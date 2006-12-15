@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 15, 2006 9:57:29 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.TestType" table="test_type" schema="public">
+        <id name="testTypeIi" type="int">
+            <column name="test_type_ii" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select">
+            <column name="value_type_ii" />
+        </many-to-one>
+        <many-to-one name="testObject" class="net.sf.regadb.db.TestObject" fetch="select">
+            <column name="test_object_ii" not-null="true" />
+        </many-to-one>
+        <property name="description" type="string">
+            <column name="description" length="50" not-null="true" />
+        </property>
+        <set name="tests" inverse="true" cascade="all">
+            <key>
+                <column name="test_type_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.Test" />
+        </set>
+        <set name="testNominalValues" inverse="true" cascade="all">
+            <key>
+                <column name="test_type_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.TestNominalValue" />
+        </set>
+    </class>
+</hibernate-mapping>

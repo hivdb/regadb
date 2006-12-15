@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 15, 2006 9:57:29 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.Protein" table="protein" schema="public">
+        <id name="proteinIi" type="int">
+            <column name="protein_ii" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <property name="abbreviation" type="string">
+            <column name="abbreviation" length="50" not-null="true" />
+        </property>
+        <property name="fullName" type="string">
+            <column name="full_name" length="50" />
+        </property>
+        <set name="aaSequences" inverse="true" cascade="all">
+            <key>
+                <column name="protein_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.AaSequence" />
+        </set>
+    </class>
+</hibernate-mapping>

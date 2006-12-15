@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 15, 2006 9:57:29 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.AaMutation" table="aa_mutation" schema="public">
+        <composite-id name="id" class="net.sf.regadb.db.AaMutationId">
+            <key-property name="position" type="short">
+                <column name="position" />
+            </key-property>
+            <key-property name="aaSequenceIi" type="int">
+                <column name="aa_sequence_ii" />
+            </key-property>
+        </composite-id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <many-to-one name="aaSequence" class="net.sf.regadb.db.AaSequence" update="false" insert="false" fetch="select">
+            <column name="aa_sequence_ii" not-null="true" />
+        </many-to-one>
+        <property name="aaReference" type="string">
+            <column name="aa_reference" length="1" not-null="true" />
+        </property>
+        <property name="aaMutation" type="string">
+            <column name="aa_mutation" length="30" />
+        </property>
+        <property name="ntReferenceCodon" type="java.lang.String">
+            <column name="nt_reference_codon" not-null="true" />
+        </property>
+        <property name="ntMutationCodon" type="java.lang.String">
+            <column name="nt_mutation_codon" />
+        </property>
+    </class>
+</hibernate-mapping>
