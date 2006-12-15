@@ -12,19 +12,49 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 
 /**
- * Object that represents an authenticated login for access
- * to the database.
+ * Login represents an authenticated login for access to the
+ * database.
+ * 
+ * A Login does not maintain an open connection to the database,
+ * or any other resources, and is safe to to keep around for
+ * a long time in your application.
  */
 public class Login {
     private String uid;
 
-    static Login authenticate(String uid, String passwd) {
+    /**
+     * Create a new authenticated login to the database.
+     * 
+     * Uses the database settings from hibernate.
+     * 
+     * @param uid
+     * @param passwd
+     * @return
+     */
+    public static Login authenticate(String uid, String passwd) {
         Login login = new Login(uid);
         
         if (login.authenticate(passwd)) {
             return login;
         } else
             return null;
+    }
+    
+    /**
+     * Start a new transaction.
+     * 
+     * @return
+     */
+    public Transaction createTransaction() {
+        return new Transaction(this, getSession());
+    }
+    
+    public String getUid() {
+        return uid;
+    }
+
+    private Session getSession() {
+        return HibernateUtil.getSessionFactory().getCurrentSession();
     }
     
     private Login(String uid) {
@@ -40,17 +70,5 @@ public class Login {
         t.commit();
         
         return settings != null;
-    }
-
-    public Transaction createTransaction() {
-        return new Transaction(this, getSession());
-    }
-    
-    private Session getSession() {
-        return HibernateUtil.getSessionFactory().getCurrentSession();
-    }
-
-    public String getUid() {
-        return uid;
     }
 }

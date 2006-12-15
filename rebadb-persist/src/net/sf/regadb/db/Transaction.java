@@ -13,6 +13,15 @@ import org.hibernate.Session;
 
 import net.sf.regadb.db.session.Login;
 
+/**
+ * Represents a short-lived transaction to the database.
+ * 
+ * The transaction must be either committed or rolled back. You should make
+ * your transaction short-lived, since it consumes database resources.
+ * 
+ * You may fetch persistent objects in one transaction, modify them at will,
+ * and then save them in a new transaction.
+ */
 public class Transaction {
 
     private Login login;
@@ -25,15 +34,15 @@ public class Transaction {
     }
     
     private void begin() {
-
+        session.beginTransaction();
     }
     
     public void commit() {
-        
+        session.getTransaction().commit();
     }
     
     public void rollback() {
-        
+        session.getTransaction().rollback();
     }
 
     /*
