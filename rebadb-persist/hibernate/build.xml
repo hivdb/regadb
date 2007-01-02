@@ -1,11 +1,11 @@
-<project name="regadb" basedir=".">
+<project name="regadb" basedir="../">
   <!-- Name of project and version -->
   <property name="proj.name" value="RegaDB-db"/>
   <property name="proj.version" value="1.0"/>
   <!-- Global properties for this build -->
-  <property name="src.java.dir" value="../src"/>
-  <property name="lib.dir" value="../lib"/>
-  <property name="build.dir" value="../bin"/>
+  <property name="src.java.dir" value="src"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="build.dir" value="bin"/>
   <!-- Classpath declaration -->
   <path id="project.classpath">
     <fileset dir="${lib.dir}">
@@ -43,7 +43,7 @@
 
   <target name="reveng.hbmxml"
           description="Produces XML mapping files in src directory">
-    <hibernatetool destdir="${basedir}/src">
+    <hibernatetool destdir="${src.java.dir}">
       <jdbcconfiguration
         propertyfile="${basedir}/regadb.db.properties"
         revengfile="${basedir}/regadb.reveng.xml"
@@ -55,19 +55,23 @@
 
   <target name="reveng.pojos"
 	  description="Produces Java classes from XML mappings">
-    <hibernatetool destdir="${basedir}/src">
+    <hibernatetool destdir="${src.java.dir}">
       <configuration>
-	<fileset dir="${basedir}/src">
+	<fileset dir="${src.java.dir}">
 	  <include name="**/*.hbm.xml"/>
 	</fileset>
       </configuration>
-      <hbm2java/> <!-- Generate entity class source -->
+      <hbm2java
+	jdk5="true"
+	ejb3="true"
+	> <!-- Generate entity class source -->
+      </hbm2java>
     </hibernatetool>
   </target>
 
   <target name="reveng.entities"
           description="Produces Java entity classes in src directory">
-    <hibernatetool destdir="${basedir}/src">
+    <hibernatetool destdir="${src.java.dir}">
       <jdbcconfiguration
 	  propertyfile="${basedir}/regadb.db.properties"
 	  revengfile="${basedir}/regadb.reveng.xml"/>
