@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.Test" table="test" schema="public">
-        <id name="testIi" type="int">
+        <id name="testIi" type="java.lang.Integer">
             <column name="test_ii" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">test_test_ii_seq</param>
+            </generator>
         </id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />
@@ -26,17 +28,5 @@
         <property name="serviceConfig" type="string">
             <column name="service_config" />
         </property>
-        <set name="testResults" inverse="true" cascade="all">
-            <key>
-                <column name="test_ii" not-null="true" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.TestResult" />
-        </set>
-        <set name="settingsUsers" inverse="true" cascade="all">
-            <key>
-                <column name="chart_resistance_test_ii" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.SettingsUser" />
-        </set>
     </class>
 </hibernate-mapping>

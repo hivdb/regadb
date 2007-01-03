@@ -2,12 +2,12 @@
   search/replace of
     invert="true"
   to
-    invert="true" cascade="all"
+    invert="false" cascade="all"
+
+  but not:
+     getDatasets in PatientImpl (?)
 
 - We must mofidy the JAVA files:
   in PatientImpl:
     make class package scope
-  in Dataset:
-    make getPatients setPatients package scope
-    make setDatasetAccess package scope
 

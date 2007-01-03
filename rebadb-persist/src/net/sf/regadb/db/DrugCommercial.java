@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,16 +12,13 @@ public class DrugCommercial implements java.io.Serializable {
 
     // Fields    
 
-    private int commercialIi;
+    private Integer commercialIi;
 
     private Integer version;
 
     private String name;
 
     private Set<DrugGeneric> drugGenerics = new HashSet<DrugGeneric>(0);
-
-    private Set<TherapyCommercial> therapyCommercials = new HashSet<TherapyCommercial>(
-            0);
 
     // Constructors
 
@@ -30,27 +27,22 @@ public class DrugCommercial implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public DrugCommercial(int commercialIi, String name) {
-        this.commercialIi = commercialIi;
+    public DrugCommercial(String name) {
         this.name = name;
     }
 
     /** full constructor */
-    public DrugCommercial(int commercialIi, String name,
-            Set<DrugGeneric> drugGenerics,
-            Set<TherapyCommercial> therapyCommercials) {
-        this.commercialIi = commercialIi;
+    public DrugCommercial(String name, Set<DrugGeneric> drugGenerics) {
         this.name = name;
         this.drugGenerics = drugGenerics;
-        this.therapyCommercials = therapyCommercials;
     }
 
     // Property accessors
-    public int getCommercialIi() {
+    public Integer getCommercialIi() {
         return this.commercialIi;
     }
 
-    public void setCommercialIi(int commercialIi) {
+    public void setCommercialIi(Integer commercialIi) {
         this.commercialIi = commercialIi;
     }
 
@@ -76,14 +68,6 @@ public class DrugCommercial implements java.io.Serializable {
 
     public void setDrugGenerics(Set<DrugGeneric> drugGenerics) {
         this.drugGenerics = drugGenerics;
-    }
-
-    public Set<TherapyCommercial> getTherapyCommercials() {
-        return this.therapyCommercials;
-    }
-
-    public void setTherapyCommercials(Set<TherapyCommercial> therapyCommercials) {
-        this.therapyCommercials = therapyCommercials;
     }
 
 }

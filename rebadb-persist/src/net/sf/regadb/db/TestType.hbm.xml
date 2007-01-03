@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.TestType" table="test_type" schema="public">
-        <id name="testTypeIi" type="int">
+        <id name="testTypeIi" type="java.lang.Integer">
             <column name="test_type_ii" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">test_type_test_type_ii_seq</param>
+            </generator>
         </id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />
@@ -20,12 +22,6 @@
         <property name="description" type="string">
             <column name="description" length="50" not-null="true" />
         </property>
-        <set name="tests" inverse="true" cascade="all">
-            <key>
-                <column name="test_type_ii" not-null="true" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.Test" />
-        </set>
         <set name="testNominalValues" inverse="true" cascade="all">
             <key>
                 <column name="test_type_ii" not-null="true" />

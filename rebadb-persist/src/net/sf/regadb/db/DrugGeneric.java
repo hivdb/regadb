@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ public class DrugGeneric implements java.io.Serializable {
 
     // Fields    
 
-    private int genericIi;
+    private Integer genericIi;
 
     private Integer version;
 
@@ -21,10 +21,6 @@ public class DrugGeneric implements java.io.Serializable {
     private String genericId;
 
     private String genericName;
-
-    private Set<TherapyGeneric> therapyGenerics = new HashSet<TherapyGeneric>(0);
-
-    private Set<TestResult> testResults = new HashSet<TestResult>(0);
 
     private Set<DrugCommercial> drugCommercials = new HashSet<DrugCommercial>(0);
 
@@ -35,33 +31,27 @@ public class DrugGeneric implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public DrugGeneric(int genericIi, DrugClass drugClass, String genericId,
-            String genericName) {
-        this.genericIi = genericIi;
+    public DrugGeneric(DrugClass drugClass, String genericId, String genericName) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
     }
 
     /** full constructor */
-    public DrugGeneric(int genericIi, DrugClass drugClass, String genericId,
-            String genericName, Set<TherapyGeneric> therapyGenerics,
-            Set<TestResult> testResults, Set<DrugCommercial> drugCommercials) {
-        this.genericIi = genericIi;
+    public DrugGeneric(DrugClass drugClass, String genericId,
+            String genericName, Set<DrugCommercial> drugCommercials) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
-        this.therapyGenerics = therapyGenerics;
-        this.testResults = testResults;
         this.drugCommercials = drugCommercials;
     }
 
     // Property accessors
-    public int getGenericIi() {
+    public Integer getGenericIi() {
         return this.genericIi;
     }
 
-    public void setGenericIi(int genericIi) {
+    public void setGenericIi(Integer genericIi) {
         this.genericIi = genericIi;
     }
 
@@ -95,22 +85,6 @@ public class DrugGeneric implements java.io.Serializable {
 
     public void setGenericName(String genericName) {
         this.genericName = genericName;
-    }
-
-    public Set<TherapyGeneric> getTherapyGenerics() {
-        return this.therapyGenerics;
-    }
-
-    public void setTherapyGenerics(Set<TherapyGeneric> therapyGenerics) {
-        this.therapyGenerics = therapyGenerics;
-    }
-
-    public Set<TestResult> getTestResults() {
-        return this.testResults;
-    }
-
-    public void setTestResults(Set<TestResult> testResults) {
-        this.testResults = testResults;
     }
 
     public Set<DrugCommercial> getDrugCommercials() {

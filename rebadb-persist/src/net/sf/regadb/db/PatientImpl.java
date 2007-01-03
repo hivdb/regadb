@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ class PatientImpl implements java.io.Serializable {
 
     // Fields    
 
-    private int patientIi;
+    private Integer patientIi;
 
     private Integer version;
 
@@ -45,18 +45,16 @@ class PatientImpl implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public PatientImpl(int patientIi, String patientId) {
-        this.patientIi = patientIi;
+    public PatientImpl(String patientId) {
         this.patientId = patientId;
     }
 
     /** full constructor */
-    public PatientImpl(int patientIi, String patientId, String lastName,
-            String firstName, Date birthDate, Date deathDate,
-            Set<Dataset> datasets, Set<TestResult> testResults,
+    public PatientImpl(String patientId, String lastName, String firstName,
+            Date birthDate, Date deathDate, Set<Dataset> datasets,
+            Set<TestResult> testResults,
             Set<PatientAttributeValue> patientAttributeValues,
             Set<ViralIsolate> viralIsolates, Set<Therapy> therapies) {
-        this.patientIi = patientIi;
         this.patientId = patientId;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -70,11 +68,11 @@ class PatientImpl implements java.io.Serializable {
     }
 
     // Property accessors
-    public int getPatientIi() {
+    public Integer getPatientIi() {
         return this.patientIi;
     }
 
-    public void setPatientIi(int patientIi) {
+    public void setPatientIi(Integer patientIi) {
         this.patientIi = patientIi;
     }
 

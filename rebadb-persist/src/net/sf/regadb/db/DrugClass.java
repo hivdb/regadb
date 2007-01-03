@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ public class DrugClass implements java.io.Serializable {
 
     // Fields    
 
-    private int classIi;
+    private Integer classIi;
 
     private Integer version;
 
@@ -29,27 +29,25 @@ public class DrugClass implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public DrugClass(int classIi, String classId, String className) {
-        this.classIi = classIi;
+    public DrugClass(String classId, String className) {
         this.classId = classId;
         this.className = className;
     }
 
     /** full constructor */
-    public DrugClass(int classIi, String classId, String className,
+    public DrugClass(String classId, String className,
             Set<DrugGeneric> drugGenerics) {
-        this.classIi = classIi;
         this.classId = classId;
         this.className = className;
         this.drugGenerics = drugGenerics;
     }
 
     // Property accessors
-    public int getClassIi() {
+    public Integer getClassIi() {
         return this.classIi;
     }
 
-    public void setClassIi(int classIi) {
+    public void setClassIi(Integer classIi) {
         this.classIi = classIi;
     }
 

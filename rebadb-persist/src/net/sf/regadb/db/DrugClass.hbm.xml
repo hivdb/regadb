@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.DrugClass" table="drug_class" schema="public">
-        <id name="classIi" type="int">
+        <id name="classIi" type="java.lang.Integer">
             <column name="class_ii" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">drug_class_drug_class_ii_seq</param>
+            </generator>
         </id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />

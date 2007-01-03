@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.TestNominalValue" table="test_nominal_value" schema="public">
-        <id name="nominalValueIi" type="int">
+        <id name="nominalValueIi" type="java.lang.Integer">
             <column name="nominal_value_ii" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">test_nominal_value_test_nominal_value_ii_seq</param>
+            </generator>
         </id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />

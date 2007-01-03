@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ public class TestType implements java.io.Serializable {
 
     // Fields    
 
-    private int testTypeIi;
+    private Integer testTypeIi;
 
     private Integer version;
 
@@ -21,8 +21,6 @@ public class TestType implements java.io.Serializable {
     private TestObject testObject;
 
     private String description;
-
-    private Set<Test> tests = new HashSet<Test>(0);
 
     private Set<TestNominalValue> testNominalValues = new HashSet<TestNominalValue>(
             0);
@@ -34,30 +32,26 @@ public class TestType implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public TestType(int testTypeIi, TestObject testObject, String description) {
-        this.testTypeIi = testTypeIi;
+    public TestType(TestObject testObject, String description) {
         this.testObject = testObject;
         this.description = description;
     }
 
     /** full constructor */
-    public TestType(int testTypeIi, ValueType valueType, TestObject testObject,
-            String description, Set<Test> tests,
-            Set<TestNominalValue> testNominalValues) {
-        this.testTypeIi = testTypeIi;
+    public TestType(ValueType valueType, TestObject testObject,
+            String description, Set<TestNominalValue> testNominalValues) {
         this.valueType = valueType;
         this.testObject = testObject;
         this.description = description;
-        this.tests = tests;
         this.testNominalValues = testNominalValues;
     }
 
     // Property accessors
-    public int getTestTypeIi() {
+    public Integer getTestTypeIi() {
         return this.testTypeIi;
     }
 
-    public void setTestTypeIi(int testTypeIi) {
+    public void setTestTypeIi(Integer testTypeIi) {
         this.testTypeIi = testTypeIi;
     }
 
@@ -91,14 +85,6 @@ public class TestType implements java.io.Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Set<Test> getTests() {
-        return this.tests;
-    }
-
-    public void setTests(Set<Test> tests) {
-        this.tests = tests;
     }
 
     public Set<TestNominalValue> getTestNominalValues() {

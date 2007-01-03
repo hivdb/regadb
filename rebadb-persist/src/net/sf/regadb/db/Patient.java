@@ -13,6 +13,10 @@ public class Patient {
 
     private PatientImpl patient;
     private Privileges privileges;
+    
+    PatientImpl getPatient() {
+        return patient;
+    }
 
     public Patient(PatientImpl patient, int privileges) {
         this.patient = patient;
@@ -33,6 +37,10 @@ public class Patient {
         return patient.getPatientIi();
     }
 
+    public Set<Dataset> getDatasets() {
+        return patient.getDatasets();
+    }
+    
     public void setPatientIi(int patientIi) {
         patient.setPatientIi(patientIi);
     }
@@ -72,7 +80,7 @@ public class Patient {
     }
 
     public void setFirstName(String firstName) {
-        patient.setLastName(firstName);
+        patient.setFirstName(firstName);
     }
 
     public Date getBirthDate() {
@@ -126,5 +134,34 @@ public class Patient {
 
     public Privileges getPrivileges() {
         return privileges;
+    }
+
+    public PatientAttributeValue createPatientAttributeValue(Attribute attribute) {
+        PatientAttributeValue result
+            = new PatientAttributeValue
+                (new PatientAttributeValueId(getPatientIi(), attribute.getAttributeIi()),
+                        attribute, patient);
+
+        getPatientAttributeValues().add(result);
+        
+        return result;
+    }
+    
+    public Therapy createTherapy(Date startDate) {
+        Therapy result = new Therapy(patient, startDate);
+        getTherapies().add(result);
+        return result;
+    }
+    
+    public ViralIsolate createViralIsolate() {
+        ViralIsolate result = new ViralIsolate(patient);
+        getViralIsolates().add(result);
+        return result;
+    }
+    
+    public TestResult createTestResult(Test test) {
+        TestResult result = new TestResult(test, patient);
+        getTestResults().add(result);
+        return result;
     }
 }

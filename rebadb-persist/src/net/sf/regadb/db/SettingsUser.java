@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,16 +33,14 @@ public class SettingsUser implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public SettingsUser(String uid, int chartWidth, int chartHeight) {
-        this.uid = uid;
+    public SettingsUser(int chartWidth, int chartHeight) {
         this.chartWidth = chartWidth;
         this.chartHeight = chartHeight;
     }
 
     /** full constructor */
-    public SettingsUser(String uid, Test test, Dataset dataset, int chartWidth,
+    public SettingsUser(Test test, Dataset dataset, int chartWidth,
             int chartHeight, Set<DatasetAccess> datasetAccesses) {
-        this.uid = uid;
         this.test = test;
         this.dataset = dataset;
         this.chartWidth = chartWidth;

@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ public class Attribute implements java.io.Serializable {
 
     // Fields    
 
-    private int attributeIi;
+    private Integer attributeIi;
 
     private Integer version;
 
@@ -24,10 +24,9 @@ public class Attribute implements java.io.Serializable {
 
     private Boolean sequenceAttribute;
 
-    private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
-            0);
+    private String attributeGroup;
 
-    private Set<PatientAttributeValue> patientAttributeValues = new HashSet<PatientAttributeValue>(
+    private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
             0);
 
     // Constructors
@@ -37,31 +36,29 @@ public class Attribute implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public Attribute(int attributeIi, String name) {
-        this.attributeIi = attributeIi;
+    public Attribute(String name) {
         this.name = name;
     }
 
     /** full constructor */
-    public Attribute(int attributeIi, ValueType valueType, String name,
+    public Attribute(ValueType valueType, String name,
             Boolean patientAttribute, Boolean sequenceAttribute,
-            Set<AttributeNominalValue> attributeNominalValues,
-            Set<PatientAttributeValue> patientAttributeValues) {
-        this.attributeIi = attributeIi;
+            String attributeGroup,
+            Set<AttributeNominalValue> attributeNominalValues) {
         this.valueType = valueType;
         this.name = name;
         this.patientAttribute = patientAttribute;
         this.sequenceAttribute = sequenceAttribute;
+        this.attributeGroup = attributeGroup;
         this.attributeNominalValues = attributeNominalValues;
-        this.patientAttributeValues = patientAttributeValues;
     }
 
     // Property accessors
-    public int getAttributeIi() {
+    public Integer getAttributeIi() {
         return this.attributeIi;
     }
 
-    public void setAttributeIi(int attributeIi) {
+    public void setAttributeIi(Integer attributeIi) {
         this.attributeIi = attributeIi;
     }
 
@@ -105,6 +102,14 @@ public class Attribute implements java.io.Serializable {
         this.sequenceAttribute = sequenceAttribute;
     }
 
+    public String getAttributeGroup() {
+        return this.attributeGroup;
+    }
+
+    public void setAttributeGroup(String attributeGroup) {
+        this.attributeGroup = attributeGroup;
+    }
+
     public Set<AttributeNominalValue> getAttributeNominalValues() {
         return this.attributeNominalValues;
     }
@@ -112,15 +117,6 @@ public class Attribute implements java.io.Serializable {
     public void setAttributeNominalValues(
             Set<AttributeNominalValue> attributeNominalValues) {
         this.attributeNominalValues = attributeNominalValues;
-    }
-
-    public Set<PatientAttributeValue> getPatientAttributeValues() {
-        return this.patientAttributeValues;
-    }
-
-    public void setPatientAttributeValues(
-            Set<PatientAttributeValue> patientAttributeValues) {
-        this.patientAttributeValues = patientAttributeValues;
     }
 
 }

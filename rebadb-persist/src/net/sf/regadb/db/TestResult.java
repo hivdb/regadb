@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ public class TestResult implements java.io.Serializable {
 
     // Fields    
 
-    private int testResultIi;
+    private Integer testResultIi;
 
     private Integer version;
 
@@ -38,17 +38,15 @@ public class TestResult implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public TestResult(int testResultIi, Test test, String value) {
-        this.testResultIi = testResultIi;
+    public TestResult(Test test, PatientImpl patient) {
         this.test = test;
-        this.value = value;
+        this.patient = patient;
     }
 
     /** full constructor */
-    public TestResult(int testResultIi, Test test, DrugGeneric drugGeneric,
+    public TestResult(Test test, DrugGeneric drugGeneric,
             ViralIsolate viralIsolate, PatientImpl patient, String value,
             Date testDate, String sampleId, Integer nominalValueIi) {
-        this.testResultIi = testResultIi;
         this.test = test;
         this.drugGeneric = drugGeneric;
         this.viralIsolate = viralIsolate;
@@ -60,11 +58,11 @@ public class TestResult implements java.io.Serializable {
     }
 
     // Property accessors
-    public int getTestResultIi() {
+    public Integer getTestResultIi() {
         return this.testResultIi;
     }
 
-    public void setTestResultIi(int testResultIi) {
+    public void setTestResultIi(Integer testResultIi) {
         this.testResultIi = testResultIi;
     }
 

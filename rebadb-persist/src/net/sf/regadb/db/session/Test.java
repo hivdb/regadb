@@ -6,13 +6,17 @@
  */
 package net.sf.regadb.db.session;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 
 public class Test {
 
@@ -21,6 +25,7 @@ public class Test {
         
         test.getPatients();
         //test.testModifySettings();
+        test.modifyPatient();
     }
 
     private void getPatients() {
@@ -37,8 +42,32 @@ public class Test {
             
             System.err.println(patients.size());
         }
+        
+        System.err.println("Total patients: " + t.getPatients().size());
+        
+        t.commit();
     }
 
+    private void modifyPatient() {
+        Transaction t = login.createTransaction();
+        
+        Patient p = t.getPatient(t.getDataset("TEST"), "12312");
+        
+        p.setFirstName("Flapfoo");
+        
+        ViralIsolate v = p.createViralIsolate();
+        v.setSampleDate(new Date());
+        v.setSampleId("Flupke");
+        
+        TestResult result = p.createTestResult(t.getTest("CD4 Count (generic)"));
+        result.setTestDate(new Date());
+        result.setValue("<1234");
+        
+        t.save(p);
+        
+        t.commit();
+    }
+    
     private Login login;
     
     Test(String uid, String passwd) {

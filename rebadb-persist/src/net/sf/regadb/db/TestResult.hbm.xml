@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.TestResult" table="test_result" schema="public">
-        <id name="testResultIi" type="int">
+        <id name="testResultIi" type="java.lang.Integer">
             <column name="test_result_ii" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">test_result_test_result_ii_seq</param>
+            </generator>
         </id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />
@@ -21,10 +23,10 @@
             <column name="viral_isolate_ii" />
         </many-to-one>
         <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
-            <column name="patient_ii" />
+            <column name="patient_ii" not-null="true" />
         </many-to-one>
         <property name="value" type="string">
-            <column name="value" length="50" not-null="true" />
+            <column name="value" length="50" />
         </property>
         <property name="testDate" type="date">
             <column name="test_date" length="4" />

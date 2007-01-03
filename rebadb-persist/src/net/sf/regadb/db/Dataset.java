@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 11:34:35 AM by Hibernate Tools 3.2.0.beta8
+// Generated Jan 3, 2007 3:29:22 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ public class Dataset implements java.io.Serializable {
 
     // Fields    
 
-    private int datasetIi;
+    private Integer datasetIi;
 
     private Integer version;
 
@@ -25,10 +25,6 @@ public class Dataset implements java.io.Serializable {
 
     private Integer revision;
 
-    private Set<SettingsUser> settingsUsers = new HashSet<SettingsUser>(0);
-
-    private Set<PatientImpl> patients = new HashSet<PatientImpl>(0);
-
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
     // Constructors
@@ -38,32 +34,27 @@ public class Dataset implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public Dataset(int datasetIi, String description, Date creationDate) {
-        this.datasetIi = datasetIi;
+    public Dataset(String description, Date creationDate) {
         this.description = description;
         this.creationDate = creationDate;
     }
 
     /** full constructor */
-    public Dataset(int datasetIi, String description, Date creationDate,
-            Date closedDate, Integer revision, Set<SettingsUser> settingsUsers,
-            Set<PatientImpl> patients, Set<DatasetAccess> datasetAccesses) {
-        this.datasetIi = datasetIi;
+    public Dataset(String description, Date creationDate, Date closedDate,
+            Integer revision, Set<DatasetAccess> datasetAccesses) {
         this.description = description;
         this.creationDate = creationDate;
         this.closedDate = closedDate;
         this.revision = revision;
-        this.settingsUsers = settingsUsers;
-        this.patients = patients;
         this.datasetAccesses = datasetAccesses;
     }
 
     // Property accessors
-    public int getDatasetIi() {
+    public Integer getDatasetIi() {
         return this.datasetIi;
     }
 
-    public void setDatasetIi(int datasetIi) {
+    public void setDatasetIi(Integer datasetIi) {
         this.datasetIi = datasetIi;
     }
 
@@ -105,22 +96,6 @@ public class Dataset implements java.io.Serializable {
 
     public void setRevision(Integer revision) {
         this.revision = revision;
-    }
-
-    public Set<SettingsUser> getSettingsUsers() {
-        return this.settingsUsers;
-    }
-
-    public void setSettingsUsers(Set<SettingsUser> settingsUsers) {
-        this.settingsUsers = settingsUsers;
-    }
-
-    public Set<PatientImpl> getPatients() {
-        return this.patients;
-    }
-
-    public void setPatients(Set<PatientImpl> patients) {
-        this.patients = patients;
     }
 
     public Set<DatasetAccess> getDatasetAccesses() {

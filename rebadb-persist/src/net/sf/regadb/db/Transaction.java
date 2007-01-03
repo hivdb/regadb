@@ -46,6 +46,37 @@ public class Transaction {
     }
 
     /*
+     * Lists of attributes, tests, test types, etc...
+     */
+    @SuppressWarnings("unchecked")
+    public List<Attribute> getAttributes() {
+        Query q = session.createQuery("from Attribute attribute");
+        
+        return q.list();
+    }
+
+    public Attribute getAttribute(String name) {
+        Query q = session.createQuery("from Attribute attribute where attribute.name = :name");
+        q.setParameter("name", name);
+        
+        return (Attribute) q.uniqueResult();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Test> getTests() {
+        Query q = session.createQuery("from Test test");
+        
+        return q.list();
+    }
+
+    public Test getTest(String description) {
+        Query q = session.createQuery("from Test test where test.description = :description");
+        q.setParameter("description", description);
+        
+        return (Test) q.uniqueResult();
+    }
+
+    /*
      * Dataset queries
      */
 
@@ -59,44 +90,72 @@ public class Transaction {
         return q.list();
     }
 
+    public Dataset getDataset(String description) {
+        Query q = session.createQuery("from Dataset dataset where dataset.description = :description");
+        q.setParameter("description", description);
+        
+        return (Dataset) q.uniqueResult();
+    }    
+
     /**
-     * Returns patients in this data set according to access
-     * permissions.
-     * 
-     * @param dataset
-     * @return
+     * Returns patients in this data set according, checking access permissions.
      */
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(Dataset dataset) {
         Query q = session.createQuery(
-                "select new PatientC(patient, max(access.permissions))" +
-                "from Patient as patient" +
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                "from PatientImpl as patient " +
                 "join patient.datasets as dataset " +
                 "join dataset.datasetAccesses access " +
                 "where dataset = :dataset " +
-                "where access.permissions >= 1 " +
-                "and access.settingsUser.uid = :uid");
+                "and access.permissions >= 1 " +
+                "and access.settingsUser.uid = :uid " +
+                "group by patient");
         q.setParameter("dataset", dataset);
         q.setParameter("uid", login.getUid());
 
         return q.list();
     }
-    
+
+    /**
+     * Returns all patients, checking access permissions.
+     */
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients() {
         Query q = session.createQuery(
-                "select distinct patient from Patient as patient" +
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                "from PatientImpl as patient " +
                 "join patient.datasets as dataset " +
                 "join dataset.datasetAccesses access " +
                 "where access.permissions >= 1 " +
-                "and access.settingsUser.uid = :uid");
+                "and access.settingsUser.uid = :uid " +
+                "group by patient");
         q.setParameter("uid", login.getUid());
 
         return q.list();
     }
 
+    public Patient getPatient(Dataset dataset, String id) {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
+                "from PatientImpl as patient " +
+                "join patient.datasets as dataset " +
+                "join dataset.datasetAccesses access " +
+                "where dataset = :dataset " +
+                "and access.permissions >= 1 " +
+                "and access.settingsUser.uid = :uid " +
+                "and patient.patientId = :patientId " +
+                "group by patient");
+        
+        q.setParameter("dataset", dataset);
+        q.setParameter("uid", login.getUid());
+        q.setParameter("patientId", id);
+        
+        return (Patient) q.uniqueResult();
+    }
+    
     /*
-     * User queries
+     * User settings queries
      */
 
     /**
@@ -130,11 +189,13 @@ public class Transaction {
     /*
      * Patient queries
      */
-    
+
     /**
      * Check access permissions, and save the patient.
      */
     public void save(Patient patient) {
-        
+        if (patient.getPrivileges().canWrite()) {
+            session.saveOrUpdate(patient.getPatient());
+        } // TODO: else throw exception
     }
 }

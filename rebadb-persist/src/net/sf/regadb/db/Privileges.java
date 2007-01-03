@@ -20,4 +20,8 @@ public enum Privileges {
     int getValue() {
         return this.value;
     }
+
+    public boolean canWrite() {
+        return this.value >= READWRITE.value;
+    }
 }
