@@ -4,6 +4,9 @@
 
 <hibernate-reverse-engineering>
   <table-filter match-name=".*" package="net.sf.regadb.db"/>
+
+  <table name="patient" schema="public" class="PatientImpl">
+  </table>
  
   <table name="aa_mutation" schema="public">
     <column name="nt_reference_codon" type="java.lang.String" />

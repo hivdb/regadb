@@ -5,8 +5,8 @@
     invert="true" cascade="all"
 
 - We must mofidy the JAVA files:
-  in Patient:
-    make getDatasets setDatasets package scope
+  in PatientImpl:
+    make class package scope
   in Dataset:
     make getPatients setPatients package scope
     make setDatasetAccess package scope

@@ -52,8 +52,11 @@ public class Transaction {
     /**
      * Obtain a list of all datasets in the database.
      */
+    @SuppressWarnings("unchecked")
     public List<Dataset> getDatasets() {
-        return null;
+        Query q = session.createQuery("from Dataset dataset");
+        
+        return q.list();
     }
 
     /**
@@ -66,12 +69,27 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(Dataset dataset) {
         Query q = session.createQuery(
+                "select new PatientC(patient, max(access.permissions))" +
+                "from Patient as patient" +
+                "join patient.datasets as dataset " +
+                "join dataset.datasetAccesses access " +
+                "where dataset = :dataset " +
+                "where access.permissions >= 1 " +
+                "and access.settingsUser.uid = :uid");
+        q.setParameter("dataset", dataset);
+        q.setParameter("uid", login.getUid());
+
+        return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Patient> getPatients() {
+        Query q = session.createQuery(
                 "select distinct patient from Patient as patient" +
                 "join patient.datasets as dataset " +
                 "join dataset.datasetAccesses access " +
-                "where access.permissions >= 3 " +
+                "where access.permissions >= 1 " +
                 "and access.settingsUser.uid = :uid");
-        
         q.setParameter("uid", login.getUid());
 
         return q.list();
@@ -81,13 +99,32 @@ public class Transaction {
      * User queries
      */
 
+    /**
+     * Authenticated access to user settings.
+     */
     public SettingsUser getSettingsUser(String uid, String passwd) {
-        Query q = session.createQuery(
-                "from SettingsUser user where user.uid = :uid");
-  
+        Query q = session.createQuery("from SettingsUser user where user.uid = :uid");
         q.setParameter("uid", uid);
 
         return (SettingsUser) q.uniqueResult();
+    }
+
+    /**
+     * Unauthenticated access to own settings.
+     */
+    public SettingsUser getSettingsUser() {
+        Query q = session.createQuery("from SettingsUser user where user.uid = :uid");  
+        q.setParameter("uid", login.getUid());
+
+        return (SettingsUser) q.uniqueResult();
+    }
+
+    /**
+     * Save settings.
+     * @param settings
+     */
+    public void save(SettingsUser settings) {
+        session.saveOrUpdate(settings);
     }
 
     /*
@@ -99,9 +136,5 @@ public class Transaction {
      */
     public void save(Patient patient) {
         
-    }
-    
-    List<Patient> getPatientList() {
-        return null;
     }
 }

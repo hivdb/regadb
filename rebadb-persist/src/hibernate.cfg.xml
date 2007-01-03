@@ -23,6 +23,7 @@
         <mapping resource="net/sf/regadb/db/AttributeNominalValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugGeneric.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestNominalValue.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/PatientImpl.hbm.xml" />
         <mapping resource="net/sf/regadb/db/NtSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Protein.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Attribute.hbm.xml" />
@@ -31,8 +32,6 @@
         <mapping resource="net/sf/regadb/db/AaInsertion.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Patient.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Gender.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Test.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />

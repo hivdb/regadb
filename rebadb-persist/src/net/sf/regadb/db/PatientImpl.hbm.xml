@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Dec 15, 2006 9:57:29 AM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.Patient" table="patient" schema="public">
+    <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="public">
         <id name="patientIi" type="int">
             <column name="patient_ii" />
             <generator class="assigned" />
@@ -11,9 +11,6 @@
         <version name="version" type="java.lang.Integer">
             <column name="version" />
         </version>
-        <many-to-one name="gender" class="net.sf.regadb.db.Gender" fetch="select">
-            <column name="gender_ii" />
-        </many-to-one>
         <property name="patientId" type="string">
             <column name="patient_id" length="50" not-null="true" />
         </property>
@@ -29,7 +26,7 @@
         <property name="deathDate" type="date">
             <column name="death_date" length="4" />
         </property>
-        <set name="datasets" inverse="true" cascade="all" table="patient_dataset" >
+        <set name="datasets" inverse="true" cascade="all" table="patient_dataset">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>
