@@ -38,7 +38,11 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             || fromTable.getName().equals("test_nominal_value")
             || fromTable.getName().equals("commercial_generic")
             || fromTable.getName().equals("dataset_access")
-            || referencedTable.getName().equals("patient"))
+            || referencedTable.getName().equals("patient")
+            || referencedTable.getName().equals("viral_isolate")
+            || referencedTable.getName().equals("nt_sequence")
+            || referencedTable.getName().equals("aa_sequence")
+            || referencedTable.getName().equals("therapy"))
             return false;
         else
             return true;

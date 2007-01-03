@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 4:00:56 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.Therapy" table="therapy" schema="public">
         <id name="therapyIi" type="java.lang.Integer">
@@ -25,5 +25,17 @@
         <property name="comment" type="string">
             <column name="comment" length="50" />
         </property>
+        <set name="therapyCommercials" inverse="true" cascade="all">
+            <key>
+                <column name="therapy_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.TherapyCommercial" />
+        </set>
+        <set name="therapyGenerics" inverse="true" cascade="all">
+            <key>
+                <column name="therapy_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.TherapyGeneric" />
+        </set>
     </class>
 </hibernate-mapping>

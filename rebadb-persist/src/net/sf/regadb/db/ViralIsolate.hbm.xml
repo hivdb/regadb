@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 3:28:15 PM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 3, 2007 4:00:56 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.ViralIsolate" table="viral_isolate" schema="public">
         <id name="viralIsolateIi" type="java.lang.Integer">
@@ -22,5 +22,17 @@
         <property name="sampleDate" type="date">
             <column name="sample_date" length="4" />
         </property>
+        <set name="ntSequences" inverse="true" cascade="all">
+            <key>
+                <column name="viral_isolate_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.NtSequence" />
+        </set>
+        <set name="testResults" inverse="true" cascade="all">
+            <key>
+                <column name="viral_isolate_ii" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.TestResult" />
+        </set>
     </class>
 </hibernate-mapping>
