@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.TestResult" table="test_result" schema="public">
+        <id name="testResultIi" type="int">
+            <column name="test_result_ii" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
+            <column name="test_ii" not-null="true" />
+        </many-to-one>
+        <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" fetch="select">
+            <column name="generic_ii" />
+        </many-to-one>
+        <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select">
+            <column name="viral_isolate_ii" />
+        </many-to-one>
+        <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
+            <column name="patient_ii" />
+        </many-to-one>
+        <property name="value" type="string">
+            <column name="value" length="50" not-null="true" />
+        </property>
+        <property name="testDate" type="date">
+            <column name="test_date" length="4" />
+        </property>
+        <property name="sampleId" type="string">
+            <column name="sample_id" length="50" />
+        </property>
+        <property name="nominalValueIi" type="java.lang.Integer">
+            <column name="nominal_value_ii" />
+        </property>
+    </class>
+</hibernate-mapping>

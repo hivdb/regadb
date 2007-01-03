@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.Attribute" table="attribute" schema="public">
+        <id name="attributeIi" type="int">
+            <column name="attribute_ii" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select">
+            <column name="value_type_ii" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" length="50" not-null="true" />
+        </property>
+        <property name="patientAttribute" type="java.lang.Boolean">
+            <column name="patient_attribute" />
+        </property>
+        <property name="sequenceAttribute" type="java.lang.Boolean">
+            <column name="sequence_attribute" />
+        </property>
+        <set name="attributeNominalValues" inverse="true" cascade="all">
+            <key>
+                <column name="attribute_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.AttributeNominalValue" />
+        </set>
+        <set name="patientAttributeValues" inverse="true" cascade="all">
+            <key>
+                <column name="attribute_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
+        </set>
+    </class>
+</hibernate-mapping>

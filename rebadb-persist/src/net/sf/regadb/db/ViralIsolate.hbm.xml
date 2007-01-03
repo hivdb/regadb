@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2007 11:28:14 AM by Hibernate Tools 3.2.0.beta8 -->
+<hibernate-mapping>
+    <class name="net.sf.regadb.db.ViralIsolate" table="viral_isolate" schema="public">
+        <id name="viralIsolateIi" type="int">
+            <column name="viral_isolate_ii" />
+            <generator class="assigned" />
+        </id>
+        <version name="version" type="java.lang.Integer">
+            <column name="version" />
+        </version>
+        <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
+            <column name="patient_ii" not-null="true" />
+        </many-to-one>
+        <property name="sampleId" type="string">
+            <column name="sample_id" length="50" />
+        </property>
+        <property name="sampleDate" type="date">
+            <column name="sample_date" length="4" />
+        </property>
+        <set name="ntSequences" inverse="true" cascade="all">
+            <key>
+                <column name="viral_isolate_ii" not-null="true" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.NtSequence" />
+        </set>
+        <set name="testResults" inverse="true" cascade="all">
+            <key>
+                <column name="viral_isolate_ii" />
+            </key>
+            <one-to-many class="net.sf.regadb.db.TestResult" />
+        </set>
+    </class>
+</hibernate-mapping>
