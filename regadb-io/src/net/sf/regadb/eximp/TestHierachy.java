@@ -10,15 +10,30 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.hibernate.InterpreteHbm;
 
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 
 public class TestHierachy {
 	private static Class[] regaClasses_;
-	 
-	 
+	private static List<Class> classeslisted=new ArrayList<Class>();
+	
+	
+	static void init ()
+	{
+		Class c = null;
+		try {
+			c = Class.forName("net.sf.regadb.db.PatientImpl");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		makeXmlSchema(c);
+	}
 	static
 	{
 		try 
@@ -33,56 +48,84 @@ public class TestHierachy {
 	
 	public static void main(String[] args) 
 	{		
-		Class c= Patient.class;
-		List classeslisted=new ArrayList();
-		classeslisted.add("Patient");
-		printClassInfo(c);
-		
+		init();
 	}
 
- static void printClassInfo(Class c)
+ static void makeXmlSchema(Class c)
   {
-	 Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
-	 Element patientEl = new Element("Patient");
-	 patientEl.setNamespace(relaxng);
-	 Element nameEl = new Element("name");
-	 nameEl.addContent(c.getName());
-	 patientEl.addContent(nameEl);
-	
 	 
-	 	 //System.out.println("Current class :"+ c.getName());
+	 InterpreteHbm interpreter = InterpreteHbm.getInstance();
+	 Element rootEl = new Element("element");
+	 Element firstchild = new Element("element");
+	
+	 Element newnode =new Element("element");
 	 Field [] pfields =c.getDeclaredFields();
-		for (int m=0; m<pfields.length;m++){
-			String currentfieldname =pfields[m].getName();
-			//System.out.println("Field Name: " + currentfieldname);
-			 //XmlSchemaStr=XmlSchemaStr +"<attribute name=\"" + currentfieldname +"\">\n";
-			patientEl.setAttribute("name", currentfieldname);
-			
-			if(pfields[m].getType() == Set.class)
+	 String currentfieldname=new String();
+	 
+	 if(c.getName().equals("net.sf.regadb.db.PatientImpl"))
+	 {
+		 Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
+		 rootEl.setNamespace(relaxng);
+		 rootEl.setAttribute("name", "Patients");
+		 firstchild.setAttribute("name", c.getName().substring(c.getName().lastIndexOf(".")+1));
+		 rootEl.addContent(firstchild); 
+	 }
+	 else //Continue at the previous
+	 {
+		 Element childnode = new Element("element");
+		 newnode.setAttribute("name", currentfieldname);
+		 childnode.addContent(newnode);
+	 }
+	
+
+	 for (int m=0; m<pfields.length;m++)
+	 {
+		 currentfieldname =pfields[m].getName();
+		if((pfields[m].getType() == Set.class))
+		{	
+			try
 			{
-				//Class<Set> s = (Class<Set>)pfields[m].getType();
 				String setInfo = pfields[m].toGenericString();
 				int startfrom=setInfo.indexOf('<')+1;
 				int endat=setInfo.indexOf('>');
 				String classstr=setInfo.substring( startfrom,endat);
-				try 
+				if(isRegaClass(Class.forName(classstr))) //create a new node on current parent
 				{
-					if (isRegaClass(Class.forName(classstr)))
-							{
-						//Check if class is already printed by checking an array
-						//System.out.println(classstr);
-						//printClassInfo(Class.forName(classstr));
-							}
-				} 
-				catch (ClassNotFoundException e) 
-				{
-					e.printStackTrace();
+					//newnode.setAttribute("name", currentfieldname);
+					//makeXmlSchema( Class.forName(classstr));
 				}
-				//System.out.println (classstr.substring(classstr.lastIndexOf('.')+1));
 			}
-			}	 
-		 //XmlSchemaStr=XmlSchemaStr+"</element>\n</element>";
-		//System.out.println (XmlSchemaStr);
+			catch (ClassNotFoundException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		else //if not regaclass 
+		 {				
+			if(!interpreter.isId(c.getName(), currentfieldname)&& 
+					!interpreter.isVersion(c.getName(), currentfieldname))
+			{
+				Element childnode = new Element("element");
+				childnode.setAttribute("name", currentfieldname);
+				firstchild.addContent(childnode);
+			}
+			
+		 }
+		}	
+		
+	classeslisted.add(c.getClass());
+
+	try
+	{
+	Document n = new Document(rootEl);
+	XMLOutputter outputter = new XMLOutputter();
+	outputter.setFormat(Format.getPrettyFormat());
+	outputter.output(n, System.out);
+	}
+	catch(Exception e) 
+	{
+		e.printStackTrace();
+	} 
 }
  static boolean isRegaClass(Class searchclass) 
  {
@@ -90,6 +133,21 @@ public class TestHierachy {
 	
 	 
 	 for(Class c : regaClasses_)
+	 {
+		 if(c.equals(searchclass))
+		 {
+			 return true;
+		 }
+	 }
+	 
+	 return false;
+}
+ 
+ static boolean isClassListed(Class searchclass) 
+ {
+
+	 
+	 for(Class c : classeslisted)
 	 {
 		 if(c.equals(searchclass))
 		 {
