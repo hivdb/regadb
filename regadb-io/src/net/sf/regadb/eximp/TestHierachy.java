@@ -1,5 +1,4 @@
 package net.sf.regadb.eximp;
-
 //package net.sf.regadb.eximp;
 import java.io.File;
 import java.lang.reflect.Field;
@@ -8,10 +7,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.hibernate.InterpreteHbm;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -22,18 +19,6 @@ import org.jdom.output.XMLOutputter;
 public class TestHierachy {
 	private static Class[] regaClasses_;
 	private static List<Class> classeslisted=new ArrayList<Class>();
-	
-	
-	static void init ()
-	{
-		Class c = null;
-		try {
-			c = Class.forName("net.sf.regadb.db.PatientImpl");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		makeXmlSchema(c);
-	}
 	static
 	{
 		try 
@@ -45,12 +30,6 @@ public class TestHierachy {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void main(String[] args) 
-	{		
-		init();
-	}
-
  static void makeXmlSchema(Class c)
   {
 	 
@@ -77,7 +56,7 @@ public class TestHierachy {
 		 childnode.addContent(newnode);
 	 }
 	
-
+//
 	 for (int m=0; m<pfields.length;m++)
 	 {
 		 currentfieldname =pfields[m].getName();
@@ -197,5 +176,19 @@ public class TestHierachy {
    classes.toArray(classesA); 
    return classesA; 
  } 
+ static void init ()
+	{
+		Class c = null;
+		try {
+			c = Class.forName("net.sf.regadb.db.PatientImpl");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		makeXmlSchema(c);
+	}
+	public static void main(String[] args) 
+	{		
+		init();
+	}
 
 }
