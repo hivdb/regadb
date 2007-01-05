@@ -1,5 +1,4 @@
 package net.sf.regadb.eximp;
-//package net.sf.regadb.eximp;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -19,6 +18,7 @@ import org.jdom.output.XMLOutputter;
 public class TestHierachy {
 	private static Class[] regaClasses_;
 	private static List<Class> classeslisted=new ArrayList<Class>();
+	private static Element rootE1=new Element("element");
 	static
 	{
 		try 
@@ -30,31 +30,35 @@ public class TestHierachy {
 			e.printStackTrace();
 		}
 	}
- static void makeXmlSchema(Class c)
+ static void makexmlschema(Class c, Element parentnode)
   {
+	
 	 
 	 InterpreteHbm interpreter = InterpreteHbm.getInstance();
-	 Element rootEl = new Element("element");
-	 Element firstchild = new Element("element");
+	 //Element rootEl = new Element("element");
+	 Element child = new Element("element");
 	
-	 Element newnode =new Element("element");
+	 //Element newnode =new Element("element"); 
 	 Field [] pfields =c.getDeclaredFields();
 	 String currentfieldname=new String();
 	 
 	 if(c.getName().equals("net.sf.regadb.db.PatientImpl"))
 	 {
 		 Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
-		 rootEl.setNamespace(relaxng);
-		 rootEl.setAttribute("name", "Patients");
-		 firstchild.setAttribute("name", c.getName().substring(c.getName().lastIndexOf(".")+1));
-		 rootEl.addContent(firstchild); 
-	 }
+		 parentnode.setNamespace(relaxng);
+		 parentnode.setAttribute("name", "Patients");
+	 } 
 	 else //Continue at the previous
 	 {
-		 Element childnode = new Element("element");
+		 parentnode.setAttribute("name", parentnode.getAttributeValue("name")); 
+		 /*Element childnode = new Element("element");
 		 newnode.setAttribute("name", currentfieldname);
-		 childnode.addContent(newnode);
+		 childnode.addContent(newnode);*/
 	 }
+	 
+	 child.setAttribute("name", c.getName().substring(c.getName().lastIndexOf(".")+1));
+	 parentnode.addContent(child); 
+	 //Element nextparent =child.getParentElement();
 	
 //
 	 for (int m=0; m<pfields.length;m++)
@@ -71,7 +75,7 @@ public class TestHierachy {
 				if(isRegaClass(Class.forName(classstr))) //create a new node on current parent
 				{
 					//newnode.setAttribute("name", currentfieldname);
-					//makeXmlSchema( Class.forName(classstr));
+					makexmlschema( Class.forName(classstr),child);
 				}
 			}
 			catch (ClassNotFoundException e) 
@@ -86,17 +90,21 @@ public class TestHierachy {
 			{
 				Element childnode = new Element("element");
 				childnode.setAttribute("name", currentfieldname);
-				firstchild.addContent(childnode);
+				child.addContent(childnode);
 			}
 			
 		 }
 		}	
 		
 	classeslisted.add(c.getClass());
+  }
+ 
+  static void printxmlschema()
+ {
 
 	try
 	{
-	Document n = new Document(rootEl);
+	Document n = new Document(rootE1);
 	XMLOutputter outputter = new XMLOutputter();
 	outputter.setFormat(Format.getPrettyFormat());
 	outputter.output(n, System.out);
@@ -125,7 +133,7 @@ public class TestHierachy {
  static boolean isClassListed(Class searchclass) 
  {
 
-	 
+	
 	 for(Class c : classeslisted)
 	 {
 		 if(c.equals(searchclass))
@@ -184,11 +192,15 @@ public class TestHierachy {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		makeXmlSchema(c);
+		makexmlschema(c, rootE1);
+		
+			
 	}
 	public static void main(String[] args) 
 	{		
-		init();
+		TestHierachy test=new TestHierachy();
+		test.init();
+		printxmlschema();
 	}
 
 }
