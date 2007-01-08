@@ -2,6 +2,7 @@ package net.sf.regadb.ui.framework.tree;
 
 import java.util.ArrayList;
 
+import net.sf.regadb.ui.framework.RegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.form.action.ITreeAction;
 import net.sf.witty.event.SignalListener;
@@ -29,14 +30,14 @@ public abstract class TreeMenuNode extends WTreeNode
 			{
 				if(isEnabled())
 				{
-					TreeMenuNode formerSelected = RegaDBMain.getTree().getSelectedTreeNode();
+					TreeMenuNode formerSelected = RegaDBMain.getApp().getTree().getSelectedTreeNode();
 					if(formerSelected!=null)
 					{
 						formerSelected.unselect();
 					}
 					
 					select();
-					RegaDBMain.getTree().setSelectedTreeNode(TreeMenuNode.this);
+					RegaDBMain.getApp().getTree().setSelectedTreeNode(TreeMenuNode.this);
 					
 					openOnlyOneMenuPath();
 					if(childNodes().size()>0)
@@ -160,7 +161,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		super.refresh();
 		setStyle();
-		if(RegaDBMain.getTree().getSelectedTreeNode()==this)
+		if(RegaDBMain.getApp().getTree().getSelectedTreeNode()==this)
 		{
 			select();
 		}
