@@ -16,6 +16,16 @@
   	margin-right: 5px;
 }
 
+*.filterTF-valid-input
+{
+
+}
+
+*.filterTF-invalid-input
+{
+	color: red;
+}
+
 *.treemenu-menuItem
 {
 	cursor: pointer; cursor: hand;
