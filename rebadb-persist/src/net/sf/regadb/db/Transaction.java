@@ -89,6 +89,17 @@ public class Transaction {
         
         return q.list();
     }
+    
+    /**
+     * Obtain a list of all datasets in the database which the current user can acces.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Dataset> getCurrentUsersDatasets() {
+        Query q = session.createQuery("from Dataset dataset where dataset.dataAcces >= 1");
+        
+        return q.list();
+    }
+    
 
     public Dataset getDataset(String description) {
         Query q = session.createQuery("from Dataset dataset where dataset.description = :description");

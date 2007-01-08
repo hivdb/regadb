@@ -6,10 +6,11 @@
  */
 package net.sf.regadb.db.session;
 
-import org.hibernate.Session;
-
-import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.ILoginStrategy;
+import net.sf.regadb.db.login.LoginFactory;
+
+import org.hibernate.Session;
 
 /**
  * Login represents an authenticated login for access to the
@@ -34,10 +35,16 @@ public class Login {
     public static Login authenticate(String uid, String passwd) {
         Login login = new Login(uid);
         
-        if (login.authenticate(passwd)) {
+        ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
+        
+        if (loginMethod.authenticate(uid, passwd, login)) 
+        {
             return login;
-        } else
-            return null;
+        } 
+        else
+        {
+        	return null;
+        }
     }
     
     /**
@@ -59,16 +66,5 @@ public class Login {
     
     private Login(String uid) {
         this.uid = uid;
-    }
-    
-    private boolean authenticate(String passwd) {
-        Transaction t = createTransaction();
-        
-        SettingsUser settings
-            = t.getSettingsUser(uid, passwd);
-        
-        t.commit();
-        
-        return settings != null;
     }
 }

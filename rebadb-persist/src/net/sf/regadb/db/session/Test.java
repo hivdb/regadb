@@ -9,7 +9,6 @@ package net.sf.regadb.db.session;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
