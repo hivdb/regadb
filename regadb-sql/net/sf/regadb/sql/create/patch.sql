@@ -288,3 +288,7 @@ alter table only test_result alter column patient_ii set not null;
 
 -- add a password field to the user settings table
 ALTER TABLE ONLY settings_user ADD COLUMN password character varying(50);
+
+-- add these tables, they're replace with the patient_attribute_value table
+DROP TABLE patient_nominal_attribute_value;
+DROP TABLE patient_other_attribute_value;
