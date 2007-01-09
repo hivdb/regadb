@@ -28,7 +28,7 @@
         <property name="password" type="string">
             <column name="password" length="50" />
         </property>
-        <set name="datasetAccesses" inverse="true">
+        <set name="datasetAccesses" inverse="false" cascade="all">
             <key>
                 <column name="uid" length="50" not-null="true" />
             </key>

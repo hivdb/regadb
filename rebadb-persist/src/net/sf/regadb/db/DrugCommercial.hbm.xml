@@ -16,7 +16,7 @@
         <property name="name" type="string">
             <column name="name" length="100" not-null="true" />
         </property>
-        <set name="drugGenerics" inverse="true" table="commercial_generic">
+        <set name="drugGenerics" inverse="false" cascade="all" table="commercial_generic">
             <key>
                 <column name="commercial_ii" not-null="true" />
             </key>

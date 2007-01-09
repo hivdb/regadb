@@ -22,7 +22,7 @@
         <property name="genericName" type="string">
             <column name="generic_name" length="50" not-null="true" />
         </property>
-        <set name="drugCommercials" inverse="true" table="commercial_generic">
+        <set name="drugCommercials" inverse="false" cascade="all" table="commercial_generic">
             <key>
                 <column name="generic_ii" not-null="true" />
             </key>

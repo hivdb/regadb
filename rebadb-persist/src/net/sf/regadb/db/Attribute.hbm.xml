@@ -28,7 +28,7 @@
         <property name="attributeGroup" type="string">
             <column name="attribute_group" length="100" />
         </property>
-        <set name="attributeNominalValues" inverse="true">
+        <set name="attributeNominalValues" inverse="false" cascade="all">
             <key>
                 <column name="attribute_ii" not-null="true" />
             </key>

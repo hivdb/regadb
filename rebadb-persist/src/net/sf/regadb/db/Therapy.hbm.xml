@@ -25,13 +25,13 @@
         <property name="comment" type="string">
             <column name="comment" length="50" />
         </property>
-        <set name="therapyCommercials" inverse="true">
+        <set name="therapyCommercials" inverse="false" cascade="all">
             <key>
                 <column name="therapy_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.TherapyCommercial" />
         </set>
-        <set name="therapyGenerics" inverse="true">
+        <set name="therapyGenerics" inverse="false" cascade="all">
             <key>
                 <column name="therapy_ii" not-null="true" />
             </key>

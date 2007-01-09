@@ -19,7 +19,7 @@
         <property name="className" type="string">
             <column name="class_name" length="100" not-null="true" />
         </property>
-        <set name="drugGenerics" inverse="true">
+        <set name="drugGenerics" inverse="false" cascade="all">
             <key>
                 <column name="drug_class_ii" not-null="true" />
             </key>

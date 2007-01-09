@@ -22,13 +22,13 @@
         <property name="sampleDate" type="date">
             <column name="sample_date" length="4" />
         </property>
-        <set name="ntSequences" inverse="true">
+        <set name="ntSequences" inverse="false" cascade="all">
             <key>
                 <column name="viral_isolate_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.NtSequence" />
         </set>
-        <set name="testResults" inverse="true">
+        <set name="testResults" inverse="false" cascade="all">
             <key>
                 <column name="viral_isolate_ii" />
             </key>

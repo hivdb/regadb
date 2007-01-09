@@ -25,13 +25,13 @@
         <property name="lastAaPos" type="short">
             <column name="last_aa_pos" not-null="true" />
         </property>
-        <set name="aaMutations" inverse="true">
+        <set name="aaMutations" inverse="false" cascade="all">
             <key>
                 <column name="aa_sequence_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.AaMutation" />
         </set>
-        <set name="aaInsertions" inverse="true">
+        <set name="aaInsertions" inverse="false" cascade="all">
             <key>
                 <column name="aa_sequence_ii" not-null="true" />
             </key>
