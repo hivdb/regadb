@@ -1,8 +1,8 @@
 - We must modify the XML files:
   search/replace of
-    invert="true"
+    inverse="true"
   to
-    invert="false" cascade="all"
+    inverse="false" cascade="all"
 
   but not:
      getDatasets in PatientImpl (?)
