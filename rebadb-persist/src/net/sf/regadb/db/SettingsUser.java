@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 3, 2007 4:02:11 PM by Hibernate Tools 3.2.0.beta8
+// Generated 9/01/2007 13:30:52 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +24,8 @@ public class SettingsUser implements java.io.Serializable {
 
     private int chartHeight;
 
+    private String password;
+
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
     // Constructors
@@ -40,11 +42,12 @@ public class SettingsUser implements java.io.Serializable {
 
     /** full constructor */
     public SettingsUser(Test test, Dataset dataset, int chartWidth,
-            int chartHeight, Set<DatasetAccess> datasetAccesses) {
+            int chartHeight, String password, Set<DatasetAccess> datasetAccesses) {
         this.test = test;
         this.dataset = dataset;
         this.chartWidth = chartWidth;
         this.chartHeight = chartHeight;
+        this.password = password;
         this.datasetAccesses = datasetAccesses;
     }
 
@@ -95,6 +98,14 @@ public class SettingsUser implements java.io.Serializable {
 
     public void setChartHeight(int chartHeight) {
         this.chartHeight = chartHeight;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<DatasetAccess> getDatasetAccesses() {
