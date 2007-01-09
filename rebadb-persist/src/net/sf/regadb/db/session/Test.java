@@ -24,7 +24,7 @@ import net.sf.regadb.db.ViralIsolate;
 public class Test {
 
     public static void main(String[] args) {        
-        Test test = new Test("plibin0", "");
+        Test test = new Test("kdforc0", "");
         
         test.getPatients();
         //test.testModifySettings();
