@@ -135,15 +135,47 @@ public class Transaction {
     public List<Patient> getPatients() {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
-                "from PatientImpl as patient " +
-                "join patient.datasets as dataset " +
-                "join dataset.datasetAccesses access " +
-                "where access.permissions >= 1 " +
-                "and access.settingsUser.uid = :uid " +
-                "group by patient");
+                getPatientsQuery());
         q.setParameter("uid", login.getUid());
 
         return q.list();
+    }
+    
+    /**
+     * Returns a Page of patients, checking access permissions,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Patient> getPatients(int firstResult, int maxResults) {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                getPatientsQuery());
+        q.setParameter("uid", login.getUid());
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public String getPatientsQuery()
+    {
+        return "from PatientImpl as patient " +
+        "join patient.datasets as dataset " +
+        "join dataset.datasetAccesses access " +
+        "where access.permissions >= 1 " +
+        "and access.settingsUser.uid = :uid " +
+        "group by patient";
+    }
+    
+    public int getPatientCount()
+    {
+        Query q = session.createQuery(
+                "select count(patient) " +
+                getPatientsQuery());
+        q.setParameter("uid", login.getUid());
+        
+        return ((Integer)q.uniqueResult()).intValue();
     }
 
     public Patient getPatient(Dataset dataset, String id) {
