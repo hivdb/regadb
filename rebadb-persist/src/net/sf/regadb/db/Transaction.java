@@ -205,8 +205,9 @@ public class Transaction {
      * Authenticated access to user settings.
      */
     public SettingsUser getSettingsUser(String uid, String passwd) {
-        Query q = session.createQuery("from SettingsUser user where user.uid = :uid");
+        Query q = session.createQuery("from SettingsUser user where user.uid = :uid and password = :password");
         q.setParameter("uid", uid);
+        q.setParameter("password", passwd);
 
         return (SettingsUser) q.uniqueResult();
     }

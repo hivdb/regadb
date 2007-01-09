@@ -12,10 +12,10 @@ public class RegaDBLoginStrategy implements ILoginStrategy
         Transaction t = login.createTransaction();
         
         SettingsUser settings
-            = t.getSettingsUser(uid, password);
+            = t.getSettingsUser(uid, Encrypt.encryptMD5(password));
         
         t.commit();
         
-        return settings != null && Encrypt.encryptMD5(password).equals(settings.getPassword());
+        return settings != null;
 	}
 }
