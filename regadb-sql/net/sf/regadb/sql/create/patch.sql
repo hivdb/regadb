@@ -285,3 +285,6 @@ ALTER TABLE attribute ADD COLUMN attribute_group character varying(100);
 
 alter table only test_result alter column value drop not null;
 alter table only test_result alter column patient_ii set not null;
+
+-- add a password field to the user settings table
+ALTER TABLE ONLY settings_user ADD COLUMN password character varying(50);
