@@ -15,6 +15,6 @@ public class RegaDBLoginStrategy implements ILoginStrategy
         
         t.commit();
         
-        return settings != null;
+        return settings != null ;//&& Encrypt.encryptMD5(password).equals(password);
 	}
 }
