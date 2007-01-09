@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 4:00:56 PM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated 9/01/2007 12:58:55 by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="public">
         <id name="patientIi" type="java.lang.Integer">
@@ -28,7 +28,7 @@
         <property name="deathDate" type="date">
             <column name="death_date" length="4" />
         </property>
-        <set name="datasets" inverse="true" cascade="all" table="patient_dataset">
+        <set name="datasets" inverse="true" table="patient_dataset">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>
@@ -36,25 +36,25 @@
                 <column name="dataset_ii" not-null="true" />
             </many-to-many>
         </set>
-        <set name="testResults" inverse="true" cascade="all">
+        <set name="testResults" inverse="true">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.TestResult" />
         </set>
-        <set name="patientAttributeValues" inverse="true" cascade="all">
+        <set name="patientAttributeValues" inverse="true">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
         </set>
-        <set name="viralIsolates" inverse="true" cascade="all">
+        <set name="viralIsolates" inverse="true">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>
             <one-to-many class="net.sf.regadb.db.ViralIsolate" />
         </set>
-        <set name="therapies" inverse="true" cascade="all">
+        <set name="therapies" inverse="true">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>

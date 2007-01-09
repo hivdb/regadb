@@ -5,10 +5,9 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.connection.password">4yr1s1ly</property>
         <property name="hibernate.connection.url">jdbc:postgresql://zolder:5432/testregadb</property>
         <property name="hibernate.connection.username">regadb</property>
-        <property name="hibernate.connection.password">4yr1s1ly</property>
         <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />

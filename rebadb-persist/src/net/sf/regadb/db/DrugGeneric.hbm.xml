@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2007 4:00:56 PM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated 9/01/2007 12:58:55 by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.DrugGeneric" table="drug_generic" schema="public">
         <id name="genericIi" type="java.lang.Integer">
@@ -22,7 +22,7 @@
         <property name="genericName" type="string">
             <column name="generic_name" length="50" not-null="true" />
         </property>
-        <set name="drugCommercials" inverse="true" cascade="all" table="commercial_generic">
+        <set name="drugCommercials" inverse="true" table="commercial_generic">
             <key>
                 <column name="generic_ii" not-null="true" />
             </key>
