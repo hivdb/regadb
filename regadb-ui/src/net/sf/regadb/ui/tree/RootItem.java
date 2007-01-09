@@ -1,0 +1,26 @@
+package net.sf.regadb.ui.tree;
+
+import net.sf.regadb.ui.framework.form.action.ITreeAction;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.witty.wt.widgets.WContainerWidget;
+
+public class RootItem extends TreeMenuNode
+{
+	public RootItem(WContainerWidget root)
+	{
+		super(tr("menu.root.rootItem"));
+		this.expand();
+	}
+	
+	@Override
+	public ITreeAction getFormAction()
+	{
+		return null;
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return true;
+	}
+}

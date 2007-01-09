@@ -53,6 +53,7 @@ public abstract class TreeMenuNode extends WTreeNode
 						}
 					}
 					
+					if(getFormAction()!=null)
 					getFormAction().performAction(TreeMenuNode.this);
 				}
 			}
