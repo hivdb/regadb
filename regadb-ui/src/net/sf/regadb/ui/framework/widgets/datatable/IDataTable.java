@@ -1,17 +1,24 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public interface IDataTable
+
+public interface IDataTable <DataType>
 {
 	public String[] getColNames();
 	
 	public int getAmountOfRows();
 	
-	public ArrayList getPreviousDataBlock();
-	public ArrayList getNextDataBlock();
-	public ArrayList getFirstDataBlock();
-	public ArrayList getLastDataBlock();
+	public int getPageSize();
+	
+	public List<DataType> getPreviousDataBlock();
+	public List<DataType> getNextDataBlock();
+	public List<DataType> getFirstDataBlock();
+	public List<DataType> getLastDataBlock();
+	
+	public String[] getRowData(DataType type);
+	
+	public IFilter[] getFilters();
 	
 	public void setHibernateFilterConstraints(String [] constraints);
 	public void setSortedColumn(int index);
