@@ -3,6 +3,7 @@ package net.sf.regadb.db.login;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.encrypt.Encrypt;
 
 public class RegaDBLoginStrategy implements ILoginStrategy
 {	
@@ -15,6 +16,6 @@ public class RegaDBLoginStrategy implements ILoginStrategy
         
         t.commit();
         
-        return settings != null ;//&& Encrypt.encryptMD5(password).equals(password);
+        return settings != null && Encrypt.encryptMD5(password).equals(password);
 	}
 }
