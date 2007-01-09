@@ -3,7 +3,7 @@
   "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
 
 <hibernate-reverse-engineering>
-  <table-filter match-name=".*" package="net.sf.regadb.db"/>
+  <table-filter match-name=".*" package="net.sf.regadb.db" match-schema="public" />
 
   <table name="patient" schema="public" class="PatientImpl">
   </table>
