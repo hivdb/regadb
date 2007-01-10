@@ -195,17 +195,8 @@ public class InterpreteHbm
 			}
 		});
 		
-		for(File xmlFile : xmlFiles)
-		{
-			Element rootEl = getRootElementFromXmlFile(xmlFile);
-			Element classEl = rootEl.getChild("class");
-			String className = classEl.getAttribute("name").getValue();
-			classHbms_.put(className, classEl);
-		}
-	}
-	
-	public static Element getRootElementFromXmlFile(File xmlFile)
-	{
+
+		
 		SAXBuilder builder = new SAXBuilder();
 		builder.setEntityResolver(new EntityResolver()
 		{
@@ -227,6 +218,19 @@ public class InterpreteHbm
 			}
 		});
 		
+		for(File xmlFile : xmlFiles)
+		{
+			Element rootEl = getRootElementFromXmlFile(xmlFile, builder);
+			Element classEl = rootEl.getChild("class");
+			String className = classEl.getAttribute("name").getValue();
+			classHbms_.put(className, classEl);
+		}
+		
+
+	}
+	
+	public Element getRootElementFromXmlFile(File xmlFile, SAXBuilder builder)
+	{
 		Document doc = null;
 		try
 		{
