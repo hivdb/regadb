@@ -1,4 +1,4 @@
-package net.sf.regadb.hibernate;
+package net.sf.regadb.io.hibernate.mapping;
 
 import java.io.File;
 import java.io.FileFilter;

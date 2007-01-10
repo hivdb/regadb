@@ -1,4 +1,4 @@
-package net.sf.regadb.eximp;
+package net.sf.regadb.io.relaxng.generation;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.hibernate.InterpreteHbm;
+import net.sf.regadb.io.hibernate.mapping.InterpreteHbm;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
