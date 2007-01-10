@@ -4,8 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/rega-util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jwt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
