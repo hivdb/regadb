@@ -3,24 +3,28 @@ package net.sf.regadb.ui.framework;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.transaction.CannotCreateTransactionException;
-import net.sf.witty.wt.core.WApplication;
 import net.sf.witty.wt.core.WEnvironment;
+import net.sf.witty.wt.widgets.WApplication;
 
 public class RegaDBApplication extends WApplication
 {
 	private Login login_;
 	private Transaction transaction_;
 	
+	private RegaDBWindow window_;
+	
 	public RegaDBApplication(WEnvironment env)
 	{
 		super(env);
 		
-		root().addWidget(new RegaDBWindow());
+		window_ = new RegaDBWindow();
+		window_.init();
+		root().addWidget(window_);
 	}
 
 	public RegaDBWindow getWindow()
 	{
-		return (RegaDBWindow)root().getChildren_().get(0);
+		return window_;
 	}
 	
 	public Tree getTree()
@@ -68,5 +72,10 @@ public class RegaDBApplication extends WApplication
     public Login getLogin() 
     {
         return login_;
+    }
+    
+    public void login(String uid, String pwd)
+    {
+    	login_ = Login.authenticate(uid, pwd);
     }
 }

@@ -2,11 +2,10 @@ package net.sf.regadb.ui.framework.tree;
 
 import java.util.ArrayList;
 
-import net.sf.regadb.ui.framework.RegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.form.action.ITreeAction;
-import net.sf.witty.event.SignalListener;
 import net.sf.witty.wt.i8n.WMessage;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WTreeNode;
 import net.sf.witty.wt.widgets.event.WMouseEvent;
 
@@ -28,37 +27,46 @@ public abstract class TreeMenuNode extends WTreeNode
 		{
 			public void notify(WMouseEvent a)
 			{
-				if(isEnabled())
-				{
-					TreeMenuNode formerSelected = RegaDBMain.getApp().getTree().getSelectedTreeNode();
-					if(formerSelected!=null)
-					{
-						formerSelected.unselect();
-					}
-					
-					select();
-					RegaDBMain.getApp().getTree().setSelectedTreeNode(TreeMenuNode.this);
-					
-					openOnlyOneMenuPath();
-					if(childNodes().size()>0)
-					{
-					expand();
-					}
-					
-					for(WTreeNode node : childNodes())
-					{
-						if(node instanceof TreeMenuNode)
-						{
-							((TreeMenuNode)node).refresh();
-						}
-					}
-					
-					if(getFormAction()!=null)
-					getFormAction().performAction(TreeMenuNode.this);
-				}
+				selectNode();
 			}
 		});
 	}
+	
+	public void selectNode()
+	{
+		if(isEnabled())
+		{
+			TreeMenuNode formerSelected = null;
+			formerSelected = RegaDBMain.getApp().getTree().getSelectedTreeNode();
+
+			if(formerSelected!=null)
+			{
+				formerSelected.unselect();
+			}
+			
+			select();
+			RegaDBMain.getApp().getTree().setSelectedTreeNode(TreeMenuNode.this);
+			
+			openOnlyOneMenuPath();
+			if(childNodes().size()>0)
+			{
+			expand();
+			}
+			
+			for(WTreeNode node : childNodes())
+			{
+				if(node instanceof TreeMenuNode)
+				{
+					((TreeMenuNode)node).refresh();
+				}
+			}
+			
+			if(getFormAction()!=null)
+			getFormAction().performAction(TreeMenuNode.this);
+		}
+	}
+	
+	
 	
 	private void setStyle()
 	{
@@ -133,7 +141,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		return findChildInNode(this, intlKey, true);
 	}
 	
-	public void select()
+	protected void select()
 	{
 		if(isEnabled())
 		{
@@ -145,7 +153,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		}
 	}
 	
-	public void unselect()
+	protected void unselect()
 	{
 		if(isEnabled())
 		{

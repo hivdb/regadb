@@ -4,8 +4,8 @@ import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WImage;
+import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.table.WTable;
 
 public class Header extends WTable
 {

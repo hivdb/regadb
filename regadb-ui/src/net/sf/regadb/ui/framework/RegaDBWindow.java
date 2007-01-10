@@ -1,9 +1,8 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.witty.wt.core.WApplication;
 import net.sf.witty.wt.i8n.WStdMessageResource;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.table.WTable;
+import net.sf.witty.wt.widgets.WApplication;
+import net.sf.witty.wt.widgets.WTable;
 
 public class RegaDBWindow extends WTable
 {
@@ -44,5 +43,10 @@ public class RegaDBWindow extends WTable
 	public Tree getTree_()
 	{
 		return tree_;
+	}
+	
+	public void init()
+	{
+		tree_.init();
 	}
 }

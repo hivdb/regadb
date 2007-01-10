@@ -3,6 +3,11 @@
 	<name>regadb-ui</name>
 	<comment></comment>
 	<projects>
+		<project>regadb-analyses</project>
+		<project>regadb-io</project>
+		<project>regadb-persist</project>
+		<project>rega-util</project>
+		<project>witty</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

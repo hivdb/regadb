@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.event.SignalListener;
 import net.sf.witty.wt.validation.WValidator;
 import net.sf.witty.wt.validation.WValidatorState;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.event.WEmptyEvent;

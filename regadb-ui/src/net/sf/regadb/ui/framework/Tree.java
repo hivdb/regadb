@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework;
 
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.RootItem;
 import net.sf.regadb.ui.tree.TreeContent;
 import net.sf.witty.wt.widgets.WContainerWidget;
 
@@ -12,8 +13,14 @@ public class Tree extends WContainerWidget
 	public Tree(WContainerWidget root)
 	{
 		super(root);
+		
+		RootItem rootItem = new RootItem(root);
+		root.addWidget(rootItem);
+		rootItem.expand();
+		rootTreeNode_ = rootItem;
+		
 		TreeContent tc = new TreeContent();
-		rootTreeNode_ = tc.setContent(root);
+		selectedTreeNode_ = tc.setContent(rootItem);
 	}
 
 	public TreeMenuNode getSelectedTreeNode()
@@ -29,5 +36,13 @@ public class Tree extends WContainerWidget
 	public TreeMenuNode getRootTreeNode()
 	{
 		return rootTreeNode_;
+	}
+	
+	public void init()
+	{
+		//selecting the initial treenode
+		if(getSelectedTreeNode().getParent()!=null)
+			getSelectedTreeNode().getParent().expand();
+		getSelectedTreeNode().selectNode();
 	}
 }

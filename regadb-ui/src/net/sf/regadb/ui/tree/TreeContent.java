@@ -13,26 +13,31 @@ import net.sf.witty.wt.widgets.WContainerWidget;
 
 public class TreeContent
 {
-	public TreeMenuNode setContent(WContainerWidget rootCont)
+	public TreeMenuNode setContent(RootItem rootItem)
 	{
-		RootItem rootItem = new RootItem(rootCont);
-		
 		PatientItem singlePatientMain = new PatientItem(rootItem);
-		rootCont.addWidget(rootItem);
+		
 			PatientSelectItem patientSelect = new PatientSelectItem(singlePatientMain);
 			PatientAddItem patientAdd = new PatientAddItem(singlePatientMain);
 			
-			ActionItem chart = new ActionItem(rootCont.tr("menu.singlePatient.chart"), singlePatientMain);
-			ActionItem measurements = new ActionItem(rootCont.tr("menu.singlePatient.measurements"), singlePatientMain);
-				ActionSelectItem measurementsSelect = new ActionSelectItem(rootCont.tr("menu.singlePatient.measurements.select"), measurements);
-				ActionAddItem measurementsAdd = new ActionAddItem(rootCont.tr("menu.singlePatient.measurements.add"), measurements);
-			ActionItem therapies = new ActionItem(rootCont.tr("menu.singlePatient.therapies"), singlePatientMain);
-				ActionSelectItem therapiesSelect = new ActionSelectItem(rootCont.tr("menu.singlePatient.therapies.select"), therapies);
-				ActionAddItem therapiesAdd = new ActionAddItem(rootCont.tr("menu.singlePatient.therapies.add"), therapies);
+			ActionItem chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), singlePatientMain);
+			ActionItem measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), singlePatientMain);
+				ActionSelectItem measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
+				ActionAddItem measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
+			ActionItem therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), singlePatientMain);
+				ActionSelectItem therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
+				ActionAddItem therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);
 		
 		MyAccountItem myAccountMain = new MyAccountItem(rootItem);
 			LoginItem myAccountLogin = new LoginItem(myAccountMain);
 			
-		return rootItem;
+		if(singlePatientMain.isEnabled())
+		{
+			return singlePatientMain;
+		}
+		else
+		{
+			return myAccountLogin;
+		}
 	}
 }

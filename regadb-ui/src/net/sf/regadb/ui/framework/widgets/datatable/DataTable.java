@@ -3,8 +3,8 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.table.WTable;
 
 public class DataTable<DataType> extends WTable
 {

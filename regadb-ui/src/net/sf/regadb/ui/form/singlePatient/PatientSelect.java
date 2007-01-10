@@ -1,10 +1,10 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.ui.framework.RegaDBApplication;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.form.IForm;
 import net.sf.regadb.ui.tree.items.singlePatient.IGetSinglePatient;
-import net.sf.witty.event.SignalListener;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WText;
@@ -21,10 +21,10 @@ public class PatientSelect extends WContainerWidget implements IForm
 		{
 			public void notify(WMouseEvent me)
 			{
-				/*IGetSinglePatient singlePatient = (IGetSinglePatient)RegaDBApplication.getTree().getRootTreeNode().findDeepChild("menu.singlePatient.mainItem");
-				singlePatient.setSelectedPatient(new Patient());
+				IGetSinglePatient singlePatient = (IGetSinglePatient)RegaDBMain.getApp().getTree().getRootTreeNode().findDeepChild("menu.singlePatient.mainItem");
+				singlePatient.setSelectedPatient(new Patient(null,1));
 				
-				RegaDBApplication.getTree().getRootTreeNode().refresh();*/
+				RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
 			}
 		});
 	}
