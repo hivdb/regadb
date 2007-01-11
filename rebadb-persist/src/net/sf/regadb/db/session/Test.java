@@ -24,7 +24,7 @@ import net.sf.regadb.db.ViralIsolate;
 public class Test {
 
     public static void main(String[] args) {        
-        Test test = new Test("kdforc0", "");
+        Test test = new Test("kdforc0", "Vitabis1");
         
         test.getPatients();
         //test.testModifySettings();
@@ -74,7 +74,7 @@ public class Test {
         Attribute genderAttribute = t.getAttribute("Gender");
         PatientAttributeValue genderValue = p.createPatientAttributeValue(genderAttribute);
         AttributeNominalValue firstValue = genderAttribute.getAttributeNominalValues().iterator().next();
-        genderValue.setNominalValueIi(firstValue.getId().getNominalValueIi());
+        genderValue.setNominalValueIi(firstValue.getNominalValueIi());
         
         t.save(p);
         

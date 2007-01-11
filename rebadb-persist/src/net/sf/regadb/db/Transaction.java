@@ -6,7 +6,9 @@
  */
 package net.sf.regadb.db;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -76,6 +78,23 @@ public class Transaction {
         return (Test) q.uniqueResult();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Protein> getProteins() {
+        Query q = session.createQuery("from Protein protein");
+        return q.list();
+    }
+    
+    public Map<String, Protein> getProteinMap() {
+        List<Protein> proteins = getProteins();
+        Map<String, Protein> result = new HashMap<String, Protein>();
+        
+        for (Protein p:proteins)
+            result.put(p.getAbbreviation(), p);
+        
+
+        return result;
+    }
+    
     /*
      * Dataset queries
      */

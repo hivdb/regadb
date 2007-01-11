@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 9/01/2007 12:58:55 by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="public">
         <id name="patientIi" type="java.lang.Integer">
@@ -28,7 +28,7 @@
         <property name="deathDate" type="date">
             <column name="death_date" length="4" />
         </property>
-        <set name="datasets" inverse="true" table="patient_dataset">
+        <set name="datasets" inverse="false" cascade="all" table="patient_dataset">
             <key>
                 <column name="patient_ii" not-null="true" />
             </key>

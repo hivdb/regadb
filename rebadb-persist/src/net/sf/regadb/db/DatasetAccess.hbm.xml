@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 9/01/2007 12:58:55 by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.DatasetAccess" table="dataset_access" schema="public">
         <composite-id name="id" class="net.sf.regadb.db.DatasetAccessId">
-            <key-property name="uid" type="string">
-                <column name="uid" length="50" />
-            </key-property>
-            <key-property name="datasetIi" type="int">
-                <column name="dataset_ii" />
-            </key-property>
+            <key-many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser">
+                <column name="uid" />
+            </key-many-to-one>
+            <key-many-to-one name="dataset" class="net.sf.regadb.db.Dataset">
+                <column name="datasetIi" />
+            </key-many-to-one>
         </composite-id>
         <version name="version" type="java.lang.Integer">
             <column name="version" />

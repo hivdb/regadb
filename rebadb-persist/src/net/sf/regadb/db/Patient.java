@@ -139,8 +139,7 @@ public class Patient {
     public PatientAttributeValue createPatientAttributeValue(Attribute attribute) {
         PatientAttributeValue result
             = new PatientAttributeValue
-                (new PatientAttributeValueId(getPatientIi(), attribute.getAttributeIi()),
-                        attribute, patient);
+                (new PatientAttributeValueId(patient, attribute), attribute, patient);
 
         getPatientAttributeValues().add(result);
         
