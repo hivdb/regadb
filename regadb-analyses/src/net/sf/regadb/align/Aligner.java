@@ -7,7 +7,6 @@
 package net.sf.regadb.align;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +29,7 @@ import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
+import org.biojava.bio.symbol.SymbolList;
 
 public class Aligner {
     private AlignmentService service;
@@ -66,8 +66,14 @@ public class Aligner {
             OpenReadingFrame orf = genome.getOpenReadingFrames().get(r);
 
             List<AaSequence> aas = align(s, orf);
-            if (aas != null)
+            if (aas != null) {
+                for (AaSequence aa:aas) {
+                    aa.setNtSequence(seq);
+                    seq.getAaSequences().add(aa);
+                }
+
                 result.addAll(aas);
+            }
         }
 
         return result;
@@ -101,8 +107,8 @@ public class Aligner {
                     s.setLastAaPos((short) Math.min(protein.getAaLength(), protein
                             .posInProtein(aligned.getLastAa())));
 
-                    Set<AaMutation> mutations = new HashSet<AaMutation>();
-                    Set<AaInsertion> insertions = new HashSet<AaInsertion>();
+                    Set<AaMutation> mutations = s.getAaMutations();
+                    Set<AaInsertion> insertions = s.getAaInsertions();
 
                     for (Mutation m:aligned.getMutations()) {
                         System.err.println(m);
@@ -110,35 +116,45 @@ public class Aligner {
                             && m.getAaPos() <= protein.getLastAa()) {
                             if (m.getInsIndex() == -1) {
                                 AaMutation aam = new AaMutation();
-                                aam.setAaSequence(s);
-                                aam.setId(new AaMutationId((short) m.getAaPos(), 0));
+                                aam.setId(new AaMutationId((short) protein.posInProtein(m.getAaPos()), s));
                                 aam.setAaMutation(asString(m.getTargetAminoAcids()));
                                 aam.setAaReference(aatok.tokenizeSymbol(m.getRefAminoAcid()));
-                                aam.setNtMutationCodon(nttok.tokenizeSymbolList(m.getTargetCodon()));
-                                aam.setNtReferenceCodon(nttok.tokenizeSymbolList(m.getRefCodon()));
+                                aam.setNtMutationCodon(asArray(nttok, m.getTargetCodon()));
+                                aam.setNtReferenceCodon(asArray(nttok, m.getRefCodon()));
                                 
                                 mutations.add(aam);
                             } else {
                                 AaInsertion aai = new AaInsertion();
-                                aai.setAaSequence(s);
-                                aai.setId(new AaInsertionId((short) m.getAaPos(), 0, (short) m.getInsIndex()));
+                                aai.setId(new AaInsertionId((short) protein.posInProtein(m.getAaPos()), s, (short) m.getInsIndex()));
                                 aai.setAaInsertion(asString(m.getTargetAminoAcids()));
-                                aai.setNtInsertionCodon(nttok.tokenizeSymbolList(m.getTargetCodon()));
+                                aai.setNtInsertionCodon(asArray(nttok, m.getTargetCodon()));
                                 
                                 insertions.add(aai);
                             }
                         }
                     }
-                    
-                    s.setAaMutations(mutations);
-                    s.setAaInsertions(insertions);
-                }
+                 }
             }
 
             return result;
         } catch (IllegalSymbolException e) {
             throw new RuntimeException(e);
-        } catch (BioException e) {
+        }
+    }
+
+    private String asArray(SymbolTokenization st, SymbolList codon) {
+        try {
+            String result = "{";
+            for (int i = 1; i <= codon.length(); ++i) {
+                if (i != 1)
+                    result += ",";
+                result += st.tokenizeSymbol(codon.symbolAt(i));
+            }
+            result += "}";
+            return result;
+        } catch (IllegalSymbolException e) {
+            throw new RuntimeException(e);
+        } catch (IndexOutOfBoundsException e) {
             throw new RuntimeException(e);
         }
     }

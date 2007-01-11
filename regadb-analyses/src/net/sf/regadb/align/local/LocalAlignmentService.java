@@ -39,7 +39,7 @@ public class LocalAlignmentService implements AlignmentService {
             result.setFirstAa((firstNonGap(alignedTarget) - 1) / 3 + 1); // stupid !! BioJava idiots !!
             result.setLastAa((lastNonGap(alignedTarget) - 1) / 3 + 1);   // stupid !! BioJava idiots !!
 
-            int refAaPos = result.getFirstAa();
+            int refAaPos = result.getFirstAa() - 1;
 
             for (int i = result.getFirstAa(); i <= result.getLastAa(); ++i) {
                 int codonStart = (i - 1) * 3 + 1;
