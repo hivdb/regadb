@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
+	<classpathentry kind="lib" path="/regadb-persist/bin"/>
+	<classpathentry kind="lib" path="lib/biojava-1.5-beta2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
