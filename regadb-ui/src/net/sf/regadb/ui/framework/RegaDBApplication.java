@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.framework;
 
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.transaction.CannotCreateTransactionException;
 import net.sf.witty.wt.core.WEnvironment;
@@ -74,7 +76,7 @@ public class RegaDBApplication extends WApplication
         return login_;
     }
     
-    public void login(String uid, String pwd)
+    public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException
     {
     	login_ = Login.authenticate(uid, pwd);
     }

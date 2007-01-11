@@ -42,3 +42,13 @@
 	color: blue;
 	font-weight: bold;
 }
+
+*.form-field-textfield-edit-valid
+{
+	
+}
+
+*.form-field-textfield-edit-invalid
+{
+	background-color: red;
+}

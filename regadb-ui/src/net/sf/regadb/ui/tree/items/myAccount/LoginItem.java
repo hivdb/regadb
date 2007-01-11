@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.tree.items.myAccount;
 
+import net.sf.regadb.ui.forms.login.LoginForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.form.action.ITreeAction;
+import net.sf.regadb.ui.framework.forms.action.ITreeAction;
+import net.sf.regadb.ui.framework.forms.action.PutFormAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.widgets.WTreeNode;
 
@@ -15,19 +17,12 @@ public class LoginItem extends TreeMenuNode
 	@Override
 	public ITreeAction getFormAction()
 	{
-		return new ITreeAction()
-		{
-			public void performAction(TreeMenuNode node)
-			{
-				RegaDBMain.getApp().login("plibin0", "xqeyiopln234");
-				RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-			}
-		};
+		return new PutFormAction(new LoginForm());
 	}
 
 	@Override
 	public boolean isEnabled()
 	{
-		return true;
+		return RegaDBMain.getApp().getLogin()==null;
 	}
 }

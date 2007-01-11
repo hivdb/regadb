@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.regadb.ui.framework.form.IForm;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.witty.wt.widgets.WContainerWidget;
 
 public class FormContainer extends WContainerWidget

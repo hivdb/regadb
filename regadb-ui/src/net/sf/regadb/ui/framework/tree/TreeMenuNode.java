@@ -3,7 +3,7 @@ package net.sf.regadb.ui.framework.tree;
 import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.form.action.ITreeAction;
+import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WTreeNode;
@@ -30,6 +30,13 @@ public abstract class TreeMenuNode extends WTreeNode
 				selectNode();
 			}
 		});
+	}
+	
+	public void prograSelectNode()
+	{
+		if(getParent()!=null)
+			getParent().expand();	
+		selectNode();
 	}
 	
 	public void selectNode()
@@ -112,7 +119,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	private static TreeMenuNode findChildInNode(TreeMenuNode rootNode, String intlKey, boolean deep)
 	{
-		if(((TreeMenuNode)rootNode).label().message().key().equals(intlKey))
+		if(((TreeMenuNode)rootNode).label().text().keyOrValue().equals(intlKey))
 		{
 			return rootNode;
 		}
@@ -121,7 +128,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		{
 			if(node instanceof TreeMenuNode)
 			{
-				if(((TreeMenuNode)node).label().message().key().equals(intlKey))
+				if(((TreeMenuNode)node).label().text().keyOrValue().equals(intlKey))
 				{
 					return (TreeMenuNode)node;
 				}

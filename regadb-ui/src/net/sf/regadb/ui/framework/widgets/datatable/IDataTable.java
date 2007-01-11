@@ -9,8 +9,6 @@ public interface IDataTable <DataType>
 	
 	public int getAmountOfRows();
 	
-	public int getPageSize();
-	
 	public List<DataType> getPreviousDataBlock();
 	public List<DataType> getNextDataBlock();
 	public List<DataType> getFirstDataBlock();

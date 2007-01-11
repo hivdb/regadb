@@ -41,8 +41,6 @@ public class Tree extends WContainerWidget
 	public void init()
 	{
 		//selecting the initial treenode
-		if(getSelectedTreeNode().getParent()!=null)
-			getSelectedTreeNode().getParent().expand();
-		getSelectedTreeNode().selectNode();
+		selectedTreeNode_.prograSelectNode();
 	}
 }

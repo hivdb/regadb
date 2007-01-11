@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.framework.form.action;
+package net.sf.regadb.ui.framework.forms.action;
 
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 
