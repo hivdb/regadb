@@ -292,3 +292,8 @@ ALTER TABLE ONLY settings_user ADD COLUMN password character varying(50);
 -- remove these tables, they're replace with the patient_attribute_value table
 DROP TABLE patient_nominal_attribute_value;
 DROP TABLE patient_other_attribute_value;
+
+-- fix primary key in attribute_nominal_value
+ALTER TABLE ONLY attribute_nominal_value DROP CONSTRAINT nominal_value_pkey;
+ALTER TABLE ONLY attribute_nominal_value
+    ADD CONSTRAINT attribute_nominal_value_pkey PRIMARY KEY(nominal_value_ii);
