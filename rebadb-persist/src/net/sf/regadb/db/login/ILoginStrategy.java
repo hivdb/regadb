@@ -5,5 +5,5 @@ import net.sf.regadb.db.session.Login;
 
 public interface ILoginStrategy
 {
-	public boolean authenticate(String uid, String password, Login login);
+	public boolean authenticate(String uid, String password, Login login) throws WrongUidException, WrongPasswordException;
 }

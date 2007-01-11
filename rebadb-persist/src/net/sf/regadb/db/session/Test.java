@@ -20,6 +20,8 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 
 public class Test {
 
@@ -84,7 +86,20 @@ public class Test {
     private Login login;
     
     Test(String uid, String passwd) {
-        login = Login.authenticate(uid, passwd);
+        try
+		{
+			login = Login.authenticate(uid, passwd);
+		}
+		catch (WrongUidException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (WrongPasswordException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         if (login == null) {
             throw new RuntimeException("Could not login with given username/password.");

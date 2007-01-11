@@ -9,6 +9,8 @@ package net.sf.regadb.db.session;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 
 import org.hibernate.Session;
 
@@ -31,8 +33,10 @@ public class Login {
      * @param uid
      * @param passwd
      * @return
+     * @throws WrongPasswordException 
+     * @throws WrongUidException 
      */
-    public static Login authenticate(String uid, String passwd) {
+    public static Login authenticate(String uid, String passwd) throws WrongUidException, WrongPasswordException {
         Login login = new Login(uid);
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
