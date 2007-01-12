@@ -16,14 +16,18 @@ import org.jdom.output.XMLOutputter;
 
 public class TestHierachy
 {
-	private static List<Class> classeslisted = new ArrayList<Class>();
-	private static Element rootE1;
+	private List<Class> classeslisted = new ArrayList<Class>();
+	private Element rootE1;
 	private Class startclass;
 	
 	private static Class[] regaClasses_;
-	TestHierachy(String strstartclass)
+	
+	public TestHierachy(String strstartclass,String rootnodename)
 	{
 		rootE1 = new Element("element");
+		Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
+		rootE1.setNamespace(relaxng);
+		rootE1.setAttribute("name", rootnodename);
 
 		try
 		{
@@ -48,18 +52,16 @@ public class TestHierachy
 		}
 	}
 
-	static void makexmlschema(Class c, Element parentnode)
+	private void makeXmlSchema(Class c, Element parentnode)
 	{
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
 		Element child = new Element("element");
 		Field[] pfields = c.getDeclaredFields();
 		String currentfieldname = new String();
 
-		if (c.getName().equals("net.sf.regadb.db.PatientImpl")) //startclass.getname()
+		if (c.getName().equals(startclass.getName())) //startclass.getname()
 		{
-			Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
-			parentnode.setNamespace(relaxng);
-			parentnode.setAttribute("name", "Patients");
+			
 		}
 		else
 		{
@@ -82,7 +84,7 @@ public class TestHierachy
 					String classstr = setInfo.substring(startfrom, endat);
 					if (isRegaClass(Class.forName(classstr))) 
 					{
-						makexmlschema(Class.forName(classstr), child);
+						makeXmlSchema(Class.forName(classstr), child);
 					}
 				}
 				catch (ClassNotFoundException e)
@@ -106,7 +108,7 @@ public class TestHierachy
 		classeslisted.add(c.getClass());
 	}
 
-	static void printxmlschema()
+	public void printXmlSchema()
 	{
 
 		try
@@ -122,7 +124,7 @@ public class TestHierachy
 		}
 	}
 
-	static boolean isRegaClass(Class searchclass)
+	private boolean isRegaClass(Class searchclass)
 	{
 
 		for (Class c : regaClasses_)
@@ -136,7 +138,7 @@ public class TestHierachy
 		return false;
 	}
 
-	static boolean isClassListed(Class searchclass)
+	private boolean isClassListed(Class searchclass)
 	{
 
 		for (Class c : classeslisted)
@@ -152,16 +154,14 @@ public class TestHierachy
 
 	void init()
 	{
-		
-		makexmlschema(startclass, rootE1);
-
+		makeXmlSchema(startclass, rootE1);
 	}
 
 	public static void main(String[] args)
 	{
-		TestHierachy test = new TestHierachy("net.sf.regadb.db.PatientImpl");
+		TestHierachy test = new TestHierachy("net.sf.regadb.db.PatientImpl", "Patients");
 		test.init();
-		printxmlschema();
+		test.printXmlSchema();
 	}
 
 }
