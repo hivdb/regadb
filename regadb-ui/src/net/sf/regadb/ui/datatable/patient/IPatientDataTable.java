@@ -13,19 +13,21 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 
 public class IPatientDataTable implements IDataTable<Patient>
 {
-	private static String [] colNames_ = {	"dataTable.patient.colName.dataSet","dataTable.patient.colName.patientId", 
-									"dataTable.patient.colName.name", "dataTable.patient.colName.surName"};
-	
+	private static String[] colNames_ = { "dataTable.patient.colName.dataSet", "dataTable.patient.colName.patientId",
+			"dataTable.patient.colName.name", "dataTable.patient.colName.surName" };
+
 	private IFilter[] filters_ = new IFilter[4];
-	private static String [] filterVarNames_ = {"dataset.description", "patient.patientId", "patient.lastName", "patient.firstName"};
-	
+
+	private static String[] filterVarNames_ = { "dataset.description", "patient.patientId", "patient.lastName",
+			"patient.firstName" };
+
 	private int sortedColumn_ = -1;
-	
+
 	public IPatientDataTable()
 	{
-		
+
 	}
-	
+
 	public void init(Transaction t)
 	{
 		filters_[0] = new DatasetFilter(t);
@@ -33,7 +35,7 @@ public class IPatientDataTable implements IDataTable<Patient>
 		filters_[2] = new StringFilter();
 		filters_[3] = new StringFilter();
 	}
-	
+
 	public String[] getColNames()
 	{
 		return colNames_;
@@ -51,12 +53,12 @@ public class IPatientDataTable implements IDataTable<Patient>
 
 	public String[] getRowData(Patient type)
 	{
-		String [] toReturn = new String[4];
-		
-		Set<Dataset> dataSets =  type.getDatasets();
-		for(Dataset set : dataSets)
+		String[] toReturn = new String[4];
+
+		Set<Dataset> dataSets = type.getDatasets();
+		for (Dataset set : dataSets)
 		{
-			if(set.getClosedDate()==null)
+			if (set.getClosedDate() == null)
 			{
 				toReturn[0] = set.getDescription();
 			}
@@ -64,7 +66,7 @@ public class IPatientDataTable implements IDataTable<Patient>
 		toReturn[1] = type.getPatientId();
 		toReturn[2] = type.getFirstName();
 		toReturn[3] = type.getLastName();
-		
+
 		return toReturn;
 	}
 
@@ -72,7 +74,7 @@ public class IPatientDataTable implements IDataTable<Patient>
 	{
 		sortedColumn_ = index;
 	}
-	
+
 	public int getAmountOfColumns()
 	{
 		return 4;
