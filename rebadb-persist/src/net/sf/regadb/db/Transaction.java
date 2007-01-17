@@ -114,8 +114,8 @@ public class Transaction {
      */
     @SuppressWarnings("unchecked")
     public List<Dataset> getCurrentUsersDatasets() {
-        Query q = session.createQuery("from Dataset dataset where dataset.dataAcces >= 1");
-        
+        Query q = session.createQuery("from Dataset dataset where dataset.datasetAccesses.permissions >= 1");
+
         return q.list();
     }
     
@@ -154,7 +154,8 @@ public class Transaction {
     public List<Patient> getPatients() {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
-                getPatientsQuery());
+                getPatientsQuery() + 
+                "group by patient");
         q.setParameter("uid", login.getUid());
 
         return q.list();
@@ -165,10 +166,17 @@ public class Transaction {
      * checking all the filter constraints and grouped by the selected col.
      */
     @SuppressWarnings("unchecked")
-    public List<Patient> getPatients(int firstResult, int maxResults) {
-        Query q = session.createQuery(
-                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
-                getPatientsQuery());
+    public List<Patient> getPatients(int firstResult, int maxResults, int selectionCol, String filterConstraints) 
+    {
+        String queryString = 	"select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                				getPatientsQuery();
+        if(!filterConstraints.equals(" "))
+        {
+        	queryString += "and" + filterConstraints;
+        }
+        queryString += "group by patient";
+        
+        Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
         
         q.setFirstResult(firstResult);
@@ -183,15 +191,15 @@ public class Transaction {
         "join patient.datasets as dataset " +
         "join dataset.datasetAccesses access " +
         "where access.permissions >= 1 " +
-        "and access.settingsUser.uid = :uid " +
-        "group by patient";
+        "and access.settingsUser.uid = :uid ";
     }
     
     public int getPatientCount()
     {
         Query q = session.createQuery(
                 "select count(patient) " +
-                getPatientsQuery());
+                getPatientsQuery() +
+                "group by patient");
         q.setParameter("uid", login.getUid());
         
         return ((Integer)q.uniqueResult()).intValue();
