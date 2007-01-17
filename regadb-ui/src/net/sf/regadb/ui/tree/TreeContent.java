@@ -9,7 +9,6 @@ import net.sf.regadb.ui.tree.items.singlePatient.ActionSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
-import net.sf.witty.wt.widgets.WContainerWidget;
 
 public class TreeContent
 {

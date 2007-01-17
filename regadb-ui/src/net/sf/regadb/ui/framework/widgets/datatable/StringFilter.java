@@ -1,26 +1,23 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WText;
 
 public class StringFilter extends WContainerWidget implements IFilter 
 {
-	private WText label_;
 	private FilterOperatorCombo combo_;
 	private FilterTF tf_;
 	
-	public StringFilter(WMessage label)
+	public StringFilter()
 	{
-		label_ = new WText(label, this);
-		tf_ = new FilterTF(null, this);
-		combo_ = new FilterOperatorCombo(tf_, this);
+		tf_ = new FilterTF(null);
+		tf_.setInline(false);
+		combo_ = new FilterOperatorCombo(tf_);
+		combo_.setInline(false);
 		
-		setInline(false);
+		addWidget(combo_);
+		addWidget(tf_);
 		
-		//filling of the combo-box with operators
-		combo_.addItem(tr("dataTable.filter.listFilter.noFilter"));
-		
+		//filling of the combo-box with operators		
 		combo_.addItem(tr("dataTable.filter.stringFilter.beginsWith"));
 		combo_.addItem(tr("dataTable.filter.stringFilter.endsWith"));
 		combo_.addItem(tr("dataTable.filter.stringFilter.contains"));
@@ -38,22 +35,32 @@ public class StringFilter extends WContainerWidget implements IFilter
 		
 		if(operator.equals("dataTable.filter.stringFilter.beginsWith"))
 		{
-			return varName + "like '" + tf_.text() + "%'"; 
+			return varName + " like '" + tf_.text() + "%'"; 
 		}
 		else if(operator.equals("dataTable.filter.stringFilter.endsWith"))
 		{
-			return varName + "like '%" + tf_.text() + "'"; 
+			return varName + " like '%" + tf_.text() + "'"; 
 		}
 		else if(operator.equals("dataTable.filter.stringFilter.contains"))
 		{
-			return varName + "like '%" + tf_.text() + "%'"; 
+			return varName + " like '%" + tf_.text() + "%'"; 
 		}
 		else if(operator.equals("dataTable.filter.stringFilter.sqlRegExp"))
 		{
-			return varName + "like '" + tf_.text() + "'"; 
+			return varName + " like '" + tf_.text() + "'"; 
 		}
 		
 		return null;
 	}
 	
+	public void setVisible(boolean vis)
+	{
+		combo_.setHidden(!vis);
+		tf_.setHidden(!vis);
+	}
+	
+	public boolean isVisible()
+	{
+		return !combo_.isHidden();
+	}
 }

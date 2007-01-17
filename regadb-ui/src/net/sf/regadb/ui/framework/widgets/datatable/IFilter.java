@@ -6,4 +6,6 @@ public interface IFilter
 {
 	public String getHibernateString(String varName);
 	public WContainerWidget getFilterWidget();
+	public void setVisible(boolean vis);
+	public boolean isVisible();
 }

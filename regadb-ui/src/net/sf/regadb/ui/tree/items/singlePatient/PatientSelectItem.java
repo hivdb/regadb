@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
-import net.sf.regadb.ui.form.singlePatient.PatientSelect;
+import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.forms.action.PutFormAction;
@@ -17,7 +17,7 @@ public class PatientSelectItem extends TreeMenuNode
 	@Override
 	public ITreeAction getFormAction()
 	{
-		return new PutFormAction(new PatientSelect());
+		return new PutFormAction(new SelectPatientForm());
 	}
 	
 	@Override

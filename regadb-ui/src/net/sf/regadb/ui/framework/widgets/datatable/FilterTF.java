@@ -3,7 +3,6 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 import net.sf.witty.wt.validation.WValidator;
 import net.sf.witty.wt.validation.WValidatorState;
 import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.event.WEmptyEvent;
 import net.sf.witty.wt.widgets.event.WKeyEvent;
@@ -12,9 +11,9 @@ public class FilterTF extends WLineEdit
 {
 	private WValidatorState initialState_;
 	
-	public FilterTF(WValidator validator, WContainerWidget parent)
+	public FilterTF(WValidator validator)
 	{
-		super(parent);
+		super();
 		
 		setValidator(validator);
 		

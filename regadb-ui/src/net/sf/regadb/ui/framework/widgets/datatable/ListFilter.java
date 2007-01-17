@@ -31,7 +31,7 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 		if(combo_.currentIndex()==0)
 			return null;
 		else
-			return "varName == " + combo_.currentText().value();
+			return " " + varName+" = '" + combo_.currentText().value() + '\'';
 	}
 	
 	public abstract void setComboBox(WComboBox combo);
@@ -39,5 +39,15 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	public Transaction getTransaction()
 	{
 		return transaction_;
+	}
+
+	public void setVisible(boolean vis)
+	{
+		combo_.setHidden(!vis);
+	}
+	
+	public boolean isVisible()
+	{
+		return !combo_.isHidden();
 	}
 }
