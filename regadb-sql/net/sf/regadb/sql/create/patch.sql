@@ -297,3 +297,6 @@ DROP TABLE patient_other_attribute_value;
 ALTER TABLE ONLY attribute_nominal_value DROP CONSTRAINT nominal_value_pkey;
 ALTER TABLE ONLY attribute_nominal_value
     ADD CONSTRAINT attribute_nominal_value_pkey PRIMARY KEY(nominal_value_ii);
+    
+-- make nominal_values_ii in test_result a foreign key to test_nominal_values
+ALTER TABLE ONLY test_result ADD CONSTRAINT "FK_test_result__nominal_value" FOREIGN KEY (nominal_value_ii) REFERENCES test_nominal_value(nominal_value_ii) ON UPDATE CASCADE;
