@@ -300,3 +300,6 @@ ALTER TABLE ONLY attribute_nominal_value
     
 -- make nominal_values_ii in test_result a foreign key to test_nominal_values
 ALTER TABLE ONLY test_result ADD CONSTRAINT "FK_test_result__nominal_value" FOREIGN KEY (nominal_value_ii) REFERENCES test_nominal_value(nominal_value_ii) ON UPDATE CASCADE;
+
+-- make nominal values for attributes accessible as a class reference in a PatientAttributeValue
+ALTER TABLE ONLY patient_attribute_value ADD CONSTRAINT "FK_patient_attribute_value_attribute_nominal_value" FOREIGN KEY (nominal_value_ii) REFERENCES attribute_nominal_value(nominal_value_ii) ON UPDATE CASCADE;
