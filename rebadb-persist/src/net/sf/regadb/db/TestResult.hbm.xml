@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
+<!-- Generated 18/01/2007 17:18:43 by Hibernate Tools 3.2.0.beta8 -->
 <hibernate-mapping>
     <class name="net.sf.regadb.db.TestResult" table="test_result" schema="public">
         <id name="testResultIi" type="java.lang.Integer">
@@ -22,6 +22,9 @@
         <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select">
             <column name="viral_isolate_ii" />
         </many-to-one>
+        <many-to-one name="testNominalValue" class="net.sf.regadb.db.TestNominalValue" fetch="select">
+            <column name="nominal_value_ii" />
+        </many-to-one>
         <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
             <column name="patient_ii" not-null="true" />
         </many-to-one>
@@ -33,9 +36,6 @@
         </property>
         <property name="sampleId" type="string">
             <column name="sample_id" length="50" />
-        </property>
-        <property name="nominalValueIi" type="java.lang.Integer">
-            <column name="nominal_value_ii" />
         </property>
     </class>
 </hibernate-mapping>
