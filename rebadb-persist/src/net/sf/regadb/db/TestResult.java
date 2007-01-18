@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jan 11, 2007 2:11:17 PM by Hibernate Tools 3.2.0.beta8
+// Generated 18/01/2007 18:10:54 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -21,6 +21,8 @@ public class TestResult implements java.io.Serializable {
 
     private ViralIsolate viralIsolate;
 
+    private TestNominalValue testNominalValue;
+
     private PatientImpl patient;
 
     private String value;
@@ -28,8 +30,6 @@ public class TestResult implements java.io.Serializable {
     private Date testDate;
 
     private String sampleId;
-
-    private Integer nominalValueIi;
 
     // Constructors
 
@@ -45,16 +45,16 @@ public class TestResult implements java.io.Serializable {
 
     /** full constructor */
     public TestResult(Test test, DrugGeneric drugGeneric,
-            ViralIsolate viralIsolate, PatientImpl patient, String value,
-            Date testDate, String sampleId, Integer nominalValueIi) {
+            ViralIsolate viralIsolate, TestNominalValue testNominalValue,
+            PatientImpl patient, String value, Date testDate, String sampleId) {
         this.test = test;
         this.drugGeneric = drugGeneric;
         this.viralIsolate = viralIsolate;
+        this.testNominalValue = testNominalValue;
         this.patient = patient;
         this.value = value;
         this.testDate = testDate;
         this.sampleId = sampleId;
-        this.nominalValueIi = nominalValueIi;
     }
 
     // Property accessors
@@ -98,6 +98,14 @@ public class TestResult implements java.io.Serializable {
         this.viralIsolate = viralIsolate;
     }
 
+    public TestNominalValue getTestNominalValue() {
+        return this.testNominalValue;
+    }
+
+    public void setTestNominalValue(TestNominalValue testNominalValue) {
+        this.testNominalValue = testNominalValue;
+    }
+
     public PatientImpl getPatient() {
         return this.patient;
     }
@@ -128,14 +136,6 @@ public class TestResult implements java.io.Serializable {
 
     public void setSampleId(String sampleId) {
         this.sampleId = sampleId;
-    }
-
-    public Integer getNominalValueIi() {
-        return this.nominalValueIi;
-    }
-
-    public void setNominalValueIi(Integer nominalValueIi) {
-        this.nominalValueIi = nominalValueIi;
     }
 
 }
