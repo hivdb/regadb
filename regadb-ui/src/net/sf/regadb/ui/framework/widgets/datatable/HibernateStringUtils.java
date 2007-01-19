@@ -9,7 +9,7 @@ public class HibernateStringUtils
 		
 		for(int i = 0; i<dt.getFilters().length; i++)
 		{
-			filter = dt.getFilters()[i].getHibernateString(dt.getColNames()[i]);
+			filter = dt.getFilters()[i].getHibernateString(dt.getFieldNames()[i]);
 			if(filter!=null)
 			{
 				if(!query.equals(" "))

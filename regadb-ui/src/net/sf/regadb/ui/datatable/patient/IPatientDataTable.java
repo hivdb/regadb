@@ -79,4 +79,9 @@ public class IPatientDataTable implements IDataTable<Patient>
 	{
 		return 4;
 	}
+
+    public String[] getFieldNames() 
+    {
+        return filterVarNames_;
+    }
 }

@@ -22,4 +22,6 @@ public interface IDataTable <DataType>
 	public IFilter[] getFilters();
 
 	public void setSortedColumn(int index);
+    
+    public String[] getFieldNames(); 
 }
