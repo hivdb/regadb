@@ -14,32 +14,31 @@ import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-public class TestHierachy
+public class GenerateRelaxNGSchema
 {
-	private List<Class> classeslisted = new ArrayList<Class>();
-	private Element rootE1;
-	private Class startclass;
+	private List<Class> classeslisted_ = new ArrayList<Class>();
+	private Element rootE1_;
+	private Class startclass_;
 	
 	private static Class[] regaClasses_;
 	
-	public TestHierachy(String strstartclass,String rootnodename)
+	public GenerateRelaxNGSchema(String strstartclass,String rootnodename)
 	{
-		rootE1 = new Element("element");
+		rootE1_ = new Element("element");
 		Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
-		rootE1.setNamespace(relaxng);
-		rootE1.setAttribute("name", rootnodename);
+		rootE1_.setNamespace(relaxng);
+		rootE1_.setAttribute("name", rootnodename);
 
 		try
 		{
-			startclass = Class.forName(strstartclass);
+			startclass_ = Class.forName(strstartclass);
 		}
 		catch (ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
-	
+		
 	static
 	{
 		try
@@ -59,7 +58,7 @@ public class TestHierachy
 		Field[] pfields = c.getDeclaredFields();
 		String currentfieldname = new String();
 
-		if (c.getName().equals(startclass.getName())) //startclass.getname()
+		if (c.getName().equals(startclass_.getName())) //startclass.getname()
 		{
 			
 		}
@@ -105,7 +104,7 @@ public class TestHierachy
 			}
 		}
 
-		classeslisted.add(c.getClass());
+		classeslisted_.add(c.getClass());
 	}
 
 	public void printXmlSchema()
@@ -113,7 +112,7 @@ public class TestHierachy
 
 		try
 		{
-			Document n = new Document(rootE1);
+			Document n = new Document(rootE1_);
 			XMLOutputter outputter = new XMLOutputter();
 			outputter.setFormat(Format.getPrettyFormat());
 			outputter.output(n, System.out);
@@ -126,7 +125,6 @@ public class TestHierachy
 
 	private boolean isRegaClass(Class searchclass)
 	{
-
 		for (Class c : regaClasses_)
 		{
 			if (c.equals(searchclass))
@@ -140,8 +138,7 @@ public class TestHierachy
 
 	private boolean isClassListed(Class searchclass)
 	{
-
-		for (Class c : classeslisted)
+		for (Class c : classeslisted_)
 		{
 			if (c.equals(searchclass))
 			{
@@ -154,12 +151,12 @@ public class TestHierachy
 
 	void init()
 	{
-		makeXmlSchema(startclass, rootE1);
+		makeXmlSchema(startclass_, rootE1_);
 	}
 
 	public static void main(String[] args)
 	{
-		TestHierachy test = new TestHierachy("net.sf.regadb.db.PatientImpl", "Patients");
+		GenerateRelaxNGSchema test = new GenerateRelaxNGSchema("net.sf.regadb.db.PatientImpl", "Patients");
 		test.init();
 		test.printXmlSchema();
 	}

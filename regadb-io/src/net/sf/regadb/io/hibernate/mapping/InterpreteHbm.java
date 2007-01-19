@@ -225,8 +225,6 @@ public class InterpreteHbm
 			String className = classEl.getAttribute("name").getValue();
 			classHbms_.put(className, classEl);
 		}
-		
-
 	}
 	
 	public Element getRootElementFromXmlFile(File xmlFile, SAXBuilder builder)
