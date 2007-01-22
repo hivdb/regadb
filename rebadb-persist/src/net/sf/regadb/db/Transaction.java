@@ -191,7 +191,7 @@ public class Transaction {
         "join patient.datasets as dataset " +
         "join dataset.datasetAccesses access " +
         "where access.permissions >= 1 " +
-        "and access.settingsUser.uid = :uid ";
+        "and access.id.settingsUser.uid = :uid ";
     }
     
     public int getPatientCount()
