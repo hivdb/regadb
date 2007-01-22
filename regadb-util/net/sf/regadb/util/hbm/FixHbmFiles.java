@@ -18,12 +18,9 @@ public class FixHbmFiles
     {
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
-      //  search/replace of
-      //  inverse="true"
-      //to
-      //  inverse="false" cascade="all"
-      //but not:
-      //   getDatasets in PatientImpl (?)
+      //search/replace of
+      //inverse="true" to inverse="false" cascade="all"
+      //but not: datasets in PatientImpl (?)
         Object o;
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
         {
