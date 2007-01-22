@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
@@ -23,6 +24,8 @@ public class GenerateRelaxNGSchema
 	private static Class[] regaClasses_;
     private static ArrayList<String> classToBeIgnored_ = new ArrayList<String>();
     private static String dbPackage = "net.sf.regadb.db.";
+    
+    private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
 	
     static
     {
@@ -54,44 +57,12 @@ public class GenerateRelaxNGSchema
 			e.printStackTrace();
 		}
 	}
-		
-	private void makeXmlSchema(Class c, Element parentnode)
-	{
-		InterpreteHbm interpreter = InterpreteHbm.getInstance();
-		Element child = new Element("element");
-		Field[] pfields = c.getDeclaredFields();
-		String currentfieldname;
-        
-		child.setAttribute("name", c.getName().substring(c.getName().lastIndexOf(".") + 1));
-		parentnode.addContent(child);
-		
-		for (int m = 0; m < pfields.length; m++)
-		{
-			currentfieldname = pfields[m].getName();
-			if ((pfields[m].getType() == Set.class))
-			{
-                handleSet(child, pfields[m], c.getName());
-			}
-			else if (!interpreter.isId(c.getName(), currentfieldname)
-						&& !interpreter.isVersion(c.getName(), currentfieldname) 
-                        && !isClassToBeIgnored(c.getName()) 
-                        && !isClassListed(c))
-			{
-			    Element toAdd = handleOptionalFields(child, pfields[m], c.getName());
-				Element childnode = new Element("element");
-				childnode.setAttribute("name", currentfieldname);
-                toAdd.addContent(childnode);
-			}
-		}
-
-		classeslisted_.add(c.getClass());
-	}
-    
-    private boolean isClassToBeIgnored(String className)
+	
+    private boolean alreadyWritten(Class c)
     {
-        for(String c : classToBeIgnored_)
+        for(Class grammarC : grammarAlreadyWritten_)
         {
-            if(c.equals(className) || c.equals(dbPackage+className))
+            if(grammarC.equals(c))
             {
                 return true;
             }
@@ -100,49 +71,178 @@ public class GenerateRelaxNGSchema
         return false;
     }
     
-    private void handleSet(Element child, Field field, String parentClassStr)
-    {
-        try
+	private void writeClassGrammar(Class c)
+	{
+       if(alreadyWritten(c))
+           return;
+        
+		InterpreteHbm interpreter = InterpreteHbm.getInstance();
+		
+        Field[] fields = c.getDeclaredFields();
+        
+        Element toAdd = rootE1_;
+        Element define = new Element("define");
+        define.setAttribute("name", c.getName());
+        toAdd.addContent(define);
+        toAdd = define;
+           
+        Element startEl = toAdd;
+        for(Field field : fields)
         {
-            String setInfo = field.toGenericString();
-            int startfrom = setInfo.indexOf('<') + 1;
-            int endat = setInfo.indexOf('>');
-            String classStr = setInfo.substring(startfrom, endat);
-            if (isRegaClass(Class.forName(classStr)) && !isClassToBeIgnored(classStr) && !isClassListed(Class.forName(classStr))) 
+            toAdd = startEl;
+            
+            if(!alreadyWritten(field.getType()))
             {
-                Element zeroOrMore = new Element("zeroOrMore");
-                child.addContent(zeroOrMore);
-                makeXmlSchema(Class.forName(classStr), zeroOrMore);
+                Class bareClass;
+                if(field.getType() == Set.class)
+                {
+                    bareClass = extractSetType(field);
+                }
+                else
+                {
+                    bareClass = field.getType();
+                }
+                
+                if(!isFieldToBeIgnored(c, field, bareClass))
+                {
+                    //if the field is a set >> zeroOrMore
+                    if(field.getType() == Set.class)
+                    {
+                        Element zeroOrMore = new Element("zeroOrMore");
+                        toAdd.addContent(zeroOrMore);
+                        toAdd = zeroOrMore;
+                    }
+                    //if the field can be null >> optional
+                    else if(!interpreter.isNotNull(field.getType().getName(), field.getName()))
+                    {
+                        Element optional = new Element("optional");
+                        toAdd.addContent(optional);
+                        toAdd = optional;
+                    }
+                    
+                    Element fieldEl = new Element("element");
+                    fieldEl.setAttribute("name", field.getName());
+                    toAdd.addContent(fieldEl);
+                    toAdd = fieldEl;
+                    
+                    grammarAlreadyWritten_.add(c);
+                    
+                    if(isRegaClass(bareClass))
+                    {
+                        addReference(toAdd, bareClass);
+                        writeClassGrammar(bareClass);
+                    }
+                    else if(checkPrimitiveField(field))
+                    {
+                        //TODO also pass the length
+                        addPrimitiveType(toAdd, field, null);
+                    }
+                    else
+                    {
+                        System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
+                    }
+                }
             }
         }
+	}
+    
+    private boolean isFieldToBeIgnored(Class c, Field field, Class bareFieldClass)
+    {
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        
+        if(interpreter.isId(c.getName(), field.getName()))
+        {
+            return true;
+        }
+        
+        if(interpreter.isVersion(c.getName(), field.getName()))
+        {
+            return true;
+        }
+        
+        if(isClassToBeIgnored(bareFieldClass))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private void addReference(Element parentNode, Class ref)
+    {
+        Element refEl = new Element("ref");
+        refEl.setAttribute("name", ref.getName());
+        parentNode.addContent(refEl);
+    }
+    
+    private void addPrimitiveType(Element parentNode, Field field, Integer length)
+    {
+        
+    }
+    
+    private boolean checkPrimitiveField(Field field)
+    {
+        if(field.getClass() == Integer.class)
+        {
+            return true;
+        }
+        else if(field.getClass() == Short.class)
+        {
+            return true;
+        }
+        else if(field.getClass() == String.class)
+        {
+            return true;
+        }
+        else if(field.getClass() == Double.class)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private void handleField()
+    {
+        
+    }
+    
+    private boolean isClassToBeIgnored(Class classs)
+    {
+        if(true)
+        {
+            System.err.println("lala");
+        }
+        for(String c : classToBeIgnored_)
+        {
+            if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private Class extractSetType(Field setField)
+    {
+        String setInfo = setField.toGenericString();
+        int startfrom = setInfo.indexOf('<') + 1;
+        int endat = setInfo.indexOf('>');
+        String classStr = setInfo.substring(startfrom, endat);
+        try 
+        {
+            return Class.forName(classStr);
+        } 
         catch (ClassNotFoundException e)
         {
             e.printStackTrace();
+            return null;
         }
-    }
-    
-    //the returned Element is the Element where you should put your stuff
-    private Element handleOptionalFields(Element child, Field field, String parentClassStr)
-    {
-        InterpreteHbm interpreter = InterpreteHbm.getInstance();
-        Element toAdd;
-        if(!interpreter.isNotNull(parentClassStr, field.getName()))
-        {
-            Element optional = new Element("optional");
-            child.addContent(optional);
-            toAdd = optional;
-        }
-        else
-        {
-            toAdd = child;
-        }
-        
-        return toAdd;
     }
 
 	public void printXmlSchema()
 	{
-
 		try
 		{
 			Document n = new Document(rootE1_);
@@ -184,7 +284,7 @@ public class GenerateRelaxNGSchema
 
 	void init()
 	{
-		makeXmlSchema(startclass_, rootE1_);
+        writeClassGrammar(startclass_);
 	}
 
 	public static void main(String[] args)
