@@ -2,8 +2,11 @@ package net.sf.regadb.util.hbm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+
+import net.sf.regadb.util.pair.Pair;
 
 import org.jdom.Attribute;
 import org.jdom.Comment;
@@ -57,7 +60,11 @@ public class FixHbmFiles
         changeKeyPropToKeyManyToMany("TherapyCommercial.hbm.xml", "commercialIi", "drugCommercial", "net.sf.regadb.db.DrugCommercial");
         
         changeKeyPropToKeyManyToMany("TherapyGeneric.hbm.xml", "therapyIi", "therapy", "net.sf.regadb.db.Therapy");
-        changeKeyPropToKeyManyToMany("TherapyGeneric.hbm.xml", "generic_ii", "drugGeneric", "net.sf.regadb.db.DrugGeneric");
+        changeKeyPropToKeyManyToMany("TherapyGeneric.hbm.xml", "genericIi", "drugGeneric", "net.sf.regadb.db.DrugGeneric");
+        
+        //if there is a key-many-to-one (in the composite-id)
+        //the corresponding many-to-one definition in the class definition should be removed
+        removeManyToOneIfThereIsAKeyAlready();
         
         //remove the dates from the hbm xml files (easier for the versioning control system)
         removeDateFromHbmXmlFiles();
@@ -85,6 +92,67 @@ public class FixHbmFiles
         }
         
         System.out.println("FixHbmFiles has finished");
+    }
+    
+    class StringPair
+    {
+        
+    }
+    private static void removeManyToOneIfThereIsAKeyAlready()
+    {
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        
+        ArrayList<Pair<String, String>> al = new ArrayList<Pair<String, String>>();
+        
+        for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
+        {
+            Object o;
+            Element el;
+            
+            for(Iterator i = a.getValue().getDescendants(); i.hasNext();)
+            {
+                o = i.next();
+                if(o instanceof Element)
+                {
+                    el = (Element)o;
+                    if(el.getName().equals("key-many-to-one"))
+                    {
+                        al.add(new Pair<String, String>(a.getKey(), el.getAttributeValue("name")));
+                    }
+                }
+            }
+        }
+        
+        for(Pair<String, String> p : al)
+        {
+            removeCorrespondingManyToOne(p.getKey(), p.getValue());
+        }
+    }
+    
+    private static void removeCorrespondingManyToOne(String className, String keyName)
+    {
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        
+        Object o;
+        Element el;
+        Element root = interpreter.classHbms_.get(className);
+        
+        for(Iterator i = root.getDescendants(); i.hasNext();)
+        {
+            o = i.next();
+            if(o instanceof Element)
+            {
+                el = (Element)o;
+                if(el.getName().equals("many-to-one"))
+                {
+                    if(el.getAttribute("name").getValue().equals(keyName))
+                    {
+                        //el.getParent().removeContent(el);
+                        i.remove();
+                    }
+                }
+            }
+        }
     }
     
     private static String getClassNameForFileName(String fileName)
