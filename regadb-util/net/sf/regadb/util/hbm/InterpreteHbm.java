@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -227,7 +228,8 @@ public class InterpreteHbm
 				});
 				
 				FileReader fileReader = new FileReader(dtdFiles[0]);
-				return new InputSource(fileReader);
+				//return new InputSource(fileReader);
+                return new InputSource(new StringBufferInputStream(""));
 			}
 		});
 		
