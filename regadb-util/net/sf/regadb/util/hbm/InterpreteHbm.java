@@ -182,7 +182,7 @@ public class InterpreteHbm
     private String getDirectoryPath(String packageName)
     {
         //hacky stuff
-        //since regadb-util cannot reference to regadb-persist, we need to give the path in a special way
+        //since regadb-util cannot reference to regadb-persist (circular dependencies), we need to give the path in a special way
         final String packageNameHack = "net.sf.regadb.util.hbm";
         URL packageURLHack = Thread.currentThread().getContextClassLoader().getResource(packageNameHack.replace('.', '/'));
         File directoryHack = new File(URLDecoder.decode(packageURLHack.getFile()));
