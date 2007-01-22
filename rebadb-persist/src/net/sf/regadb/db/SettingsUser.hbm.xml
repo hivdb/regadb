@@ -1,38 +1,38 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.SettingsUser" table="settings_user" schema="public">
-        <id name="uid" type="string">
-            <column name="uid" length="50" />
-            <generator class="sequence">
-                <param name="sequence">settings_user_settings_user_ii_seq</param>
-            </generator>
-        </id>
-        <version name="version" type="java.lang.Integer">
-            <column name="version" />
-        </version>
-        <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
-            <column name="chart_resistance_test_ii" />
-        </many-to-one>
-        <many-to-one name="dataset" class="net.sf.regadb.db.Dataset" fetch="select">
-            <column name="source_dataset_ii" />
-        </many-to-one>
-        <property name="chartWidth" type="int">
-            <column name="chart_width" not-null="true" />
-        </property>
-        <property name="chartHeight" type="int">
-            <column name="chart_height" not-null="true" />
-        </property>
-        <property name="password" type="string">
-            <column name="password" length="50" />
-        </property>
-        <set name="datasetAccesses" inverse="false" cascade="all">
-            <key>
-                <column name="uid" length="50" not-null="true" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.DatasetAccess" />
-        </set>
-    </class>
+  <class name="net.sf.regadb.db.SettingsUser" table="settings_user" schema="public">
+    <id name="uid" type="string">
+      <column name="uid" length="50" />
+      <generator class="sequence">
+        <param name="sequence">settings_user_settings_user_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="java.lang.Integer">
+      <column name="version" />
+    </version>
+    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
+      <column name="chart_resistance_test_ii" />
+    </many-to-one>
+    <many-to-one name="dataset" class="net.sf.regadb.db.Dataset" fetch="select">
+      <column name="source_dataset_ii" />
+    </many-to-one>
+    <property name="chartWidth" type="int">
+      <column name="chart_width" not-null="true" />
+    </property>
+    <property name="chartHeight" type="int">
+      <column name="chart_height" not-null="true" />
+    </property>
+    <property name="password" type="string">
+      <column name="password" length="50" />
+    </property>
+    <set name="datasetAccesses" inverse="false" cascade="all">
+      <key>
+        <column name="uid" length="50" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.DatasetAccess" />
+    </set>
+  </class>
 </hibernate-mapping>
+

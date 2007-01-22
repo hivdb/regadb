@@ -1,32 +1,32 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.Test" table="test" schema="public">
-        <id name="testIi" type="java.lang.Integer">
-            <column name="test_ii" />
-            <generator class="sequence">
-                <param name="sequence">test_test_ii_seq</param>
-            </generator>
-        </id>
-        <version name="version" type="java.lang.Integer">
-            <column name="version" />
-        </version>
-        <many-to-one name="testType" class="net.sf.regadb.db.TestType" fetch="select">
-            <column name="test_type_ii" not-null="true" />
-        </many-to-one>
-        <property name="description" type="string">
-            <column name="description" length="50" not-null="true" />
-        </property>
-        <property name="serviceClass" type="string">
-            <column name="service_class" length="50" />
-        </property>
-        <property name="serviceData" type="string">
-            <column name="service_data" />
-        </property>
-        <property name="serviceConfig" type="string">
-            <column name="service_config" />
-        </property>
-    </class>
+  <class name="net.sf.regadb.db.Test" table="test" schema="public">
+    <id name="testIi" type="java.lang.Integer">
+      <column name="test_ii" />
+      <generator class="sequence">
+        <param name="sequence">test_test_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="java.lang.Integer">
+      <column name="version" />
+    </version>
+    <many-to-one name="testType" class="net.sf.regadb.db.TestType" fetch="select">
+      <column name="test_type_ii" not-null="true" />
+    </many-to-one>
+    <property name="description" type="string">
+      <column name="description" length="50" not-null="true" />
+    </property>
+    <property name="serviceClass" type="string">
+      <column name="service_class" length="50" />
+    </property>
+    <property name="serviceData" type="string">
+      <column name="service_data" />
+    </property>
+    <property name="serviceConfig" type="string">
+      <column name="service_config" />
+    </property>
+  </class>
 </hibernate-mapping>
+

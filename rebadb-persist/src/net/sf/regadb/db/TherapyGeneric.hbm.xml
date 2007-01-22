@@ -1,28 +1,22 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.TherapyGeneric" table="therapy_generic" schema="public">
-        <composite-id name="id" class="net.sf.regadb.db.TherapyGenericId">
-            <key-many-to-one name="therapy" class="net.sf.regadb.db.Therapy">
-                <column name="therapy_ii" />
-            </key-many-to-one>
-            <key-many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric">
-                <column name="generic_ii" />
-            </key-many-to-one>
-        </composite-id>
-        <version name="version" type="java.lang.Integer">
-            <column name="version" />
-        </version>
-        <many-to-one name="therapy" class="net.sf.regadb.db.Therapy" update="false" insert="false" fetch="select">
-            <column name="therapy_ii" not-null="true" />
-        </many-to-one>
-        <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" update="false" insert="false" fetch="select">
-            <column name="generic_ii" not-null="true" />
-        </many-to-one>
-        <property name="dayDosageMg" type="java.lang.Double">
-            <column name="day_dosage_mg" precision="8" scale="0" />
-        </property>
-    </class>
+  <class name="net.sf.regadb.db.TherapyGeneric" table="therapy_generic" schema="public">
+    <composite-id name="id" class="net.sf.regadb.db.TherapyGenericId">
+      <key-many-to-one name="therapy" class="net.sf.regadb.db.Therapy">
+        <column name="therapy_ii" />
+      </key-many-to-one>
+      <key-many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric">
+        <column name="generic_ii" />
+      </key-many-to-one>
+    </composite-id>
+    <version name="version" type="java.lang.Integer">
+      <column name="version" />
+    </version>
+    <property name="dayDosageMg" type="java.lang.Double">
+      <column name="day_dosage_mg" precision="8" scale="0" />
+    </property>
+  </class>
 </hibernate-mapping>
+

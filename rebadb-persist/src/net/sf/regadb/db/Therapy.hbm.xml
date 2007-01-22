@@ -1,41 +1,41 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 11, 2007 1:57:41 PM by Hibernate Tools 3.2.0.beta8 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.Therapy" table="therapy" schema="public">
-        <id name="therapyIi" type="java.lang.Integer">
-            <column name="therapy_ii" />
-            <generator class="sequence">
-                <param name="sequence">therapy_therapy_ii_seq</param>
-            </generator>
-        </id>
-        <version name="version" type="java.lang.Integer">
-            <column name="version" />
-        </version>
-        <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
-            <column name="patient_ii" not-null="true" />
-        </many-to-one>
-        <property name="startDate" type="date">
-            <column name="start_date" length="4" not-null="true" />
-        </property>
-        <property name="stopDate" type="date">
-            <column name="stop_date" length="4" />
-        </property>
-        <property name="comment" type="string">
-            <column name="comment" length="50" />
-        </property>
-        <set name="therapyCommercials" inverse="false" cascade="all">
-            <key>
-                <column name="therapy_ii" not-null="true" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.TherapyCommercial" />
-        </set>
-        <set name="therapyGenerics" inverse="false" cascade="all">
-            <key>
-                <column name="therapy_ii" not-null="true" />
-            </key>
-            <one-to-many class="net.sf.regadb.db.TherapyGeneric" />
-        </set>
-    </class>
+  <class name="net.sf.regadb.db.Therapy" table="therapy" schema="public">
+    <id name="therapyIi" type="java.lang.Integer">
+      <column name="therapy_ii" />
+      <generator class="sequence">
+        <param name="sequence">therapy_therapy_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="java.lang.Integer">
+      <column name="version" />
+    </version>
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
+      <column name="patient_ii" not-null="true" />
+    </many-to-one>
+    <property name="startDate" type="date">
+      <column name="start_date" length="4" not-null="true" />
+    </property>
+    <property name="stopDate" type="date">
+      <column name="stop_date" length="4" />
+    </property>
+    <property name="comment" type="string">
+      <column name="comment" length="50" />
+    </property>
+    <set name="therapyCommercials" inverse="false" cascade="all">
+      <key>
+        <column name="therapy_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.TherapyCommercial" />
+    </set>
+    <set name="therapyGenerics" inverse="false" cascade="all">
+      <key>
+        <column name="therapy_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.TherapyGeneric" />
+    </set>
+  </class>
 </hibernate-mapping>
+

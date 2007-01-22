@@ -1,31 +1,25 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 18/01/2007 18:28:49 by Hibernate Tools 3.2.0.beta8 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
-    <class name="net.sf.regadb.db.PatientAttributeValue" table="patient_attribute_value" schema="public">
-        <composite-id name="id" class="net.sf.regadb.db.PatientAttributeValueId">
-            <key-many-to-one name="patient" class="net.sf.regadb.db.PatientImpl">
-                <column name="patient_ii" />
-            </key-many-to-one>
-            <key-many-to-one name="attribute" class="net.sf.regadb.db.Attribute">
-                <column name="attribute_ii" />
-            </key-many-to-one>
-        </composite-id>
-        <version name="version" type="java.lang.Integer">
-            <column name="version" />
-        </version>
-        <many-to-one name="attribute" class="net.sf.regadb.db.Attribute" update="false" insert="false" fetch="select">
-            <column name="attribute_ii" not-null="true" />
-        </many-to-one>
-        <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" update="false" insert="false" fetch="select">
-            <column name="patient_ii" not-null="true" />
-        </many-to-one>
-        <many-to-one name="attributeNominalValue" class="net.sf.regadb.db.AttributeNominalValue" fetch="select">
-            <column name="nominal_value_ii" />
-        </many-to-one>
-        <property name="value" type="string">
-            <column name="value" length="100" />
-        </property>
-    </class>
+  <class name="net.sf.regadb.db.PatientAttributeValue" table="patient_attribute_value" schema="public">
+    <composite-id name="id" class="net.sf.regadb.db.PatientAttributeValueId">
+      <key-many-to-one name="patient" class="net.sf.regadb.db.PatientImpl">
+        <column name="patient_ii" />
+      </key-many-to-one>
+      <key-many-to-one name="attribute" class="net.sf.regadb.db.Attribute">
+        <column name="attribute_ii" />
+      </key-many-to-one>
+    </composite-id>
+    <version name="version" type="java.lang.Integer">
+      <column name="version" />
+    </version>
+    <many-to-one name="attributeNominalValue" class="net.sf.regadb.db.AttributeNominalValue" fetch="select">
+      <column name="nominal_value_ii" />
+    </many-to-one>
+    <property name="value" type="string">
+      <column name="value" length="100" />
+    </property>
+  </class>
 </hibernate-mapping>
+
