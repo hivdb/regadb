@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 23/01/2007 09:16:11 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,10 +20,6 @@ public class Attribute implements java.io.Serializable {
 
     private String name;
 
-    private Boolean patientAttribute;
-
-    private Boolean sequenceAttribute;
-
     private String attributeGroup;
 
     private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
@@ -41,14 +37,10 @@ public class Attribute implements java.io.Serializable {
     }
 
     /** full constructor */
-    public Attribute(ValueType valueType, String name,
-            Boolean patientAttribute, Boolean sequenceAttribute,
-            String attributeGroup,
+    public Attribute(ValueType valueType, String name, String attributeGroup,
             Set<AttributeNominalValue> attributeNominalValues) {
         this.valueType = valueType;
         this.name = name;
-        this.patientAttribute = patientAttribute;
-        this.sequenceAttribute = sequenceAttribute;
         this.attributeGroup = attributeGroup;
         this.attributeNominalValues = attributeNominalValues;
     }
@@ -84,22 +76,6 @@ public class Attribute implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Boolean getPatientAttribute() {
-        return this.patientAttribute;
-    }
-
-    public void setPatientAttribute(Boolean patientAttribute) {
-        this.patientAttribute = patientAttribute;
-    }
-
-    public Boolean getSequenceAttribute() {
-        return this.sequenceAttribute;
-    }
-
-    public void setSequenceAttribute(Boolean sequenceAttribute) {
-        this.sequenceAttribute = sequenceAttribute;
     }
 
     public String getAttributeGroup() {

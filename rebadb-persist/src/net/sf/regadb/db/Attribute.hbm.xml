@@ -18,12 +18,6 @@
     <property name="name" type="string">
       <column name="name" length="50" not-null="true" />
     </property>
-    <property name="patientAttribute" type="java.lang.Boolean">
-      <column name="patient_attribute" />
-    </property>
-    <property name="sequenceAttribute" type="java.lang.Boolean">
-      <column name="sequence_attribute" />
-    </property>
     <property name="attributeGroup" type="string">
       <column name="attribute_group" length="100" />
     </property>
