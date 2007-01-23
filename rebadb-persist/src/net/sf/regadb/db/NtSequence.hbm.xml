@@ -18,12 +18,6 @@
     <property name="nucleotides" type="string">
       <column name="nucleotides" />
     </property>
-    <property name="hivType" type="string">
-      <column name="hiv_type" length="20" />
-    </property>
-    <property name="hivSubtype" type="string">
-      <column name="hiv_subtype" length="20" />
-    </property>
     <set name="aaSequences" inverse="false" cascade="all">
       <key>
         <column name="nt_sequence_ii" not-null="true" />

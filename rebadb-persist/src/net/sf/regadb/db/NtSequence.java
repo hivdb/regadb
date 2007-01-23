@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 23/01/2007 09:24:32 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,10 +20,6 @@ public class NtSequence implements java.io.Serializable {
 
     private String nucleotides;
 
-    private String hivType;
-
-    private String hivSubtype;
-
     private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
 
     // Constructors
@@ -39,11 +35,9 @@ public class NtSequence implements java.io.Serializable {
 
     /** full constructor */
     public NtSequence(ViralIsolate viralIsolate, String nucleotides,
-            String hivType, String hivSubtype, Set<AaSequence> aaSequences) {
+            Set<AaSequence> aaSequences) {
         this.viralIsolate = viralIsolate;
         this.nucleotides = nucleotides;
-        this.hivType = hivType;
-        this.hivSubtype = hivSubtype;
         this.aaSequences = aaSequences;
     }
 
@@ -78,22 +72,6 @@ public class NtSequence implements java.io.Serializable {
 
     public void setNucleotides(String nucleotides) {
         this.nucleotides = nucleotides;
-    }
-
-    public String getHivType() {
-        return this.hivType;
-    }
-
-    public void setHivType(String hivType) {
-        this.hivType = hivType;
-    }
-
-    public String getHivSubtype() {
-        return this.hivSubtype;
-    }
-
-    public void setHivSubtype(String hivSubtype) {
-        this.hivSubtype = hivSubtype;
     }
 
     public Set<AaSequence> getAaSequences() {
