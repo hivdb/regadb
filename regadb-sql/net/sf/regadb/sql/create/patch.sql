@@ -303,3 +303,7 @@ ALTER TABLE ONLY test_result ADD CONSTRAINT "FK_test_result__nominal_value" FORE
 
 -- make nominal values for attributes accessible as a class reference in a PatientAttributeValue
 ALTER TABLE ONLY patient_attribute_value ADD CONSTRAINT "FK_patient_attribute_value_attribute_nominal_value" FOREIGN KEY (nominal_value_ii) REFERENCES attribute_nominal_value(nominal_value_ii) ON UPDATE CASCADE;
+
+-- remove obsolete attribute columns
+ALTER TABLE ONLY attribute DROP COLUMN patient_attribute;
+ALTER TABLE ONLY attribute DROP COLUMN sequence_attribute;
