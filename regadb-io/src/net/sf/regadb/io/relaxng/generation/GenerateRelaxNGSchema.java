@@ -116,50 +116,89 @@ public class GenerateRelaxNGSchema
                 
                 if(!isFieldToBeIgnored(c, field, bareClass))
                 {
-                    //if the field is a set >> zeroOrMore
-                    if(field.getType() == Set.class)
-                    {
-                        Element zeroOrMore = new Element("zeroOrMore");
-                        toAdd.addContent(zeroOrMore);
-                        toAdd = zeroOrMore;
-                    }
-                    //if the field can be null >> optional
-                    else if(!interpreter.isNotNull(field.getType().getName(), field.getName()))
-                    {
-                        Element optional = new Element("optional");
-                        toAdd.addContent(optional);
-                        toAdd = optional;
-                    }
-                    
-                    Element fieldEl = new Element("element");
-                    fieldEl.setAttribute("name", field.getName());
-                    toAdd.addContent(fieldEl);
-                    toAdd = fieldEl;
-                    
-                    grammarAlreadyWritten_.add(c);
-                    
-                    if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass))
-                    {
-                        addReference(toAdd, bareClass);
-                        writeClassGrammar(bareClass);
-                    }
-                    else if(isStringRepresentedField(bareClass))
-                    {
-                        handleStringField(new Element("data"), toAdd, null);
-                    }
-                    else //primitive field
-                    {
-                        Integer length = interpreter.getLength(c.getName(), field.getName());
-                        boolean primitive = addPrimitiveType(toAdd, field, length);
-                        if(!primitive)
-                        {
-                            System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
-                        }
-                    }
+                    handleField(field, toAdd, bareClass, c);
                 }
             }
         }
 	}
+    
+    private void handleField(Field field, Element toAdd, Class bareClass, Class c)
+    {
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        
+        if(!interpreter.isComposite(c.getName(), field.getName()))
+        {
+            // if the field is a set >> zeroOrMore
+            if (field.getType() == Set.class) 
+            {
+                Element zeroOrMore = new Element("zeroOrMore");
+                toAdd.addContent(zeroOrMore);
+                toAdd = zeroOrMore;
+            }
+            // if the field can be null >> optional
+            else if (!interpreter.isNotNull(field.getType().getName(), field.getName())) 
+            {
+                Element optional = new Element("optional");
+                toAdd.addContent(optional);
+                toAdd = optional;
+            }        
+    
+            Element fieldEl = new Element("element");
+            fieldEl.setAttribute("name", field.getName());
+            toAdd.addContent(fieldEl);
+            toAdd = fieldEl;
+        }
+        
+        grammarAlreadyWritten_.add(c);
+        
+        if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass) && !interpreter.isComposite(c.getName(), field.getName()))
+        {
+            addReference(toAdd, bareClass);
+            writeClassGrammar(bareClass);
+        }
+        else if(isStringRepresentedField(bareClass))
+        {
+            toAdd.addContent(handleStringField(new Element("data"), null));
+        }
+        else if(interpreter.isComposite(c.getName(), field.getName()))
+        {
+            for(Field compositeField : field.getType().getDeclaredFields())
+            {
+                if(isStringRepresentedField(compositeField.getType()))
+                {
+                    Element el = new Element("element");
+                    el.setAttribute("name", compositeField.getName());
+                    toAdd.addContent(el);
+                    el.addContent(handleStringField(new Element("data"), null));
+                }
+                else 
+                {
+                    Integer length = interpreter.getLength(compositeField.getType().getName(), compositeField.getName());
+                    Element data = addPrimitiveType(compositeField, length);
+                    if(data!=null)
+                    {
+                        Element el = new Element("element");
+                        el.setAttribute("name", compositeField.getName());
+                        toAdd.addContent(el);
+                        el.addContent(data);
+                    }
+                }
+            }
+        }
+        else //primitive field
+        {
+            Integer length = interpreter.getLength(c.getName(), field.getName());
+            Element primitive = addPrimitiveType(field, length);
+            if(primitive==null)
+            {
+                System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
+            }
+            else
+            {
+                toAdd.addContent(primitive);
+            }
+        }
+    }
     
     private boolean isStringRepresentedField(Class classs)
     {
@@ -225,11 +264,11 @@ public class GenerateRelaxNGSchema
     
     private Attribute getDataTypeLib()
     {
-        return new Attribute("datatypeLibrary", "http://www.w3.org/2001/XMLSchema-datatypes");
-        
+        //return new Attribute("datatypeLibrary", "http://www.w3.org/2001/XMLSchema-datatypes");
+        return new Attribute("datatypeLibrary", "lib");
     }
     
-    private void handleStringField(Element data, Element parentNode, Integer length)
+    private Element handleStringField(Element data, Integer length)
     {
         data.setAttribute("type", "string");
         data.setAttribute(getDataTypeLib());
@@ -240,57 +279,52 @@ public class GenerateRelaxNGSchema
             param.addContent(new Text(length.intValue()+""));
             data.addContent(param);
         }
-        parentNode.addContent(data);
+        
+        return data;
     }
     
-    private boolean addPrimitiveType(Element parentNode, Field field, Integer length)
+    private Element addPrimitiveType(Field field, Integer length)
     {
         String fieldType = field.getType().toString();
         Element data = new Element("data");
         
-        
         if(fieldType.indexOf("String")>-1)
         {
-            handleStringField(data, parentNode, length);
-            return true;
+            handleStringField(data, length);
+            return data;
         }
         else if(fieldType.toLowerCase().indexOf("short")>-1)
         {
             data.setAttribute("type", "short");
             data.setAttribute(getDataTypeLib());
-            parentNode.addContent(data);
-            return true;
+            return data;
         }
         else if(fieldType.toLowerCase().indexOf("int")>-1)
         {
             data.setAttribute("type", "int");
             data.setAttribute(getDataTypeLib());
-            parentNode.addContent(data);;
-            return true;
+            return data;
         }
         else if(fieldType.toLowerCase().indexOf("double")>-1)
         {
             data.setAttribute("type", "double");
             data.setAttribute(getDataTypeLib());
-            parentNode.addContent(data);
-            return true;
+            return data;
         }
         else if(fieldType.indexOf("Date")>-1)
         {
             data.setAttribute("type", "date");
             data.setAttribute(getDataTypeLib());
-            parentNode.addContent(data);
-            return true;
+            return data;
         }
         else if(fieldType.toLowerCase().indexOf("boolean")>-1)
         {
             data.setAttribute("type", "boolean");
             data.setAttribute(getDataTypeLib());
-            parentNode.addContent(data);
-            return true;
+            return data;
         }
         
-        return false;
+        return null;
     }
     
     private boolean isClassToBeIgnored(Class classs)
