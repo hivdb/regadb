@@ -307,3 +307,7 @@ ALTER TABLE ONLY patient_attribute_value ADD CONSTRAINT "FK_patient_attribute_va
 -- remove obsolete attribute columns
 ALTER TABLE ONLY attribute DROP COLUMN patient_attribute;
 ALTER TABLE ONLY attribute DROP COLUMN sequence_attribute;
+
+--remove obsolete fields from nt_sequence
+ALTER TABLE ONLY nt_sequence DROP COLUMN hiv_type;
+ALTER TABLE ONLY nt_sequence DROP COLUMN hiv_subtype;
