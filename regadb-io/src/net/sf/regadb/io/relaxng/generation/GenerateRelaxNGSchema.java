@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -24,7 +25,10 @@ public class GenerateRelaxNGSchema
 	private static Class[] regaClasses_;
     private static ArrayList<String> classToBeIgnored_ = new ArrayList<String>();
     private static String dbPackage = "net.sf.regadb.db.";
+    private static ArrayList<String> stringRepresentedFields_ = new ArrayList<String>();
+    private static ArrayList<String> pointerClasses = new ArrayList<String>();
     
+      
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
 	
     static
@@ -39,6 +43,12 @@ public class GenerateRelaxNGSchema
         }
         
         classToBeIgnored_.add(dbPackage + "DatasetAccess");
+        
+        stringRepresentedFields_.add(dbPackage + "DrugGeneric");
+        stringRepresentedFields_.add(dbPackage + "DrugCommercial");
+        stringRepresentedFields_.add(dbPackage + "Protein");
+        
+   
     }
     
 	public GenerateRelaxNGSchema(String strstartclass,String rootnodename)
@@ -81,11 +91,12 @@ public class GenerateRelaxNGSchema
         Field[] fields = c.getDeclaredFields();
         
         Element toAdd = rootE1_;
+  
         Element define = new Element("define");
         define.setAttribute("name", c.getName());
         toAdd.addContent(define);
         toAdd = define;
-           
+        
         Element startEl = toAdd;
         for(Field field : fields)
         {
@@ -127,24 +138,54 @@ public class GenerateRelaxNGSchema
                     
                     grammarAlreadyWritten_.add(c);
                     
-                    if(isRegaClass(bareClass))
+                    if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass))
                     {
                         addReference(toAdd, bareClass);
                         writeClassGrammar(bareClass);
                     }
-                    else if(checkPrimitiveField(field))
+                    else if(isStringRepresentedField(bareClass))
                     {
-                        //TODO also pass the length
-                        addPrimitiveType(toAdd, field, null);
+                        handleStringField(new Element("data"), toAdd, null);
                     }
-                    else
+                    else //primitive field
                     {
-                        System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
+                        Integer length = interpreter.getLength(c.getName(), field.getName());
+                        boolean primitive = addPrimitiveType(toAdd, field, length);
+                        if(!primitive)
+                        {
+                            System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
+                        }
                     }
                 }
             }
         }
 	}
+    
+    private boolean isStringRepresentedField(Class classs)
+    {
+        for(String c : stringRepresentedFields_)
+        {
+            if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean isPointer(Class classs)
+    {
+        for(String c : this.pointerClasses)
+        {
+            if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
     
     private boolean isFieldToBeIgnored(Class c, Field field, Class bareFieldClass)
     {
@@ -165,6 +206,13 @@ public class GenerateRelaxNGSchema
             return true;
         }
         
+        if(interpreter.isManyToOne(c.getName(), field.getName()) &&
+                !isPointer(bareFieldClass) &&
+                !isStringRepresentedField(bareFieldClass))
+        {
+            return true;
+        }
+        
         return false;
     }
     
@@ -175,44 +223,78 @@ public class GenerateRelaxNGSchema
         parentNode.addContent(refEl);
     }
     
-    private void addPrimitiveType(Element parentNode, Field field, Integer length)
+    private Attribute getDataTypeLib()
     {
+        return new Attribute("datatypeLibrary", "http://www.w3.org/2001/XMLSchema-datatypes");
         
     }
     
-    private boolean checkPrimitiveField(Field field)
+    private void handleStringField(Element data, Element parentNode, Integer length)
     {
-        if(field.getClass() == Integer.class)
+        data.setAttribute("type", "string");
+        data.setAttribute(getDataTypeLib());
+        if(length!=null)
         {
+            Element param = new Element("param");
+            param.setAttribute("name", "maxLength");
+            param.addContent(new Text(length.intValue()+""));
+            data.addContent(param);
+        }
+        parentNode.addContent(data);
+    }
+    
+    private boolean addPrimitiveType(Element parentNode, Field field, Integer length)
+    {
+        String fieldType = field.getType().toString();
+        Element data = new Element("data");
+        
+        
+        if(fieldType.indexOf("String")>-1)
+        {
+            handleStringField(data, parentNode, length);
             return true;
         }
-        else if(field.getClass() == Short.class)
+        else if(fieldType.toLowerCase().indexOf("short")>-1)
         {
+            data.setAttribute("type", "short");
+            data.setAttribute(getDataTypeLib());
+            parentNode.addContent(data);
             return true;
         }
-        else if(field.getClass() == String.class)
+        else if(fieldType.toLowerCase().indexOf("int")>-1)
         {
+            data.setAttribute("type", "int");
+            data.setAttribute(getDataTypeLib());
+            parentNode.addContent(data);;
             return true;
         }
-        else if(field.getClass() == Double.class)
+        else if(fieldType.toLowerCase().indexOf("double")>-1)
         {
+            data.setAttribute("type", "double");
+            data.setAttribute(getDataTypeLib());
+            parentNode.addContent(data);
+            return true;
+        }
+        else if(fieldType.indexOf("Date")>-1)
+        {
+            data.setAttribute("type", "date");
+            data.setAttribute(getDataTypeLib());
+            parentNode.addContent(data);
+            return true;
+        }
+        else if(fieldType.toLowerCase().indexOf("boolean")>-1)
+        {
+            data.setAttribute("type", "boolean");
+            data.setAttribute(getDataTypeLib());
+            parentNode.addContent(data);
             return true;
         }
         
         return false;
     }
     
-    private void handleField()
-    {
-        
-    }
-    
     private boolean isClassToBeIgnored(Class classs)
     {
-        if(true)
-        {
-            System.err.println("lala");
-        }
         for(String c : classToBeIgnored_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
