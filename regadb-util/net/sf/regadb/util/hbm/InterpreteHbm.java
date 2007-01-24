@@ -42,6 +42,11 @@ public class InterpreteHbm
 	{
 		return checkProperty(parent, property, "composite-id");
 	}
+    
+    public boolean isManyToOne(String parent, String property)
+    {
+        return checkProperty(parent, property, "many-to-one") || checkProperty(parent, property, "key-many-to-one");
+    }
 	
 	public boolean isCompositeIndex(String parent, String compositeName, String property)
 	{
