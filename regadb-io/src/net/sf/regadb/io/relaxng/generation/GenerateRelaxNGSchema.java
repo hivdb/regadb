@@ -26,7 +26,8 @@ public class GenerateRelaxNGSchema
     private static ArrayList<String> classToBeIgnored_ = new ArrayList<String>();
     private static String dbPackage = "net.sf.regadb.db.";
     private static ArrayList<String> stringRepresentedFields_ = new ArrayList<String>();
-    private static ArrayList<String> pointerClasses = new ArrayList<String>();
+    private static ArrayList<String> pointerClasses_ = new ArrayList<String>();
+    private static ArrayList<String> nominalValues_ = new ArrayList<String>();
     
       
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
@@ -48,7 +49,17 @@ public class GenerateRelaxNGSchema
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
         stringRepresentedFields_.add(dbPackage + "Protein");
         
-   
+        pointerClasses_.add(dbPackage + "Test");
+        pointerClasses_.add(dbPackage + "TestType");
+        pointerClasses_.add(dbPackage + "ValueType");
+        pointerClasses_.add(dbPackage + "TestObject");
+        pointerClasses_.add(dbPackage + "TestNominalValue");
+        
+        pointerClasses_.add(dbPackage + "Attribute");
+        pointerClasses_.add(dbPackage + "AttributeNominalValue");
+        
+        nominalValues_.add(dbPackage + "TestNominalValue");
+        nominalValues_.add(dbPackage + "AttributeNominalValue");
     }
     
 	public GenerateRelaxNGSchema(String strstartclass,String rootnodename)
@@ -102,8 +113,6 @@ public class GenerateRelaxNGSchema
         {
             toAdd = startEl;
             
-            if(!alreadyWritten(field.getType()))
-            {
                 Class bareClass;
                 if(field.getType() == Set.class)
                 {
@@ -118,13 +127,13 @@ public class GenerateRelaxNGSchema
                 {
                     handleField(field, toAdd, bareClass, c);
                 }
-            }
         }
 	}
     
     private void handleField(Field field, Element toAdd, Class bareClass, Class c)
     {
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        boolean set = false;
         
         if(!interpreter.isComposite(c.getName(), field.getName()))
         {
@@ -134,6 +143,7 @@ public class GenerateRelaxNGSchema
                 Element zeroOrMore = new Element("zeroOrMore");
                 toAdd.addContent(zeroOrMore);
                 toAdd = zeroOrMore;
+                set = true;
             }
             // if the field can be null >> optional
             else if (!interpreter.isNotNull(field.getType().getName(), field.getName())) 
@@ -151,7 +161,7 @@ public class GenerateRelaxNGSchema
         
         grammarAlreadyWritten_.add(c);
         
-        if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass) && !interpreter.isComposite(c.getName(), field.getName()))
+        if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass) && !interpreter.isComposite(c.getName(), field.getName()) && !isPointer(bareClass))
         {
             addReference(toAdd, bareClass);
             writeClassGrammar(bareClass);
@@ -159,6 +169,10 @@ public class GenerateRelaxNGSchema
         else if(isStringRepresentedField(bareClass))
         {
             toAdd.addContent(handleStringField(new Element("data"), null));
+        }
+        else if(isPointer(bareClass))
+        {
+            handlePointer(toAdd, bareClass, set);
         }
         else if(interpreter.isComposite(c.getName(), field.getName()))
         {
@@ -170,6 +184,13 @@ public class GenerateRelaxNGSchema
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     el.addContent(handleStringField(new Element("data"), null));
+                }
+                else if(isPointer(compositeField.getType()))
+                {
+                    Element el = new Element("element");
+                    el.setAttribute("name", compositeField.getName());
+                    toAdd.addContent(el);
+                    handlePointer(el, compositeField.getType(), false);
                 }
                 else 
                 {
@@ -200,6 +221,37 @@ public class GenerateRelaxNGSchema
         }
     }
     
+    private void handlePointer(Element toAdd, Class bareClass, boolean set)
+    {
+        Element reference = new Element("element");
+        reference.setAttribute("name", "reference");
+        Element data = new Element("data");
+        data.setAttribute("type", "int");
+        data.setAttribute(getDataTypeLib());
+        reference.addContent(data);
+        toAdd.addContent(reference);
+        if(set || !isNominalClass(bareClass))
+        {
+            Element optional = new Element("optional");
+            toAdd.addContent(optional);
+            addReference(optional, bareClass);
+            writeClassGrammar(bareClass);
+        }
+    }
+    
+    private boolean isNominalClass(Class classs)
+    {
+        for(String c : nominalValues_)
+        {
+            if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     private boolean isStringRepresentedField(Class classs)
     {
         for(String c : stringRepresentedFields_)
@@ -215,7 +267,7 @@ public class GenerateRelaxNGSchema
     
     private boolean isPointer(Class classs)
     {
-        for(String c : this.pointerClasses)
+        for(String c : pointerClasses_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
             {
@@ -228,6 +280,11 @@ public class GenerateRelaxNGSchema
     
     private boolean isFieldToBeIgnored(Class c, Field field, Class bareFieldClass)
     {
+        if(field.getName().equals("testNominalValue"))
+        {
+            System.err.println("nominal");
+        }
+        
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
         if(interpreter.isId(c.getName(), field.getName()))
@@ -248,6 +305,11 @@ public class GenerateRelaxNGSchema
         if(interpreter.isManyToOne(c.getName(), field.getName()) &&
                 !isPointer(bareFieldClass) &&
                 !isStringRepresentedField(bareFieldClass))
+        {
+            return true;
+        }
+        
+        if(isNominalClass(c)&&isPointer(bareFieldClass))
         {
             return true;
         }
