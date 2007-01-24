@@ -16,6 +16,8 @@ import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.*;
+
 public class GenerateRelaxNGSchema
 {
 	private List<Class> classeslisted_ = new ArrayList<Class>();
@@ -98,6 +100,10 @@ public class GenerateRelaxNGSchema
            return;
         
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        
+        String id = createString();
+        
+        writeMethodSig(c, id);
 		
         Field[] fields = c.getDeclaredFields();
         
@@ -125,12 +131,14 @@ public class GenerateRelaxNGSchema
                 
                 if(!isFieldToBeIgnored(c, field, bareClass))
                 {
-                    handleField(field, toAdd, bareClass, c);
+                    handleField(field, toAdd, bareClass, c, id);
                 }
         }
+        
+        writeMethodSigEnd(id);
 	}
     
-    private void handleField(Field field, Element toAdd, Class bareClass, Class c)
+    private void handleField(Field field, Element toAdd, Class bareClass, Class c, String id)
     {
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
         boolean set = false;
@@ -140,8 +148,11 @@ public class GenerateRelaxNGSchema
             // if the field is a set >> zeroOrMore
             if (field.getType() == Set.class) 
             {
+                Element setEl = new Element("element");
+                setEl.setAttribute("name", field.getName());
                 Element zeroOrMore = new Element("zeroOrMore");
-                toAdd.addContent(zeroOrMore);
+                setEl.addContent(zeroOrMore);
+                toAdd.addContent(setEl);
                 toAdd = zeroOrMore;
                 set = true;
             }
@@ -154,7 +165,19 @@ public class GenerateRelaxNGSchema
             }        
     
             Element fieldEl = new Element("element");
-            fieldEl.setAttribute("name", field.getName());
+            if(!set)
+            {
+                fieldEl.setAttribute("name", field.getName());
+            }
+            else
+            {
+                String fieldName = field.getName();
+                if(fieldName.charAt(fieldName.length()-1)=='s')
+                {
+                    fieldName = fieldName.substring(0, fieldName.length()-1);
+                }
+                fieldEl.setAttribute("name", fieldName);
+            }
             toAdd.addContent(fieldEl);
             toAdd = fieldEl;
         }
@@ -164,6 +187,15 @@ public class GenerateRelaxNGSchema
         if(isRegaClass(bareClass) && !isStringRepresentedField(bareClass) && !interpreter.isComposite(c.getName(), field.getName()) && !isPointer(bareClass))
         {
             addReference(toAdd, bareClass);
+            if(set)
+            {
+                XMLWriteCodeGen.writeSet(bareClass, field.getName(), "parentNode", id);
+            }
+            else
+            {
+                XMLWriteCodeGen.callClassWriteMethod(null,bareClass, field.getName(), "parentNode", id);
+            }
+            
             writeClassGrammar(bareClass);
         }
         else if(isStringRepresentedField(bareClass))
@@ -196,18 +228,22 @@ public class GenerateRelaxNGSchema
                 {
                     Integer length = interpreter.getLength(compositeField.getType().getName(), compositeField.getName());
                     Element data = addPrimitiveType(compositeField, length);
+                    //This is a test to see wether it is really a primitive field
+                    //otherwise it is ignored
                     if(data!=null)
                     {
                         Element el = new Element("element");
                         el.setAttribute("name", compositeField.getName());
                         toAdd.addContent(el);
                         el.addContent(data);
+                        XMLWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
                     }
                 }
             }
         }
         else //primitive field
         {
+            XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
@@ -427,6 +463,8 @@ public class GenerateRelaxNGSchema
 			XMLOutputter outputter = new XMLOutputter();
 			outputter.setFormat(Format.getPrettyFormat());
 			outputter.output(n, System.out);
+            
+            printAllMethods();
 		}
 		catch (Exception e)
 		{
@@ -471,5 +509,4 @@ public class GenerateRelaxNGSchema
 		test.init();
 		test.printXmlSchema();
 	}
-
 }
