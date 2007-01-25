@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 import net.sf.regadb.db.AaInsertionId;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.util.hbm.InterpreteHbm;
@@ -176,6 +175,8 @@ public class XMLWriteCodeGen
             var = fieldName;
         }
         
+        writeClassCode += "if("+var+"!=null)";
+        writeClassCode += "{";
         writeClassCode += "Integer index" + fieldName+" = " + toWrite.getSimpleName() +"PMap.get(" + var +");";
         writeClassCode += "Element wrapper"+fieldName+" = new Element(\""+fieldName+"\");";
         writeClassCode += parentNode + ".addContent(" + "wrapper"+fieldName+");";
@@ -194,6 +195,7 @@ public class XMLWriteCodeGen
         callClassWriteMethod(null, toWrite, var, "wrapper"+fieldName, id);
         
         writeClassCode = "}";
+        writeClassCode += "}";
         addString(id, writeClassCode);
     }
     
@@ -212,6 +214,8 @@ public class XMLWriteCodeGen
     {
         String var = generateGetterConstruct(id, null, fieldName);
         String writeClassCode = "";
+        writeClassCode += "if("+var+".size()!=0)";
+        writeClassCode += "{";
         writeClassCode += "Element forParent = new Element(\""+fieldName+"\");";
         writeClassCode += parentNode+".addContent(forParent);";
         writeClassCode += "Element forParentLoopVar;"; 
@@ -224,6 +228,7 @@ public class XMLWriteCodeGen
         writePointer(id, toWrite, fieldName +"loopvar", "forParentLoopVar", true, parentClass);
         
         writeClassCode = "}";
+        writeClassCode += "}";
         addString(id, writeClassCode);
     }
     
