@@ -178,8 +178,15 @@ public class XMLWriteCodeGen
         writeClassCode += "if("+var+"!=null)";
         writeClassCode += "{";
         writeClassCode += "Integer index" + fieldName+" = " + toWrite.getSimpleName() +"PMap.get(" + var +");";
-        writeClassCode += "Element wrapper"+fieldName+" = new Element(\""+fieldName+"\");";
-        writeClassCode += parentNode + ".addContent(" + "wrapper"+fieldName+");";
+        if(doNotTransformFieldName)
+        {
+            writeClassCode += "Element wrapper"+fieldName +" = " + parentNode+";";
+        }
+        else
+        {
+            writeClassCode += "Element wrapper"+fieldName+" = new Element(\""+fieldName+"\");";
+            writeClassCode += parentNode + ".addContent(" + "wrapper"+fieldName+");";
+        }
         writeClassCode += "if(index"+fieldName+"!=null)";
         writeClassCode += "{";
         writeClassCode += handlePointerRef(fieldName);
