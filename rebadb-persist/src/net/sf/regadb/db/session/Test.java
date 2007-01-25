@@ -66,8 +66,6 @@ public class Test {
         NtSequence s = new NtSequence(v);
         v.getNtSequences().add(s);
         s.setNucleotides("ACGT");
-        s.setHivSubtype("None");
-        s.setHivType("2");
         
         TestResult result = p.createTestResult(t.getTest("CD4 Count (generic)"));
         result.setTestDate(new Date());
@@ -76,7 +74,7 @@ public class Test {
         Attribute genderAttribute = t.getAttribute("Gender");
         PatientAttributeValue genderValue = p.createPatientAttributeValue(genderAttribute);
         AttributeNominalValue firstValue = genderAttribute.getAttributeNominalValues().iterator().next();
-        genderValue.setNominalValueIi(firstValue.getNominalValueIi());
+        genderValue.setAttributeNominalValue(firstValue);
         
         t.save(p);
         
