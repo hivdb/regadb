@@ -31,7 +31,7 @@ public class TestPatient
 		
 		Transaction t = login.createTransaction();
 		
-		List<Patient> pList = t.getPatients(0, 10, -1);
+		List<Patient> pList = t.getPatients(0, 10, -1, " ");
 		for(Patient p : pList)
 		{
 			System.err.println(((Dataset)p.getDatasets().toArray()[0]).getDescription());
