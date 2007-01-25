@@ -32,7 +32,7 @@ public class XMLWriteCodeGen
     
     public static void writeMethodSigEnd(String id)
     {
-        String writeClassCode = "}\n";
+        String writeClassCode = "}";
         addString(id, writeClassCode);
     }
     
@@ -40,12 +40,12 @@ public class XMLWriteCodeGen
     {
         String writeClassCode="";
         
-        writeClassCode += "public void write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element parentNode)\n";
-        writeClassCode += "{\n";
-        writeClassCode += "\tif("+toWrite.getSimpleName()+"var==null)\n";
-        writeClassCode += "\t{\n";
-        writeClassCode += "\treturn;\n";
-        writeClassCode += "\t}\n";
+        writeClassCode += "public void write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element parentNode)";
+        writeClassCode += "{";
+        writeClassCode += "if("+toWrite.getSimpleName()+"var==null)";
+        writeClassCode += "{";
+        writeClassCode += "return;";
+        writeClassCode += "}";
         
         varNameList_.put(id, toWrite.getSimpleName()+"var");
         
@@ -57,13 +57,15 @@ public class XMLWriteCodeGen
         String writeClassCode="";
         
         String loopVarName = toWrite.getSimpleName() +"loopvar";
-        writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName) +")\n{\n";
-        writeClassCode += "\tElement "+ toWrite.getSimpleName()+"El = new Element(\""+fieldName+"\");\n";
-        writeClassCode += "\t"+xmlParentNode+".addContent("+toWrite.getSimpleName()+"El);\n";
+        writeClassCode += "Element "+ fieldName+"El = new Element(\""+fieldName+"\");";
+        writeClassCode += ""+xmlParentNode+".addContent("+fieldName+"El);";
+        writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName) +"){";
+        writeClassCode += "Element "+ fieldName+"_elEl = new Element(\""+fieldName+"-el\");";
+        writeClassCode += ""+fieldName+"El"+".addContent("+fieldName+"_elEl);";
         //temporarly saving otherwise callClassWriteMethod does not have the new content
         addString(id, writeClassCode);
-        callClassWriteMethod(null, toWrite, loopVarName, toWrite.getSimpleName()+"El", id,loopVarName) ;
-        writeClassCode = "}\n";
+        callClassWriteMethod(null, toWrite, loopVarName, fieldName+"_elEl", id,loopVarName) ;
+        writeClassCode = "}";
         
         addString(id, writeClassCode);
     }
@@ -110,33 +112,33 @@ public class XMLWriteCodeGen
             String startChar = "";
             if(fieldType.indexOf("class")>-1)
             {
-                writeClassCode += "if("+var+"!=null)\n";
-                writeClassCode += "{\n";
-                startChar = "\t";
+                writeClassCode += "if("+var+"!=null)";
+                writeClassCode += "{";
+                startChar = "";
             }
             
             String primValEl = field.getName()+"primitiveValEl";
-            writeClassCode += startChar + "Element "+primValEl+" = new Element(\""+field.getName()+"\");\n";
+            writeClassCode += startChar + "Element "+primValEl+" = new Element(\""+field.getName()+"\");";
             if(fieldType.indexOf("class")>-1)
             {
                 if(fieldType.indexOf("Date")>-1)
                 {
-                    writeClassCode += startChar + primValEl + ".addContent(XmlTools.dateToString("+ var + "));\n";
+                    writeClassCode += startChar + primValEl + ".addContent(XmlTools.dateToString("+ var + "));";
                 }
                 else
                 {
-                    writeClassCode += startChar + primValEl + ".addContent("+ var + ".toString());\n";
+                    writeClassCode += startChar + primValEl + ".addContent("+ var + ".toString());";
                 }
             }
             else
             {
-                writeClassCode += startChar + primValEl + ".addContent(String.valueOf("+ var+"));\n";
+                writeClassCode += startChar + primValEl + ".addContent(String.valueOf("+ var+"));";
             }
-            writeClassCode += startChar + parentNode+".addContent("+primValEl+");\n";         
+            writeClassCode += startChar + parentNode+".addContent("+primValEl+");";         
             
             if(fieldType.indexOf("class")>-1)
             {
-                writeClassCode += "}\n";
+                writeClassCode += "}";
             }
 
             addString(id, writeClassCode);
@@ -150,7 +152,7 @@ public class XMLWriteCodeGen
             var = noGetter;
         }
         
-        String writeClassCode = "\twrite"+toWrite.getSimpleName()+"("+fieldName+","+parentNode+");\n";
+        String writeClassCode = "write"+toWrite.getSimpleName()+"("+fieldName+","+parentNode+");";
         
         addString(id, writeClassCode);
     }
@@ -195,13 +197,70 @@ public class XMLWriteCodeGen
         
         System.out.println(generateGetterConstruct(id, "patient", "currentDate"));
         System.out.println(generateGetterConstruct(id, null, "currentDate"));
+        
+        printAllMethods();
     }
     
     public static void printAllMethods()
     {
+        String total = "";
+        
         for(java.util.Map.Entry<String, String> entry : methodString_.entrySet())
         {
-            System.out.println(entry.getValue()+"\n\n");
+            total += entry.getValue();
         }
+        
+        total = "public class Lala {" +total+"}";
+        String formatted = beautifyCode(total);
+        
+        System.out.println(formatted);
+    }
+    
+    private static String beautifyCode(String code)
+    {
+        StringBuffer toReturn = new StringBuffer(1000);
+        int amountOfBrackets = 0;
+        String startChars = "";
+        
+        char c;
+        for(int i = 0; i<code.length(); i++)
+        {
+            c = code.charAt(i);
+            
+            if(c=='{')
+            {
+                amountOfBrackets++;
+                toReturn.append('\n');                            
+                
+                toReturn.append(startChars);
+                toReturn.append(c);
+                toReturn.append('\n');
+
+                startChars += '\t';
+                toReturn.append(startChars);
+            }
+            else if(c==';')
+            {
+                toReturn.append(c);
+                toReturn.append('\n');
+                toReturn.append(startChars);
+            }
+            else if(c=='}')
+            {
+                amountOfBrackets--;
+                
+                startChars = startChars.substring(0,startChars.length()-1);
+                toReturn.deleteCharAt(toReturn.length()-1);
+                
+                toReturn.append(c);
+                toReturn.append('\n');
+                toReturn.append(startChars);
+            }
+            else 
+            {
+                toReturn.append(c);
+            }
+        }
+        return toReturn.toString();
     }
 }

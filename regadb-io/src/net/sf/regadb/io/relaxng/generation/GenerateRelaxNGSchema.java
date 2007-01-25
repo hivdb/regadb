@@ -172,11 +172,7 @@ public class GenerateRelaxNGSchema
             else
             {
                 String fieldName = field.getName();
-                if(fieldName.charAt(fieldName.length()-1)=='s')
-                {
-                    fieldName = fieldName.substring(0, fieldName.length()-1);
-                }
-                fieldEl.setAttribute("name", fieldName);
+                fieldEl.setAttribute("name", fieldName+"-el");
             }
             toAdd.addContent(fieldEl);
             toAdd = fieldEl;
