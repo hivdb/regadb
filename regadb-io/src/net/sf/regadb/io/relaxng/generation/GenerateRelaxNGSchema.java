@@ -110,7 +110,13 @@ public class GenerateRelaxNGSchema
         Element toAdd = rootE1_;
   
         Element define = new Element("define");
-        define.setAttribute("name", c.getName());
+        String className = c.getName();
+        //PatientImpl is not accessible for security reasons
+        if(className.indexOf("PatientImpl")>-1)
+        {
+            className = className.replace("PatientImpl", "Patient");
+        }
+        define.setAttribute("name", className);
         toAdd.addContent(define);
         toAdd = define;
         
@@ -201,6 +207,15 @@ public class GenerateRelaxNGSchema
         else if(isPointer(bareClass))
         {
             handlePointer(toAdd, bareClass, set);
+            
+            if(!set)
+            {
+                writePointer(id, bareClass, field.getName(), "parentNode", false, c);
+            }
+            else
+            {
+                writePointerSet(id, bareClass, field.getName(), "parentNode", c);
+            }
         }
         else if(interpreter.isComposite(c.getName(), field.getName()))
         {
@@ -219,6 +234,7 @@ public class GenerateRelaxNGSchema
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     handlePointer(el, compositeField.getType(), false);
+                    writePointer(id, compositeField.getType(), compositeField.getName(), "parentNode", false, c);
                 }
                 else 
                 {
@@ -341,10 +357,10 @@ public class GenerateRelaxNGSchema
             return true;
         }
         
-        if(isNominalClass(c)&&isPointer(bareFieldClass))
+        /*if(isNominalClass(c)&&isPointer(bareFieldClass))
         {
             return true;
-        }
+        }*/
         
         return false;
     }
@@ -460,7 +476,7 @@ public class GenerateRelaxNGSchema
 			outputter.setFormat(Format.getPrettyFormat());
 			outputter.output(n, System.out);
             
-            printAllMethods();
+            System.out.print(createClassCode(pointerClasses_));
 		}
 		catch (Exception e)
 		{
