@@ -8,6 +8,7 @@ import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -271,7 +272,21 @@ public class InterpreteHbm
 
 		return doc;
 	}
-	
+    
+    public String[] getClassNames() 
+    {
+        String [] names = new String [classHbms_.entrySet().size()];
+        int i = 0;
+        
+        for(Map.Entry<String, Element> className: classHbms_.entrySet())
+        {
+            names[i] = className.getKey();
+            i++;
+        }
+        
+        return names;
+    }
+    
 	public static void main(String [] args)
 	{
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
