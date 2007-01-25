@@ -1,12 +1,23 @@
 package net.sf.regadb.io.relaxng.generation;
 
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.createClassCode;
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.createString;
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writeMethodSig;
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writeMethodSigEnd;
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writePointer;
+import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writePointerSet;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.util.hbm.InterpreteHbm;
+import net.sf.regadb.util.pair.Pair;
 
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -15,8 +26,6 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.*;
 
 public class GenerateRelaxNGSchema
 {
@@ -30,6 +39,8 @@ public class GenerateRelaxNGSchema
     private static ArrayList<String> stringRepresentedFields_ = new ArrayList<String>();
     private static ArrayList<String> pointerClasses_ = new ArrayList<String>();
     private static ArrayList<String> nominalValues_ = new ArrayList<String>();
+    
+    private static ArrayList<Pair<String, String>>  stringRepresentedFieldsRepresentationFields_ = new ArrayList<Pair<String, String>> ();
     
       
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
@@ -51,6 +62,10 @@ public class GenerateRelaxNGSchema
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
         stringRepresentedFields_.add(dbPackage + "Protein");
         
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
+        
         pointerClasses_.add(dbPackage + "Test");
         pointerClasses_.add(dbPackage + "TestType");
         pointerClasses_.add(dbPackage + "ValueType");
@@ -62,6 +77,19 @@ public class GenerateRelaxNGSchema
         
         nominalValues_.add(dbPackage + "TestNominalValue");
         nominalValues_.add(dbPackage + "AttributeNominalValue");
+    }
+    
+    public static String getStringRepValueName(String className)
+    {
+        for(Pair<String, String> c : stringRepresentedFieldsRepresentationFields_)
+        {
+            if(c.getKey().equals(className) || c.getKey().equals(dbPackage+className))
+            {
+                return c.getValue();
+            }
+        }
+        
+        return null;
     }
     
 	public GenerateRelaxNGSchema(String strstartclass,String rootnodename)
@@ -203,6 +231,7 @@ public class GenerateRelaxNGSchema
         else if(isStringRepresentedField(bareClass))
         {
             toAdd.addContent(handleStringField(new Element("data"), null));
+            XMLWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, false, "parentNode");
         }
         else if(isPointer(bareClass))
         {
@@ -227,6 +256,7 @@ public class GenerateRelaxNGSchema
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     el.addContent(handleStringField(new Element("data"), null));
+                    XMLWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, "parentNode");
                 }
                 else if(isPointer(compositeField.getType()))
                 {

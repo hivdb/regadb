@@ -251,6 +251,26 @@ public class XMLWriteCodeGen
         methodString_.put(id, "");
     }
     
+    public static void writeStringRepresentedValue(String id, String fieldName, Class toWrite, boolean composite, String parentNode)
+    {
+        String stringRepField = GenerateRelaxNGSchema.getStringRepValueName(toWrite.getName());
+        stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
+        String var;
+        var = generateGetterConstruct(id, composite?"id":null, fieldName);
+        String var2 = var + ".get" + stringRepField+"()";
+        String writeClassCode = "";
+        writeClassCode += "if("+var+"!=null &&" +var2+"!=null)";
+        writeClassCode += "{";
+        writeClassCode += "Element "+fieldName+"var = new Element(\""+fieldName+"\");";
+        writeClassCode += parentNode + ".addContent(" + fieldName+"var);";
+        writeClassCode += fieldName+"var.addContent(" + var2 +");";
+        writeClassCode += "}";
+        
+        
+        
+        addString(id, writeClassCode);
+    }
+    
     public static void main(String [] args)
     {
         String id = createString();
