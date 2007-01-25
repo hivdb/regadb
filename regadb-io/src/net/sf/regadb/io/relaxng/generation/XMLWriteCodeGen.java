@@ -1,12 +1,16 @@
 package net.sf.regadb.io.relaxng.generation;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 import net.sf.regadb.db.AaInsertionId;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class XMLWriteCodeGen 
 {
@@ -144,6 +148,85 @@ public class XMLWriteCodeGen
             addString(id, writeClassCode);
     }
     
+    public static void writePointer(String id, Class toWrite, String fieldName, String parentNode, boolean doNotTransformFieldName, Class parentClass)
+    {
+        //boolean doNotTransformFieldName is necessary when working from a loop (writePointerSet)
+        String writeClassCode = "";
+        
+        String var;
+        var = generateGetterConstruct(id, null, fieldName);
+
+        boolean foundVarInClass = false;
+        for(Field f : parentClass.getDeclaredFields())
+        {
+            if(f.getName().equals(fieldName))
+            {
+                foundVarInClass = true;
+                break;
+            }
+        }
+        
+        if(!foundVarInClass)
+        {
+            var = generateGetterConstruct(id, "id", fieldName);
+        }
+        
+        if(doNotTransformFieldName)
+        {
+            var = fieldName;
+        }
+        
+        writeClassCode += "Integer index" + fieldName+" = " + toWrite.getSimpleName() +"PMap.get(" + var +");";
+        writeClassCode += "Element wrapper"+fieldName+" = new Element(\""+fieldName+"\");";
+        writeClassCode += parentNode + ".addContent(" + "wrapper"+fieldName+");";
+        writeClassCode += "if(index"+fieldName+"!=null)";
+        writeClassCode += "{";
+        writeClassCode += handlePointerRef(fieldName);
+        //writeClassCode += "return;";
+        writeClassCode += "}";
+        writeClassCode += "else";
+        writeClassCode += "{";
+        writeClassCode += "index"+ fieldName+" = new Integer("+toWrite.getSimpleName() +"PMap.size());";
+        writeClassCode += handlePointerRef(fieldName);
+        writeClassCode += toWrite.getSimpleName() +"PMap.put("+var+",index"+fieldName+");";
+        addString(id, writeClassCode);
+        
+        callClassWriteMethod(null, toWrite, var, "wrapper"+fieldName, id);
+        
+        writeClassCode = "}";
+        addString(id, writeClassCode);
+    }
+    
+    private static String  handlePointerRef(String fieldName)
+    {
+        String writeClassCode = "";
+        
+        writeClassCode += "Element refElement"+fieldName+"= new Element(\"reference\");";
+        writeClassCode += "wrapper"+fieldName + ".addContent(" + "refElement"+fieldName+");";
+        writeClassCode += "refElement"+fieldName + ".addContent(index"+fieldName+".toString());";
+        
+        return writeClassCode;
+    }
+    
+    public static void writePointerSet(String id, Class toWrite, String fieldName, String parentNode, Class parentClass)
+    {
+        String var = generateGetterConstruct(id, null, fieldName);
+        String writeClassCode = "";
+        writeClassCode += "Element forParent = new Element(\""+fieldName+"\");";
+        writeClassCode += parentNode+".addContent(forParent);";
+        writeClassCode += "Element forParentLoopVar;"; 
+        writeClassCode += "for("+toWrite.getSimpleName() +" " +fieldName +"loopvar :" +var+")";
+        writeClassCode += "{";
+        writeClassCode += "forParentLoopVar = new Element(\""+fieldName+"-el\");";
+        writeClassCode += "forParent.addContent(forParentLoopVar);";
+        addString(id, writeClassCode);
+        
+        writePointer(id, toWrite, fieldName +"loopvar", "forParentLoopVar", true, parentClass);
+        
+        writeClassCode = "}";
+        addString(id, writeClassCode);
+    }
+    
     public static void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id, String noGetter)
     {
         String var = generateGetterConstruct(id, grandFatherFieldName, fieldName);
@@ -198,22 +281,64 @@ public class XMLWriteCodeGen
         System.out.println(generateGetterConstruct(id, "patient", "currentDate"));
         System.out.println(generateGetterConstruct(id, null, "currentDate"));
         
-        printAllMethods();
+        writePointer(id, Test.class,"testField", "parentNode", false, null);
+        
+        //System.out.println(createClassCode());
     }
     
-    public static void printAllMethods()
+    public static String createClassCode(ArrayList<String> pointerClasses)
     {
         String total = "";
         
+        //package declaration
+        total = "package net.sf.regadb.io.exportXML;\n";
+        //package declaration
+        
+        //imports
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        String imports = "";
+        for(String className : interpreter.getClassNames())
+        {
+            imports += "import "+className +";";
+        }
+        imports += "import net.sf.regadb.util.xml.XmlTools;";
+        imports += "import org.jdom.Element;";
+        imports += "import java.util.HashMap;";
+        
+        total += imports +"\n";
+        //imports
+        
+        //class definition
+        total += "public class ExportToXML {";
+        //class definition
+        
+        //pointer hashmaps
+        for(String pointerClass : pointerClasses)
+        {
+            String pointer = pointerClass.substring(pointerClass.lastIndexOf('.')+1);
+            String line = "HashMap<" +pointer+", Integer> " + pointer +"PMap = new HashMap<"+pointer+", Integer>();";
+            total += line;
+        }
+        //pointer hashmaps
+        
+        //methods
         for(java.util.Map.Entry<String, String> entry : methodString_.entrySet())
         {
             total += entry.getValue();
         }
+        //methods
         
-        total = "public class Lala {" +total+"}";
+        //end class definition
+        total += "}";
+        //end class definition
+         
+        //replace PatientImpl by Patient
+        //PatientImpl is for security reasons not accessible
+        total = total.replace("PatientImpl", "Patient");
+        
         String formatted = beautifyCode(total);
         
-        System.out.println(formatted);
+        return formatted;
     }
     
     private static String beautifyCode(String code)
