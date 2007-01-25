@@ -30,7 +30,9 @@ class TestLocalAlign {
     private NtSequence seq;
     private List<AaSequence> result;
 
-    TestLocalAlign(String uid, String passwd) {
+    TestLocalAlign(String uid, String passwd)
+        throws WrongUidException, WrongPasswordException {
+        
         try
 		{
 			login = Login.authenticate(uid, passwd);
@@ -102,7 +104,7 @@ class TestLocalAlign {
         t.commit();
     }
 
-    public static void main(String[] args) {        
+    public static void main(String[] args) throws WrongUidException, WrongPasswordException {        
         TestLocalAlign test = new TestLocalAlign("kdforc0", "Vitabis1");
 
         test.testCreateAligner();
