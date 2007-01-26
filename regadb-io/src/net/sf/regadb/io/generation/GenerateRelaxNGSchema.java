@@ -1,11 +1,11 @@
-package net.sf.regadb.io.relaxng.generation;
+package net.sf.regadb.io.generation;
 
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.createClassCode;
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.createString;
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writeMethodSig;
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writeMethodSigEnd;
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writePointer;
-import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writePointerSet;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.createClassCode;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.createString;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.writeMethodSig;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.writeMethodSigEnd;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointer;
+import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointerSet;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -500,7 +500,7 @@ public class GenerateRelaxNGSchema
         }
     }
 
-	public void printXmlSchema()
+	public void generate()
 	{
 		try
 		{
@@ -552,6 +552,6 @@ public class GenerateRelaxNGSchema
 	{
 		GenerateRelaxNGSchema test = new GenerateRelaxNGSchema("net.sf.regadb.db.PatientImpl", "Patients");
 		test.init();
-		test.printXmlSchema();
+		test.generate();
 	}
 }

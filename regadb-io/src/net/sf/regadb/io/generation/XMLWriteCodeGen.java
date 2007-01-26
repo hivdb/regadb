@@ -1,4 +1,4 @@
-package net.sf.regadb.io.relaxng.generation;
+package net.sf.regadb.io.generation;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
