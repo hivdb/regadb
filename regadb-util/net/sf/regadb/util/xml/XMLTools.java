@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class XmlTools 
+public class XMLTools 
 {
     private static DateFormat df_ = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
