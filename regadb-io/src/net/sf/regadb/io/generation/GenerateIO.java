@@ -7,7 +7,11 @@ import static net.sf.regadb.io.generation.XMLWriteCodeGen.writeMethodSigEnd;
 import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointer;
 import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointerSet;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -504,18 +508,42 @@ public class GenerateIO
 	{
 		try
 		{
+            //relaxng schema
 			Document n = new Document(rootE1_);
 			XMLOutputter outputter = new XMLOutputter();
 			outputter.setFormat(Format.getPrettyFormat());
-			outputter.output(n, System.out);
+            String srcDir = getSrcPath("net.sf.regadb.io.relaxng");
+            File relaxNgFile = new File(srcDir+File.separatorChar+"regadb-relaxng.xml");
+            FileWriter fw = new FileWriter(relaxNgFile);
+            outputter.output(n, fw);
+            fw.flush();
+            fw.close();
+            //relaxng schema
             
-            System.out.print(createClassCode(pointerClasses_));
+            //export java code
+            srcDir = getSrcPath("net.sf.regadb.io.exportXML");
+            File exportJavaCodeFile = new File(srcDir+File.separatorChar+"ExportToXML.java");
+            String exportCode = createClassCode(pointerClasses_);
+            fw = new FileWriter(exportJavaCodeFile);
+            fw.write(exportCode);
+            fw.flush();
+            fw.close();
+            //export java code
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
+    
+    private String getSrcPath(String pckName)
+    {
+        URL packageURL = Thread.currentThread().getContextClassLoader().getResource(pckName.replace('.', '/'));
+        File directory = new File(URLDecoder.decode(packageURL.getFile()));
+        File srcDir = new File(directory.getAbsolutePath().replace(File.separatorChar+"bin"+File.separatorChar, File.separatorChar+"src"+File.separatorChar));
+        
+        return srcDir.getAbsolutePath();
+    }
 
 	private boolean isRegaClass(Class searchclass)
 	{
@@ -550,8 +578,11 @@ public class GenerateIO
 
 	public static void main(String[] args)
 	{
+        long start = System.currentTimeMillis();
         GenerateIO test = new GenerateIO("net.sf.regadb.db.PatientImpl", "Patients");
 		test.init();
 		test.generate();
+        long duration = System.currentTimeMillis() -start;
+        System.out.println("duration:"+duration);
 	}
 }
