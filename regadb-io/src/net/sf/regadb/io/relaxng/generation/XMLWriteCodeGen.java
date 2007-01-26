@@ -277,9 +277,7 @@ public class XMLWriteCodeGen
         writeClassCode += parentNode + ".addContent(" + fieldName+"var);";
         writeClassCode += fieldName+"var.addContent(" + var2 +");";
         writeClassCode += "}";
-        
-        
-        
+         
         addString(id, writeClassCode);
     }
     
