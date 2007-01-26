@@ -169,7 +169,7 @@ public class DataTable<DataType> extends WTable
         {
             currentPage--;
             amountOfPages_ = getAmountOfPages(trans);
-            if(currentPage>amountOfPages_)
+            if(currentPage+1>amountOfPages_)
             {
                 lastScroll(trans, amountOfPages_);
             }
@@ -186,7 +186,7 @@ public class DataTable<DataType> extends WTable
         Transaction trans = RegaDBMain.getApp().createTransaction();
         currentPage++;
         amountOfPages_  = getAmountOfPages(trans);
-        if(currentPage>amountOfPages_)
+        if(currentPage+1>amountOfPages_)
         {
             lastScroll(trans, amountOfPages_);
         }
