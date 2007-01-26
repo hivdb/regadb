@@ -198,11 +198,25 @@ public class Transaction {
     {
         Query q = session.createQuery(
                 "select count(patient) " +
-                getPatientsQuery() +
-                "group by patient");
+                getPatientsQuery());
         q.setParameter("uid", login.getUid());
         
         return ((Integer)q.uniqueResult()).intValue();
+    }
+    
+    public long getPatientCount(String filterConstraints) 
+    {
+        String queryString =    "select count(patient) " +
+                                getPatientsQuery();
+        if(!filterConstraints.equals(" "))
+        {
+            queryString += "and" + filterConstraints;
+        }
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("uid", login.getUid());
+        
+        return ((Long)q.uniqueResult()).longValue();
     }
 
     public Patient getPatient(Dataset dataset, String id) {
