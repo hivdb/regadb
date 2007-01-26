@@ -9,12 +9,9 @@ import static net.sf.regadb.io.relaxng.generation.XMLWriteCodeGen.writePointerSe
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 import net.sf.regadb.util.pair.Pair;
@@ -41,6 +38,7 @@ public class GenerateRelaxNGSchema
     private static ArrayList<String> nominalValues_ = new ArrayList<String>();
     
     private static ArrayList<Pair<String, String>>  stringRepresentedFieldsRepresentationFields_ = new ArrayList<Pair<String, String>> ();
+    private static ArrayList<Pair<String, String>>  fieldsToBeIgnored_ = new ArrayList<Pair<String, String>> ();
     
       
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
@@ -57,6 +55,8 @@ public class GenerateRelaxNGSchema
         }
         
         classToBeIgnored_.add(dbPackage + "DatasetAccess");
+        
+        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
         
         stringRepresentedFields_.add(dbPackage + "DrugGeneric");
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
@@ -387,10 +387,13 @@ public class GenerateRelaxNGSchema
             return true;
         }
         
-        /*if(isNominalClass(c)&&isPointer(bareFieldClass))
+        for(Pair<String, String> ign : fieldsToBeIgnored_)
         {
-            return true;
-        }*/
+            if(ign.getKey().equals(c.getName()) && ign.getValue().equals(field.getName()))
+            {
+                return true;
+            }
+        }
         
         return false;
     }
