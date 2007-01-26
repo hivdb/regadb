@@ -24,7 +24,7 @@ import org.jdom.Text;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-public class GenerateRelaxNGSchema
+public class GenerateIO
 {
 	private List<Class> classeslisted_ = new ArrayList<Class>();
 	private Element rootE1_;
@@ -92,7 +92,7 @@ public class GenerateRelaxNGSchema
         return null;
     }
     
-	public GenerateRelaxNGSchema(String strstartclass,String rootnodename)
+	public GenerateIO(String strstartclass,String rootnodename)
 	{
 		rootE1_ = new Element("element");
 		Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
@@ -550,7 +550,7 @@ public class GenerateRelaxNGSchema
 
 	public static void main(String[] args)
 	{
-		GenerateRelaxNGSchema test = new GenerateRelaxNGSchema("net.sf.regadb.db.PatientImpl", "Patients");
+        GenerateIO test = new GenerateIO("net.sf.regadb.db.PatientImpl", "Patients");
 		test.init();
 		test.generate();
 	}

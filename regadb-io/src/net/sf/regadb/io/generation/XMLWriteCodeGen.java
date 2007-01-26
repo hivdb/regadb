@@ -265,7 +265,7 @@ public class XMLWriteCodeGen
     
     public static void writeStringRepresentedValue(String id, String fieldName, Class toWrite, boolean composite, String parentNode)
     {
-        String stringRepField = GenerateRelaxNGSchema.getStringRepValueName(toWrite.getName());
+        String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
         stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
         String var;
         var = generateGetterConstruct(id, composite?"id":null, fieldName);
