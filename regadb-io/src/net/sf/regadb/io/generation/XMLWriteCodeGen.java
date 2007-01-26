@@ -331,7 +331,7 @@ public class XMLWriteCodeGen
         {
             imports += "import "+className +";";
         }
-        imports += "import net.sf.regadb.util.xml.XmlTools;";
+        imports += "import net.sf.regadb.util.xml.XMLTools;";
         imports += "import org.jdom.Element;";
         imports += "import java.util.HashMap;";
         
