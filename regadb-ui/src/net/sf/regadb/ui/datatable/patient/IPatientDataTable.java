@@ -75,13 +75,13 @@ public class IPatientDataTable implements IDataTable<Patient>
 		sortedColumn_ = index;
 	}
 
-	public int getAmountOfColumns()
-	{
-		return 4;
-	}
-
     public String[] getFieldNames() 
     {
         return filterVarNames_;
+    }
+    
+    public long getDataSetSize(Transaction t)
+    {
+        return t.getPatientCount(HibernateStringUtils.filterConstraintsQuery(this));
     }
 }

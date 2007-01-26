@@ -11,9 +11,6 @@ public interface IDataTable <DataType>
 	
 	public void init(Transaction t);
 	
-	public int getAmountOfColumns();
-
-	
 	public List<DataType> getDataBlock(Transaction t, int startIndex, int amountOfRows);
 	
 	public String[] getRowData(DataType type);
@@ -23,5 +20,7 @@ public interface IDataTable <DataType>
 
 	public void setSortedColumn(int index);
     
-    public String[] getFieldNames(); 
+    public String[] getFieldNames();
+    
+    public long getDataSetSize(Transaction t);
 }
