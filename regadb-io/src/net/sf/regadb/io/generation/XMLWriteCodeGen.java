@@ -126,7 +126,7 @@ public class XMLWriteCodeGen
             {
                 if(fieldType.indexOf("Date")>-1)
                 {
-                    writeClassCode += startChar + primValEl + ".addContent(XmlTools.dateToString("+ var + "));";
+                    writeClassCode += startChar + primValEl + ".addContent(XMLTools.dateToString("+ var + "));";
                 }
                 else
                 {
