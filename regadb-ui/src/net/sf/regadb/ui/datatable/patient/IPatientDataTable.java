@@ -41,9 +41,9 @@ public class IPatientDataTable implements IDataTable<Patient>
 		return colNames_;
 	}
 
-	public List<Patient> getDataBlock(Transaction t, int startIndex, int amountOfRows)
+	public List<Patient> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortColIndex, boolean ascending)
 	{
-		return t.getPatients(startIndex, amountOfRows, -1, HibernateStringUtils.filterConstraintsQuery(this));
+		return t.getPatients(startIndex, amountOfRows, filterVarNames_[sortColIndex], ascending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public IFilter[] getFilters()
