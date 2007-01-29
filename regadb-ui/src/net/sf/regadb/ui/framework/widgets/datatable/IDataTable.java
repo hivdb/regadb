@@ -11,7 +11,7 @@ public interface IDataTable <DataType>
 	
 	public void init(Transaction t);
 	
-	public List<DataType> getDataBlock(Transaction t, int startIndex, int amountOfRows);
+	public List<DataType> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending);
 	
 	public String[] getRowData(DataType type);
 	

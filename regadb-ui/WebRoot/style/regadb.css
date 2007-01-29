@@ -28,7 +28,7 @@
 
 *.treemenu-menuItem
 {
-	cursor: pointer; cursor: hand;
+	cursor: pointer;
 	color: blue;
 }
 
@@ -51,4 +51,11 @@
 *.form-field-textfield-edit-invalid
 {
 	background-color: red;
+}
+
+*.general-clickable-text
+{
+	color : blue;
+	text-decoration: underline;
+	cursor: pointer;
 }

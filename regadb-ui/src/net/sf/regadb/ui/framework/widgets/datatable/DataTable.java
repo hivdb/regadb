@@ -36,6 +36,10 @@ public class DataTable<DataType> extends WTable
 	private int amountOfPages_ = 0;
     
     private final static WMessage emptyLiteral_ = new WMessage("", true);
+    
+    private ColumnHeader[] colHeaders_;
+    
+    private int sortColIndex_ = 0;
 	
 	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
 	{
@@ -64,15 +68,40 @@ public class DataTable<DataType> extends WTable
 		});
 		row++;
 		}
-				
+			
+        
+        colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
 		//put colheaders in the table
 		for(String colName : dataTableInterface_.getColNames())
 		{
-			new ColumnHeader(tr(colName), elementAt(row, col));
+            colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
+            colHeaders_[col].setSortNone();
+            final int colHeaderIndex = col;
+            colHeaders_[col].clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                        public void notify(WMouseEvent a) 
+                        {
+                            //a header is selected where sorting is already enabled
+                            if(colHeaderIndex==sortColIndex_)
+                            {
+                                colHeaders_[sortColIndex_].setSortOpposite();
+                            }
+                            else
+                            {
+                                colHeaders_[sortColIndex_].setSortNone();
+                                sortColIndex_ = colHeaderIndex;
+                                colHeaders_[sortColIndex_].setSortDesc();
+                            }
+                            Transaction trans = RegaDBMain.getApp().createTransaction();
+                            refreshData(trans, true);
+                            trans.commit();
+                        }
+                   });
 			col++;
 		}
 		row++;
 		col = 0;
+        colHeaders_[col].setSortDesc();
 		
 		//put filters in the table
 		if(dataTableInterface_.getFilters()!=null)
@@ -117,7 +146,7 @@ public class DataTable<DataType> extends WTable
 		}
         
         //scrolling buttons
-        elementAt(row, col).setRowSpan(dataTableInterface_.getColNames().length);
+        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
         firstScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -223,7 +252,7 @@ public class DataTable<DataType> extends WTable
             amountOfPages_ = getAmountOfPages(trans);
         }
         
-	    List<DataType> dataTypes = dataTableInterface_.getDataBlock(trans, currentPage_ , amountOfPageRows_);
+	    List<DataType> dataTypes = dataTableInterface_.getDataBlock(trans, currentPage_ , amountOfPageRows_, sortColIndex_, colHeaders_[sortColIndex_].isAsc());
 		for(int i = 0; i<dataTypes.size(); i++)
 		{
 			List<WText> al = textMatrix_.get(i);
