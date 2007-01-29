@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
@@ -21,8 +23,8 @@ public class DataTable<DataType> extends WTable
 	
 	private int amountOfPageRows_;
 	
-	private WPushButton _showHideFilter;
-	private WPushButton _applyFilter;
+	private WPushButton showHideFilter_;
+	private WPushButton applyFilter_;
     
     private WPushButton firstScroll_;
     private WPushButton previousScroll_;
@@ -30,8 +32,10 @@ public class DataTable<DataType> extends WTable
     private WPushButton lastScroll_;
     private WText labelScroll_;
 	
-	private int currentPage = 0;
+	private int currentPage_ = 0;
 	private int amountOfPages_ = 0;
+    
+    private final static WMessage emptyLiteral_ = new WMessage("", true);
 	
 	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
 	{
@@ -50,8 +54,8 @@ public class DataTable<DataType> extends WTable
 		
 		if(dataTableInterface_.getFilters()!=null)
 		{
-		_showHideFilter = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
-		_showHideFilter.clicked.addListener(new SignalListener<WMouseEvent>()
+		showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
+		showHideFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
 		{
 			public void notify(WMouseEvent e)
 			{
@@ -78,13 +82,13 @@ public class DataTable<DataType> extends WTable
 				filter.getFilterWidget().setParent(elementAt(row, col));
 				col++;
 			}
-			_applyFilter = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
-			_applyFilter.clicked.addListener(new SignalListener<WMouseEvent>()
+			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
+			applyFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
 			{
 				public void notify(WMouseEvent me)
 				{
                     Transaction trans = RegaDBMain.getApp().createTransaction();
-                    currentPage = 0;
+                    currentPage_ = 0;
 					refreshData(trans, true);
                     trans.commit();
 				}
@@ -100,9 +104,12 @@ public class DataTable<DataType> extends WTable
 			textRow = new ArrayList<WText>();
 			textMatrix_.add(textRow);
 			
+            WText toPut;
 			for(int j = 0; j<dataTableInterface_.getColNames().length; j++)
 			{
-				textRow.add(new WText(noNullLt(""), elementAt(row, col)));
+                toPut = new WText(noNullLt(null), elementAt(row, col));
+                elementAt(row, col).resize(new WLength(), new WLength(1.0,WLengthUnit.FontEm));
+				textRow.add(toPut);
 				col++;
 			}
 			row++;
@@ -157,7 +164,7 @@ public class DataTable<DataType> extends WTable
     private void firstScroll()
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        currentPage = 0;
+        currentPage_ = 0;
         refreshData(trans, true);
         trans.commit();
     }
@@ -165,11 +172,11 @@ public class DataTable<DataType> extends WTable
     private void previousScroll()
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        if(currentPage!=0)
+        if(currentPage_!=0)
         {
-            currentPage--;
+            currentPage_--;
             amountOfPages_ = getAmountOfPages(trans);
-            if(currentPage+1>amountOfPages_)
+            if(currentPage_+1>amountOfPages_)
             {
                 lastScroll(trans, amountOfPages_);
             }
@@ -184,9 +191,9 @@ public class DataTable<DataType> extends WTable
     private void nextScroll()
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        currentPage++;
+        currentPage_++;
         amountOfPages_  = getAmountOfPages(trans);
-        if(currentPage+1>amountOfPages_)
+        if(currentPage_+1>amountOfPages_)
         {
             lastScroll(trans, amountOfPages_);
         }
@@ -200,7 +207,7 @@ public class DataTable<DataType> extends WTable
     private void lastScroll(Transaction trans, long amountOfPages)
     {
         amountOfPages_ = getAmountOfPages(trans);
-        currentPage = amountOfPages_ -1;
+        currentPage_ = amountOfPages_ -1;
         refreshData(trans, false);
     }
     
@@ -216,7 +223,7 @@ public class DataTable<DataType> extends WTable
             amountOfPages_ = getAmountOfPages(trans);
         }
         
-	    List<DataType> dataTypes = dataTableInterface_.getDataBlock(trans, currentPage , amountOfPageRows_);
+	    List<DataType> dataTypes = dataTableInterface_.getDataBlock(trans, currentPage_ , amountOfPageRows_);
 		for(int i = 0; i<dataTypes.size(); i++)
 		{
 			List<WText> al = textMatrix_.get(i);
@@ -237,32 +244,32 @@ public class DataTable<DataType> extends WTable
             }
         }
         
-        labelScroll_.setText(lt("Page "+(currentPage+1)+" of " + amountOfPages_));
+        labelScroll_.setText(lt("Page "+(currentPage_+1)+" of " + amountOfPages_));
 	}
 	
 	private void showHideFilters()
 	{
 		if(!dataTableInterface_.getFilters()[0].isVisible())
 		{
-			_showHideFilter.setText(tr("datatable.button.hideFilter"));
+			showHideFilter_.setText(tr("datatable.button.hideFilter"));
 		}
 		else
 		{
-			_showHideFilter.setText(tr("datatable.button.showFilter"));
+			showHideFilter_.setText(tr("datatable.button.showFilter"));
 		}
 		
 		for(IFilter i : dataTableInterface_.getFilters())
 		{
 			i.setVisible(!i.isVisible());
 		}
-		_applyFilter.setHidden(!_applyFilter.isHidden());	
+		applyFilter_.setHidden(!applyFilter_.isHidden());	
 	}
 	
 	private WMessage noNullLt(String col)
 	{
 		if(col==null)
 		{
-			return lt("");
+			return emptyLiteral_;
 		}
 		return lt(col);
 	}
