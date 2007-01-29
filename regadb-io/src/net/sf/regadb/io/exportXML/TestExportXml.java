@@ -38,7 +38,7 @@ public class TestExportXml
         Transaction t = login.createTransaction();
         
         String [] constraints ={null,null,null,null};
-        List<Patient> pList = t.getPatients(0, 20, -1, " dataset.description='TEST' ");
+        List<Patient> pList = t.getPatients(0, 20, "dataset.description", true, " dataset.description='TEST' ");
         for(Patient p : pList)
         {
             System.err.println(((Dataset)p.getDatasets().toArray()[0]).getDescription());
