@@ -166,7 +166,7 @@ public class Transaction {
      * checking all the filter constraints and grouped by the selected col.
      */
     @SuppressWarnings("unchecked")
-    public List<Patient> getPatients(int firstResult, int maxResults, int selectionCol, String filterConstraints) 
+    public List<Patient> getPatients(int firstResult, int maxResults, String sortField, boolean ascending, String filterConstraints) 
     {
         String queryString = 	"select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 				getPatientsQuery();
@@ -174,7 +174,8 @@ public class Transaction {
         {
         	queryString += "and" + filterConstraints;
         }
-        queryString += "group by patient";
+        queryString += " group by patient, " + sortField;
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
         
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
