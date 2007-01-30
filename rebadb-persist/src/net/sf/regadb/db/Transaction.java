@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.regadb.db.session.Login;
+
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-
-import net.sf.regadb.db.session.Login;
 
 /**
  * Represents a short-lived transaction to the database.
@@ -282,5 +283,10 @@ public class Transaction {
         if (patient.getPrivileges().canWrite()) {
             session.saveOrUpdate(patient.getPatient());
         } // TODO: else throw exception
+    }
+    
+    public Criteria createCriteria(Class c)
+    {
+        return session.createCriteria(c);
     }
 }

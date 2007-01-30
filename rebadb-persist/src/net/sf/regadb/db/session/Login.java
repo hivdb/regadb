@@ -12,6 +12,7 @@ import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
@@ -58,6 +59,11 @@ public class Login {
      */
     public Transaction createTransaction() {
         return new Transaction(this, getSession());
+    }
+    
+    public Criteria createCriteria(Class classType)
+    {
+        return getSession().createCriteria(classType);
     }
     
     public String getUid() {
