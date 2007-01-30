@@ -7,6 +7,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
+import net.sf.witty.wt.i8n.WArgMessage;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
@@ -14,9 +15,6 @@ import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
 import net.sf.witty.wt.widgets.event.WMouseEvent;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 
 public class DataTable<DataType> extends WTable
 {
@@ -36,6 +34,7 @@ public class DataTable<DataType> extends WTable
     private WPushButton nextScroll_;
     private WPushButton lastScroll_;
     private WText labelScroll_;
+    private WArgMessage labelMsg_;
 	
 	private int currentPage_ = 0;
 	private int amountOfPages_ = 0;
@@ -181,7 +180,13 @@ public class DataTable<DataType> extends WTable
                         previousScroll();
                     }
                });
+        
         labelScroll_ = new WText(scrollingButtons);
+        labelMsg_ = new WArgMessage("datatable.text.pageXOfY");
+        labelMsg_.addArgument("{currentPage}", 0);
+        labelMsg_.addArgument("{amountOfPages}", 0);
+        labelScroll_.setText(labelMsg_);
+        
         nextScroll_ = new WPushButton(tr("datatable.button.nextScroll"), scrollingButtons);
         nextScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
@@ -290,7 +295,9 @@ public class DataTable<DataType> extends WTable
             }
         }
         
-        labelScroll_.setText(lt("Page "+(currentPage_+1)+" of " + amountOfPages_));
+        labelMsg_.changeArgument("{currentPage}", (currentPage_+1));
+        labelMsg_.changeArgument("{amountOfPages}", amountOfPages_);
+        labelScroll_.setText(labelMsg_);
 	}
 	
 	private void showHideFilters()
