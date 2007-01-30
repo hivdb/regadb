@@ -15,11 +15,16 @@ import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
 import net.sf.witty.wt.widgets.event.WMouseEvent;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
 public class DataTable<DataType> extends WTable
 {
 	private IDataTable<DataType> dataTableInterface_;
 	
 	private List<List<WText>> textMatrix_ = new ArrayList<List<WText>>();
+    
+    private List<DataType> rawDataArray_;
 	
 	private int amountOfPageRows_;
 	
@@ -40,11 +45,14 @@ public class DataTable<DataType> extends WTable
     private ColumnHeader[] colHeaders_;
     
     private int sortColIndex_ = 0;
+    
+    private IRowSelector rowSelector_;
 	
-	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
+	public DataTable(IDataTable<DataType> dataTableInterface, IRowSelector rowSelector, int amountOfPageRows)
 	{
 		super();
 		dataTableInterface_ = dataTableInterface;
+        rowSelector_ = rowSelector;
 		amountOfPageRows_ = amountOfPageRows;
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -133,10 +141,19 @@ public class DataTable<DataType> extends WTable
 			textRow = new ArrayList<WText>();
 			textMatrix_.add(textRow);
 			
+            final int index = i;
             WText toPut;
 			for(int j = 0; j<dataTableInterface_.getColNames().length; j++)
 			{
-                toPut = new WText(noNullLt(null), elementAt(row, col));
+			    toPut = new WText(noNullLt(null), elementAt(row, col));
+                toPut.setStyleClass("table-cell");
+                toPut.clicked.addListener(new SignalListener<WMouseEvent>()
+                        {
+                            public void notify(WMouseEvent a) 
+                            {
+
+                            }
+                        });
                 elementAt(row, col).resize(new WLength(), new WLength(1.0,WLengthUnit.FontEm));
 				textRow.add(toPut);
 				col++;
@@ -252,11 +269,11 @@ public class DataTable<DataType> extends WTable
             amountOfPages_ = getAmountOfPages(trans);
         }
         
-	    List<DataType> dataTypes = dataTableInterface_.getDataBlock(trans, currentPage_ , amountOfPageRows_, sortColIndex_, colHeaders_[sortColIndex_].isAsc());
-		for(int i = 0; i<dataTypes.size(); i++)
+	    rawDataArray_ = dataTableInterface_.getDataBlock(trans, currentPage_ , amountOfPageRows_, sortColIndex_, colHeaders_[sortColIndex_].isAsc());
+		for(int i = 0; i<rawDataArray_.size(); i++)
 		{
 			List<WText> al = textMatrix_.get(i);
-			String [] cols = dataTableInterface_.getRowData(dataTypes.get(i));
+			String [] cols = dataTableInterface_.getRowData(rawDataArray_.get(i));
 			for(int j = 0; j<al.size(); j++)
 			{
 				al.get(j).setText(noNullLt(cols[j]));
@@ -264,9 +281,9 @@ public class DataTable<DataType> extends WTable
 		}
         
         //clean up empty rows
-        for(int i = 0; i<amountOfPageRows_-dataTypes.size(); i++)
+        for(int i = 0; i<amountOfPageRows_-rawDataArray_.size(); i++)
         {
-            List<WText> al = textMatrix_.get(i+dataTypes.size());
+            List<WText> al = textMatrix_.get(i+rawDataArray_.size());
             for(int j = 0; j<al.size(); j++)
             {
                 al.get(j).setText(lt(""));

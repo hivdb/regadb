@@ -56,6 +56,10 @@
 *.general-clickable-text
 {
 	color : blue;
-	text-decoration: underline;
+	cursor: pointer;
+}
+
+*.table-cell
+{
 	cursor: pointer;
 }

@@ -7,6 +7,8 @@ import net.sf.regadb.db.session.Login;
 import net.sf.witty.wt.core.WEnvironment;
 import net.sf.witty.wt.widgets.WApplication;
 
+import org.hibernate.Criteria;
+
 public class RegaDBApplication extends WApplication
 {
 	private Login login_;
@@ -55,5 +57,10 @@ public class RegaDBApplication extends WApplication
     public Transaction createTransaction()
     {
     	return login_.createTransaction();
+    }
+    
+    public Criteria createCriteria(Class classType)
+    {
+        return login_.createCriteria(classType);
     }
 }

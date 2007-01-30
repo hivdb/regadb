@@ -6,10 +6,8 @@ import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.widgets.WTreeNode;
 
-public class PatientItem extends TreeMenuNode implements IGetSinglePatient
-{
-	private Patient selectedPatient_;
-	
+public class PatientItem extends TreeMenuNode
+{	
 	public PatientItem(WTreeNode root)
 	{
 		super(tr("menu.singlePatient.mainItem"), root);
@@ -31,15 +29,5 @@ public class PatientItem extends TreeMenuNode implements IGetSinglePatient
 	public boolean isEnabled()
 	{
 		return RegaDBMain.getApp().getLogin()!=null;
-	}
-
-	public Patient getSelectedPatient()
-	{
-		return selectedPatient_;
-	}
-
-	public void setSelectedPatient(Patient selectedPatient)
-	{
-		this.selectedPatient_ = selectedPatient;
 	}
 }

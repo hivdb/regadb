@@ -9,6 +9,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.ActionSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
+import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 
 public class TreeContent
 {
@@ -18,12 +19,13 @@ public class TreeContent
 		
 			PatientSelectItem patientSelect = new PatientSelectItem(singlePatientMain);
 			PatientAddItem patientAdd = new PatientAddItem(singlePatientMain);
+            PatientSelectedItem patientSelected = new PatientSelectedItem(singlePatientMain);
 			
-			ActionItem chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), singlePatientMain);
-			ActionItem measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), singlePatientMain);
+			ActionItem chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
+			ActionItem measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
 				ActionSelectItem measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
 				ActionAddItem measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
-			ActionItem therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), singlePatientMain);
+			ActionItem therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
 				ActionSelectItem therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
 				ActionAddItem therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);
 		
