@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WArgMessage;
@@ -162,8 +163,9 @@ public class DataTable<DataType> extends WTable
 		}
         
         //scrolling buttons
-        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
+        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length+1);
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
+        scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
         firstScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
