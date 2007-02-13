@@ -289,4 +289,19 @@ public class Transaction {
     {
         return session.createCriteria(c);
     }
+    
+    public boolean patientStillExists(Patient p)
+    {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
+                "from PatientImpl as patient " +
+                "join patient.datasets as dataset " +
+                "join dataset.datasetAccesses access " +
+                "where patient.patientIi = :patientIi " +
+                "group by patient");
+        
+        q.setParameter("patientIi", p.getPatient().getPatientIi());
+        
+        return q.uniqueResult()!=null;
+    }
 }

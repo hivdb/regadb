@@ -61,11 +61,6 @@ public class Login {
         return new Transaction(this, getSession());
     }
     
-    public Criteria createCriteria(Class classType)
-    {
-        return getSession().createCriteria(classType);
-    }
-    
     public String getUid() {
         return uid;
     }
