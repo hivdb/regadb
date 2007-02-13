@@ -9,24 +9,21 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WImage;
 import net.sf.witty.wt.widgets.WLineEditEchoMode;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
 import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class LoginForm extends WGroupBox implements IForm
 {	
-	private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>(); 
+	private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
 	
-	private WImage warningImage_ = new WImage("pics/formWarning.gif");
-	private WText warningText_ = new WText(tr("form.validationProblem.warning.mainText"));
-	private WContainerWidget warningWidget_ = new WContainerWidget();
-	
+    private WFormValidation formValidation_ = new WFormValidation();
+    
 	//login group
 	private WGroupBox loginGroup_ = new WGroupBox(tr("form.login.loginForm.login"));
 	private Label uidL = new Label(tr("form.login.label.uid"));
@@ -41,11 +38,9 @@ public class LoginForm extends WGroupBox implements IForm
 	public LoginForm()
 	{
 		super(tr("form.login.loginForm"));
-		addWidget(warningWidget_);
-		warningWidget_.addWidget(warningImage_);
-		warningWidget_.addWidget(warningText_);
-		warningWidget_.setHidden(true);
 		
+        formValidation_.init(this);
+        
 		//login group
 		addWidget(loginGroup_);
 		WTable loginGroupTable = new WTable(loginGroup_);
@@ -68,7 +63,7 @@ public class LoginForm extends WGroupBox implements IForm
 		{
 			public void notify(WMouseEvent me)
 			{
-				if(validate())
+				if(formValidation_.validate(formFields_))
 				{
 					if(validateLogin())
 					{
@@ -77,35 +72,15 @@ public class LoginForm extends WGroupBox implements IForm
 					}
 					else
 					{
-						warningWidget_.setHidden(false);
+                        formValidation_.setHidden(false);
 					}
 				}
 				else
 				{
-					warningWidget_.setHidden(false);
+                    formValidation_.setHidden(false);
 				}
 			}
 		});
-	}
-	
-	private boolean validate()
-	{
-		boolean erroneousInput = false;
-		
-		for(IFormField ff : formFields_)
-		{
-			if(!ff.validate())
-			{
-				erroneousInput = true;
-				ff.flagErroneous();
-			}
-			else
-			{
-				ff.flagValid();
-			}
-		}
-		
-		return !erroneousInput;
 	}
 	
 	private boolean validateLogin()
