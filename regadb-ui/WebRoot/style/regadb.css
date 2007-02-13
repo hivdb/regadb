@@ -63,3 +63,41 @@
 {
 	cursor: pointer;
 }
+
+*.dialog-title
+{
+	color : white;
+	
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-title-container
+{
+	background-color : blue;
+}
+
+*.dialog-image
+{
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-message
+{
+	color : black;
+	
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-message-container
+{
+	background-color : grey;
+}

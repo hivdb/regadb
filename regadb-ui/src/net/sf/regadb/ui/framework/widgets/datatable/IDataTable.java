@@ -23,4 +23,8 @@ public interface IDataTable <DataType>
     public String[] getFieldNames();
     
     public long getDataSetSize(Transaction t);
+    
+    public boolean stillExists(DataType selectedItem);
+    
+    public void selectAction(DataType selectedItem);
 }

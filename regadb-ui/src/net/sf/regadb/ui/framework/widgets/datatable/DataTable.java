@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
@@ -12,6 +13,7 @@ import net.sf.witty.wt.i8n.WArgMessage;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
+import net.sf.witty.wt.widgets.WImage;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
@@ -46,13 +48,10 @@ public class DataTable<DataType> extends WTable
     
     private int sortColIndex_ = 0;
     
-    private IRowSelector rowSelector_;
-	
-	public DataTable(IDataTable<DataType> dataTableInterface, IRowSelector rowSelector, int amountOfPageRows)
+	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
 	{
 		super();
 		dataTableInterface_ = dataTableInterface;
-        rowSelector_ = rowSelector;
 		amountOfPageRows_ = amountOfPageRows;
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -151,7 +150,15 @@ public class DataTable<DataType> extends WTable
                         {
                             public void notify(WMouseEvent a) 
                             {
-
+                                if(dataTableInterface_.stillExists(rawDataArray_.get(index)))
+                                {
+                                    //dataTableInterface_.selectAction(rawDataArray_.get(index));
+                                    MessageBox.showWarningMessage(tr("datatable.message.alreadySelected"));
+                                }
+                                else
+                                {
+                                    
+                                }
                             }
                         });
                 elementAt(row, col).resize(new WLength(), new WLength(1.0,WLengthUnit.FontEm));

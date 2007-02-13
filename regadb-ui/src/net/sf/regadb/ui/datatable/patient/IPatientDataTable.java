@@ -6,6 +6,7 @@ import java.util.Set;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.HibernateStringUtils;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
@@ -83,5 +84,18 @@ public class IPatientDataTable implements IDataTable<Patient>
     public long getDataSetSize(Transaction t)
     {
         return t.getPatientCount(HibernateStringUtils.filterConstraintsQuery(this));
+    }
+
+    public void selectAction(Patient selectedItem) 
+    {
+        
+    }
+
+    public boolean stillExists(Patient selectedItem) 
+    {
+        Transaction trans = RegaDBMain.getApp().createTransaction();
+        boolean state = trans.patientStillExists(selectedItem);
+        trans.commit();
+        return state;
     }
 }
