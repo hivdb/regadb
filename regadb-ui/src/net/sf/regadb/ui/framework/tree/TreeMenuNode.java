@@ -183,6 +183,18 @@ public abstract class TreeMenuNode extends WTreeNode
 			select();
 		}
 	}
+    
+    public void refreshAllChildren()
+    {
+        for(WTreeNode node : childNodes())
+        {
+            node.refresh();
+            if(node instanceof TreeMenuNode)
+            {
+                ((TreeMenuNode)node).refreshAllChildren();
+            }
+        }
+    }
 	
 	public void openOnlyOneMenuPath()
 	{

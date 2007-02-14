@@ -13,24 +13,41 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 
 public class TreeContent
 {
+    public PatientItem singlePatientMain;
+    public PatientSelectItem patientSelect;
+    public PatientAddItem patientAdd;
+    public PatientSelectedItem patientSelected;
+    public ActionItem viewPatient;
+    public ActionItem editPatient;
+    public ActionItem chart;
+    public ActionItem measurements;
+    public ActionSelectItem measurementsSelect;
+    public ActionAddItem measurementsAdd;
+    public ActionItem therapies;
+    public ActionSelectItem therapiesSelect;
+    public ActionAddItem therapiesAdd;
+
+    public MyAccountItem myAccountMain;
+    public LoginItem myAccountLogin;
+    
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
-		PatientItem singlePatientMain = new PatientItem(rootItem);
-		
-			PatientSelectItem patientSelect = new PatientSelectItem(singlePatientMain);
-			PatientAddItem patientAdd = new PatientAddItem(singlePatientMain);
-            PatientSelectedItem patientSelected = new PatientSelectedItem(singlePatientMain);
-			
-			ActionItem chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
-			ActionItem measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
-				ActionSelectItem measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
-				ActionAddItem measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
-			ActionItem therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
-				ActionSelectItem therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
-				ActionAddItem therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);
-		
-		MyAccountItem myAccountMain = new MyAccountItem(rootItem);
-			LoginItem myAccountLogin = new LoginItem(myAccountMain);
+		singlePatientMain = new PatientItem(rootItem);
+		    patientSelect = new PatientSelectItem(singlePatientMain);
+			patientAdd = new PatientAddItem(singlePatientMain);
+            patientSelected = new PatientSelectedItem(singlePatientMain);
+                viewPatient = new ActionItem(rootItem.tr("menu.singlePatient.view"), patientSelected);
+                editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected);
+				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
+    			measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
+    				measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
+    				measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
+    			therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
+    				therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
+    				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);
+    		
+		myAccountMain = new MyAccountItem(rootItem);
+			myAccountLogin = new LoginItem(myAccountMain);
 			
 		if(singlePatientMain.isEnabled())
 		{

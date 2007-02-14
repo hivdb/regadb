@@ -9,6 +9,7 @@ public class Tree extends WContainerWidget
 {
 	private TreeMenuNode selectedTreeNode_ = null;
 	private TreeMenuNode rootTreeNode_;
+    private TreeContent treeContent_ = new TreeContent();
 	
 	public Tree(WContainerWidget root)
 	{
@@ -19,8 +20,7 @@ public class Tree extends WContainerWidget
 		rootItem.expand();
 		rootTreeNode_ = rootItem;
 		
-		TreeContent tc = new TreeContent();
-		selectedTreeNode_ = tc.setContent(rootItem);
+		selectedTreeNode_ = treeContent_.setContent(rootItem);
 	}
 
 	public TreeMenuNode getSelectedTreeNode()
@@ -37,6 +37,11 @@ public class Tree extends WContainerWidget
 	{
 		return rootTreeNode_;
 	}
+    
+    public TreeContent getTreeContent()
+    {
+        return treeContent_;
+    }
 	
 	public void init()
 	{

@@ -152,12 +152,11 @@ public class DataTable<DataType> extends WTable
                             {
                                 if(dataTableInterface_.stillExists(rawDataArray_.get(index)))
                                 {
-                                    //dataTableInterface_.selectAction(rawDataArray_.get(index));
-                                    MessageBox.showWarningMessage(tr("datatable.message.alreadySelected"));
+                                    dataTableInterface_.selectAction(rawDataArray_.get(index));
                                 }
                                 else
                                 {
-                                    
+                                    MessageBox.showWarningMessage(tr("datatable.message.alreadySelected"));
                                 }
                             }
                         });
