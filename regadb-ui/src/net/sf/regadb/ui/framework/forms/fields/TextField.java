@@ -1,19 +1,13 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.witty.wt.validation.WValidator;
-import net.sf.witty.wt.validation.WValidatorState;
-import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.WInteractWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.WLineEditEchoMode;
-import net.sf.witty.wt.widgets.WText;
 
-public class TextField extends WContainerWidget implements IFormField
+public class TextField extends FormField
 {
 	private WLineEdit _fieldEdit;
-	private WText _fieldView;
 	
 	public TextField(boolean edit, IForm form)
 	{
@@ -26,8 +20,7 @@ public class TextField extends WContainerWidget implements IFormField
 		}
 		else
 		{
-			_fieldView = new WText();
-			addWidget(_fieldView);
+		    initViewWidget();
 		}
 		
 		form.addFormField(this);
@@ -43,27 +36,6 @@ public class TextField extends WContainerWidget implements IFormField
 		return _fieldEdit;
 	}
 	
-	public WInteractWidget getViewWidget()
-	{
-		return _fieldView;
-	}
-
-	public boolean isMandatory()
-	{
-		if(_fieldEdit==null)
-		{
-			return false;
-		}
-		else
-		{
-			WValidator validator = _fieldEdit.validator();
-			if(validator==null)
-				return false;
-			else
-				return validator.isMandatory();
-		}
-	}
-
 	public void flagErroneous()
 	{
 		_fieldEdit.setStyleClass("form-field-textfield-edit-invalid");
@@ -74,31 +46,8 @@ public class TextField extends WContainerWidget implements IFormField
 		_fieldEdit.setStyleClass("form-field-textfield-edit-valid");
 	}
 
-	public boolean validate()
-	{
-		if(_fieldEdit.validator()!=null)
-		{
-			return _fieldEdit.validator().validate(_fieldEdit.text(), null) == WValidatorState.Valid;
-		}
-		return true;
-	}
-	
-	public void setValidator(WValidator validator)
-	{
-		_fieldEdit.setValidator(validator);
-	}
-	
-	public void setMandatory(boolean mandatory)
-	{
-		if(_fieldEdit.validator()==null)
-		{
-			_fieldEdit.setValidator(new WValidator());
-		}
-		_fieldEdit.validator().setMandatory(mandatory);
-	}
-	
-	public String text()
-	{
-		return _fieldEdit!=null?_fieldEdit.text():_fieldView.text().value();
-	}
+    public String getFormText() 
+    {
+        return _fieldEdit.text();
+    }
 }

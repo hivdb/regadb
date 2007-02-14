@@ -53,6 +53,16 @@
 	background-color: red;
 }
 
+*.form-field-combo-edit-valid
+{
+	
+}
+
+*.form-field-combo-edit-invalid
+{
+	background-color: red;
+}
+
 *.general-clickable-text
 {
 	color : blue;

@@ -7,6 +7,7 @@ public interface IFormField
 {
 	public boolean isMandatory();
 	public WFormWidget getFormWidget();
+    public String getFormText();
 	public WWidget getViewWidget();
 	public boolean validate();
 	public void flagErroneous();
