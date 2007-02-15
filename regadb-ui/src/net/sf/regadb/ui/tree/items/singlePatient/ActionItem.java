@@ -7,21 +7,23 @@ import net.sf.witty.wt.widgets.WTreeNode;
 
 public class ActionItem extends TreeMenuNode
 {
-	public ActionItem(WMessage text, WTreeNode root)
+    private ITreeAction action_;
+    
+	public ActionItem(WMessage text, WTreeNode root, ITreeAction action)
 	{
 		super(text, root);
+        action_ = action;
 	}
+    
+    public ActionItem(WMessage text, WTreeNode root)
+    {
+        this(text, root, null);
+    }
 
 	@Override
 	public ITreeAction getFormAction()
 	{
-		return new ITreeAction()
-		{
-			public void performAction(TreeMenuNode node)
-			{
-
-			}
-		};
+        return action_;
 	}
 
 	@Override

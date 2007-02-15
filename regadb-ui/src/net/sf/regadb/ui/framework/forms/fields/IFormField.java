@@ -8,8 +8,10 @@ public interface IFormField
 	public boolean isMandatory();
 	public WFormWidget getFormWidget();
     public String getFormText();
+    public void setFormText(String text);
 	public WWidget getViewWidget();
 	public boolean validate();
 	public void flagErroneous();
 	public void flagValid();
+    public WWidget getWidget();
 }

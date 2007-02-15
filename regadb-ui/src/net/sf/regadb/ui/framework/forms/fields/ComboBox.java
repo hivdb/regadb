@@ -63,4 +63,9 @@ public class ComboBox extends FormField
     {
         return _fieldEdit.currentText().keyOrValue();
     }
+
+    public void setFormText(String text) 
+    {
+        _fieldEdit.setCurrentItem(lt(text));
+    }
 }

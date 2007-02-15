@@ -5,6 +5,7 @@ import net.sf.witty.wt.validation.WValidatorState;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WInteractWidget;
 import net.sf.witty.wt.widgets.WText;
+import net.sf.witty.wt.widgets.WWidget;
 
 public abstract class FormField extends WContainerWidget implements IFormField
 {
@@ -64,5 +65,27 @@ public abstract class FormField extends WContainerWidget implements IFormField
     public String text()
     {
         return getFormWidget()!=null?getFormText():_fieldView.text().value();
+    }
+    
+    public void setText(String text)
+    {
+        if(text==null)
+        {
+        text = "";    
+        }
+        
+        if(getFormWidget()!=null)
+            {
+                setFormText(text);
+            }
+        else
+            {
+                _fieldView.setText(lt(text));
+            }
+    }
+    
+    public WWidget getWidget()
+    {
+        return this;
     }
 }

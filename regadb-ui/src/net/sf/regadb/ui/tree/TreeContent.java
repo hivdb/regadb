@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
+import net.sf.regadb.ui.framework.forms.action.PutFormAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
@@ -36,7 +38,7 @@ public class TreeContent
 		    patientSelect = new PatientSelectItem(singlePatientMain);
 			patientAdd = new PatientAddItem(singlePatientMain);
             patientSelected = new PatientSelectedItem(singlePatientMain);
-                viewPatient = new ActionItem(rootItem.tr("menu.singlePatient.view"), patientSelected);
+                viewPatient = new ActionItem(rootItem.tr("menu.singlePatient.view"), patientSelected, new PutFormAction(new SinglePatientForm(true)));
                 editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected);
 				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
     			measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);

@@ -38,50 +38,53 @@ public class LoginForm extends WGroupBox implements IForm
 	public LoginForm()
 	{
 		super(tr("form.login.loginForm"));
-		
+	}
+    
+    public void init()
+    {
         formValidation_.init(this);
         
-		//login group
-		addWidget(loginGroup_);
-		WTable loginGroupTable = new WTable(loginGroup_);
-		//user id
-		uidTF.setMandatory(true);
-		uidL.setBuddy(uidTF);
-		loginGroupTable.putElementAt(0, 0, uidL);
-		loginGroupTable.putElementAt(0, 1, uidTF);
-		//user password
-		passwordTF.setMandatory(true);
-		passwordL.setBuddy(passwordTF);
-		passwordTF.setEchomode(WLineEditEchoMode.Password);
-		loginGroupTable.putElementAt(1, 0, passwordL);
-		loginGroupTable.putElementAt(1, 1, passwordTF);
-		
-		//control
-		addWidget(_loginButton);
-		addWidget(_helpButton);
-		_loginButton.clicked.addListener(new SignalListener<WMouseEvent>()
-		{
-			public void notify(WMouseEvent me)
-			{
-				if(formValidation_.validate(formFields_))
-				{
-					if(validateLogin())
-					{
-						RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-						RegaDBMain.getApp().getTree().getRootTreeNode().findDeepChild("menu.singlePatient.patientSelectItem").prograSelectNode();
-					}
-					else
-					{
+        //login group
+        addWidget(loginGroup_);
+        WTable loginGroupTable = new WTable(loginGroup_);
+        //user id
+        uidTF.setMandatory(true);
+        uidL.setBuddy(uidTF);
+        loginGroupTable.putElementAt(0, 0, uidL);
+        loginGroupTable.putElementAt(0, 1, uidTF);
+        //user password
+        passwordTF.setMandatory(true);
+        passwordL.setBuddy(passwordTF);
+        passwordTF.setEchomode(WLineEditEchoMode.Password);
+        loginGroupTable.putElementAt(1, 0, passwordL);
+        loginGroupTable.putElementAt(1, 1, passwordTF);
+        
+        //control
+        addWidget(_loginButton);
+        addWidget(_helpButton);
+        _loginButton.clicked.addListener(new SignalListener<WMouseEvent>()
+        {
+            public void notify(WMouseEvent me)
+            {
+                if(formValidation_.validate(formFields_))
+                {
+                    if(validateLogin())
+                    {
+                        RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
+                        RegaDBMain.getApp().getTree().getRootTreeNode().findDeepChild("menu.singlePatient.patientSelectItem").prograSelectNode();
+                    }
+                    else
+                    {
                         formValidation_.setHidden(false);
-					}
-				}
-				else
-				{
+                    }
+                }
+                else
+                {
                     formValidation_.setHidden(false);
-				}
-			}
-		});
-	}
+                }
+            }
+        });
+    }
 	
 	private boolean validateLogin()
 	{

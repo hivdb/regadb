@@ -7,4 +7,5 @@ public interface IForm
 {
 	public WContainerWidget getWContainer();
 	public void addFormField(IFormField field);
+    public void init();
 }

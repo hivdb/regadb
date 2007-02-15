@@ -15,6 +15,7 @@ public class PutFormAction implements ITreeAction
 	
 	public void performAction(TreeMenuNode node)
 	{
+        form_.init();
 		RegaDBMain.getApp().getFormContainer().setForm(form_);
 	}
 }

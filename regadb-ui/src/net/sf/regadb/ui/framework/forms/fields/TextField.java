@@ -50,4 +50,9 @@ public class TextField extends FormField
     {
         return _fieldEdit.text();
     }
+    
+    public void setFormText(String text) 
+    {
+        _fieldEdit.setText(text);
+    }
 }

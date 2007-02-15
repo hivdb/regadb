@@ -15,10 +15,6 @@ public class SelectPatientForm extends WGroupBox implements IForm
 	public SelectPatientForm()
 	{
 		super(tr("form.patient.selectPatientForm"));
-		
-		dataTableI_ = new IPatientDataTable();
-		dataTable_ = new DataTable<Patient>(dataTableI_, 10);
-		addWidget(dataTable_);
 	}
 	
 	public void addFormField(IFormField field)
@@ -30,4 +26,11 @@ public class SelectPatientForm extends WGroupBox implements IForm
 	{
 		return this;
 	}
+
+    public void init() 
+    {
+        dataTableI_ = new IPatientDataTable();
+        dataTable_ = new DataTable<Patient>(dataTableI_, 10);
+        addWidget(dataTable_);    
+    }
 }
