@@ -15,6 +15,7 @@ public class SelectPatientForm extends WGroupBox implements IForm
 	public SelectPatientForm()
 	{
 		super(tr("form.patient.selectPatientForm"));
+        init();
 	}
 	
 	public void addFormField(IFormField field)

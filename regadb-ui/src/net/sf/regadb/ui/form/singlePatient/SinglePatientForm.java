@@ -38,6 +38,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
 	{
         super(null);
         editable_ = editable;
+        init();
 	}
     
     public void init()

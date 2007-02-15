@@ -38,6 +38,7 @@ public class LoginForm extends WGroupBox implements IForm
 	public LoginForm()
 	{
 		super(tr("form.login.loginForm"));
+        init();
 	}
     
     public void init()
