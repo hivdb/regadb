@@ -41,7 +41,14 @@ public class ComboBox extends FormField
     
     public void selectItem(WMessage itemToSelect)
     {
-        _fieldEdit.setCurrentItem(itemToSelect);
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.setCurrentItem(itemToSelect);
+        }
+        else
+        {
+            setText(itemToSelect.keyOrValue());
+        }
     }
 
     public WFormWidget getFormWidget()
@@ -67,5 +74,10 @@ public class ComboBox extends FormField
     public void setFormText(String text) 
     {
         _fieldEdit.setCurrentItem(lt(text));
+    }
+
+    public void addNoSelectionItem() 
+    {
+        addItem(tr("form.combobox.noSelectionItem"));
     }
 }
