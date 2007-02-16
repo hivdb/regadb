@@ -13,6 +13,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
+import net.sf.witty.wt.widgets.WWidget;
 
 public class TreeContent
 {
@@ -43,10 +44,16 @@ public class TreeContent
                 {
                     public void performAction(TreeMenuNode node) 
                     {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true));
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(false, WWidget.tr("form.singlePatient.view")));
                     }
                 });
-                editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected);
+                editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected, new ITreeAction()
+                {
+                    public void performAction(TreeMenuNode node) 
+                    {
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.edit")));
+                    }
+                });
 				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
     			measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
     				measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
