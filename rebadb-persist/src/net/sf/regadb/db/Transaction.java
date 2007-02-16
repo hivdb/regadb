@@ -53,7 +53,7 @@ public class Transaction {
      */
     @SuppressWarnings("unchecked")
     public List<Attribute> getAttributes() {
-        Query q = session.createQuery("from Attribute attribute");
+        Query q = session.createQuery("from Attribute");
         
         return q.list();
     }
@@ -270,6 +270,11 @@ public class Transaction {
      */
     public void save(SettingsUser settings) {
         session.saveOrUpdate(settings);
+    }
+    
+    public void update(Patient patient) 
+    {
+        session.saveOrUpdate(patient.getPatient());
     }
 
     /*
