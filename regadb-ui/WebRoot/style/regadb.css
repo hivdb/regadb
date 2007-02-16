@@ -111,3 +111,9 @@
 {
 	background-color : grey;
 }
+
+*.table-expander-text
+{
+	cursor: pointer;
+	color: blue;
+}

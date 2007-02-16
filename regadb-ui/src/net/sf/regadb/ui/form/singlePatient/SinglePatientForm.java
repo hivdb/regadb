@@ -16,12 +16,12 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
 import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
 
 public class SinglePatientForm extends WContainerWidget implements IForm
 {
@@ -136,7 +136,8 @@ public class SinglePatientForm extends WContainerWidget implements IForm
             attributesGroupTable_ = new WTable(attributesGroup_);
             
             int numRows;
-            WText attributeGroup;
+            TableExpander attributeGroup;
+            WMessage groupMessage;
             Label attributeLabel;
             TextField attributeFieldTF;
             ComboBox attributeFieldCB;
@@ -144,17 +145,17 @@ public class SinglePatientForm extends WContainerWidget implements IForm
             for(Map.Entry<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> entry : groups.entrySet())
             {
                 numRows = attributesGroupTable_.numRows();
-                attributeGroup = new WText(entry.getKey().equals("form.singlePatient.editView.generalAttribute")?tr(entry.getKey()):lt(entry.getKey()));
-                attributesGroupTable_.putElementAt(numRows, 0, attributeGroup);
+                groupMessage = (entry.getKey().equals("form.singlePatient.editView.generalAttribute")?tr(entry.getKey()):lt(entry.getKey()));
+                attributeGroup = new TableExpander(groupMessage, attributesGroupTable_, numRows);
                 for(Pair<Attribute, PatientAttributeValue> attrEl : entry.getValue())
                 {
                     numRows = attributesGroupTable_.numRows();
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
-                    attributesGroupTable_.putElementAt(numRows, 0, attributeLabel);
+                    attributesGroupTable_.putElementAt(numRows, 1, attributeLabel);
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
                         attributeFieldCB = new ComboBox(editable_, this);
-                        attributesGroupTable_.putElementAt(numRows, 1, attributeFieldCB);
+                        attributesGroupTable_.putElementAt(numRows, 2, attributeFieldCB);
                         attributeFieldCB.addNoSelectionItem();
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
@@ -172,7 +173,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                     else
                     {
                         attributeFieldTF = new TextField(editable_, this);
-                        attributesGroupTable_.putElementAt(numRows, 1, attributeFieldTF);
+                        attributesGroupTable_.putElementAt(numRows, 2, attributeFieldTF);
                     }
                 }
             }
@@ -225,4 +226,14 @@ public class SinglePatientForm extends WContainerWidget implements IForm
 	{
         formFields_.add(field);
 	}
+
+    public void performCollapse() 
+    {
+        
+    }
+
+    public void performExpand() 
+    {
+        
+    }
 }
