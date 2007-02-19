@@ -4,6 +4,7 @@ import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WIconPair;
 import net.sf.witty.wt.widgets.WTable;
+import net.sf.witty.wt.widgets.WTableCell;
 import net.sf.witty.wt.widgets.WText;
 import net.sf.witty.wt.widgets.WWidget;
 import net.sf.witty.wt.widgets.event.WMouseEvent;
@@ -13,14 +14,16 @@ public class TableExpander
     private WText label_;
     private WIconPair plusMinusIcon_;
     private WTable table_;
-    private int row_;
     
+    private WTableCell startTableCell_;
+   
     public TableExpander(WMessage labelText, WTable table, int row)
     {
-        row_ = row;
         table_ = table;
         
-        plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", table.elementAt(row, 0));
+        startTableCell_ = table.elementAt(row, 0);
+        
+        plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", startTableCell_);
         label_ = new WText(labelText, table.elementAt(row, 1));
         label_.setStyleClass("table-expander-text");
         
@@ -71,7 +74,8 @@ public class TableExpander
     private void perform(boolean expand)
     {
         WWidget cellWidget;
-        for(int i = row_+1; i<table_.numRows(); i++)
+        int row = startTableCell_.row();
+        for(int i = row+1; i<table_.numRows(); i++)
         {
             if(table_.elementAt(i, 0)!=null && table_.elementAt(i, 0).children().size()!=0)
             {
