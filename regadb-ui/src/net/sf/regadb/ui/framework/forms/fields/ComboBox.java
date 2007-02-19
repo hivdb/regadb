@@ -7,15 +7,17 @@ import net.sf.witty.wt.widgets.WFormWidget;
 
 public class ComboBox extends FormField
 {
-    private WComboBox _fieldEdit;
+    private WComboBox fieldEdit_;
+    private boolean mandatory_ = false;
+    private final static String noSelectionItem = "form.combobox.noSelectionItem";
     
     public ComboBox(boolean edit, IForm form)
     {
         super();
         if(edit)
         {
-            _fieldEdit = new WComboBox();
-            addWidget(_fieldEdit);
+            fieldEdit_ = new WComboBox();
+            addWidget(fieldEdit_);
             flagValid();
         }
         else
@@ -28,22 +30,22 @@ public class ComboBox extends FormField
     
     public void addItem(WMessage item)
     {
-        if(_fieldEdit!=null)
+        if(fieldEdit_!=null)
         {
-            _fieldEdit.addItem(item);
+            fieldEdit_.addItem(item);
         }
     }
     
     public WMessage currentText()
     {
-        return _fieldEdit.currentText();
+        return fieldEdit_.currentText();
     }
     
     public void selectItem(WMessage itemToSelect)
     {
-        if(_fieldEdit!=null)
+        if(fieldEdit_!=null)
         {
-            _fieldEdit.setCurrentItem(itemToSelect);
+            fieldEdit_.setCurrentItem(itemToSelect);
         }
         else
         {
@@ -53,31 +55,60 @@ public class ComboBox extends FormField
 
     public WFormWidget getFormWidget()
     {
-        return _fieldEdit;
+        return fieldEdit_;
     }
     
     public void flagErroneous()
     {
-        _fieldEdit.setStyleClass("form-field-combobox-edit-invalid");
+        fieldEdit_.setStyleClass("form-field-combobox-edit-invalid");
     }
 
     public void flagValid()
     {
-        _fieldEdit.setStyleClass("form-field-combobox-edit-valid");
+        fieldEdit_.setStyleClass("form-field-combobox-edit-valid");
     }
 
     public String getFormText() 
     {
-        return _fieldEdit.currentText().keyOrValue();
+        return fieldEdit_.currentText().keyOrValue();
     }
 
     public void setFormText(String text) 
     {
-        _fieldEdit.setCurrentItem(lt(text));
+        fieldEdit_.setCurrentItem(lt(text));
     }
 
     public void addNoSelectionItem() 
     {
-        addItem(tr("form.combobox.noSelectionItem"));
+        addItem(tr(noSelectionItem));
+    }
+    
+    public void setMandatory(boolean mandatory)
+    {
+        mandatory_ = mandatory;
+    }
+    
+    public boolean isMandatory()
+    {
+        if(getFormWidget()==null)
+        {
+            return false;
+        }
+        else
+        {
+            return mandatory_;
+        }
+    }
+    
+    public boolean validate()
+    {
+        if(isMandatory())
+        {
+            return !(fieldEdit_.currentText().keyOrValue().equals(noSelectionItem));
+        }
+        else
+        {
+            return true;
+        }
     }
 }
