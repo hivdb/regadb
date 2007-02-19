@@ -10,22 +10,35 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
+import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
+import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class SinglePatientForm extends WContainerWidget implements IForm
 {
+    //TODO initial dataset stuff
+    
     private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
+    
+    private WFormValidation formValidation_ = new WFormValidation();
     
     private WGroupBox formGroup_;
     
@@ -50,6 +63,11 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     private WTable attributesGroupTable_;
     private ArrayList<Pair<IFormField, PatientAttributeValue>> attributeList_ = new ArrayList<Pair<IFormField, PatientAttributeValue>>(); 
     
+    //control buttons
+    private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
+    private WPushButton _cancelButton = new WPushButton(tr("form.general.button.cancel"));
+    private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
+    
     private boolean editable_;
     
     public SinglePatientForm(boolean editable, WMessage formName)
@@ -62,6 +80,8 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     
     public void init()
     {   
+        formValidation_.init(formGroup_);
+        
         //general group
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), formGroup_);
         generalGroupTable_ = new WTable(generalGroup_);
@@ -70,6 +90,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetTF);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
         idTF = new TextField(editable_, this);
+        idTF.setMandatory(true);
         addLineToTable(generalGroupTable_, idL, idTF);
         firstNameL = new Label(tr("form.singlePatient.editView.firstName"));
         firstNameTF = new TextField(editable_, this);
@@ -85,6 +106,36 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
         
         fillData(RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient());
+        
+        addControlButtons();
+    }
+    
+    public void addControlButtons()
+    {
+        WContainerWidget buttonContainer = new WContainerWidget(formGroup_);
+        buttonContainer.addWidget(_okButton);
+        _okButton.clicked.addListener(new SignalListener<WMouseEvent>()
+                {
+                    public void notify(WMouseEvent a) 
+                    {
+                        if(formValidation_.validate(formFields_))
+                        {
+                            formValidation_.setHidden(true);
+                        }
+                        else
+                        {
+                            formValidation_.setHidden(false);
+                        }
+                    }
+                });
+        buttonContainer.addWidget(_cancelButton);
+        buttonContainer.addWidget(_helpButton);
+        buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
+        if(!editable_)
+        {
+            _okButton.setEnabled(false);
+            _cancelButton.setEnabled(false);
+        }
     }
     
     public void addLineToTable(WTable table, Label label, IFormField field)
@@ -95,7 +146,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         label.setBuddy(field);
     }
     
-    public void fillData(Patient patient)
+    private void fillData(Patient patient)
     {
         sourceDatasetTF.setText("IMPLEMENT");
         idTF.setText(patient.getPatientId());
@@ -139,7 +190,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
             TableExpander attributeGroup;
             WMessage groupMessage;
             Label attributeLabel;
-            TextField attributeFieldTF;
+            FormField attributeFieldTF = null;
             ComboBox attributeFieldCB;
             AttributeNominalValue selectedNominalVal;
             for(Map.Entry<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> entry : groups.entrySet())
@@ -182,7 +233,22 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                     }
                     else
                     {
-                        attributeFieldTF = new TextField(editable_, this);
+                        switch(ValueTypes.getValueType(attrEl.getKey().getValueType().getValueTypeIi()))
+                        {
+                        case STRING:
+                            attributeFieldTF = new TextField(editable_, this);
+                            break;
+                        case NUMBER:
+                            attributeFieldTF = new TextField(editable_, this, FieldType.DOUBLE);
+                            break;
+                        case LIMITED_NUMBER:
+                            attributeFieldTF = new LimitedNumberField(editable_, this, FieldType.DOUBLE);
+                            break;
+                        }
+                        if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
+                        {
+                        attributeFieldTF.setText(attrEl.getValue().getValue());
+                        }
                         attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldTF);
                     }
                 }
