@@ -1,7 +1,6 @@
 package net.sf.regadb.ui.framework.widgets.calendar;
 import java.util.Date;
 
-import net.sf.regadb.ui.forms.login.LoginForm;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WComboBox;
@@ -137,27 +136,28 @@ public class Calendar extends WContainerWidget
 		
 		
 		int row=1;
-		if (showPrevious_)
-		{
-			for(int col = 0; col < firstDayOfMonthPosition; col++)
+			
+        for(int col = 0; col < firstDayOfMonthPosition; col++)
 			{
 				WText calendarField = (WText) calendarTable_.elementAt(row, col).children().get(0);
-				calendarField.setText(lt(amountOfDaysInPreviousMonth-firstDayOfMonthPosition+col+1+""));
+                if (showPrevious_)
+                {
+                    calendarField.setText(lt(amountOfDaysInPreviousMonth-firstDayOfMonthPosition+col+1+""));
+                }
+                else
+                {
+                    calendarField.setText(lt(""));
+                }
 			}	
-		}
 		
 		
 		int startDate=1;
 		
 		int col = firstDayOfMonthPosition;
 		boolean firstRoundUp = true;
-		boolean breaking=false;
+		boolean nextMonth=false;
 		for (; row < maxOfWeekLines+1; row++)
 		{
-			if(breaking)
-			{
-			break;	
-			}
 			if(firstRoundUp)
 			{
 				firstRoundUp = false;
@@ -168,17 +168,21 @@ public class Calendar extends WContainerWidget
 			}
 			for(; col<amountOfWeekDays; col++,startDate++)
 			{
-				if(!showPrevious_ && startDate>amountOfDaysInThisMonth)
-				{
-				breaking=true;	
-				break;
-				}
 				if(startDate>amountOfDaysInThisMonth)
 				{
 					startDate = 1;
+                    nextMonth = true;
 				}
-				WText calendarField = (WText) calendarTable_.elementAt(row, col).children().get(0);
-				calendarField.setText(lt(startDate + ""));
+				
+                WText calendarField = (WText) calendarTable_.elementAt(row, col).children().get(0);
+				if(nextMonth && !showPrevious_)
+                {
+                    calendarField.setText(lt(""));
+                }
+                else
+                {
+                    calendarField.setText(lt(startDate + ""));
+                }
 			}
 		}
 	}
