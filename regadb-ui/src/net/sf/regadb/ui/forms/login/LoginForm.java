@@ -33,7 +33,7 @@ public class LoginForm extends WGroupBox implements IForm
 	
 	//control
 	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));
-	private WPushButton _helpButton = new WPushButton(tr("form.login.button.help"));
+	private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
 	
 	public LoginForm()
 	{
@@ -72,7 +72,7 @@ public class LoginForm extends WGroupBox implements IForm
                     if(validateLogin())
                     {
                         RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-                        RegaDBMain.getApp().getTree().getRootTreeNode().findDeepChild("menu.singlePatient.patientSelectItem").prograSelectNode();
+                        RegaDBMain.getApp().getTree().getTreeContent().patientSelect.prograSelectNode();
                     }
                     else
                     {
