@@ -55,11 +55,14 @@ public abstract class FormField extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory)
     {
-        if(getFormWidget().validator()==null)
+        if(getFormWidget()!=null && getFormWidget().validator()==null)
         {
             getFormWidget().setValidator(new WValidator());
         }
-        getFormWidget().validator().setMandatory(mandatory);
+        if(getFormWidget()!=null)
+        {
+            getFormWidget().validator().setMandatory(mandatory);
+        }
     }
     
     public String text()

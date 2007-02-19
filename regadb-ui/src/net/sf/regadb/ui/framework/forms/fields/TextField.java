@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.witty.wt.validation.WDoubleValidator;
+import net.sf.witty.wt.validation.WIntValidator;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.WLineEditEchoMode;
@@ -9,7 +11,7 @@ public class TextField extends FormField
 {
 	private WLineEdit _fieldEdit;
 	
-	public TextField(boolean edit, IForm form)
+	public TextField(boolean edit, IForm form, FieldType type)
 	{
 		super();
 		if(edit)
@@ -24,7 +26,22 @@ public class TextField extends FormField
 		}
 		
 		form.addFormField(this);
+        
+        switch(type)
+        {
+            case DOUBLE:
+                _fieldEdit.setValidator(new WDoubleValidator());
+                break;
+            case INTEGER:
+                _fieldEdit.setValidator(new WIntValidator());
+                break;
+        }
 	}
+    
+    public TextField(boolean edit, IForm form)
+    {
+        this(edit, form, FieldType.ALFANUMERIC);
+    }
 	
 	public void setEchomode(WLineEditEchoMode mode)
 	{
