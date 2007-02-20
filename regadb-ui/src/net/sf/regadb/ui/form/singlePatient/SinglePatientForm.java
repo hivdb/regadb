@@ -7,8 +7,10 @@ import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -34,7 +36,7 @@ import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class SinglePatientForm extends WContainerWidget implements IForm
 {
-    //TODO implement dataset and dates stuff
+    //TODO implement dates stuff
     
     private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
     
@@ -46,7 +48,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     private WGroupBox generalGroup_;
     private WTable generalGroupTable_;
     private Label sourceDatasetL;
-    private TextField sourceDatasetTF;
+    private ComboBox sourceDatasetCB;
     private Label idL;
     private TextField idTF;
     private Label firstNameL;
@@ -88,8 +90,8 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), formGroup_);
         generalGroupTable_ = new WTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
-        sourceDatasetTF = new TextField(editable_, this);
-        addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetTF);
+        sourceDatasetCB = new ComboBox(editable_, this);
+        addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
         idTF = new TextField(editable_, this);
         idTF.setMandatory(true);
@@ -151,7 +153,24 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     
     private void fillData(Patient patient)
     {
-        sourceDatasetTF.setText("IMPLEMENT");
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.update(patient);
+        
+        for(Dataset ds : t.getCurrentUsersDatasets(Privileges.READWRITE))
+        {
+            if(ds.getClosedDate()==null)
+            {
+                sourceDatasetCB.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
+            }
+        }
+        for(Dataset ds : patient.getDatasets())
+        {
+            if(ds.getClosedDate()==null)
+            {
+                sourceDatasetCB.selectItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
+            }
+        }
+        
         idTF.setText(patient.getPatientId());
         firstNameTF.setText(patient.getFirstName());
         lastNameTF.setText(patient.getLastName());
@@ -160,7 +179,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         if(patient.getDeathDate()!=null)
         deathDateTF.setText(patient.getDeathDate().toString());
         
-        Transaction t = RegaDBMain.getApp().createTransaction();
+        
         t.update(patient);
         List<Attribute> attributes;
         if(editable_)
@@ -224,14 +243,14 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                         attributeFieldCB.addNoSelectionItem();
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
-                            attributeFieldCB.addItem(new AttributeComboMessage(nominalVal));
+                            attributeFieldCB.addItem(new DataComboMessage<AttributeNominalValue>(nominalVal,nominalVal.getValue()));
                         }
                         if(attrEl.getValue()!=null)
                         {
                             selectedNominalVal = attrEl.getValue().getAttributeNominalValue();
                             if(selectedNominalVal!=null)
                             {
-                                attributeFieldCB.selectItem(new AttributeComboMessage(selectedNominalVal));
+                                attributeFieldCB.selectItem(new DataComboMessage<AttributeNominalValue>(selectedNominalVal,selectedNominalVal.getValue()));
                             }
                         }
                     }
@@ -312,7 +331,8 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         
         t.update(p);
         
-        //TODO sourceDatasetTF = new TextField(editable_, this);
+        p.getDatasets().add(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue());
+        
         if(canStore(idTF.text()))
         {
             p.setPatientId(idTF.text());
@@ -357,13 +377,13 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                     {
                         message = ((ComboBox)tf).currentText();
                         
-                        if(message instanceof AttributeComboMessage)
+                        if(message instanceof DataComboMessage)
                         {
                             if(attributeValue==null)
                             {
                             attributeValue = p.createPatientAttributeValue(attribute);
                             }
-                            attributeValue.setAttributeNominalValue(((AttributeComboMessage)message).getValue());
+                            attributeValue.setAttributeNominalValue(((DataComboMessage<AttributeNominalValue>)message).getValue());
                         }
                         else if(attributeValue!=null)
                         {
