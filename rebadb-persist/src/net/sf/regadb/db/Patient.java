@@ -146,6 +146,19 @@ public class Patient {
         return result;
     }
     
+    public PatientAttributeValue getAttributeValue(Attribute attribute)
+    {
+        for(PatientAttributeValue pav : getPatientAttributeValues())
+        {
+            if(pav.getId().getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
+            {
+                return pav;
+            }
+        }
+        
+        return null;
+    }
+    
     public Therapy createTherapy(Date startDate) {
         Therapy result = new Therapy(patient, startDate);
         getTherapies().add(result);
