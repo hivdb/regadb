@@ -20,16 +20,7 @@ public class Patient {
 
     public Patient(PatientImpl patient, int privileges) {
         this.patient = patient;
-        switch (privileges) {
-        case 1:
-            this.privileges = Privileges.ANONYMOUS_READONLY;
-            break;
-        case 2:
-            this.privileges = Privileges.READONLY;
-            break;
-        case 3:
-            this.privileges = Privileges.READWRITE;
-        }
+        this.privileges = Privileges.getPrivilege(privileges);
     }
 
     // Property accessors

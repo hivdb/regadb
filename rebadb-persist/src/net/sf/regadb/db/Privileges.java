@@ -24,4 +24,19 @@ public enum Privileges {
     public boolean canWrite() {
         return this.value >= READWRITE.value;
     }
+    
+    public static Privileges getPrivilege(int permission)
+    {
+        switch (permission) 
+        {
+        case 1:
+            return Privileges.ANONYMOUS_READONLY;
+        case 2:
+            return Privileges.READONLY;
+        case 3:
+            return Privileges.READWRITE;
+        }
+        
+        return null;
+    }
 }
