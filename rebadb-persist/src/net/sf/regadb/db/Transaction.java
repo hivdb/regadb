@@ -6,6 +6,7 @@
  */
 package net.sf.regadb.db;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,6 +276,11 @@ public class Transaction {
     public void update(Patient patient) 
     {
         session.saveOrUpdate(patient.getPatient());
+    }
+    
+    public void delete(Serializable object)
+    {
+        session.delete(object);
     }
 
     /*
