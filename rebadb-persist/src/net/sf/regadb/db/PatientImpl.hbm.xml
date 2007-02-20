@@ -41,7 +41,7 @@
       </key>
       <one-to-many class="net.sf.regadb.db.TestResult" />
     </set>
-    <set name="patientAttributeValues" inverse="false" cascade="all">
+    <set name="patientAttributeValues" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
