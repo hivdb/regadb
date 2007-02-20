@@ -24,6 +24,7 @@ public class FixHbmFiles
       //search/replace of
       //inverse="true" to inverse="false" cascade="all"
       //but not: datasets in PatientImpl (?)
+      //put inverse true for PatientImpl >> patientattributevalues
         Object o;
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
         {
@@ -41,6 +42,10 @@ public class FixHbmFiles
                         e.getAttribute("inverse").setValue("false");
                         e.setAttribute(new Attribute("cascade", "all"));
                         }
+                        if((e.getAttributeValue("name").equals("patientAttributeValues")&& a.getKey().equals("net.sf.regadb.db.PatientImpl")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }   
                     }
                 }
             }
