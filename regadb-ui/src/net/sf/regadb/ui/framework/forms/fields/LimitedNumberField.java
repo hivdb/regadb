@@ -38,14 +38,17 @@ public class LimitedNumberField extends FormField
         
         form.addFormField(this);
         
-        switch(type)
+        if(edit)
         {
-            case DOUBLE:
-                fieldEdit_.setValidator(new WDoubleValidator());
-                break;
-            case INTEGER:
-                fieldEdit_.setValidator(new WIntValidator());
-                break;
+            switch(type)
+            {
+                case DOUBLE:
+                    fieldEdit_.setValidator(new WDoubleValidator());
+                    break;
+                case INTEGER:
+                    fieldEdit_.setValidator(new WIntValidator());
+                    break;
+            }
         }
     }
     
