@@ -34,7 +34,7 @@ import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class SinglePatientForm extends WContainerWidget implements IForm
 {
-    //TODO initial dataset stuff
+    //TODO implement dataset and dates stuff
     
     private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
     
@@ -61,7 +61,9 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     //attributes
     private WGroupBox attributesGroup_;
     private WTable attributesGroupTable_;
-    private ArrayList<Pair<IFormField, PatientAttributeValue>> attributeList_ = new ArrayList<Pair<IFormField, PatientAttributeValue>>(); 
+    private ArrayList<Pair<IFormField, PatientAttributeValue>> attributeList_ = new ArrayList<Pair<IFormField, PatientAttributeValue>>();
+    
+    private HashMap<Label, Attribute> attributePairs_ = new HashMap<Label, Attribute>();
     
     //control buttons
     private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
@@ -121,6 +123,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                         if(formValidation_.validate(formFields_))
                         {
                             formValidation_.setHidden(true);
+                            saveData(RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient());
                         }
                         else
                         {
@@ -212,6 +215,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                     rowToPlace++;
                     addRowIfNotEmpty(rowToPlace);
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
+                    attributePairs_.put(attributeLabel, attrEl.getKey());
                     attributesGroupTable_.putElementAt(rowToPlace, 1, attributeLabel);
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
@@ -220,14 +224,14 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                         attributeFieldCB.addNoSelectionItem();
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
-                            attributeFieldCB.addItem(lt(nominalVal.getValue()));
+                            attributeFieldCB.addItem(new AttributeComboMessage(nominalVal));
                         }
                         if(attrEl.getValue()!=null)
                         {
                             selectedNominalVal = attrEl.getValue().getAttributeNominalValue();
                             if(selectedNominalVal!=null)
                             {
-                                attributeFieldCB.selectItem(lt(selectedNominalVal.getValue()));
+                                attributeFieldCB.selectItem(new AttributeComboMessage(selectedNominalVal));
                             }
                         }
                     }
@@ -300,6 +304,100 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         }
 
         return groups;
+    }
+    
+    public void saveData(Patient p)
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.update(p);
+        
+        //TODO sourceDatasetTF = new TextField(editable_, this);
+        if(canStore(idTF.text()))
+        {
+            p.setPatientId(idTF.text());
+        }
+        if(canStore(firstNameTF.text()))
+        {
+            p.setFirstName(firstNameTF.text());
+        }
+        if(canStore(lastNameTF.text()))
+        {
+            p.setLastName(lastNameTF.text());
+        }
+        //TODO handle dates
+        //birthDateTF = new TextField(editable_, this);
+        //deathDateTF = new TextField(editable_, this);
+        
+        Object label;
+        Object tf;
+        String text;
+        WMessage message;
+        Attribute attribute;
+        for(int row = 0; row < attributesGroupTable_.numRows(); row++)
+        {
+                label = attributesGroupTable_.elementAt(row, 1).children().get(0);
+                if(label instanceof Label)
+                {
+                    attribute = attributePairs_.get(label);
+                    tf = attributesGroupTable_.elementAt(row, 2).children().get(0);
+                    PatientAttributeValue attributeValue = p.getAttributeValue(attribute);
+    
+                    if(tf instanceof TextField)
+                    {
+                        text = ((TextField)tf).text();
+                        storeAttributeTF(text, attributeValue, attribute, p, t);
+                    }
+                    else if(tf instanceof LimitedNumberField)
+                    {
+                        text = ((LimitedNumberField)tf).text();
+                        storeAttributeTF(text, attributeValue, attribute, p, t);
+                    }
+                    else if(tf instanceof ComboBox)
+                    {
+                        message = ((ComboBox)tf).currentText();
+                        
+                        if(message instanceof AttributeComboMessage)
+                        {
+                            if(attributeValue==null)
+                            {
+                            attributeValue = p.createPatientAttributeValue(attribute);
+                            }
+                            attributeValue.setAttributeNominalValue(((AttributeComboMessage)message).getValue());
+                        }
+                        else if(attributeValue!=null)
+                        {
+                            p.getPatientAttributeValues().remove(attributeValue);
+                            t.delete(attributeValue);
+                        }
+                    }
+            }
+        }
+
+        t.save(p);
+        t.commit();
+    }
+    
+    private void storeAttributeTF(String text, PatientAttributeValue attributeValue, Attribute attribute, Patient p, Transaction t)
+    {
+        if(canStore(text))
+        {
+            if(attributeValue==null)
+            {
+            attributeValue = p.createPatientAttributeValue(attribute);
+            }
+            attributeValue.setValue(text);
+        }
+        else if(attributeValue!=null)
+        {
+            p.getPatientAttributeValues().remove(attributeValue);
+            t.delete(attributeValue);
+        }
+    }
+    
+    public boolean canStore(String toStore)
+    {
+        return toStore!=null && !toStore.equals("");
     }
 	
 	public WContainerWidget getWContainer()
