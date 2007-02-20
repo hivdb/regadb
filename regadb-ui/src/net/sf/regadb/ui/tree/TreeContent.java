@@ -44,14 +44,14 @@ public class TreeContent
                 {
                     public void performAction(TreeMenuNode node) 
                     {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(false, WWidget.tr("form.singlePatient.view")));
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(false, WWidget.tr("form.singlePatient.view"), patientSelected.getSelectedPatient()));
                     }
                 });
                 editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected, new ITreeAction()
                 {
                     public void performAction(TreeMenuNode node) 
                     {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.edit")));
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedPatient()));
                     }
                 });
 				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);

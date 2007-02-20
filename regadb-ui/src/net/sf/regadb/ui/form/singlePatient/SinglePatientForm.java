@@ -74,9 +74,12 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     
     private boolean editable_;
     
-    public SinglePatientForm(boolean editable, WMessage formName)
+    private Patient patient_;
+    
+    public SinglePatientForm(boolean editable, WMessage formName, Patient patient)
 	{
         super(null);
+        patient_ = patient;
         editable_ = editable;
         formGroup_ = new WGroupBox(formName, this);
         init();
@@ -109,7 +112,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         deathDateTF = new TextField(editable_, this);
         addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
         
-        fillData(RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient());
+        fillData(patient_);
         
         addControlButtons();
     }
@@ -125,7 +128,9 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                         if(formValidation_.validate(formFields_))
                         {
                             formValidation_.setHidden(true);
-                            saveData(RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient());
+                            saveData(patient_);
+                            RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedPatient(patient_);
+                            RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
                         }
                         else
                         {
@@ -154,7 +159,11 @@ public class SinglePatientForm extends WContainerWidget implements IForm
     private void fillData(Patient patient)
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
-        t.update(patient);
+        
+        if(patient.getPatientIi()!=null)
+        {
+            t.update(patient);
+        }
         
         for(Dataset ds : t.getCurrentUsersDatasets(Privileges.READWRITE))
         {
@@ -179,8 +188,6 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         if(patient.getDeathDate()!=null)
         deathDateTF.setText(patient.getDeathDate().toString());
         
-        
-        t.update(patient);
         List<Attribute> attributes;
         if(editable_)
         {
@@ -325,25 +332,28 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         return groups;
     }
     
-    public void saveData(Patient p)
+    public void saveData(Patient patient)
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.update(p);
+        if(patient.getPatientIi()!=null)
+        {
+            t.update(patient);
+        }
         
-        p.getDatasets().add(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue());
+        patient.getDatasets().add(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue());
         
         if(canStore(idTF.text()))
         {
-            p.setPatientId(idTF.text());
+            patient.setPatientId(idTF.text());
         }
         if(canStore(firstNameTF.text()))
         {
-            p.setFirstName(firstNameTF.text());
+            patient.setFirstName(firstNameTF.text());
         }
         if(canStore(lastNameTF.text()))
         {
-            p.setLastName(lastNameTF.text());
+            patient.setLastName(lastNameTF.text());
         }
         //TODO handle dates
         //birthDateTF = new TextField(editable_, this);
@@ -361,17 +371,17 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                 {
                     attribute = attributePairs_.get(label);
                     tf = attributesGroupTable_.elementAt(row, 2).children().get(0);
-                    PatientAttributeValue attributeValue = p.getAttributeValue(attribute);
+                    PatientAttributeValue attributeValue = patient.getAttributeValue(attribute);
     
                     if(tf instanceof TextField)
                     {
                         text = ((TextField)tf).text();
-                        storeAttributeTF(text, attributeValue, attribute, p, t);
+                        storeAttributeTF(text, attributeValue, attribute, patient, t);
                     }
                     else if(tf instanceof LimitedNumberField)
                     {
                         text = ((LimitedNumberField)tf).text();
-                        storeAttributeTF(text, attributeValue, attribute, p, t);
+                        storeAttributeTF(text, attributeValue, attribute, patient, t);
                     }
                     else if(tf instanceof ComboBox)
                     {
@@ -381,20 +391,20 @@ public class SinglePatientForm extends WContainerWidget implements IForm
                         {
                             if(attributeValue==null)
                             {
-                            attributeValue = p.createPatientAttributeValue(attribute);
+                            attributeValue = patient.createPatientAttributeValue(attribute);
                             }
                             attributeValue.setAttributeNominalValue(((DataComboMessage<AttributeNominalValue>)message).getValue());
                         }
                         else if(attributeValue!=null)
                         {
-                            p.getPatientAttributeValues().remove(attributeValue);
+                            patient.getPatientAttributeValues().remove(attributeValue);
                             t.delete(attributeValue);
                         }
                     }
             }
         }
 
-        t.save(p);
+        t.save(patient);
         t.commit();
     }
     
