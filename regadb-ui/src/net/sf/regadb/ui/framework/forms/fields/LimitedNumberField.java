@@ -81,7 +81,7 @@ public class LimitedNumberField extends FormField
 
     public String getFormText() 
     {
-        if(limiterField_.currentText().value().equals(""))
+        if(fieldEdit_.text().equals(""))
             return "";
         else
             return limiterField_.currentText().value()+fieldEdit_.text();
