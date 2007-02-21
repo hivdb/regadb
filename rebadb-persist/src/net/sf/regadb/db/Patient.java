@@ -14,6 +14,12 @@ public class Patient {
     private PatientImpl patient;
     private Privileges privileges;
     
+    public Patient()
+    {
+        patient = new PatientImpl();
+        privileges = Privileges.READWRITE;
+    }
+    
     PatientImpl getPatient() {
         return patient;
     }
@@ -24,7 +30,7 @@ public class Patient {
     }
 
     // Property accessors
-    public int getPatientIi() {
+    public Integer getPatientIi() {
         return patient.getPatientIi();
     }
 
