@@ -15,7 +15,7 @@ public class RegaDBMain extends WebController
 	@Override
 	public WApplication createApplication(WEnvironment env)
 	{
-		RegaDBApplication app = new RegaDBApplication(env);
+		RegaDBApplication app = new RegaDBApplication(env, this.getServletContext());
         
         return app;
 	}
