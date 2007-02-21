@@ -33,6 +33,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.compare.DrugGenericComparator;
 
 public class PatientChart
 {
@@ -85,7 +86,7 @@ public class PatientChart
 
 	private Patient data;
 
-	private Set<DrugGeneric> drugList = new TreeSet<DrugGeneric>();
+	private Set<DrugGeneric> drugList = new TreeSet<DrugGeneric>(new DrugGenericComparator());
 
 	private int maxMutations;
 
@@ -292,7 +293,7 @@ public class PatientChart
 
 	private double getNumberValue(TestResult result)
 	{
-		if (result.getTest().getTestType().getValueType().getValueTypeIi() == 2)
+		if (result.getTest().getTestType().getValueType().getValueTypeIi().intValue() == 2)
 			return Double.parseDouble(result.getValue().substring(1));
 		else
 			return Double.parseDouble(result.getValue());

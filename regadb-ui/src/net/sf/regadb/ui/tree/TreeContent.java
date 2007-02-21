@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
+import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
@@ -54,7 +55,13 @@ public class TreeContent
                         RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedPatient()));
                     }
                 });
-				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected);
+				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected, new ITreeAction()
+                {
+                    public void performAction(TreeMenuNode node) 
+                    {
+                        RegaDBMain.getApp().getFormContainer().setForm(new PatientChartForm(patientSelected.getSelectedPatient()));
+                    }
+                });
     			measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
     				measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
     				measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
