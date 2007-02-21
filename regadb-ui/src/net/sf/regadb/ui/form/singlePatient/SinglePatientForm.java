@@ -94,6 +94,7 @@ public class SinglePatientForm extends WContainerWidget implements IForm
         generalGroupTable_ = new WTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
         sourceDatasetCB = new ComboBox(editable_, this);
+        sourceDatasetCB.setMandatory(true);
         addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
         idTF = new TextField(editable_, this);
