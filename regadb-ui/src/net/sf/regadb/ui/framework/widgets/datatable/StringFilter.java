@@ -7,10 +7,10 @@ public class StringFilter extends WContainerWidget implements IFilter
 	private FilterOperatorCombo combo_;
 	private FilterTF tf_;
 	
-	private final static String beginsWith_ = "dataTable.filter.stringFilter.beginsWith";
-	private final static String endsWith_ = "dataTable.filter.stringFilter.endsWith";
-	private final static String contains_ = "dataTable.filter.stringFilter.contains";
-	private final static String sqlRegExp_ = "dataTable.filter.stringFilter.sqlRegExp";
+	public final static String beginsWith_ = "dataTable.filter.stringFilter.beginsWith";
+	public final static String endsWith_ = "dataTable.filter.stringFilter.endsWith";
+	public final static String contains_ = "dataTable.filter.stringFilter.contains";
+	public final static String sqlRegExp_ = "dataTable.filter.stringFilter.sqlRegExp";
 	
 	public StringFilter()
 	{
