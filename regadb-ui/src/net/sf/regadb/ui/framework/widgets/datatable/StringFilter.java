@@ -7,6 +7,11 @@ public class StringFilter extends WContainerWidget implements IFilter
 	private FilterOperatorCombo combo_;
 	private FilterTF tf_;
 	
+	private final static String beginsWith_ = "dataTable.filter.stringFilter.beginsWith";
+	private final static String endsWith_ = "dataTable.filter.stringFilter.endsWith";
+	private final static String contains_ = "dataTable.filter.stringFilter.contains";
+	private final static String sqlRegExp_ = "dataTable.filter.stringFilter.sqlRegExp";
+	
 	public StringFilter()
 	{
 		tf_ = new FilterTF(null);
@@ -18,10 +23,10 @@ public class StringFilter extends WContainerWidget implements IFilter
 		addWidget(tf_);
 		
 		//filling of the combo-box with operators		
-		combo_.addItem(tr("dataTable.filter.stringFilter.beginsWith"));
-		combo_.addItem(tr("dataTable.filter.stringFilter.endsWith"));
-		combo_.addItem(tr("dataTable.filter.stringFilter.contains"));
-		combo_.addItem(tr("dataTable.filter.stringFilter.sqlRegExp"));
+		combo_.addItem(tr(beginsWith_));
+		combo_.addItem(tr(endsWith_));
+		combo_.addItem(tr(contains_));
+		combo_.addItem(tr(sqlRegExp_));
 	}
 	
 	public WContainerWidget getFilterWidget()
@@ -33,19 +38,19 @@ public class StringFilter extends WContainerWidget implements IFilter
 	{		
 		String operator = combo_.currentText().key();
 		
-		if(operator.equals("dataTable.filter.stringFilter.beginsWith"))
+		if(operator.equals(beginsWith_))
 		{
 			return varName + " like '" + tf_.text() + "%'"; 
 		}
-		else if(operator.equals("dataTable.filter.stringFilter.endsWith"))
+		else if(operator.equals(endsWith_))
 		{
 			return varName + " like '%" + tf_.text() + "'"; 
 		}
-		else if(operator.equals("dataTable.filter.stringFilter.contains"))
+		else if(operator.equals(contains_))
 		{
 			return varName + " like '%" + tf_.text() + "%'"; 
 		}
-		else if(operator.equals("dataTable.filter.stringFilter.sqlRegExp"))
+		else if(operator.equals(sqlRegExp_))
 		{
 			return varName + " like '" + tf_.text() + "'"; 
 		}
