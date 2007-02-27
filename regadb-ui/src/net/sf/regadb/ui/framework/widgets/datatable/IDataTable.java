@@ -17,8 +17,6 @@ public interface IDataTable <DataType>
 	
 	//return null if you do not want to use any filters
 	public IFilter[] getFilters();
-
-	public void setSortedColumn(int index);
     
     public String[] getFieldNames();
     
@@ -27,4 +25,6 @@ public interface IDataTable <DataType>
     public boolean stillExists(DataType selectedItem);
     
     public void selectAction(DataType selectedItem);
+    
+    public boolean[] sortableFields();
 }
