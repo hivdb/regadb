@@ -40,14 +40,4 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	{
 		return transaction_;
 	}
-
-	public void setVisible(boolean vis)
-	{
-		combo_.setHidden(!vis);
-	}
-	
-	public boolean isVisible()
-	{
-		return !combo_.isHidden();
-	}
 }

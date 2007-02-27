@@ -310,7 +310,7 @@ public class DataTable<DataType> extends WTable
 	
 	private void showHideFilters()
 	{
-		if(!dataTableInterface_.getFilters()[0].isVisible())
+		if(dataTableInterface_.getFilters()[0].getFilterWidget().isHidden())
 		{
 			showHideFilter_.setText(tr("datatable.button.hideFilter"));
 		}
@@ -321,7 +321,7 @@ public class DataTable<DataType> extends WTable
 		
 		for(IFilter i : dataTableInterface_.getFilters())
 		{
-			i.setVisible(!i.isVisible());
+			i.getFilterWidget().setHidden(!i.getFilterWidget().isHidden());
 		}
 		applyFilter_.setHidden(!applyFilter_.isHidden());	
 	}

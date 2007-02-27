@@ -57,15 +57,4 @@ public class StringFilter extends WContainerWidget implements IFilter
 		
 		return null;
 	}
-	
-	public void setVisible(boolean vis)
-	{
-		combo_.setHidden(!vis);
-		tf_.setHidden(!vis);
-	}
-	
-	public boolean isVisible()
-	{
-		return !combo_.isHidden();
-	}
 }
