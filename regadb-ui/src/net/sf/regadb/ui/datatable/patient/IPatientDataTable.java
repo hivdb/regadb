@@ -21,8 +21,8 @@ public class IPatientDataTable implements IDataTable<Patient>
 
 	private static String[] filterVarNames_ = { "dataset.description", "patient.patientId", "patient.lastName",
 			"patient.firstName" };
-
-	private int sortedColumn_ = -1;
+	
+	private static boolean [] sortable_ = {true, true, true, true};
 
 	public IPatientDataTable()
 	{
@@ -71,11 +71,6 @@ public class IPatientDataTable implements IDataTable<Patient>
 		return toReturn;
 	}
 
-	public void setSortedColumn(int index)
-	{
-		sortedColumn_ = index;
-	}
-
     public String[] getFieldNames() 
     {
         return filterVarNames_;
@@ -101,4 +96,9 @@ public class IPatientDataTable implements IDataTable<Patient>
         trans.commit();
         return state;
     }
+
+	public boolean[] sortableFields()
+	{
+		return sortable_;
+	}
 }
