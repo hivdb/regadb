@@ -210,18 +210,7 @@ public class SinglePatientForm extends FormWidget
                     }
                     else
                     {
-                        switch(ValueTypes.getValueType(attrEl.getKey().getValueType().getValueTypeIi()))
-                        {
-                        case STRING:
-                            attributeFieldTF = new TextField(getInteractionState(), this);
-                            break;
-                        case NUMBER:
-                            attributeFieldTF = new TextField(getInteractionState(), this, FieldType.DOUBLE);
-                            break;
-                        case LIMITED_NUMBER:
-                            attributeFieldTF = new LimitedNumberField(getInteractionState(), this, FieldType.DOUBLE);
-                            break;
-                        }
+                    	attributeFieldTF = getTextField(ValueTypes.getValueType(attrEl.getKey().getValueType().getValueTypeIi()));
                         if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
                         {
                         attributeFieldTF.setText(attrEl.getValue().getValue());
