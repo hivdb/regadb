@@ -26,7 +26,7 @@ public class DateUtils
             calendar_.setTime(new Date(System.currentTimeMillis()));
             calendar_.set(Calendar.DAY_OF_MONTH, 1);
             calendar_.set(Calendar.YEAR, year);
-            calendar_.set(Calendar.MONTH, month);
+            calendar_.set(Calendar.MONTH, month-1);
             calendar_.set(Calendar.MINUTE, 0);
             calendar_.set(Calendar.SECOND, 0);
             int amountOfDays = calendar_.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
@@ -57,12 +57,12 @@ public class DateUtils
         {
             dd = "0" + dd;
         }
-        String mm = ""+calendar_.get(Calendar.MONTH);
+        String mm = ""+(calendar_.get(Calendar.MONTH)+1);
         if(mm.length()==1)
         {
             mm = "0" + mm;
         }
-        String yyyy = ""+calendar_.get(Calendar.MONTH);
+        String yyyy = ""+calendar_.get(Calendar.YEAR);
         int yLength = yyyy.length();
         for(int i = yLength; i<4 ; i++)
         {
