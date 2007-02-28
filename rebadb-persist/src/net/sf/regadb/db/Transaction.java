@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -179,19 +181,24 @@ public class Transaction {
      * checking all the filter constraints and grouped by the selected col.
      */
     @SuppressWarnings("unchecked")
-    public List<Patient> getPatients(int firstResult, int maxResults, String sortField, boolean ascending, String filterConstraints) 
+    public List<Patient> getPatients(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) 
     {
         String queryString = 	"select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 				getPatientsQuery();
-        if(!filterConstraints.equals(" "))
+        if(!filterConstraints.clause_.equals(" "))
         {
-        	queryString += "and" + filterConstraints;
+        	queryString += "and" + filterConstraints.clause_;
         }
         queryString += " group by patient, " + sortField;
         queryString += " order by " + sortField + (ascending?" asc":" desc");
         
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
         
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
@@ -218,17 +225,22 @@ public class Transaction {
         return ((Integer)q.uniqueResult()).intValue();
     }
     
-    public long getPatientCount(String filterConstraints) 
+    public long getPatientCount(HibernateFilterConstraint filterConstraints) 
     {
         String queryString =    "select count(patient) " +
                                 getPatientsQuery();
-        if(!filterConstraints.equals(" "))
+        if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += "and" + filterConstraints;
+            queryString += "and" + filterConstraints.clause_;
         }
         
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
         
         return ((Long)q.uniqueResult()).longValue();
     }
@@ -332,18 +344,23 @@ public class Transaction {
      * checking all the filter constraints and grouped by the selected col.
      */
     @SuppressWarnings("unchecked")
-    public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, String filterConstraints)
+    public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "from TestResult as testResult " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null";
-        if(!filterConstraints.equals(" "))
+        if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += " and" + filterConstraints;
+            queryString += " and" + filterConstraints.clause_;
         }
         queryString += " order by " + sortField + (ascending?" asc":" desc");
     
         Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
         
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
@@ -351,18 +368,23 @@ public class Transaction {
         return q.list();
     }
     
-    public long getNonViralIsolateTestResultsCount(Patient patient, String filterConstraints)
+    public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select count(testResult) " +
                             "from TestResult as testResult " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null";
-        if(!filterConstraints.equals(" "))
+        if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += " and" + filterConstraints;
+            queryString += " and" + filterConstraints.clause_;
         }
 
         Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
         
         return ((Long)q.uniqueResult()).longValue();
     }
