@@ -28,15 +28,18 @@ public class TextField extends FormField
 		
 		form.addFormField(this);
         
-        switch(type)
-        {
-            case DOUBLE:
-                _fieldEdit.setValidator(new WDoubleValidator());
-                break;
-            case INTEGER:
-                _fieldEdit.setValidator(new WIntValidator());
-                break;
-        }
+		if(_fieldEdit!=null)
+		{
+	        switch(type)
+	        {
+	            case DOUBLE:
+	                _fieldEdit.setValidator(new WDoubleValidator());
+	                break;
+	            case INTEGER:
+	                _fieldEdit.setValidator(new WIntValidator());
+	                break;
+	        }
+		}
 	}
     
     public TextField(InteractionState state, IForm form)
