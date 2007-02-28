@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
+import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -26,7 +28,7 @@ public class TreeContent
     public ActionItem editPatient;
     public ActionItem chart;
     public ActionItem measurements;
-    public ActionSelectItem measurementsSelect;
+    public ActionItem measurementsSelect;
     public ActionAddItem measurementsAdd;
     public ActionItem therapies;
     public ActionSelectItem therapiesSelect;
@@ -63,7 +65,13 @@ public class TreeContent
                     }
                 });
     			measurements = new ActionItem(rootItem.tr("menu.singlePatient.measurements"), patientSelected);
-    				measurementsSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements);
+    				measurementsSelect = new ActionItem(rootItem.tr("menu.singlePatient.measurements.select"), measurements, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node) 
+                        {
+                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
+                        }
+                    });
     				measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
     			therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
     				therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);

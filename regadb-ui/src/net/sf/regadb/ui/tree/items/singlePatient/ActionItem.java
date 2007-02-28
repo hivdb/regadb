@@ -29,6 +29,6 @@ public class ActionItem extends TreeMenuNode
 	@Override
 	public boolean isEnabled()
 	{
-		return ((PatientSelectedItem)this.getParent()).getSelectedPatient()!=null;
+		return getParent().isEnabled();
 	}
 }
