@@ -74,6 +74,24 @@ public class Transaction {
         
         return q.list();
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Test> getTests(TestType testType) 
+    {
+        Query q = session.createQuery("from Test test where test.testType.testTypeIi = :testTypeIdParam");
+
+        q.setParameter("testTypeIdParam", testType.getTestTypeIi());
+        
+        return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<TestType> getTestTypes() 
+    {
+        Query q = session.createQuery("from TestTypes");
+        
+        return q.list();
+    }
 
     public Test getTest(String description) {
         Query q = session.createQuery("from Test test where test.description = :description");
@@ -299,6 +317,11 @@ public class Transaction {
     public void update(Patient patient) 
     {
         session.saveOrUpdate(patient.getPatient());
+    }
+    
+    public void update(Serializable object) 
+    {
+        session.saveOrUpdate(object);
     }
     
     public void delete(Serializable object)
