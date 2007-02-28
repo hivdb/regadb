@@ -2,6 +2,7 @@ package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
+import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -11,11 +12,11 @@ import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
-import net.sf.regadb.ui.tree.items.singlePatient.ActionSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
+import net.sf.regadb.ui.tree.items.singlePatient.TestResultSelectedItem;
 import net.sf.witty.wt.widgets.WWidget;
 
 public class TreeContent
@@ -29,9 +30,11 @@ public class TreeContent
     public ActionItem chart;
     public ActionItem measurements;
     public ActionItem measurementsSelect;
+    public TestResultSelectedItem measurementSelected;
+    public ActionItem measurementView;
     public ActionAddItem measurementsAdd;
     public ActionItem therapies;
-    public ActionSelectItem therapiesSelect;
+    //public SelectActionItem therapiesSelect;
     public ActionAddItem therapiesAdd;
 
     public MyAccountItem myAccountMain;
@@ -72,10 +75,18 @@ public class TreeContent
                         	RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
                         }
                     });
+    				measurementSelected = new TestResultSelectedItem(measurementsSelect);
+    				measurementView = new ActionItem(rootItem.tr("menu.singlePatient.measurement.view"), measurementSelected, new ITreeAction()
+    				{
+						public void performAction(TreeMenuNode node)
+						{
+							RegaDBMain.getApp().getFormContainer().setForm(new TestResultForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), measurementSelected.getSelectedTestResult()));
+						}
+    				});
     				measurementsAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements);
-    			therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
-    				therapiesSelect = new ActionSelectItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
-    				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);
+    			/*therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
+    				therapiesSelect = new SelectActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
+    				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);*/
     		
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);

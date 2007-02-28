@@ -77,12 +77,18 @@ public class ITestDataTable implements IDataTable<TestResult>
 
 	public void selectAction(TestResult selectedItem)
 	{
-
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedTestResult(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.expand();
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();
 	}
 
 	public boolean stillExists(TestResult selectedItem)
 	{
-		return false;
+        Transaction trans = RegaDBMain.getApp().createTransaction();
+        boolean state = trans.testResultStillExists(selectedItem);
+        trans.commit();
+        return state;
 	}
 
 	public boolean[] sortableFields()
