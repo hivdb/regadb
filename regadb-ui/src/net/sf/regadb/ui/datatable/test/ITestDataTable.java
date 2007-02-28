@@ -7,10 +7,10 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.HibernateStringUtils;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
+import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 
 public class ITestDataTable implements IDataTable<TestResult>
 {

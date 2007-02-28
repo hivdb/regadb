@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
+import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WContainerWidget;
 
 public class StringFilter extends WContainerWidget implements IFilter 
@@ -33,28 +34,14 @@ public class StringFilter extends WContainerWidget implements IFilter
 	{
 		return this;
 	}
-
-	public String getHibernateString(String varName)
-	{		
-		String operator = combo_.currentText().key();
-		
-		if(operator.equals(beginsWith_))
-		{
-			return varName + " like '" + tf_.text() + "%'"; 
-		}
-		else if(operator.equals(endsWith_))
-		{
-			return varName + " like '%" + tf_.text() + "'"; 
-		}
-		else if(operator.equals(contains_))
-		{
-			return varName + " like '%" + tf_.text() + "%'"; 
-		}
-		else if(operator.equals(sqlRegExp_))
-		{
-			return varName + " like '" + tf_.text() + "'"; 
-		}
-		
-		return null;
+	
+	public WMessage getComboState()
+	{
+		return combo_.currentText();
+	}
+	
+	public String getStringValue()
+	{
+		return tf_.text();
 	}
 }

@@ -1,6 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.core.utils.WVerticalAlignment;
+import java.util.Date;
+
+import net.sf.regadb.util.date.DateUtils;
+import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.validation.WEuropeanDateValidator;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
@@ -15,10 +18,10 @@ public class DateFilter extends WContainerWidget implements IFilter
 	private FilterTF tf2_;
 	private WImage calendarIcon2 = new WImage("pics/calendar.png");
 	
-	private final static String equals_ = "dataTable.filter.dateFilter.equals";
-	private final static String before_ = "dataTable.filter.dateFilter.before";
-	private final static String after_ = "dataTable.filter.dateFilter.after";
-	private final static String between_ = "dataTable.filter.dateFilter.between";
+	public final static String equals_ = "dataTable.filter.dateFilter.equals";
+	public final static String before_ = "dataTable.filter.dateFilter.before";
+	public final static String after_ = "dataTable.filter.dateFilter.after";
+	public final static String between_ = "dataTable.filter.dateFilter.between";
 	
 	public DateFilter()
 	{
@@ -62,27 +65,18 @@ public class DateFilter extends WContainerWidget implements IFilter
 		return this;
 	}
 	
-	public String getHibernateString(String varName)
+	public Date getFirstDate()
 	{
-		String operator = combo_.currentText().key();
-		
-		if(operator.equals(equals_))
-		{
-			return varName + " = '" + tf1_.text() + "'"; 
-		}
-		else if(operator.equals(before_))
-		{
-			return varName + " < '" + tf1_.text() + "'"; 
-		}
-		else if(operator.equals(after_))
-		{
-			return varName + " > '" + tf1_.text() + "'"; 
-		}
-		else if(operator.equals(between_))
-		{
-			return varName + " between '" + tf1_.text() + "' and '" +tf2_.text()+"'"; 
-		}
-		
-		return null;
+		return DateUtils.parserEuropeanDate(tf1_.text());
+	}
+	
+	public Date getSecondDate()
+	{
+		return DateUtils.parserEuropeanDate(tf2_.text());
+	}
+	
+	public WMessage getComboState()
+	{
+		return combo_.currentText();
 	}
 }
