@@ -1,7 +1,10 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import java.util.Date;
+
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.validation.WEuropeanDateValidator;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WImage;
@@ -64,5 +67,15 @@ public class DateField extends FormField
     public void setFormText(String text) 
     {
         _fieldEdit.setText(text);
+    }
+    
+    public void setDate(Date date)
+    {
+    	setText(DateUtils.getEuropeanFormat(date));
+    }
+    
+    public Date getDate()
+    {
+    	return DateUtils.parserEuropeanDate(text());
     }
 }

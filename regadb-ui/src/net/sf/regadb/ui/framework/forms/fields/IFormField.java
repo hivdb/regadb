@@ -6,6 +6,7 @@ import net.sf.witty.wt.widgets.WWidget;
 public interface IFormField
 {
 	public boolean isMandatory();
+	public void setMandatory(boolean mandatory);
 	public WFormWidget getFormWidget();
     public String getFormText();
     public void setFormText(String text);

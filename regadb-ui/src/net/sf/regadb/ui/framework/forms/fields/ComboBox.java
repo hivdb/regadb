@@ -112,4 +112,12 @@ public class ComboBox extends FormField
             return true;
         }
     }
+    
+    public void clearItems()
+    {
+    	if(fieldEdit_!=null)
+    	{
+    		fieldEdit_.clear();
+    	}
+    }
 }
