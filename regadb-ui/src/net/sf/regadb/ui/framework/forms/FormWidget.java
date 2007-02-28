@@ -2,9 +2,13 @@ package net.sf.regadb.ui.framework.forms;
 
 import java.util.ArrayList;
 
-import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
@@ -68,7 +72,7 @@ public abstract class FormWidget extends WGroupBox implements IForm
 		return interactionState_== InteractionState.Adding || interactionState_== InteractionState.Editing; 
 	}
 	
-    public void addControlButtons()
+    protected void addControlButtons()
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
         buttonContainer.addWidget(_okButton);
@@ -95,6 +99,21 @@ public abstract class FormWidget extends WGroupBox implements IForm
             _okButton.setEnabled(false);
             _cancelButton.setEnabled(false);
         }
+    }
+    
+    public FormField getTextField(ValueTypes type)
+    {
+        switch(type)
+        {
+        case STRING:
+        	return new TextField(getInteractionState(), this);
+        case NUMBER:
+        	return new TextField(getInteractionState(), this, FieldType.DOUBLE);
+        case LIMITED_NUMBER:
+        	return new LimitedNumberField(getInteractionState(), this, FieldType.DOUBLE);
+        }
+        
+        return null;
     }
     
     public abstract void saveData();
