@@ -27,6 +27,8 @@ public class DateUtils
             calendar_.set(Calendar.DAY_OF_MONTH, 1);
             calendar_.set(Calendar.YEAR, year);
             calendar_.set(Calendar.MONTH, month);
+            calendar_.set(Calendar.MINUTE, 0);
+            calendar_.set(Calendar.SECOND, 0);
             int amountOfDays = calendar_.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
             
             if(day<1 || day>amountOfDays)
@@ -45,5 +47,28 @@ public class DateUtils
         {
             return null;
         }
+    }
+    
+    public static String getEuropeanFormat(Date date)
+    {
+        calendar_.setTime(date);
+        String dd = ""+calendar_.get(Calendar.DAY_OF_MONTH);
+        if(dd.length()==1)
+        {
+            dd = "0" + dd;
+        }
+        String mm = ""+calendar_.get(Calendar.MONTH);
+        if(mm.length()==1)
+        {
+            mm = "0" + mm;
+        }
+        String yyyy = ""+calendar_.get(Calendar.MONTH);
+        int yLength = yyyy.length();
+        for(int i = yLength; i<4 ; i++)
+        {
+            yyyy = "0" + yyyy;
+        }
+        
+        return dd + "-" + mm + "-" + yyyy;
     }
 }
