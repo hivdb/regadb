@@ -9,6 +9,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -38,7 +39,9 @@ public class TestExportXml
         Transaction t = login.createTransaction();
         
         String [] constraints ={null,null,null,null};
-        List<Patient> pList = t.getPatients(0, 20, "dataset.description", true, " dataset.description='TEST' ");
+        HibernateFilterConstraint hfc = new HibernateFilterConstraint();
+        hfc.clause_ = " dataset.description='TEST' ";
+        List<Patient> pList = t.getPatients(0, 20, "dataset.description", true, hfc);
         for(Patient p : pList)
         {
             System.err.println(((Dataset)p.getDatasets().toArray()[0]).getDescription());
