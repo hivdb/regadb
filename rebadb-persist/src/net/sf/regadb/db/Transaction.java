@@ -326,4 +326,44 @@ public class Transaction {
         
         return q.uniqueResult()!=null;
     }
+    
+    /**
+     * Returns a Page of TestResults,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, String filterConstraints)
+    {
+        String queryString = "from TestResult as testResult " +
+                            "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
+                            "and testResult.viralIsolate is null";
+        if(!filterConstraints.equals(" "))
+        {
+            queryString += " and" + filterConstraints;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public long getNonViralIsolateTestResultsCount(Patient patient, String filterConstraints)
+    {
+        String queryString = "select count(testResult) " +
+                            "from TestResult as testResult " +
+                            "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
+                            "and testResult.viralIsolate is null";
+        if(!filterConstraints.equals(" "))
+        {
+            queryString += " and" + filterConstraints;
+        }
+
+        Query q = session.createQuery(queryString);
+        
+        return ((Long)q.uniqueResult()).longValue();
+    }
 }
