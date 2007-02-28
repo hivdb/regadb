@@ -88,7 +88,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<TestType> getTestTypes() 
     {
-        Query q = session.createQuery("from TestTypes");
+        Query q = session.createQuery("from TestType");
         
         return q.list();
     }
@@ -360,6 +360,16 @@ public class Transaction {
         q.setParameter("patientIi", p.getPatient().getPatientIi());
         
         return q.uniqueResult()!=null;
+    }
+    
+    public boolean testResultStillExists(TestResult testResult)
+    {
+        Query q = session.createQuery("from TestResult testResult " + 
+                                    "where testResult.testResultIi = :testResultId");
+        
+        q.setParameter("testResultId", testResult.getTestResultIi());
+    
+        return q.uniqueResult() !=null;
     }
     
     /**
