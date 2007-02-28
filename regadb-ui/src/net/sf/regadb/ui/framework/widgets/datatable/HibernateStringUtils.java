@@ -9,14 +9,17 @@ public class HibernateStringUtils
 		
 		for(int i = 0; i<dt.getFilters().length; i++)
 		{
-			filter = dt.getFilters()[i].getHibernateString(dt.getFieldNames()[i]);
-			if(filter!=null)
+			if(dt.getFilters()[i]!=null)
 			{
-				if(!query.equals(" "))
+				filter = dt.getFilters()[i].getHibernateString(dt.getFieldNames()[i]);
+				if(filter!=null)
 				{
-					query += " and ";
+					if(!query.equals(" "))
+					{
+						query += " and ";
+					}
+					query += filter + " ";
 				}
-				query += filter + " ";
 			}
 		}
 		

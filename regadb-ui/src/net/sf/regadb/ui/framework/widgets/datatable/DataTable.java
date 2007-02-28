@@ -79,9 +79,12 @@ public class DataTable<DataType> extends WTable
         
         colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
 		//put colheaders in the table
+        int columnIndex = 0;
 		for(String colName : dataTableInterface_.getColNames())
 		{
             colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
+            if(dataTableInterface_.sortableFields()[columnIndex])
+            {
             colHeaders_[col].setSortNone();
             final int colHeaderIndex = col;
             colHeaders_[col].clicked.addListener(new SignalListener<WMouseEvent>()
@@ -104,6 +107,8 @@ public class DataTable<DataType> extends WTable
                             trans.commit();
                         }
                    });
+            }
+            columnIndex++;
 			col++;
 		}
 		row++;
@@ -115,7 +120,10 @@ public class DataTable<DataType> extends WTable
 		{
 			for(IFilter filter : dataTableInterface_.getFilters())
 			{
-				filter.getFilterWidget().setParent(elementAt(row, col));
+				if(filter!=null)
+				{
+					filter.getFilterWidget().setParent(elementAt(row, col));
+				}
 				col++;
 			}
 			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
