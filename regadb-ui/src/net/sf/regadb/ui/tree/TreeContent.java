@@ -1,10 +1,10 @@
 package net.sf.regadb.ui.tree;
 
-import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
@@ -47,14 +47,14 @@ public class TreeContent
                 {
                     public void performAction(TreeMenuNode node) 
                     {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(false, WWidget.tr("form.singlePatient.view"), patientSelected.getSelectedPatient()));
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Viewing, WWidget.tr("form.singlePatient.view"), patientSelected.getSelectedPatient()));
                     }
                 });
                 editPatient = new ActionItem(rootItem.tr("menu.singlePatient.edit"), patientSelected, new ITreeAction()
                 {
                     public void performAction(TreeMenuNode node) 
                     {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedPatient()));
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Editing, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedPatient()));
                     }
                 });
 				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected, new ITreeAction()

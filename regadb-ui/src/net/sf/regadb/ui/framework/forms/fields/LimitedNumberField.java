@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
 import net.sf.witty.wt.validation.WValidatorState;
@@ -14,10 +15,10 @@ public class LimitedNumberField extends FormField
     private WLineEdit fieldEdit_;
     private WComboBox limiterField_;
     
-    public LimitedNumberField(boolean edit, IForm form, FieldType type)
+    public LimitedNumberField(InteractionState state, IForm form, FieldType type)
     {
         super();
-        if(edit)
+        if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WLineEdit();
 
@@ -38,7 +39,7 @@ public class LimitedNumberField extends FormField
         
         form.addFormField(this);
         
-        if(edit)
+        if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             switch(type)
             {
@@ -52,9 +53,9 @@ public class LimitedNumberField extends FormField
         }
     }
     
-    public LimitedNumberField(boolean edit, IForm form)
+    public LimitedNumberField(InteractionState state, IForm form)
     {
-        this(edit, form, FieldType.DOUBLE);
+        this(state, form, FieldType.DOUBLE);
     }
     
     public void setEchomode(WLineEditEchoMode mode)

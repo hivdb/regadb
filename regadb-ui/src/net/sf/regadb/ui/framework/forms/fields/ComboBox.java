@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WComboBox;
 import net.sf.witty.wt.widgets.WFormWidget;
@@ -11,10 +12,10 @@ public class ComboBox extends FormField
     private boolean mandatory_ = false;
     private final static String noSelectionItem = "form.combobox.noSelectionItem";
     
-    public ComboBox(boolean edit, IForm form)
+    public ComboBox(InteractionState state, IForm form)
     {
         super();
-        if(edit)
+        if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WComboBox();
             addWidget(fieldEdit_);

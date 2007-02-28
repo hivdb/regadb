@@ -6,6 +6,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -27,9 +28,9 @@ public class LoginForm extends WGroupBox implements IForm
 	//login group
 	private WGroupBox loginGroup_ = new WGroupBox(tr("form.login.loginForm.login"));
 	private Label uidL = new Label(tr("form.login.label.uid"));
-	private TextField uidTF = new TextField(true, this);
+	private TextField uidTF = new TextField(InteractionState.Editing, this);
 	private Label passwordL = new Label(tr("form.login.label.password"));
-	private TextField passwordTF = new TextField(true, this);
+	private TextField passwordTF = new TextField(InteractionState.Editing, this);
 	
 	//control
 	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));

@@ -3,6 +3,7 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.widgets.WTreeNode;
@@ -22,7 +23,7 @@ public class PatientAddItem extends TreeMenuNode
 		{
 			public void performAction(TreeMenuNode node)
 			{
-                RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(true, WWidget.tr("form.singlePatient.add"), new Patient()));
+                RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("form.singlePatient.add"), new Patient()));
 			}
 		};
 	}

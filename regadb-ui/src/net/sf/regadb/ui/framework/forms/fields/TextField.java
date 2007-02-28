@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
 import net.sf.witty.wt.widgets.WFormWidget;
@@ -11,11 +12,11 @@ public class TextField extends FormField
 {
 	private WLineEdit _fieldEdit;
 	
-	public TextField(boolean edit, IForm form, FieldType type)
+	public TextField(InteractionState state, IForm form, FieldType type)
 	{
 		super();
-		if(edit)
-		{
+        if(state == InteractionState.Adding || state == InteractionState.Editing)
+        {
 			_fieldEdit = new WLineEdit();
 			addWidget(_fieldEdit);
 			flagValid();
@@ -38,9 +39,9 @@ public class TextField extends FormField
         }
 	}
     
-    public TextField(boolean edit, IForm form)
+    public TextField(InteractionState state, IForm form)
     {
-        this(edit, form, FieldType.ALFANUMERIC);
+        this(state, form, FieldType.ALFANUMERIC);
     }
 	
 	public void setEchomode(WLineEditEchoMode mode)
