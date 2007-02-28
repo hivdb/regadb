@@ -106,4 +106,18 @@ public class GregorianCalendarType implements ICalendarType
 		calendar_.setTime(date);
 		return calendar_.get(java.util.Calendar.YEAR);
 	}
+
+	public int getYearIndex(Date date, int startYear)
+	{
+		
+		return getYear(date)-startYear;
+	}
+
+	public Date getDate(int dd, int mm, int yyyy) 
+	{
+		calendar_.set(java.util.Calendar.DAY_OF_MONTH, dd);
+		calendar_.set(java.util.Calendar.MONTH, mm);
+		calendar_.set(java.util.Calendar.YEAR, yyyy);
+		return calendar_.getTime();
+	}
 }

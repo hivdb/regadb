@@ -13,6 +13,8 @@ public interface ICalendarType
 	public int getAmountOfDaysInMonth(Date currentDate);
 	public int getAmountOfDaysInPreviousMonth(Date currentDate);
 	public Date getDate(int mm,int yyyy);
+	public Date getDate(int dd,int mm,int yyyy);
 	public int getMonth(Date date);
 	public int getYear(Date date);
+	public int getYearIndex(Date date, int startYear);
 }
