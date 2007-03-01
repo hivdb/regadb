@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
@@ -12,7 +11,7 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WGroupBox;
@@ -33,7 +32,7 @@ public class TestResultForm extends FormWidget
     private ComboBox testNameCB;
     private Label testResultL;
     private ComboBox testResultNominalValueCB;
-    private IFormField testResultValueTF;
+    private FormField testResultValueTF;
     
 	public TestResultForm(InteractionState interactionState, WMessage formName, TestResult testResult)
 	{
@@ -68,13 +67,18 @@ public class TestResultForm extends FormWidget
 	
 	private void fillData()
 	{
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        if(testResult_.getTestResultIi()!=null)
+		Transaction t;
+        if(testResult_!=null)
         {
+        	t = RegaDBMain.getApp().createTransaction();
             t.update(testResult_);
+            t.commit();
         }
-        t.commit();
-        
+        else
+        {
+        	testResult_ = new TestResult();
+        }
+                
         dateTF.setDate(testResult_.getTestDate());
         
         t = RegaDBMain.getApp().createTransaction();
@@ -82,11 +86,19 @@ public class TestResultForm extends FormWidget
         {
         	testTypeCB.addItem(new DataComboMessage<TestType>(testType, testType.getDescription()));
         }
-        testTypeCB.selectItem(new DataComboMessage<TestType>(testResult_.getTest().getTestType(), testResult_.getTest().getTestType().getDescription()));
         
-        setTestCombo(t, testResult_.getTest().getTestType());
+        if(testResult_.getTest()!=null)
+        {
+        	testTypeCB.selectItem(new DataComboMessage<TestType>(testResult_.getTest().getTestType(), testResult_.getTest().getTestType().getDescription()));
+        }
+        setTestCombo(t, ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue());
 
         t.commit();
+
+        if(testResult_.getTest()==null)
+        {
+        	testResult_.setTest(((DataComboMessage<Test>)testNameCB.currentText()).getValue());
+        }
         
         ValueTypes valueType = ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType().getValueTypeIi());
         if(valueType == ValueTypes.NOMINAL_VALUE)
@@ -105,8 +117,9 @@ public class TestResultForm extends FormWidget
         }
         else
         {
-        	testResultValueTF = this.getTextField(valueType);
+        	testResultValueTF = getTextField(valueType);
             testResultValueTF.setMandatory(true);
+            testResultValueTF.setText(testResult_.getValue());
             addLineToTable(generalGroupTable_, testResultL, testResultValueTF);
         }	
 	}
@@ -119,7 +132,10 @@ public class TestResultForm extends FormWidget
         {
         	testNameCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
         }
-        testNameCB.selectItem(new DataComboMessage<Test>(testResult_.getTest(), testResult_.getTest().getDescription()));
+        if(testResult_.getTest()!=null)
+        {
+        	testNameCB.selectItem(new DataComboMessage<Test>(testResult_.getTest(), testResult_.getTest().getDescription()));
+        }
 	}
 
 	@Override
