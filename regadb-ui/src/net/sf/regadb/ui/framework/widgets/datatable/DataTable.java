@@ -329,7 +329,10 @@ public class DataTable<DataType> extends WTable
 		
 		for(IFilter i : dataTableInterface_.getFilters())
 		{
-			i.getFilterWidget().setHidden(!i.getFilterWidget().isHidden());
+			if(i!=null)
+			{
+				i.getFilterWidget().setHidden(!i.getFilterWidget().isHidden());
+			}
 		}
 		applyFilter_.setHidden(!applyFilter_.isHidden());	
 	}
