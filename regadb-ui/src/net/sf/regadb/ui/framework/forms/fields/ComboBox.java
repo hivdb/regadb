@@ -39,7 +39,14 @@ public class ComboBox extends FormField
     
     public WMessage currentText()
     {
-        return fieldEdit_.currentText();
+    	if(fieldEdit_!=null)
+    	{
+    		return fieldEdit_.currentText();
+    	}
+    	else
+    	{
+    		return getViewMessage();
+    	}
     }
     
     public void selectItem(WMessage itemToSelect)
@@ -50,7 +57,7 @@ public class ComboBox extends FormField
         }
         else
         {
-            setText(itemToSelect.keyOrValue());
+            setViewMessage(itemToSelect);
         }
     }
 

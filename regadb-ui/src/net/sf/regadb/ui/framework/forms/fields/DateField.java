@@ -71,7 +71,10 @@ public class DateField extends FormField
     
     public void setDate(Date date)
     {
-    	setText(DateUtils.getEuropeanFormat(date));
+    	if(date!=null)
+    	{
+    		setText(DateUtils.getEuropeanFormat(date));
+    	}
     }
     
     public Date getDate()

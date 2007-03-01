@@ -100,15 +100,26 @@ public class LimitedNumberField extends FormField
     public void setFormText(String text) 
     {
         String tmpText = text.trim();
-        switch(text.charAt(0))
+        try
         {
-            case '<':
-                limiterField_.setCurrentIndex(0);
-            case '=':
-                limiterField_.setCurrentIndex(1);
-            case '>':
-                limiterField_.setCurrentIndex(2);
+	        switch(text.charAt(0))
+	        {
+	            case '<':
+	                limiterField_.setCurrentIndex(0);
+	            case '=':
+	                limiterField_.setCurrentIndex(1);
+	            case '>':
+	                limiterField_.setCurrentIndex(2);
+	            default :
+	            	limiterField_.setCurrentIndex(0);
+	        }
+	        fieldEdit_.setText(tmpText.substring(1).trim());
         }
-        fieldEdit_.setText(tmpText.substring(1).trim());
+        catch(StringIndexOutOfBoundsException sioobe)
+        {
+        	//handle an empty string
+        	limiterField_.setCurrentIndex(0);
+        	fieldEdit_.setText("");
+        }
     }
 }

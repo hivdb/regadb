@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.validation.WValidator;
 import net.sf.witty.wt.validation.WValidatorState;
 import net.sf.witty.wt.widgets.WContainerWidget;
@@ -85,6 +86,16 @@ public abstract class FormField extends WContainerWidget implements IFormField
             {
                 _fieldView.setText(lt(text));
             }
+    }
+    
+    public void setViewMessage(WMessage message)
+    {
+    	_fieldView.setText(message);
+    }
+    
+    public WMessage getViewMessage()
+    {
+    	return _fieldView.text();
     }
     
     public WWidget getWidget()
