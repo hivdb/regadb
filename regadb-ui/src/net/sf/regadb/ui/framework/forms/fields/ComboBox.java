@@ -137,12 +137,4 @@ public class ComboBox extends FormField
     		fieldEdit_.clear();
     	}
     }
-    
-    public void selectFirstItem()
-    {
-    	if(fieldEdit_!=null)
-    	{
-    		fieldEdit_.setCurrentIndex(0);
-    	}
-    }
 }
