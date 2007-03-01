@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
@@ -142,6 +143,27 @@ public class TestResultForm extends FormWidget
 	@Override
 	public void saveData()
 	{
+		testResult_.setTestDate(dateTF.getDate());
+		testResult_.setTest(((DataComboMessage<Test>)testNameCB.currentText()).getValue());
+	    
+		if(testResultNominalValueCB!=null)
+		{
+			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)testResultNominalValueCB.currentText()).getValue());
+		}
+		else
+		{
+			testResult_.setValue(testResultValueTF.text());
+		}
 		
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		if(getInteractionState()==InteractionState.Adding)
+		{
+			p.getTestResults().add(testResult_);
+		}
+		
+		Transaction t = RegaDBMain.getApp().createTransaction();
+		t.save(p);
+		
+		RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();
 	}
 }
