@@ -74,7 +74,7 @@ public class TestResultForm extends FormWidget
             t.update(testResult_);
             t.commit();
         }
-        else
+        else //when adding a new TestResult
         {
         	testResult_ = new TestResult();
         }
@@ -95,6 +95,7 @@ public class TestResultForm extends FormWidget
 
         t.commit();
 
+        //when adding a new TestResult
         if(testResult_.getTest()==null)
         {
         	testResult_.setTest(((DataComboMessage<Test>)testNameCB.currentText()).getValue());
