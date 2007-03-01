@@ -3,8 +3,10 @@ package net.sf.regadb.ui.framework.forms.fields;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.i8n.WMessage;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WComboBox;
 import net.sf.witty.wt.widgets.WFormWidget;
+import net.sf.witty.wt.widgets.event.WEmptyEvent;
 
 public class ComboBox extends FormField
 {
@@ -27,6 +29,14 @@ public class ComboBox extends FormField
         }
         
         form.addFormField(this);
+    }
+    
+    public void addComboChangeListener(SignalListener<WEmptyEvent> listener)
+    {
+    	if(fieldEdit_!=null)
+    	{
+    	fieldEdit_.changed.addListener(listener);
+    	}
     }
     
     public void addItem(WMessage item)
@@ -125,6 +135,14 @@ public class ComboBox extends FormField
     	if(fieldEdit_!=null)
     	{
     		fieldEdit_.clear();
+    	}
+    }
+    
+    public void selectFirstItem()
+    {
+    	if(fieldEdit_!=null)
+    	{
+    		fieldEdit_.setCurrentIndex(0);
     	}
     }
 }
