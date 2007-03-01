@@ -14,7 +14,7 @@ import net.sf.witty.wt.widgets.WLineEditEchoMode;
 public class DateField extends FormField
 {
 	private WLineEdit _fieldEdit;
-	private static WImage calendarIcon_ = new WImage("pics/calendar.png");
+	private WImage calendarIcon_ = new WImage("pics/calendar.png");
 	
 	public DateField(InteractionState state, IForm form)
 	{
