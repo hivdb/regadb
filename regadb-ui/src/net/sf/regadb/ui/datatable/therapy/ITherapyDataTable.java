@@ -101,7 +101,10 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public void selectAction(Therapy selectedItem)
 	{
-		
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesEdit.selectNode();
 	}
 
 	public boolean[] sortableFields()
@@ -111,6 +114,6 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public boolean stillExists(Therapy selectedItem)
 	{
-		return false;
+		return true;
 	}
 }

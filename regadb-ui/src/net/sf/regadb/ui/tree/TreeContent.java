@@ -4,6 +4,7 @@ import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
+import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -18,6 +19,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TestResultSelectedItem;
+import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
 import net.sf.witty.wt.widgets.WWidget;
 
 public class TreeContent
@@ -37,6 +39,8 @@ public class TreeContent
     public ActionItem measurementsAdd;
     public ActionItem therapies;
     public ActionItem therapiesSelect;
+    public TherapySelectedItem therapiesSelected;
+    public ActionItem therapiesEdit;
     public ActionAddItem therapiesAdd;
 
     public MyAccountItem myAccountMain;
@@ -108,6 +112,14 @@ public class TreeContent
                         	RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());
                         }
                     });
+    				therapiesSelected = new TherapySelectedItem(therapies);
+    				therapiesEdit = new ActionItem(rootItem.tr("menu.singlePatient.therapies.edit"), therapiesSelected, new ITreeAction()
+    				{
+						public void performAction(TreeMenuNode node)
+						{
+							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedTherapy()));
+						}
+    				});
     			/*therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
     				therapiesSelect = new SelectActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
     				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);*/
