@@ -70,12 +70,15 @@ public class TestResultForm extends FormWidget
         WMessage current = null;
         for(TestType testType : t.getTestTypes())
         {
-        	current = new DataComboMessage<TestType>(testType, testType.getDescription());
-        	if(first==null)
+        	if(t.hasTests(testType))
         	{
-        		first = current;
+	        	current = new DataComboMessage<TestType>(testType, testType.getDescription());
+	        	if(first==null)
+	        	{
+	        		first = current;
+	        	}
+	        	testTypeCB.addItem(current);
         	}
-        	testTypeCB.addItem(current);
         }
         testTypeCB.selectItem(first);
 
@@ -154,11 +157,11 @@ public class TestResultForm extends FormWidget
         WMessage current = null;
         for(Test test : t.getTests(testType))
         {
+        	current = new DataComboMessage<Test>(test, test.getDescription());
         	if(first==null)
         	{
         		first = current;
         	}
-        	current = new DataComboMessage<Test>(test, test.getDescription());
         	testNameCB.addItem(current);
         }
  
