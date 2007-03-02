@@ -217,5 +217,6 @@ public class TherapyForm extends FormWidget
 		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(therapy_);
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesView.selectNode();
 	}
 }

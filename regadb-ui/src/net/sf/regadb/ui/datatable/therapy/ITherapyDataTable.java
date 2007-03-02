@@ -83,7 +83,10 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 			genericDrugList.append("+");
 		}
 		//remove last character, which is an extra plus
-		genericDrugList.deleteCharAt(genericDrugList.length()-1);
+		if(genericDrugList.length()>0)
+		{
+			genericDrugList.deleteCharAt(genericDrugList.length()-1);
+		}
 		row[2] = genericDrugList.toString();
 		
 		row[3] = type.getComment();
@@ -104,7 +107,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesEdit.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesView.selectNode();
 	}
 
 	public boolean[] sortableFields()
@@ -114,6 +117,9 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public boolean stillExists(Therapy selectedItem)
 	{
-		return true;
+        Transaction trans = RegaDBMain.getApp().createTransaction();
+        boolean state = trans.therapyStillExists(selectedItem);
+        trans.commit();
+        return state;
 	}
 }

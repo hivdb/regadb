@@ -39,9 +39,10 @@ public class TreeContent
     public ActionItem measurementsAdd;
     public ActionItem therapies;
     public ActionItem therapiesSelect;
+    public ActionItem therapiesAdd;
     public TherapySelectedItem therapiesSelected;
     public ActionItem therapiesEdit;
-    public ActionAddItem therapiesAdd;
+    public ActionItem therapiesView;
 
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
@@ -112,7 +113,21 @@ public class TreeContent
                         	RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());
                         }
                     });
+    				therapiesAdd = new ActionItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies, new ITreeAction()
+    				{
+						public void performAction(TreeMenuNode node)
+						{
+							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
+						}
+    				});
     				therapiesSelected = new TherapySelectedItem(therapies);
+    				therapiesView = new ActionItem(rootItem.tr("menu.singlePatient.therapies.view"), therapiesSelected, new ITreeAction()
+    				{
+						public void performAction(TreeMenuNode node)
+						{
+							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Viewing, WWidget.tr("form.therapy.view"), therapiesSelected.getSelectedTherapy()));
+						}
+    				});
     				therapiesEdit = new ActionItem(rootItem.tr("menu.singlePatient.therapies.edit"), therapiesSelected, new ITreeAction()
     				{
 						public void performAction(TreeMenuNode node)
@@ -120,9 +135,6 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedTherapy()));
 						}
     				});
-    			/*therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
-    				therapiesSelect = new SelectActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
-    				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);*/
     		
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);

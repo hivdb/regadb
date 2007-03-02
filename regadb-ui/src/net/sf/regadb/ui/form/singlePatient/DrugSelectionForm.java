@@ -66,6 +66,11 @@ public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 						removeDrugsAction();
 					}
 				});
+		if(therapyForm_.getInteractionState()==InteractionState.Viewing)
+		{
+			_addDrugButton.setEnabled(false);
+			_removeDrugsButton.setEnabled(false);
+		}
 		addWidget(buttonContainer);
 		
 		//table
@@ -88,6 +93,9 @@ public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 	
 	private void removeDrugsAction()
 	{
+		if(_table.numRows()==1)
+			return;
+		
 		ArrayList<WTableCell> rowIndexesToBeDeleted = new ArrayList<WTableCell>();
 		
 		for(int i = 1; i<_table.numRows(); i++)
