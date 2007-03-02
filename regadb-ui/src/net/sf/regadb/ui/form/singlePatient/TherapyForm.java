@@ -5,9 +5,12 @@ import java.util.List;
 
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -86,6 +89,7 @@ public class TherapyForm extends FormWidget
         }
         commercialDrugs_ = new DrugSelectionForm(this, tr("form.therapy.editView.commercialDrugs"), commercialDrugList, tr("form.therapy.editView.drugDosage.unit"));
         addWidget(commercialDrugs_);
+        t.commit();
         
         addControlButtons();
 	}
@@ -94,6 +98,11 @@ public class TherapyForm extends FormWidget
 	{
 		if(getInteractionState()!=InteractionState.Adding)
 		{
+			Transaction t;
+			t = RegaDBMain.getApp().createTransaction();
+	        t.update(therapy_);
+	        t.commit();
+	        
 			startDateTF.setDate(therapy_.getStartDate());
 			stopDateTF.setDate(therapy_.getStopDate());
 			commentTF.setText(therapy_.getComment());
@@ -133,6 +142,80 @@ public class TherapyForm extends FormWidget
 	@Override
 	public void saveData()
 	{
-	
+		Transaction t = RegaDBMain.getApp().createTransaction();
+		
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		t.update(p);
+				
+		if(getInteractionState()==InteractionState.Adding)
+		{
+			therapy_ = p.createTherapy(startDateTF.getDate());
+		}
+		else
+		{
+			therapy_.setStartDate(startDateTF.getDate());
+		}
+		
+		therapy_.setStopDate(stopDateTF.getDate());
+		
+		if(canStore(commentTF.text()))
+		{
+			therapy_.setComment(commentTF.text());
+		}
+		else
+		{
+			therapy_.setComment(null);
+		}
+		
+		//deleting old drugs
+		ArrayList<TherapyGeneric> removeMemGeneric = new ArrayList<TherapyGeneric>(); 
+		for(TherapyGeneric tg : therapy_.getTherapyGenerics())
+		{
+			removeMemGeneric.add(tg);
+		}
+		for(TherapyGeneric tg : removeMemGeneric)
+		{
+			therapy_.getTherapyGenerics().remove(tg);
+			t.delete(tg);
+		}
+		//deleting old drugs
+		
+		//deleting old drugs
+		ArrayList<TherapyCommercial> removeMemCommercial = new ArrayList<TherapyCommercial>(); 
+		for(TherapyCommercial tc : therapy_.getTherapyCommercials())
+		{
+			removeMemCommercial.add(tc);
+		}
+		for(TherapyCommercial tc : removeMemCommercial)
+		{
+			therapy_.getTherapyCommercials().remove(tc);
+			t.delete(tc);
+		}
+		//deleting old drugs
+		
+		t.update(therapy_);
+		t.commit();
+		
+		//adding new drugs
+		t = RegaDBMain.getApp().createTransaction();
+		List<Pair<DrugGeneric, Double>> dataG = genericDrugs_.getData();
+		for(Pair<DrugGeneric, Double> dg : dataG)
+		{
+			therapy_.getTherapyGenerics().add(new TherapyGeneric(new TherapyGenericId(therapy_, dg.getKey()), dg.getValue()));
+		}
+		
+		List<Pair<DrugCommercial, Double>> dataC = commercialDrugs_.getData();
+		for(Pair<DrugCommercial, Double> dc : dataC)
+		{
+			therapy_.getTherapyCommercials().add(new TherapyCommercial(new TherapyCommercialId(therapy_, dc.getKey()), dc.getValue()));
+		}
+		
+		t.update(therapy_);
+		t.commit();
+		//adding new drugs
+		
+		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(therapy_);
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
 	}
 }

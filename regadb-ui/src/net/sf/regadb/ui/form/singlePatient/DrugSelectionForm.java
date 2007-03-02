@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
@@ -141,5 +142,31 @@ public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 			}
 		}
 		_table.putElementAt(rowIndex, 2, tf);
+	}
+	
+	public List<Pair<DrugType, Double>> getData()
+	{
+		List<Pair<DrugType, Double>> dataList = new ArrayList<Pair<DrugType, Double>>();
+		
+		DrugType drug;
+		Double dosage;
+		for(int i = 1; i<_table.numRows(); i++)
+		{
+			if(_table.elementAt(i, 1).children().get(0) instanceof ComboBox)
+			{
+				drug = ((DataComboMessage<DrugType>)((ComboBox)_table.elementAt(i, 1).children().get(0)).currentText()).getValue();
+				try
+				{
+					dosage = Double.parseDouble(((TextField)_table.elementAt(i, 2).children().get(0)).text());
+				}
+				catch(NumberFormatException nfe)
+				{
+					dosage = null;
+				}
+				dataList.add(new Pair<DrugType, Double>(drug, dosage));
+			}
+		}
+		
+		return dataList;
 	}
 }
