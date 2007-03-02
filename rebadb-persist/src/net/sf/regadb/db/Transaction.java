@@ -92,6 +92,15 @@ public class Transaction {
         
         return q.list();
     }
+    
+    public boolean hasTests(TestType testType)
+    {
+        Query q = session.createQuery("select count(test) from Test test where test.testType.id = :testTypeIdParam");
+        
+        q.setParameter("testTypeIdParam", testType.getTestTypeIi());
+        
+        return ((Long)q.uniqueResult())>0;
+    }
 
     public Test getTest(String description) {
         Query q = session.createQuery("from Test test where test.description = :description");
