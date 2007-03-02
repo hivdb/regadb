@@ -430,4 +430,57 @@ public class Transaction {
         
         return ((Long)q.uniqueResult()).longValue();
     }
+    
+    /**
+     * Returns a Page of Therapies,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Therapy> getTherapies(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from Therapy as therapy " +
+                            "where therapy.patient.id = " + patient.getPatientIi();
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += " and" + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    /**
+     * Returns the count of Therapies,
+     * for the given constraints.
+     */
+    @SuppressWarnings("unchecked")
+    public long getTherapiesCount(Patient patient, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "select count(therapy)" +
+                            "from Therapy as therapy " +
+                            "where therapy.patient.id = " + patient.getPatientIi();
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += " and" + filterConstraints.clause_;
+        }
+      
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        return ((Long)q.uniqueResult()).longValue();
+    }
 }
