@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.pair.Pair;
@@ -131,7 +132,7 @@ public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 		}
 		_table.putElementAt(rowIndex, 1, combo );
 		
-		tf = new TextField(therapyForm_.getInteractionState(), therapyForm_);
+		tf = new TextField(therapyForm_.getInteractionState(), therapyForm_, FieldType.DOUBLE);
 		if(drugPair!=null)
 		{
 			if(drugPair.getValue()!=null)
