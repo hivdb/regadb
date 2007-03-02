@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
+import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
@@ -35,7 +36,7 @@ public class TreeContent
     public ActionItem measurementEdit;
     public ActionItem measurementsAdd;
     public ActionItem therapies;
-    //public SelectActionItem therapiesSelect;
+    public ActionItem therapiesSelect;
     public ActionAddItem therapiesAdd;
 
     public MyAccountItem myAccountMain;
@@ -99,6 +100,14 @@ public class TreeContent
 						}
     				});
 
+    			therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
+    				therapiesSelect = new ActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node) 
+                        {
+                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());
+                        }
+                    });
     			/*therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
     				therapiesSelect = new SelectActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies);
     				therapiesAdd = new ActionAddItem(rootItem.tr("menu.singlePatient.therapies.add"), therapies);*/
