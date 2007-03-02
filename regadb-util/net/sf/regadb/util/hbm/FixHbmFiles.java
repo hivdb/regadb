@@ -45,7 +45,15 @@ public class FixHbmFiles
                         if((e.getAttributeValue("name").equals("patientAttributeValues")&& a.getKey().equals("net.sf.regadb.db.PatientImpl")))
                         {
                             e.getAttribute("inverse").setValue("true");
-                        }   
+                        }
+                        if((e.getAttributeValue("name").equals("therapyCommercials")&& a.getKey().equals("net.sf.regadb.db.Therapy")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
+                        if((e.getAttributeValue("name").equals("therapyGenerics")&& a.getKey().equals("net.sf.regadb.db.Therapy")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                 }
             }
