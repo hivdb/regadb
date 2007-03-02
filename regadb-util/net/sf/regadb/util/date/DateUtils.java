@@ -51,6 +51,9 @@ public class DateUtils
     
     public static String getEuropeanFormat(Date date)
     {
+        if(date==null)
+        return null;
+        
         calendar_.setTime(date);
         String dd = ""+calendar_.get(Calendar.DAY_OF_MONTH);
         if(dd.length()==1)
