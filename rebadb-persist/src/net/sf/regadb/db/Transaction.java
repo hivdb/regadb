@@ -395,6 +395,16 @@ public class Transaction {
         return q.uniqueResult() !=null;
     }
     
+    public boolean therapyStillExists(Therapy therapy)
+    {
+        Query q = session.createQuery("from Therapy therapy " + 
+                                    "where therapy.id = :therapyId");
+        
+        q.setParameter("therapyId", therapy.getTherapyIi());
+    
+        return q.uniqueResult() !=null;
+    }
+    
     /**
      * Returns a Page of TestResults,
      * checking all the filter constraints and grouped by the selected col.
