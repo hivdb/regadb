@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import net.sf.regadb.util.date.DateUtils;
 
 public class ITestDataTable implements IDataTable<TestResult>
 {
@@ -59,7 +60,7 @@ public class ITestDataTable implements IDataTable<TestResult>
 	{
 		String [] row = new String[4];
 		
-		row[0] = type.getTestDate().toString();
+		row[0] = DateUtils.getEuropeanFormat(type.getTestDate());
 		row[1] = type.getTest().getTestType().getDescription();
 		row[2] = type.getTest().getDescription();
 		row[3] = type.getValue()==null?type.getTestNominalValue().getValue():type.getValue();
