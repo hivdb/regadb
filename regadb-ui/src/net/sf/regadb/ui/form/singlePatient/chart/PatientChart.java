@@ -108,7 +108,7 @@ public class PatientChart
 	{
 		MutationBlock mb = new MutationBlock(a.getProtein().getAbbreviation(), a.getFirstAaPos(), a.getLastAaPos());
 
-		for (AaMutInsertion m : AaMutInsertion.getMutInsertionList(a))
+		for (AaMutInsertion m : AaMutInsertion.getSortedMutInsertionList(a))
 		{
 			// TODO implement algorithm stuff
 			// if (algorithm == null ||
