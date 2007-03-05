@@ -1,5 +1,7 @@
 package net.sf.regadb.db;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -46,7 +48,7 @@ public class AaMutInsertion implements Comparable<AaMutInsertion>
         return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
     }
     
-    public static SortedSet<AaMutInsertion> getMutInsertionList(AaSequence aaseq)
+    public static SortedSet<AaMutInsertion> getSortedMutInsertionList(AaSequence aaseq)
     {
         SortedSet<AaMutInsertion> set = new TreeSet<AaMutInsertion>();
         
