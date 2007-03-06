@@ -2,6 +2,7 @@ package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
+import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -143,8 +144,9 @@ public class TreeContent
     				viralIsolates = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates"), patientSelected);
     				viralIsolatesSelect = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.select"), viralIsolates, new ITreeAction()
                     {
-                        public void performAction(TreeMenuNode node) 
+    					public void performAction(TreeMenuNode node) 
                         {
+                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectViralIsolateForm());
                         }
                     });
     		
