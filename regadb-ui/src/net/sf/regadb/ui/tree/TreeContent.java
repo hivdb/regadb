@@ -20,6 +20,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TestResultSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
+import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
 import net.sf.witty.wt.widgets.WWidget;
 
 public class TreeContent
@@ -43,6 +44,9 @@ public class TreeContent
     public TherapySelectedItem therapiesSelected;
     public ActionItem therapiesEdit;
     public ActionItem therapiesView;
+    public ActionItem viralIsolates;
+    public ActionItem viralIsolatesSelect;
+    public ViralIsolateSelectedItem viralIsolateSelected;
 
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
@@ -135,6 +139,14 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedTherapy()));
 						}
     				});
+    				
+    				viralIsolates = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates"), patientSelected);
+    				viralIsolatesSelect = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.select"), viralIsolates, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node) 
+                        {
+                        }
+                    });
     		
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);

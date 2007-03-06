@@ -10,7 +10,7 @@ import net.sf.witty.wt.widgets.WTreeNode;
 
 public class TherapySelectedItem extends TreeMenuNode
 {
-	Therapy selectedTherapy_;
+	private Therapy selectedTherapy_;
 	
 	public TherapySelectedItem(WTreeNode parent)
 	{
