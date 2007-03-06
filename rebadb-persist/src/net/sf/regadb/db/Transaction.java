@@ -405,6 +405,16 @@ public class Transaction {
         return q.uniqueResult() !=null;
     }
     
+    public boolean viralIsolateStillExists(ViralIsolate viralIsolate)
+    {
+        Query q = session.createQuery("from ViralIsolate viralIsolate " + 
+                                    "where viralIsolate.id = :viralIsolateId");
+        
+        q.setParameter("viralIsolateId", viralIsolate.getViralIsolateIi());
+    
+        return q.uniqueResult() !=null;
+    }
+    
     /**
      * Returns a Page of TestResults,
      * checking all the filter constraints and grouped by the selected col.
@@ -484,6 +494,34 @@ public class Transaction {
     }
     
     /**
+     * Returns a Page of ViralIsolates,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<ViralIsolate> getViralIsolates(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from ViralIsolate as viralIsolate " +
+                            "where viralIsolate.patient.id = " + patient.getPatientIi();
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += " and" + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    /**
      * Returns the count of Therapies,
      * for the given constraints.
      */
@@ -493,6 +531,31 @@ public class Transaction {
         String queryString = "select count(therapy)" +
                             "from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += " and" + filterConstraints.clause_;
+        }
+      
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    /**
+     * Returns the count of ViralIsolates,
+     * for the given constraints.
+     */
+    @SuppressWarnings("unchecked")
+    public long getViralIsolateCount(Patient patient, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "select count(viralIsolate)" +
+                            "from ViralIsolate as viralIsolate " +
+                            "where viralIsolate.patient.id = " + patient.getPatientIi();
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += " and" + filterConstraints.clause_;
