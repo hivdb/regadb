@@ -28,7 +28,10 @@ public class ComboBox extends FormField
             initViewWidget();
         }
         
-        form.addFormField(this);
+        if(form!=null)
+        {
+        	form.addFormField(this);
+        }
     }
     
     public void addComboChangeListener(SignalListener<WEmptyEvent> listener)

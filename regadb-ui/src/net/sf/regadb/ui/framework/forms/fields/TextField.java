@@ -4,6 +4,7 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
+import net.sf.witty.wt.widgets.WCssDecorationStyle;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.WLineEditEchoMode;
@@ -75,5 +76,17 @@ public class TextField extends FormField
     public void setFormText(String text) 
     {
         _fieldEdit.setText(text);
+    }
+    
+    public WCssDecorationStyle decorationStyle()
+    {
+		if(_fieldEdit!=null)
+		{
+			return _fieldEdit.decorationStyle();
+		}
+		else
+		{
+			return getViewWidget().decorationStyle();
+		}
     }
 }

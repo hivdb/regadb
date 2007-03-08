@@ -21,6 +21,7 @@ public class ViralIsolateForm extends FormWidget
 	private WMenu tabForm_;
 	
 	private ViralIsolateMainForm _mainForm;
+	private ViralIsolateProteinForm proteinForm_;
 
 	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
 	{
@@ -43,7 +44,10 @@ public class ViralIsolateForm extends FormWidget
 
 		_mainForm = new ViralIsolateMainForm(this);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
-		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), new WText(lt("lala")));
+		proteinForm_ = new ViralIsolateProteinForm(this);
+		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
+		
+		fillData();
 	}
 
 	private void fillData()
@@ -56,6 +60,7 @@ public class ViralIsolateForm extends FormWidget
 	        t.commit();
 	        
 	        _mainForm.fillData(viralIsolate_);
+	        proteinForm_.fillData(viralIsolate_);
 		}
 	}
 	
