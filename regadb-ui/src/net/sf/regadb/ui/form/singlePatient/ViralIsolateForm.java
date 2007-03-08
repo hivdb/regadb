@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.core.utils.WLength;
@@ -17,6 +19,8 @@ public class ViralIsolateForm extends FormWidget
 	private ViralIsolate viralIsolate_;
 
 	private WMenu tabForm_;
+	
+	private ViralIsolateMainForm _mainForm;
 
 	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
 	{
@@ -37,10 +41,24 @@ public class ViralIsolateForm extends FormWidget
 		tabForm_.resize(new WLength(100, WLengthUnit.Percentage), new WLength());
 		layout.elementAt(1, 0).resize(new WLength(20, WLengthUnit.FontEx), new WLength());
 
-		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), new ViralIsolateMainForm(this));
+		_mainForm = new ViralIsolateMainForm(this);
+		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), new WText(lt("lala")));
 	}
 
+	private void fillData()
+	{
+		if(getInteractionState()!=InteractionState.Adding)
+		{
+			Transaction t;
+			t = RegaDBMain.getApp().createTransaction();
+	        t.update(viralIsolate_);
+	        t.commit();
+	        
+	        _mainForm.fillData(viralIsolate_);
+		}
+	}
+	
 	@Override
 	public void saveData()
 	{

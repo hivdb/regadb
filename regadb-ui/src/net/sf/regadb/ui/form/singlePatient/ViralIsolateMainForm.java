@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -89,6 +90,10 @@ public class ViralIsolateMainForm extends WContainerWidget
 		subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
 		subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
-
+	}
+	
+	void fillData(ViralIsolate vi)
+	{
+		
 	}
 }
