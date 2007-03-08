@@ -311,3 +311,7 @@ ALTER TABLE ONLY attribute DROP COLUMN sequence_attribute;
 --remove obsolete fields from nt_sequence
 ALTER TABLE ONLY nt_sequence DROP COLUMN hiv_type;
 ALTER TABLE ONLY nt_sequence DROP COLUMN hiv_subtype;
+
+--add label and sequence_date to nt_sequence
+ALTER TABLE Nt_Sequence ADD COLUMN label character varying(50);
+ALTER TABLE Nt_Sequence ADD COLUMN sequence_date Date;
