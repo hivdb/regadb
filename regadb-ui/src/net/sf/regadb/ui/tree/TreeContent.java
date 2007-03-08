@@ -6,6 +6,7 @@ import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -48,6 +49,7 @@ public class TreeContent
     public ActionItem viralIsolates;
     public ActionItem viralIsolatesSelect;
     public ViralIsolateSelectedItem viralIsolateSelected;
+    public ActionItem viralIsolateView;
 
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
@@ -149,6 +151,14 @@ public class TreeContent
                         	RegaDBMain.getApp().getFormContainer().setForm(new SelectViralIsolateForm());
                         }
                     });
+    				viralIsolateSelected = new ViralIsolateSelectedItem(viralIsolates);
+    				viralIsolateView = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.view"), viralIsolateSelected, new ITreeAction()
+    				{
+						public void performAction(TreeMenuNode node)
+						{
+							RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedViralIsolate()));
+						}
+    				});
     		
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);

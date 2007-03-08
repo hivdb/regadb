@@ -25,7 +25,7 @@ public class ViralIsolateSelectedItem extends TreeMenuNode
 	{
 		selectedViralIsolate_ = selectedViralIsolate;
 		
-        ((WArgMessage)label().text()).changeArgument("{viralIsolatesId}", "["+selectedViralIsolate.getSampleId()+"]");
+        ((WArgMessage)label().text()).changeArgument("{viralIsolatesId}", selectedViralIsolate.getSampleId());
         
         refresh();
 	}

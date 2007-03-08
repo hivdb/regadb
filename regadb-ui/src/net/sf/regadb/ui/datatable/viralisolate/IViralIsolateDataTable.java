@@ -1,7 +1,12 @@
 package net.sf.regadb.ui.datatable.viralisolate;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -56,7 +61,25 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		
 		row[0] = DateUtils.getEuropeanFormat(type.getSampleDate());
 		row[1] = type.getSampleId();
-		row[2] = "";
+		
+		SortedSet<String> proteinList = new TreeSet<String>();
+		for(NtSequence ntseq : type.getNtSequences())
+		{
+			for(AaSequence aaseq : ntseq.getAaSequences())
+			{
+				proteinList.add(aaseq.getProtein().getAbbreviation());
+			}
+		}
+		
+		StringBuffer proteinBuffer = new StringBuffer(proteinList.size()*4);
+		for(Iterator<String> i = proteinList.iterator(); i.hasNext();)
+		{
+			proteinBuffer.append(i.next());
+			if(i.hasNext())
+			proteinBuffer.append("+");
+		}
+		row[2] = proteinBuffer.toString();
+		
 		row[3] = "";
 		
 		return row;
@@ -75,7 +98,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedViralIsolate(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();
-        //TODO select vi view node
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView.selectNode();
 	}
 
 	public boolean[] sortableFields()
