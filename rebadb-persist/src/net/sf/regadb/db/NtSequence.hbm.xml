@@ -18,6 +18,12 @@
     <property name="nucleotides" type="string">
       <column name="nucleotides" />
     </property>
+    <property name="label" type="string">
+      <column name="label" length="50" />
+    </property>
+    <property name="sequenceDate" type="date">
+      <column name="sequence_date" length="4" />
+    </property>
     <set name="aaSequences" inverse="false" cascade="all">
       <key>
         <column name="nt_sequence_ii" not-null="true" />
