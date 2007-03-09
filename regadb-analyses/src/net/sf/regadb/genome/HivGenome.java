@@ -68,7 +68,7 @@ public class HivGenome implements Genome {
                                     + "CAGATGGCAGGTGATGATTGTGTGGCAAGTAGACAGGATGAGGAT", "pol");
 
             Map<String, Protein> proteins = new HashMap<String, Protein>();
-            proteins.put("PRO", new Protein("p6", "Transframe peptide (partially)", 1, 48));
+            proteins.put("p6", new Protein("p6", "Transframe peptide (partially)", 1, 48));
             proteins.put("PRO", new Protein("PRO", "Protease", 48 + 1, 48 + 99));
             proteins.put("RT", new Protein("RT", "Reverse Transcriptase", 48 + 100, 48 + 659));
             proteins.put("IN", new Protein("IN", "Integrase", 48 + 660, 48 + 947));
