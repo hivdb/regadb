@@ -116,4 +116,29 @@ public class HivGenome implements Genome {
 
         return result;
     }
+    
+    public String getNtSequenceForProtein(String proteinAbbreviation)
+    {
+        Protein protein = null;
+        for(Map.Entry<String, OpenReadingFrame> readingFrameEntry : getOpenReadingFrames().entrySet())
+        {
+            for(Map.Entry<String, Protein> proteinEntry : readingFrameEntry.getValue().getProteins().entrySet())
+            {
+                if(proteinEntry.getKey().equals(proteinAbbreviation))
+                {
+                    protein = proteinEntry.getValue();
+                }
+            }
+        }
+        
+        if(protein==null)
+            return null;
+        
+        OpenReadingFrame orf = protein.getOrf();
+        
+        String proteinNt = orf.getSequence().seqString();
+        proteinNt = proteinNt.substring(protein.getFirstNt()-1, protein.getLastNt());
+        
+        return proteinNt;
+    }
 }
