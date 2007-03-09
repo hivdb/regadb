@@ -115,6 +115,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	{
 		DataComboMessage<NtSequence> currentSequence = (DataComboMessage<NtSequence>)ntSequenceCombo_.currentText();
 		
+		aaSequenceCombo_.clearItems();
+		
 		for(AaSequence aaseq : currentSequence.getValue().getAaSequences())
 		{
 			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getAaSequenceIi()+""));
