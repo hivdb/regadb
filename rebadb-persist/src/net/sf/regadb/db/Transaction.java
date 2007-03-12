@@ -356,6 +356,11 @@ public class Transaction {
     {
         session.delete(object);
     }
+    
+    public void refresh(Serializable object)
+    {
+        session.refresh(object);
+    }
 
     /*
      * Patient queries
