@@ -12,7 +12,6 @@ import net.sf.witty.wt.widgets.WMenu;
 import net.sf.witty.wt.widgets.WMenuOrientation;
 import net.sf.witty.wt.widgets.WStackedWidget;
 import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
 
 public class ViralIsolateForm extends FormWidget
 {
@@ -59,8 +58,9 @@ public class ViralIsolateForm extends FormWidget
 	        t.update(viralIsolate_);
 	        t.commit();
 	        
-	        _mainForm.fillData(viralIsolate_);
+            _mainForm.fillData(viralIsolate_);
 	        proteinForm_.fillData(viralIsolate_);
+            
 		}
 	}
 	

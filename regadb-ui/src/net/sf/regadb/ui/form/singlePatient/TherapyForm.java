@@ -193,7 +193,7 @@ public class TherapyForm extends FormWidget
 		}
 		//deleting old drugs
 		
-		t.update(therapy_);
+		t.save(therapy_);
 		t.commit();
 		
 		//adding new drugs
