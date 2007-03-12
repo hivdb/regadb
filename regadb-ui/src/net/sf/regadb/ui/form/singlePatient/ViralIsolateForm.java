@@ -28,6 +28,7 @@ public class ViralIsolateForm extends FormWidget
 		viralIsolate_ = viralIsolate;
 
 		init();
+		fillData();
 	}
 
 	public void init()
@@ -45,8 +46,6 @@ public class ViralIsolateForm extends FormWidget
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
 		proteinForm_ = new ViralIsolateProteinForm(this);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
-		
-		fillData();
 	}
 
 	private void fillData()
@@ -55,14 +54,23 @@ public class ViralIsolateForm extends FormWidget
 		{
 			Transaction t;
 			t = RegaDBMain.getApp().createTransaction();
-	        t.update(viralIsolate_);
+	        t.refresh(viralIsolate_);
 	        t.commit();
 	        
             _mainForm.fillData(viralIsolate_);
 	        proteinForm_.fillData(viralIsolate_);
             
 		}
+        else if(getInteractionState()==InteractionState.Editing)
+        {
+            
+        }
 	}
+    
+    public ViralIsolate getViralIsolate()
+    {
+        return viralIsolate_;
+    }
 	
 	@Override
 	public void saveData()

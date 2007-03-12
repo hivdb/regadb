@@ -13,7 +13,7 @@ public class ViralIsolateSelectedItem extends TreeMenuNode
 	public ViralIsolateSelectedItem(WTreeNode parent)
 	{
 		super(new WArgMessage("menu.singlePatient.viralIsolates.viralIsolatesSelectedItem"), parent);
-		((WArgMessage)label().text()).addArgument("{viralIsolatesId}", "[]");
+		((WArgMessage)label().text()).addArgument("{viralIsolatesId}", "");
 	}
 
 	public ViralIsolate getSelectedViralIsolate()

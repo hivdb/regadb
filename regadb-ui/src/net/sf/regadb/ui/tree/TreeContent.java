@@ -50,6 +50,7 @@ public class TreeContent
     public ActionItem viralIsolatesSelect;
     public ViralIsolateSelectedItem viralIsolateSelected;
     public ActionItem viralIsolateView;
+    public ActionItem viralIsolateEdit;
 
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
@@ -159,6 +160,13 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedViralIsolate()));
 						}
     				});
+                    viralIsolateEdit = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.edit"), viralIsolateSelected, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Editing, WWidget.tr("form.viralIsolate.edit"), viralIsolateSelected.getSelectedViralIsolate()));
+                        }
+                    });
     		
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);
