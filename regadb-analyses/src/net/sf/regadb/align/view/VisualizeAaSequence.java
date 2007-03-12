@@ -22,12 +22,11 @@ public class VisualizeAaSequence
     private StringBuffer refCodon = new StringBuffer();
     private StringBuffer tarCodon = new StringBuffer();
     
-    private int ntCounter = 0;
-    //private int aaCounter = 0;
+    private int aaCounter = 0;
+    private int lineCounter = 0;
     
     public String getAlignmentView (AaSequence aaseq)
     {
-        String proteinAbbrev = aaseq.getProtein().getAbbreviation();
         HivGenome genome = HivGenome.getHxb2();
         String proteinNt = genome.getNtSequenceForProtein(aaseq.getProtein().getAbbreviation());
                 
@@ -42,20 +41,20 @@ public class VisualizeAaSequence
         {
             if(i<(aaseq.getFirstAaPos()-1*3) || i>=aaseq.getLastAaPos()*3)
             {
-                addOneNt(proteinNt.charAt(i), ' ');
+                addNt(proteinNt.charAt(i), ' ');
             }
             else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getPosition()-1)*3==i)
             {
                 mutationCodon = extractMutationCodon(mutations[mutationIndex].getAaMutation());
-                addOneNt(proteinNt.charAt(i), mutationCodon.charAt(0));
-                addOneNt(proteinNt.charAt(i+1), mutationCodon.charAt(1));
-                addOneNt(proteinNt.charAt(i+2), mutationCodon.charAt(2));
+                addNt(proteinNt.charAt(i), mutationCodon.charAt(0));
+                addNt(proteinNt.charAt(i+1), mutationCodon.charAt(1));
+                addNt(proteinNt.charAt(i+2), mutationCodon.charAt(2));
                 i+=2;
                 mutationIndex++;
             }
             else
             {
-                addOneNt(proteinNt.charAt(i), proteinNt.charAt(i));
+                addNt(proteinNt.charAt(i), proteinNt.charAt(i));
             }
             
             if(insertions.length != insertionIndex && (insertions[insertionIndex].getId().getPosition()-1)*3==i)
@@ -64,9 +63,9 @@ public class VisualizeAaSequence
                 while(insertions[insertionIndex].getId().getPosition()==pos)
                 {
                     mutationCodon = extractMutationCodon(insertions[insertionIndex].getNtInsertionCodon());
-                    addOneNt('-', mutationCodon.charAt(0));
-                    addOneNt('-', mutationCodon.charAt(1));
-                    addOneNt('-', mutationCodon.charAt(2));
+                    addNt('-', mutationCodon.charAt(0));
+                    addNt('-', mutationCodon.charAt(1));
+                    addNt('-', mutationCodon.charAt(2));
                     
                     insertionIndex++;
                 }
@@ -74,16 +73,15 @@ public class VisualizeAaSequence
             
             if(refCodon.length()>=3)
             {
-                //give the triple nt, per three
-                refAa.append(AaSequenceHelper.getAminoAcid(refCodon.toString()));
-                tarAa.append(AaSequenceHelper.getAminoAcid(tarCodon.toString()));
-                refCodon.delete(0, 3);
-                tarCodon.delete(0, 3);
+                addAa();
             }
         }
+        
+        endOfAlignment();
 
         //return refAa.toString() + '\n' +refNt.toString() + '\n'+  tarNt.toString() + '\n' + tarAa.toString() + '\n';
-        return '\n' +refNt.toString() + '\n' + tarNt.toString() + '\n';
+        //return '\n' +refNt.toString() + '\n' + tarNt.toString() + '\n';
+        return page.toString();
     }
     
     public String extractMutationCodon(String codon)
@@ -92,21 +90,63 @@ public class VisualizeAaSequence
         return r.toLowerCase();
     }
     
-    public void addOneNt(char reference, char target)
+    private void addNt(char reference, char target)
     {
-        if(ntCounter==80)
-        {
-            refNt.append('\n');
-            tarNt.append('\n');
-            ntCounter = 0;
-        }
-        
         refNt.append(reference);
         refCodon.append(reference);
         tarNt.append(target);
         tarCodon.append(target);
-        ntCounter++;
+        diff.append(reference==target?'|':' ');
     }
+    
+    private void addAa()
+    {
+        refAa.append(AaSequenceHelper.getAminoAcid(refCodon.toString()));
+        tarAa.append(AaSequenceHelper.getAminoAcid(tarCodon.toString()));
+        refCodon.delete(0, 3);
+        tarCodon.delete(0, 3);
+        aaCounter++;
+        
+        nextLine();
+    }
+    
+    private void nextLine()
+    {
+        if(aaCounter==(LINE_SIZE/3.0))
+        {
+            endOfAlignment();
+        }
+    }
+    
+    private void endOfAlignment()
+    {
+        int fromNt = ((LINE_SIZE * lineCounter) + 1);
+        int toNt = fromNt + (aaCounter*3) - 1;
+        int fromAa = (((LINE_SIZE/3) * lineCounter) + 1);
+        int toAa = fromAa + aaCounter - 1;
+
+        page.append("Going from " + fromNt + " to " + toNt + " (" + fromAa + " to " + toAa + ")\n");
+        page.append(refAa);
+        page.append('\n');
+        refAa.delete(0, refAa.length());
+        page.append(refNt);
+        page.append('\n');
+        refNt.delete(0, refNt.length());
+        page.append(diff);
+        page.append('\n');
+        diff.delete(0, diff.length());
+        page.append(tarNt);
+        page.append('\n');
+        tarNt.delete(0, tarNt.length());
+        page.append(tarAa);
+        page.append('\n');
+        tarAa.delete(0, tarAa.length());
+        page.append('\n');
+
+        aaCounter = 0;
+        lineCounter++;
+    }
+    
     
     public static void main(String [] args)
     {
