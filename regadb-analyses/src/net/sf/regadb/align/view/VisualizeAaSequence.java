@@ -25,8 +25,12 @@ public class VisualizeAaSequence
     private int aaCounter = 0;
     private int lineCounter = 0;
     
+    private static String newLine = "<br>";
+    
     public String getAlignmentView (AaSequence aaseq)
     {
+        clear();
+        
         HivGenome genome = HivGenome.getHxb2();
         String proteinNt = genome.getNtSequenceForProtein(aaseq.getProtein().getAbbreviation());
                 
@@ -41,11 +45,11 @@ public class VisualizeAaSequence
         {
             if(i<(aaseq.getFirstAaPos()-1*3) || i>=aaseq.getLastAaPos()*3)
             {
-                addNt(proteinNt.charAt(i), ' ');
+                addNt(proteinNt.charAt(i), '-');
             }
             else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getPosition()-1)*3==i)
             {
-                mutationCodon = extractMutationCodon(mutations[mutationIndex].getAaMutation());
+                mutationCodon = extractMutationCodon(mutations[mutationIndex].getNtMutationCodon());
                 addNt(proteinNt.charAt(i), mutationCodon.charAt(0));
                 addNt(proteinNt.charAt(i+1), mutationCodon.charAt(1));
                 addNt(proteinNt.charAt(i+2), mutationCodon.charAt(2));
@@ -60,7 +64,7 @@ public class VisualizeAaSequence
             if(insertions.length != insertionIndex && (insertions[insertionIndex].getId().getPosition()-1)*3==i)
             {
                 short pos = insertions[insertionIndex].getId().getPosition();
-                while(insertions[insertionIndex].getId().getPosition()==pos)
+                while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getPosition()==pos)
                 {
                     mutationCodon = extractMutationCodon(insertions[insertionIndex].getNtInsertionCodon());
                     addNt('-', mutationCodon.charAt(0));
@@ -92,17 +96,37 @@ public class VisualizeAaSequence
     
     private void addNt(char reference, char target)
     {
-        refNt.append(reference);
+        if(reference==target || target == '-')
+        {
+            refNt.append(reference);
+            tarNt.append(target);
+        }
+        else
+        {
+            refNt.append("<font color=red>"+reference+"</font>");
+            tarNt.append("<font color=red>"+target+"</font>");
+        }
+        
         refCodon.append(reference);
-        tarNt.append(target);
         tarCodon.append(target);
         diff.append(reference==target?'|':' ');
     }
     
     private void addAa()
     {
-        refAa.append(AaSequenceHelper.getAminoAcid(refCodon.toString()));
-        tarAa.append(AaSequenceHelper.getAminoAcid(tarCodon.toString()));
+        String ref = AaSequenceHelper.getAminoAcid(refCodon.toString());
+        String tar = AaSequenceHelper.getAminoAcid(tarCodon.toString());
+        if(ref.equals(tar) || tar.toString().equals(" - "))
+        {
+            refAa.append(ref);
+            tarAa.append(tar);
+        }
+        else
+        {
+            refAa.append("<font color=red>"+ref+"</font>");
+            tarAa.append("<font color=red>"+tar+"</font>");
+        }
+
         refCodon.delete(0, 3);
         tarCodon.delete(0, 3);
         aaCounter++;
@@ -125,28 +149,34 @@ public class VisualizeAaSequence
         int fromAa = (((LINE_SIZE/3) * lineCounter) + 1);
         int toAa = fromAa + aaCounter - 1;
 
-        page.append("Going from " + fromNt + " to " + toNt + " (" + fromAa + " to " + toAa + ")\n");
-        page.append(refAa);
-        page.append('\n');
-        refAa.delete(0, refAa.length());
-        page.append(refNt);
-        page.append('\n');
-        refNt.delete(0, refNt.length());
-        page.append(diff);
-        page.append('\n');
-        diff.delete(0, diff.length());
-        page.append(tarNt);
-        page.append('\n');
-        tarNt.delete(0, tarNt.length());
-        page.append(tarAa);
-        page.append('\n');
-        tarAa.delete(0, tarAa.length());
-        page.append('\n');
+        page.append("Going from " + fromNt + " to " + toNt + " (" + fromAa + " to " + toAa + ")"+ newLine);
+        
+        appendLineToPage(refAa);
+        appendLineToPage(refNt);
+        appendLineToPage(diff);
+        appendLineToPage(tarNt);
+        appendLineToPage(tarAa);
 
         aaCounter = 0;
         lineCounter++;
     }
     
+    private void appendLineToPage(StringBuffer b)
+    {
+        page.append(b+newLine);
+        b.delete(0, b.length());
+    }
+    
+    private void clear()
+    {
+        if(page.length()!=0)
+        {
+            page.delete(0, page.length());
+        }
+        
+        aaCounter = 0;
+        lineCounter = 0;
+    }
     
     public static void main(String [] args)
     {
