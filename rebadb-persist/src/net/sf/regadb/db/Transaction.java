@@ -334,17 +334,22 @@ public class Transaction {
      * @param settings
      */
     public void save(SettingsUser settings) {
-        session.saveOrUpdate(settings);
+        session.save(settings);
     }
     
     public void update(Patient patient) 
     {
-        session.saveOrUpdate(patient.getPatient());
+        session.update(patient.getPatient());
     }
     
     public void update(Serializable object) 
     {
-        session.saveOrUpdate(object);
+        session.update(object);
+    }
+    
+    public void save(Serializable object) 
+    {
+        session.save(object);
     }
     
     public void delete(Serializable object)
