@@ -1,8 +1,11 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.align.view.VisualizeAaSequence;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -11,6 +14,7 @@ import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WFont;
 import net.sf.witty.wt.widgets.WFontGenericFamily;
+import net.sf.witty.wt.widgets.WFontSize;
 import net.sf.witty.wt.widgets.WGroupBox;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.event.WEmptyEvent;
@@ -35,6 +39,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private TextField synonymousTF;
 	private Label nonSynonymousL;
 	private TextField nonSynonymousTF;
+    
+	private VisualizeAaSequence visAaSeq_ = new VisualizeAaSequence();
 	
 	public ViralIsolateProteinForm(ViralIsolateForm viralIsolateForm)
 	{
@@ -63,7 +69,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		alignmentL = new Label(tr("form.viralIsolate.editView.label.alignment"));
 		alignmentTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		alignmentTF.decorationStyle().setFont(new WFont(WFontGenericFamily.Monospace, "Courier"));
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, alignmentL, alignmentTF);
+        viralIsolateForm_.addLineToTable(proteinGroupTable_, alignmentL, alignmentTF);
 		synonymousL = new Label(tr("form.viralIsolate.editView.label.synonymous"));
 		synonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(proteinGroupTable_, synonymousL, synonymousTF);
@@ -78,7 +84,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		{
 			if(ntseq.getAaSequences().size()!=0)
 			{
-				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getNtSequenceIi()+""));
+				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
 			}
 		}
 		
@@ -105,10 +111,16 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	
 	private void setAaData()
 	{
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
 		AaSequence aaSequence = ((DataComboMessage<AaSequence>)aaSequenceCombo_.currentText()).getValue();
-		
+        t.attach(aaSequence);
+        
 		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
 		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
+        alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
+        
+        t.commit();
 	}
 	
 	private void setAaSequenceCombo()
@@ -117,9 +129,12 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		
 		aaSequenceCombo_.clearItems();
 		
+        Transaction t = RegaDBMain.getApp().createTransaction();
 		for(AaSequence aaseq : currentSequence.getValue().getAaSequences())
 		{
-			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getAaSequenceIi()+""));
+			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
 		}
+        
+        t.commit();
 	}
 }

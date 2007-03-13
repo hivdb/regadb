@@ -54,11 +54,11 @@ public class ViralIsolateForm extends FormWidget
 		{
 			Transaction t;
 			t = RegaDBMain.getApp().createTransaction();
-	        t.refresh(viralIsolate_);
+	        t.attach(viralIsolate_);
 	        t.commit();
 	        
             _mainForm.fillData(viralIsolate_);
-	        proteinForm_.fillData(viralIsolate_);
+            proteinForm_.fillData(viralIsolate_);
             
 		}
         else if(getInteractionState()==InteractionState.Editing)
