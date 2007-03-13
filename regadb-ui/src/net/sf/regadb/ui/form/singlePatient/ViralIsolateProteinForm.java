@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import net.sf.regadb.align.view.VisualizeAaSequence;
+import net.sf.regadb.analysis.functions.MutationHelper;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
@@ -14,7 +15,6 @@ import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WFont;
 import net.sf.witty.wt.widgets.WFontGenericFamily;
-import net.sf.witty.wt.widgets.WFontSize;
 import net.sf.witty.wt.widgets.WGroupBox;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.event.WEmptyEvent;
@@ -119,6 +119,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
 		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
         alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
+        synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
+        nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
         
         t.commit();
 	}
