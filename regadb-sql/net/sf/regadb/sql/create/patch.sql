@@ -315,3 +315,21 @@ ALTER TABLE ONLY nt_sequence DROP COLUMN hiv_subtype;
 --add label and sequence_date to nt_sequence
 ALTER TABLE Nt_Sequence ADD COLUMN label character varying(50);
 ALTER TABLE Nt_Sequence ADD COLUMN sequence_date Date;
+
+--create attribute group table
+CREATE TABLE attribute_group (
+    attribute_group_ii serial NOT NULL,
+    group_name character varying(50),
+    version integer
+);
+
+ALTER TABLE ONLY attribute_group
+    ADD CONSTRAINT attribute_group_pkey PRIMARY KEY (attribute_group_ii);
+
+REVOKE ALL ON TABLE attribute_group FROM PUBLIC;
+GRANT SELECT ON TABLE attribute_group TO GROUP researchers;
+GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE attribute_group TO GROUP clinicians;
+
+REVOKE ALL ON TABLE attribute_group_attribute_group_ii_seq FROM PUBLIC;
+GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE attribute_group_attribute_group_ii_seq TO GROUP clinicians;
+GRANT SELECT ON TABLE attribute_group_attribute_group_ii_seq TO GROUP researchers;
