@@ -13,6 +13,7 @@
         <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
         <mapping resource="net/sf/regadb/db/SettingsUser.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/AttributeGroup.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyDrugs.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
