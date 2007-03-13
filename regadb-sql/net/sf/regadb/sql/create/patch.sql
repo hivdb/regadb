@@ -333,3 +333,8 @@ GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE attribute_group TO GROUP clinicians;
 REVOKE ALL ON TABLE attribute_group_attribute_group_ii_seq FROM PUBLIC;
 GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE attribute_group_attribute_group_ii_seq TO GROUP clinicians;
 GRANT SELECT ON TABLE attribute_group_attribute_group_ii_seq TO GROUP researchers;
+
+--make the attribute point to an attribute_group instead of using a simple string
+ALTER TABLE ONLY attribute DROP COLUMN attribute_group;
+ALTER TABLE ONLY attribute ADD COLUMN attribute_group_ii integer;
+ALTER TABLE ONLY attribute ADD CONSTRAINT "FK_attribute_attribute_group" FOREIGN KEY (attribute_group_ii) REFERENCES attribute_group(attribute_group_ii) ON UPDATE CASCADE;

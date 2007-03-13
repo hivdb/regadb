@@ -15,11 +15,11 @@
     <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select">
       <column name="value_type_ii" />
     </many-to-one>
+    <many-to-one name="attributeGroup" class="net.sf.regadb.db.AttributeGroup" fetch="select">
+      <column name="attribute_group_ii" />
+    </many-to-one>
     <property name="name" type="string">
       <column name="name" length="50" not-null="true" />
-    </property>
-    <property name="attributeGroup" type="string">
-      <column name="attribute_group" length="100" />
     </property>
     <set name="attributeNominalValues" inverse="false" cascade="all">
       <key>

@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 23/01/2007 09:16:11 by Hibernate Tools 3.2.0.beta8
+// Generated 13/03/2007 12:22:27 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,9 +18,9 @@ public class Attribute implements java.io.Serializable {
 
     private ValueType valueType;
 
-    private String name;
+    private AttributeGroup attributeGroup;
 
-    private String attributeGroup;
+    private String name;
 
     private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
             0);
@@ -37,11 +37,11 @@ public class Attribute implements java.io.Serializable {
     }
 
     /** full constructor */
-    public Attribute(ValueType valueType, String name, String attributeGroup,
-            Set<AttributeNominalValue> attributeNominalValues) {
+    public Attribute(ValueType valueType, AttributeGroup attributeGroup,
+            String name, Set<AttributeNominalValue> attributeNominalValues) {
         this.valueType = valueType;
-        this.name = name;
         this.attributeGroup = attributeGroup;
+        this.name = name;
         this.attributeNominalValues = attributeNominalValues;
     }
 
@@ -70,20 +70,20 @@ public class Attribute implements java.io.Serializable {
         this.valueType = valueType;
     }
 
+    public AttributeGroup getAttributeGroup() {
+        return this.attributeGroup;
+    }
+
+    public void setAttributeGroup(AttributeGroup attributeGroup) {
+        this.attributeGroup = attributeGroup;
+    }
+
     public String getName() {
         return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAttributeGroup() {
-        return this.attributeGroup;
-    }
-
-    public void setAttributeGroup(String attributeGroup) {
-        this.attributeGroup = attributeGroup;
     }
 
     public Set<AttributeNominalValue> getAttributeNominalValues() {
