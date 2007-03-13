@@ -130,6 +130,20 @@ public class Transaction {
         return q.list();
     }
     
+    @SuppressWarnings("unchecked")
+    public List<ValueType> getValueTypes()
+    {
+        Query q = session.createQuery("from ValueType");
+        return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<AttributeGroup> getAttributeGroups()
+    {
+        Query q = session.createQuery("from AttributeGroup");
+        return q.list();
+    }
+    
     public Map<String, Protein> getProteinMap() {
         List<Protein> proteins = getProteins();
         Map<String, Protein> result = new HashMap<String, Protein>();
@@ -644,7 +658,7 @@ public class Transaction {
         Query q = session.createQuery("from Attribute attribute " + 
                                     "where attribute.attributeIi = :attributeId");
         
-        q.setParameter("testResultId", attribute.getAttributeIi());
+        q.setParameter("attributeId", attribute.getAttributeIi());
     
         return q.uniqueResult() !=null;
     }
