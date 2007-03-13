@@ -242,7 +242,7 @@ public class SinglePatientForm extends FormWidget
         PatientAttributeValue value;
         for(Attribute attribute : attributes)
         {
-            groupName = attribute.getAttributeGroup();
+            groupName = attribute.getAttributeGroup().getGroupName();
             if(groupName==null)
             {
                 groupName = "form.singlePatient.editView.generalAttribute";
