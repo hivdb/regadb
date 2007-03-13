@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jwt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
