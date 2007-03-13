@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
@@ -17,7 +18,6 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
-import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -25,14 +25,9 @@ import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class SinglePatientForm extends FormWidget
 {
@@ -237,21 +232,26 @@ public class SinglePatientForm extends FormWidget
     {
         HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groups = new HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>>();
         
-        String groupName;
+        AttributeGroup groupName;
+        String groupStr;
         ArrayList<Pair<Attribute, PatientAttributeValue>> listOfAttributesInOneGroup;
         PatientAttributeValue value;
         for(Attribute attribute : attributes)
         {
-            groupName = attribute.getAttributeGroup().getGroupName();
+            groupName = attribute.getAttributeGroup();
             if(groupName==null)
             {
-                groupName = "form.singlePatient.editView.generalAttribute";
+                groupStr = "form.singlePatient.editView.generalAttribute";
             }
-            listOfAttributesInOneGroup = groups.get(groupName);
+            else
+            {
+                groupStr = groupName.getGroupName();
+            }
+            listOfAttributesInOneGroup = groups.get(groupStr);
             if(listOfAttributesInOneGroup==null)
             {
                 listOfAttributesInOneGroup = new ArrayList<Pair<Attribute, PatientAttributeValue>>();
-                groups.put(groupName, listOfAttributesInOneGroup);
+                groups.put(groupStr, listOfAttributesInOneGroup);
             }
             value = null;
             for(PatientAttributeValue attributeValue : attributeValueList)
