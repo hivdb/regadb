@@ -586,4 +586,66 @@ public class Transaction {
         
         return ((Long)q.uniqueResult()).longValue();
     }
+    
+    /**
+     * Returns a Page of Attributes,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Attribute> getAttributes(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from Attribute as attribute ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    /**
+     * Returns the count of Attributes,
+     * for the given constraints.
+     */
+    @SuppressWarnings("unchecked")
+    public long getAttributeCount(HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "select count(attribute) from Attribute as attribute ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+      
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    public boolean attributeStillExists(Attribute attribute)
+    {
+        Query q = session.createQuery("from Attribute attribute " + 
+                                    "where attribute.attributeIi = :attributeId");
+        
+        q.setParameter("testResultId", attribute.getAttributeIi());
+    
+        return q.uniqueResult() !=null;
+    }
 }
