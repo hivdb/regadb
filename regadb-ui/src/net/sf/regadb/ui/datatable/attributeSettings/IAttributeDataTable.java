@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.datatable.attribute;
+package net.sf.regadb.ui.datatable.attributeSettings;
 
 import java.util.List;
 

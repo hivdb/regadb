@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.datatable.attribute;
+package net.sf.regadb.ui.datatable.attributeSettings;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.ui.framework.forms.IForm;
