@@ -13,7 +13,7 @@ public class AttributeSelectedItem extends TreeMenuNode
     public AttributeSelectedItem(WTreeNode parent)
     {
         super(new WArgMessage("menu.attributeSettings.attributeSelectedItem"), parent);
-        ((WArgMessage)label().text()).addArgument("{attributeId}", "");
+        ((WArgMessage)label().text()).addArgument("{attributeSelectedItem}", "");
     }
 
     public Attribute getSelectedAttribute()
@@ -25,7 +25,7 @@ public class AttributeSelectedItem extends TreeMenuNode
     {
         selectedAttribute_ = selectedAttribute;
         
-        ((WArgMessage)label().text()).changeArgument("{attributeId}", selectedAttribute.getName());
+        ((WArgMessage)label().text()).changeArgument("{attributeSelectedItem}", selectedAttribute.getName());
         
         refresh();
     }

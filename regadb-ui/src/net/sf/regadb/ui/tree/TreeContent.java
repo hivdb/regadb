@@ -1,9 +1,10 @@
 package net.sf.regadb.ui.tree;
 
-import net.sf.regadb.ui.datatable.attribute.SelectAttributeForm;
+import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
+import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -180,7 +181,14 @@ public class TreeContent
 		myAccountMain = new MyAccountItem(rootItem);
 			myAccountLogin = new LoginItem(myAccountMain);
             
-       attributesSettings = new ActionItem(rootItem.tr("menu.attributeSettings.attributeSettings"), rootItem);
+       attributesSettings = new ActionItem(rootItem.tr("menu.attributeSettings.attributeSettings"), rootItem)
+       {
+            @Override
+            public boolean isEnabled()
+            {
+                return RegaDBMain.getApp().getLogin()!=null;
+            }
+       };
            attributes = new ActionItem(rootItem.tr("menu.attributeSettings.attributes"), attributesSettings);
            attributesSelect  = new ActionItem(rootItem.tr("menu.attributeSettings.attributes.select"), attributes, new ITreeAction()
            {
@@ -193,7 +201,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                    //RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attribute.add"), null));
                 }
             });
            attributesSelected = new AttributeSelectedItem(attributes);
@@ -201,14 +209,14 @@ public class TreeContent
            {
                public void performAction(TreeMenuNode node)
                {
-                   //RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedViralIsolate()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attribute.view"), attributesSelected.getSelectedAttribute()));
                }
            });
            attributesEdit = new ActionItem(rootItem.tr("menu.attributeSettings.attributes.edit"), attributesSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   //RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedViralIsolate()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attribute.edit"), attributesSelected.getSelectedAttribute()));
                }
            });
 
