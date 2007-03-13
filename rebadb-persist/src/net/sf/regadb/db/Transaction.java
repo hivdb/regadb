@@ -16,6 +16,7 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -355,6 +356,11 @@ public class Transaction {
     public void delete(Serializable object)
     {
         session.delete(object);
+    }
+    
+    public void attach(Object o)
+    {
+        session.lock(o, LockMode.NONE);
     }
     
     public void refresh(Serializable object)
