@@ -50,6 +50,25 @@ public class ComboBox extends FormField
         }
     }
     
+    public void removeItem(WMessage toRemove)
+    {
+        if(fieldEdit_!=null)
+        {
+            int index = -1;
+            for(int i = 0; i<fieldEdit_.count(); i++)
+            {
+                if(fieldEdit_.itemText(i).equals(toRemove))
+                {
+                    index = i;
+                }
+            }
+            if(index!=-1)
+            {
+                fieldEdit_.removeItem(index);
+            }
+        }
+    }
+    
     public WMessage currentText()
     {
     	if(fieldEdit_!=null)
