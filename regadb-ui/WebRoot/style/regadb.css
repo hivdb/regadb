@@ -58,6 +58,16 @@
 	
 }
 
+*.form-field-ntfield-edit-invalid
+{
+	background-color: red;
+}
+
+*.form-field-ntfield-edit-valid
+{
+
+}
+
 *.form-field-combo-edit-invalid
 {
 	background-color: red;
