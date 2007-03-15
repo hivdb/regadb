@@ -4,10 +4,13 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WCssDecorationStyle;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WLineEdit;
 import net.sf.witty.wt.widgets.WLineEditEchoMode;
+import net.sf.witty.wt.widgets.event.WEmptyEvent;
+import net.sf.witty.wt.widgets.event.WKeyEvent;
 
 public class TextField extends FormField
 {
@@ -88,5 +91,13 @@ public class TextField extends FormField
 		{
 			return getViewWidget().decorationStyle();
 		}
+    }
+    
+    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    {
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.changed.addListener(listener);
+        }
     }
 }
