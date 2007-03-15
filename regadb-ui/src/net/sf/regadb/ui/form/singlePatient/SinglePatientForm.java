@@ -205,7 +205,7 @@ public class SinglePatientForm extends FormWidget
                     }
                     else
                     {
-                    	attributeFieldTF = getTextField(ValueTypes.getValueType(attrEl.getKey().getValueType().getValueTypeIi()));
+                    	attributeFieldTF = getTextField(ValueTypes.getValueType(attrEl.getKey().getValueType()));
                         if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
                         {
                         attributeFieldTF.setText(attrEl.getValue().getValue());

@@ -87,7 +87,7 @@ public class TestResultForm extends FormWidget
         setTestCombo(t, type);
         t.commit();
         
-        ValueTypes valueType = ValueTypes.getValueType(type.getValueType().getValueTypeIi());
+        ValueTypes valueType = ValueTypes.getValueType(type.getValueType());
         if(valueType == ValueTypes.NOMINAL_VALUE)
         {
         	testResultNominalValueCB = new ComboBox(getInteractionState(), this);

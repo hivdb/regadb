@@ -7,9 +7,9 @@ public enum ValueTypes
     STRING,
     NOMINAL_VALUE;
     
-    public static ValueTypes getValueType(int valueTypeKey)
+    public static ValueTypes getValueType(ValueType vt)
     {
-        switch(valueTypeKey)
+        switch(vt.getValueTypeIi())
         {
         case 1:
             return NUMBER;
