@@ -662,4 +662,13 @@ public class Transaction {
     
         return q.uniqueResult() !=null;
     }
+    
+    public long getAttributeUsage(Attribute attribute)
+    {
+        Query q = session.createQuery("select count(attributeValue.id.attribute) from PatientAttributeValue attributeValue where attributeValue.id.attribute = :idParam");
+
+        q.setParameter("idParam", attribute);
+
+        return ((Long)q.uniqueResult()).longValue();
+    }
 }
