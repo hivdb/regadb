@@ -16,8 +16,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -32,8 +35,10 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.compare.DrugGenericComparator;
+import net.sf.regadb.db.compare.TestResultComparator;
 
 public class PatientChart
 {
@@ -140,6 +145,13 @@ public class PatientChart
 			{
 				drugList.add(tg.getId().getDrugGeneric());
 			}
+            for (TherapyCommercial tc : therapy.getTherapyCommercials())
+            {
+                for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
+                {
+                    drugList.add(dg);
+                }
+            }
 		}
 
 		IMAGE_WIDTH = us.getChartWidth();
@@ -166,6 +178,20 @@ public class PatientChart
 		bold = new BasicStroke(2, bold.getEndCap(), bold.getLineJoin(), bold.getMiterLimit(), bold.getDashArray(), 0);
 	}
 
+    private List<TestResult> getSortedTestResults()
+    {
+        List<TestResult> list = new ArrayList<TestResult>();
+        
+        for (TestResult r : data.getTestResults())
+        {
+            list.add(r);
+        }
+        
+        Collections.sort(list, new TestResultComparator());
+        
+        return list;
+    }
+    
 	public void writePngChart(int dimx, OutputStream result) throws IOException
 	{
 		width_ = IMAGE_WIDTH;
@@ -273,18 +299,38 @@ public class PatientChart
 
 			for (Therapy f : data.getTherapies())
 			{
-				if (f.getTherapyGenerics().contains(drug))
-				{
-					int x1 = computeX(f.getStartDate());
-					int x2 = computeX(f.getStopDate() == null ? maxDate : f.getStopDate());
-					x2 = Math.max(x2, x1 + 1);
-
-					vg.setColor(COLOR_DRUG_USED);
-					vg.fillRect(x1, ytop + 2, x2 - x1, DRUG_HEIGHT - 4);
-				}
+				for(TherapyGeneric tg : f.getTherapyGenerics())
+                {
+                    if(drug.getGenericName().equals(tg.getId().getDrugGeneric().getGenericName()))
+                    {
+                        drawTherapy(f, vg, ytop);
+                    }
+                }
+                
+                for(TherapyCommercial tc : f.getTherapyCommercials())
+                {
+                    for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
+                    {
+                        if(dg.getGenericName().equals(drug.getGenericName()))
+                        {
+                            drawTherapy(f, vg, ytop);
+                        }
+                    }
+                }
 			}
+            n++;
 		}
 	}
+    
+    private void drawTherapy(Therapy f, Graphics2D vg, int ytop)
+    {
+            int x1 = computeX(f.getStartDate());
+            int x2 = computeX(f.getStopDate() == null ? maxDate : f.getStopDate());
+            x2 = Math.max(x2, x1 + 1);
+
+            vg.setColor(COLOR_DRUG_USED);
+            vg.fillRect(x1, ytop + 2, x2 - x1, DRUG_HEIGHT - 4);
+    }
 
 	private int getTestType(TestResult result)
 	{
@@ -314,7 +360,7 @@ public class PatientChart
 
 		vg.setStroke(bold);
 
-		for (TestResult r : data.getTestResults())
+		for (TestResult r : getSortedTestResults())
 		{
 			if (getTestType(r) == testType)
 			{
@@ -377,7 +423,7 @@ public class PatientChart
 		minVL = 10;
 		maxVL = 10000;
 
-		for (TestResult r : data.getTestResults())
+		for (TestResult r : getSortedTestResults())
 		{
 			if (getTestType(r) == TEST_TYPE_VL)
 			{
@@ -398,7 +444,7 @@ public class PatientChart
 		minCD4 = 0;
 		maxCD4 = 500;
 
-		for (TestResult r : data.getTestResults())
+		for (TestResult r : getSortedTestResults())
 		{
 			if (getTestType(r) == TEST_TYPE_CD4)
 			{
@@ -491,9 +537,9 @@ public class PatientChart
 		for (DrugGeneric drug : drugList)
 		{
 			int ytop = CHART_HEIGHT + BORDER_CHART_DRUGS + (n * DRUG_HEIGHT);
-			drawString(vg, drug.getGenericName(), ALIGNMENT_LEFT, ALIGNMENT_CENTER, IMAGE_WIDTH - BORDER_H + 6, ytop
+			drawString(vg, drug.getGenericId(), ALIGNMENT_LEFT, ALIGNMENT_CENTER, IMAGE_WIDTH - BORDER_H + 6, ytop
 					+ DRUG_HEIGHT / 2);
-			drawString(vg, drug.getGenericName(), ALIGNMENT_RIGHT, ALIGNMENT_CENTER, BORDER_H - 6, ytop + DRUG_HEIGHT
+			drawString(vg, drug.getGenericId(), ALIGNMENT_RIGHT, ALIGNMENT_CENTER, BORDER_H - 6, ytop + DRUG_HEIGHT
 					/ 2);
 			vg.drawRect(BORDER_H, ytop + 2, IMAGE_WIDTH - 2 * BORDER_H, DRUG_HEIGHT - 4);
 			++n;
@@ -560,7 +606,7 @@ public class PatientChart
 
 		minDate = cal.getTime();
 
-		for (TestResult r : data.getTestResults())
+		for (TestResult r : getSortedTestResults())
 		{
 			if ((getTestType(r) == TEST_TYPE_CD4) || (getTestType(r) == TEST_TYPE_VL))
 			{
