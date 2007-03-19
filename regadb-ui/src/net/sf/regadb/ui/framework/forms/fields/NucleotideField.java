@@ -4,11 +4,13 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
+import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WCheckBox;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WTextArea;
+import net.sf.witty.wt.widgets.event.WEmptyEvent;
 
 public class NucleotideField extends FormField
 {
@@ -33,6 +35,7 @@ public class NucleotideField extends FormField
             
             /*addWidget(_fieldEdit);*/
             flagValid();
+            _fieldEdit.setValidator(new WNucleotideValidator());
         }
         else
         {
@@ -40,11 +43,6 @@ public class NucleotideField extends FormField
         }
         
         form.addFormField(this);
-        
-        if(_fieldEdit!=null)
-        {
-            //TODO set validator
-        }
     }
     
     public WFormWidget getFormWidget()
@@ -72,14 +70,16 @@ public class NucleotideField extends FormField
         return replaceAllPatterns(_fieldEdit.text(), "\n", "");
     }
     
+    @Override
     protected void setViewMessage(WMessage message)
     {
-        super.setViewMessage(message);
+        super.setViewMessage(lt(createLinesFromText("<br>", message.value())));
     }
     
+    @Override
     protected WMessage getViewMessage()
     {
-        return super.getViewMessage();
+        return lt(replaceAllPatterns(super.getViewMessage().value(), "<br>", ""));
     }
     
     public static String replaceAllPatterns(String str, String pattern, String replace) 
@@ -129,5 +129,13 @@ public class NucleotideField extends FormField
         }
         
         return newsb.toString();
+    }
+    
+    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    {
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.changed.addListener(listener);
+        }
     }
 }
