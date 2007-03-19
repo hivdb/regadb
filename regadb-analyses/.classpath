@@ -5,5 +5,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
 	<classpathentry kind="lib" path="/regadb-persist/bin" sourcepath="/regadb-persist/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/biojava-1.5-beta2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bytecode.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-cli.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-pool-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
