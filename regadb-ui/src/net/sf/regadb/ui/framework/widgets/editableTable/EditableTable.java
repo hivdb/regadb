@@ -25,7 +25,8 @@ public class EditableTable<DataType> extends WContainerWidget
     private ArrayList<DataType> items_;
     
     private ArrayList<DataType> itemList_ = new ArrayList<DataType>();
-    
+    private ArrayList<DataType> removedItemList_ = new ArrayList<DataType>();
+        
     public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, ArrayList<DataType> items)
     {
         super(parent);
@@ -92,6 +93,7 @@ public class EditableTable<DataType> extends WContainerWidget
         for(Integer index : indexes)
         {
             itemTable_.deleteRow(index+1-amountOfRowsAlreadyDeleted);
+            removedItemList_.add(itemList_.get(index-amountOfRowsAlreadyDeleted));
             itemList_.remove(index-amountOfRowsAlreadyDeleted);
             amountOfRowsAlreadyDeleted++;
         }
@@ -114,5 +116,39 @@ public class EditableTable<DataType> extends WContainerWidget
             colIndex++;
         }
         itemList_.add(item);
+    }
+    
+    public void saveData()
+    {
+        DataType dt;
+        for(int i = 0; i < itemList_.size(); i++)
+        {
+            dt = itemList_.get(i);
+            if(dt==null)
+            {
+                editableList_.addData(getWidgets(i+1));
+            }
+            else
+            {
+                editableList_.changeData(dt, getWidgets(i+1));
+            }
+        }
+        
+        for(DataType type : removedItemList_)
+        {
+            editableList_.deleteData(type);
+        }
+    }
+    
+    private WWidget[] getWidgets(int row)
+    {
+        WWidget[] widgets = new WWidget[itemTable_.numColumns()-1];
+        
+        for(int i = 1; i < itemTable_.numColumns(); i++)
+        {
+            widgets[i-1] = itemTable_.elementAt(row, i).children().get(0);
+        }
+        
+        return widgets;
     }
 }
