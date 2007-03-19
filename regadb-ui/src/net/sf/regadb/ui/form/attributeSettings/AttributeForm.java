@@ -42,6 +42,7 @@ public class AttributeForm extends FormWidget
     //nominal values group
     private WGroupBox nominalValuesGroup_;
     private EditableTable<AttributeNominalValue> nominalValuesList_;
+    private IAttributeNominalValueDataList iNominalValuesList_;
     
     public AttributeForm(InteractionState interactionState, WMessage formName, Attribute attribute)
     {
@@ -72,7 +73,7 @@ public class AttributeForm extends FormWidget
         if(getInteractionState()!=InteractionState.Adding)
         {
             usageL = new Label(tr("form.attributeSettings.attribute.editView.usage"));
-            usageTF = new TextField(InteractionState.Viewing, this);
+            usageTF = new TextField(InteractionState.Viewing, null);
             addLineToTable(generalGroupTable_, usageL, usageTF);
         }
         
@@ -141,7 +142,8 @@ public class AttributeForm extends FormWidget
                 }
                 t.commit();
             }
-            nominalValuesList_ = new EditableTable<AttributeNominalValue>(nominalValuesGroup_, new IAttributeNominalValueDataList(this), list);
+            iNominalValuesList_ = new IAttributeNominalValueDataList(this);
+            nominalValuesList_ = new EditableTable<AttributeNominalValue>(nominalValuesGroup_, iNominalValuesList_, list);
         }
     }
     
@@ -181,6 +183,27 @@ public class AttributeForm extends FormWidget
     @Override
     public void saveData() 
     {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        if(!(getInteractionState()==InteractionState.Adding))
+        {
+            t.attach(attribute_);
+        }
+        AttributeGroup ag = ((DataComboMessage<AttributeGroup>)groupCB.currentText()).getValue();
+        t.update(ag);
+        ValueType vt = ((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue();
+        t.attach(vt);
+        attribute_.setName(nameTF.text());
+        attribute_.setValueType(vt);
+        attribute_.setAttributeGroup(ag);
         
+        if(!nominalValuesGroup_.isHidden())
+        {
+            iNominalValuesList_.setAttribute(attribute_);
+            iNominalValuesList_.setTransaction(t);
+            nominalValuesList_.saveData();
+        }
+        
+        t.save(attribute_);
+        t.commit();
     }
 }

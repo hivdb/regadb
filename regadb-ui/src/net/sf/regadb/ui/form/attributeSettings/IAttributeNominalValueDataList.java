@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -12,6 +14,9 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
     private FormWidget form_;
     private static final String [] headers_ = {"editableTable.attributeNominvalValue.colName.name"};
     
+    private Attribute attribute_;
+    private Transaction transaction_;
+    
     public IAttributeNominalValueDataList(FormWidget form)
     {
         form_ = form;
@@ -19,17 +24,26 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
     
     public void addData(WWidget[] widgets) 
     {
-        
+        AttributeNominalValue anv = new AttributeNominalValue(attribute_, ((TextField)widgets[0]).text());
+        attribute_.getAttributeNominalValues().add(anv);
     }
 
     public void changeData(AttributeNominalValue type, WWidget[] widgets) 
     {
-        
+        for(AttributeNominalValue anv : attribute_.getAttributeNominalValues())
+        {
+            if(type.getNominalValueIi().equals(anv.getNominalValueIi()))
+            {
+                anv.setValue(((TextField)widgets[0]).text());
+                break;
+            }
+        }
     }
 
     public void deleteData(AttributeNominalValue type) 
     {
-        
+        attribute_.getAttributeNominalValues().remove(type);
+        transaction_.delete(type);
     }
 
     public InteractionState getInteractionState() 
@@ -53,6 +67,22 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
         {
         tf.setText(type.getValue());
         }
+        
         return widgets;
+    }
+
+    public Attribute getAttribute() 
+    {
+        return attribute_;
+    }
+
+    public void setAttribute(Attribute attribute) 
+    {
+        this.attribute_ = attribute;
+    }
+
+    public void setTransaction(Transaction transaction) 
+    {
+        this.transaction_ = transaction;
     }
 }
