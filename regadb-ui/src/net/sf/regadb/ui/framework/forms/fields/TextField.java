@@ -30,7 +30,10 @@ public class TextField extends FormField
 		    initViewWidget();
 		}
 		
-		form.addFormField(this);
+        if(form!=null)
+        {
+            form.addFormField(this);
+        }
         
 		if(_fieldEdit!=null)
 		{
