@@ -28,7 +28,7 @@ public class ViralIsolateForm extends FormWidget
 		viralIsolate_ = viralIsolate;
 
 		init();
-		fillData();
+		
 	}
 
 	public void init()
@@ -38,18 +38,26 @@ public class ViralIsolateForm extends FormWidget
 
 		WStackedWidget menuContents = new WStackedWidget(layout.elementAt(1, 0));
 		tabForm_ = new WMenu(menuContents, WMenuOrientation.Horizontal, layout.elementAt(0, 0));
-		// tabForm_.setStyleClass("menu");
 		tabForm_.resize(new WLength(100, WLengthUnit.Percentage), new WLength());
 		layout.elementAt(1, 0).resize(new WLength(20, WLengthUnit.FontEx), new WLength());
 
 		_mainForm = new ViralIsolateMainForm(this);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
+        //tabForm_.setStyleClass("tab-menu");
 		proteinForm_ = new ViralIsolateProteinForm(this);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
+        
+        fillData();
+        
+        addControlButtons();
 	}
 
 	private void fillData()
 	{
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            viralIsolate_ = new ViralIsolate();
+        }
 		if(getInteractionState()!=InteractionState.Adding)
 		{
 			Transaction t;
@@ -75,7 +83,6 @@ public class ViralIsolateForm extends FormWidget
 	@Override
 	public void saveData()
 	{
-		// TODO Auto-generated method stub
-
+        _mainForm.saveData();
 	}
 }
