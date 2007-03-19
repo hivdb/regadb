@@ -3,6 +3,7 @@ package net.sf.regadb.ui.framework.forms.fields;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
+import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.WCheckBox;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WPushButton;
@@ -66,10 +67,19 @@ public class NucleotideField extends FormField
        _fieldEdit.setText(createLinesFromText("\n", text));
     }
     
-    @Override
-    public String text()
+    public String getFormText()
     {
-        return replaceAllPatterns(super.text(), "<br>", "");
+        return replaceAllPatterns(_fieldEdit.text(), "\n", "");
+    }
+    
+    protected void setViewMessage(WMessage message)
+    {
+        super.setViewMessage(message);
+    }
+    
+    protected WMessage getViewMessage()
+    {
+        return super.getViewMessage();
     }
     
     public static String replaceAllPatterns(String str, String pattern, String replace) 
@@ -85,11 +95,6 @@ public class NucleotideField extends FormField
         }
         result.append(str.substring(s));
         return result.toString();
-    }
-    
-    public String getFormText()
-    {
-        return replaceAllPatterns(_fieldEdit.text(), "\n", "");
     }
     
     private String createLinesFromText(String endOfLine, String text)

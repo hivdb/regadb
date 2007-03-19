@@ -68,7 +68,7 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public String text()
     {
-        return getFormWidget()!=null?getFormText():_fieldView.text().value();
+        return getFormWidget()!=null?getFormText():getViewMessage().value();
     }
     
     public void setText(String text)
@@ -84,16 +84,16 @@ public abstract class FormField extends WContainerWidget implements IFormField
             }
         else
             {
-                _fieldView.setText(lt(text));
+                setViewMessage(lt(text));
             }
     }
     
-    public void setViewMessage(WMessage message)
+    protected void setViewMessage(WMessage message)
     {
     	_fieldView.setText(message);
     }
     
-    public WMessage getViewMessage()
+    protected WMessage getViewMessage()
     {
     	return _fieldView.text();
     }
