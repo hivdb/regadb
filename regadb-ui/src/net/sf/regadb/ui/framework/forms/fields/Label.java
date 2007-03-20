@@ -17,6 +17,7 @@ public class Label extends WLabel
 	public Label(WMessage labelText)
 	{
 		super(labelText);
+        this.setStyleClass("preField");
 	}
 	
 	public void setBuddy(IFormField formField)
