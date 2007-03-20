@@ -67,12 +67,7 @@ public class ViralIsolateForm extends FormWidget
 	        
             _mainForm.fillData(viralIsolate_);
             proteinForm_.fillData(viralIsolate_);
-            
 		}
-        else if(getInteractionState()==InteractionState.Editing)
-        {
-            
-        }
 	}
     
     public ViralIsolate getViralIsolate()
@@ -83,6 +78,11 @@ public class ViralIsolateForm extends FormWidget
 	@Override
 	public void saveData()
 	{
-        _mainForm.saveData();
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.update(viralIsolate_);
+        
+        _mainForm.saveData(t);
+        t.update(viralIsolate_);
+        t.commit();
 	}
 }

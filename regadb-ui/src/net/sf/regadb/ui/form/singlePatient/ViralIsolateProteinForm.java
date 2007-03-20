@@ -82,7 +82,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	{
 		for(NtSequence ntseq : vi.getNtSequences())
 		{
-			if(ntseq.getAaSequences().size()!=0)
+			if(ntseq.getAaSequences()!=null && ntseq.getAaSequences().size()!=0)
 			{
 				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
 			}

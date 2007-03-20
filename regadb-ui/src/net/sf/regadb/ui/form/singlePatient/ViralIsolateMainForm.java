@@ -5,20 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.forms.fields.WNucleotideValidator;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.validation.WValidatorPosition;
-import net.sf.witty.wt.validation.WValidatorState;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WComboBox;
 import net.sf.witty.wt.widgets.WContainerWidget;
@@ -31,6 +26,8 @@ import net.sf.witty.wt.widgets.event.WMouseEvent;
 public class ViralIsolateMainForm extends WContainerWidget
 {
 	private ViralIsolateForm viralIsolateForm_;
+    
+    private ArrayList<NtSequence> removedSequences = new ArrayList<NtSequence>(); 
 
 	// General group
 	private WGroupBox generalGroup_;
@@ -256,7 +253,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     private void deleteSequence()
     {
         NtSequence currentSequence = ((DataComboMessage<NtSequence>)seqComboBox.currentText()).getValue();
-        viralIsolateForm_.getViralIsolate().getNtSequences().remove(currentSequence);
+        removedSequences.add(currentSequence);
         seqComboBox.removeItem(seqComboBox.currentIndex());
         
         seqComboBox.setCurrentIndex(seqComboBox.count()-1);
@@ -312,12 +309,18 @@ public class ViralIsolateMainForm extends WContainerWidget
         return valid;
     }
     
-    public void saveData()
+    public void saveData(Transaction t)
     {
-        Transaction t = RegaDBMain.getApp().createTransaction();
+        confirmSequence();
         
-        t.save(viralIsolateForm_.getViralIsolate());
-        t.commit();
+        for(NtSequence ntseq : removedSequences)
+        {
+            t.delete(ntseq);
+            viralIsolateForm_.getViralIsolate().getNtSequences().remove(ntseq);
+        }
+        
+        viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
+        viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
     }
 
     private void addButtons()
