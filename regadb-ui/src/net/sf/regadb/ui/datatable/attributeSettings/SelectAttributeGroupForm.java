@@ -1,20 +1,20 @@
 package net.sf.regadb.ui.datatable.attributeSettings;
 
-import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
 
-public class SelectAttributeForm extends WGroupBox implements IForm
+public class SelectAttributeGroupForm extends WGroupBox implements IForm
 {
-    private DataTable<Attribute> dataTable_;
-    private IAttributeDataTable dataTableI_;
+    private DataTable<AttributeGroup> dataTable_;
+    private IAttributeGroupDataTable dataTableI_;
     
-    public SelectAttributeForm()
+    public SelectAttributeGroupForm()
     {
-        super(tr("form.attributes.attribute.selectAttributeGroupForm"));
+        super(tr("form.attributes.attributeGroups.selectAttributeGroupsForm"));
         init();
     }
     
@@ -30,8 +30,8 @@ public class SelectAttributeForm extends WGroupBox implements IForm
 
     public void init() 
     {
-        dataTableI_ = new IAttributeDataTable();
-        dataTable_ = new DataTable<Attribute>(dataTableI_, 10);
+        dataTableI_ = new IAttributeGroupDataTable();
+        dataTable_ = new DataTable<AttributeGroup>(dataTableI_, 10);
         addWidget(dataTable_);
     }
 }

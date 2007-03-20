@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
+import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
@@ -14,6 +15,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
@@ -64,6 +66,12 @@ public class TreeContent
     public AttributeSelectedItem attributesSelected;
     public ActionItem attributesEdit;
     public ActionItem attributesView;
+    public ActionItem attributeGroups;
+    public ActionItem attributeGroupsSelect;
+    public ActionItem attributeGroupsAdd;
+    public AttributeGroupSelectedItem attributeGroupsSelected;
+    public ActionItem attributeGroupsView;
+    public ActionItem attributeGroupsEdit;
     
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
@@ -217,6 +225,37 @@ public class TreeContent
                public void performAction(TreeMenuNode node)
                {
                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attribute.edit"), attributesSelected.getSelectedAttribute()));
+               }
+           });
+           
+           attributeGroups = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups"), attributesSettings);
+           attributeGroupsSelect  = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.select"), attributeGroups, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node) 
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new SelectAttributeGroupForm());
+               }
+           });
+           attributeGroupsAdd = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.add"), attributeGroups, new ITreeAction()
+           {
+                public void performAction(TreeMenuNode node)
+                {
+                    //RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
+                }
+            });
+           attributeGroupsSelected = new AttributeGroupSelectedItem(attributeGroups);
+           attributeGroupsView = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.view"), attributeGroupsSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   //RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attributeGroups.view"), attributeGroupsSelected.getSelectedAttributeGroup()));
+               }
+           });
+           attributeGroupsEdit = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.edit"), attributeGroupsSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   //RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedAttributeGroup()));
                }
            });
 
