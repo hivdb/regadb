@@ -14,7 +14,7 @@ public class SelectAttributeForm extends WGroupBox implements IForm
     
     public SelectAttributeForm()
     {
-        super(tr("form.attributes.attribute.selectAttributeGroupForm"));
+        super(tr("form.attributes.attribute.selectAttributeForm"));
         init();
     }
     
