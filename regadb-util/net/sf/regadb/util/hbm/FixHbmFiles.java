@@ -58,6 +58,10 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("ntSequences")&& a.getKey().equals("net.sf.regadb.db.ViralIsolate")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                 }
             }

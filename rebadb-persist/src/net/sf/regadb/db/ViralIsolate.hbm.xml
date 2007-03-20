@@ -21,7 +21,7 @@
     <property name="sampleDate" type="date">
       <column name="sample_date" length="4" />
     </property>
-    <set name="ntSequences" inverse="false" cascade="all">
+    <set name="ntSequences" inverse="true" cascade="all">
       <key>
         <column name="viral_isolate_ii" not-null="true" />
       </key>
