@@ -671,4 +671,66 @@ public class Transaction {
 
         return ((Long)q.uniqueResult()).longValue();
     }
+    
+    /**
+     * Returns a Page of AttributeGroups,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<AttributeGroup> getAttributeGroups(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from AttributeGroup as attributeGroup ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    /**
+     * Returns the count of Attributes,
+     * for the given constraints.
+     */
+    @SuppressWarnings("unchecked")
+    public long getAttributeGroupCount(HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "select count(attributeGroup) from AttributeGroup as attributeGroup ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+      
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    public boolean attributeGroupStillExists(AttributeGroup attribute)
+    {
+        Query q = session.createQuery("from AttributeGroup attributeGroup " + 
+                                    "where attributeGroup.id = :attributeGroupId");
+        
+        q.setParameter("attributeGroupId", attribute.getAttributeGroupIi());
+    
+        return q.uniqueResult() !=null;
+    }
 }
