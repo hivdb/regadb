@@ -26,6 +26,11 @@
 	color: red;
 }
 
+*.treeFixed
+{
+	width: 15em;
+}
+
 *.treemenu-menuItem
 {
 	cursor: pointer;
