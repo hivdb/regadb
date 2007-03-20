@@ -6,6 +6,8 @@ import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WCheckBox;
+import net.sf.witty.wt.widgets.WFont;
+import net.sf.witty.wt.widgets.WFontGenericFamily;
 import net.sf.witty.wt.widgets.WFormWidget;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
@@ -40,6 +42,7 @@ public class NucleotideField extends FormField
         else
         {
             initViewWidget();
+            getViewWidget().decorationStyle().setFont(new WFont(WFontGenericFamily.Monospace , "Courier"));
         }
         
         form.addFormField(this);
