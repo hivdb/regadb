@@ -10,7 +10,7 @@ public class MutationHelper
         String temp = "";
         for (AaMutInsertion mut : AaMutInsertion.getSortedMutInsertionList(aaseq)) 
         {
-            if (/*mut.isInsertion() ||*/ mut.isSilent()) 
+            if (mut.isSilent()) 
             {
                 temp = addMutation(temp, mut.filterCodon(mut.getMutation().getNtReferenceCodon()),
                         mut.getPosition(), mut.filterCodon(mut.getMutation().getNtMutationCodon()));
@@ -22,11 +22,6 @@ public class MutationHelper
 
     public static String getNonSynonymousMutations(AaSequence aaseq) 
     { 
-        return getWildtypeMutationList(aaseq);
-    }
-    
-    public static String getWildtypeMutationList(AaSequence aaseq) 
-    {
         String result = "";
         
         for (AaMutInsertion aaMutation : AaMutInsertion.getSortedMutInsertionList(aaseq)) 
