@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -26,6 +27,12 @@ public class ViralIsolateForm extends FormWidget
 	{
 		super(formName, interactionState);
 		viralIsolate_ = viralIsolate;
+        
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            viralIsolate_ = new ViralIsolate();
+            viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
+        }
 
 		init();
 		
@@ -54,10 +61,6 @@ public class ViralIsolateForm extends FormWidget
 
 	private void fillData()
 	{
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            viralIsolate_ = new ViralIsolate();
-        }
 		if(getInteractionState()!=InteractionState.Adding)
 		{
 			Transaction t;
@@ -65,9 +68,10 @@ public class ViralIsolateForm extends FormWidget
 	        t.attach(viralIsolate_);
 	        t.commit();
 	        
-            _mainForm.fillData(viralIsolate_);
             proteinForm_.fillData(viralIsolate_);
 		}
+        
+        _mainForm.fillData(viralIsolate_);
 	}
     
     public ViralIsolate getViralIsolate()

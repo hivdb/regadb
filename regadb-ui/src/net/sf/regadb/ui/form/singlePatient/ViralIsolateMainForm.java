@@ -119,11 +119,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleDateTF.setDate(vi.getSampleDate());
 		sampleIdTF.setText(vi.getSampleId());
         
-        if(viralIsolateForm_.getInteractionState()==InteractionState.Adding)
-        {
-            addSeqData();
-        }
-        
         for(NtSequence ntseq : vi.getNtSequences())
         {
             if(ntseq.getLabel()==null || ntseq.getLabel().equals(""))
