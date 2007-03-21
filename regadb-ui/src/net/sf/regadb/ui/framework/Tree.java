@@ -19,7 +19,7 @@ public class Tree extends WContainerWidget
 		root.addWidget(rootItem);
 		rootItem.expand();
 		rootTreeNode_ = rootItem;
-        this.setStyleClass("treeFixed");
+        this.setStyleClass("main-tree");
 		
 		selectedTreeNode_ = treeContent_.setContent(rootItem);
 	}

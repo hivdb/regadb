@@ -26,11 +26,6 @@
 	color: red;
 }
 
-*.treeFixed
-{
-	width: 15em;
-}
-
 *.treemenu-menuItem
 {
 	cursor: pointer;
@@ -133,7 +128,7 @@
 	color: blue;
 }
 
-*.preField 
+*.form-label 
 { 
 	white-space : nowrap;
 	
@@ -141,11 +136,16 @@
 	padding-right: 10px;
 }
 	
-*.preField span
+*.form-label span
 {
 	display: -moz-inline-box;
 	display: inline-block;
 	
 	font-style: arial;
 	font-weight: bold;	
+}
+
+*.main-tree
+{
+	width: 15em;
 }
