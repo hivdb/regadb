@@ -6,6 +6,7 @@ import net.sf.regadb.ui.datatable.test.SelectTestForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
+import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TestResultForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -248,7 +249,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                    //RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
                 }
             });
            attributeGroupsSelected = new AttributeGroupSelectedItem(attributeGroups);
@@ -256,14 +257,14 @@ public class TreeContent
            {
                public void performAction(TreeMenuNode node)
                {
-                   //RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attributeGroups.view"), attributeGroupsSelected.getSelectedAttributeGroup()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attributeGroups.view"), attributeGroupsSelected.getSelectedAttributeGroup()));
                }
            });
            attributeGroupsEdit = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.edit"), attributeGroupsSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   //RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedAttributeGroup()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedAttributeGroup()));
                }
            });
 
