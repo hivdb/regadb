@@ -1,22 +1,32 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.regadb.analysis.functions.FastaHelper;
+import net.sf.regadb.analysis.functions.FastaRead;
+import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.forms.fields.WNucleotideValidator;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.core.utils.WVerticalAlignment;
+import net.sf.witty.wt.validation.WValidatorPosition;
+import net.sf.witty.wt.validation.WValidatorState;
 import net.sf.witty.wt.widgets.SignalListener;
+import net.sf.witty.wt.widgets.WCheckBox;
 import net.sf.witty.wt.widgets.WComboBox;
 import net.sf.witty.wt.widgets.WContainerWidget;
+import net.sf.witty.wt.widgets.WFileUpload;
+import net.sf.witty.wt.widgets.WFontSize;
 import net.sf.witty.wt.widgets.WGroupBox;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
@@ -55,8 +65,13 @@ public class ViralIsolateMainForm extends WContainerWidget
 	private TextField seqLabelTF;
 	private Label seqDateL;
 	private DateField seqDateTF;
+    private Label upLoadL;
+    private WFileUpload upload_;
+    private WCheckBox autoFix_;
+    private WPushButton uploadFasta_;
     private Label ntL;
     private NucleotideField ntTF;
+    private WNucleotideValidator ntValidator;
 	//private Label subTypeL;
 	//private TextField subTypeTF;
     
@@ -103,13 +118,73 @@ public class ViralIsolateMainForm extends WContainerWidget
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
 		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, seqDateL, seqDateTF);
+        //subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
+        //subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+        //viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
+        
+        if(viralIsolateForm_.isEditable())
+        {
+            WTable ntFileTable = new WTable(ntSeqGroupTable_.elementAt(2, 1));
+            WTable buttonTable = new WTable(ntFileTable.elementAt(0, 1));
+            upLoadL = new Label(tr("form.viralIsolate.editView.uploadlabel"));
+            ntSeqGroupTable_.putElementAt(2, 0, upLoadL);
+            upload_ = new WFileUpload(buttonTable.elementAt(0, 0));
+            autoFix_ = new WCheckBox(tr("formfield.ntfield.checkbox.autofixSequence"), buttonTable.elementAt(1, 0));
+            uploadFasta_ = new WPushButton(tr("formfield.ntfield.button.uploadFastaFile"), buttonTable.elementAt(2, 0));
+            ntFileTable.elementAt(0, 1).setVerticalAlignment(WVerticalAlignment.AlignBottom);
+            upload_.decorationStyle().font().setSize(WFontSize.Smaller);
+            
+            ntValidator = new WNucleotideValidator();
+            uploadFasta_.clicked.addListener(new SignalListener<WMouseEvent>()
+            {
+                   public void notify(WMouseEvent a) 
+                   {                
+                       upload_.upload();
+                   }
+            });
+            
+            upload_.uploaded.addListener(new SignalListener<WEmptyEvent>()
+            {
+                   public void notify(WEmptyEvent a) 
+                   {                
+                       File fastaFile = new File(upload_.spoolFileName());
+                            
+                       FastaRead read = FastaHelper.readFastaFile(fastaFile, autoFix_.isChecked());
+                            
+                       fastaFile.delete();
+                            
+                       if(read.status_==FastaReadStatus.Invalid)
+                       {
+                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.invalidFastaFile"));
+                       }
+                       else if(read.status_==FastaReadStatus.FileNotFound)
+                       {
+                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.fastaFileNotFound"));
+                       }
+                       else if(read.status_==FastaReadStatus.MultipleSequences)
+                       {
+                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.multipleSequences"));
+                       }
+                       else if (read.status_==FastaReadStatus.ValidButFixed)
+                       {
+                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.autoFixedSequence"));
+                           ntTF.setText(read.xna_);
+                           seqComboBox.disable();
+                           addButton.disable();
+                       }
+                       else
+                       {
+                           ntTF.setText(read.xna_);
+                           seqComboBox.disable();
+                           addButton.disable();
+                       }
+                   }
+            });
+        }
         ntL = new Label(tr("form.viralIsolate.editView.nucleotides"));
         ntTF = new NucleotideField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         ntTF.setMandatory(true);
         viralIsolateForm_.addLineToTable(ntSeqGroupTable_, ntL, ntTF);
-		//subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
-		//subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		//viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
         
         addButtons();
 	}
