@@ -53,7 +53,11 @@ public class ViralIsolateForm extends FormWidget
         //tabForm_.setStyleClass("tab-menu");
 		proteinForm_ = new ViralIsolateProteinForm(this);
 		tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
-        
+
+		tabForm_.setStyleClass("tabmenu");
+		_mainForm.setStyleClass("viralisolateform");
+		proteinForm_.setStyleClass("viralisolateform");
+		
         fillData();
         
         addControlButtons();
