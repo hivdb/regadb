@@ -6,6 +6,7 @@ import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WCheckBox;
+import net.sf.witty.wt.widgets.WFileUpload;
 import net.sf.witty.wt.widgets.WFont;
 import net.sf.witty.wt.widgets.WFontGenericFamily;
 import net.sf.witty.wt.widgets.WFormWidget;
@@ -13,12 +14,14 @@ import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WTextArea;
 import net.sf.witty.wt.widgets.event.WEmptyEvent;
+import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class NucleotideField extends FormField
 {
     private WTextArea _fieldEdit;
     private WCheckBox autoFix_;
     private WPushButton uploadFasta_;
+    private WFileUpload upload_;
     
     public NucleotideField(InteractionState state, IForm form)
     {
@@ -28,14 +31,9 @@ public class NucleotideField extends FormField
             _fieldEdit = new WTextArea();
             _fieldEdit.setColumns(70);
             _fieldEdit.setRows(15);
-            WTable ntFileTable = new WTable(this);
-            ntFileTable.putElementAt(0, 0, _fieldEdit);
-            WTable buttonTable = new WTable(ntFileTable.elementAt(0, 1));
-            autoFix_ = new WCheckBox(tr("formfield.ntfield.checkbox.autofixSequence"), buttonTable.elementAt(0, 0));
-            uploadFasta_ = new WPushButton(tr("formfield.ntfield.button.uploadFastaFile"), buttonTable.elementAt(1, 0));
-            ntFileTable.elementAt(0, 1).setVerticalAlignment(WVerticalAlignment.AlignBottom);
             
-            /*addWidget(_fieldEdit);*/
+            
+            addWidget(_fieldEdit);
             flagValid();
             _fieldEdit.setValidator(new WNucleotideValidator());
         }
