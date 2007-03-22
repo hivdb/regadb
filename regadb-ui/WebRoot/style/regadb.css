@@ -181,3 +181,44 @@
 	padding: 5px;
 	border: 1px solid black;
 }
+
+*.datatable td
+{
+	padding-right: 10px;
+}
+
+*.scrollingButtons span
+{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+*.scrollingButtons button
+{
+	margin: 1px;
+}
+
+*.Generic-drug-table th
+{
+	margin: 5px;
+}
+
+*.Generic-drug-table td
+{
+	padding: 3px;
+}
+
+*.table-header-bold
+{
+	font-weight: bold;
+}
+
+*.table-header
+{
+	font-weight: bold;
+}
+
+*.editable-table td
+{
+	padding: 3px;
+}
