@@ -10,6 +10,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WCheckBox;
@@ -75,8 +76,11 @@ public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 		
 		//table
 		_table = new WTable();
+        _table.setStyleClass("Generic-drug-table");
 		_table.putElementAt(0, 1, new TableHeader(tr("form.therapy.drugSelectionForm.tableHeader.drug")));
 		_table.putElementAt(0, 2, new TableHeader(dailyDosageHeader_));
+        _table.elementAt(0, 1).setStyleClass("table-header-bold");
+        _table.elementAt(0, 2).setStyleClass("table-header-bold");
 		addWidget(_table);
 	}
 	

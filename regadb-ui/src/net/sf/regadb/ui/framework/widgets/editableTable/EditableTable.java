@@ -30,6 +30,7 @@ public class EditableTable<DataType> extends WContainerWidget
     public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, ArrayList<DataType> items)
     {
         super(parent);
+        this.setStyleClass("editable-table");
         editableList_ = editableList;
         items_ = items;
         init();

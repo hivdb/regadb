@@ -13,7 +13,6 @@ import net.sf.witty.wt.i8n.WArgMessage;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WImage;
 import net.sf.witty.wt.widgets.WPushButton;
 import net.sf.witty.wt.widgets.WTable;
 import net.sf.witty.wt.widgets.WText;
@@ -51,6 +50,9 @@ public class DataTable<DataType> extends WTable
 	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
 	{
 		super();
+        
+        this.setStyleClass("datatable");
+        
 		dataTableInterface_ = dataTableInterface;
 		amountOfPageRows_ = amountOfPageRows;
 		
@@ -169,7 +171,7 @@ public class DataTable<DataType> extends WTable
                             }
                         });
                 elementAt(row, col).resize(new WLength(), new WLength(1.0,WLengthUnit.FontEm));
-				textRow.add(toPut);
+                textRow.add(toPut);
 				col++;
 			}
 			row++;
@@ -180,6 +182,7 @@ public class DataTable<DataType> extends WTable
         elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length+1);
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
         scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
+        scrollingButtons.setStyleClass("scrollingButtons");
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
         firstScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {

@@ -14,6 +14,6 @@ public class TableHeader extends WText
 	
 	public TableHeader(WMessage title)
 	{
-		super(title, null);
+		this(title, null);
 	}
 }
