@@ -4,6 +4,7 @@ public class FastaRead
 {
     public FastaReadStatus status_;
     public String xna_;
+    public String invalidChars_;
     
     public FastaRead(String xna)
     {

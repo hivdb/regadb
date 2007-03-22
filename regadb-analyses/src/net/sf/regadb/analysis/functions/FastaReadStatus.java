@@ -5,5 +5,6 @@ public enum FastaReadStatus
     Valid,
     Invalid,
     FileNotFound,
-    MultipleSequences
+    MultipleSequences,
+    ValidButFixed
 }

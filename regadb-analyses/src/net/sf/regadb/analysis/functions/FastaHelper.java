@@ -13,8 +13,8 @@ import org.biojava.bio.seq.Sequence;
 import org.biojavax.bio.seq.RichSequenceIterator;
 
 public class FastaHelper
-{
-    public static FastaRead readFastaFile(File file)
+{    
+    public static FastaRead readFastaFile(File file, boolean autoFix)
     {
         ArrayList<String> sequences = new ArrayList<String>();
    
@@ -32,6 +32,11 @@ public class FastaHelper
             return read;
         }
         
+        if(autoFix)
+        {
+            autoFixSequence(read);
+        }
+        
         if(sequences.size()==1)
         {
             return new FastaRead(sequences.get(0));
@@ -46,7 +51,7 @@ public class FastaHelper
         }
     }
     
-    public static FastaRead handleXNA(ArrayList<String> sequences, File file, boolean desoxy)
+    private static FastaRead handleXNA(ArrayList<String> sequences, File file, boolean desoxy)
     {
         Sequence seq;
         
@@ -108,9 +113,34 @@ public class FastaHelper
         return null;
     }
     
+    private static void autoFixSequence(FastaRead fastaRead)
+    {
+        StringBuffer validChars = new StringBuffer();
+        StringBuffer invalidChars = new StringBuffer();
+        
+        for(int i = 0; i<fastaRead.xna_.length(); i++)
+        {
+            if(!NtSequenceHelper.isValidNtCharacter(fastaRead.xna_.charAt(i)))
+            {
+                invalidChars.append(fastaRead.xna_.charAt(i));
+            }
+            else    
+            {
+                validChars.append(fastaRead.xna_.charAt(i));
+            }
+        }
+        
+        if(invalidChars.length() > 0)
+        {
+            fastaRead.status_ = FastaReadStatus.ValidButFixed;
+            fastaRead.invalidChars_ = invalidChars.toString();
+            fastaRead.xna_ = validChars.toString();
+        }
+    }
+    
     public static void main(String [] args)
     {
-        FastaRead read = FastaHelper.readFastaFile(new File("/home/plibin0/Desktop/fasta/Seqs_Pieter/54751_rna.fasta"));
+        FastaRead read = FastaHelper.readFastaFile(new File("/home/plibin0/Desktop/fasta/Seqs_Pieter/54751_rna.fasta"), true);
         System.err.println(read.status_);
         System.err.println(read.xna_.length());
     }
