@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
+import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.widgets.SignalListener;
 import net.sf.witty.wt.widgets.WContainerWidget;
 import net.sf.witty.wt.widgets.WGroupBox;
@@ -62,8 +63,10 @@ public class LoginForm extends WGroupBox implements IForm
         loginGroupTable.putElementAt(1, 1, passwordTF);
         
         //control
-        addWidget(_loginButton);
-        addWidget(_helpButton);
+        WContainerWidget buttonContainer = new WContainerWidget(this);
+        buttonContainer.addWidget(_loginButton);
+        buttonContainer.addWidget(_helpButton);
+        buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
         _loginButton.clicked.addListener(new SignalListener<WMouseEvent>()
         {
             public void notify(WMouseEvent me)
