@@ -124,8 +124,7 @@
 
 *.table-expander-text
 {
-	cursor: pointer;
-	color: blue;
+	text-decoration: underline;
 }
 
 *.form-label 
