@@ -195,9 +195,6 @@ public class TreeContent
                         }
                     });
     		
-		myAccountMain = new MyAccountItem(rootItem);
-			myAccountLogin = new LoginItem(myAccountMain);
-            
        attributesSettings = new ActionItem(rootItem.tr("menu.attributeSettings.attributeSettings"), rootItem)
        {
             @Override
@@ -268,6 +265,8 @@ public class TreeContent
                }
            });
 
+        myAccountMain = new MyAccountItem(rootItem);
+            myAccountLogin = new LoginItem(myAccountMain);
 			
 		if(singlePatientMain.isEnabled())
 		{
