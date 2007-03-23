@@ -21,7 +21,7 @@ public class Header extends WTable
 		
 		edition_ = edition;
 		
-		  WImage icon = new WImage("pics/regaDBHeader.jpg", this.elementAt(0, 0));
+		  WImage icon = new WImage("pics/regaDBHeader.gif", this.elementAt(0, 0));
 		  icon.setMargin(new WLength(5));
 		  
 		  WTable textTable = new WTable(this.elementAt(0, 1));
