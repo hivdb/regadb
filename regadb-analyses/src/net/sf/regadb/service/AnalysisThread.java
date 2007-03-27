@@ -1,6 +1,5 @@
 package net.sf.regadb.service;
 
-import net.sf.regadb.db.Analysis;
 
 public class AnalysisThread extends Thread
 {
