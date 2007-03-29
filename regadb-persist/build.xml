@@ -1,6 +1,6 @@
-<project name="regadb-util" default="all" basedir=".">
+<project name="regadb-persist" default="all" basedir=".">
     <description>
-        RegaDB build file for regadb-persist
+        RegaDB build file for regadb-util
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
@@ -17,26 +17,26 @@
 	
   <target name="init" depends="clean">
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-    <mkdir dir="${dist}"/>
+    <mkdir dir="${proj.name}/${build}"/>
+    <mkdir dir="${proj.name}/${dist}"/>
   </target>
 
   <target name="compile" description="compile the source" depends="init" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
+    <javac srcdir="${proj.name}/${src}" destdir="${proj.name}/${build}">
   		<classpath refid="project.classpath"/>
     </javac>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >
-    <!-- Put everything in ${build} into the regadb-persist.jar file -->
-    <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+    <!-- Put everything in ${build} into the jar file -->
+    <jar jarfile="${proj.name}/${dist}/${proj.name}-${proj.version}.jar" basedir="${proj.name}/${build}"/>
   </target>
   
   <!-- Clean up -->
   <target name="clean">
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
+    <delete dir="${proj.name}/${build}"/>
+    <delete dir="${proj.name}/${dist}"/>
   </target>
 
   <target name="all" description="Do the build" depends="dist" />
