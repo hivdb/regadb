@@ -3,14 +3,16 @@
   <property name="proj.name" value="RegaDB-db"/>
   <property name="proj.version" value="1.0"/>
   <!-- Global properties for this build -->
-  <property name="src.java.dir" value="src"/>
-  <property name="lib.dir" value="lib"/>
-  <property name="build.dir" value="bin"/>
+  <property name="src.java.dir" value="regadb-persist/src"/>
+  <property name="lib.dir" value="regadb-persist/lib"/>
+  <property name="build.dir" value="regadb-persist/bin"/>
   <!-- Classpath declaration -->
   <path id="project.classpath">
     <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
-      <include name="**/*.zip"/>
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="">
+      <include name="**/dist/*.jar"/>
     </fileset>
   </path>
 
