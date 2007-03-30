@@ -9,11 +9,11 @@
 	<property name="proj.name" value="regadb-ui"/>
 	<property name="proj.version" value="0.9"/>
 
-	<!-- <path id="project.classpath">
-		<fileset dir="lib">
-	      <include name="**/*.jar"/>
+	<path id="project.classpath">
+		<fileset dir="">
+	      <include name="**/dist/*.jar"/>
 	    </fileset>
-	</path> -->
+	</path>
 	
   <target name="init" depends="clean">
     <!-- Create the build directory structure used by compile -->
@@ -24,7 +24,7 @@
   <target name="compile" description="compile the source" depends="init" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}">
-  		<!-- <classpath refid="project.classpath"/> -->
+  		<classpath refid="project.classpath"/>
     </javac>
   </target>
 
