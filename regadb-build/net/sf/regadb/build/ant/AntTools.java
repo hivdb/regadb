@@ -23,10 +23,9 @@ public class AntTools
             System.err.println("The default task list could not be loaded.");
         }
         
-        
         try
         {
-            project.setBasedir(localBuildDir);
+            project.setBasedir(localBuildDir + projectName);
         }
         catch (BuildException e)
         {
@@ -41,6 +40,8 @@ public class AntTools
         {
             System.err.println("Configuration file " + buildFile + " is invalid, or cannot be read.");
         }
+        
+        System.out.println("Building project: " + projectName);
         
         project.executeTarget("all");
     }

@@ -10,7 +10,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 
 public class Jarbuilder
 {
-    private final static String buildDir_ = "/home/plibin0/regadb_build";
+    private final static String buildDir_ = "/home/plibin0/regadb_build/";
     
     private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
     private final static String witty_cvs_url = ":pserver:anonymous@zolder:2401/cvsroot/witty";
@@ -22,9 +22,15 @@ public class Jarbuilder
         AntTools.buildProject("jwt_src", buildDir_);
         
         SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
+        
         ArrayList<String> modules = SvnTools.getModules(svnrepos);
         
         modules = filterRegaDBSvnModules(modules);
+        
+        for(String m : modules)
+        {
+            SvnTools.checkout(regadb_svn_url_, m, buildDir_, svnrepos);
+        }
     }
     
     private static ArrayList<String> filterRegaDBSvnModules(ArrayList<String> modules)
