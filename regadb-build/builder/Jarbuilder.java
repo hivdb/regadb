@@ -92,20 +92,20 @@ public class Jarbuilder
             {
                 break;
             }
-            System.err.println("roundTrips:"+i);
+            //System.err.println("roundTrips:"+i);
             for(Entry<String, ArrayList<String>> entry : moduleDeps.entrySet())
             {
                 if(entry.getValue().size()==0)
                 {
                     buildModule(buildDir_, entry.getKey());
-                    System.err.println("building:"+entry.getKey());
+                    //System.err.println("building:"+entry.getKey());
                     projectsToRemove.add(entry.getKey());
                     
                     for(Entry<String, ArrayList<String>> entryDeeper : moduleDeps.entrySet())
                     {
                         if(entryDeeper.getValue().remove(entry.getKey()))
                         {
-                            System.err.println("remove:"+entry.getKey()+"from:"+entryDeeper.getKey());
+                            //System.err.println("remove:"+entry.getKey()+"from:"+entryDeeper.getKey());
                         }
                     }
                     break;
