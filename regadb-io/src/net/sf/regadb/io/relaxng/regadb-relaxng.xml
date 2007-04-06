@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element xmlns="http://relaxng.org/ns/structure/1.0" name="Patients">
+  <define xmlns="" name="net.sf.regadb.db.Patient">
+    <optional>
+      <element name="patientId">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="lastName">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="firstName">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="birthDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="deathDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <element name="datasets">
+      <zeroOrMore>
+        <element name="datasets-el">
+          <ref name="net.sf.regadb.db.Dataset" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="testResults">
+      <zeroOrMore>
+        <element name="testResults-el">
+          <ref name="net.sf.regadb.db.TestResult" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="patientAttributeValues">
+      <zeroOrMore>
+        <element name="patientAttributeValues-el">
+          <ref name="net.sf.regadb.db.PatientAttributeValue" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="viralIsolates">
+      <zeroOrMore>
+        <element name="viralIsolates-el">
+          <ref name="net.sf.regadb.db.ViralIsolate" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="therapies">
+      <zeroOrMore>
+        <element name="therapies-el">
+          <ref name="net.sf.regadb.db.Therapy" />
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.Dataset">
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="creationDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="closedDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="revision">
+        <data type="int" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TestResult">
+    <optional>
+      <element name="test">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Test" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="drugGeneric">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="testNominalValue">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+      </element>
+    </optional>
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="testDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="sampleId">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.Test">
+    <optional>
+      <element name="testType">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.TestType" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="serviceClass">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="serviceData">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="serviceConfig">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TestType">
+    <optional>
+      <element name="valueType">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.ValueType" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="testObject">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.TestObject" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <element name="testNominalValues">
+      <zeroOrMore>
+        <element name="testNominalValues-el">
+          <element name="reference">
+            <data type="int" datatypeLibrary="lib" />
+          </element>
+          <optional>
+            <ref name="net.sf.regadb.db.TestNominalValue" />
+          </optional>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.ValueType">
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="min">
+        <data type="double" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="max">
+        <data type="double" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="multiple">
+        <data type="boolean" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TestObject">
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TestNominalValue">
+    <optional>
+      <element name="testType">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.TestType" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.PatientAttributeValue">
+    <element name="attribute">
+      <element name="reference">
+        <data type="int" datatypeLibrary="lib" />
+      </element>
+      <optional>
+        <ref name="net.sf.regadb.db.Attribute" />
+      </optional>
+    </element>
+    <optional>
+      <element name="attributeNominalValue">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+      </element>
+    </optional>
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.Attribute">
+    <optional>
+      <element name="valueType">
+        <element name="reference">
+          <data type="int" datatypeLibrary="lib" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.ValueType" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="name">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <element name="attributeNominalValues">
+      <zeroOrMore>
+        <element name="attributeNominalValues-el">
+          <element name="reference">
+            <data type="int" datatypeLibrary="lib" />
+          </element>
+          <optional>
+            <ref name="net.sf.regadb.db.AttributeNominalValue" />
+          </optional>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.AttributeNominalValue">
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.ViralIsolate">
+    <optional>
+      <element name="sampleId">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="sampleDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <element name="ntSequences">
+      <zeroOrMore>
+        <element name="ntSequences-el">
+          <ref name="net.sf.regadb.db.NtSequence" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="testResults">
+      <zeroOrMore>
+        <element name="testResults-el">
+          <ref name="net.sf.regadb.db.TestResult" />
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.NtSequence">
+    <optional>
+      <element name="nucleotides">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="label">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="sequenceDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <element name="aaSequences">
+      <zeroOrMore>
+        <element name="aaSequences-el">
+          <ref name="net.sf.regadb.db.AaSequence" />
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.AaSequence">
+    <optional>
+      <element name="protein">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="firstAaPos">
+        <data type="short" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="lastAaPos">
+        <data type="short" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <element name="aaMutations">
+      <zeroOrMore>
+        <element name="aaMutations-el">
+          <ref name="net.sf.regadb.db.AaMutation" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="aaInsertions">
+      <zeroOrMore>
+        <element name="aaInsertions-el">
+          <ref name="net.sf.regadb.db.AaInsertion" />
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.AaMutation">
+    <element name="position">
+      <data type="short" datatypeLibrary="lib" />
+    </element>
+    <optional>
+      <element name="aaReference">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">1</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="aaMutation">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">30</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="ntReferenceCodon">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="ntMutationCodon">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.AaInsertion">
+    <element name="position">
+      <data type="short" datatypeLibrary="lib" />
+    </element>
+    <element name="insertionOrder">
+      <data type="short" datatypeLibrary="lib" />
+    </element>
+    <optional>
+      <element name="aaInsertion">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">30</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="ntInsertionCodon">
+        <data type="string" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.Therapy">
+    <optional>
+      <element name="startDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="stopDate">
+        <data type="date" datatypeLibrary="lib" />
+      </element>
+    </optional>
+    <optional>
+      <element name="comment">
+        <data type="string" datatypeLibrary="lib">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <element name="therapyCommercials">
+      <zeroOrMore>
+        <element name="therapyCommercials-el">
+          <ref name="net.sf.regadb.db.TherapyCommercial" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="therapyGenerics">
+      <zeroOrMore>
+        <element name="therapyGenerics-el">
+          <ref name="net.sf.regadb.db.TherapyGeneric" />
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TherapyCommercial">
+    <element name="drugCommercial">
+      <data type="string" datatypeLibrary="lib" />
+    </element>
+    <optional>
+      <element name="dayDosageUnits">
+        <data type="double" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+  <define xmlns="" name="net.sf.regadb.db.TherapyGeneric">
+    <element name="drugGeneric">
+      <data type="string" datatypeLibrary="lib" />
+    </element>
+    <optional>
+      <element name="dayDosageMg">
+        <data type="double" datatypeLibrary="lib" />
+      </element>
+    </optional>
+  </define>
+</element>
+
