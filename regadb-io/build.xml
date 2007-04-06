@@ -1,17 +1,17 @@
 <project name="regadb-io" default="all" basedir=".">
     <description>
-        RegaDB build file for regadb-util
+        RegaDB build file for regadb-io
     </description>
   <!-- set global properties for this build -->
-  <property name="src" location="regadb-io/src"/>
-  <property name="build" location="regadb-io/build"/>
-  <property name="dist" location="regadb-io/dist"/>
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
 	<property name="proj.name" value="regadb-io"/>
 	<property name="proj.version" value="0.9"/>
 
 	<path id="project.classpath">
-		<fileset dir="">
-	      <include name="**/dist/*.jar"/>
+		<fileset dir="lib">
+	      <include name="*.jar"/>
 	    </fileset>
 	</path>
 	
