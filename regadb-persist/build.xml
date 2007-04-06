@@ -1,6 +1,6 @@
 <project name="regadb-persist" default="all" basedir=".">
     <description>
-        RegaDB build file for regadb-util
+        RegaDB build file for regadb-persist
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="regadb-persist/src"/>
@@ -8,10 +8,6 @@
   <property name="dist" location="regadb-persist/dist"/>
 	<property name="proj.name" value="regadb-persist"/>
 	<property name="proj.version" value="0.9"/>
-	
-	<property name="build.dir" value="regadb-persist/bin"/>
-	  <property name="proj.hibernate.name" value="RegaDB-db"/>
-	  <property name="proj.hibernate.version" value="1.0"/>
 
 	<path id="project.classpath">
 		<fileset dir="regadb-persist/lib">
@@ -32,61 +28,8 @@
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
   </target>
-	
-	<target name="compile.hibernate" depends="init">
-	    <mkdir dir="${build.dir}"/>
-	    <javac
-	         srcdir="${src}"
-	         destdir="${build.dir}"
-	         nowarn="on">
-	     <classpath refid="project.classpath"/>
-	    </javac>
-	  </target>
-	
-	<taskdef name="hibernatetool"
-	     classname="org.hibernate.tool.ant.HibernateToolTask"
-	     classpathref="project.classpath"/>
 
-	  <target name="reveng.hbmxml"
-	          description="Produces XML mapping files in src directory">
-	    <hibernatetool destdir="${src}">
-	      <jdbcconfiguration
-	        propertyfile="${basedir}/regadb.db.properties"
-	        revengfile="${basedir}/regadb.reveng.xml"
-	      	reversestrategy="net.sf.regadb.db.hibernate.RegadbStrategy"/>
-	      <hbm2hbmxml/> <!-- Export Hibernate XML files -->
-	      <hbm2cfgxml/> <!-- Export a hibernate.cfg.xml file -->
-	    </hibernatetool>
-	  </target>
-
-	  <target name="reveng.pojos"
-		  description="Produces Java classes from XML mappings">
-	    <hibernatetool destdir="${src}">
-	      <configuration>
-		<fileset dir="${src}">
-		  <include name="**/*.hbm.xml"/>
-		</fileset>
-	      </configuration>
-	      <hbm2java
-		jdk5="true"
-		ejb3="true"
-		> <!-- Generate entity class source -->
-	      </hbm2java>
-	    </hibernatetool>
-	  </target>
-
-	  <target name="reveng.entities"
-	          description="Produces Java entity classes in src directory">
-	    <hibernatetool destdir="${src.java.dir}">
-	      <jdbcconfiguration
-		  propertyfile="${basedir}/regadb.db.properties"
-		  revengfile="${basedir}/regadb.reveng.xml"/>
-	      <hbm2java jdk5="true" ejb3="true"/>
-	      <hbm2cfgxml ejb3="true"/>
-	    </hibernatetool>
-	  </target>
-
-  <target name="compile" description="compile the source" depends="compile.hibernate" >
+  <target name="compile" description="compile the source" depends="init" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}">
   		<classpath refid="project.classpath"/>
