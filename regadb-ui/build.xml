@@ -34,7 +34,7 @@
   	<mkdir dir="${build}/${resourceBundleFilesDir}"/>
   	
   	<copy todir="${build}/${resourceBundleFilesDir}">
-  	  <fileset dir="${src}/${resources}"
+  	  <fileset dir="${src}/${resourceBundleFilesDir}"
   	           includes="**/*.properties" />
   	</copy>
   </target>
