@@ -17,11 +17,11 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
 
 public class AttributeForm extends FormWidget
 {
@@ -128,7 +128,7 @@ public class AttributeForm extends FormWidget
             nominalValuesGroup_.setHidden(false);
             if(nominalValuesList_!=null)
             {
-                nominalValuesGroup_.removeChild(nominalValuesList_);
+                nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
             ArrayList<AttributeNominalValue> list = new ArrayList<AttributeNominalValue>();
             if(getInteractionState()!=InteractionState.Adding)

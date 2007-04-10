@@ -2,15 +2,15 @@ package net.sf.regadb.ui.framework.widgets.calendar;
 import java.util.Date;
 
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WComboBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WComboBox;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class Calendar extends WContainerWidget
 {

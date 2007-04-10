@@ -4,7 +4,7 @@ import net.sf.regadb.ui.forms.login.LoginForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.WTreeNode;
+import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public class LoginItem extends TreeMenuNode
 {

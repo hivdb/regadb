@@ -10,8 +10,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.witty.wt.core.WEnvironment;
-import net.sf.witty.wt.widgets.WApplication;
+import net.sf.witty.wt.WApplication;
+import net.sf.witty.wt.WEnvironment;
 
 public class RegaDBApplication extends WApplication
 {

@@ -1,11 +1,11 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WKeyEvent;
+import net.sf.witty.wt.WLineEdit;
 import net.sf.witty.wt.validation.WValidator;
 import net.sf.witty.wt.validation.WValidatorState;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WLineEdit;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
-import net.sf.witty.wt.widgets.event.WKeyEvent;
 
 public class FilterTF extends WLineEdit
 {

@@ -10,14 +10,14 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public abstract class FormWidget extends WGroupBox implements IForm
 {

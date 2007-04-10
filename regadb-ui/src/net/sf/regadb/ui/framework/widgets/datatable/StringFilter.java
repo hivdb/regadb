@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
+import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WContainerWidget;
 
 public class StringFilter extends WContainerWidget implements IFilter 
 {

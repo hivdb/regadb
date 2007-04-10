@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WCheckBox;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WWidget;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class EditableTable<DataType> extends WContainerWidget
 {

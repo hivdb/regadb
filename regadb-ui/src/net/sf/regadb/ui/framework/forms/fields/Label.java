@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.witty.wt.WFormWidget;
+import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WLabel;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.WImage;
-import net.sf.witty.wt.widgets.WLabel;
 
 public class Label extends WLabel
 {

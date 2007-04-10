@@ -2,11 +2,11 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WComboBox;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WComboBox;
-import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
 
 public class ComboBox extends FormField
 {

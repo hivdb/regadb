@@ -1,11 +1,11 @@
 package net.sf.regadb.ui.framework;
 
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WImage;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
 
 public class Header extends WTable
 {

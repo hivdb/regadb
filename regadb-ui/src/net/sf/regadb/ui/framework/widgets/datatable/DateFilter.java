@@ -3,12 +3,12 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 import java.util.Date;
 
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.validation.WEuropeanDateValidator;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WImage;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
 
 public class DateFilter extends WContainerWidget implements IFilter 
 {

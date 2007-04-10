@@ -4,8 +4,8 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WGroupBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
 
 public class SelectTherapyForm extends WGroupBox implements IForm
 {

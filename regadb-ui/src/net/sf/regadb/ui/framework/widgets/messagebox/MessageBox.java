@@ -1,15 +1,15 @@
 package net.sf.regadb.ui.framework.widgets.messagebox;
 
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WImage;
-import net.sf.witty.wt.widgets.WModalFloating;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
+import net.sf.witty.wt.widgets.extra.WModalFloating;
 
 public class MessageBox extends WModalFloating
 {

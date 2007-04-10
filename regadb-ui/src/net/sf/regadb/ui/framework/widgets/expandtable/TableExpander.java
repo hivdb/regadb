@@ -1,13 +1,13 @@
 package net.sf.regadb.ui.framework.widgets.expandtable;
 
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTableCell;
+import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WIconPair;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WTableCell;
-import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.WWidget;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
+import net.sf.witty.wt.widgets.extra.WIconPair;
 
 public class TableExpander 
 {

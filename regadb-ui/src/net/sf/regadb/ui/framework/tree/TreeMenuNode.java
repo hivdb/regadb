@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WTreeNode;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
+import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public abstract class TreeMenuNode extends WTreeNode
 {

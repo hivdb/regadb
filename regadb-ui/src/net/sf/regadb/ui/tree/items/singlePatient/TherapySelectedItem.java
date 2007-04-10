@@ -6,7 +6,7 @@ import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.i8n.WArgMessage;
-import net.sf.witty.wt.widgets.WTreeNode;
+import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public class TherapySelectedItem extends TreeMenuNode
 {

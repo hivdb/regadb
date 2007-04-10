@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
-import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.WWidget;
+import net.sf.witty.wt.WFormWidget;
+import net.sf.witty.wt.WWidget;
 
 public interface IFormField
 {

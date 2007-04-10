@@ -6,8 +6,8 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.WTreeNode;
-import net.sf.witty.wt.widgets.WWidget;
+import net.sf.witty.wt.WWidget;
+import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public class PatientAddItem extends TreeMenuNode
 {

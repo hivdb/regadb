@@ -2,13 +2,13 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.WComboBox;
+import net.sf.witty.wt.WFormWidget;
+import net.sf.witty.wt.WLineEdit;
+import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
 import net.sf.witty.wt.validation.WValidatorState;
-import net.sf.witty.wt.widgets.WComboBox;
-import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.WLineEdit;
-import net.sf.witty.wt.widgets.WLineEditEchoMode;
 
 public class LimitedNumberField extends FormField
 {

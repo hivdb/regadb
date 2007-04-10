@@ -2,19 +2,19 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WFileUpload;
+import net.sf.witty.wt.WFont;
+import net.sf.witty.wt.WFontGenericFamily;
+import net.sf.witty.wt.WFormWidget;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTextArea;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WCheckBox;
-import net.sf.witty.wt.widgets.WFileUpload;
-import net.sf.witty.wt.widgets.WFont;
-import net.sf.witty.wt.widgets.WFontGenericFamily;
-import net.sf.witty.wt.widgets.WFormWidget;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WTextArea;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class NucleotideField extends FormField
 {

@@ -11,13 +11,13 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WFont;
-import net.sf.witty.wt.widgets.WFontGenericFamily;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WFont;
+import net.sf.witty.wt.WFontGenericFamily;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WTable;
 
 public class ViralIsolateProteinForm extends WContainerWidget
 {

@@ -7,10 +7,10 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WFileResource;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WImage;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WFileResource;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WImage;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {

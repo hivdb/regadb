@@ -28,7 +28,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TestResultSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
-import net.sf.witty.wt.widgets.WWidget;
+import net.sf.witty.wt.WWidget;
 
 public class TreeContent
 {

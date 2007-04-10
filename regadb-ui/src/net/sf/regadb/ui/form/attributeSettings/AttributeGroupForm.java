@@ -10,9 +10,9 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WTable;
 
 public class AttributeGroupForm extends FormWidget 
 {

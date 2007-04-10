@@ -5,7 +5,7 @@ import java.util.List;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
-import net.sf.witty.wt.widgets.WComboBox;
+import net.sf.witty.wt.WComboBox;
 
 public class DatasetFilter extends ListFilter
 {

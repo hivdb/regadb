@@ -6,13 +6,13 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.WStackedWidget;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WMenu;
-import net.sf.witty.wt.widgets.WMenuOrientation;
-import net.sf.witty.wt.widgets.WStackedWidget;
-import net.sf.witty.wt.widgets.WTable;
+import net.sf.witty.wt.widgets.extra.WMenu;
+import net.sf.witty.wt.widgets.extra.WMenuOrientation;
 
 public class ViralIsolateForm extends FormWidget
 {

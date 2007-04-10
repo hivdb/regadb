@@ -7,7 +7,7 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
-import net.sf.witty.wt.widgets.WWidget;
+import net.sf.witty.wt.WWidget;
 
 public class IAttributeNominalValueDataList implements IEditableTable<AttributeNominalValue>
 {

@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.framework;
 
+import net.sf.witty.wt.WApplication;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WStdMessageResource;
-import net.sf.witty.wt.widgets.WApplication;
-import net.sf.witty.wt.widgets.WTable;
 
 public class RegaDBWindow extends WTable
 {

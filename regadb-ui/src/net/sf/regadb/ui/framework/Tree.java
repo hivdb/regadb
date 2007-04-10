@@ -3,7 +3,7 @@ package net.sf.regadb.ui.framework;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.RootItem;
 import net.sf.regadb.ui.tree.TreeContent;
-import net.sf.witty.wt.widgets.WContainerWidget;
+import net.sf.witty.wt.WContainerWidget;
 
 public class Tree extends WContainerWidget
 {

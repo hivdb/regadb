@@ -9,17 +9,17 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTableCell;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WCheckBox;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.WTableCell;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class DrugSelectionForm <DrugType, TherapyType> extends WGroupBox
 {

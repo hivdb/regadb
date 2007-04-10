@@ -1,12 +1,12 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WInteractWidget;
+import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.validation.WValidator;
 import net.sf.witty.wt.validation.WValidatorState;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WInteractWidget;
-import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.WWidget;
 
 public abstract class FormField extends WContainerWidget implements IFormField
 {

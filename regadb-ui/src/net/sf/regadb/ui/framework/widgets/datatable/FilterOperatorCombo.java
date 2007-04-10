@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WComboBox;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WComboBox;
 
 public class FilterOperatorCombo extends WComboBox
 {

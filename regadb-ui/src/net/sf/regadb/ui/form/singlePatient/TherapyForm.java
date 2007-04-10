@@ -19,9 +19,9 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WTable;
 
 public class TherapyForm extends FormWidget
 {

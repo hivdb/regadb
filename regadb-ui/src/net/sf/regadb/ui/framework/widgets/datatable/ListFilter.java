@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
 import net.sf.regadb.db.Transaction;
+import net.sf.witty.wt.WComboBox;
+import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WComboBox;
-import net.sf.witty.wt.widgets.WContainerWidget;
 
 public abstract class ListFilter extends WContainerWidget implements IFilter 
 {

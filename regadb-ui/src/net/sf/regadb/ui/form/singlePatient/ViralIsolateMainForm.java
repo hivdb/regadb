@@ -17,21 +17,21 @@ import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.fields.WNucleotideValidator;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WComboBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WFileUpload;
+import net.sf.witty.wt.WFontSize;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.validation.WValidatorPosition;
 import net.sf.witty.wt.validation.WValidatorState;
-import net.sf.witty.wt.widgets.SignalListener;
-import net.sf.witty.wt.widgets.WCheckBox;
-import net.sf.witty.wt.widgets.WComboBox;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WFileUpload;
-import net.sf.witty.wt.widgets.WFontSize;
-import net.sf.witty.wt.widgets.WGroupBox;
-import net.sf.witty.wt.widgets.WPushButton;
-import net.sf.witty.wt.widgets.WTable;
-import net.sf.witty.wt.widgets.event.WEmptyEvent;
-import net.sf.witty.wt.widgets.event.WMouseEvent;
 
 public class ViralIsolateMainForm extends WContainerWidget
 {

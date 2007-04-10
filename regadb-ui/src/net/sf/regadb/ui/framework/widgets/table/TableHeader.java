@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.framework.widgets.table;
 
+import net.sf.witty.wt.WTableCell;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.WTableCell;
-import net.sf.witty.wt.widgets.WText;
 
 public class TableHeader extends WText
 {

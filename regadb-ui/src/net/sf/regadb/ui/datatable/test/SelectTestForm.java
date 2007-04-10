@@ -4,8 +4,8 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WGroupBox;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
 
 public class SelectTestForm extends WGroupBox implements IForm
 {

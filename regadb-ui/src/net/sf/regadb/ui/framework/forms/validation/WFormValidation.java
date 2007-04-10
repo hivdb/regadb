@@ -3,10 +3,10 @@ package net.sf.regadb.ui.framework.forms.validation;
 import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.witty.wt.widgets.WContainerWidget;
-import net.sf.witty.wt.widgets.WImage;
-import net.sf.witty.wt.widgets.WText;
-import net.sf.witty.wt.widgets.WWidget;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WWidget;
 
 public class WFormValidation 
 {
