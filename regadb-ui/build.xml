@@ -28,6 +28,12 @@
     <javac srcdir="${src}" destdir="${build}">
   		<classpath refid="project.classpath"/>
     </javac>
+  	
+  	<copy todir="${build}">
+  	  <fileset dir="${src}/net/sf/regadb/ui/i18n/resources"
+  	           includes="**/*.properties"
+  	  />
+  	</copy>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >
