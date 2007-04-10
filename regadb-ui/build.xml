@@ -8,6 +8,8 @@
   	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
 	
+	<property name="resources" location="net/sf/regadb/ui/i18n/resources"/>
+	
 	<property name="proj.name" value="regadb-ui"/>
 	<property name="proj.version" value="0.9"/>
 
@@ -29,10 +31,11 @@
   		<classpath refid="project.classpath"/>
     </javac>
   	
-  	<copy todir="${build}">
-  	  <fileset dir="${src}/net/sf/regadb/ui/i18n/resources"
-  	           includes="**/*.properties"
-  	  />
+  	<mkdir dir="${build}/${resources}"/>
+  	
+  	<copy todir="${build}/${resources}">
+  	  <fileset dir="${src}/${resources}"
+  	           includes="**/*.properties" />
   	</copy>
   </target>
 
