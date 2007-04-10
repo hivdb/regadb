@@ -7,11 +7,11 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.i8n.WArgMessage;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
-public class TestResultSelectedItem extends TreeMenuNode
+public class MeasurementSelectedItem extends TreeMenuNode
 {
 	TestResult selectedTestResult_;
 	
-	public TestResultSelectedItem(WTreeNode parent)
+	public MeasurementSelectedItem(WTreeNode parent)
 	{
 		super(new WArgMessage("menu.singlePatient.testResultSelectedItem"), parent);
 		((WArgMessage)label().text()).addArgument("{testResultId}", "");

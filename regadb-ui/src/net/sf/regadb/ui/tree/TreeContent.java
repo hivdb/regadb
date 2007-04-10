@@ -2,13 +2,13 @@ package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
-import net.sf.regadb.ui.datatable.test.SelectTestForm;
+import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
-import net.sf.regadb.ui.form.singlePatient.TestResultForm;
+import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
@@ -25,7 +25,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
-import net.sf.regadb.ui.tree.items.singlePatient.TestResultSelectedItem;
+import net.sf.regadb.ui.tree.items.singlePatient.MeasurementSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
 import net.sf.witty.wt.WWidget;
@@ -41,7 +41,7 @@ public class TreeContent
     public ActionItem chart;
     public ActionItem measurements;
     public ActionItem measurementsSelect;
-    public TestResultSelectedItem measurementSelected;
+    public MeasurementSelectedItem measurementSelected;
     public ActionItem measurementView;
     public ActionItem measurementEdit;
     public ActionItem measurementsAdd;
@@ -107,29 +107,29 @@ public class TreeContent
                     {
                         public void performAction(TreeMenuNode node) 
                         {
-                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
+                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectMeasurementForm());
                         }
                     });
     				measurementsAdd = new ActionItem(rootItem.tr("menu.singlePatient.measurements.add"), measurements, new ITreeAction()
     				{
 						public void performAction(TreeMenuNode node)
 						{
-							RegaDBMain.getApp().getFormContainer().setForm(new TestResultForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
+							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
 						}
     				});
-    				measurementSelected = new TestResultSelectedItem(measurements);
+    				measurementSelected = new MeasurementSelectedItem(measurements);
     				measurementView = new ActionItem(rootItem.tr("menu.singlePatient.measurement.view"), measurementSelected, new ITreeAction()
     				{
 						public void performAction(TreeMenuNode node)
 						{
-							RegaDBMain.getApp().getFormContainer().setForm(new TestResultForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), measurementSelected.getSelectedTestResult()));
+							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), measurementSelected.getSelectedTestResult()));
 						}
     				});
     				measurementEdit = new ActionItem(rootItem.tr("menu.singlePatient.measurement.edit"), measurementSelected, new ITreeAction()
     				{
 						public void performAction(TreeMenuNode node)
 						{
-							RegaDBMain.getApp().getFormContainer().setForm(new TestResultForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), measurementSelected.getSelectedTestResult()));
+							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), measurementSelected.getSelectedTestResult()));
 						}
     				});
 

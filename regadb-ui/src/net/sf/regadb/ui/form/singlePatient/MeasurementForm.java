@@ -20,7 +20,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
-public class TestResultForm extends FormWidget
+public class MeasurementForm extends FormWidget
 {
 	private TestResult testResult_;
 	
@@ -37,7 +37,7 @@ public class TestResultForm extends FormWidget
     private ComboBox testResultNominalValueCB;
     private FormField testResultValueTF;
     
-	public TestResultForm(InteractionState interactionState, WMessage formName, TestResult testResult)
+	public MeasurementForm(InteractionState interactionState, WMessage formName, TestResult testResult)
 	{
 		super(formName, interactionState);
 		testResult_ = testResult;

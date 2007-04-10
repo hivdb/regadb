@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.datatable.test;
+package net.sf.regadb.ui.datatable.measurement;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 
-public class ITestDataTable implements IDataTable<TestResult>
+public class IMeasurementDataTable implements IDataTable<TestResult>
 {
 	private static String [] _colNames = {"dataTable.test.colName.date","dataTable.test.colName.testType", 
 		"dataTable.test.colName.testName", "dataTable.test.colName.result"};
@@ -24,7 +24,7 @@ public class ITestDataTable implements IDataTable<TestResult>
 	
 	private IFilter[] filters_ = new IFilter[4];
 	
-	public ITestDataTable()
+	public IMeasurementDataTable()
 	{
 		
 	}
