@@ -377,6 +377,11 @@ public class Transaction {
         session.lock(o, LockMode.NONE);
     }
     
+    public void attach(Patient p)
+    {
+        session.lock(p.getPatient(), LockMode.NONE);
+    }
+    
     public void refresh(Serializable object)
     {
         session.refresh(object);
