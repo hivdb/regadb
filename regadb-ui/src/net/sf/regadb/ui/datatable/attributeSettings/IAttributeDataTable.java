@@ -64,7 +64,7 @@ public class IAttributeDataTable implements IDataTable<Attribute>
 
     public void selectAction(Attribute selectedItem)
     {
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedAttribute(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().attributesView.selectNode();

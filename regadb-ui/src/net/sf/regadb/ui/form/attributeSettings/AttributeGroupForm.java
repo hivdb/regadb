@@ -80,7 +80,7 @@ public class AttributeGroupForm extends FormWidget
         t.save(attributeGroup_);
         t.commit();
         
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedAttributeGroup(attributeGroup_);
+        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(attributeGroup_);
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView.selectNode();

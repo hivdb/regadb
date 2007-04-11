@@ -36,13 +36,13 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public List<Therapy> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getTherapies(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getTherapiesCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
@@ -104,7 +104,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public void selectAction(Therapy selectedItem)
 	{
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesView.selectNode();

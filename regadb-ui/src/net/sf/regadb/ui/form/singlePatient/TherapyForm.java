@@ -144,7 +144,7 @@ public class TherapyForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		t.update(p);
 				
 		if(getInteractionState()==InteractionState.Adding)
@@ -214,7 +214,7 @@ public class TherapyForm extends FormWidget
 		t.commit();
 		//adding new drugs
 		
-		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedTherapy(therapy_);
+		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().therapiesView.selectNode();

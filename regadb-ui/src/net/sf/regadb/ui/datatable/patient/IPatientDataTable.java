@@ -83,7 +83,7 @@ public class IPatientDataTable implements IDataTable<Patient>
 
     public void selectAction(Patient selectedItem) 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedPatient(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.selectNode();

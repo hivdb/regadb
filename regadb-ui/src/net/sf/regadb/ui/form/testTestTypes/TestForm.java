@@ -111,7 +111,7 @@ private Test test_;
         t.save(test_);
         t.commit();
         
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedTest(test_);
+        RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(test_);
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().testView.selectNode();

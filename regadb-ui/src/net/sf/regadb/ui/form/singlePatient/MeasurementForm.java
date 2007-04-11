@@ -177,7 +177,7 @@ public class MeasurementForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		t.update(p);
 		
 		Test test = ((DataComboMessage<Test>)testNameCB.currentText()).getValue();
@@ -205,7 +205,7 @@ public class MeasurementForm extends FormWidget
 		t.save(p);
 		t.commit();
 		
-		RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedTestResult(testResult_);
+		RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(testResult_);
         RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.refreshAllChildren();
 		RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();

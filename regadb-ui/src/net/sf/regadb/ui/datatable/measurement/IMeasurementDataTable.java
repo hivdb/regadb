@@ -36,13 +36,13 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public List<TestResult> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getNonViralIsolateTestResults(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getNonViralIsolateTestResultsCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
@@ -78,7 +78,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public void selectAction(TestResult selectedItem)
 	{
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedTestResult(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();

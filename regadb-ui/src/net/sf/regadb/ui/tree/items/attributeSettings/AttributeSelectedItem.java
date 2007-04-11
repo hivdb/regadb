@@ -1,44 +1,19 @@
 package net.sf.regadb.ui.tree.items.attributeSettings;
 
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.i8n.WArgMessage;
+import net.sf.regadb.ui.tree.GenericSelectedItem;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
-public class AttributeSelectedItem extends TreeMenuNode
+public class AttributeSelectedItem extends GenericSelectedItem<Attribute>
 {
-    Attribute selectedAttribute_;
-    
     public AttributeSelectedItem(WTreeNode parent)
     {
-        super(new WArgMessage("menu.attributeSettings.attributeSelectedItem"), parent);
-        ((WArgMessage)label().text()).addArgument("{attributeSelectedItem}", "");
-    }
-
-    public Attribute getSelectedAttribute()
-    {
-        return selectedAttribute_;
-    }
-
-    public void setSelectedAttribute(Attribute selectedAttribute)
-    {
-        selectedAttribute_ = selectedAttribute;
-        
-        ((WArgMessage)label().text()).changeArgument("{attributeSelectedItem}", selectedAttribute.getName());
-        
-        refresh();
+        super(parent, "menu.attributeSettings.attributeSelectedItem", "{attributeSelectedItem}");
     }
 
     @Override
-    public ITreeAction getFormAction()
+    public String getArgument(Attribute type) 
     {
-        return null;
-    }
-
-    @Override
-    public boolean isEnabled()
-    {
-        return selectedAttribute_!=null;
+        return type.getName();
     }
 }

@@ -32,7 +32,7 @@ public class ViralIsolateForm extends FormWidget
         if(getInteractionState()==InteractionState.Adding)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
             viralIsolate_ = p.createViralIsolate();
             viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
@@ -98,7 +98,7 @@ public class ViralIsolateForm extends FormWidget
         t.update(viralIsolate_);
         t.commit();
         
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedViralIsolate(viralIsolate_);
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView.selectNode();

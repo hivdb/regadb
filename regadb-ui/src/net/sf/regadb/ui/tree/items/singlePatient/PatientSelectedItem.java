@@ -1,60 +1,35 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.i8n.WArgMessage;
+import net.sf.regadb.ui.tree.GenericSelectedItem;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
-public class PatientSelectedItem extends TreeMenuNode implements IGetSinglePatient
+public class PatientSelectedItem extends GenericSelectedItem<Patient>
 {
-    private Patient selectedPatient_ = null;
-    
     public PatientSelectedItem(WTreeNode parent)
     {
-        super(new WArgMessage("menu.singlePatient.patientSelectedItem"), parent);
-        ((WArgMessage)label().text()).addArgument("{patientId}", "");
+        super(parent, "menu.singlePatient.patientSelectedItem", "{patientId}");
     }
 
     @Override
-    public ITreeAction getFormAction()
+    public String getArgument(Patient type) 
     {
-        return null;
-    }
-
-    @Override
-    public boolean isEnabled()
-    {
-        return selectedPatient_!=null;
-    }
-
-    public Patient getSelectedPatient()
-    {
-        return selectedPatient_;
-    }
-
-    public void setSelectedPatient(Patient selectedPatient)
-    {
-        this.selectedPatient_ = selectedPatient;
-        
         String id="";
-        if(selectedPatient_.getFirstName()!=null)
+        if(type.getFirstName()!=null)
         {
-            id += selectedPatient_.getFirstName() + " ";
+            id += type.getFirstName() + " ";
         }
-        if(selectedPatient_.getLastName()!=null)
+        if(type.getLastName()!=null)
         {
-            id += selectedPatient_.getLastName();
+            id += type.getLastName();
         }
         id = id.trim();
         
         if(id.equals(""))
         {
-            id = selectedPatient_.getPatientId();
+            id = type.getPatientId();
         }
-                
-        ((WArgMessage)label().text()).changeArgument("{patientId}", id);
-        
-        refresh();
+
+        return id;
     }
 }

@@ -206,7 +206,7 @@ public class AttributeForm extends FormWidget
         t.save(attribute_);
         t.commit();
         
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedAttribute(attribute_);
+        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(attribute_);
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().attributesView.selectNode();

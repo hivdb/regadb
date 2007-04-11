@@ -35,13 +35,13 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 
 	public List<ViralIsolate> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getViralIsolates(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedPatient();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		return t.getViralIsolateCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
@@ -95,7 +95,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 
 	public void selectAction(ViralIsolate selectedItem)
 	{
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedViralIsolate(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView.selectNode();
