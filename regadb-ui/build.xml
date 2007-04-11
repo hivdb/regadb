@@ -32,7 +32,7 @@
   		<classpath refid="project.classpath"/>
     </javac>
   	
-  	<mkdir dir="${build}/${srcResourceBundleFilesDir}"/>
+  	<mkdir dir="${buildResourceBundleFilesDir}"/>
   	
   	<copy todir="${buildResourceBundleFilesDir}">
   	  <fileset dir="${srcResourceBundleFilesDir}"
