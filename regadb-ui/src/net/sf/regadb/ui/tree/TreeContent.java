@@ -297,68 +297,68 @@ public class TreeContent
            };
           
           testTypes = new ActionItem(rootItem.tr("menu.testSettings.testTypes"), testSettings);
-          testTypesSelect  = new ActionItem(rootItem.tr("menu.testSetting.testTypes.select"), testTypes, new ITreeAction()
+          testTypesSelect  = new ActionItem(rootItem.tr("menu.testSettings.testTypes.select"), testTypes, new ITreeAction()
            {
                public void performAction(TreeMenuNode node) 
                {
                    RegaDBMain.getApp().getFormContainer().setForm(new SelectTestTypeForm());
                }
            });
-           testTypesAdd = new ActionItem(rootItem.tr("menu.testSetting.testTypes.add"), testTypes, new ITreeAction()
+           testTypesAdd = new ActionItem(rootItem.tr("menu.testSettings.testTypes.add"), testTypes, new ITreeAction()
            {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("menu.testSetting.testTypes.add"),null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("form.testSettings.testType.add"),null));
                     
                 }
             });
            testTypeSelected = new TestTypeSelectedItem(testTypes);
-           testTypesView = new ActionItem(rootItem.tr("menu.testSetting.testTypes.view"), testTypeSelected, new ITreeAction()
+           testTypesView = new ActionItem(rootItem.tr("menu.testSettings.testTypes.view"), testTypeSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Viewing, WWidget.tr("menu.testSetting.testTypes.view"),testTypeSelected.getSelectedTestType()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testTypeSelected.getSelectedTestType()));
                }
            });
-           testTypesEdit = new ActionItem(rootItem.tr("menu.testSetting.testTypes.edit"), testTypeSelected, new ITreeAction()
+           testTypesEdit = new ActionItem(rootItem.tr("menu.testSettings.testTypes.edit"), testTypeSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Editing, WWidget.tr("menu.testSetting.testTypes.edit"),testTypeSelected.getSelectedTestType()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Editing, WWidget.tr("form.testSettings.testType.edit"),testTypeSelected.getSelectedTestType()));
                }
            });
            
            
            //test
            test = new ActionItem(rootItem.tr("menu.testSettings.tests"), testSettings);        
-           testSelect  = new ActionItem(rootItem.tr("menu.testSetting.tests.select"), test, new ITreeAction()
+           testSelect  = new ActionItem(rootItem.tr("menu.testSettings.tests.select"), test, new ITreeAction()
            {
                public void performAction(TreeMenuNode node) 
                {
                    RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
                }
            });
-           testAdd = new ActionItem(rootItem.tr("menu.testSetting.tests.add"), test, new ITreeAction()
+           testAdd = new ActionItem(rootItem.tr("menu.testSettings.tests.add"), test, new ITreeAction()
            {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("menu.testSetting.tests.add"),null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("form.testSettings.test.add"),null));
                     
                 }
             });
            testSelected = new TestSelectedItem(test);
-           testView = new ActionItem(rootItem.tr("menu.testSetting.tests.view"), testSelected, new ITreeAction()
+           testView = new ActionItem(rootItem.tr("menu.testSettings.tests.view"), testSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Viewing, WWidget.tr("menu.testSetting.testTypes.view"),testSelected.getSelectedTest()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testSelected.getSelectedTest()));
                }
            });
-           testEdit = new ActionItem(rootItem.tr("menu.testSetting.tests.edit"), testSelected, new ITreeAction()
+           testEdit = new ActionItem(rootItem.tr("menu.testSettings.tests.edit"), testSelected, new ITreeAction()
            {
                public void performAction(TreeMenuNode node)
                {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Editing, WWidget.tr("menu.testSetting.tests.edit"),testSelected.getSelectedTest()));
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Editing, WWidget.tr("form.testSettings.test.edit"),testSelected.getSelectedTest()));
                }
            });
 

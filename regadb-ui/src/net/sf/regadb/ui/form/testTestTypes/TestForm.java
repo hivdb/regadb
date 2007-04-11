@@ -114,6 +114,6 @@ private Test test_;
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedTest(test_);
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().testView.selectNode();
        }
 }

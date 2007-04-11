@@ -137,6 +137,6 @@ public class TestTypeForm extends FormWidget
         RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedTestType(testType_);
         RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().testTypesView.selectNode();
 	}
 }

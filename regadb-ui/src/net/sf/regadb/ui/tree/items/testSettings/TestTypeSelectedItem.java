@@ -12,7 +12,7 @@ public class TestTypeSelectedItem extends TreeMenuNode
 
 	public TestTypeSelectedItem(WTreeNode parent) 
 	{
-		super(new WArgMessage("menu.testType.testTypeSelectedItem"), parent);
+		super(new WArgMessage("menu.testSettings.testTypeSelectedItem"), parent);
 		((WArgMessage) label().text()).addArgument("{testTypeSelectedItem}", "");
 	}
 
