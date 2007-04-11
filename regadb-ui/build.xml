@@ -8,7 +8,8 @@
   	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
 	
-	<property name="resourceBundleFilesDir" location="net/sf/regadb/ui/i18n/resources"/>
+	<property name="srcResourceBundleFilesDir" location="${src}/net/sf/regadb/ui/i18n/resources"/>
+	<property name="buildResourceBundleFilesDir" location="${build}/net/sf/regadb/ui/i18n/resources"/>
 	
 	<property name="proj.name" value="regadb-ui"/>
 	<property name="proj.version" value="0.9"/>
@@ -31,10 +32,10 @@
   		<classpath refid="project.classpath"/>
     </javac>
   	
-  	<mkdir dir="${build}/${resourceBundleFilesDir}"/>
+  	<mkdir dir="${build}/${srcResourceBundleFilesDir}"/>
   	
-  	<copy todir="${build}/${resourceBundleFilesDir}">
-  	  <fileset dir="${src}/${resourceBundleFilesDir}"
+  	<copy todir="${buildResourceBundleFilesDir}">
+  	  <fileset dir="${srcResourceBundleFilesDir}"
   	           includes="**/*.properties" />
   	</copy>
   </target>
