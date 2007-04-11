@@ -84,7 +84,6 @@ public class MeasurementForm extends FormWidget
 
         TestType type = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
         
-        setTestCombo(t, type);
         t.commit();
         
         ValueTypes valueType = ValueTypes.getValueType(type.getValueType());
@@ -137,6 +136,11 @@ public class MeasurementForm extends FormWidget
 	        	testResultValueTF.setText(testResult_.getValue());
 	        }
 		}
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        TestType type = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
+        setTestCombo(t, type);
+        t.commit();
 		
         testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
                 {
