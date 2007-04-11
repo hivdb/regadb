@@ -738,4 +738,117 @@ public class Transaction {
     
         return q.uniqueResult() !=null;
     }
+
+    @SuppressWarnings("unchecked")
+	public List<TestObject> getTestObjects() 
+	{
+		Query q=session.createQuery("from TestObject");
+		return q.list();
+	}
+
+	public boolean testTypeStillExists(TestType testType)
+	{
+		Query q = session.createQuery("from TestType testType " + 
+        "where testType.id = :testTypeId");
+
+		q.setParameter("testTypeId", testType.getTestTypeIi());
+
+		return q.uniqueResult() !=null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<TestType> getTestTypes(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) 
+	{
+		String queryString = "from TestType as testType ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+	}
+
+	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
+	{
+		 String queryString = "select count(testType) from TestType as testType ";
+	        
+	       	if(!filterConstraints.clause_.equals(" "))
+	        {
+	            queryString += "where " + filterConstraints.clause_;
+	        }
+	      
+	        Query q = session.createQuery(queryString);
+	        
+	        for(Pair<String, Object> arg : filterConstraints.arguments_)
+	        {
+	            q.setParameter(arg.getKey(), arg.getValue());
+	        }
+	        
+	        return ((Long)q.uniqueResult()).longValue();
+	}
+	
+	public long getTestCount(HibernateFilterConstraint filterConstraints) 
+	{
+		 String queryString = "select count(description) from Test as test ";
+	        
+	        if(!filterConstraints.clause_.equals(" "))
+	        {
+	            queryString += "where " + filterConstraints.clause_;
+	        }
+	      
+	        Query q = session.createQuery(queryString);
+	        
+	        for(Pair<String, Object> arg : filterConstraints.arguments_)
+	        {
+	            q.setParameter(arg.getKey(), arg.getValue());
+	        }
+	        
+	        return ((Long)q.uniqueResult()).longValue();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Test> getTests(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+	{
+		String queryString = "from Test as test ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+	}
+
+	public boolean testStillExists(Test test) 
+	{
+		Query q = session.createQuery("from Test test " + 
+        "where test.id = :testId");
+
+		q.setParameter("testId", test.getTestIi());
+
+		return q.uniqueResult() !=null;
+	}
 }
