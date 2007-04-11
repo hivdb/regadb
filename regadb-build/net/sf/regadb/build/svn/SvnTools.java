@@ -29,7 +29,7 @@ public class SvnTools
 
             latestRevision = repository.getLatestRevision();
             SVNClientManager.newInstance().getUpdateClient().doCheckout(
-                    SVNURL.parseURIDecoded(url + File.separatorChar + projectName),
+                    SVNURL.parseURIDecoded(url + "/" + projectName),
                     new File(localDir + projectName),
                     SVNRevision.create(latestRevision),
                     SVNRevision.create(latestRevision), true);
