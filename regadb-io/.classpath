@@ -5,5 +5,10 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-persist"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-util"/>
 	<classpathentry kind="lib" path="/regadb-util/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/isorelax.jar"/>
+	<classpathentry kind="lib" path="lib/isorelax-jaxp-bridge-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/msv.jar"/>
+	<classpathentry kind="lib" path="lib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

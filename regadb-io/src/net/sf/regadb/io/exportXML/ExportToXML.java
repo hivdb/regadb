@@ -49,13 +49,13 @@ public class ExportToXML
 		if(Therapyvar.getStartDate()!=null)
 		{
 			Element startDateprimitiveValEl = new Element("startDate");
-			startDateprimitiveValEl.addContent(XMLTools.dateToString(Therapyvar.getStartDate()));
+			startDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStartDate()));
 			parentNode.addContent(startDateprimitiveValEl);
 		}
 		if(Therapyvar.getStopDate()!=null)
 		{
 			Element stopDateprimitiveValEl = new Element("stopDate");
-			stopDateprimitiveValEl.addContent(XMLTools.dateToString(Therapyvar.getStopDate()));
+			stopDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStopDate()));
 			parentNode.addContent(stopDateprimitiveValEl);
 		}
 		if(Therapyvar.getComment()!=null)
@@ -187,10 +187,10 @@ public class ExportToXML
 			descriptionprimitiveValEl.addContent(TestTypevar.getDescription().toString());
 			parentNode.addContent(descriptionprimitiveValEl);
 		}
+		Element forParent = new Element("testNominalValues");
+		parentNode.addContent(forParent);
 		if(TestTypevar.getTestNominalValues().size()!=0)
 		{
-			Element forParent = new Element("testNominalValues");
-			parentNode.addContent(forParent);
 			Element forParentLoopVar;
 			for(TestNominalValue testNominalValuesloopvar :TestTypevar.getTestNominalValues())
 			{
@@ -379,13 +379,13 @@ public class ExportToXML
 		if(Patientvar.getBirthDate()!=null)
 		{
 			Element birthDateprimitiveValEl = new Element("birthDate");
-			birthDateprimitiveValEl.addContent(XMLTools.dateToString(Patientvar.getBirthDate()));
+			birthDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Patientvar.getBirthDate()));
 			parentNode.addContent(birthDateprimitiveValEl);
 		}
 		if(Patientvar.getDeathDate()!=null)
 		{
 			Element deathDateprimitiveValEl = new Element("deathDate");
-			deathDateprimitiveValEl.addContent(XMLTools.dateToString(Patientvar.getDeathDate()));
+			deathDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Patientvar.getDeathDate()));
 			parentNode.addContent(deathDateprimitiveValEl);
 		}
 		Element datasetsEl = new Element("datasets");
@@ -450,7 +450,7 @@ public class ExportToXML
 		if(NtSequencevar.getSequenceDate()!=null)
 		{
 			Element sequenceDateprimitiveValEl = new Element("sequenceDate");
-			sequenceDateprimitiveValEl.addContent(XMLTools.dateToString(NtSequencevar.getSequenceDate()));
+			sequenceDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(NtSequencevar.getSequenceDate()));
 			parentNode.addContent(sequenceDateprimitiveValEl);
 		}
 		Element aaSequencesEl = new Element("aaSequences");
@@ -530,13 +530,13 @@ public class ExportToXML
 		if(Datasetvar.getCreationDate()!=null)
 		{
 			Element creationDateprimitiveValEl = new Element("creationDate");
-			creationDateprimitiveValEl.addContent(XMLTools.dateToString(Datasetvar.getCreationDate()));
+			creationDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Datasetvar.getCreationDate()));
 			parentNode.addContent(creationDateprimitiveValEl);
 		}
 		if(Datasetvar.getClosedDate()!=null)
 		{
 			Element closedDateprimitiveValEl = new Element("closedDate");
-			closedDateprimitiveValEl.addContent(XMLTools.dateToString(Datasetvar.getClosedDate()));
+			closedDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Datasetvar.getClosedDate()));
 			parentNode.addContent(closedDateprimitiveValEl);
 		}
 		if(Datasetvar.getRevision()!=null)
@@ -574,7 +574,7 @@ public class ExportToXML
 		if(ViralIsolatevar.getSampleDate()!=null)
 		{
 			Element sampleDateprimitiveValEl = new Element("sampleDate");
-			sampleDateprimitiveValEl.addContent(XMLTools.dateToString(ViralIsolatevar.getSampleDate()));
+			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
 			parentNode.addContent(sampleDateprimitiveValEl);
 		}
 		Element ntSequencesEl = new Element("ntSequences");
@@ -657,7 +657,7 @@ public class ExportToXML
 		if(TestResultvar.getTestDate()!=null)
 		{
 			Element testDateprimitiveValEl = new Element("testDate");
-			testDateprimitiveValEl.addContent(XMLTools.dateToString(TestResultvar.getTestDate()));
+			testDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(TestResultvar.getTestDate()));
 			parentNode.addContent(testDateprimitiveValEl);
 		}
 		if(TestResultvar.getSampleId()!=null)
@@ -779,10 +779,10 @@ public class ExportToXML
 			nameprimitiveValEl.addContent(Attributevar.getName().toString());
 			parentNode.addContent(nameprimitiveValEl);
 		}
+		Element forParent = new Element("attributeNominalValues");
+		parentNode.addContent(forParent);
 		if(Attributevar.getAttributeNominalValues().size()!=0)
 		{
-			Element forParent = new Element("attributeNominalValues");
-			parentNode.addContent(forParent);
 			Element forParentLoopVar;
 			for(AttributeNominalValue attributeNominalValuesloopvar :Attributevar.getAttributeNominalValues())
 			{

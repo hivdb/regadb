@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<element xmlns="http://relaxng.org/ns/structure/1.0" name="Patients">
-  <define xmlns="" name="net.sf.regadb.db.Patient">
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <define name="net.sf.regadb.db.Patient">
     <optional>
       <element name="patientId">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="lastName">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="firstName">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="birthDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="deathDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="datasets">
@@ -68,35 +68,35 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.Dataset">
+  <define name="net.sf.regadb.db.Dataset">
     <optional>
       <element name="description">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="creationDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="closedDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="revision">
-        <data type="int" datatypeLibrary="lib" />
+        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TestResult">
+  <define name="net.sf.regadb.db.TestResult">
     <optional>
       <element name="test">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.Test" />
@@ -105,41 +105,41 @@
     </optional>
     <optional>
       <element name="drugGeneric">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="testNominalValue">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
       </element>
     </optional>
     <optional>
       <element name="value">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="testDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="sampleId">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.Test">
+  <define name="net.sf.regadb.db.Test">
     <optional>
       <element name="testType">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.TestType" />
@@ -148,34 +148,34 @@
     </optional>
     <optional>
       <element name="description">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="serviceClass">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="serviceData">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="serviceConfig">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TestType">
+  <define name="net.sf.regadb.db.TestType">
     <optional>
       <element name="valueType">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.ValueType" />
@@ -185,7 +185,7 @@
     <optional>
       <element name="testObject">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.TestObject" />
@@ -194,7 +194,7 @@
     </optional>
     <optional>
       <element name="description">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
@@ -203,7 +203,7 @@
       <zeroOrMore>
         <element name="testNominalValues-el">
           <element name="reference">
-            <data type="int" datatypeLibrary="lib" />
+            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
           </element>
           <optional>
             <ref name="net.sf.regadb.db.TestNominalValue" />
@@ -212,44 +212,44 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.ValueType">
+  <define name="net.sf.regadb.db.ValueType">
     <optional>
       <element name="description">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="min">
-        <data type="double" datatypeLibrary="lib" />
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="max">
-        <data type="double" datatypeLibrary="lib" />
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="multiple">
-        <data type="boolean" datatypeLibrary="lib" />
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TestObject">
+  <define name="net.sf.regadb.db.TestObject">
     <optional>
       <element name="description">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TestNominalValue">
+  <define name="net.sf.regadb.db.TestNominalValue">
     <optional>
       <element name="testType">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.TestType" />
@@ -258,16 +258,16 @@
     </optional>
     <optional>
       <element name="value">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">100</param>
         </data>
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.PatientAttributeValue">
+  <define name="net.sf.regadb.db.PatientAttributeValue">
     <element name="attribute">
       <element name="reference">
-        <data type="int" datatypeLibrary="lib" />
+        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
       <optional>
         <ref name="net.sf.regadb.db.Attribute" />
@@ -276,23 +276,23 @@
     <optional>
       <element name="attributeNominalValue">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
       </element>
     </optional>
     <optional>
       <element name="value">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">100</param>
         </data>
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.Attribute">
+  <define name="net.sf.regadb.db.Attribute">
     <optional>
       <element name="valueType">
         <element name="reference">
-          <data type="int" datatypeLibrary="lib" />
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
         </element>
         <optional>
           <ref name="net.sf.regadb.db.ValueType" />
@@ -301,7 +301,7 @@
     </optional>
     <optional>
       <element name="name">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
@@ -310,7 +310,7 @@
       <zeroOrMore>
         <element name="attributeNominalValues-el">
           <element name="reference">
-            <data type="int" datatypeLibrary="lib" />
+            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
           </element>
           <optional>
             <ref name="net.sf.regadb.db.AttributeNominalValue" />
@@ -319,26 +319,26 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.AttributeNominalValue">
+  <define name="net.sf.regadb.db.AttributeNominalValue">
     <optional>
       <element name="value">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">100</param>
         </data>
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.ViralIsolate">
+  <define name="net.sf.regadb.db.ViralIsolate">
     <optional>
       <element name="sampleId">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="sampleDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="ntSequences">
@@ -356,22 +356,22 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.NtSequence">
+  <define name="net.sf.regadb.db.NtSequence">
     <optional>
       <element name="nucleotides">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="label">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="sequenceDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="aaSequences">
@@ -382,20 +382,20 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.AaSequence">
+  <define name="net.sf.regadb.db.AaSequence">
     <optional>
       <element name="protein">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="firstAaPos">
-        <data type="short" datatypeLibrary="lib" />
+        <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="lastAaPos">
-        <data type="short" datatypeLibrary="lib" />
+        <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="aaMutations">
@@ -413,69 +413,69 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.AaMutation">
+  <define name="net.sf.regadb.db.AaMutation">
     <element name="position">
-      <data type="short" datatypeLibrary="lib" />
+      <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <optional>
       <element name="aaReference">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">1</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="aaMutation">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">30</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="ntReferenceCodon">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="ntMutationCodon">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.AaInsertion">
+  <define name="net.sf.regadb.db.AaInsertion">
     <element name="position">
-      <data type="short" datatypeLibrary="lib" />
+      <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <element name="insertionOrder">
-      <data type="short" datatypeLibrary="lib" />
+      <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <optional>
       <element name="aaInsertion">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">30</param>
         </data>
       </element>
     </optional>
     <optional>
       <element name="ntInsertionCodon">
-        <data type="string" datatypeLibrary="lib" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.Therapy">
+  <define name="net.sf.regadb.db.Therapy">
     <optional>
       <element name="startDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="stopDate">
-        <data type="date" datatypeLibrary="lib" />
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
       <element name="comment">
-        <data type="string" datatypeLibrary="lib">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
       </element>
@@ -495,25 +495,32 @@
       </zeroOrMore>
     </element>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TherapyCommercial">
+  <define name="net.sf.regadb.db.TherapyCommercial">
     <element name="drugCommercial">
-      <data type="string" datatypeLibrary="lib" />
+      <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <optional>
       <element name="dayDosageUnits">
-        <data type="double" datatypeLibrary="lib" />
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-  <define xmlns="" name="net.sf.regadb.db.TherapyGeneric">
+  <define name="net.sf.regadb.db.TherapyGeneric">
     <element name="drugGeneric">
-      <data type="string" datatypeLibrary="lib" />
+      <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <optional>
       <element name="dayDosageMg">
-        <data type="double" datatypeLibrary="lib" />
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>
-</element>
+  <start>
+    <element name="Patients">
+      <zeroOrMore>
+        <ref name="net.sf.regadb.db.Patient" />
+      </zeroOrMore>
+    </element>
+  </start>
+</grammar>
 

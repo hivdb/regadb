@@ -104,9 +104,9 @@ public class GenerateIO
     
 	public GenerateIO(String strstartclass,String rootnodename)
 	{
-		rootE1_ = new Element("element");
+		rootE1_ = new Element("grammar");
         setNs(rootE1_);
-		rootE1_.setAttribute("name", rootnodename);
+		//rootE1_.setAttribute("name", rootnodename);
 
 		try
 		{
@@ -534,7 +534,23 @@ public class GenerateIO
 		try
 		{
             //relaxng schema
-			Document n = new Document(rootE1_);
+            //create start element
+            Element start = new Element("start");
+            setNs(start);
+            Element el = new Element("element");
+            setNs(el);
+            el.setAttribute("name", "Patients");
+            start.addContent(el);
+            Element zeroOrMore = new Element("zeroOrMore");
+            setNs(zeroOrMore);
+            el.addContent(zeroOrMore);
+            Element ref = new Element("ref");
+            setNs(ref);
+            zeroOrMore.addContent(ref);
+            ref.setAttribute("name", "net.sf.regadb.db.Patient");
+            rootE1_.addContent(start);
+
+            Document n = new Document(rootE1_);
 			XMLOutputter outputter = new XMLOutputter();
 			outputter.setFormat(Format.getPrettyFormat());
             String srcDir = getSrcPath("net.sf.regadb.io.relaxng");

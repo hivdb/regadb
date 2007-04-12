@@ -126,7 +126,7 @@ public class XMLWriteCodeGen
             {
                 if(fieldType.indexOf("Date")>-1)
                 {
-                    writeClassCode += startChar + primValEl + ".addContent(XMLTools.dateToString("+ var + "));";
+                    writeClassCode += startChar + primValEl + ".addContent(XMLTools.dateToRelaxNgString("+ var + "));";
                 }
                 else
                 {
@@ -221,10 +221,10 @@ public class XMLWriteCodeGen
     {
         String var = generateGetterConstruct(id, null, fieldName);
         String writeClassCode = "";
-        writeClassCode += "if("+var+".size()!=0)";
-        writeClassCode += "{";
         writeClassCode += "Element forParent = new Element(\""+fieldName+"\");";
         writeClassCode += parentNode+".addContent(forParent);";
+        writeClassCode += "if("+var+".size()!=0)";
+        writeClassCode += "{";
         writeClassCode += "Element forParentLoopVar;"; 
         writeClassCode += "for("+toWrite.getSimpleName() +" " +fieldName +"loopvar :" +var+")";
         writeClassCode += "{";

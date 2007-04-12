@@ -48,7 +48,7 @@ public class TestExportXml
         }
         
         ExportToXML l = new ExportToXML();
-        Element root = new Element("patients");
+        Element root = new Element("Patients");
         l.writePatient(pList.get(0), root);
         
         Document n = new Document(root);
