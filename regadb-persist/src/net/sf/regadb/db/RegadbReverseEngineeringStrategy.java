@@ -12,6 +12,7 @@ import java.util.Properties;
 import org.hibernate.cfg.reveng.DelegatingReverseEngineeringStrategy;
 import org.hibernate.cfg.reveng.ReverseEngineeringStrategy;
 import org.hibernate.cfg.reveng.TableIdentifier;
+import org.hibernate.mapping.Table;
 
 public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeringStrategy {
 
@@ -38,6 +39,7 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             || fromTable.getName().equals("test_nominal_value")
             || fromTable.getName().equals("commercial_generic")
             || fromTable.getName().equals("dataset_access")
+//          || (referencedTable.getName().equals("patient") && !fromTable.getName().equals("dataset"))
             || referencedTable.getName().equals("patient")
             || referencedTable.getName().equals("viral_isolate")
             || referencedTable.getName().equals("nt_sequence")
@@ -48,4 +50,14 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             return true;
         //return super.excludeForeignKeyAsCollection(arg0, arg1, arg2, arg3, arg4);
     }
+
+    @Override
+    public boolean isManyToManyTable(Table table) {
+        if (table.getName().equals("patient_dataset"))
+            return false;
+        else
+            return super.isManyToManyTable(table);
+    }
+    
+    
 }
