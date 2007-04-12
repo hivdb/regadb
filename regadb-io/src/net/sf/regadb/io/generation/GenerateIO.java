@@ -96,11 +96,16 @@ public class GenerateIO
         return null;
     }
     
+    private void setNs(Element el)
+    {
+        Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
+        el.setNamespace(relaxng);
+    }
+    
 	public GenerateIO(String strstartclass,String rootnodename)
 	{
 		rootE1_ = new Element("element");
-		Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
-		rootE1_.setNamespace(relaxng);
+        setNs(rootE1_);
 		rootE1_.setAttribute("name", rootnodename);
 
 		try
@@ -142,6 +147,7 @@ public class GenerateIO
         Element toAdd = rootE1_;
   
         Element define = new Element("define");
+        setNs(define);
         String className = c.getName();
         //PatientImpl is not accessible for security reasons
         if(className.indexOf("PatientImpl")>-1)
@@ -187,8 +193,10 @@ public class GenerateIO
             if (field.getType() == Set.class) 
             {
                 Element setEl = new Element("element");
+                setNs(setEl);
                 setEl.setAttribute("name", field.getName());
                 Element zeroOrMore = new Element("zeroOrMore");
+                setNs(zeroOrMore);
                 setEl.addContent(zeroOrMore);
                 toAdd.addContent(setEl);
                 toAdd = zeroOrMore;
@@ -198,11 +206,13 @@ public class GenerateIO
             else if (!interpreter.isNotNull(field.getType().getName(), field.getName())) 
             {
                 Element optional = new Element("optional");
+                setNs(optional);
                 toAdd.addContent(optional);
                 toAdd = optional;
             }        
     
             Element fieldEl = new Element("element");
+            setNs(fieldEl);
             if(!set)
             {
                 fieldEl.setAttribute("name", field.getName());
@@ -234,7 +244,9 @@ public class GenerateIO
         }
         else if(isStringRepresentedField(bareClass))
         {
-            toAdd.addContent(handleStringField(new Element("data"), null));
+            Element data = new Element("data");
+            setNs(data);
+            toAdd.addContent(handleStringField(data, null));
             XMLWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, false, "parentNode");
         }
         else if(isPointer(bareClass))
@@ -257,14 +269,18 @@ public class GenerateIO
                 if(isStringRepresentedField(compositeField.getType()))
                 {
                     Element el = new Element("element");
+                    setNs(el);
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
-                    el.addContent(handleStringField(new Element("data"), null));
+                    Element data = new Element("data");
+                    setNs(data);
+                    el.addContent(handleStringField(data, null));
                     XMLWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, "parentNode");
                 }
                 else if(isPointer(compositeField.getType()))
                 {
                     Element el = new Element("element");
+                    setNs(el);
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     handlePointer(el, compositeField.getType(), false);
@@ -279,6 +295,7 @@ public class GenerateIO
                     if(data!=null)
                     {
                         Element el = new Element("element");
+                        setNs(el);
                         el.setAttribute("name", compositeField.getName());
                         toAdd.addContent(el);
                         el.addContent(data);
@@ -306,8 +323,10 @@ public class GenerateIO
     private void handlePointer(Element toAdd, Class bareClass, boolean set)
     {
         Element reference = new Element("element");
+        setNs(reference);
         reference.setAttribute("name", "reference");
         Element data = new Element("data");
+        setNs(data);
         data.setAttribute("type", "int");
         data.setAttribute(getDataTypeLib());
         reference.addContent(data);
@@ -315,6 +334,9 @@ public class GenerateIO
         if(set || !isNominalClass(bareClass))
         {
             Element optional = new Element("optional");
+            setNs(optional);
+            Namespace relaxng = Namespace.getNamespace("http://relaxng.org/ns/structure/1.0");
+            optional.setNamespace(relaxng);
             toAdd.addContent(optional);
             addReference(optional, bareClass);
             writeClassGrammar(bareClass);
@@ -405,14 +427,15 @@ public class GenerateIO
     private void addReference(Element parentNode, Class ref)
     {
         Element refEl = new Element("ref");
+        setNs(refEl);
         refEl.setAttribute("name", ref.getName());
         parentNode.addContent(refEl);
     }
     
     private Attribute getDataTypeLib()
     {
-        //return new Attribute("datatypeLibrary", "http://www.w3.org/2001/XMLSchema-datatypes");
-        return new Attribute("datatypeLibrary", "lib");
+        return new Attribute("datatypeLibrary", "http://www.w3.org/2001/XMLSchema-datatypes");
+        //return new Attribute("datatypeLibrary", "lib");
     }
     
     private Element handleStringField(Element data, Integer length)
@@ -422,6 +445,7 @@ public class GenerateIO
         if(length!=null)
         {
             Element param = new Element("param");
+            setNs(param);
             param.setAttribute("name", "maxLength");
             param.addContent(new Text(length.intValue()+""));
             data.addContent(param);
@@ -434,6 +458,7 @@ public class GenerateIO
     {
         String fieldType = field.getType().toString();
         Element data = new Element("data");
+        setNs(data);
         
         if(fieldType.indexOf("String")>-1)
         {
