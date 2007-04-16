@@ -7,6 +7,7 @@
 package net.sf.regadb.db;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Patient {
@@ -35,7 +36,13 @@ public class Patient {
     }
 
     public Set<Dataset> getDatasets() {
-        return patient.getDatasets();
+        Set<PatientDataset> pds_set = patient.getPatientDatasets();
+        Set<Dataset> ds = new HashSet<Dataset>();
+        for(PatientDataset pds : pds_set)
+        {
+            ds.add(pds.getDataset());
+        }
+        return ds;
     }
     
     public void setPatientIi(int patientIi) {
