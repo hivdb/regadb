@@ -1,0 +1,43 @@
+<project name="regadb-io" default="all" basedir=".">
+    <description>
+        Build file for wts-build
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+	<property name="proj.name" value="wts-build"/>
+	<property name="proj.version" value="0.9"/>
+
+	<path id="project.classpath">
+		<fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	</path>
+	
+  <target name="init" depends="clean">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile" description="compile the source" depends="init" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}">
+  		<classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="dist" description="Make jar file" depends="compile" >
+    <!-- Put everything in ${build} into the jar file -->
+    <jar jarfile="${dist}/${proj.name}.jar" basedir="${build}"/>
+  </target>
+  
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="all" description="Do the build" depends="dist" />
+</project>
