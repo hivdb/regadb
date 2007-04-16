@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -31,8 +33,6 @@ import net.sf.witty.wt.i8n.WMessage;
 
 public class SinglePatientForm extends FormWidget
 {
-    //TODO implement dates stuff
-    
     //general group
     private WGroupBox generalGroup_;
     private WTable generalGroupTable_;
@@ -45,9 +45,9 @@ public class SinglePatientForm extends FormWidget
     private Label lastNameL;
     private TextField lastNameTF;
     private Label birthDateL;
-    private TextField birthDateTF;
+    private DateField birthDateTF;
     private Label deathDateL;
-    private TextField deathDateTF;
+    private DateField deathDateTF;
     
     //attributes
     private WGroupBox attributesGroup_;
@@ -85,10 +85,10 @@ public class SinglePatientForm extends FormWidget
         lastNameTF = new TextField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, lastNameL, lastNameTF);
         birthDateL = new Label(tr("form.singlePatient.editView.birthDate"));
-        birthDateTF = new TextField(getInteractionState(), this);
+        birthDateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, birthDateL, birthDateTF);
         deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
-        deathDateTF = new TextField(getInteractionState(), this);
+        deathDateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
         
         fillData(patient_);
@@ -291,9 +291,9 @@ public class SinglePatientForm extends FormWidget
         {
         	patient_.setLastName(lastNameTF.text());
         }
-        //TODO handle dates
-        //birthDateTF = new TextField(getInteractionState(), this);
-        //deathDateTF = new TextField(getInteractionState(), this);
+
+        patient_.setBirthDate(birthDateTF.getDate());
+        patient_.setDeathDate(deathDateTF.getDate());
         
         Object label;
         Object tf;
