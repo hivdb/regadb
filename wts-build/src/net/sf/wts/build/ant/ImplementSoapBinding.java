@@ -3,6 +3,8 @@ package net.sf.wts.build.ant;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -55,7 +57,20 @@ public class ImplementSoapBinding extends Task
         
         result.insert(public_class_pos, "import " + adapterClassPackage + ";\n\n");
         
-        System.err.println(result.toString());
+        //System.err.println(result.toString());
+        
+        FileWriter fw;
+        try 
+        {
+            fw = new FileWriter(soapBindingFile);
+            fw.write(result.toString());
+            fw.flush();
+            fw.close();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
     }
     
     private String createFunction(String var, String funcSig)
