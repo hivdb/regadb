@@ -37,5 +37,6 @@
         <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

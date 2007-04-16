@@ -206,7 +206,8 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 "from PatientImpl as patient " +
-                "join patient.datasets as dataset " +
+                "join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.dataset as dataset " +
                 "join dataset.datasetAccesses access " +
                 "where dataset = :dataset " +
                 "and access.permissions >= 1 " +
@@ -265,7 +266,8 @@ public class Transaction {
     public String getPatientsQuery()
     {
         return "from PatientImpl as patient " +
-        "join patient.datasets as dataset " +
+        "join patient.patientDatasets as patient_dataset " +
+        "join patient_dataset.dataset as dataset " +
         "join dataset.datasetAccesses access " +
         "where access.permissions >= 1 " +
         "and access.id.settingsUser.uid = :uid ";
@@ -305,7 +307,8 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
                 "from PatientImpl as patient " +
-                "join patient.datasets as dataset " +
+                "join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.dataset as dataset " +
                 "join dataset.datasetAccesses access " +
                 "where dataset = :dataset " +
                 "and access.permissions >= 1 " +
@@ -410,7 +413,8 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
                 "from PatientImpl as patient " +
-                "join patient.datasets as dataset " +
+                "join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.dataset as dataset " +
                 "join dataset.datasetAccesses access " +
                 "where patient.patientIi = :patientIi " +
                 "group by patient");
