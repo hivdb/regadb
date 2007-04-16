@@ -27,13 +27,11 @@
     <property name="deathDate" type="date">
       <column name="death_date" length="4" />
     </property>
-    <set name="datasets" inverse="true" table="patient_dataset">
+    <set name="patientDatasets" inverse="false" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
-      <many-to-many entity-name="net.sf.regadb.db.Dataset">
-        <column name="dataset_ii" not-null="true" />
-      </many-to-many>
+      <one-to-many class="net.sf.regadb.db.PatientDataset" />
     </set>
     <set name="testResults" inverse="false" cascade="all">
       <key>
