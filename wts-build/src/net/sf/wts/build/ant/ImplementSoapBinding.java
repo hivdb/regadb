@@ -16,7 +16,6 @@ public class ImplementSoapBinding extends Task
 {
     private File soapBindingFile;
     private String adapterClassName;
-    private String adapterClassPackage;
     
     public void execute()
     {
@@ -54,9 +53,7 @@ public class ImplementSoapBinding extends Task
         result.append("}");
         
         int public_class_pos = result.indexOf("public class");
-        
-        result.insert(public_class_pos, "import " + adapterClassPackage + ";\n\n");
-        
+                
         FileWriter fw;
         try 
         {
@@ -149,14 +146,6 @@ public class ImplementSoapBinding extends Task
         this.adapterClassName = adapterClassName;
     }
 
-    public String getAdapterClassPackage() {
-        return adapterClassPackage;
-    }
-
-    public void setAdapterClassPackage(String adapterClassPackage) {
-        this.adapterClassPackage = adapterClassPackage;
-    }
-
     public File getSoapBindingFile() {
         return soapBindingFile;
     }
@@ -170,7 +159,6 @@ public class ImplementSoapBinding extends Task
         ImplementSoapBinding isb = new ImplementSoapBinding();
         isb.setSoapBindingFile(new File(args[0]));
         isb.setAdapterClassName(args[1]);
-        isb.setAdapterClassPackage(args[2]);
         isb.execute();
     }
 }
