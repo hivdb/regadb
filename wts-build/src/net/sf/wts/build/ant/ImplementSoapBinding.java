@@ -57,8 +57,6 @@ public class ImplementSoapBinding extends Task
         
         result.insert(public_class_pos, "import " + adapterClassPackage + ";\n\n");
         
-        //System.err.println(result.toString());
-        
         FileWriter fw;
         try 
         {
@@ -91,9 +89,35 @@ public class ImplementSoapBinding extends Task
             toReturn += "return ";
         }
         
-        toReturn += var + "." + func.trim() + ";\n}\n";
+        toReturn += var + "." + prepareCallFunc(func) + ";\n}\n";
         
         return toReturn;
+    }
+    
+    private String prepareCallFunc(String callFunc)
+    {
+        int start = callFunc.indexOf('(');
+        int stop = callFunc.indexOf(')');
+        
+        String toReturn = callFunc.substring(0,start+1);
+                
+        String args = callFunc.substring(start+1,stop);
+        
+        StringTokenizer tok = new StringTokenizer(args, ",");
+        while(tok.hasMoreTokens())
+        {
+            StringTokenizer tokArg = new StringTokenizer(tok.nextToken(), " ");
+            tokArg.nextToken();
+            toReturn += tokArg.nextToken();
+            if(tok.hasMoreTokens())
+            {
+                toReturn += ", ";
+            }
+        }
+        
+        toReturn += ")";
+
+        return toReturn.trim();
     }
     
     private String readStringFromFile(File fileToRead)
@@ -139,5 +163,14 @@ public class ImplementSoapBinding extends Task
 
     public void setSoapBindingFile(File soapBindingFile) {
         this.soapBindingFile = soapBindingFile;
+    }
+    
+    public static void main(String [] args)
+    {
+        ImplementSoapBinding isb = new ImplementSoapBinding();
+        isb.setSoapBindingFile(new File(args[0]));
+        isb.setAdapterClassName(args[1]);
+        isb.setAdapterClassPackage(args[2]);
+        isb.execute();
     }
 }
