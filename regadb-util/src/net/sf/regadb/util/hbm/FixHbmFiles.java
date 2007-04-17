@@ -83,6 +83,9 @@ public class FixHbmFiles
         changeKeyPropToKeyManyToMany("TherapyGeneric.hbm.xml", "therapyIi", "therapy", "net.sf.regadb.db.Therapy");
         changeKeyPropToKeyManyToMany("TherapyGeneric.hbm.xml", "genericIi", "drugGeneric", "net.sf.regadb.db.DrugGeneric");
         
+        changeKeyPropToKeyManyToMany("PatientDataset.hbm.xml", "datasetIi", "dataset", "net.sf.regadb.db.Dataset");
+        changeKeyPropToKeyManyToMany("PatientDataset.hbm.xml", "patientIi", "patient", "net.sf.regadb.db.PatientImpl");
+        
         //if there is a key-many-to-one (in the composite-id)
         //the corresponding many-to-one definition in the class definition should be removed
         removeManyToOneIfThereIsAKeyAlready();

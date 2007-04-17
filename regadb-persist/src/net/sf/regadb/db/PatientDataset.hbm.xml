@@ -4,19 +4,13 @@
 <hibernate-mapping>
   <class name="net.sf.regadb.db.PatientDataset" table="patient_dataset" schema="public">
     <composite-id name="id" class="net.sf.regadb.db.PatientDatasetId">
-      <key-property name="datasetIi" type="int">
+      <key-many-to-one name="dataset" class="net.sf.regadb.db.Dataset">
         <column name="dataset_ii" />
-      </key-property>
-      <key-property name="patientIi" type="int">
+      </key-many-to-one>
+      <key-many-to-one name="patient" class="net.sf.regadb.db.PatientImpl">
         <column name="patient_ii" />
-      </key-property>
+      </key-many-to-one>
     </composite-id>
-    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" update="false" insert="false" fetch="select">
-      <column name="patient_ii" not-null="true" />
-    </many-to-one>
-    <many-to-one name="dataset" class="net.sf.regadb.db.Dataset" update="false" insert="false" fetch="select">
-      <column name="dataset_ii" not-null="true" />
-    </many-to-one>
   </class>
 </hibernate-mapping>
 
