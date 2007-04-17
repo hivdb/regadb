@@ -71,7 +71,7 @@ public class SinglePatientForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
-        sourceDatasetCB = new ComboBox(getInteractionState(), this);
+        sourceDatasetCB = new ComboBox(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         sourceDatasetCB.setMandatory(true);
         addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
@@ -277,7 +277,7 @@ public class SinglePatientForm extends FormWidget
             t.update(patient_);
         }
         
-        patient_.getDatasets().add(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue());
+        patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
         
         if(canStore(idTF.text()))
         {
