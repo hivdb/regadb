@@ -1,4 +1,4 @@
-<project name="regadb-io" default="all" basedir=".">
+<project name="wts-build" default="all" basedir=".">
     <description>
         Build file for wts-build
     </description>
