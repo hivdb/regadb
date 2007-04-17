@@ -40,7 +40,7 @@ public class Patient {
         Set<Dataset> ds = new HashSet<Dataset>();
         for(PatientDataset pds : pds_set)
         {
-            ds.add(pds.getDataset());
+            ds.add(pds.getId().getDataset());
         }
         return ds;
     }
@@ -179,5 +179,10 @@ public class Patient {
         TestResult result = new TestResult(test, patient);
         getTestResults().add(result);
         return result;
+    }
+    
+    public void addToDataset(Dataset ds)
+    {
+        patient.getPatientDatasets().add(new PatientDataset());
     }
 }
