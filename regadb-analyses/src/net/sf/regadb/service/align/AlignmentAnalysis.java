@@ -37,7 +37,7 @@ public class AlignmentAnalysis implements IAnalysis
         return endTime_;
     }
 
-    public Date getStartTime() 
+    public Date getStartTime()
     {
         return startTime_;
     }
@@ -49,7 +49,7 @@ public class AlignmentAnalysis implements IAnalysis
 
     public SettingsUser getUser() 
     {
-        return null;
+        return login_.getUserSettings_();
     }
 
     public void kill() 
@@ -78,13 +78,20 @@ public class AlignmentAnalysis implements IAnalysis
             e.printStackTrace();
         }
         
+
+        
+        t = login_.createTransaction();
+        NtSequence ntseq = t.getSequence(seqIi_);
         if(aaSeqs!=null)
         {
             for(AaSequence aaseq : aaSeqs)
             {
-                aaseq.getProtein().getAbbreviation();
+                ntseq.getAaSequences().add(aaseq);
             }
         }
+        t.save(ntseq);
+        t.commit();
+        
         
         endTime_ = new Date(System.currentTimeMillis());
     }

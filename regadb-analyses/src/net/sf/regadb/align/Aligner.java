@@ -66,14 +66,14 @@ public class Aligner {
             OpenReadingFrame orf = genome.getOpenReadingFrames().get(r);
 
             List<AaSequence> aas = align(s, orf);
-            if (aas != null) {
+            /*if (aas != null) {
                 for (AaSequence aa:aas) {
                     aa.setNtSequence(seq);
                     seq.getAaSequences().add(aa);
-                }
+                }*/
 
                 result.addAll(aas);
-            }
+            //}
         }
 
         return result;
