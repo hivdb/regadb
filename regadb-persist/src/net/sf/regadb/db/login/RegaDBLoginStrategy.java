@@ -7,7 +7,7 @@ import net.sf.regadb.util.encrypt.Encrypt;
 
 public class RegaDBLoginStrategy implements ILoginStrategy
 {	
-	public boolean authenticate(String uid, String password, Login login) throws WrongUidException, WrongPasswordException
+	public SettingsUser authenticate(String uid, String password, Login login) throws WrongUidException, WrongPasswordException
 	{
         Transaction t = login.createTransaction();
         
@@ -22,6 +22,13 @@ public class RegaDBLoginStrategy implements ILoginStrategy
         	throw new WrongPasswordException();
        
         
-        return settings != null && settings.getPassword().equals(Encrypt.encryptMD5(password));
+        if(settings != null && settings.getPassword().equals(Encrypt.encryptMD5(password)))
+        {
+            return settings;
+        }
+        else 
+        {
+            return null;
+        }
 	}
 }

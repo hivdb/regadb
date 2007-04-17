@@ -42,7 +42,7 @@ public class Login {
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
-        if (loginMethod.authenticate(uid, passwd, login)) 
+        if (loginMethod.authenticate(uid, passwd, login)!=null) 
         {
             return login;
         } 
