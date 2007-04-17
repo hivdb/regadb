@@ -19,11 +19,9 @@ public class AddServiceToWSDD extends Task
 
 	public void execute()
 	{
-		SAXBuilder builder;
-		Document doc = null;
-		Element rootElement;
+		SAXBuilder builder = new SAXBuilder();
 		
-		builder = new SAXBuilder();
+		Document doc = new Document();
 		
 		try 
 		{
@@ -38,7 +36,7 @@ public class AddServiceToWSDD extends Task
 			e1.printStackTrace();
 		}
 		
-		rootElement = doc.getRootElement();
+		Element rootElement = doc.getRootElement();
 		
 		Element service = new Element(serviceName);
 		service.setName("service");
@@ -110,7 +108,8 @@ public class AddServiceToWSDD extends Task
 		    FileWriter writer = new FileWriter(wsddOutputFile);
 			outputter.output(doc, writer);
 			writer.close();
-		} catch (java.io.IOException e) {
+		}
+		catch (IOException e) {
 		    e.printStackTrace();
 		}
 	}
