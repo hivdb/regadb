@@ -8,6 +8,7 @@ package net.sf.regadb.db;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Patient {
@@ -181,8 +182,16 @@ public class Patient {
         return result;
     }
     
-    public void addToDataset(Dataset ds)
+    public void setSourceDataset(Dataset ds, Transaction t)
     {
-        patient.getPatientDatasets().add(new PatientDataset());
+        List<Dataset> dsl = t.getCurrentUsersDatasets(Privileges.READWRITE);
+        
+        for(Dataset dsinl : dsl)
+        {
+            if(dsinl.getDescription().equals(ds.getDescription()) && ds.getClosedDate()==null)
+            {
+                patient.getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds, getPatient())));
+            }
+        }
     }
 }
