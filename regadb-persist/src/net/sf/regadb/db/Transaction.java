@@ -52,6 +52,18 @@ public class Transaction {
         session.getTransaction().rollback();
     }
 
+    //simple get by id
+    
+    public NtSequence getSequence(int id)
+    {
+        Query q = session.createQuery("from NtSequence where id = :id");
+        
+        q.setParameter("id", id);
+        
+        return (NtSequence)q.uniqueResult();
+    }
+    
+    //simple get by id
     /*
      * Lists of attributes, tests, test types, etc...
      */
