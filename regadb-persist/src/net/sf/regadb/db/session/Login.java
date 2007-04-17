@@ -6,13 +6,13 @@
  */
 package net.sf.regadb.db.session;
 
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
@@ -25,6 +25,7 @@ import org.hibernate.Session;
  */
 public class Login {
     private String uid;
+    private SettingsUser userSettings_;
 
     /**
      * Create a new authenticated login to the database.
@@ -42,7 +43,8 @@ public class Login {
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
-        if (loginMethod.authenticate(uid, passwd, login)!=null) 
+        login.userSettings_ = loginMethod.authenticate(uid, passwd, login);
+        if (login.userSettings_!=null) 
         {
             return login;
         } 
@@ -71,5 +73,9 @@ public class Login {
     
     private Login(String uid) {
         this.uid = uid;
+    }
+
+    public SettingsUser getUserSettings_() {
+        return userSettings_;
     }
 }
