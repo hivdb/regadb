@@ -21,7 +21,7 @@
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />
     </property>
-    <set name="testNominalValues" inverse="false" cascade="all">
+    <set name="testNominalValues" inverse="true" cascade="all">
       <key>
         <column name="test_type_ii" not-null="true" />
       </key>
