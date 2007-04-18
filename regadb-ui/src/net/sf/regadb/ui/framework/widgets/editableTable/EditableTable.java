@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.editableTable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -22,12 +23,12 @@ public class EditableTable<DataType> extends WContainerWidget
     
     private IEditableTable<DataType> editableList_;
     
-    private ArrayList<DataType> items_;
+    private List<DataType> items_;
     
     private ArrayList<DataType> itemList_ = new ArrayList<DataType>();
     private ArrayList<DataType> removedItemList_ = new ArrayList<DataType>();
         
-    public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, ArrayList<DataType> items)
+    public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, List<DataType> items)
     {
         super(parent);
         this.setStyleClass("editable-table");
@@ -68,9 +69,11 @@ public class EditableTable<DataType> extends WContainerWidget
         
         //item table
         itemTable_ = new WTable(this);
+        int headerPosition = itemTable_.numColumns()+1;
         for(String header : editableList_.getTableHeaders())
         {
-            itemTable_.putElementAt(0, itemTable_.numColumns()+1, new TableHeader(tr(header)));
+            itemTable_.putElementAt(0, headerPosition, new TableHeader(tr(header)));
+            headerPosition++;
         }
         
         for(DataType item : items_)
