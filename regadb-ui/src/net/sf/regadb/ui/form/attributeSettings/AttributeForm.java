@@ -189,7 +189,7 @@ public class AttributeForm extends FormWidget
             t.attach(attribute_);
         }
         AttributeGroup ag = ((DataComboMessage<AttributeGroup>)groupCB.currentText()).getValue();
-        t.update(ag);
+        t.attach(ag);
         ValueType vt = ((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue();
         t.attach(vt);
         attribute_.setName(nameTF.text());
@@ -203,7 +203,7 @@ public class AttributeForm extends FormWidget
             nominalValuesList_.saveData();
         }
         
-        t.update(attribute_);
+        update(attribute_, t);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(attribute_);

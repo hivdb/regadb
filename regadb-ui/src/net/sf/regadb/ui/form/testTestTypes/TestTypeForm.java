@@ -193,7 +193,7 @@ public class TestTypeForm extends FormWidget
             nominalValuesList_.saveData();
         }
         
-        t.update(testType_);
+        update(testType_, t);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(testType_);

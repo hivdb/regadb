@@ -99,7 +99,7 @@ public class ViralIsolateForm extends FormWidget
         t.attach(viralIsolate_);
         
         _mainForm.saveData(t);
-        t.update(viralIsolate_);
+        update(viralIsolate_, t);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);

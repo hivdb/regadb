@@ -108,7 +108,7 @@ private Test test_;
     
         test_.setDescription(testTF.text());
         test_.setTestType(tt);     
-        t.update(test_);
+        update(test_, t);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(test_);

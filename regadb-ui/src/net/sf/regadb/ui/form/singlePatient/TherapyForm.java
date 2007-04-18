@@ -146,7 +146,7 @@ public class TherapyForm extends FormWidget
         iGenericDrugSelectionEditableTable_.setTransaction(t);
         drugGenericList_.saveData();
         
-		t.update(therapy_);
+		update(therapy_, t);
 		t.commit();
 		
 		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);

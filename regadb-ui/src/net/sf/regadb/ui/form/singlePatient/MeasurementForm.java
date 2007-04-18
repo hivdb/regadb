@@ -197,7 +197,7 @@ public class MeasurementForm extends FormWidget
 			testResult_.setValue(testResultValueTF.text());
 		}
 		
-		t.update(testResult_);
+		update(testResult_, t);
 		t.commit();
 		
 		RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(testResult_);

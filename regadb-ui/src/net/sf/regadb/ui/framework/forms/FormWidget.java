@@ -1,7 +1,10 @@
 package net.sf.regadb.ui.framework.forms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -117,4 +120,28 @@ public abstract class FormWidget extends WGroupBox implements IForm
     }
     
     public abstract void saveData();
+    
+    protected void update(Serializable o, Transaction t)
+    {
+        if(interactionState_==InteractionState.Adding)
+        {
+            t.save(o);
+        }
+        else
+        {
+            t.update(o);
+        }
+    }
+    
+    protected void update(Patient p, Transaction t)
+    {
+        if(interactionState_==InteractionState.Adding)
+        {
+            t.save(p);
+        }
+        else
+        {
+            t.update(p);
+        }
+    }
 }

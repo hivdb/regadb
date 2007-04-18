@@ -340,7 +340,7 @@ public class SinglePatientForm extends FormWidget
             }
         }
 
-        t.update(patient_);
+        update(patient_, t);
         t.commit();
         
         //update the tree

@@ -1,10 +1,7 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.ValueType;
-import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -77,7 +74,7 @@ public class AttributeGroupForm extends FormWidget
         
         attributeGroup_.setGroupName(nameTF.text());
         
-        t.update(attributeGroup_);
+        update(attributeGroup_, t);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(attributeGroup_);
