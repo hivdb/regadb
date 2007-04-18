@@ -48,6 +48,7 @@ public class TestMeasurement
         }
         
         Transaction t = login.createTransaction();
+        //System.out.println(login.getSession());
         
         List<Dataset> dsl = t.getCurrentUsersDatasets();
         Dataset ptds = null;
@@ -59,11 +60,16 @@ public class TestMeasurement
                 }
         }
         Patient p1 = t.getPatient(ptds, "19217");
+        for(TestResult tr : p1.getTestResults())
+        {
+            System.err.println("trver:"+tr.getVersion());
+            
+        }
         
         t.commit();
 
         
-        t = login.createTransaction();
+        t = login2.createTransaction();
         Patient p2 = t.getPatient(ptds, "19217");
         dsl = t.getCurrentUsersDatasets();
         ptds = null;
@@ -79,20 +85,26 @@ public class TestMeasurement
         Set<TestResult>trl = p2.getTestResults();
         for(TestResult tr : trl)
         {
-            tr.setValue("66");
+            tr.setValue("103");
+            System.err.println("trver:"+tr.getVersion());
             break;
         }
 
+        t.update(p2);
         t.commit();
+        //login2.getSession().flush();
         
         t = login.createTransaction();
         t.attach(p1);
-        trl = p2.getTestResults();
+        trl = p1.getTestResults();
         for(TestResult tr : trl)
         {
-            tr.setValue("77");
-            break;
+            tr.setValue("lolo");
+            System.err.println("trver:"+tr.getVersion());
         }
+        t.update(p1);
         t.commit();
+        
+        //System.out.println(login2.getSession() == login.getSession());
     }
 }

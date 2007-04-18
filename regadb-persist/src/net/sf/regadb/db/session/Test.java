@@ -76,7 +76,7 @@ public class Test {
         AttributeNominalValue firstValue = genderAttribute.getAttributeNominalValues().iterator().next();
         genderValue.setAttributeNominalValue(firstValue);
         
-        t.save(p);
+        t.update(p);
         
         t.commit();
     }
@@ -118,7 +118,7 @@ public class Test {
         
         t = login.createTransaction();
 
-        t.save(settings);
+        t.update(settings);
         
         t.commit();
     }

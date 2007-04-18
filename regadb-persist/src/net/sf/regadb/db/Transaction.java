@@ -359,14 +359,6 @@ public class Transaction {
         return (SettingsUser) q.uniqueResult();
     }
 
-    /**
-     * Save settings.
-     * @param settings
-     */
-    public void save(SettingsUser settings) {
-        session.save(settings);
-    }
-    
     public void update(Patient patient) 
     {
         session.update(patient.getPatient());
@@ -376,47 +368,26 @@ public class Transaction {
     {
         session.update(object);
     }
-    
-    public void save(Serializable object) 
-    {
-        session.save(object);
-    }
-    
+        
     public void delete(Serializable object)
     {
         session.delete(object);
     }
     
-    public void attach(Object o)
+    public void attach(Serializable o)
     {
         session.lock(o, LockMode.READ);
     }
-
     
     public void attach(Patient p)
     {
         session.lock(p.getPatient(), LockMode.READ);
-    }
-    
-    
-    public void refresh(Serializable object)
-    {
-        session.refresh(object);
     }
 
     /*
      * Patient queries
      */
 
-    /**
-     * Check access permissions, and save the patient.
-     */
-    public void save(Patient patient) {
-        if (patient.getPrivileges().canWrite()) {
-            session.saveOrUpdate(patient.getPatient());
-        } // TODO: else throw exception
-    }
-    
     public Criteria createCriteria(Class c)
     {
         return session.createCriteria(c);

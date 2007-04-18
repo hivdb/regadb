@@ -69,7 +69,6 @@ public class Login {
     }
 
     private Session getSession() {
-        //return HibernateUtil.getSessionFactory().getCurrentSession();
         return session_;
     }
     
