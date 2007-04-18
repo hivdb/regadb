@@ -203,7 +203,7 @@ public class AttributeForm extends FormWidget
             nominalValuesList_.saveData();
         }
         
-        t.save(attribute_);
+        t.update(attribute_);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(attribute_);

@@ -70,14 +70,14 @@ public class AttributeGroupForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        if(!(getInteractionState()==InteractionState.Adding))
+        if(getInteractionState()!=InteractionState.Adding)
         {
             t.attach(attributeGroup_);
         }
         
         attributeGroup_.setGroupName(nameTF.text());
         
-        t.save(attributeGroup_);
+        t.update(attributeGroup_);
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(attributeGroup_);

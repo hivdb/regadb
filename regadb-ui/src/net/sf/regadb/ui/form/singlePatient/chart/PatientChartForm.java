@@ -23,7 +23,7 @@ public class PatientChartForm extends WGroupBox implements IForm
 		super(tr("form.singlePatient.viewChart"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
-		t.update(p);
+		t.attach(p);
 		PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
 		File tmpFile = RegaDBMain.getApp().createTempFile("regadb-chart", ".png");
 		chartDrawer.writePngChartToFile(800, tmpFile);

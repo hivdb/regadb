@@ -104,7 +104,7 @@ public class SinglePatientForm extends FormWidget
         
         if(patient.getPatientIi()!=null)
         {
-            t.update(patient);
+            t.attach(patient);
         }
         
         for(Dataset ds : t.getCurrentUsersDatasets(Privileges.READWRITE))
@@ -274,7 +274,7 @@ public class SinglePatientForm extends FormWidget
         
         if(patient_.getPatientIi()!=null)
         {
-            t.update(patient_);
+            t.attach(patient_);
         }
         
         patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
@@ -340,7 +340,7 @@ public class SinglePatientForm extends FormWidget
             }
         }
 
-        t.save(patient_);
+        t.update(patient_);
         t.commit();
         
         //update the tree

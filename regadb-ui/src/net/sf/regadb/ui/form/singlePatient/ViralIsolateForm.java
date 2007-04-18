@@ -92,7 +92,7 @@ public class ViralIsolateForm extends FormWidget
 	public void saveData()
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
-        t.update(viralIsolate_);
+        t.attach(viralIsolate_);
         
         _mainForm.saveData(t);
         t.update(viralIsolate_);

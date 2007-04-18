@@ -11,6 +11,9 @@ import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.align.AlignmentAnalysis;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
@@ -30,8 +33,6 @@ import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
-import net.sf.witty.wt.validation.WValidatorPosition;
-import net.sf.witty.wt.validation.WValidatorState;
 
 public class ViralIsolateMainForm extends WContainerWidget
 {
@@ -391,6 +392,11 @@ public class ViralIsolateMainForm extends WContainerWidget
         
         viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
+        
+        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
+        {
+            AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq, t.getProteinMap(), RegaDBMain.getApp().getLogin()));
+        }
     }
 
     private void addButtons()
