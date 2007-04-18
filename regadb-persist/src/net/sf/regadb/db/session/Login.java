@@ -26,6 +26,7 @@ import org.hibernate.Session;
 public class Login {
     private String uid;
     private SettingsUser userSettings_;
+    private Session session_;
 
     /**
      * Create a new authenticated login to the database.
@@ -68,11 +69,13 @@ public class Login {
     }
 
     private Session getSession() {
-        return HibernateUtil.getSessionFactory().getCurrentSession();
+        //return HibernateUtil.getSessionFactory().getCurrentSession();
+        return session_;
     }
     
     private Login(String uid) {
         this.uid = uid;
+        session_ = HibernateUtil.getSessionFactory().openSession();
     }
 
     public SettingsUser getUserSettings_() {
