@@ -21,14 +21,16 @@ public class AlignmentAnalysis implements IAnalysis
 {
     private int seqIi_;
     private NtSequence ntSeq_;
+    Map<String, Protein> proteins_;
     private Date startTime_;
     private Date endTime_;
     private Login login_;
     
-    public AlignmentAnalysis(NtSequence ntseq, Login login)
+    public AlignmentAnalysis(NtSequence ntseq, Map<String, Protein> proteins, Login login)
     {
         seqIi_ = ntseq.getNtSequenceIi();
         ntSeq_ = ntseq;
+        proteins_ = proteins;
         login_ = login;
     }
 
@@ -61,12 +63,7 @@ public class AlignmentAnalysis implements IAnalysis
     {
         startTime_ = new Date(System.currentTimeMillis());
         
-        Transaction t = login_.createTransaction();
-
-        Map<String, Protein> proteins = t.getProteinMap();
-        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins);
-        
-        t.commit();
+        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins_);
         
         List<AaSequence> aaSeqs = null;
         try 
@@ -77,10 +74,8 @@ public class AlignmentAnalysis implements IAnalysis
         {
             e.printStackTrace();
         }
-        
-
-        
-        t = login_.createTransaction();
+                
+        Transaction t = login_.createTransaction();
         NtSequence ntseq = t.getSequence(seqIi_);
         if(aaSeqs!=null)
         {
@@ -89,10 +84,10 @@ public class AlignmentAnalysis implements IAnalysis
                 ntseq.getAaSequences().add(aaseq);
             }
         }
-        t.save(ntseq);
+        
+        t.update(ntseq);
         t.commit();
-        
-        
+                
         endTime_ = new Date(System.currentTimeMillis());
     }
 

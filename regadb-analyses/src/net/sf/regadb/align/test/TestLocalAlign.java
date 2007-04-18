@@ -99,7 +99,7 @@ class TestLocalAlign {
         vi.getNtSequences().add(seq);
         seq.setViralIsolate(vi);
 
-        t.save(p);
+        t.update(p);
         
         t.commit();
     }
