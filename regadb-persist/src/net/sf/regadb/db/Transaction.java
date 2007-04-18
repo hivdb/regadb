@@ -324,7 +324,7 @@ public class Transaction {
                 "join dataset.datasetAccesses access " +
                 "where dataset = :dataset " +
                 "and access.permissions >= 1 " +
-                "and access.settingsUser.uid = :uid " +
+                "and access.id.settingsUser.uid = :uid " +
                 "and patient.patientId = :patientId " +
                 "group by patient");
         
@@ -389,13 +389,15 @@ public class Transaction {
     
     public void attach(Object o)
     {
-        session.lock(o, LockMode.NONE);
+        session.lock(o, LockMode.READ);
     }
+
     
     public void attach(Patient p)
     {
-        session.lock(p.getPatient(), LockMode.NONE);
+        session.lock(p.getPatient(), LockMode.READ);
     }
+    
     
     public void refresh(Serializable object)
     {
