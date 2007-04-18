@@ -100,11 +100,13 @@ public class ComboBox extends FormField
     
     public void flagErroneous()
     {
+        if(fieldEdit_!=null)
         fieldEdit_.setStyleClass("form-field-combobox-edit-invalid");
     }
 
     public void flagValid()
     {
+        if(fieldEdit_!=null)
         fieldEdit_.setStyleClass("form-field-combobox-edit-valid");
     }
 
