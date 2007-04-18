@@ -368,6 +368,16 @@ public class Transaction {
     {
         session.update(object);
     }
+    
+    public void save(Patient patient) 
+    {
+        session.save(patient.getPatient());
+    }
+    
+    public void save(Serializable object) 
+    {
+        session.save(object);
+    }
         
     public void delete(Serializable object)
     {
