@@ -13,7 +13,7 @@ import org.apache.axis.client.Service;
 import org.apache.axis.encoding.XMLType;
 
 public class FileClient {
-	private static final String SOAPUrl = "http://localhost:8080/wts/services/PieterHandler";
+	private static final String SOAPUrl = "http://localhost:8080/wts/services/FileHandler";
 	
 	private static final String inputFile = "build.xml";
 	private static final String outputFile = "client.xml";
