@@ -1,7 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,7 +276,10 @@ public class SinglePatientForm extends FormWidget
             t.attach(patient_);
         }
         
-        patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
+        if(getInteractionState() == InteractionState.Adding)
+        {
+            patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
+        }
         
         if(canStore(idTF.text()))
         {
