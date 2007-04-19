@@ -3,11 +3,14 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.analysis.functions.FastaReadStatus;
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -38,7 +41,8 @@ public class ViralIsolateMainForm extends WContainerWidget
 {
 	private ViralIsolateForm viralIsolateForm_;
     
-    private ArrayList<NtSequence> removedSequences = new ArrayList<NtSequence>(); 
+    private ArrayList<NtSequence> removedSequences = new ArrayList<NtSequence>();
+    private Set<AaSequence> removedAaSequences = new HashSet<AaSequence>();
 
 	// General group
 	private WGroupBox generalGroup_;
@@ -340,6 +344,11 @@ public class ViralIsolateMainForm extends WContainerWidget
             currentSeq.setLabel(seqLabelTF.getFormText());
             currentSeq.setSequenceDate(seqDateTF.getDate());
             currentSeq.setNucleotides(ntTF.getFormText());
+            
+            for(AaSequence aaseq : currentSeq.getAaSequences())
+            {
+                removedAaSequences.add(aaseq);
+            }
         }
     }
     
@@ -390,12 +399,27 @@ public class ViralIsolateMainForm extends WContainerWidget
             viralIsolateForm_.getViralIsolate().getNtSequences().remove(ntseq);
         }
         
+        NtSequence ntseqref;
+        for(AaSequence aaseq : removedAaSequences)
+        {
+            ntseqref = aaseq.getNtSequence();
+            ntseqref.getAaSequences().remove(aaseq);
+            t.delete(aaseq);
+        }
+        
         viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
-        
+    }
+    
+    public void startAnalysis()
+    {
         for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
         {
-            AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq, t.getProteinMap(), RegaDBMain.getApp().getLogin()));
+            if(ntseq.getAaSequences().size()==0)
+            {
+            System.err.println("ntseq for alignment:"+ntseq.getLabel());
+            AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
+            }
         }
     }
 

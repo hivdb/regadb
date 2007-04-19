@@ -102,6 +102,8 @@ public class ViralIsolateForm extends FormWidget
         update(viralIsolate_, t);
         t.commit();
         
+        _mainForm.startAnalysis();
+        
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();

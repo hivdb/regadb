@@ -24,7 +24,7 @@
     <property name="sequenceDate" type="date">
       <column name="sequence_date" length="4" />
     </property>
-    <set name="aaSequences" inverse="false" cascade="all">
+    <set name="aaSequences" inverse="true" cascade="all">
       <key>
         <column name="nt_sequence_ii" not-null="true" />
       </key>

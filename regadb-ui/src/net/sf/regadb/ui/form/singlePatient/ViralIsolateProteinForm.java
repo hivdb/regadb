@@ -113,16 +113,21 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-		AaSequence aaSequence = ((DataComboMessage<AaSequence>)aaSequenceCombo_.currentText()).getValue();
-        t.attach(aaSequence);
+        DataComboMessage<AaSequence> dcm = (DataComboMessage<AaSequence>)aaSequenceCombo_.currentText();
+		
+        if(dcm!=null)
+        {
+            AaSequence aaSequence = dcm.getValue();
+            t.attach(aaSequence);
         
-		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
-		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
-        alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
-        synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
-        nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
-        
-        t.commit();
+    		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
+    		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
+            alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
+            synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
+            nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
+            
+            t.commit();
+        }
 	}
 	
 	private void setAaSequenceCombo()
@@ -132,7 +137,9 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		aaSequenceCombo_.clearItems();
 		
         Transaction t = RegaDBMain.getApp().createTransaction();
-		for(AaSequence aaseq : currentSequence.getValue().getAaSequences())
+
+        if(currentSequence!=null)
+        for(AaSequence aaseq : currentSequence.getValue().getAaSequences())
 		{
 			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
 		}

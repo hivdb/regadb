@@ -6,7 +6,6 @@
  */
 package net.sf.regadb.db.session;
 
-import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
@@ -25,7 +24,6 @@ import org.hibernate.Session;
  */
 public class Login {
     private String uid;
-    private SettingsUser userSettings_;
     private Session session_;
 
     /**
@@ -44,8 +42,7 @@ public class Login {
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
-        login.userSettings_ = loginMethod.authenticate(uid, passwd, login);
-        if (login.userSettings_!=null) 
+        if (loginMethod.authenticate(uid, passwd, login)!=null) 
         {
             return login;
         } 
@@ -76,8 +73,9 @@ public class Login {
         this.uid = uid;
         session_ = HibernateUtil.getSessionFactory().openSession();
     }
-
-    public SettingsUser getUserSettings_() {
-        return userSettings_;
+    
+    public Login copyLogin()
+    {
+        return new Login(this.uid);
     }
 }
