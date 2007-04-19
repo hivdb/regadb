@@ -46,6 +46,7 @@ public class NeedlemanWunsch {
             final int seq1Size = seq1.length();
             final int seq2Size = seq2.length();
 
+            System.err.println("seq1Size:"+seq1Size+"seq2Size:"+seq2Size);
             double dnTable[][] = new double[seq1Size + 1][seq2Size + 1];
             int gapsLengthTable[][] = new int[seq1Size + 1][seq2Size + 1];
             // >0: horiz, <0: vert

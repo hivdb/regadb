@@ -44,7 +44,7 @@ public class Aligner {
         this.service = service;
         this.proteins = proteins;
         try {
-            aatok = ProteinTools.getAlphabet().getTokenization("token");
+            aatok = ProteinTools.getTAlphabet().getTokenization("token");
             nttok = DNATools.getDNA().getTokenization("token");
         } catch (BioException e) {
             throw new RuntimeException(e);
@@ -66,14 +66,14 @@ public class Aligner {
             OpenReadingFrame orf = genome.getOpenReadingFrames().get(r);
 
             List<AaSequence> aas = align(s, orf);
-            /*if (aas != null) {
-                for (AaSequence aa:aas) {
+            if (aas != null) {
+                /*for (AaSequence aa:aas) {
                     aa.setNtSequence(seq);
                     seq.getAaSequences().add(aa);
                 }*/
 
                 result.addAll(aas);
-            //}
+            }
         }
 
         return result;

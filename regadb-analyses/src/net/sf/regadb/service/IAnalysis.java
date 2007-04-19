@@ -3,11 +3,11 @@ package net.sf.regadb.service;
 import java.util.Date;
 
 import net.sf.regadb.db.AnalysisStatus;
-import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.session.Login;
 
 public interface IAnalysis 
 {
-    public SettingsUser getUser();
+    public String getUser();
     public AnalysisStatus getStatus();
     public Date getStartTime();
     public Date getEndTime();
@@ -15,7 +15,7 @@ public interface IAnalysis
     //return a Long represeting the time after the Analsyis should be removed from the logging
     public Long removeFromLogging();
     
-    public void launch();
+    public void launch(Login sessionSafeLogin);
     public void pause();
     public void kill();
 }

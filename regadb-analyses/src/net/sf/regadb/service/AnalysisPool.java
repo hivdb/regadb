@@ -2,8 +2,8 @@ package net.sf.regadb.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import net.sf.regadb.db.session.Login;
 
 public class AnalysisPool 
 {
@@ -13,7 +13,7 @@ public class AnalysisPool
     
     private AnalysisPool()
     {
-        TimerTask keepThreadListClean = new TimerTask()
+        /*TimerTask keepThreadListClean = new TimerTask()
         {
             @Override
             public void run() 
@@ -23,7 +23,7 @@ public class AnalysisPool
         };
         
         Timer timer = new Timer();
-        timer.schedule(keepThreadListClean, 60*5*1000, 60*2*1000);
+        timer.schedule(keepThreadListClean, 60*5*1000, 60*2*1000);*/
     }
     
     private synchronized void cleanThreadList()
@@ -46,9 +46,9 @@ public class AnalysisPool
         threadList_.removeAll(toBeRemoved);
     }
     
-    public synchronized void launchAnalysis(final IAnalysis analysis)
+    public synchronized void launchAnalysis(final IAnalysis analysis, Login login)
     {
-        AnalysisThread t = new AnalysisThread(analysis);
+        AnalysisThread t = new AnalysisThread(analysis, login.copyLogin());
         t.start();
         threadList_.add(t);
     }
