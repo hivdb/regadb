@@ -66,6 +66,18 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("aaSequences")&& a.getKey().equals("net.sf.regadb.db.NtSequence")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
+                        if((e.getAttributeValue("name").equals("aaInsertions")&& a.getKey().equals("net.sf.regadb.db.AaSequence")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
+                        if((e.getAttributeValue("name").equals("aaMutations")&& a.getKey().equals("net.sf.regadb.db.AaSequence")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                 }
             }
