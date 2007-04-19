@@ -1,15 +1,10 @@
 <project name="wst" default="default" basedir="." >
 	
 	<property name="src" location="src"/>
-	<property name="build" location="build"/>
-	<property name="work" location="work"/>
-	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
-	<property name="wts" location="wts"/>
-	
-	<property name="service" value="FileHandler"/>
-	<property name="package" value="net.sf.wts.example.filehandler"/>
-	<property name="location" value="net/sf/wts/example/filehandler"/>
+	<property name="wts" location="WEB-INF"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="dist"/>
 	
 	<path id="project.classpath">
 		<fileset dir="${lib}">
@@ -34,7 +29,7 @@
 		<classpath refid="project.classpath"/>
 	</taskdef>
 	
-	<target name="default" depends="deploy" description="create a web service"/>
+	<target name="default"/>
 	
 	<target name="clean">
 		<delete includeemptydirs="true">
@@ -45,10 +40,14 @@
 	
 	<target name="init" depends="clean">
 		<mkdir dir="${dist}"/>
+		
+		<copy todir="${build}/WEB-INF">
+			<fileset dir="${wts}"/>
+		</copy>
 	</target>
 	
-	<target name="service" depends="init">
-		<javac srcdir="${src}" destdir="${build}" includes="${location}/**">
+	<target name="service">
+		<javac srcdir="${src}/${location}" destdir="${build}">
 			<classpath refid="project.classpath"/>
 		</javac>
 		
@@ -77,12 +76,12 @@
 			<classpath refid="project.classpath"/>
 		</javac>
 		
-		<addservicetowsdd wsddInputFile="${wts}/WEB-INF/server-config-original.wsdd" wsddOutputFile="${wts}/WEB-INF/server-config.wsdd" serviceName="${service}" servicePackage="${package}"/>
+		<addservicetowsdd wsddFile="${build}/WEB-INF/server-config.wsdd" serviceName="${service}" servicePackage="${package}"/>
 	</target>
 	
-	<target name="deploy" depends="service">
-		<war destfile="${dist}/wts.war" webxml="${wts}/WEB-INF/web.xml">
-			<fileset dir="${wts}">
+	<target name="deploy">
+		<war destfile="${dist}/wts.war" webxml="${build}/WEB-INF/web.xml">
+			<fileset dir="${build}/">
 				<include name="WEB-INF/server-config.wsdd"/>
 			</fileset>
 			<lib dir="${lib}" excludes="wts-build.jar axis-ant.jar"/>

@@ -12,8 +12,7 @@ import org.jdom.output.XMLOutputter;
 
 public class AddServiceToWSDD extends Task
 {
-	private String wsddInputFile;
-	private String wsddOutputFile;
+	private String wsddFile;
 	private String serviceName;
 	private String servicePackage;
 
@@ -25,7 +24,7 @@ public class AddServiceToWSDD extends Task
 		
 		try 
 		{
-			doc = builder.build(new File(wsddInputFile));
+			doc = builder.build(new File(wsddFile));
 		} 
 		catch (JDOMException e1) 
 		{
@@ -105,7 +104,7 @@ public class AddServiceToWSDD extends Task
 		    XMLOutputter outputter = new XMLOutputter();
 		    outputter.outputString(doc);
 		    
-		    FileWriter writer = new FileWriter(wsddOutputFile);
+		    FileWriter writer = new FileWriter(wsddFile);
 			outputter.output(doc, writer);
 			writer.close();
 		}
@@ -114,20 +113,12 @@ public class AddServiceToWSDD extends Task
 		}
 	}
 	
-	public String getWsddInputFile() {
-		return wsddInputFile;
+	public String getWsddFile() {
+		return wsddFile;
 	}
 	
-	public void setWsddInputFile(String wsddInputFile) {
-		this.wsddInputFile = wsddInputFile;
-	}
-	
-	public String getWsddOutputFile() {
-		return wsddOutputFile;
-	}
-	
-	public void setWsddOutputFile(String wsddOutputFile) {
-		this.wsddOutputFile = wsddOutputFile;
+	public void setWsddFile(String wsddInputFile) {
+		this.wsddFile = wsddInputFile;
 	}
 	
 	public String getServiceName() {
