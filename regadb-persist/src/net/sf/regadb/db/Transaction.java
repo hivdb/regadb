@@ -393,6 +393,11 @@ public class Transaction {
     {
         session.lock(p.getPatient(), LockMode.READ);
     }
+    
+    public void refresh(Serializable s)
+    {
+        session.refresh(s);
+    }
 
     /*
      * Patient queries
