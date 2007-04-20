@@ -45,9 +45,9 @@
 	
 	<target name="create-services" depends="compile">
 		<antcall target="create-wsdl-service">
-			<param name="service" value="FileHandler"/>
-			<param name="package" value="net.sf.wts.example.filehandler"/>
-			<param name="location" value="net/sf/wts/example/filehandler"/>
+			<param name="service" value="GetChallenge"/>
+			<param name="package" value="net.sf.wts.services"/>
+			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
 	</target>
 	

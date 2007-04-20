@@ -33,7 +33,7 @@
 			testcase="no">
 			<mapping namespace="urn:${service}" package="${package}"/>
 		</wsdl2java>
-
+		
 		<implementsoapbinding soapBindingFile="${build}/${location}/${service}SoapBindingImpl.java" adapterClassName="${package}.${service}Impl"/>
 		
 		<addservicetowsdd wsddFile="${build}/WEB-INF/server-config.wsdd" serviceName="${service}" servicePackage="${package}"/>
