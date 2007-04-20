@@ -29,15 +29,19 @@ public class ViralIsolateForm extends FormWidget
 		super(formName, interactionState);
 		viralIsolate_ = viralIsolate;
         
+        Transaction t = RegaDBMain.getApp().createTransaction();
         if(getInteractionState()==InteractionState.Adding)
         {
-            Transaction t = RegaDBMain.getApp().createTransaction();
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
             viralIsolate_ = p.createViralIsolate();
             viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
-            t.commit();
         }
+        else
+        {
+            t.refresh(viralIsolate_);
+        }
+        t.commit();
 
 		init();
 		
