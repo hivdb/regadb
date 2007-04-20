@@ -3,11 +3,13 @@ package net.sf.wts.build.ant;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import org.apache.tools.ant.Task;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class AddServiceToWSDD extends Task
@@ -101,7 +103,7 @@ public class AddServiceToWSDD extends Task
 		service.addContent(wsdlServiceElement);
 		
 		try {
-		    XMLOutputter outputter = new XMLOutputter();
+		    XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		    outputter.outputString(doc);
 		    
 		    FileWriter writer = new FileWriter(wsddFile);
