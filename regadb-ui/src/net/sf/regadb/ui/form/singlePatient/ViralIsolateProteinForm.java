@@ -17,7 +17,10 @@ import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFont;
 import net.sf.witty.wt.WFontGenericFamily;
 import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTimer;
 
 public class ViralIsolateProteinForm extends WContainerWidget
 {
@@ -40,6 +43,9 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private Label nonSynonymousL;
 	private TextField nonSynonymousTF;
     
+    private WPushButton refreshAlignments_;
+    private WTimer refreshAlignmentsTimer_;
+    
 	private VisualizeAaSequence visAaSeq_ = new VisualizeAaSequence();
 	
 	public ViralIsolateProteinForm(ViralIsolateForm viralIsolateForm)
@@ -56,8 +62,35 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		proteinGroupTable_ = new WTable(proteinGroup_);
 		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
 		ntSequenceCombo_ = new ComboBox(InteractionState.Editing, null);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, ntSequenceComboL_, ntSequenceCombo_);
-		aaSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.aaSequence"));
+        int row = viralIsolateForm_.addLineToTable(proteinGroupTable_, ntSequenceComboL_, ntSequenceCombo_);
+        //alignment refresh
+        boolean aligning = false;
+        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
+        {
+            if(ntseq.getAaSequences().size()==0)
+            {
+                aligning = true;
+                break;
+            }
+        }
+        if(aligning)
+        {
+            refreshAlignments_ = new WPushButton(tr("form.viralIsolate.editView.button.aligning"));
+            refreshAlignments_.setEnabled(false);
+            proteinGroupTable_.putElementAt(row, 2, refreshAlignments_);
+            refreshAlignmentsTimer_ = new WTimer(refreshAlignments_);
+            refreshAlignmentsTimer_.setInterval(2000);
+            refreshAlignmentsTimer_.timeout.addListener(new SignalListener<WEmptyEvent>()
+            {
+                public void notify(WEmptyEvent a)
+                {
+                    checkAlignments();
+                }
+            });
+            refreshAlignmentsTimer_.start();
+        }
+        //alignment refresh
+        aaSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.aaSequence"));
 		aaSequenceCombo_ = new ComboBox(InteractionState.Editing, null);
 		viralIsolateForm_.addLineToTable(proteinGroupTable_, aaSequenceComboL_, aaSequenceCombo_);
 		proteinL = new Label(tr("form.viralIsolate.editView.label.protein"));
@@ -77,9 +110,45 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		nonSynonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(proteinGroupTable_, nonSynonymousL, nonSynonymousTF);
 	}
+    
+    private void checkAlignments()
+    {
+        boolean aligning = false;
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.refresh(viralIsolateForm_.getViralIsolate());
+        t.commit();
+        
+        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
+        {
+            if(ntseq.getAaSequences().size()==0)
+            {
+                aligning = true;
+                break;
+            }
+        }
+        
+        if(!aligning)
+        {
+            refreshAlignmentsTimer_.stop();
+            refreshAlignments_.setText(tr("form.viralIsolate.editView.button.refreshAlignments"));
+            refreshAlignments_.setEnabled(true);
+            refreshAlignments_.clicked.addListener(new SignalListener<WMouseEvent>()
+            {
+                public void notify(WMouseEvent me)
+                {
+                    fillData(viralIsolateForm_.getViralIsolate());
+                    refreshAlignments_.setHidden(true);
+                }
+            });
+        }
+    }
 	
 	void fillData(ViralIsolate vi)
 	{
+        ntSequenceCombo_.clearItems();
+        aaSequenceCombo_.clearItems();
+        
 		for(NtSequence ntseq : vi.getNtSequences())
 		{
 			if(ntseq.getAaSequences()!=null && ntseq.getAaSequences().size()!=0)

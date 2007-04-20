@@ -57,12 +57,13 @@ public abstract class FormWidget extends WGroupBox implements IForm
         formFields_.add(field);
 	}
 	
-    public void addLineToTable(WTable table, Label label, IFormField field)
+    public int addLineToTable(WTable table, Label label, IFormField field)
     {
         int numRows = table.numRows();
         table.putElementAt(numRows, 0, label);
         table.putElementAt(numRows, 1, field.getWidget());
         label.setBuddy(field);
+        return numRows;
     }
 
 	public InteractionState getInteractionState()
