@@ -1,8 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+       <!ENTITY create-wsdl-service SYSTEM "create-wsdl-service-task.xml">
+]>
+
 <project name="wst" default="default" basedir="." >
 	
 	<property name="src" location="src"/>
 	<property name="lib" location="lib"/>
-	<property name="wts" location="WEB-INF"/>
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
 	
@@ -13,21 +18,7 @@
 		<pathelement location="${build}"/>
 	</path>
 	
-	<taskdef name="java2wsdl" classname="org.apache.axis.tools.ant.wsdl.Java2WsdlAntTask" loaderref="axis">
-		<classpath refid="project.classpath"/>
-	</taskdef>
-	
-	<taskdef name="wsdl2java" classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask" loaderref="axis">
-		<classpath refid="project.classpath"/>
-	</taskdef>
-	
-	<taskdef name="implementsoapbinding" classname="net.sf.wts.build.ant.ImplementSoapBinding">
-			<classpath refid="project.classpath"/>
-	</taskdef>
-	
-	<taskdef name="addservicetowsdd" classname="net.sf.wts.build.ant.AddServiceToWSDD">
-		<classpath refid="project.classpath"/>
-	</taskdef>
+	&create-wsdl-service;
 	
 	<target name="default"/>
 	
@@ -42,44 +33,28 @@
 		<mkdir dir="${dist}"/>
 		
 		<copy todir="${build}/WEB-INF">
-			<fileset dir="${wts}"/>
+			<fileset dir="WEB-INF"/>
 		</copy>
 	</target>
 	
-	<target name="service">
-		<javac srcdir="${src}/${location}" destdir="${build}">
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}">
 			<classpath refid="project.classpath"/>
 		</javac>
-		
-		<java2wsdl output="${build}/${service}.wsdl"
-			portTypeName = "${service}"
-			className="${package}.${service}Impl"
-			namespace="urn:${service}"
-			location="http://localhost:8080/axis/services/${service}">
-			<mapping namespace="urn:${service}" package="${package}"/>
-		</java2wsdl>
-		
-		<wsdl2java url="${build}/${service}.wsdl"
-			output="${build}"
-			deployscope="session"
-			serverSide="yes"
-			skeletonDeploy="yes"
-			noimports="no"
-			verbose="no"
-			testcase="no">
-			<mapping namespace="urn:${service}" package="${package}"/>
-		</wsdl2java>
-
-		<implementsoapbinding soapBindingFile="${build}/${location}/${service}SoapBindingImpl.java" adapterClassName="${package}.${service}Impl"/>
-		
+	</target>
+	
+	<target name="create-services" depends="compile">
+		<antcall target="create-wsdl-service">
+			<param name="service" value="FileHandler"/>
+			<param name="package" value="net.sf.wts.example.filehandler"/>
+			<param name="location" value="net/sf/wts/example/filehandler"/>
+		</antcall>
+	</target>
+	
+	<target name="deploy" depends="create-services">
 		<javac srcdir="${build}" destdir="${build}">
 			<classpath refid="project.classpath"/>
 		</javac>
-		
-		<addservicetowsdd wsddFile="${build}/WEB-INF/server-config.wsdd" serviceName="${service}" servicePackage="${package}"/>
-	</target>
-	
-	<target name="deploy">
 		<war destfile="${dist}/wts.war" webxml="${build}/WEB-INF/web.xml">
 			<fileset dir="${build}/">
 				<include name="WEB-INF/server-config.wsdd"/>
