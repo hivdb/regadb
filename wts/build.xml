@@ -49,6 +49,11 @@
 			<param name="package" value="net.sf.wts.services"/>
 			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
+		<antcall target="create-wsdl-service">
+			<param name="service" value="Login"/>
+			<param name="package" value="net.sf.wts.services"/>
+			<param name="location" value="net/sf/wts/services"/>
+		</antcall>
 	</target>
 	
 	<target name="deploy" depends="create-services">
