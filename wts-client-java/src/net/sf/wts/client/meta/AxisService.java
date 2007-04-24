@@ -48,6 +48,12 @@ public class AxisService
         parameters_.add(param);
     }
     
+    public void addParameter(byte[] param)
+    {
+        call.addParameter("in"+parameters_.size(), XMLType.XSD_HEXBIN, ParameterMode.IN);
+        parameters_.add(param);
+    }
+    
     public String callAndGetStringResult() throws RemoteException
     {
         call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);
@@ -60,6 +66,12 @@ public class AxisService
         call.setReturnType(org.apache.axis.encoding.XMLType.XSD_HEXBIN);
         
         return (byte[])(call.invoke(parameters_.toArray()));
+    }
+    
+    public void call() throws RemoteException
+    {   
+        call.setReturnType(org.apache.axis.encoding.XMLType.XSD_ANYTYPE);
+        call.invoke(parameters_.toArray());
     }
     
     public void removeParameters()
