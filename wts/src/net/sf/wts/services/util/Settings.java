@@ -29,6 +29,17 @@ public class Settings
     
     public final static String mutex_ = "mutex";
     
+    static
+    {
+        synchronized(Settings.mutex_)
+        {
+            if(!Settings.isInitiated())
+            {
+                Settings.init();
+            }
+        }
+    }
+    
     public static void init()
     {
         SAXBuilder builder = new SAXBuilder();
@@ -79,15 +90,16 @@ public class Settings
         {
             if(serviceDir.isDirectory())
             {
-                parseService(new File(serviceDir.getAbsolutePath()+File.separatorChar+"service.xml"));
+                parseService(new File(serviceDir.getAbsolutePath()+File.separatorChar+"service.xml"), serviceDir.getName());
             }
         }
         
         initiated_ = true;
     }
     
-    private static void parseService(File serviceXmlFile)
+    private static void parseService(File serviceXmlFile, String serviceName)
     {
+        System.err.println("parseService"+serviceXmlFile.getAbsolutePath());
         if(serviceXmlFile.exists())
         {
             SAXBuilder builder = new SAXBuilder();
@@ -114,6 +126,7 @@ public class Settings
             rootElement = doc.getRootElement();
             if(rootElement!=null)
             {
+                System.err.println("inputs");
                 Element inputs = rootElement.getChild("inputs");
                 if(inputs==null)
                     return;
@@ -129,6 +142,7 @@ public class Settings
                     service.inputs_.add(name.getTextTrim());
                 }
                 
+                System.err.println("outputs");
                 Element outputs = rootElement.getChild("outputs");
                 if(inputs==null)
                     return;
@@ -143,16 +157,22 @@ public class Settings
                     service.outputs_.add(name.getTextTrim());
                 }
                 
+                System.err.println("description");
                 Element description = rootElement.getChild("description");
                 if(description == null)
                     return;
                 service.description_ = description.getTextTrim();
                 
+                System.err.println("version");
                 Element version = rootElement.getChild("version");
                 if(version == null)
                     return;
                 service.version_ = version.getTextTrim();
                 
+                System.err.println("name");
+                service.name_ = serviceName;
+                
+                System.err.println("add");
                 services_.add(service);
             }
         }
@@ -184,5 +204,22 @@ public class Settings
         }
         
         return null;
+    }
+    
+    public static String[] getServicesList()
+    {
+        synchronized(services_)
+        {
+            String [] services = new String[services_.size()];
+            
+            System.err.println("size:"+services_.size());
+            
+            for(int i = 0; i < services_.size(); i++)
+            {
+                System.err.println("name:"+services_.get(i).name_);
+                services[i] = services_.get(i).name_;
+            }
+            return services;
+        }
     }
 }

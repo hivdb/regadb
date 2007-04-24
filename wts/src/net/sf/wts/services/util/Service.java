@@ -6,6 +6,7 @@ public class Service
 {
     public String description_;
     public String version_;
+    public String name_;
     public ArrayList<String> inputs_ = new ArrayList<String>();
     public ArrayList<String> outputs_ = new ArrayList<String>();
 }
