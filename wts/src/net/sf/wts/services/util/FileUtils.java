@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,6 +36,24 @@ public class FileUtils
         }
         
         return out;
+    }
+    
+    public static void writeByteArrayToFile(byte[] array, File file)
+    {
+        try 
+        {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(array);
+            fos.close();
+        } 
+        catch (FileNotFoundException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
     }
     
     private static void copy(InputStream in, OutputStream out) throws IOException {

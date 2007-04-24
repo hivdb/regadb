@@ -233,4 +233,26 @@ public class Settings
         }
         else return null;
     }
+    
+    public static File getSessionPath(String sessionTicket)
+    {
+        File sessionDir = new File(wtsPath_+File.separatorChar+"sessions"+File.separatorChar+sessionTicket);
+        if(sessionDir.exists() && sessionDir.isDirectory())
+        {
+            return sessionDir;
+        }
+        return null;
+    }
+    
+    public static Service getService(String serviceName)
+    {
+        for(Service s : services_)
+        {
+            if(s.name_.equals(serviceName))
+            {
+                return s;
+            }
+        }
+        return null;
+    }
 }
