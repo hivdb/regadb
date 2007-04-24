@@ -30,6 +30,27 @@ public class WtsMetaClient
         
         return services;
     }
+    
+    public byte[] getServiceDescription(String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "GetServiceDescription");
+        
+        byte [] result = null;
+        
+        axisService.addParameter(serviceName);
+        
+        try 
+        {
+            result = axisService.callAndGetByteArrayResult();
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        return result;
+    }
 
     public String getUrl() 
     {
@@ -40,5 +61,7 @@ public class WtsMetaClient
     {
         WtsMetaClient client = new WtsMetaClient("http://localhost:8080/wts/services/");
         System.err.println(client.listServices());
+        byte[] array = client.getServiceDescription("regadb-align");
+        System.err.println(new String(array));
     }
 }
