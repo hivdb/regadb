@@ -222,4 +222,15 @@ public class Settings
             return services;
         }
     }
+    
+    public static File getDescription(String serviceName)
+    {
+        File servicesDir = new File(wtsPath_+File.separatorChar+"services"+File.separatorChar+serviceName);
+        File serviceFile = new File(wtsPath_+File.separatorChar+"services"+File.separatorChar+serviceName+File.separatorChar+"service.xml");
+        if(servicesDir.isDirectory() && servicesDir.exists() && serviceFile.isFile() && serviceFile.exists())
+        {
+            return serviceFile;
+        }
+        else return null;
+    }
 }
