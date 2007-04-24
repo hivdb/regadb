@@ -55,6 +55,13 @@ public class AxisService
         return (String)(call.invoke(parameters_.toArray()));
     }
     
+    public byte[] callAndGetByteArrayResult() throws RemoteException
+    {
+        call.setReturnType(org.apache.axis.encoding.XMLType.XSD_HEXBIN);
+        
+        return (byte[])(call.invoke(parameters_.toArray()));
+    }
+    
     public void removeParameters()
     {
         call.removeAllParameters();
