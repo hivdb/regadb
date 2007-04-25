@@ -56,6 +56,12 @@
 		<antcall target="create-wts-service">
 			<param name="service" value="Start"/>
 		</antcall>
+		<antcall target="create-wts-service">
+			<param name="service" value="MonitorLogFile"/>
+		</antcall>
+		<antcall target="create-wts-service">
+			<param name="service" value="MonitorLogTail"/>
+		</antcall>
 		<antcall target="create-wts-meta-service">
 			<param name="service" value="ListServices"/>
 		</antcall>
