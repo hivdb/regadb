@@ -60,6 +60,11 @@
 			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
 		<antcall target="create-wsdl-service">
+			<param name="service" value="Start"/>
+			<param name="package" value="net.sf.wts.services"/>
+			<param name="location" value="net/sf/wts/services"/>
+		</antcall>
+		<antcall target="create-wsdl-service">
 			<param name="service" value="ListServices"/>
 			<param name="package" value="net.sf.wts.services.meta"/>
 			<param name="location" value="net/sf/wts/services/meta"/>

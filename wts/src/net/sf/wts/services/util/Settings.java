@@ -245,4 +245,9 @@ public class Settings
         }
         return null;
     }
+    
+    public static File getServiceStartScriptPath(String serviceName)
+    {
+        return new File(wtsPath_+File.separatorChar+"services"+File.separatorChar+serviceName+File.separatorChar+"startService");
+    }
 }
