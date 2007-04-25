@@ -48,6 +48,12 @@ public class AxisService
         parameters_.add(param);
     }
     
+    public void addParameter(int param)
+    {
+        call.addParameter("in"+parameters_.size(), XMLType.XSD_INT, ParameterMode.IN);
+        parameters_.add(param);
+    }
+    
     public void addParameter(byte[] param)
     {
         call.addParameter("in"+parameters_.size(), XMLType.XSD_HEXBIN, ParameterMode.IN);
