@@ -127,6 +127,28 @@ public class WtsClient
         return array;
     }
     
+    public String monitorStatus(String sessionTicket, String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "MonitorStatus");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        
+        String status = "";
+        
+        try 
+        {
+            status = axisService.callAndGetStringResult();
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+
+        return status;
+    }
+    
     public void start(String sessionTicket, String serviceName)
     {
         axisService.removeParameters();
@@ -177,6 +199,8 @@ public class WtsClient
             System.err.println("monitor log tail:");
             String logTail = new String(client.monitorLogTail(ticket, "regadb-align", 10));
             System.err.println(logTail);
+            
+            System.err.println("status:" + client.monitorStatus(ticket, "regadb-align"));
         } 
         catch (RemoteException e) 
         {
