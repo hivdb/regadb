@@ -204,6 +204,24 @@ public class WtsClient
             e.printStackTrace();
         }
     }
+    
+    public void closeSession(String sessionTicket, String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "CloseSession");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        
+        try 
+        {
+            axisService.call();
+        } 
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public String getUrl() 
     {
@@ -240,6 +258,8 @@ public class WtsClient
             
             System.err.println("status:" + client.monitorStatus(ticket, "regadb-align"));
             client.download(ticket, "regadb-align", "aa_sequences", new File("/home/plibin0/aaseq_service.htm"));
+            
+            client.closeSession(ticket, "regadb-align");
         } 
         catch (RemoteException e) 
         {
