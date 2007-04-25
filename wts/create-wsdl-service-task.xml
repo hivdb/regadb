@@ -14,6 +14,22 @@
 		<classpath refid="project.classpath"/>
 	</taskdef>
 	
+	<target name="create-wts-service">
+		<antcall target="create-wsdl-service">
+			<param name="service" value="${service}"/>
+			<param name="package" value="net.sf.wts.services"/>
+			<param name="location" value="net/sf/wts/services"/>
+		</antcall>
+	</target>
+	
+	<target name="create-wts-meta-service">
+		<antcall target="create-wsdl-service">
+			<param name="service" value="${service}"/>
+			<param name="package" value="net.sf.wts.services.meta"/>
+			<param name="location" value="net/sf/wts/services/meta"/>
+		</antcall>
+	</target>
+		
 	<target name="create-wsdl-service">
 		<java2wsdl output="${build}/${service}.wsdl"
 			portTypeName = "${service}"

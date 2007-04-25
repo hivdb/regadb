@@ -44,35 +44,23 @@
 	</target>
 	
 	<target name="create-services" depends="compile">
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-service">
 			<param name="service" value="GetChallenge"/>
-			<param name="package" value="net.sf.wts.services"/>
-			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-service">
 			<param name="service" value="Login"/>
-			<param name="package" value="net.sf.wts.services"/>
-			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-service">
 			<param name="service" value="Upload"/>
-			<param name="package" value="net.sf.wts.services"/>
-			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-service">
 			<param name="service" value="Start"/>
-			<param name="package" value="net.sf.wts.services"/>
-			<param name="location" value="net/sf/wts/services"/>
 		</antcall>
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-meta-service">
 			<param name="service" value="ListServices"/>
-			<param name="package" value="net.sf.wts.services.meta"/>
-			<param name="location" value="net/sf/wts/services/meta"/>
 		</antcall>
-		<antcall target="create-wsdl-service">
+		<antcall target="create-wts-meta-service">
 			<param name="service" value="GetServiceDescription"/>
-			<param name="package" value="net.sf.wts.services.meta"/>
-			<param name="location" value="net/sf/wts/services/meta"/>
 		</antcall>
 	</target>
 	
