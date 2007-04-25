@@ -1,10 +1,12 @@
 package net.sf.wts.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 import net.sf.wts.client.meta.AxisService;
-import util.FileUtils;
+
+import org.apache.commons.io.FileUtils;
 
 public class WtsClient 
 {
@@ -69,7 +71,15 @@ public class WtsClient
     
     public void upload(String sessionTicket, String serviceName, String fileName, File localLocation)
     {
-        byte[] array = FileUtils.getByteArrayFromFile(localLocation);
+        byte[] array = null;
+        try 
+        {
+            array = FileUtils.readFileToByteArray(localLocation);;
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
         
         upload(sessionTicket, serviceName, fileName, array);
     }
