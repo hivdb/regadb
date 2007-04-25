@@ -69,6 +69,44 @@ public class WtsClient
         }
     }
     
+    public byte[] download(String sessionTicket, String serviceName, String fileName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "Download");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        axisService.addParameter(fileName);
+        
+        byte[] array = null;
+        try 
+        {
+            array = axisService.callAndGetByteArrayResult();
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        return array;
+    }
+    
+    public void download(String sessionTicket, String serviceName, String fileName, File toWrite)
+    {
+        byte[] array = download(sessionTicket, serviceName, fileName);
+        if(array!=null)
+        {
+            try 
+            {
+                FileUtils.writeByteArrayToFile(toWrite, array);
+            } 
+            catch (IOException e) 
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public void upload(String sessionTicket, String serviceName, String fileName, File localLocation)
     {
         byte[] array = null;
@@ -201,6 +239,7 @@ public class WtsClient
             System.err.println(logTail);
             
             System.err.println("status:" + client.monitorStatus(ticket, "regadb-align"));
+            client.download(ticket, "regadb-align", "aa_sequences", new File("/home/plibin0/aaseq_service.htm"));
         } 
         catch (RemoteException e) 
         {
