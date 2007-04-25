@@ -48,4 +48,12 @@ public class Sessions
     {
         return sessionTicket.startsWith(serviceName+"_");
     }
+    
+    public static void removeSessionTicket(String sessionTicket)
+    {
+        synchronized(sessions_)
+        {
+                sessions_.remove(sessionTicket);
+        }
+    }
 }
