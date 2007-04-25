@@ -65,6 +65,9 @@
 		<antcall target="create-wts-service">
 			<param name="service" value="MonitorStatus"/>
 		</antcall>
+		<antcall target="create-wts-service">
+			<param name="service" value="Download"/>
+		</antcall>
 		
 		<antcall target="create-wts-meta-service">
 			<param name="service" value="ListServices"/>
