@@ -25,19 +25,6 @@ public class StartImpl
         
         final File startScript = Settings.getServiceStartScriptPath(serviceName);
         
-        
-        File runningJob = new File(sessionPath.getAbsolutePath()+File.separatorChar+".running");
-        System.err.println("runningFile"+runningJob.getAbsolutePath());
-        
-        try 
-        {
-            FileUtils.writeByteArrayToFile(runningJob, "RUNNING".getBytes());
-        } 
-        catch (IOException e1) 
-        {
-            e1.printStackTrace();
-        }
-        
         Thread jobRunningThread = new Thread(new Runnable()
         {
             public void run()
