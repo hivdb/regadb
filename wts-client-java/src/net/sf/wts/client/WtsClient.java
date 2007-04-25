@@ -84,6 +84,49 @@ public class WtsClient
         upload(sessionTicket, serviceName, fileName, array);
     }
     
+    public byte[] monitorLogFile(String sessionTicket, String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "MonitorLogFile");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+
+        byte[] array = null;
+        try 
+        {
+            array = axisService.callAndGetByteArrayResult();
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        return array;
+    }
+    
+    public byte[] monitorLogTail(String sessionTicket, String serviceName, int numberOfLines)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "MonitorLogTail");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        axisService.addParameter(numberOfLines);
+
+        byte[] array = null;
+        try 
+        {
+            array = axisService.callAndGetByteArrayResult();
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        return array;
+    }
+    
     public void start(String sessionTicket, String serviceName)
     {
         axisService.removeParameters();
@@ -119,6 +162,21 @@ public class WtsClient
             client.upload(ticket, "regadb-align", "nt_sequences", new File("/home/plibin0/mutations.htm"));
             client.upload(ticket, "regadb-align", "region", new File("/home/plibin0/region.htm"));
             client.start(ticket, "regadb-align");
+            
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            System.err.println("monitor log file:");
+            String logFile = new String(client.monitorLogFile(ticket, "regadb-align"));
+            System.err.println(logFile);
+            
+            System.err.println("monitor log tail:");
+            String logTail = new String(client.monitorLogTail(ticket, "regadb-align", 10));
+            System.err.println(logTail);
         } 
         catch (RemoteException e) 
         {
