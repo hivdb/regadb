@@ -3,7 +3,7 @@ package net.sf.wts.services.util;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Session 
+public class Sessions 
 {
     private static ArrayList<String> sessions_ = new ArrayList<String>();
     
@@ -19,6 +19,7 @@ public class Session
             }
             while(sessions_.contains(unique));
             
+            
             sessions_.add(unique);
         }
         
@@ -31,5 +32,20 @@ public class Session
         sessionOutputPath.mkdir();
         
         return unique;
+    }
+    
+    public static File getSessionPath(String sessionTicket)
+    {
+        File sessionDir = new File(Settings.getWtsPath()+File.separatorChar+"sessions"+File.separatorChar+sessionTicket);
+        if(sessionDir.exists() && sessionDir.isDirectory())
+        {
+            return sessionDir;
+        }
+        return null;
+    }
+    
+    public static boolean isSessionForService(String sessionTicket, String serviceName)
+    {
+        return sessionTicket.startsWith(serviceName+"_");
     }
 }

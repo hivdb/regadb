@@ -3,7 +3,7 @@ package net.sf.wts.services;
 import java.rmi.RemoteException;
 
 import net.sf.wts.services.util.Authentication;
-import net.sf.wts.services.util.Session;
+import net.sf.wts.services.util.Sessions;
 
 public class LoginImpl 
 {
@@ -12,7 +12,7 @@ public class LoginImpl
         boolean valid = Authentication.authenticate(challenge, hashedChallenge, userName);
         if(valid)
         {
-            return Session.createNewSession(serviceName, userName);
+            return Sessions.createNewSession(serviceName, userName);
         }
         else
         {

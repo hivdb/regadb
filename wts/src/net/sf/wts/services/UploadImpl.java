@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 
 import net.sf.wts.services.util.FileUtils;
 import net.sf.wts.services.util.Service;
+import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
 
 
@@ -12,12 +13,14 @@ public class UploadImpl
 {
     public void exec(String sessionTicket, String serviceName, String fileName, byte[] file) throws RemoteException
     {
-        File sessionPath = Settings.getSessionPath(sessionTicket);
+        File sessionPath = Sessions.getSessionPath(sessionTicket);
         if(sessionPath==null)
             throw new RemoteException("Your session ticket is not valid");
         Service service = Settings.getService(serviceName);
         if(service==null)
             throw new RemoteException("Service \"" + serviceName + "\" is not available");
+        if(!Sessions.isSessionForService(sessionTicket, serviceName))
+            throw new RemoteException("This ticket is not valid for service \"" + serviceName + "\"");
         
         boolean found = false;
         for(String inputFileName : service.inputs_)
