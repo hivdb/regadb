@@ -1,12 +1,14 @@
 package net.sf.wts.services;
 
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 
-import net.sf.wts.services.util.FileUtils;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
+
+import org.apache.commons.io.FileUtils;
 
 
 public class UploadImpl 
@@ -35,6 +37,13 @@ public class UploadImpl
         if(!found)
             throw new RemoteException("Service \"" + serviceName + "\" does not accept inputfile with name \""+ fileName +"\"");
         
-        FileUtils.writeByteArrayToFile(file, new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName));
+        try 
+        {
+            FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), file);
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }
