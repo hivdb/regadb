@@ -83,6 +83,24 @@ public class WtsClient
         
         upload(sessionTicket, serviceName, fileName, array);
     }
+    
+    public void start(String sessionTicket, String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "Start");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        
+        try 
+        {
+            axisService.call();
+        } 
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public String getUrl() 
     {
@@ -99,6 +117,8 @@ public class WtsClient
             String ticket = client.login("kdforc0", challenge, "Vitabis1", "regadb-align");
             System.err.println(ticket);
             client.upload(ticket, "regadb-align", "nt_sequences", new File("/home/plibin0/mutations.htm"));
+            client.upload(ticket, "regadb-align", "region", new File("/home/plibin0/region.htm"));
+            client.start(ticket, "regadb-align");
         } 
         catch (RemoteException e) 
         {
