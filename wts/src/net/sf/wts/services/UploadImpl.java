@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
+import net.sf.wts.services.util.Status;
 
 import org.apache.commons.io.FileUtils;
 
@@ -23,6 +24,10 @@ public class UploadImpl
             throw new RemoteException("Service \"" + serviceName + "\" is not available");
         if(!Sessions.isSessionForService(sessionTicket, serviceName))
             throw new RemoteException("This ticket is not valid for service \"" + serviceName + "\"");
+        
+        String status = Status.getStatus(sessionPath);
+        if(status.equals("RUNNING"))
+            throw new RemoteException("Service is runnning already");
         
         boolean found = false;
         for(String inputFileName : service.inputs_)

@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
+import net.sf.wts.services.util.Status;
 
 import org.apache.commons.io.FileUtils;
 
@@ -25,6 +26,10 @@ public class StartImpl
         
         final File startScript = Settings.getServiceStartScriptPath(serviceName);
         
+        String status = Status.getStatus(sessionPath);
+        if(status.equals("RUNNING"))
+            throw new RemoteException("Service is runnning already");
+            
         Thread jobRunningThread = new Thread(new Runnable()
         {
             public void run()
