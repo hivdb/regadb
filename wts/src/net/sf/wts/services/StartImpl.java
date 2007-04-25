@@ -27,8 +27,18 @@ public class StartImpl
         final File startScript = Settings.getServiceStartScriptPath(serviceName);
         
         String status = Status.getStatus(sessionPath);
-        if(status.equals("RUNNING"))
+        if(!status.equals(Status.READY_FOR_JOB))
             throw new RemoteException("Service is runnning already");
+        
+        File runningJob = new File(sessionPath.getAbsolutePath()+File.separatorChar+".running");
+        try 
+        {
+            FileUtils.writeByteArrayToFile(runningJob, "RUNNING".getBytes());
+        } 
+        catch (IOException e1) 
+        {
+            e1.printStackTrace();
+        }
             
         Thread jobRunningThread = new Thread(new Runnable()
         {

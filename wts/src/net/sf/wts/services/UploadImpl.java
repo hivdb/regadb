@@ -26,7 +26,7 @@ public class UploadImpl
             throw new RemoteException("This ticket is not valid for service \"" + serviceName + "\"");
         
         String status = Status.getStatus(sessionPath);
-        if(status.equals("RUNNING"))
+        if(!status.equals(Status.READY_FOR_JOB))
             throw new RemoteException("Service is runnning already");
         
         boolean found = false;
