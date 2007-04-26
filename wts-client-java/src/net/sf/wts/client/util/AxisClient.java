@@ -1,4 +1,4 @@
-package net.sf.wts.client.meta;
+package net.sf.wts.client.util;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -11,12 +11,12 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.encoding.XMLType;
 
-public class AxisService 
+public class AxisClient 
 {
     private Call call;
     private ArrayList<Object> parameters_ = new ArrayList<Object>();
     
-    public AxisService()
+    public AxisClient()
     {
         Service service = new Service();
         try 

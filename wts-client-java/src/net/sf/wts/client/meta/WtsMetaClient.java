@@ -2,10 +2,12 @@ package net.sf.wts.client.meta;
 
 import java.rmi.RemoteException;
 
+import net.sf.wts.client.util.AxisClient;
+
 public class WtsMetaClient 
 {
     private String url_;
-    private AxisService axisService = new AxisService();
+    private AxisClient axisService = new AxisClient();
     
     public WtsMetaClient(String url)
     {

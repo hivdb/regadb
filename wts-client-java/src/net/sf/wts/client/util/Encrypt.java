@@ -1,4 +1,4 @@
-package net.sf.wts.client;
+package net.sf.wts.client.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

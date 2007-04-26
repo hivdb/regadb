@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import net.sf.wts.client.meta.AxisService;
+import net.sf.wts.client.util.AxisClient;
+import net.sf.wts.client.util.Encrypt;
 
 import org.apache.commons.io.FileUtils;
 
 public class WtsClient 
 {
     private String url_;
-    private AxisService axisService = new AxisService();
+    private AxisClient axisService = new AxisClient();
     
     public WtsClient(String url)
     {
