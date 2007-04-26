@@ -13,13 +13,14 @@ import org.jgraph.graph.PortView;
 
 public class WorkFlow extends JGraph
 {
-    private AnalysesBox ab1_;
-    private AnalysesBox ab2_;
+    private WFAnalysisBox ab1_;
+    private WFAnalysisBox ab2_;
     private String[] input1 = {"Joris", "Pieter", "Bart"};
     private String[] input2 = {"Joris", "Jose", "Ishmael", "Fatima"};
     private String[] output1 = {"Joris", "Joris"};
     private String[] output2 = {"XXX"};
-    
+    private String[] label = {"Pieter", "Pieteraaaaaaaaaaaa", "Test"};
+    private String[] label2 = {"Pieter", "oo", "Test"};
     
     public WorkFlow(DefaultGraphModel model)
     {
@@ -27,20 +28,20 @@ public class WorkFlow extends JGraph
         setBackground(Color.white);
         setPortsVisible(true);
         this.setJumpToDefaultPort(true);
-        this.setMarqueeHandler(new MyMarqueeHandler(this));
+        this.setMarqueeHandler(new WFMarqueeHandler(this));
         
         this.getGraphLayoutCache().setFactory(new DefaultCellViewFactory() {
             /**
              * Constructs a new instance of a PortView view for the specified object
              */
             protected PortView createPortView(Port p) {
-                return new MyPortView(p);
+                return new WFPortView(p);
             }
         });
         
 
-        ab1_ = new AnalysesBox(this,200,200,"Joris","Bart","jkjkjkjkjkjkjkjkjkjkjjkjjk",input1,output1);
-        ab2_ = new AnalysesBox(this,400,200,"Pieter","Bart","Joris",input2,output2);
+        ab1_ = new WFAnalysisBox(200,200,label,input1,output1);
+        ab2_ = new WFAnalysisBox(400,200,label2,input2,output2);
         Object[] cells = {ab1_, ab2_};
         getGraphLayoutCache().insert(cells);
         
@@ -52,9 +53,9 @@ public class WorkFlow extends JGraph
         if(e != null) 
         {
             Object c = getFirstCellForLocation(e.getX(), e.getY());
-            if(c instanceof MyPortView)
+            if(c instanceof WFPortView)
             {
-                MyPortView mpv = (MyPortView)c;
+                WFPortView mpv = (WFPortView)c;
                 return "port tooltiptext";
             }
             

@@ -17,7 +17,7 @@ import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.Port;
 import org.jgraph.graph.PortView;
 
-public class MyMarqueeHandler extends BasicMarqueeHandler {
+public class WFMarqueeHandler extends BasicMarqueeHandler {
 
     // Holds the Start and the Current Point
     protected Point2D start, current;
@@ -27,7 +27,7 @@ public class MyMarqueeHandler extends BasicMarqueeHandler {
     
     private JGraph graph;
     
-    public MyMarqueeHandler(JGraph graph)
+    public WFMarqueeHandler(JGraph graph)
     {
         this.graph = graph;
     }

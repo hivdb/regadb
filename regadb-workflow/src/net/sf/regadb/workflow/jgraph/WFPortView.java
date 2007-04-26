@@ -7,25 +7,24 @@
  */
 package net.sf.regadb.workflow.jgraph;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.CellViewRenderer;
+import org.jgraph.graph.DefaultPort;
 import org.jgraph.graph.GraphConstants;
-import org.jgraph.graph.PortRenderer;
 import org.jgraph.graph.PortView;
 
-public class MyPortView extends PortView 
+public class WFPortView extends PortView 
 {
-    protected static MyPortRenderer renderer = new MyPortRenderer();
+    protected WFPortRenderer renderer_;
 
-    public MyPortView(Object cell)
+    public WFPortView(Object cell)
     {
         super(cell);
+        
+        renderer_ = new WFPortRenderer(((WFPortUserObject)((DefaultPort)cell).getUserObject()).getSelectionColor());
         
         AttributeMap am = new AttributeMap();
         GraphConstants.setAbsoluteX(am, true);
@@ -49,25 +48,6 @@ public class MyPortView extends PortView
 
     public CellViewRenderer getRenderer()
     {
-        return new MyPortRenderer();
-    }
-
-    public static class MyPortRenderer extends PortRenderer
-    {
-        public void paint(Graphics g)
-        {
-            Dimension d = getSize();
-            if (preview)
-            {
-                g.setColor(Color.green);
-                g.drawRect(3, 3, d.width-4, d.height-4);
-            }
-            else if (!preview)
-            {
-                g.setColor(Color.white);
-                g.drawRect(3, 3, d.width-4, d.height-4);
-            }
-        }
-
+        return renderer_;
     }
 }
