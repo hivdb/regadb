@@ -222,6 +222,24 @@ public class WtsClient
             e.printStackTrace();
         }
     }
+    
+    public void stop(String sessionTicket, String serviceName)
+    {
+        axisService.removeParameters();
+        axisService.setServiceUrl(url_, "Stop");
+        
+        axisService.addParameter(sessionTicket);
+        axisService.addParameter(serviceName);
+        
+        try 
+        {
+            axisService.call();
+        } 
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public String getUrl() 
     {
