@@ -25,6 +25,8 @@ public class Settings
     
     private static String WTS_CONFIG_FILE = null;
     
+    private static String startServiceFileName_ = null;
+    
     private static boolean initiated_ = false;
     
     public final static String mutex_ = "mutex";
@@ -72,6 +74,15 @@ public class Settings
         wtsPath_ = wts_dir.getTextTrim();
         Element challenge_settings = rootElement.getChild("challenge-settings");
         challengeExpireTime_ = Long.parseLong(challenge_settings.getChildTextTrim("expire-time"));
+        Element startService_settings = rootElement.getChild("startService-settings");
+        if(startService_settings!=null)
+        {
+            startServiceFileName_ = startService_settings.getChildText("filename");
+        }
+        else
+        {
+            startServiceFileName_ = "startService";
+        }
         
         String thisLine;
         int indexOfSemiCol;
@@ -256,6 +267,6 @@ public class Settings
     
     public static File getServiceStartScriptPath(String serviceName)
     {
-        return new File(wtsPath_+File.separatorChar+"services"+File.separatorChar+serviceName+File.separatorChar+"startService");
+        return new File(wtsPath_+File.separatorChar+"services"+File.separatorChar+serviceName+File.separatorChar+startServiceFileName_);
     }
 }
