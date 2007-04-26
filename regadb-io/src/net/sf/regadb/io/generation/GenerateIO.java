@@ -570,6 +570,32 @@ public class GenerateIO
             fw.flush();
             fw.close();
             //export java code
+            
+            //import java code
+            /*
+             * Strategy:
+             *   - If we import a Patient that already exists, then we replace that Patient
+             *     unless we are non-incremental, then we throw a Exception
+             *   - Certain objects are recognized as special and must already exist:
+             *     - drugs (generic, commercial)
+             *     - test types
+             *     - value types
+             *   - Whether an object already exists depends on a comparison that is specific
+             *     for every object, and not related to the primary keys. Therefore we add
+             *       custom implementation of Object findExisting(Object o)
+             *     The objects for which this matters are:
+             *       Patient:               patient Id, source data set
+             *       Attribute:             name, attribute group
+             *       AttributeNominalValue  attribute, name
+             *       Test                   name
+             *       TestNominalValue       test, name
+             *       TestType               name
+             *       ValueType              name
+             *       Drugs                  name
+             *       
+             *  Let's first write the skeleton that takes new Patients and ViralIsolates ?
+             */
+            //import java code
 		}
 		catch (Exception e)
 		{
