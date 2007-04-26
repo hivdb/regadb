@@ -12,10 +12,17 @@ import net.sf.regadb.align.AlignmentResult;
 import net.sf.regadb.align.AlignmentService;
 import net.sf.regadb.align.Mutation;
 
+import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.Alignment;
+import org.biojava.bio.symbol.Alphabet;
+import org.biojava.bio.symbol.Edit;
 import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SimpleSymbolList;
+import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
+import org.biojava.utils.ChangeVetoException;
 
 public class LocalAlignmentService implements AlignmentService {
     
@@ -25,9 +32,33 @@ public class LocalAlignmentService implements AlignmentService {
         this.codonAligner = new CodonAlign();
     }
 
+    private static Sequence removeGaps(Sequence seq) {
+        SymbolList syms = new SimpleSymbolList(seq);
+        Alphabet alfa = syms.getAlphabet();
+        try {
+            for (int i = 1; i <= syms.length(); ++i) {
+                Symbol s = syms.symbolAt(i);
+                   
+                if (s == alfa.getGapSymbol()) {
+                    syms.edit(new Edit(i, 1, SymbolList.EMPTY_LIST));
+                }
+            }
+            
+        } catch (ChangeVetoException e) {
+            throw new RuntimeException(e);
+        } catch (BioException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new SimpleSequence(syms, seq.getURN(), seq.getName(), seq.getAnnotation());
+     }
+    
     public AlignmentResult alignTo(Sequence target, Sequence ref)
     {
         try {
+            
+            target = removeGaps(target);
+            
             Alignment alignment = codonAligner.compute(ref, target, 5);
             SymbolList alignedRef = alignment.symbolListForLabel("ref");
             SymbolList alignedTarget = alignment.symbolListForLabel("target");

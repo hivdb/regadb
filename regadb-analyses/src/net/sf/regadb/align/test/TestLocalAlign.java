@@ -7,6 +7,7 @@
 package net.sf.regadb.align.test;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,17 @@ class TestLocalAlign {
             throw new RuntimeException("Could not login with given username/password.");
         }
     }
- 
+
+    TestLocalAlign() {
+        login = null;
+        
+        Map<String, Protein> proteins = new HashMap<String, Protein>();
+        proteins.put("PRO", new Protein("PRO", "protease"));
+        proteins.put("RT", new Protein("RT", "reverse transcriptase"));
+
+        aligner = new Aligner(new LocalAlignmentService(), proteins);
+    }
+
     void testCreateAligner() {
         Transaction t = login.createTransaction();
 
@@ -64,14 +75,33 @@ class TestLocalAlign {
     
     void testAlign() {
         seq = new NtSequence();
-        seq.setNucleotides("CTAAGTTTGCCAGGAAAATGGAAACCAAAAATGATAGGAGGAATT"
-                + "GGAGGTTTTAtcAAAGTAAAAcaGTAtGATCAGGtATCCRTAGAGATCTG"
-                + "tGGACAtAAAGCTATAGGTACAGTGcTagTAGGACCTACaccTGTCAACA"
-                + "nTAATTGGAAGAAATCTGTTGACTCAGATTGGTTGCACTTTAAATTTTCCC"
-                + "ATtAgTCCTATTGAAACTGTACCAGTAAAATTAAAGCCAGGAATGGATGG"
-                + "CCCAAAAGTTAAACAATGGCCATTGACAGAAGAAAAAATAAAAGCATTAG"
-                + "TAGAAATTTGTACAGAAATGGAAAAGGAAGGGAAAATTTCAAAAATTGGG"
-                + "CCTGAAAATCCATACAATACTCCAG");
+        seq.setNucleotides("CCTCAAATcACTCTTTGGCAGCGACCCCTTGTCTCAATAAAAGTAGGGGG"
++ "CCAGACAAAGGAGGCTCTCTTAGACACAGGAGCAGATGATACAGTATTAG"
++ "AAGAAACAGTAGAG-CTGCCAGGAAGATGGAAACCAAAAATGATAGGAGG"
++ "AATTGGAGGTTTTATCAAAGTAAGACAGTATGATCAAATACTCATAGAGA"
++ "TTTGTGGAAAAAAGGCTATAGGTACAGTATtAGTAGGACCTACACCTGTC"
++ "AACAtAATtGGAAGAAATATGTTGACTCAGCTTGGATGCACACtAAAyTK"
++ "TCCAATWRSCMCCATTGAAACTGTACCAGTAAAATTAAAGCCAGGAATGG"
++ "ACGGYCCAAAGGTTAAACAATGGCCATTGACAGAAGARAARATAAAAGCA"
++ "TTAACAGAAaTTTGTGAGGAAATGGARAAGGAAGGAAAAATTACAAAAAT"
++ "TGGGCCTGAAAATCCATATAACACTCCAGTATTTGCCATAAAAAAGAAGG"
++ "ACAGTACTAAGTGGAGAAAATTGGTAGATTTCAGGGAACTTAATAAAAGA"
++ "ACTCAAGACTTTTGGGAAGTACAATTAGGAATACCACACCCTGCAGGGTT"
++ "AAAAAAGAAAAARTCAGTGACAGTACTGGATGTGGGGGATGCATATTTTT"
++ "CAGTKCCTTTAGAtGAAAATTTCAGAAAATATACTGCATTCACCATACCT"
++ "AGTATAAACAATGAAACACCAGGGATTAGATATCAATATAATGTrCTYCC"
++ "ACAGGGATGGAAAGGATCACCAGCAATATTCCAGAGTAGCATGACAAAAA"
++ "TCTTagAGCcCTTTAGgGCACAAAATCCAGACATAGTCATCTATCAATAT"
++ "ATGGATGACTTGTATGTAGGATCTGACTTAGAGATAGGGCAACATAGAGC"
++ "AAAAATAGAGAAGCTAAGrGACCATCTATTAArGTGGGGATTTACCACAC"
++ "CAGATAAGAAACATCAGAAAGAACCCCCATTYCTTTGGATGGGGTATGAA"
++ "CTCCATCCTGACAAATGGACAGTACAGCCTATACAGCTGCCAGATAAGGA"
++ "AAGCTGGACTGTCAATGATATACAGAAGTTAGTGGGAAAATTAAATTGGG"
++ "CAAGTCAGATTTACCCAGGAATTAAAGTAAAGCAACTTTGtAAACTCCTT"
++ "AGGGGGACCAArGCACtAACAGACAtAGtACCACtAACtGAtGAAGCAGA"
++ "ATtagAACtGgcaGAGAACAGGGAAATTCTAAAAGAACCAGTACATGGAG"
++ "TATATTATGACCCATCAAAAGAGTTRATAGCTGAAATACAGAAACAGGGG"
++ "GATGAC");
         
         try {
             result = aligner.alignHiv(seq);
@@ -104,11 +134,17 @@ class TestLocalAlign {
         t.commit();
     }
 
-    public static void main(String[] args) throws WrongUidException, WrongPasswordException {        
-        TestLocalAlign test = new TestLocalAlign("kdforc0", "Vitabis1");
+    public static void main(String[] args) throws WrongUidException, WrongPasswordException {
+        
+        if (false) {
+            TestLocalAlign test = new TestLocalAlign("kdforc0", "Vitabis1");
 
-        test.testCreateAligner();
-        test.testAlign();
-        test.testCommit();
+            test.testCreateAligner();
+            test.testAlign();
+            test.testCommit();
+        } else {
+            TestLocalAlign test = new TestLocalAlign();
+            test.testAlign();           
+        }
     }
 }

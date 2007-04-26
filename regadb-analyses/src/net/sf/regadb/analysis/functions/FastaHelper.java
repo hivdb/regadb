@@ -16,12 +16,17 @@ public class FastaHelper
 {    
     public static FastaRead readFastaFile(File file, boolean autoFix)
     {
-        ArrayList<String> sequences = new ArrayList<String>();
+        ArrayList<Sequence> sequences = new ArrayList<Sequence>();
    
         FastaRead read = handleXNA(sequences, file, true);
-        
+
         if(read!=null)
         {
+            if(autoFix)
+            {
+                autoFixSequence(read);
+            }
+            
             return read;
         }
         
@@ -29,12 +34,12 @@ public class FastaHelper
         
         if(read!=null)
         {
+            if(autoFix)
+            {
+                autoFixSequence(read);
+            }
+
             return read;
-        }
-        
-        if(autoFix)
-        {
-            autoFixSequence(read);
         }
         
         if(sequences.size()==1)
@@ -51,9 +56,8 @@ public class FastaHelper
         }
     }
     
-    private static FastaRead handleXNA(ArrayList<String> sequences, File file, boolean desoxy)
+    private static FastaRead handleXNA(ArrayList<Sequence> sequences, File file, boolean desoxy)
     {
-        Sequence seq;
         
         RichSequenceIterator xna = null;
         FileReader uploadedStream = null;
@@ -86,8 +90,8 @@ public class FastaHelper
             {
                 try 
                 {
-                    seq = xna.nextRichSequence();
-                    sequences.add(seq.seqString());
+                    Sequence seq = xna.nextRichSequence();
+                    sequences.add(seq);
                 } 
                 catch (NoSuchElementException e) 
                 {

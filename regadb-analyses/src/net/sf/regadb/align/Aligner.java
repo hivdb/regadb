@@ -65,7 +65,11 @@ public class Aligner {
         for (String r : genome.getOpenReadingFrames().keySet()) {
             OpenReadingFrame orf = genome.getOpenReadingFrames().get(r);
 
+            System.err.println("Trying: " + orf.getName());
+            
             List<AaSequence> aas = align(s, orf);
+            System.err.println(orf.getName() + ": " + (aas != null ? aas.size() : 0) + " proteins");            
+
             if (aas != null) {
                 /*for (AaSequence aa:aas) {
                     aa.setNtSequence(seq);
@@ -111,7 +115,7 @@ public class Aligner {
                     Set<AaInsertion> insertions = s.getAaInsertions();
 
                     for (Mutation m:aligned.getMutations()) {
-                        System.err.println(m);
+                        //System.err.println(m);
                         if (m.getAaPos() >= protein.getFirstAa()
                             && m.getAaPos() <= protein.getLastAa()) {
                             if (m.getInsIndex() == -1) {

@@ -84,7 +84,7 @@ public class CodonAlign {
     public CodonAlign() {
         this.aaNeedleman = new NeedlemanWunsch(-10, -3.3, blosum30matrix);
         this.ntNeedleman = new NeedlemanWunsch(-10, -3.3, nuc4_4matrix);
-        this.minNtScore = 100;
+        this.minNtScore = 200;
     }
 
     public Alignment compute(Sequence ref, Sequence target, int maxFrameShifts)
@@ -124,7 +124,7 @@ public class CodonAlign {
 
             System.err.println("Scores: " + ntAlignment.getScore() + " " + ntCodonAlignment.getScore());
             
-            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 100) {
+            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 50) {
                 /*
                  * a possible frameshift
                  */
@@ -275,7 +275,7 @@ public class CodonAlign {
             throws IndexOutOfBoundsException, IllegalAlphabetException,
             ChangeVetoException, IllegalSymbolException {
         seq1 = new SimpleSymbolList(seq1);
-
+        
         SymbolList seq2ORFLead = ORF == 0 ? null : seq2.subList(1, ORF);
         seq2 = new SimpleSymbolList(seq2.subList(ORF + 1, seq2.length()));
 
