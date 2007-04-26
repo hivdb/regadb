@@ -23,7 +23,7 @@ public class Settings
     
     private static ArrayList<Service> services_ = new ArrayList<Service>(); 
     
-    private final static String WTS_CONFIG_FILE = "/etc/wt/wts/wts.xml";
+    private static String WTS_CONFIG_FILE = null;
     
     private static boolean initiated_ = false;
     
@@ -42,6 +42,14 @@ public class Settings
     
     public static void init()
     {
+        String osName = System.getProperty("os.name");
+        osName = osName.toLowerCase();
+        
+        if(osName.startsWith("windows"))
+            WTS_CONFIG_FILE = "C:\\Program files\\wt\\wts\\wts.xml";
+        else
+            WTS_CONFIG_FILE = "/etc/wt/wts/wts.xml";
+        
         SAXBuilder builder = new SAXBuilder();
         
         Document doc = new Document();
