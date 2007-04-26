@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import net.sf.wts.services.util.Job;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -13,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 
 public class StartImpl 
 {
-    public void exec(String sessionTicket, final String serviceName) throws RemoteException
+    public void exec(final String sessionTicket, final String serviceName) throws RemoteException
     {
         final File sessionPath = Sessions.getSessionPath(sessionTicket);
         if(sessionPath==null)
@@ -48,6 +49,7 @@ public class StartImpl
                 {
                     ProcessBuilder pb = new ProcessBuilder(startScript.getAbsolutePath(), sessionPath.getAbsolutePath());
                     Process p = pb.start();
+                    Sessions.getProcesses().add(new Job(p,sessionTicket));
                 } 
                 catch (IOException e) 
                 {

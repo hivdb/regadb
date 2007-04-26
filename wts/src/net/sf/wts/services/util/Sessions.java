@@ -7,6 +7,8 @@ public class Sessions
 {
     private static ArrayList<String> sessions_ = new ArrayList<String>();
     
+    private static ArrayList<Job> processes_ = new ArrayList<Job>();
+    
     public static String createNewSession(String serviceName, String userName)
     {
         String unique;
@@ -55,5 +57,10 @@ public class Sessions
         {
                 sessions_.remove(sessionTicket);
         }
+    }
+
+    public static ArrayList<Job> getProcesses()
+    {
+        return processes_;
     }
 }
