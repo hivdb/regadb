@@ -71,6 +71,9 @@
 		<antcall target="create-wts-service">
 			<param name="service" value="CloseSession"/>
 		</antcall>
+		<antcall target="create-wts-service">
+			<param name="service" value="Stop"/>
+		</antcall>
 		
 		<antcall target="create-wts-meta-service">
 			<param name="service" value="ListServices"/>
