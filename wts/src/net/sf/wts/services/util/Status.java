@@ -23,7 +23,7 @@ public class Status
             try 
             {
                 List lines = FileUtils.readLines(endedFile);
-                String line = (String)lines.get(0);
+                String line = ((String)lines.get(0)).trim();
                 if(line.equals(ENDED_SUCCES) || line.equals(ENDED_FAILED) || line.equals(ENDED_KILLED))
                 {
                     return line;

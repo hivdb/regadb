@@ -77,7 +77,7 @@ public class Settings
         Element startService_settings = rootElement.getChild("startService-settings");
         if(startService_settings!=null)
         {
-            startServiceFileName_ = startService_settings.getChildText("filename");
+            startServiceFileName_ = startService_settings.getChildTextTrim("filename");
         }
         else
         {
