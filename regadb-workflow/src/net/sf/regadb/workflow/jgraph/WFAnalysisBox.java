@@ -25,10 +25,10 @@ public class WFAnalysisBox extends DefaultGraphCell
         for(int i = 0; i<labelNames.length; i++)
         {
             maxWidth = Math.max(labelNames[i].length(), maxWidth);
-            if(i+1==labelNames.length)
-                label += labelNames[i];
-            else
-                label += labelNames[i] + "<br>";
+            
+            label += labelNames[i];
+            if(i+1!=labelNames.length)
+                label += "<br>";
         }
         label += "</center></html>";
         maxWidth=maxWidth*7 + 10; //supposed font width
