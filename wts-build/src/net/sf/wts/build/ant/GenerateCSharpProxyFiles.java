@@ -23,8 +23,11 @@ public class GenerateCSharpProxyFiles  extends Task
                 int extensionIndex = baseName.lastIndexOf(".wsdl");
                 baseName = baseName.substring(0, extensionIndex);
                 String wsdlExec = wsdlExecutable.getAbsolutePath();
-                String arg1 = "/out:"+csharpDirectory.getAbsolutePath()+File.separatorChar+baseName+".cs";
-                String arg2 = "/namespace:net.sf.wts.client";
+                File serviceDir = new File(csharpDirectory.getAbsolutePath()+File.separatorChar+baseName+File.separatorChar);
+                serviceDir.mkdir();
+                
+                String arg1 = "/out:"+csharpDirectory.getAbsolutePath()+File.separatorChar+baseName+File.separatorChar+baseName+"Service.cs";
+                String arg2 = "/namespace:net.sf.wts.client.proxyFiles."+baseName;
                 String arg3 = file.getAbsolutePath();
                 System.err.println(wsdlExec + " " + arg1+ " " + arg2+ " " + arg3);
                 final ProcessBuilder pb = new ProcessBuilder(wsdlExec, arg1, arg2, arg3);
