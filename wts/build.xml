@@ -4,12 +4,13 @@
        <!ENTITY create-wsdl-service SYSTEM "create-wsdl-service-task.xml">
 ]>
 
-<project name="wst" default="default" basedir="." >
+<project name="wts" default="default" basedir="." >
 	
 	<property name="src" location="src"/>
 	<property name="lib" location="lib"/>
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
+	<property name="csharp" location="csharp"/>
 	
 	<path id="project.classpath">
 		<fileset dir="${lib}">
@@ -27,6 +28,7 @@
 			<fileset dir="${build}" includes="**/*"/>
 		</delete>
 		<delete dir="${dist}"/>
+		<delete dir="${csharp}"/>
 	</target>
 	
 	<target name="init" depends="clean">
@@ -83,7 +85,7 @@
 		</antcall>
 	</target>
 	
-	<target name="deploy" depends="create-services">
+	<target name="create-war" depends="create-services">
 		<javac srcdir="${build}" destdir="${build}">
 			<classpath refid="project.classpath"/>
 		</javac>
@@ -94,5 +96,13 @@
 			<lib dir="${lib}" excludes="wts-build.jar axis-ant.jar"/>
 			<classes dir="${build}" includes="**/*.class"/>
 		</war>
+	</target>
+	
+	<target name="csharp" depends="create-war">
+		<generatecsharpproxies 
+			wsdlDirectory = "${build}" 
+			csharpDirectory = "${csharp}"
+			wsdlExecutable = "${basedir}">
+			</generatecsharpproxies>
 	</target>
 </project>

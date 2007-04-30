@@ -13,7 +13,11 @@
 	<taskdef name="addservicetowsdd" classname="net.sf.wts.build.ant.AddServiceToWSDD">
 		<classpath refid="project.classpath"/>
 	</taskdef>
-	
+
+	<taskdef name="generatecsharpproxies" classname="net.sf.wts.build.ant.GenerateCSharpProxyFiles">
+		<classpath refid="project.classpath"/>
+	</taskdef>
+		
 	<target name="create-wts-service">
 		<antcall target="create-wsdl-service">
 			<param name="service" value="${service}"/>
