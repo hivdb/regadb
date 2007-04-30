@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 30/04/2007 18:14:44 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +26,16 @@ public class SettingsUser implements java.io.Serializable {
 
     private String password;
 
+    private String email;
+
+    private String firstName;
+
+    private String lastName;
+
+    private Boolean admin;
+
+    private Boolean enabled;
+
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
     // Constructors
@@ -42,12 +52,19 @@ public class SettingsUser implements java.io.Serializable {
 
     /** full constructor */
     public SettingsUser(Test test, Dataset dataset, int chartWidth,
-            int chartHeight, String password, Set<DatasetAccess> datasetAccesses) {
+            int chartHeight, String password, String email, String firstName,
+            String lastName, Boolean admin, Boolean enabled,
+            Set<DatasetAccess> datasetAccesses) {
         this.test = test;
         this.dataset = dataset;
         this.chartWidth = chartWidth;
         this.chartHeight = chartHeight;
         this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.admin = admin;
+        this.enabled = enabled;
         this.datasetAccesses = datasetAccesses;
     }
 
@@ -106,6 +123,46 @@ public class SettingsUser implements java.io.Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Boolean getAdmin() {
+        return this.admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
+    }
+
+    public Boolean getEnabled() {
+        return this.enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Set<DatasetAccess> getDatasetAccesses() {

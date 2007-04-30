@@ -338,3 +338,10 @@ GRANT SELECT ON TABLE attribute_group_attribute_group_ii_seq TO GROUP researcher
 ALTER TABLE ONLY attribute DROP COLUMN attribute_group;
 ALTER TABLE ONLY attribute ADD COLUMN attribute_group_ii integer;
 ALTER TABLE ONLY attribute ADD CONSTRAINT "FK_attribute_attribute_group" FOREIGN KEY (attribute_group_ii) REFERENCES attribute_group(attribute_group_ii) ON UPDATE CASCADE;
+
+--add some attributes to settings_user
+alter table settings_user add column enabled boolean;
+alter table settings_user add column admin boolean;
+alter table settings_user add column last_name character varying(50);
+alter table settings_user add column first_name character varying(50);
+alter table settings_user add column email character varying(100);
