@@ -98,11 +98,12 @@
 		</war>
 	</target>
 	
-	<target name="csharp" depends="create-war">
+	<target name="csharp">
+		<mkdir dir="${csharp}"/>
 		<generatecsharpproxies 
 			wsdlDirectory = "${build}" 
 			csharpDirectory = "${csharp}"
-			wsdlExecutable = "${basedir}">
+			wsdlExecutable = "${basedir}/wsdl.exe">
 			</generatecsharpproxies>
 	</target>
 </project>
