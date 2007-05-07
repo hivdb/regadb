@@ -27,6 +27,9 @@
     <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
+    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select">
+      <column name="nt_sequence_ii" />
+    </many-to-one>
     <property name="value" type="string">
       <column name="value" length="50" />
     </property>

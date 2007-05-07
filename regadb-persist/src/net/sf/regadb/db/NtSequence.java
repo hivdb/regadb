@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 9/03/2007 11:58:45 by Hibernate Tools 3.2.0.beta8
+// Generated 7/05/2007 10:19:16 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -27,6 +27,8 @@ public class NtSequence implements java.io.Serializable {
 
     private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
 
+    private Set<TestResult> testResults = new HashSet<TestResult>(0);
+
     // Constructors
 
     /** default constructor */
@@ -40,12 +42,14 @@ public class NtSequence implements java.io.Serializable {
 
     /** full constructor */
     public NtSequence(ViralIsolate viralIsolate, String nucleotides,
-            String label, Date sequenceDate, Set<AaSequence> aaSequences) {
+            String label, Date sequenceDate, Set<AaSequence> aaSequences,
+            Set<TestResult> testResults) {
         this.viralIsolate = viralIsolate;
         this.nucleotides = nucleotides;
         this.label = label;
         this.sequenceDate = sequenceDate;
         this.aaSequences = aaSequences;
+        this.testResults = testResults;
     }
 
     // Property accessors
@@ -103,6 +107,14 @@ public class NtSequence implements java.io.Serializable {
 
     public void setAaSequences(Set<AaSequence> aaSequences) {
         this.aaSequences = aaSequences;
+    }
+
+    public Set<TestResult> getTestResults() {
+        return this.testResults;
+    }
+
+    public void setTestResults(Set<TestResult> testResults) {
+        this.testResults = testResults;
     }
 
 }

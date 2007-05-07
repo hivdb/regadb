@@ -30,6 +30,12 @@
       </key>
       <one-to-many class="net.sf.regadb.db.AaSequence" />
     </set>
+    <set name="testResults" inverse="false" cascade="all">
+      <key>
+        <column name="nt_sequence_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.TestResult" />
+    </set>
   </class>
 </hibernate-mapping>
 

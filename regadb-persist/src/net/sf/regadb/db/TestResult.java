@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 7/05/2007 10:19:16 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -25,6 +25,8 @@ public class TestResult implements java.io.Serializable {
 
     private PatientImpl patient;
 
+    private NtSequence ntSequence;
+
     private String value;
 
     private Date testDate;
@@ -46,12 +48,14 @@ public class TestResult implements java.io.Serializable {
     /** full constructor */
     public TestResult(Test test, DrugGeneric drugGeneric,
             ViralIsolate viralIsolate, TestNominalValue testNominalValue,
-            PatientImpl patient, String value, Date testDate, String sampleId) {
+            PatientImpl patient, NtSequence ntSequence, String value,
+            Date testDate, String sampleId) {
         this.test = test;
         this.drugGeneric = drugGeneric;
         this.viralIsolate = viralIsolate;
         this.testNominalValue = testNominalValue;
         this.patient = patient;
+        this.ntSequence = ntSequence;
         this.value = value;
         this.testDate = testDate;
         this.sampleId = sampleId;
@@ -112,6 +116,14 @@ public class TestResult implements java.io.Serializable {
 
     public void setPatient(PatientImpl patient) {
         this.patient = patient;
+    }
+
+    public NtSequence getNtSequence() {
+        return this.ntSequence;
+    }
+
+    public void setNtSequence(NtSequence ntSequence) {
+        this.ntSequence = ntSequence;
     }
 
     public String getValue() {
