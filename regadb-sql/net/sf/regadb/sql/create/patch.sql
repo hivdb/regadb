@@ -345,3 +345,7 @@ alter table settings_user add column admin boolean;
 alter table settings_user add column last_name character varying(50);
 alter table settings_user add column first_name character varying(50);
 alter table settings_user add column email character varying(100);
+
+--add nt_sequence to test_result
+ALTER TABLE ONLY test_result ADD COLUMN nt_sequence_ii integer;
+ALTER TABLE ONLY test_result ADD CONSTRAINT "FK_test_result_nt_sequence" FOREIGN KEY (nt_sequence_ii) REFERENCES nt_sequence(nt_sequence_ii) ON UPDATE CASCADE;
