@@ -15,6 +15,9 @@
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />
     </property>
+    <property name="testObjectId" type="java.lang.Integer">
+      <column name="test_object_id" />
+    </property>
   </class>
 </hibernate-mapping>
 
