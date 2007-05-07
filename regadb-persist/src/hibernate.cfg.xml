@@ -34,9 +34,9 @@
         <mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Test.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
     </session-factory>
 </hibernate-configuration>
