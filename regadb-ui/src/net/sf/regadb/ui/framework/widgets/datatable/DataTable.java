@@ -293,7 +293,7 @@ public class DataTable<DataType> extends WTable
             amountOfPages_ = getAmountOfPages(trans);
         }
         
-	    rawDataArray_ = dataTableInterface_.getDataBlock(trans, (currentPage_-1)*amountOfPageRows_ , amountOfPageRows_, sortColIndex_, colHeaders_[sortColIndex_].isAsc());
+	    rawDataArray_ = dataTableInterface_.getDataBlock(trans, (currentPage_)*amountOfPageRows_ , amountOfPageRows_, sortColIndex_, colHeaders_[sortColIndex_].isAsc());
 		for(int i = 0; i<rawDataArray_.size(); i++)
 		{
 			List<WText> al = textMatrix_.get(i);
