@@ -5,9 +5,7 @@
   <class name="net.sf.regadb.db.SettingsUser" table="settings_user" schema="public">
     <id name="uid" type="string">
       <column name="uid" length="50" />
-      <generator class="sequence">
-        <param name="sequence">settings_user_settings_user_ii_seq</param>
-      </generator>
+      <generator class="sequence" />
     </id>
     <version name="version" type="java.lang.Integer">
       <column name="version" />

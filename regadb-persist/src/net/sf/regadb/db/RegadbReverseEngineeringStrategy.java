@@ -23,7 +23,10 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
     @Override
     public Properties getTableIdentifierProperties(TableIdentifier id) {
         Properties p = new Properties();
-        p.put("sequence", id.getName() + "_" + id.getName() + "_ii_seq");
+        if(id.getName()!="settings_user")
+        {
+            p.put("sequence", id.getName() + "_" + id.getName() + "_ii_seq");
+        }
         return p;
     }
 
