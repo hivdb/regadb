@@ -454,6 +454,16 @@ public class Transaction {
         return q.uniqueResult() !=null;
     }
     
+    public boolean settingsUserStillExists(SettingsUser settingsUser)
+    {
+        Query q = session.createQuery("from SettingsUser settingsUser " + 
+                                    "where settingsUser.uid = :settingsUserId");
+        
+        q.setParameter("settingsUserId", settingsUser.getUid());
+    
+        return q.uniqueResult() !=null;
+    }
+    
     /**
      * Returns a Page of TestResults,
      * checking all the filter constraints and grouped by the selected col.
@@ -855,4 +865,52 @@ public class Transaction {
 
 		return q.uniqueResult() !=null;
 	}
+    
+    @SuppressWarnings("unchecked")
+    public List<SettingsUser> getSettingsUser(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from SettingsUser as settingsUser ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_ + "and enabled" + (enabled?" is not null":"= null");
+        }
+        else
+        {
+            queryString += "where enabled" + (enabled?" is not null":"= null");
+        }
+        
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+      	Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public long getSettingsUserCount(HibernateFilterConstraint filterConstraints) 
+    {
+         String queryString = "select count(settingsUser) from SettingsUser as settingsUser";
+            
+            if(!filterConstraints.clause_.equals(" "))
+            {
+                queryString += " where" + filterConstraints.clause_;
+            }
+          
+            Query q = session.createQuery(queryString);
+            
+            for(Pair<String, Object> arg : filterConstraints.arguments_)
+            {
+                q.setParameter(arg.getKey(), arg.getValue());
+            }
+            
+            return ((Long)q.uniqueResult()).longValue();
+    }
 }
