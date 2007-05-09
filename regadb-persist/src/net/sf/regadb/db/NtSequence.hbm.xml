@@ -30,7 +30,7 @@
       </key>
       <one-to-many class="net.sf.regadb.db.AaSequence" />
     </set>
-    <set name="testResults" inverse="false" cascade="all">
+    <set name="testResults" inverse="true" cascade="all">
       <key>
         <column name="nt_sequence_ii" />
       </key>
