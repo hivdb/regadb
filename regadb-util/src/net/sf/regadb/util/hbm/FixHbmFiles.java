@@ -26,6 +26,7 @@ public class FixHbmFiles
       //but not: datasets in PatientImpl (?)
       //put inverse true for PatientImpl >> patientattributevalues
         Object o;
+        Element toRemoveGeneratorFrom = null;
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
         {
            for(Iterator i = a.getValue().getDescendants(); i.hasNext();)
@@ -78,10 +79,23 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("testResults")&& a.getKey().equals("net.sf.regadb.db.NtSequence")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
+                    }
+                    if(e.getName().equals("id") )
+                    {
+                        if(e.getAttribute("name").getValue().equals("uid") && ((Element)e.getParent()).getAttribute("name").getValue().equals("net.sf.regadb.db.SettingsUser"))
+                        {
+                            toRemoveGeneratorFrom = e;
+                        }
                     }
                 }
             }
         }
+        
+        toRemoveGeneratorFrom.removeChild("generator");
         
         //change the composite fields from key-property to key-many-to-one
         changeKeyPropToKeyManyToMany("AaMutation.hbm.xml", "aaSequenceII", "aaSequence", "net.sf.regadb.db.AaSequence");
