@@ -10,6 +10,5 @@
 	<classpathentry kind="lib" path="lib/msv.jar"/>
 	<classpathentry kind="lib" path="lib/relaxngDatatype.jar"/>
 	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
