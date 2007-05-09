@@ -12,10 +12,14 @@ import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.DefaultServices;
 import net.sf.regadb.service.align.AlignmentAnalysis;
+import net.sf.regadb.service.wts.NtSequenceAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -51,8 +55,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 	private DateField sampleDateTF;
 	private Label sampleIdL;
 	private TextField sampleIdTF;
-	//private Label sampleTypeL;
-	//private TextField sampleTypeTF;
 
 	// Sequence group
 	private WGroupBox sequenceGroup_;
@@ -77,8 +79,10 @@ public class ViralIsolateMainForm extends WContainerWidget
     private Label ntL;
     private NucleotideField ntTF;
     private WNucleotideValidator ntValidator;
-	//private Label subTypeL;
-	//private TextField subTypeTF;
+    private Label typeL;
+    private TextField typeTF;
+	private Label subTypeL;
+	private TextField subTypeTF;
     
     private static final String defaultSequenceLabel_ = "Sequence ";
 
@@ -101,9 +105,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
 		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(generalGroupTable_, sampleIdL, sampleIdTF);
-		//sampleTypeL = new Label(tr("form.viralIsolate.editView.sampleType"));
-		//sampleTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		//viralIsolateForm_.addLineToTable(generalGroupTable_, sampleTypeL, sampleTypeTF);
 
 		// Sequence group
 		sequenceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.sequence"), this);
@@ -123,9 +124,13 @@ public class ViralIsolateMainForm extends WContainerWidget
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
 		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, seqDateL, seqDateTF);
-        //subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
-        //subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        //viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
+        typeL = new Label(tr("form.viralIsolate.editView.sampleType"));
+        typeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+        viralIsolateForm_.addLineToTable(generalGroupTable_, typeL, typeTF);
+        subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
+        subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+        viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
+
         
         if(viralIsolateForm_.isEditable())
         {
@@ -275,7 +280,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     private DataComboMessage<NtSequence> addSeqData()
     {
         String label = getUniqueSequenceLabel(viralIsolateForm_.getViralIsolate());
-        NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate(), null, label, null, null);
+        NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
+        newSeq.setLabel(label);
         viralIsolateForm_.getViralIsolate().getNtSequences().add(newSeq);
         
         DataComboMessage<NtSequence> msg = new DataComboMessage<NtSequence>(newSeq, label);
@@ -286,9 +292,21 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     private void setSequenceData(NtSequence seq)
     {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.update(seq);
+        t.commit();
+        
         seqLabelTF.setText(seq.getLabel());
         seqDateTF.setDate(seq.getSequenceDate());
         ntTF.setText(seq.getNucleotides());
+        
+        for(TestResult tr : seq.getTestResults())
+        {
+            if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
+                subTypeTF.setText(tr.getValue());   
+            //if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+            //    type = true;
+        }
     }
     
     private String getUniqueSequenceLabel(ViralIsolate vi)
@@ -420,6 +438,27 @@ public class ViralIsolateMainForm extends WContainerWidget
             System.err.println("ntseq for alignment:"+ntseq.getLabel());
             AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
             }
+            
+            boolean subtype = false;
+            boolean type = false;
+            for(TestResult tr : ntseq.getTestResults())
+            {
+                if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
+                    subtype = true;
+                if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+                    type = true;
+            }
+            Transaction t = RegaDBMain.getApp().createTransaction();
+            if(!subtype)
+            {
+                Test test = t.getTest(DefaultServices.subTyping_, DefaultServices.subtypingType_);
+                AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-subtype", "http://zolder:8080/wts/services/", test, "subtype", true), RegaDBMain.getApp().getLogin()); 
+            }
+            /*if(!type)
+            {
+                AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-type", "http://zolder:8080/wts/services/", null, "type"), RegaDBMain.getApp().getLogin());
+            }*/
+            t.commit();
         }
     }
 
