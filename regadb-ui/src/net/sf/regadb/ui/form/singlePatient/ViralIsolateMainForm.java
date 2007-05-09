@@ -47,6 +47,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     private ArrayList<NtSequence> removedSequences = new ArrayList<NtSequence>();
     private Set<AaSequence> removedAaSequences = new HashSet<AaSequence>();
+    private Set<TestResult> removedTestResults = new HashSet<TestResult>();
 
 	// General group
 	private WGroupBox generalGroup_;
@@ -126,11 +127,10 @@ public class ViralIsolateMainForm extends WContainerWidget
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, seqDateL, seqDateTF);
         typeL = new Label(tr("form.viralIsolate.editView.sampleType"));
         typeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        viralIsolateForm_.addLineToTable(generalGroupTable_, typeL, typeTF);
+        viralIsolateForm_.addLineToTable(ntSeqGroupTable_, typeL, typeTF);
         subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
         subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
-
         
         if(viralIsolateForm_.isEditable())
         {
@@ -304,8 +304,8 @@ public class ViralIsolateMainForm extends WContainerWidget
         {
             if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
                 subTypeTF.setText(tr.getValue());   
-            //if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
-            //    type = true;
+            if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+                typeTF.setText(tr.getValue());
         }
     }
     
@@ -367,6 +367,14 @@ public class ViralIsolateMainForm extends WContainerWidget
             {
                 removedAaSequences.add(aaseq);
             }
+            
+            for(TestResult tr : currentSeq.getTestResults())
+            {
+                if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
+                    removedTestResults.add(tr);
+                else if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+                    removedTestResults.add(tr);
+            }
         }
     }
     
@@ -425,40 +433,32 @@ public class ViralIsolateMainForm extends WContainerWidget
             t.delete(aaseq);
         }
         
+        for(TestResult tr : removedTestResults)
+        {
+            ntseqref = tr.getNtSequence();
+            ntseqref.getTestResults().remove(tr);
+            t.delete(tr);
+        }
+        
         viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
     }
     
     public void startAnalysis()
     {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        Test subTypeTest = t.getTest(DefaultServices.subTyping_, DefaultServices.subtypingType_);
+        Test typeTest = t.getTest(DefaultServices.typing_, DefaultServices.typingType_);
+        t.commit();
+        
         for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
         {
             if(ntseq.getAaSequences().size()==0)
             {
-            System.err.println("ntseq for alignment:"+ntseq.getLabel());
             AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-subtype", "http://zolder:8080/wts/services/", subTypeTest, "subtype", true), RegaDBMain.getApp().getLogin()); 
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-type", "http://zolder:8080/wts/services/", typeTest, "type", true), RegaDBMain.getApp().getLogin()); 
             }
-            
-            boolean subtype = false;
-            boolean type = false;
-            for(TestResult tr : ntseq.getTestResults())
-            {
-                if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
-                    subtype = true;
-                if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
-                    type = true;
-            }
-            Transaction t = RegaDBMain.getApp().createTransaction();
-            if(!subtype)
-            {
-                Test test = t.getTest(DefaultServices.subTyping_, DefaultServices.subtypingType_);
-                AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-subtype", "http://zolder:8080/wts/services/", test, "subtype", true), RegaDBMain.getApp().getLogin()); 
-            }
-            /*if(!type)
-            {
-                AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-type", "http://zolder:8080/wts/services/", null, "type"), RegaDBMain.getApp().getLogin());
-            }*/
-            t.commit();
         }
     }
 
@@ -471,7 +471,8 @@ public class ViralIsolateMainForm extends WContainerWidget
         addButton = new WPushButton(tr("form.viralIsolate.addButton"), buttonTable.elementAt(0, 0));
         deleteButton = new WPushButton(tr("form.viralIsolate.deleteButton"), buttonTable.elementAt(0, 1));
         // confirm-cancel
-        WTable buttonsTable = new WTable(ntSeqGroupTable_.elementAt(3, 1));
+        int numRow = ntSeqGroupTable_.numRows();
+        WTable buttonsTable = new WTable(ntSeqGroupTable_.elementAt(numRow, 1));
         confirmButton = new WPushButton(tr("form.viralIsolate.confirmButton"), buttonsTable.elementAt(0, 0));
         cancelButton = new WPushButton(tr("form.viralIsolate.cancelButton"), buttonsTable.elementAt(0, 1));
         sequenceGroupTable_.elementAt(3, 1).setContentAlignment(WHorizontalAlignment.AlignRight);
