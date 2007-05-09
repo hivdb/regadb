@@ -98,8 +98,8 @@ public class AlignmentAnalysis implements IAnalysis
         
     }
 
-    public Long removeFromLogging() 
+    public Long removeFromLogging()
     {
-        return 1000L;
+        return 10000L;
     }
 }

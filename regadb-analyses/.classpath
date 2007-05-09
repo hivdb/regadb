@@ -10,5 +10,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-pool-1.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/wts-client-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
