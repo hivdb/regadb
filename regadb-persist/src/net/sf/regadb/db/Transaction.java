@@ -63,6 +63,20 @@ public class Transaction {
         return (NtSequence)q.uniqueResult();
     }
     
+    public Patient getPatient(int id)
+    {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                getPatientsQuery() + 
+                "and patient.id = :id "+
+                "group by patient");
+        
+        q.setParameter("uid", login.getUid());
+        q.setParameter("id", id);
+
+        return (Patient)q.uniqueResult();
+    }
+    
     //simple get by id
     /*
      * Lists of attributes, tests, test types, etc...
@@ -912,5 +926,16 @@ public class Transaction {
             }
             
             return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    public Test getTest(String testDescription, String testTypeDescription)
+    {
+        String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription";
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("testDescription", testDescription);
+        q.setParameter("testTypeDescription", testTypeDescription);
+        
+        return (Test)q.uniqueResult();
     }
 }
