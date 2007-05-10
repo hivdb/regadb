@@ -41,7 +41,7 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public WFormWidget getFormWidget() 
     {
-        return null;
+        return checkBox_;
     }
 
     public WWidget getViewWidget() 
@@ -51,7 +51,7 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public WWidget getWidget() 
     {
-        return checkBox_;
+        return this;
     }
 
     public boolean isMandatory() 
