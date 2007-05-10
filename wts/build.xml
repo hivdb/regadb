@@ -4,7 +4,7 @@
        <!ENTITY create-wsdl-service SYSTEM "create-wsdl-service-task.xml">
 ]>
 
-<project name="wts" default="default" basedir="." >
+<project name="wts" default="all" basedir="." >
 	
 	<property name="src" location="src"/>
 	<property name="lib" location="lib"/>
@@ -21,7 +21,7 @@
 	
 	&create-wsdl-service;
 	
-	<target name="default"/>
+	<target name="all" depends="create-war"/>
 	
 	<target name="clean">
 		<delete includeemptydirs="true">
