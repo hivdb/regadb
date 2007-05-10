@@ -10,13 +10,13 @@ import net.sf.witty.wt.validation.WValidator;
 
 public class CheckBox extends WContainerWidget implements IFormField
 {
-    private WCheckBox checkBox = new WCheckBox();
+    private WCheckBox checkBox_ = new WCheckBox();
     
     public CheckBox(InteractionState state, IForm form)
     {
         super();
-        addWidget(checkBox);
-        checkBox.setEnabled(state == InteractionState.Adding || state == InteractionState.Editing);
+        addWidget(checkBox_);
+        checkBox_.setEnabled(state == InteractionState.Adding || state == InteractionState.Editing);
         
         if(form!=null)
         {
@@ -46,19 +46,19 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public WWidget getViewWidget() 
     {
-        return checkBox;
+        return checkBox_;
     }
 
     public WWidget getWidget() 
     {
-        return checkBox;
+        return checkBox_;
     }
 
     public boolean isMandatory() 
     {
-        if(checkBox.validator()!=null)
+        if(checkBox_.validator()!=null)
         {
-            return checkBox.validator().isMandatory();
+            return checkBox_.validator().isMandatory();
         }
         return false;
     }
@@ -70,15 +70,25 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory) 
     {
-        if(checkBox.validator()!=null)
+        if(checkBox_.validator()!=null)
         {
-            checkBox.setValidator(new WValidator());
+            checkBox_.setValidator(new WValidator());
         }
-        checkBox.validator().setMandatory(mandatory);
+        checkBox_.validator().setMandatory(mandatory);
     }
 
     public boolean validate() 
     {
         return true;
+    }
+    
+    public boolean isChecked()
+    {
+        return checkBox_.isChecked();
+    }
+    
+    public void setChecked(boolean checked)
+    {
+        checkBox_.setChecked(checked);
     }
 }
