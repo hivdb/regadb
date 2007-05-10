@@ -10,14 +10,18 @@ import java.util.Map.Entry;
 import net.sf.regadb.build.ant.AntTools;
 import net.sf.regadb.build.cvs.CvsTools;
 import net.sf.regadb.build.eclipse.EclipseParseTools;
+import net.sf.regadb.build.junit.JUnitRapport;
+import net.sf.regadb.build.junit.JUnitTest;
 import net.sf.regadb.build.svn.SvnTools;
+import net.sf.regadb.build.transform.XsltTransformer;
 
 import org.apache.commons.io.FileUtils;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 public class Jarbuilder
 {
-    private final static String buildDir_ = "/home/plibin0/regadb_build/";
+    private final static String buildDir_ = "/home/bddeck0/Build/";
+    private final static String libPool_ = buildDir_ + "/libPool";
     
     private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
     private final static String witty_cvs_url = ":pserver:anonymous@zolder:2401/cvsroot/witty";
@@ -41,19 +45,28 @@ public class Jarbuilder
         for(String m : modules)
         {
             SvnTools.checkout(regadb_svn_url_, m, buildDir_, svnrepos);
-            ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + File.separatorChar + m + File.separatorChar);
+            ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + File.separatorChar + m);
             moduleDependencies = filterRegaDBDependencies(moduleDependencies);
             moduleDeps.put(m, moduleDependencies);
         }
         
         buildRegaDBProjects(moduleDeps);
+		
+        System.out.println("Testing projects");
+        
+        JUnitRapport.startTesting();
+        JUnitTest.executeTests(libPool_);
+        JUnitRapport.endTesting();
+        
+        System.out.println("Generate testing report");
+        XsltTransformer.transform("testresult.xml", "testresult.html", "testresult.xsl");
     }
     
     private static void createLibPoolDir()
     {
         try 
         {
-            FileUtils.forceMkdir(new File(buildDir_ + File.separatorChar + "libPool"));
+            FileUtils.forceMkdir(new File(libPool_));
         } 
         catch (IOException e) 
         {
@@ -70,7 +83,7 @@ public class Jarbuilder
         {
             try 
             {
-                FileUtils.copyFileToDirectory((File)o, new File(buildDir_ + File.separatorChar + "libPool"));
+                FileUtils.copyFileToDirectory((File)o, new File(libPool_));
             } 
             catch (IOException e) 
             {
@@ -125,7 +138,7 @@ public class Jarbuilder
         {
             try 
             {
-                FileUtils.copyFileToDirectory((File)o, new File(buildDir_ + File.separatorChar + "libPool"));
+                FileUtils.copyFileToDirectory((File)o, new File(libPool_));
             } 
             catch (IOException e) 
             {
@@ -133,7 +146,7 @@ public class Jarbuilder
             }
         }
         
-        Collection jarFilesFromLibPool = FileUtils.listFiles(new File(buildDir_ + File.separatorChar + "libPool"), new String[] { "jar" }, false);
+        Collection jarFilesFromLibPool = FileUtils.listFiles(new File(libPool_), new String[] { "jar" }, false);
         
         for(Object o : jarFilesFromLibPool)
         {
@@ -159,7 +172,7 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-client-java"))
             {
                 if(!m.equals("regadb-sql") && !m.equals("regadb-build"))
                 {
