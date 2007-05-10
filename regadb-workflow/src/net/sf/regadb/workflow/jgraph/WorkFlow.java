@@ -44,23 +44,5 @@ public class WorkFlow extends JGraph
         ab2_ = new WFAnalysisBox(400,200,label2,input2,output2);
         Object[] cells = {ab1_, ab2_};
         getGraphLayoutCache().insert(cells);
-        
-        ToolTipManager.sharedInstance().registerComponent(this);
-    }
-    
-    public String getToolTipText(MouseEvent e)
-    {
-        if(e != null) 
-        {
-            Object c = getFirstCellForLocation(e.getX(), e.getY());
-            if(c instanceof WFPortView)
-            {
-                WFPortView mpv = (WFPortView)c;
-                return "port tooltiptext";
-            }
-            
-            return null;
-        }
-        return null;
     }
 }

@@ -68,6 +68,7 @@ public class WFAnalysisBox extends DefaultGraphCell
         
         startX = maxWidth-15;
         startY = maxSize-15;
+ 
         //OutputPorts
         for(String s : output)
         {

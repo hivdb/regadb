@@ -21,12 +21,12 @@ public class WFPortRenderer extends PortRenderer
         if (preview)
         {
             g.setColor(selectionColor_);
-            g.drawRect(3, 3, d.width-4, d.height-4);
+            g.drawRect(0, 0, d.width-1, d.height-1);
         }
         else if (!preview)
         {
             g.setColor(Color.white);
-            g.drawRect(3, 3, d.width-4, d.height-4);
+            g.drawRect(0, 0, d.width-1, d.height-1);
         }
     }
 }

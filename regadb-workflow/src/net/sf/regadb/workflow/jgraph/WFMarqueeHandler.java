@@ -10,9 +10,13 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
+import net.sf.regadb.workflow.tooltip.ToolTip;
+
 import org.jgraph.JGraph;
 import org.jgraph.graph.BasicMarqueeHandler;
+import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultEdge;
+import org.jgraph.graph.DefaultPort;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.Port;
 import org.jgraph.graph.PortView;
@@ -134,16 +138,22 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
     // Show Special Cursor if Over Port
     public void mouseMoved(MouseEvent e) {
         // Check Mode and Find Port
-        if (e != null && getSourcePortAt(e.getPoint()) != null
-                && graph.isPortsVisible()) {
+        //!! make this somewhat abstract
+        PortView pv = getSourcePortAt(e.getPoint());
+        if (e != null && pv != null && graph.isPortsVisible()) {
             // Set Cusor on Graph (Automatically Reset)
             graph.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            ToolTip.insideComponent = graph;
+            CellView [] cellviews = {pv};
+            String portName = ((WFPortUserObject)(((DefaultPort)graph.getGraphLayoutCache().getCells(cellviews)[0]).getUserObject())).getName();
+            ToolTip.showTipWindow(portName, e.getX(), e.getY());
             // Consume Event
             // Note: This is to signal the BasicGraphUI's
             // MouseHandle to stop further event processing.
             e.consume();
         } else
             // Call Superclass
+            ToolTip.hideTipWindow();
             super.mouseMoved(e);
     }
 
