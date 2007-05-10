@@ -1,4 +1,4 @@
-<project name="regadb-client-java" default="all" basedir=".">
+<project name="wts-client-java" default="all" basedir=".">
     <description>
         RegaDB build file for regadb-util
     </description>
@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-	<property name="proj.name" value="regadb-client-java"/>
+	<property name="proj.name" value="wts-client-java"/>
 	<property name="proj.version" value="0.9"/>
 
 	<path id="project.classpath">
