@@ -909,14 +909,18 @@ public class Transaction {
         return q.list();
     }
     
-    public long getSettingsUserCount(HibernateFilterConstraint filterConstraints) 
+    public long getSettingsUserCount(HibernateFilterConstraint filterConstraints, boolean enabled) 
     {
-         String queryString = "select count(settingsUser) from SettingsUser as settingsUser";
+         String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
             
-            if(!filterConstraints.clause_.equals(" "))
-            {
-                queryString += " where" + filterConstraints.clause_;
-            }
+         if(!filterConstraints.clause_.equals(" "))
+         {
+             queryString += "where " + filterConstraints.clause_ + "and enabled" + (enabled?" is not null":"= null");
+         }
+         else
+         {
+             queryString += "where enabled" + (enabled?" is not null":"= null");
+         }
           
             Query q = session.createQuery(queryString);
             
