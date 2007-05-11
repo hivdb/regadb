@@ -1,8 +1,10 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
+import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
@@ -16,13 +18,19 @@ import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.form.testTestTypes.TestForm;
 import net.sf.regadb.ui.form.testTestTypes.TestTypeForm;
+import net.sf.regadb.ui.forms.account.AccountForm;
+import net.sf.regadb.ui.forms.account.PasswordForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.items.administrator.AdministratorItem;
+import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
+import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
+import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.ui.tree.items.singlePatient.MeasurementSelectedItem;
@@ -66,6 +74,25 @@ public class TreeContent
     
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
+    public LogoutItem myAccountLogout;
+    public ActionItem myAccountView;
+    public ActionItem myAccountEdit;
+    public ActionItem myAccountCreate;
+    public ActionItem myAccountEditPassword;
+    
+    public AdministratorItem administratorMain;
+    public ActionItem enabledUsers;
+    public ActionItem registeredUsersSelect;
+    public RegisteredUserSelectedItem registeredUserSelected;
+    public ActionItem registeredUsersView;
+    public ActionItem registeredUsersEdit;
+    public ActionItem registeredUsersChangePassword;
+    public ActionItem disabledUsers;
+    public ActionItem notRegisteredUsersSelect;
+    public NotRegisteredUserSelectedItem notRegisteredUserSelected;
+    public ActionItem notRegisteredUsersView;
+    public ActionItem notRegisteredUsersEdit;
+    public ActionItem notRegisteredUsersChangePassword;
 
     public ActionItem attributesSettings;
     public ActionItem attributes;
@@ -364,6 +391,126 @@ public class TreeContent
 
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
+            myAccountView = new ActionItem(rootItem.tr("form.account.view"), myAccountMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Viewing, myAccountView, myAccountMain, false, null));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
+            myAccountCreate = new ActionItem(rootItem.tr("form.account.create"), myAccountMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Adding, myAccountLogin, myAccountMain, false, new SettingsUser()));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()==null;
+                }
+            };
+            myAccountEdit = new ActionItem(rootItem.tr("form.account.edit"), myAccountMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
+            myAccountEditPassword = new ActionItem(rootItem.tr("form.account.edit.password"), myAccountMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
+            myAccountLogout = new LogoutItem(myAccountMain);
+            
+        administratorMain = new AdministratorItem(rootItem);
+            enabledUsers = new ActionItem(rootItem.tr("menu.administrator.registered.users"), administratorMain);
+            registeredUsersSelect = new ActionItem(rootItem.tr("menu.administrator.users.select"), enabledUsers, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectSettingsUserForm(true));
+                }
+            });
+            registeredUserSelected = new RegisteredUserSelectedItem(enabledUsers);
+            registeredUsersView = new ActionItem(rootItem.tr("menu.administrator.users.view"), registeredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.view"), InteractionState.Viewing, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
+            registeredUsersEdit = new ActionItem(rootItem.tr("menu.administrator.users.edit"), registeredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.edit"), InteractionState.Editing, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
+            registeredUsersChangePassword = new ActionItem(rootItem.tr("form.settings.user.password"), registeredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, registeredUsersView, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
+            
+            disabledUsers = new ActionItem(rootItem.tr("menu.administrator.notregistered.users"), administratorMain);
+            notRegisteredUsersSelect = new ActionItem(rootItem.tr("menu.administrator.users.select"), disabledUsers, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectSettingsUserForm(false));
+                }
+            });
+            notRegisteredUserSelected = new NotRegisteredUserSelectedItem(disabledUsers);
+            notRegisteredUsersView = new ActionItem(rootItem.tr("menu.administrator.users.view"), notRegisteredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notRegisteredUser.view"), InteractionState.Viewing, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
+                }
+            });
+            notRegisteredUsersEdit = new ActionItem(rootItem.tr("menu.administrator.users.edit"), notRegisteredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notRegisteredUser.edit"), InteractionState.Editing, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
+                }
+            });
+            notRegisteredUsersChangePassword = new ActionItem(rootItem.tr("form.settings.user.password"), notRegisteredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, registeredUsersView, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
 			
 		if(singlePatientMain.isEnabled())
 		{

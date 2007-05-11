@@ -61,6 +61,12 @@ public class RegaDBApplication extends WApplication
     	login_ = Login.authenticate(uid, pwd);
     }
     
+    public void logout()
+    {
+        //!! close session (hibernate/wt/servlet)
+        login_=null;
+    }
+    
     public Transaction createTransaction()
     {
     	return login_.createTransaction();

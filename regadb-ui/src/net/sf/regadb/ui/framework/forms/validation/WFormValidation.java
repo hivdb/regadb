@@ -28,14 +28,17 @@ public class WFormValidation
         
         for(IFormField ff : formFields)
         {
-            if(!ff.validate())
+            if(ff.getFormWidget()!=null)
             {
-                erroneousInput = true;
-                ff.flagErroneous();
-            }
-            else
-            {
-                ff.flagValid();
+                if(!ff.validate())
+                {
+                    erroneousInput = true;
+                    ff.flagErroneous();
+                }
+                else
+                {
+                    ff.flagValid();
+                }
             }
         }
         
