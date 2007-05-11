@@ -8,7 +8,7 @@ import org.apache.tools.ant.ProjectHelper;
 
 public class AntTools 
 {
-    public static void buildProject(String projectName, String localBuildDir)
+    public static void buildProject(String projectName, String localBuildDir) throws Exception
     {
         Project project = new Project();
         
@@ -43,6 +43,13 @@ public class AntTools
         
         System.out.println("Building project: " + projectName);
         
-        project.executeTarget("all");
+        try
+        {
+        	project.executeTarget("all");
+        }
+        catch (BuildException e)
+        {
+            throw new Exception(e.getMessage());
+        }
     }
 }

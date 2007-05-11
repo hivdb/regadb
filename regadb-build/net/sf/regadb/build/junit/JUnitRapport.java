@@ -13,17 +13,11 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class JUnitRapport {
-	private static String file = "testresult.xml";
-	
 	private static Document doc;
 	
 	private static Element rootElement;
 	private static Element currentSuite;
 	private static Element currentTest;
-	
-	public static String getFile() {
-		return file;
-	}
 	
 	public static void startTesting() {
 		doc = new Document();
@@ -40,7 +34,7 @@ public class JUnitRapport {
 		doc.addContent(rootElement);
 	}
 	
-	public static void endTesting() {
+	public static void endTesting(String fileName) {
 		List children = rootElement.getChildren();
 		
 		rootElement.setAttribute("suites", children.size() + "");
@@ -56,7 +50,7 @@ public class JUnitRapport {
 		    XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		    outputter.outputString(doc);
 		    
-		    FileWriter writer = new FileWriter(file);
+		    FileWriter writer = new FileWriter(fileName);
 			outputter.output(doc, writer);
 			writer.close();
 		}

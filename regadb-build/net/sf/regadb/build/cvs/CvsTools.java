@@ -11,7 +11,7 @@ import org.netbeans.lib.cvsclient.commandLine.CVSCommand;
 
 public class CvsTools 
 {
-    public static void checkout(String cvsroot, String localPath, String projectName, String localProjectName)
+    public static void checkout(String cvsroot, String localPath, String projectName, String localProjectName) throws Exception
     {
         System.out.println("Checking out cvs project: "+projectName);
         System.setProperty("cvs.root", cvsroot);
@@ -23,18 +23,18 @@ public class CvsTools
         {
             ps_out = new PrintStream(new FileOutputStream(new File(localPath + File.separatorChar + "cvs_out.log")));
         } 
-        catch (FileNotFoundException e1) 
+        catch (FileNotFoundException e) 
         {
-            e1.printStackTrace();
+            throw new Exception(e.getMessage());
         }
         PrintStream ps_err = null;
         try 
         {
             ps_err = new PrintStream(new FileOutputStream(new File(localPath + File.separatorChar + "cvs_err.log")));
         } 
-        catch (FileNotFoundException e1) 
+        catch (FileNotFoundException e) 
         {
-            e1.printStackTrace();
+        	throw new Exception(e.getMessage());
         }
         
         boolean succes = (CVSCommand.processCommand(argsco, null, localPath, ps_out, ps_err));
@@ -49,12 +49,19 @@ public class CvsTools
         } 
         catch (IOException e) 
         {
-            e.printStackTrace();
+        	throw new Exception(e.getMessage());
         }
     }
     
     public static void main(String [] args)
     {
-        checkout(":pserver:anonymous@zolder:2401/cvsroot/witty", "/home/plibin0/regadb_build", "jwt/src", "jwt_src");
+        try 
+        {
+        	checkout(":pserver:anonymous@zolder:2401/cvsroot/witty", "/home/plibin0/regadb_build", "jwt/src", "jwt_src");
+        }
+        catch (Exception e) 
+        {
+        	e.printStackTrace();
+        }
     }
 }

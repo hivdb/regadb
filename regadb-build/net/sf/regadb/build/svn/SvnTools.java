@@ -19,7 +19,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnTools 
 {
-    public static void checkout(String url, String projectName, String localDir, SVNRepository repository)
+    public static void checkout(String url, String projectName, String localDir, SVNRepository repository) throws Exception
     {
         long latestRevision;
         
@@ -36,7 +36,7 @@ public class SvnTools
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+        	throw new Exception(e.getMessage());
         }
     }
     
@@ -90,7 +90,14 @@ public class SvnTools
         {
             System.out.println(m);
         }
-        checkout("svn+ssh://zolder:3333/var/svn/repos", "regadb-util", "/home/plibin0/regadb_build/", svnrepos);
+        try 
+        {
+        	checkout("svn+ssh://zolder:3333/var/svn/repos", "regadb-util", "/home/plibin0/regadb_build/", svnrepos);
+        }
+        catch (Exception e) 
+        {
+        	
+        }
         // if(s.equals("regadb-sql") || s.equals("regadb-build") ||
         // s.equals("test_svn"))
 
