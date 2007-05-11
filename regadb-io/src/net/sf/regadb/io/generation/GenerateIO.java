@@ -131,11 +131,31 @@ public class GenerateIO
         return false;
     }
     
+    private Class replacePatientDatasetByDataset(Class cc)
+    {       
+       //Exception because we cannot acces PatientDataset directly 
+       if(cc.getName().equals("net.sf.regadb.db.PatientDataset"))
+       {
+           try 
+           {
+               cc = Class.forName("net.sf.regadb.db.Dataset");
+           } 
+           catch (ClassNotFoundException e) 
+           {
+               e.printStackTrace();
+           }
+       }
+       
+       return cc;
+    }
+       
 	private void writeClassGrammar(Class c)
 	{
        if(alreadyWritten(c))
            return;
-        
+		
+		c = replacePatientDatasetByDataset(c);
+		
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
         String id = createString();
@@ -187,6 +207,15 @@ public class GenerateIO
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
         boolean set = false;
         
+        String fieldName = field.getName();
+        
+		//Exception because we cannot acces PatientDataset directly 
+        if(field.getName().equals("patientDatasets"))
+        {
+			bareClass = replacePatientDatasetByDataset(bareClass);
+            fieldName = "Datasets";
+        }
+        
         if(!interpreter.isComposite(c.getName(), field.getName()))
         {
             // if the field is a set >> zeroOrMore
@@ -194,7 +223,7 @@ public class GenerateIO
             {
                 Element setEl = new Element("element");
                 setNs(setEl);
-                setEl.setAttribute("name", field.getName());
+                setEl.setAttribute("name", fieldName);
                 Element zeroOrMore = new Element("zeroOrMore");
                 setNs(zeroOrMore);
                 setEl.addContent(zeroOrMore);
@@ -219,7 +248,6 @@ public class GenerateIO
             }
             else
             {
-                String fieldName = field.getName();
                 fieldEl.setAttribute("name", fieldName+"-el");
             }
             toAdd.addContent(fieldEl);
@@ -233,7 +261,7 @@ public class GenerateIO
             addReference(toAdd, bareClass);
             if(set)
             {
-                XMLWriteCodeGen.writeSet(bareClass, field.getName(), "parentNode", id);
+                XMLWriteCodeGen.writeSet(bareClass, fieldName, "parentNode", id);
             }
             else
             {

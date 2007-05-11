@@ -1,6 +1,8 @@
 package net.sf.regadb.io.exportXML;
 
+import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.AttributeGroup;
@@ -12,18 +14,20 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.DrugCommercial;
@@ -388,13 +392,13 @@ public class ExportToXML
 			deathDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Patientvar.getDeathDate()));
 			parentNode.addContent(deathDateprimitiveValEl);
 		}
-		Element datasetsEl = new Element("datasets");
-		parentNode.addContent(datasetsEl);
+		Element DatasetsEl = new Element("Datasets");
+		parentNode.addContent(DatasetsEl);
 		for (Dataset Datasetloopvar : Patientvar.getDatasets())
 		{
-			Element datasets_elEl = new Element("datasets-el");
-			datasetsEl.addContent(datasets_elEl);
-			writeDataset(Datasetloopvar,datasets_elEl);
+			Element Datasets_elEl = new Element("Datasets-el");
+			DatasetsEl.addContent(Datasets_elEl);
+			writeDataset(Datasetloopvar,Datasets_elEl);
 		}
 		Element testResultsEl = new Element("testResults");
 		parentNode.addContent(testResultsEl);
@@ -460,6 +464,14 @@ public class ExportToXML
 			Element aaSequences_elEl = new Element("aaSequences-el");
 			aaSequencesEl.addContent(aaSequences_elEl);
 			writeAaSequence(AaSequenceloopvar,aaSequences_elEl);
+		}
+		Element testResultsEl = new Element("testResults");
+		parentNode.addContent(testResultsEl);
+		for (TestResult TestResultloopvar : NtSequencevar.getTestResults())
+		{
+			Element testResults_elEl = new Element("testResults-el");
+			testResultsEl.addContent(testResults_elEl);
+			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
 	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
@@ -557,6 +569,12 @@ public class ExportToXML
 			Element descriptionprimitiveValEl = new Element("description");
 			descriptionprimitiveValEl.addContent(TestObjectvar.getDescription().toString());
 			parentNode.addContent(descriptionprimitiveValEl);
+		}
+		if(TestObjectvar.getTestObjectId()!=null)
+		{
+			Element testObjectIdprimitiveValEl = new Element("testObjectId");
+			testObjectIdprimitiveValEl.addContent(TestObjectvar.getTestObjectId().toString());
+			parentNode.addContent(testObjectIdprimitiveValEl);
 		}
 	}
 	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)

@@ -32,9 +32,9 @@
         <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
-    <element name="datasets">
+    <element name="Datasets">
       <zeroOrMore>
-        <element name="datasets-el">
+        <element name="Datasets-el">
           <ref name="net.sf.regadb.db.Dataset" />
         </element>
       </zeroOrMore>
@@ -244,6 +244,11 @@
         </data>
       </element>
     </optional>
+    <optional>
+      <element name="testObjectId">
+        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.TestNominalValue">
     <optional>
@@ -378,6 +383,13 @@
       <zeroOrMore>
         <element name="aaSequences-el">
           <ref name="net.sf.regadb.db.AaSequence" />
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="testResults">
+      <zeroOrMore>
+        <element name="testResults-el">
+          <ref name="net.sf.regadb.db.TestResult" />
         </element>
       </zeroOrMore>
     </element>
