@@ -43,7 +43,7 @@ public class JUnitTest {
 							
 							if (cls.getSuperclass() != null) {				
 								if (cls.getSuperclass().getName().equals("junit.framework.TestCase")) {
-									JUnitRapport.addTest();
+									JUnitRapport.startTest();
 									
 									Method[] method = cls.getDeclaredMethods();
 									
@@ -58,6 +58,8 @@ public class JUnitTest {
 											JUnitRapport.addRun(tr);
 										}
 									}
+									
+									JUnitRapport.closeTest();
 								}
 							}
 						}

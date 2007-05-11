@@ -88,13 +88,17 @@ public class JUnitRapport {
 		}
 	}
 	
-	public static void addTest() {
+	public static void startTest() {
 		currentTest = new Element("testcase");
 		currentTest.setName("testcase");
 		
 		currentTest.setAttribute("runs", "" + 0);
 		currentTest.setAttribute("errors", "" + 0);
 		currentTest.setAttribute("failures", "" + 0);
+	}
+	
+	public static void closeTest() {
+		currentSuite.addContent(currentTest);
 	}
 	
 	public static void addRun(TestResult result) {
@@ -143,7 +147,5 @@ public class JUnitRapport {
 			
 			currentTest.addContent(currentError);
 		}
-		
-		currentSuite.addContent(currentTest);
 	}
 }
