@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.AnalysisData" table="analysis_data" schema="public">
+    <id name="analysisDataIi" type="java.lang.Integer">
+      <column name="analysis_data_ii" />
+      <generator class="sequence">
+        <param name="sequence">analysis_data_analysis_data_ii_seq</param>
+      </generator>
+    </id>
+    <many-to-one name="analysis" class="net.sf.regadb.db.Analysis" fetch="select">
+      <column name="analysis_ii" not-null="true" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" />
+    </property>
+    <property name="data" type="binary">
+      <column name="data" />
+    </property>
+    <property name="analysisTypeIi" type="int">
+      <column name="analysis_type_ii" not-null="true" />
+    </property>
+  </class>
+</hibernate-mapping>
+
