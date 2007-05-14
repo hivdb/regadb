@@ -1,12 +1,5 @@
 package net.sf.regadb.io.generation;
 
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.createClassCode;
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.createString;
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.writeMethodSig;
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.writeMethodSigEnd;
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointer;
-import static net.sf.regadb.io.generation.XMLWriteCodeGen.writePointerSet;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Field;
@@ -158,9 +151,10 @@ public class GenerateIO
 		
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
-        String id = createString();
+        String id = XMLWriteCodeGen.createString();
         
-        writeMethodSig(c, id);
+        XMLWriteCodeGen.writeMethodSig(c, id);
+        XMLReadCodeGen.addObject(c, id);
 		
         Field[] fields = c.getDeclaredFields();
         
@@ -199,7 +193,7 @@ public class GenerateIO
                 }
         }
         
-        writeMethodSigEnd(id);
+        XMLWriteCodeGen.writeMethodSigEnd(id);
 	}
     
     private void handleField(Field field, Element toAdd, Class bareClass, Class c, String id)
@@ -262,6 +256,7 @@ public class GenerateIO
             if(set)
             {
                 XMLWriteCodeGen.writeSet(bareClass, fieldName, "parentNode", id);
+                XMLReadCodeGen.addSet(id, field.getName(), bareClass);
             }
             else
             {
@@ -276,6 +271,7 @@ public class GenerateIO
             setNs(data);
             toAdd.addContent(handleStringField(data, null));
             XMLWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, false, "parentNode");
+            XMLReadCodeGen.addRepresentedValue(id, field.getName(), bareClass, false);
         }
         else if(isPointer(bareClass))
         {
@@ -283,11 +279,13 @@ public class GenerateIO
             
             if(!set)
             {
-                writePointer(id, bareClass, field.getName(), "parentNode", false, c);
+                XMLWriteCodeGen.writePointer(id, bareClass, field.getName(), "parentNode", false, c);
+                XMLReadCodeGen.addPointer(id, field.getName(), bareClass, false);
             }
             else
             {
-                writePointerSet(id, bareClass, field.getName(), "parentNode", c);
+                XMLWriteCodeGen.writePointerSet(id, bareClass, field.getName(), "parentNode", c);
+                XMLReadCodeGen.addPointerSet(id, field.getName(), bareClass);
             }
         }
         else if(interpreter.isComposite(c.getName(), field.getName()))
@@ -304,6 +302,7 @@ public class GenerateIO
                     setNs(data);
                     el.addContent(handleStringField(data, null));
                     XMLWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, "parentNode");
+                    XMLReadCodeGen.addRepresentedValue(id, compositeField.getName(), compositeField.getType(), true);
                 }
                 else if(isPointer(compositeField.getType()))
                 {
@@ -312,7 +311,8 @@ public class GenerateIO
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     handlePointer(el, compositeField.getType(), false);
-                    writePointer(id, compositeField.getType(), compositeField.getName(), "parentNode", false, c);
+                    XMLWriteCodeGen.writePointer(id, compositeField.getType(), compositeField.getName(), "parentNode", false, c);
+                    XMLReadCodeGen.addPointer(id, compositeField.getName(), compositeField.getType(), true);
                 }
                 else 
                 {
@@ -328,6 +328,7 @@ public class GenerateIO
                         toAdd.addContent(el);
                         el.addContent(data);
                         XMLWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
+                        XMLReadCodeGen.addPrimitive(id, compositeField.getName(), compositeField.getType(), true);
                     }
                 }
             }
@@ -335,6 +336,7 @@ public class GenerateIO
         else //primitive field
         {
             XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
+            XMLReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
@@ -592,7 +594,7 @@ public class GenerateIO
             //export java code
             srcDir = getSrcPath("net.sf.regadb.io.exportXML");
             File exportJavaCodeFile = new File(srcDir+File.separatorChar+"ExportToXML.java");
-            String exportCode = createClassCode(pointerClasses_);
+            String exportCode = XMLWriteCodeGen.createClassCode(pointerClasses_);
             fw = new FileWriter(exportJavaCodeFile);
             fw.write(exportCode);
             fw.flush();
@@ -600,29 +602,12 @@ public class GenerateIO
             //export java code
             
             //import java code
-            /*
-             * Strategy:
-             *   - If we import a Patient that already exists, then we replace that Patient
-             *     unless we are non-incremental, then we throw a Exception
-             *   - Certain objects are recognized as special and must already exist:
-             *     - drugs (generic, commercial)
-             *     - test types
-             *     - value types
-             *   - Whether an object already exists depends on a comparison that is specific
-             *     for every object, and not related to the primary keys. Therefore we add
-             *       custom implementation of Object findExisting(Object o)
-             *     The objects for which this matters are:
-             *       Patient:               patient Id, source data set
-             *       Attribute:             name, attribute group
-             *       AttributeNominalValue  attribute, name
-             *       Test                   name
-             *       TestNominalValue       test, name
-             *       TestType               name
-             *       ValueType              name
-             *       Drugs                  name
-             *       
-             *  Let's first write the skeleton that takes new Patients and ViralIsolates ?
-             */
+            srcDir = getSrcPath("net.sf.regadb.io.importXML");
+            File importJavaCodeFile = new File(srcDir+File.separatorChar+"ImportFromXML.java");
+            fw = new FileWriter(importJavaCodeFile);
+            XMLReadCodeGen.generate(fw);
+            fw.flush();
+            fw.close();
             //import java code
 		}
 		catch (Exception e)

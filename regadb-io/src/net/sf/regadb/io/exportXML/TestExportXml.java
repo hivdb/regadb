@@ -63,7 +63,7 @@ public class TestExportXml
         
         java.io.FileWriter writer;
         try {
-            writer = new java.io.FileWriter("/home/plibin0/patient.xml");
+            writer = new java.io.FileWriter("/home/kdforc0/patient.xml");
             outputter.output(n, writer);
             writer.flush();
             writer.close();

@@ -49,7 +49,7 @@ public class XMLWriteCodeGen
         writeClassCode += "{";
         writeClassCode += "return;";
         writeClassCode += "}";
-        
+
         varNameList_.put(id, toWrite.getSimpleName()+"var");
         
         addString(id, writeClassCode);
