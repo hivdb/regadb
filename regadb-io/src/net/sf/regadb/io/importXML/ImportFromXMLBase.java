@@ -11,11 +11,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.exportXML.ExportToXML;
 
 import org.jdom.Document;
@@ -28,7 +32,11 @@ import org.xml.sax.helpers.DefaultHandler;
 public class ImportFromXMLBase extends DefaultHandler{
     protected Patient patient = null;
     protected String value = null;
-    private DateFormat dateFormatter = new SimpleDateFormat("yyyy-mm-dd");
+    private DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    private Map<String, DrugGeneric> genericDrugs;
+    private Map<String, DrugCommercial> commercialDrugs;
+    private Map<String, Protein> proteins;
     
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -90,22 +98,47 @@ public class ImportFromXMLBase extends DefaultHandler{
         return null;
     }
 
-    protected DrugGeneric resolveDrugGeneric(String value) {
-        // TODO Auto-generated method stub
-        return null;
+    protected DrugGeneric resolveDrugGeneric(String value) throws SAXException {
+        DrugGeneric result = genericDrugs.get(value);
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve generic drug: '" + value + "'"));
+        else
+            return result;
     }
 
-    protected Protein resolveProtein(String value) {
-        // TODO Auto-generated method stub
-        return null;
+    protected Protein resolveProtein(String value) throws SAXException {
+        Protein result = proteins.get(value);
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve protein: '" + value + "'"));
+        else
+            return result;
     }
 
-    protected DrugCommercial resolveDrugCommercial(String value) {
-        // TODO Auto-generated method stub
-        return null;
+    protected DrugCommercial resolveDrugCommercial(String value) throws SAXException {
+        DrugCommercial result = commercialDrugs.get(value);
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve commercial drug: '" + value + "'"));
+        else
+            return result;
     }
 
+    public void loadDatabaseObjects(Transaction t) {
+        genericDrugs = new TreeMap<String, DrugGeneric>();
+        for (DrugGeneric d : t.getGenericDrugs()) {
+            genericDrugs.put(d.getGenericId(), d);
+        }
 
+        commercialDrugs = new TreeMap<String, DrugCommercial>();
+        for (DrugCommercial d : t.getCommercialDrugs()) {
+            commercialDrugs.put(d.getName(), d);
+        }
+
+        proteins = new TreeMap<String, Protein>();
+        for (Protein p : t.getProteins()) {
+            proteins.put(p.getAbbreviation(), p);
+        }
+    }
+    
     protected void importPatient(Patient patient) {
         ExportToXML l = new ExportToXML();
         Element root = new Element("Patients");
