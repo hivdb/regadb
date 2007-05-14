@@ -18,6 +18,18 @@
     <property name="url" type="string">
       <column name="URL" length="100" />
     </property>
+    <property name="account" type="string">
+      <column name="account" length="50" />
+    </property>
+    <property name="password" type="string">
+      <column name="password" length="100" />
+    </property>
+    <property name="baseinputfile" type="string">
+      <column name="baseinputfile" length="50" />
+    </property>
+    <property name="baseoutputfile" type="string">
+      <column name="baseoutputfile" length="50" />
+    </property>
   </class>
 </hibernate-mapping>
 
