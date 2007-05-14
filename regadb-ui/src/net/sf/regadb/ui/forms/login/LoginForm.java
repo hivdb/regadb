@@ -2,8 +2,10 @@ package net.sf.regadb.ui.forms.login;
 
 import java.util.ArrayList;
 
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.ui.forms.account.AccountForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -12,12 +14,15 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WBreak;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 
 public class LoginForm extends WGroupBox implements IForm
@@ -32,6 +37,7 @@ public class LoginForm extends WGroupBox implements IForm
 	private TextField uidTF = new TextField(InteractionState.Editing, this);
 	private Label passwordL = new Label(tr("form.login.label.password"));
 	private TextField passwordTF = new TextField(InteractionState.Editing, this);
+    private WText createAccountLink_ = new WText(tr("form.login.link.create"));
 	
 	//control
 	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));
@@ -61,6 +67,14 @@ public class LoginForm extends WGroupBox implements IForm
         passwordTF.setEchomode(WLineEditEchoMode.Password);
         loginGroupTable.putElementAt(1, 0, passwordL);
         loginGroupTable.putElementAt(1, 1, passwordTF);
+        createAccountLink_.setStyleClass("general-clickable-text");
+        createAccountLink_.clicked.addListener(new SignalListener<WMouseEvent>()
+        {
+            public void notify(WMouseEvent me)
+            {
+                RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
+            }
+        });
         
         //control
         WContainerWidget buttonContainer = new WContainerWidget(this);
@@ -89,6 +103,8 @@ public class LoginForm extends WGroupBox implements IForm
                 }
             }
         });
+        buttonContainer.addWidget(new WBreak());
+        buttonContainer.addWidget(createAccountLink_);
     }
 	
 	private boolean validateLogin()

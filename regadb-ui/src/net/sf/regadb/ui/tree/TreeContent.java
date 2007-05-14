@@ -391,25 +391,11 @@ public class TreeContent
 
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
-            myAccountView = new ActionItem(rootItem.tr("form.account.view"), myAccountMain, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Viewing, myAccountView, myAccountMain, false, null));
-                }
-            })
-            {
-                @Override
-                public boolean isEnabled()
-                {
-                    return RegaDBMain.getApp().getLogin()!=null;
-                }
-            };
             myAccountCreate = new ActionItem(rootItem.tr("form.account.create"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Adding, myAccountLogin, myAccountMain, false, new SettingsUser()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.edit"), InteractionState.Adding, myAccountLogin, myAccountMain, false, new SettingsUser()));
                 }
             })
             {
@@ -419,11 +405,25 @@ public class TreeContent
                     return RegaDBMain.getApp().getLogin()==null;
                 }
             };
+            myAccountView = new ActionItem(rootItem.tr("form.account.view"), myAccountMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.view"), InteractionState.Viewing, myAccountView, myAccountMain, false, null));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
             myAccountEdit = new ActionItem(rootItem.tr("form.account.edit"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.accountForm"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.edit"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
                 }
             })
             {
@@ -450,7 +450,7 @@ public class TreeContent
             myAccountLogout = new LogoutItem(myAccountMain);
             
         administratorMain = new AdministratorItem(rootItem);
-            enabledUsers = new ActionItem(rootItem.tr("menu.administrator.registered.users"), administratorMain);
+            enabledUsers = new ActionItem(rootItem.tr("menu.administrator.users.registered"), administratorMain);
             registeredUsersSelect = new ActionItem(rootItem.tr("menu.administrator.users.select"), enabledUsers, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
@@ -481,7 +481,7 @@ public class TreeContent
                 }
             });
             
-            disabledUsers = new ActionItem(rootItem.tr("menu.administrator.notregistered.users"), administratorMain);
+            disabledUsers = new ActionItem(rootItem.tr("menu.administrator.users.notregistered"), administratorMain);
             notRegisteredUsersSelect = new ActionItem(rootItem.tr("menu.administrator.users.select"), disabledUsers, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
