@@ -6,11 +6,18 @@
  */
 package net.sf.regadb.io.generation;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
@@ -206,6 +213,8 @@ public class XMLReadCodeGen {
                + "import java.util.*;\n"
                + "import net.sf.regadb.db.*;\n"
                + "import org.xml.sax.*;\n"
+               + "import org.xml.sax.helpers.XMLReaderFactory;\n"
+               + "import java.io.IOException;\n"
                + "\n"
                + "public class ImportFromXML extends ImportFromXMLBase {\n");
 
@@ -240,6 +249,9 @@ public class XMLReadCodeGen {
         write(1, "ParseState currentState() {\n");
         write(2, "return parseStateStack.get(parseStateStack.size() - 1);\n");
         write(1, "}\n\n");
+
+        write(1, "List topLevelObjects = new ArrayList();\n");
+        write(1, "Class topLevelClass = null;\n\n");
 
         /*
          * Handling references: create a map for each referenced type.
@@ -299,6 +311,7 @@ public class XMLReadCodeGen {
         write(2, "}\n");
         write(1, "}\n\n");
         
+        write(1, "@SuppressWarnings(\"unchecked\")\n");
         write(1, "public void endElement(String uri, String localName, String qName) throws SAXException {\n");
        
         write(2, "if (false) {\n");
@@ -317,7 +330,21 @@ public class XMLReadCodeGen {
             if (o.referenced)
                 write(4, "boolean referenceResolved = false;\n");
 
-            write(4, "if (false) {\n");
+            write(4, "if (currentState() == ParseState.TopLevel) {\n");
+            write(5, "if (topLevelClass == " + o.javaClass.getSimpleName() + ".class) {\n");
+
+            if (o.javaClass != Patient.class) {
+                write(6, o.varName() + " = new " + o.javaClass.getSimpleName() + "();\n");
+                if (o.hasCompositeId)
+                    write(6, o.varName() + ".setId(new " + o.javaClass.getSimpleName() + "Id());\n");
+            } else {
+                write(6, "elPatient = patient;\n");
+            }
+
+            write(6, "topLevelObjects.add(" + o.varName() + ");\n");
+            write(5, "} else {\n");
+            write(6, "throw new SAXException(new ImportException(\"Unexpected top level object: \" + qName));\n");
+            write(5, "}\n");
 
             /*
              * Find fields which contain this object, create object and add object
@@ -325,11 +352,6 @@ public class XMLReadCodeGen {
             for (ObjectField f : o.getRefererringFields()) {
                 write(4, "} else if (currentState() == ParseState." + f.parent.parseState() + ") {\n");
                 f.writeCreate(5);
-            }
-
-            if (o.javaClass == Patient.class) {
-                write(4, "} else if (currentState() == ParseState.TopLevel) {\n");
-                write(5, "elPatient = patient;\n");
             }
             
             write(4, "} else {\n");
@@ -403,7 +425,31 @@ public class XMLReadCodeGen {
         write(2, "}\n");
         
         write(1, "}\n\n");
-        
+
+        /*
+         * -- Parser entry points: one for each object type
+         */
+
+        for (String id : objectIdMap.keySet()) {
+            ObjectInfo o = objectIdMap.get(id);
+
+            write(1, "@SuppressWarnings(\"unchecked\")\n");
+            write(1, "public List<" + o.javaClass.getSimpleName() + "> read" + o.javaClass.getSimpleName()
+                    + "s(InputSource source) throws SAXException, IOException {\n");
+
+            write(2, "topLevelClass = " + o.javaClass.getSimpleName() + ".class;\n");
+            write(2, "parse(source);\n");
+            write(2, "return topLevelObjects;\n");
+            write(1, "}\n\n");
+        }
+
+        write(1, "private void parse(InputSource source)  throws SAXException, IOException {\n");
+        write(2, "XMLReader xmlReader = XMLReaderFactory.createXMLReader();\n");
+        write(2, "xmlReader.setContentHandler(this);\n");
+        write(2, "xmlReader.setErrorHandler(this);\n");        
+        write(2, "xmlReader.parse(source);\n");
+        write(1, "}\n\n");
+
         write(0, "}\n");
     }
 

@@ -9,7 +9,9 @@ package net.sf.regadb.io.importXML;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
@@ -33,7 +35,7 @@ public class TestImportXML {
         Login login = null;
         try
         {
-            login = Login.authenticate("kdforc0", "Vitabis1");
+            login = Login.authenticate("jvsant1", "Kangoer1");
         }
         catch (WrongUidException e)
         {
@@ -52,13 +54,11 @@ public class TestImportXML {
         
         t.commit();
         
-        XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-        
-        xmlReader.setContentHandler(instance);
-        xmlReader.setErrorHandler(instance);
-        
         FileReader r = new FileReader(new File(args[0]));
-        xmlReader.parse(new InputSource(r));
+
+        List<Attribute> attributes = instance.readAttributes(new InputSource(r));
+        
+        System.err.println("Read: " + attributes.size() + " attributes");
     }
 
 }
