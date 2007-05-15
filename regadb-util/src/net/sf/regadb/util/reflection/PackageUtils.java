@@ -5,20 +5,20 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
-public class Package
+public class PackageUtils
 {
-	private static Package instance_ = null;
+	private static PackageUtils instance_ = null;
 
-	private Package()
+	private PackageUtils()
 	{
 
 	}
 
-	public static Package getInstance()
+	public static PackageUtils getInstance()
 	{
 		if (instance_ != null)
 		{
-			instance_ = new Package();
+			instance_ = new PackageUtils();
 		}
 
 		return instance_;
@@ -67,4 +67,17 @@ public class Package
 		classes.toArray(classesA);
 		return classesA;
 	}
+	
+    public static String getDirectoryPath(String packageName, String projectName)
+    {
+        //hacky stuff
+        //since regadb-util cannot reference to regadb-persist (circular dependencies), we need to give the path in a special way
+        final String packageNameHack = "net.sf.regadb.util.hbm";
+        URL packageURLHack = Thread.currentThread().getContextClassLoader().getResource(packageNameHack.replace('.', '/'));
+        File directoryHack = new File(URLDecoder.decode(packageURLHack.getFile()));
+        String directoryHackPath = directoryHack.getAbsolutePath();
+        directoryHackPath = directoryHackPath.substring(0, directoryHackPath.indexOf("regadb-util"))+projectName+"/src/"+packageName.replace('.', '/');
+        
+        return directoryHackPath;
+    }
 }

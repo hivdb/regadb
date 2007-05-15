@@ -5,10 +5,10 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.sf.regadb.util.reflection.PackageUtils;
 
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -148,7 +148,7 @@ public class InterpreteHbm
 		}
 		
 		return null;
-	}
+	}private
 	
 	Element findElementRecursively(Element root, String property)
 	{
@@ -185,22 +185,11 @@ public class InterpreteHbm
 		return instance_;
 	}
 	
-    private String getDirectoryPath(String packageName)
-    {
-        //hacky stuff
-        //since regadb-util cannot reference to regadb-persist (circular dependencies), we need to give the path in a special way
-        final String packageNameHack = "net.sf.regadb.util.hbm";
-        URL packageURLHack = Thread.currentThread().getContextClassLoader().getResource(packageNameHack.replace('.', '/'));
-        File directoryHack = new File(URLDecoder.decode(packageURLHack.getFile()));
-        String directoryHackPath = directoryHack.getAbsolutePath();
-        directoryHackPath = directoryHackPath.substring(0, directoryHackPath.indexOf("regadb-util"))+"regadb-persist/src/"+packageName.replace('.', '/');
-        
-        return directoryHackPath;
-    }
+
     
 	private void init()
 	{
-        File directory = new File(getDirectoryPath("net.sf.regadb.db"));
+        File directory = new File(PackageUtils.getDirectoryPath("net.sf.regadb.db", "regadb-persist"));
   
         xmlFiles_ = directory.listFiles(new FileFilter()
 		{
@@ -224,7 +213,7 @@ public class InterpreteHbm
 		{
 			public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
 			{
-				File directory = new File(getDirectoryPath("net.sf.regadb.db.hibernate.dtd"));
+				File directory = new File(PackageUtils.getDirectoryPath("net.sf.regadb.db.hibernate.dtd", "regadb-persist"));
 				File [] dtdFiles = directory.listFiles(new FileFilter()
 				{
 					public boolean accept(File pathname)
