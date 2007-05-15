@@ -145,20 +145,19 @@ public class Settings
             rootElement = doc.getRootElement();
             if(rootElement!=null)
             {
+                Element name;
                 System.err.println("inputs");
                 Element inputs = rootElement.getChild("inputs");
-                if(inputs==null)
-                    return;
-                List inputsList = inputs.getChildren("input");
-                if(inputsList.size()==0)
-                    return;
-                Element name;
-                for(Object inp : inputsList)
+                if(inputs!=null)
                 {
-                    name = ((Element)inp).getChild("name");
-                    if(name==null)
-                        return;
-                    service.inputs_.add(name.getTextTrim());
+                    List inputsList = inputs.getChildren("input");
+                    for(Object inp : inputsList)
+                    {
+                        name = ((Element)inp).getChild("name");
+                        if(name==null)
+                            return;
+                        service.inputs_.add(name.getTextTrim());
+                    }
                 }
                 
                 System.err.println("outputs");
@@ -166,7 +165,7 @@ public class Settings
                 if(inputs==null)
                     return;
                 List outputsList = outputs.getChildren("output");
-                if(inputsList.size()==0)
+                if(outputsList.size()==0)
                     return;
                 for(Object outp : outputsList)
                 {
