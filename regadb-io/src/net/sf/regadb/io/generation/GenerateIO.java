@@ -44,7 +44,7 @@ public class GenerateIO
     {
         try
         {
-            regaClasses_ = net.sf.regadb.util.reflection.Package.getInstance().getClasses(Patient.class.getPackage().getName());
+            regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getInstance().getClasses(Patient.class.getPackage().getName());
         }
         catch (ClassNotFoundException e)
         {
