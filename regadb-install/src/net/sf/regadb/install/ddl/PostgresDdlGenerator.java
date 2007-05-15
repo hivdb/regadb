@@ -45,41 +45,50 @@ public class PostgresDdlGenerator
 	    
 	    String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll("int4", "integer");
 	    
-	    try {
+	    try 
+        {
 			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
 		}
-	    catch (IOException e) {
+	    catch (IOException e) 
+        {
 			e.printStackTrace();
 		}
 	    
-		try {
+		try 
+        {
 			array = FileUtils.readFileToByteArray(new File(fileName));
 		}
-		catch (IOException e) {
+		catch (IOException e) 
+        {
 			e.printStackTrace();
 		}
 		
-		try {
+		try 
+        {
 		        BufferedReader in = new BufferedReader(new FileReader(fileName));
 		        
 		        String str;
 		        
 		        buffer = new StringBuffer();
 		        
-		        while ((str = in.readLine()) != null) {
+		        while ((str = in.readLine()) != null) 
+                {
 		        	buffer.append(processString(str)+";\n");
 		        }
 		        
 		        in.close();
 		}
-		catch (IOException e) {
-		    	
+		catch (IOException e) 
+        {
+		    e.printStackTrace();
 		}
 		    
-		try {
+		try 
+        {
 			FileUtils.writeByteArrayToFile(new File(fileName), buffer.toString().getBytes());
 		}
-		catch (IOException e) {
+		catch (IOException e) 
+        {
 				e.printStackTrace();
 		}
 	}
