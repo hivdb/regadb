@@ -47,7 +47,7 @@ public class StartImpl
             {
                 try 
                 {
-                    ProcessBuilder pb = new ProcessBuilder(startScript.getAbsolutePath(), sessionPath.getAbsolutePath());
+                    ProcessBuilder pb = new ProcessBuilder(startScript.getAbsolutePath(), sessionPath.getAbsolutePath(), Settings.getWtsPath());
                     Process p = pb.start();
                     Sessions.getProcesses().add(new Job(p,sessionTicket));
                 } 
