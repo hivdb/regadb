@@ -17,7 +17,7 @@ public enum Privileges {
         this.value = value;
     }
     
-    int getValue() {
+    public int getValue() {
         return this.value;
     }
 
