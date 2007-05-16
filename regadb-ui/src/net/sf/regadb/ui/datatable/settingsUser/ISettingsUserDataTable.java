@@ -35,12 +35,12 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
 
     public List<SettingsUser> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean ascending)
     {
-        return t.getSettingsUser(startIndex, amountOfRows, filterVarNames_[sortIndex], ascending, enabledUsers_, HibernateStringUtils.filterConstraintsQuery(this));
+        return t.getUsersByEnabled(startIndex, amountOfRows, filterVarNames_[sortIndex], ascending, enabledUsers_, HibernateStringUtils.filterConstraintsQuery(this));
     }
 
     public long getDataSetSize(Transaction t)
     {
-        return t.getSettingsUserCount(HibernateStringUtils.filterConstraintsQuery(this), enabledUsers_);
+        return t.getSettingsUserCountByEnabled(HibernateStringUtils.filterConstraintsQuery(this), enabledUsers_);
     }
     
     public String[] getFieldNames()
