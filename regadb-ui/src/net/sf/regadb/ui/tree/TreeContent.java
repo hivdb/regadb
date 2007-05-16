@@ -3,6 +3,7 @@ package net.sf.regadb.ui.tree;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
+import net.sf.regadb.ui.datatable.datasetAccess.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
@@ -11,6 +12,7 @@ import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
+import net.sf.regadb.ui.form.datasetAccess.DatasetAccessForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -29,6 +31,8 @@ import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
+import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessItem;
+import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
@@ -74,11 +78,18 @@ public class TreeContent
     
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
-    public LogoutItem myAccountLogout;
     public ActionItem myAccountView;
     public ActionItem myAccountEdit;
     public ActionItem myAccountCreate;
     public ActionItem myAccountEditPassword;
+    public ActionItem datasetAccess;
+    public LogoutItem myAccountLogout;
+    
+    public DatasetAccessItem datasetAccessMain;
+    public ActionItem datasetAccessSelect;
+    public DatasetAccessSelectedItem datasetAccessSelected;
+    public ActionItem datasetAccessEdit;
+    public ActionItem datasetAccessView;
     
     public AdministratorItem administratorMain;
     public ActionItem enabledUsers;
@@ -389,6 +400,30 @@ public class TreeContent
                }
            });
 
+        datasetAccessMain = new DatasetAccessItem(rootItem);
+        datasetAccessSelect = new ActionItem(rootItem.tr("menu.dataset.access.select"), datasetAccessMain, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
+            }
+        });
+        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccessSelect);
+        datasetAccessView = new ActionItem(rootItem.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Viewing, WWidget.tr("form.dataset.access.view"),datasetAccessSelected.getSelectedItem()));
+            }
+        });
+        datasetAccessEdit = new ActionItem(rootItem.tr("menu.dataset.access.edit"), datasetAccessSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
+            }
+        });
+           
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
             myAccountCreate = new ActionItem(rootItem.tr("form.account.create"), myAccountMain, new ITreeAction()
@@ -448,7 +483,7 @@ public class TreeContent
                 }
             };
             myAccountLogout = new LogoutItem(myAccountMain);
-            
+        
         administratorMain = new AdministratorItem(rootItem);
             enabledUsers = new ActionItem(rootItem.tr("menu.administrator.users.registered"), administratorMain);
             registeredUsersSelect = new ActionItem(rootItem.tr("menu.administrator.users.select"), enabledUsers, new ITreeAction()
