@@ -22,7 +22,7 @@ import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 
-public abstract class FormWidget extends WGroupBox implements IForm
+public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 {
     private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
     
@@ -84,15 +84,7 @@ public abstract class FormWidget extends WGroupBox implements IForm
                 {
                     public void notify(WMouseEvent a) 
                     {
-                        if(formValidation_.validate(formFields_))
-                        {
-                            formValidation_.setHidden(true);
-                            saveData();
-                        }
-                        else
-                        {
-                            formValidation_.setHidden(false);
-                        }
+                        confirmAction();
                     }
                 });
         buttonContainer.addWidget(_cancelButton);
@@ -143,6 +135,19 @@ public abstract class FormWidget extends WGroupBox implements IForm
         else
         {
             t.update(p);
+        }
+    }
+    
+    public void confirmAction()
+    {
+        if(formValidation_.validate(formFields_))
+        {
+            formValidation_.setHidden(true);
+            saveData();
+        }
+        else
+        {
+            formValidation_.setHidden(false);
         }
     }
 }
