@@ -6,7 +6,6 @@ import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCssDecorationStyle;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WKeyEvent;
 import net.sf.witty.wt.WLineEdit;
 import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.validation.WDoubleValidator;
@@ -22,7 +21,9 @@ public class TextField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();
-			addWidget(_fieldEdit);
+            ConfirmUtils.addConfirmAction(form, _fieldEdit);
+            
+            addWidget(_fieldEdit);
 			flagValid();
 		}
 		else

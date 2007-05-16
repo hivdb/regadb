@@ -24,6 +24,7 @@ public class DateField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();
+            ConfirmUtils.addConfirmAction(form, _fieldEdit);
 			addWidget(_fieldEdit);
 			addWidget(calendarIcon_);
 			flagValid();

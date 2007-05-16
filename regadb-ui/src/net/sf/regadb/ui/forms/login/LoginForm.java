@@ -2,11 +2,10 @@ package net.sf.regadb.ui.forms.login;
 
 import java.util.ArrayList;
 
-import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.ui.forms.account.AccountForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
@@ -22,10 +21,9 @@ import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 
-public class LoginForm extends WGroupBox implements IForm
+public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 {	
 	private ArrayList<IFormField> formFields_ = new ArrayList<IFormField>();
 	
@@ -85,22 +83,7 @@ public class LoginForm extends WGroupBox implements IForm
         {
             public void notify(WMouseEvent me)
             {
-                if(formValidation_.validate(formFields_))
-                {
-                    if(validateLogin())
-                    {
-                        RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
-                        RegaDBMain.getApp().getTree().getTreeContent().patientSelect.prograSelectNode();
-                    }
-                    else
-                    {
-                        formValidation_.setHidden(false);
-                    }
-                }
-                else
-                {
-                    formValidation_.setHidden(false);
-                }
+                confirmAction();
             }
         });
         buttonContainer.addWidget(new WBreak());
@@ -135,4 +118,24 @@ public class LoginForm extends WGroupBox implements IForm
 	{
 		formFields_.add(field);
 	}
+
+    public void confirmAction() 
+    {
+        if(formValidation_.validate(formFields_))
+        {
+            if(validateLogin())
+            {
+                RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
+                RegaDBMain.getApp().getTree().getTreeContent().patientSelect.prograSelectNode();
+            }
+            else
+            {
+                formValidation_.setHidden(false);
+            }
+        }
+        else
+        {
+            formValidation_.setHidden(false);
+        }
+    }
 }

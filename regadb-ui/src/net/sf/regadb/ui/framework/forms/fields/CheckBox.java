@@ -1,9 +1,12 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.validation.WValidator;
@@ -17,6 +20,11 @@ public class CheckBox extends WContainerWidget implements IFormField
         super();
         addWidget(checkBox_);
         checkBox_.setEnabled(state == InteractionState.Adding || state == InteractionState.Editing);
+        
+        if(state!=InteractionState.Viewing)
+        {
+            ConfirmUtils.addConfirmAction(form, checkBox_);
+        }
         
         if(form!=null)
         {

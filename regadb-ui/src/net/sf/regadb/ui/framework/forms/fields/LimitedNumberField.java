@@ -21,6 +21,7 @@ public class LimitedNumberField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WLineEdit();
+            ConfirmUtils.addConfirmAction(form, fieldEdit_);
 
             limiterField_ = new WComboBox();
             limiterField_.addItem(lt("<"));
