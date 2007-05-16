@@ -222,7 +222,7 @@ public class Transaction {
         q.setParameter("description", description);
         
         return (Dataset) q.uniqueResult();
-    }    
+    }	
 
     /**
      * Returns patients in this data set according, checking access permissions.
@@ -881,7 +881,7 @@ public class Transaction {
 	}
     
     @SuppressWarnings("unchecked")
-    public List<SettingsUser> getSettingsUser(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
+    public List<SettingsUser> getUsersByEnabled(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "from SettingsUser as settingsUser ";
         
@@ -909,7 +909,7 @@ public class Transaction {
         return q.list();
     }
     
-    public long getSettingsUserCount(HibernateFilterConstraint filterConstraints, boolean enabled) 
+    public long getSettingsUserCountByEnabled(HibernateFilterConstraint filterConstraints, boolean enabled) 
     {
          String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
             
@@ -920,6 +920,50 @@ public class Transaction {
          else
          {
              queryString += "where enabled" + (enabled?" is not null":"= null");
+         }
+          
+            Query q = session.createQuery(queryString);
+            
+            for(Pair<String, Object> arg : filterConstraints.arguments_)
+            {
+                q.setParameter(arg.getKey(), arg.getValue());
+            }
+            
+            return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<SettingsUser> getSettingsUsers(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from SettingsUser as settingsUser ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        
+        queryString += " order by " + sortField;
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public long getSettingsUserCount(HibernateFilterConstraint filterConstraints) 
+    {
+         String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
+            
+         if(!filterConstraints.clause_.equals(" "))
+         {
+             queryString += "where " + filterConstraints.clause_;
          }
           
             Query q = session.createQuery(queryString);
