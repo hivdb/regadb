@@ -4,7 +4,7 @@
 <hibernate-mapping>
   <class name="net.sf.regadb.db.DrugClass" table="drug_class" schema="public">
     <id name="classIi" type="java.lang.Integer">
-      <column name="class_ii" />
+      <column name="drug_class_ii" />
       <generator class="sequence">
         <param name="sequence">drug_class_drug_class_ii_seq</param>
       </generator>
