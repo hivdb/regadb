@@ -1,9 +1,10 @@
 package net.sf.regadb.ui.datatable.patient;
 
-import java.util.List;
+import java.util.Set;
 
-import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.witty.wt.WComboBox;
 
@@ -17,10 +18,10 @@ public class DatasetFilter extends ListFilter
 	@Override
 	public void setComboBox(WComboBox combo)
 	{
-		List<Dataset> datasets = getTransaction().getCurrentUsersDatasets();
-		for(Dataset ds : datasets )
+		Set<DatasetAccess> datasets = getTransaction().getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getDatasetAccesses();
+		for(DatasetAccess ds : datasets )
 		{
-			combo.addItem(lt(ds.getDescription()));
+			combo.addItem(lt(ds.getId().getDataset().getDescription()));
 		}
 	}
 }
