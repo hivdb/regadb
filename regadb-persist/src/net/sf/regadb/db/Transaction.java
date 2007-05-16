@@ -942,4 +942,33 @@ public class Transaction {
         
         return (Test)q.uniqueResult();
     }
+
+    public TestType getTestType(String description) {
+        String queryString = "from TestType as testType where testType.description = :description";
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("description", description);
+        
+        return (TestType)q.uniqueResult();
+       
+    }
+
+    public DrugGeneric getGenericDrug(String genericId) {
+        String queryString = "from DrugGeneric as drug where drug.genericId = :genericId";
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("genericId", genericId);
+        
+        return (DrugGeneric)q.uniqueResult();
+    }
+
+    public DrugCommercial getCommercialDrug(String name) {
+        String queryString = "from DrugCommercial as drug where drug.name = :name";
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("name", name);
+        
+        return (DrugCommercial)q.uniqueResult();
+       
+    }
 }

@@ -118,7 +118,7 @@ public class Patient {
 
     public void setPatientAttributeValues(
             Set<PatientAttributeValue> patientAttributeValues) {
-        this.setPatientAttributeValues(patientAttributeValues);
+        patient.setPatientAttributeValues(patientAttributeValues);
     }
 
     public Set<ViralIsolate> getViralIsolates() {
@@ -150,7 +150,12 @@ public class Patient {
         
         return result;
     }
-    
+
+    public void addPatientAttributeValue(PatientAttributeValue attributeValue) {
+        getPatientAttributeValues().add(attributeValue);
+        attributeValue.getId().setPatient(patient);
+    }
+
     public PatientAttributeValue getAttributeValue(Attribute attribute)
     {
         for(PatientAttributeValue pav : getPatientAttributeValues())
@@ -169,11 +174,21 @@ public class Patient {
         getTherapies().add(result);
         return result;
     }
+
+    public void addTherapy(Therapy therapy) {
+        getTherapies().add(therapy);
+        therapy.setPatient(patient);
+    }
     
     public ViralIsolate createViralIsolate() {
         ViralIsolate result = new ViralIsolate(patient);
         getViralIsolates().add(result);
         return result;
+    }
+
+    public void addViralIsolate(ViralIsolate isolate) {
+        getViralIsolates().add(isolate);
+        isolate.setPatient(patient);
     }
     
     public TestResult createTestResult(Test test) {
@@ -181,7 +196,12 @@ public class Patient {
         getTestResults().add(result);
         return result;
     }
-    
+
+    public void addTestResult(TestResult testResult) {
+        getTestResults().add(testResult);
+        testResult.setPatient(patient);
+    }
+
     public void setSourceDataset(Dataset ds, Transaction t)
     {
         List<Dataset> dsl = t.getCurrentUsersDatasets(Privileges.READWRITE);
@@ -193,5 +213,9 @@ public class Patient {
                 patient.getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds, getPatient())));
             }
         }
+    }
+
+    public Dataset getSourceDataset() {
+        return null; // FIXME: get the Source Data set
     }
 }
