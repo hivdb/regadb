@@ -6,26 +6,22 @@
  */
 package net.sf.regadb.io.importXML;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.io.exportXML.ExportToXML;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -140,27 +136,95 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
     
     protected void importPatient(Patient patient) {
-        ExportToXML l = new ExportToXML();
-        Element root = new Element("Patients");
-        l.writePatient(patient, root);
-        
-        Document n = new Document(root);
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.setFormat(Format.getPrettyFormat());
-        try {
-            outputter.output(n, System.out);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        try {
-            System.err.println("New patient");
-            outputter.output(n, System.out);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        ExportToXML l = new ExportToXML();
+//        Element root = new Element("Patients");
+//        l.writePatient(patient, root);
+//        
+//        Document n = new Document(root);
+//        XMLOutputter outputter = new XMLOutputter();
+//        outputter.setFormat(Format.getPrettyFormat());
+//        try {
+//            outputter.output(n, System.out);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        
+//        try {
+//            System.err.println("New patient");
+//            outputter.output(n, System.out);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
+    protected Patient dbFindPatient(Transaction t, Patient o) {
+        return t.getPatient(o.getSourceDataset(), o.getPatientId());
+    }
+
+    protected Attribute dbFindAttribute(Transaction t, Attribute o) {
+        return t.getAttribute(o.getName());
+    }
+
+    protected Test dbFindTest(Transaction t, Test o) {
+        return t.getTest(o.getDescription());
+    }
+
+    protected TestType dbFindTestType(Transaction t, TestType o) {
+        return t.getTestType(o.getDescription());
+    }
+
+    protected DrugGeneric dbFindDrugGeneric(Transaction t, DrugGeneric o) {
+        return t.getGenericDrug(o.getGenericId());
+    }
+
+    protected DrugCommercial dbFindDrugCommercial(Transaction t, DrugCommercial o) {
+        return t.getCommercialDrug(o.getName());
+    }
+
+    protected boolean equals(Date o1, Date o2) {
+        return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
+    }
+
+    protected boolean equals(String o1, String o2) {
+        return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
+    }
+
+    protected boolean equals(short o1, short o2) {
+        return o1 == o2;
+    }
+
+    protected boolean equals(Protein o1, Protein o2) {
+        return o1 == o2;
+    }
+
+    protected boolean equals(DrugCommercial o1, DrugCommercial o2) {
+        return o1 == o2;
+    }
+
+    protected boolean equals(Double o1, Double o2) {
+        return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
+    }
+
+    protected boolean equals(DrugGeneric o1, DrugGeneric o2) {
+        return o1 == o2;
+    }
+
+    protected boolean equals(Boolean o1, Boolean o2) {
+        return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
+    }
+
+    protected boolean equals(Integer revision, Integer revision2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    protected void sync(Transaction t, DrugGeneric o, DrugGeneric dbo, boolean simulate) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    protected void sync(Transaction t, DrugCommercial o, DrugCommercial dbo, boolean simulate) {
+        // TODO Auto-generated method stub
+        
+    }
 }

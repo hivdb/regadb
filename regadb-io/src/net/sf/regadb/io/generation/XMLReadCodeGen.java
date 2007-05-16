@@ -6,24 +6,22 @@
  */
 package net.sf.regadb.io.generation;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientImpl;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 
 public class XMLReadCodeGen {
@@ -105,6 +103,13 @@ public class XMLReadCodeGen {
 
         public String setterName() {
             return "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        }
+
+        public String getterName() {
+            if (name.equals("patientDatasets"))
+                return "getDatasets";
+            else
+                return "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         }
 
         public boolean isPointer() {
@@ -212,6 +217,7 @@ public class XMLReadCodeGen {
         write(0, "package net.sf.regadb.io.importXML;\n"
                + "import java.util.*;\n"
                + "import net.sf.regadb.db.*;\n"
+               + "import net.sf.regadb.db.meta.*;\n"
                + "import org.xml.sax.*;\n"
                + "import org.xml.sax.helpers.XMLReaderFactory;\n"
                + "import java.io.IOException;\n"
@@ -450,6 +456,119 @@ public class XMLReadCodeGen {
         write(2, "xmlReader.parse(source);\n");
         write(1, "}\n\n");
 
+        /*
+         * -- Synchronize methods: one for each object type
+         */
+        
+        for (String id : objectIdMap.keySet()) {
+            ObjectInfo o = objectIdMap.get(id);
+            
+            write(1, "public void sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, boolean simulate) {\n");
+
+            /*
+             * Set all members
+             */
+            for (ObjectField f : o.fields) {
+                String comp = "";
+                if (f.composite)
+                    comp = "getId().";
+
+                if (!f.isSet())
+                    if (f.resolved != null) {
+                        write(2, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
+                        write(3, "sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), simulate);\n");
+                        write(2, "else {\n");
+                        write(3, "if (!simulate)\n");
+                        write(4, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                        write(3, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(2, "}\n");
+                    } else {
+                        write(2, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())) {\n");
+                        write(3, "if (!simulate)\n");
+                        write(4, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                        write(3, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(2, "}\n");
+                    }
+                else {
+                    /*
+                     * Synchronize the set
+                     */
+                    write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
+                    write(3, f.resolved.javaClass.getSimpleName() + " dbe = null;\n");
+                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " f : dbo." + f.getterName() + "()) {\n");
+                    write(4, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
+                    write(5, "dbe = f; break;\n");
+                    write(4, "}\n");
+                    write(3, "}\n");
+                    
+                    write(3, "if (dbe == null) {\n");
+                    write(4, "log.append(Describe.describe(dbo) + \": adding \" + Describe.describe(e) + \"\\n\");\n");
+                    write(4, "if (!simulate) {\n");
+                    if (o.javaClass == Patient.class) {
+                        if (f.resolved.javaClass != Dataset.class)
+                            write(5, "o.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
+                        else
+                            write(5, ";// TODO\n");
+                    } else {
+                        write(5, "dbo." + f.getterName() + "().add(e);\n");
+                        if (f.resolved.hasCompositeId)
+                            write (5, "e.getId().");
+                        else
+                            write(5, "e.");
+                        write(0, "set" + o.javaClass.getSimpleName() + "(dbo);\n");
+                    }
+                    write(4, "}\n");
+                    write(3, "} else\n");
+                    write(4, "sync(t, e, dbe, simulate);\n");
+                    write(2, "}\n");
+
+                    write(2, "for(" + f.resolved.javaClass.getSimpleName() + " dbe : dbo." + f.getterName() + "()) {\n");
+                    write(3, f.resolved.javaClass.getSimpleName() + " e = null;\n");
+                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
+                    write(4, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
+                    write(5, "e = f; break;\n");
+                    write(4, "}\n");
+                    write(3, "}\n");
+
+                    write(3, "if (e == null) {\n");
+                    write(4, "log.append(Describe.describe(dbo) + \": removing: \" + Describe.describe(dbe) + \"\\n\");\n");
+                    write(4, "if (!simulate)\n");
+                    write(5, "dbo." + f.getterName() + "().remove(dbe);\n");
+                    write(3, "}\n");
+                    write(2, "}\n");
+                }
+            }
+            
+            write(1, "}\n\n");
+        }
+
+        /*
+         * -- Synchronize methods: one for each unscoped object type
+         */
+        Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class, DrugGeneric.class, DrugCommercial.class };
+        
+        write(1, "enum SyncMode { Clean, Update };\n");
+        write(1, "StringBuffer log = new StringBuffer();\n");
+        
+        for (Class c : unscopedClasses) {
+            write(1, "public " + c.getSimpleName() + " sync(Transaction t, " + c.getSimpleName() + " o, SyncMode mode, boolean simulate) throws ImportException {\n");
+            write(2, c.getSimpleName() + " dbo = dbFind" + c.getSimpleName() + "(t, o);\n");
+            write(2, "if (dbo != null) {\n");
+            write(3, "if (mode == SyncMode.Clean)\n");
+            write(4, "throw new ImportException(Describe.describe(o) + \" already exists\");\n");
+            write(3, "sync(t, o, dbo, simulate);\n");
+            write(3, "if (!simulate)\n");
+            write(4, "t.update(dbo);\n");
+            write(3, "return dbo;\n");
+            write(2, "} else {\n");
+            write(3, "log.append(\"Adding: \" + Describe.describe(o) + \"\\n\");\n");
+            write(3, "if (!simulate)\n");
+            write(4, "t.save(o);\n");
+            write(3, "return o;\n");
+            write(2, "}\n");
+            write(1, "}\n\n");
+        }
+        
         write(0, "}\n");
     }
 
