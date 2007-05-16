@@ -73,7 +73,8 @@ public class PostgresDdlGenerator
 		        
 		        while ((str = in.readLine()) != null) 
                 {
-		        	buffer.append(processString(str)+";\n");
+                    str = processString(str);
+		        	buffer.append(str+";\n");
 		        }
 		        
 		        in.close();
@@ -95,29 +96,82 @@ public class PostgresDdlGenerator
 
 	private String processString(String str) 
 	{
-		String strBackup = str;
-		
-		int indexOfPrimaryKey = strBackup.indexOf("primary key");
-		
-		StringBuffer lineBuffer = null;
-		
-		if(indexOfPrimaryKey!=-1)
-		{
-			String primaryKeyArgs = strBackup.substring(indexOfPrimaryKey, strBackup.indexOf(')',indexOfPrimaryKey));
-				
-			if(!primaryKeyArgs.contains(",") && primaryKeyArgs.contains("_ii"))
-			{
-				String tableName = str.substring(str.indexOf("public.") + "public.".length(), str.indexOf(' ', str.indexOf("public.")));
-				
-				lineBuffer = new StringBuffer(str);
-				int endOfPrimKeyName = str.indexOf(' ', str.indexOf('('));
-				int endOfPrimKeyArgs = str.indexOf(',', endOfPrimKeyName);
-				
-				lineBuffer.delete(endOfPrimKeyName, endOfPrimKeyArgs);
-				lineBuffer.insert(endOfPrimKeyName, " integer default nextval(\'" + tableName + "_" + tableName + "_ii_seq')");
-			}
-		}
-		
-		return lineBuffer != null ? lineBuffer.toString() : strBackup;
-	}
+	    if(str.startsWith("create table"))
+        {
+	        return processCreateTable(str);
+        }
+        else if(str.startsWith("alter table"))
+        {
+            return processAlterTable(str);
+        }
+        
+        return str;
+    }
+    
+    private String processCreateTable(String str)
+    {
+        String strBackup = str;
+        
+        int indexOfPrimaryKey = strBackup.indexOf("primary key");
+        
+        StringBuffer lineBuffer = null;
+        
+        if(indexOfPrimaryKey!=-1)
+        {
+            String primaryKeyArgs = strBackup.substring(indexOfPrimaryKey, strBackup.indexOf(')',indexOfPrimaryKey));
+                
+            if(!primaryKeyArgs.contains(",") && primaryKeyArgs.contains("_ii"))
+            {
+                String tableName = str.substring(str.indexOf("public.") + "public.".length(), str.indexOf(' ', str.indexOf("public.")));
+                
+                lineBuffer = new StringBuffer(str);
+                int endOfPrimKeyName = str.indexOf(' ', str.indexOf('('));
+                int endOfPrimKeyArgs = str.indexOf(',', endOfPrimKeyName);
+                
+                lineBuffer.delete(endOfPrimKeyName, endOfPrimKeyArgs);
+                lineBuffer.insert(endOfPrimKeyName, " integer default nextval('" + tableName + "_" + tableName + "_ii_seq')");
+            }
+        }
+        
+        return lineBuffer != null ? lineBuffer.toString() : strBackup;
+    }
+    
+    private String processAlterTable(String str)
+    {
+        String strBackup = str;
+
+        int indexOfForeignKey = str.indexOf("foreign key");
+        if(indexOfForeignKey!=-1)
+        {
+            int firstBracket = str.indexOf('(', indexOfForeignKey);
+            String key = str.substring(firstBracket+1, str.indexOf(')', firstBracket));
+            //System.err.println("key"+key);
+            str += "("+key+") ON UPDATE CASCADE";
+            
+            String alterTablePublic = "alter table public.";
+            String alterTable = "alter table ";
+            String tableName = null;
+            if(str.indexOf(alterTablePublic)!=-1)
+            {
+                alterTable = alterTablePublic;
+            }
+            
+            if(str.indexOf("add constraint ")!=-1)
+            {
+            tableName = str.substring(str.indexOf(alterTable)+alterTable.length(),str.indexOf(" ", str.indexOf(alterTable)+alterTable.length()));
+            int referenceIndex = str.indexOf("references")+"references".length();
+            String referencingTable = str.substring(referenceIndex, str.indexOf('(', referenceIndex));
+            referencingTable = referencingTable.trim();
+            referencingTable = referencingTable.replaceAll("public.", "");
+            String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
+            StringBuffer strBuffer = new StringBuffer(str);
+            int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
+            strBuffer.delete(indexOfAddConstraint, str.indexOf(" ", indexOfAddConstraint));
+            strBuffer.insert(indexOfAddConstraint, fk_name);
+            str = strBuffer.toString();
+            }
+        }
+        
+        return str;
+    }
 }
