@@ -41,13 +41,13 @@ public class PasswordForm extends FormWidget
         
         Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         
-        if(!administrator_)
+        if(administrator_)
         {
-            su_ = t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid());
+        	su_ = settingsUser;
         }
         else
         {
-            su_ = settingsUser;
+        	su_ = t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid());
         }
         
         t.commit();
@@ -88,9 +88,11 @@ public class PasswordForm extends FormWidget
     
     private boolean validatePasswordFields()
     {
+    	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+    	
         boolean valid = true;
         
-        if(Encrypt.encryptMD5(passwordTF.getFormText()).equals(su_.getPassword()))
+        if(Encrypt.encryptMD5(passwordTF.getFormText()).equals(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getPassword()))
         {
             passwordTF.flagValid();
         }
@@ -111,6 +113,8 @@ public class PasswordForm extends FormWidget
             retypePasswordTF.flagErroneous();
             valid = false;
         }
+        
+        t.commit();
         
         return valid;
     }
