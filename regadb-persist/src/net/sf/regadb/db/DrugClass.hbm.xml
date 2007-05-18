@@ -3,14 +3,14 @@
 
 <hibernate-mapping>
   <class name="net.sf.regadb.db.DrugClass" table="drug_class" schema="public">
-    <id name="classIi" type="java.lang.Integer">
+    <id name="drugClassIi" type="java.lang.Integer">
       <column name="drug_class_ii" />
       <generator class="sequence">
         <param name="sequence">drug_class_drug_class_ii_seq</param>
       </generator>
     </id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <property name="classId" type="string">
       <column name="class_id" length="10" not-null="true" />

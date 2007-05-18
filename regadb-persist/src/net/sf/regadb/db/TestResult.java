@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 7/05/2007 10:19:16 by Hibernate Tools 3.2.0.beta8
+// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -13,7 +13,7 @@ public class TestResult implements java.io.Serializable {
 
     private Integer testResultIi;
 
-    private Integer version;
+    private int version;
 
     private Test test;
 
@@ -70,11 +70,11 @@ public class TestResult implements java.io.Serializable {
         this.testResultIi = testResultIi;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return this.version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 

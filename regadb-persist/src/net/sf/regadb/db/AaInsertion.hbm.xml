@@ -14,8 +14,8 @@
         <column name="insertion_order" />
       </key-property>
     </composite-id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <property name="aaInsertion" type="string">
       <column name="aa_insertion" length="30" not-null="true" />

@@ -9,8 +9,8 @@
         <param name="sequence">viral_isolate_viral_isolate_ii_seq</param>
       </generator>
     </id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
       <column name="patient_ii" not-null="true" />
@@ -19,7 +19,7 @@
       <column name="sample_id" length="50" />
     </property>
     <property name="sampleDate" type="date">
-      <column name="sample_date" length="4" />
+      <column name="sample_date" length="13" />
     </property>
     <set name="ntSequences" inverse="true" cascade="all">
       <key>

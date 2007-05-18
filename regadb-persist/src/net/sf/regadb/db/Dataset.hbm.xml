@@ -9,17 +9,17 @@
         <param name="sequence">dataset_dataset_ii_seq</param>
       </generator>
     </id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />
     </property>
     <property name="creationDate" type="date">
-      <column name="creation_date" length="4" not-null="true" />
+      <column name="creation_date" length="13" not-null="true" />
     </property>
     <property name="closedDate" type="date">
-      <column name="closed_date" length="4" />
+      <column name="closed_date" length="13" />
     </property>
     <property name="revision" type="java.lang.Integer">
       <column name="revision" />

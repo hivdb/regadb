@@ -9,8 +9,8 @@
         <param name="sequence">test_test_ii_seq</param>
       </generator>
     </id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <many-to-one name="testType" class="net.sf.regadb.db.TestType" fetch="select">
       <column name="test_type_ii" not-null="true" />

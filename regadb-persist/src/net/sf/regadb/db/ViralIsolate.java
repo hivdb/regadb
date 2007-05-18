@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ public class ViralIsolate implements java.io.Serializable {
 
     private Integer viralIsolateIi;
 
-    private Integer version;
+    private int version;
 
     private PatientImpl patient;
 
@@ -57,11 +57,11 @@ public class ViralIsolate implements java.io.Serializable {
         this.viralIsolateIi = viralIsolateIi;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return this.version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 

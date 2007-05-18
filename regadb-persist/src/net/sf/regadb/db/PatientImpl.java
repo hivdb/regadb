@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 16/04/2007 11:23:25 by Hibernate Tools 3.2.0.beta8
+// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ public class PatientImpl implements java.io.Serializable {
 
     private Integer patientIi;
 
-    private Integer version;
+    private int version;
 
     private String patientId;
 
@@ -76,11 +76,11 @@ public class PatientImpl implements java.io.Serializable {
         this.patientIi = patientIi;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return this.version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 

@@ -16,7 +16,7 @@
       <column name="type" />
     </property>
     <property name="url" type="string">
-      <column name="URL" length="100" />
+      <column name="url" length="100" />
     </property>
     <property name="account" type="string">
       <column name="account" length="50" />

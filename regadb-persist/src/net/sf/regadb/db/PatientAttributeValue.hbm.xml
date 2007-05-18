@@ -11,8 +11,8 @@
         <column name="attribute_ii" />
       </key-many-to-one>
     </composite-id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <many-to-one name="attributeNominalValue" class="net.sf.regadb.db.AttributeNominalValue" fetch="select">
       <column name="nominal_value_ii" />

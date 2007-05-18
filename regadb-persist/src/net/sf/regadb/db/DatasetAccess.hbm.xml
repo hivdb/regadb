@@ -11,8 +11,8 @@
         <column name="dataset_ii" />
       </key-many-to-one>
     </composite-id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <property name="permissions" type="int">
       <column name="permissions" not-null="true" />

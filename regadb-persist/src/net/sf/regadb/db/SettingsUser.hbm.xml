@@ -6,8 +6,8 @@
     <id name="uid" type="string">
       <column name="uid" length="50" />
     </id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
       <column name="test_ii" />

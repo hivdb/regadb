@@ -11,11 +11,11 @@
         <column name="commercial_ii" />
       </key-many-to-one>
     </composite-id>
-    <version name="version" type="java.lang.Integer">
-      <column name="version" />
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
     </version>
     <property name="dayDosageUnits" type="java.lang.Double">
-      <column name="day_dosage_units" precision="8" scale="0" />
+      <column name="day_dosage_units" precision="17" scale="17" />
     </property>
   </class>
 </hibernate-mapping>

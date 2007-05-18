@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 22/01/2007 12:43:36 by Hibernate Tools 3.2.0.beta8
+// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +14,7 @@ public class AaSequence implements java.io.Serializable {
 
     private Integer aaSequenceIi;
 
-    private Integer version;
+    private int version;
 
     private NtSequence ntSequence;
 
@@ -64,11 +64,11 @@ public class AaSequence implements java.io.Serializable {
         this.aaSequenceIi = aaSequenceIi;
     }
 
-    public Integer getVersion() {
+    public int getVersion() {
         return this.version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 
