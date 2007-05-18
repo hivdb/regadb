@@ -43,8 +43,8 @@ public class PostgresDdlGenerator
 	    int indexOfCreate = buffer.indexOf("create");
 	    int indexOfCreateSequence = buffer.indexOf("create sequence");
 	    
-	    String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll("int4", "integer");
-	    
+	    String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll(" int4", " integer ");
+        
 	    try 
         {
 			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
