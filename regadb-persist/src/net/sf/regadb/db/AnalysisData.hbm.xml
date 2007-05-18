@@ -18,9 +18,6 @@
     <property name="data" type="binary">
       <column name="data" />
     </property>
-    <property name="analysisTypeIi" type="int">
-      <column name="analysis_type_ii" not-null="true" />
-    </property>
   </class>
 </hibernate-mapping>
 
