@@ -37,6 +37,7 @@ public class GenerateIO
     private static ArrayList<Pair<String, String>>  stringRepresentedFieldsRepresentationFields_ = new ArrayList<Pair<String, String>> ();
     private static ArrayList<Pair<String, String>>  fieldsToBeIgnored_ = new ArrayList<Pair<String, String>> ();
     
+    private static ArrayList<Class>  idClasses_ = new ArrayList<Class> ();
       
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
 	
@@ -290,6 +291,7 @@ public class GenerateIO
         }
         else if(interpreter.isComposite(c.getName(), field.getName()))
         {
+            idClasses_.add(field.getType());
             for(Field compositeField : field.getType().getDeclaredFields())
             {
                 if(isStringRepresentedField(compositeField.getType()))
@@ -664,5 +666,44 @@ public class GenerateIO
 		test.generate();
         long duration = System.currentTimeMillis() -start;
         System.out.println("duration:"+duration);
+        
+        //check wether all classes are written
+        for(Class c : regaClasses_)
+        {
+            boolean grammarWritten = false;
+            if(test.grammarAlreadyWritten_.contains(c))
+            {
+                grammarWritten = true;
+            }
+            boolean isStringRep = false;
+            for(Pair<String, String> stringRep : stringRepresentedFieldsRepresentationFields_)
+            {
+                if(stringRep.getKey().equals(c.getName()))
+                {
+                    isStringRep = true;
+                    break;
+                }
+            }
+            
+            Class[] interfaces = c.getInterfaces();
+            boolean isSeriazable = false;
+            for(Class ii : interfaces)
+            {
+                if(ii.getName().equals("java.io.Serializable"))
+                {
+                    isSeriazable = true;
+                }
+            }
+            
+            boolean idClass = false;
+            if(idClasses_.contains(c))
+            {
+                idClass = true;
+            }
+            
+            if(!grammarWritten && !isStringRep && isSeriazable && !idClass)
+                System.err.println("oeioei"+c);
+            
+        }
 	}
 }
