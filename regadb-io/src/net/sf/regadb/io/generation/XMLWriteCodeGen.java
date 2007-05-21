@@ -221,15 +221,15 @@ public class XMLWriteCodeGen
     {
         String var = generateGetterConstruct(id, null, fieldName);
         String writeClassCode = "";
-        writeClassCode += "Element forParent = new Element(\""+fieldName+"\");";
-        writeClassCode += parentNode+".addContent(forParent);";
+        writeClassCode += "Element forParent"+fieldName+" = new Element(\""+fieldName+"\");";
+        writeClassCode += parentNode+".addContent(forParent"+fieldName+");";
         writeClassCode += "if("+var+".size()!=0)";
         writeClassCode += "{";
         writeClassCode += "Element forParentLoopVar;"; 
         writeClassCode += "for("+toWrite.getSimpleName() +" " +fieldName +"loopvar :" +var+")";
         writeClassCode += "{";
         writeClassCode += "forParentLoopVar = new Element(\""+fieldName+"-el\");";
-        writeClassCode += "forParent.addContent(forParentLoopVar);";
+        writeClassCode += "forParent"+fieldName+".addContent(forParentLoopVar);";
         addString(id, writeClassCode);
         
         writePointer(id, toWrite, fieldName +"loopvar", "forParentLoopVar", true, parentClass);
