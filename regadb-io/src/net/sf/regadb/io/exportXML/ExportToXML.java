@@ -8,29 +8,31 @@ import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.TherapyDrugs;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.TestNominalValue;
-import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
@@ -44,45 +46,40 @@ public class ExportToXML
 	HashMap<TestNominalValue, Integer> TestNominalValuePMap = new HashMap<TestNominalValue, Integer>();
 	HashMap<Attribute, Integer> AttributePMap = new HashMap<Attribute, Integer>();
 	HashMap<AttributeNominalValue, Integer> AttributeNominalValuePMap = new HashMap<AttributeNominalValue, Integer>();
-	public void writeTherapy(Therapy Therapyvar, Element parentNode)
+	HashMap<Analysis, Integer> AnalysisPMap = new HashMap<Analysis, Integer>();
+	HashMap<AnalysisData, Integer> AnalysisDataPMap = new HashMap<AnalysisData, Integer>();
+	public void writeAaMutation(AaMutation AaMutationvar, Element parentNode)
 	{
-		if(Therapyvar==null)
+		if(AaMutationvar==null)
 		{
 			return;
 		}
-		if(Therapyvar.getStartDate()!=null)
+		Element positionprimitiveValEl = new Element("position");
+		positionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getPosition()));
+		parentNode.addContent(positionprimitiveValEl);
+		if(AaMutationvar.getAaReference()!=null)
 		{
-			Element startDateprimitiveValEl = new Element("startDate");
-			startDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStartDate()));
-			parentNode.addContent(startDateprimitiveValEl);
+			Element aaReferenceprimitiveValEl = new Element("aaReference");
+			aaReferenceprimitiveValEl.addContent(AaMutationvar.getAaReference().toString());
+			parentNode.addContent(aaReferenceprimitiveValEl);
 		}
-		if(Therapyvar.getStopDate()!=null)
+		if(AaMutationvar.getAaMutation()!=null)
 		{
-			Element stopDateprimitiveValEl = new Element("stopDate");
-			stopDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStopDate()));
-			parentNode.addContent(stopDateprimitiveValEl);
+			Element aaMutationprimitiveValEl = new Element("aaMutation");
+			aaMutationprimitiveValEl.addContent(AaMutationvar.getAaMutation().toString());
+			parentNode.addContent(aaMutationprimitiveValEl);
 		}
-		if(Therapyvar.getComment()!=null)
+		if(AaMutationvar.getNtReferenceCodon()!=null)
 		{
-			Element commentprimitiveValEl = new Element("comment");
-			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
-			parentNode.addContent(commentprimitiveValEl);
+			Element ntReferenceCodonprimitiveValEl = new Element("ntReferenceCodon");
+			ntReferenceCodonprimitiveValEl.addContent(AaMutationvar.getNtReferenceCodon().toString());
+			parentNode.addContent(ntReferenceCodonprimitiveValEl);
 		}
-		Element therapyCommercialsEl = new Element("therapyCommercials");
-		parentNode.addContent(therapyCommercialsEl);
-		for (TherapyCommercial TherapyCommercialloopvar : Therapyvar.getTherapyCommercials())
+		if(AaMutationvar.getNtMutationCodon()!=null)
 		{
-			Element therapyCommercials_elEl = new Element("therapyCommercials-el");
-			therapyCommercialsEl.addContent(therapyCommercials_elEl);
-			writeTherapyCommercial(TherapyCommercialloopvar,therapyCommercials_elEl);
-		}
-		Element therapyGenericsEl = new Element("therapyGenerics");
-		parentNode.addContent(therapyGenericsEl);
-		for (TherapyGeneric TherapyGenericloopvar : Therapyvar.getTherapyGenerics())
-		{
-			Element therapyGenerics_elEl = new Element("therapyGenerics-el");
-			therapyGenericsEl.addContent(therapyGenerics_elEl);
-			writeTherapyGeneric(TherapyGenericloopvar,therapyGenerics_elEl);
+			Element ntMutationCodonprimitiveValEl = new Element("ntMutationCodon");
+			ntMutationCodonprimitiveValEl.addContent(AaMutationvar.getNtMutationCodon().toString());
+			parentNode.addContent(ntMutationCodonprimitiveValEl);
 		}
 	}
 	public void writeTest(Test Testvar, Element parentNode)
@@ -90,6 +87,27 @@ public class ExportToXML
 		if(Testvar==null)
 		{
 			return;
+		}
+		if(Testvar.getAnalysis()!=null)
+		{
+			Integer indexanalysis = AnalysisPMap.get(Testvar.getAnalysis());
+			Element wrapperanalysis = new Element("analysis");
+			parentNode.addContent(wrapperanalysis);
+			if(indexanalysis!=null)
+			{
+				Element refElementanalysis= new Element("reference");
+				wrapperanalysis.addContent(refElementanalysis);
+				refElementanalysis.addContent(indexanalysis.toString());
+			}
+			else
+			{
+				indexanalysis = new Integer(AnalysisPMap.size());
+				Element refElementanalysis= new Element("reference");
+				wrapperanalysis.addContent(refElementanalysis);
+				refElementanalysis.addContent(indexanalysis.toString());
+				AnalysisPMap.put(Testvar.getAnalysis(),indexanalysis);
+				writeAnalysis(Testvar.getAnalysis(),wrapperanalysis);
+			}
 		}
 		if(Testvar.getTestType()!=null)
 		{
@@ -137,90 +155,169 @@ public class ExportToXML
 			parentNode.addContent(serviceConfigprimitiveValEl);
 		}
 	}
-	public void writeTestType(TestType TestTypevar, Element parentNode)
+	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
 	{
-		if(TestTypevar==null)
+		if(TherapyGenericvar==null)
 		{
 			return;
 		}
-		if(TestTypevar.getValueType()!=null)
+		if(TherapyGenericvar.getId().getDrugGeneric()!=null &&TherapyGenericvar.getId().getDrugGeneric().getGenericId()!=null)
 		{
-			Integer indexvalueType = ValueTypePMap.get(TestTypevar.getValueType());
-			Element wrappervalueType = new Element("valueType");
-			parentNode.addContent(wrappervalueType);
-			if(indexvalueType!=null)
-			{
-				Element refElementvalueType= new Element("reference");
-				wrappervalueType.addContent(refElementvalueType);
-				refElementvalueType.addContent(indexvalueType.toString());
-			}
-			else
-			{
-				indexvalueType = new Integer(ValueTypePMap.size());
-				Element refElementvalueType= new Element("reference");
-				wrappervalueType.addContent(refElementvalueType);
-				refElementvalueType.addContent(indexvalueType.toString());
-				ValueTypePMap.put(TestTypevar.getValueType(),indexvalueType);
-				writeValueType(TestTypevar.getValueType(),wrappervalueType);
-			}
+			Element drugGenericvar = new Element("drugGeneric");
+			parentNode.addContent(drugGenericvar);
+			drugGenericvar.addContent(TherapyGenericvar.getId().getDrugGeneric().getGenericId());
 		}
-		if(TestTypevar.getTestObject()!=null)
+		if(TherapyGenericvar.getDayDosageMg()!=null)
 		{
-			Integer indextestObject = TestObjectPMap.get(TestTypevar.getTestObject());
-			Element wrappertestObject = new Element("testObject");
-			parentNode.addContent(wrappertestObject);
-			if(indextestObject!=null)
-			{
-				Element refElementtestObject= new Element("reference");
-				wrappertestObject.addContent(refElementtestObject);
-				refElementtestObject.addContent(indextestObject.toString());
-			}
-			else
-			{
-				indextestObject = new Integer(TestObjectPMap.size());
-				Element refElementtestObject= new Element("reference");
-				wrappertestObject.addContent(refElementtestObject);
-				refElementtestObject.addContent(indextestObject.toString());
-				TestObjectPMap.put(TestTypevar.getTestObject(),indextestObject);
-				writeTestObject(TestTypevar.getTestObject(),wrappertestObject);
-			}
+			Element dayDosageMgprimitiveValEl = new Element("dayDosageMg");
+			dayDosageMgprimitiveValEl.addContent(TherapyGenericvar.getDayDosageMg().toString());
+			parentNode.addContent(dayDosageMgprimitiveValEl);
 		}
-		if(TestTypevar.getDescription()!=null)
+	}
+	public void writeAnalysis(Analysis Analysisvar, Element parentNode)
+	{
+		if(Analysisvar==null)
 		{
-			Element descriptionprimitiveValEl = new Element("description");
-			descriptionprimitiveValEl.addContent(TestTypevar.getDescription().toString());
-			parentNode.addContent(descriptionprimitiveValEl);
+			return;
 		}
-		Element forParent = new Element("testNominalValues");
-		parentNode.addContent(forParent);
-		if(TestTypevar.getTestNominalValues().size()!=0)
+		if(Analysisvar.getAnalysisType()!=null &&Analysisvar.getAnalysisType().getType()!=null)
+		{
+			Element analysisTypevar = new Element("analysisType");
+			parentNode.addContent(analysisTypevar);
+			analysisTypevar.addContent(Analysisvar.getAnalysisType().getType());
+		}
+		if(Analysisvar.getType()!=null)
+		{
+			Element typeprimitiveValEl = new Element("type");
+			typeprimitiveValEl.addContent(Analysisvar.getType().toString());
+			parentNode.addContent(typeprimitiveValEl);
+		}
+		if(Analysisvar.getUrl()!=null)
+		{
+			Element urlprimitiveValEl = new Element("url");
+			urlprimitiveValEl.addContent(Analysisvar.getUrl().toString());
+			parentNode.addContent(urlprimitiveValEl);
+		}
+		if(Analysisvar.getAccount()!=null)
+		{
+			Element accountprimitiveValEl = new Element("account");
+			accountprimitiveValEl.addContent(Analysisvar.getAccount().toString());
+			parentNode.addContent(accountprimitiveValEl);
+		}
+		if(Analysisvar.getPassword()!=null)
+		{
+			Element passwordprimitiveValEl = new Element("password");
+			passwordprimitiveValEl.addContent(Analysisvar.getPassword().toString());
+			parentNode.addContent(passwordprimitiveValEl);
+		}
+		if(Analysisvar.getBaseinputfile()!=null)
+		{
+			Element baseinputfileprimitiveValEl = new Element("baseinputfile");
+			baseinputfileprimitiveValEl.addContent(Analysisvar.getBaseinputfile().toString());
+			parentNode.addContent(baseinputfileprimitiveValEl);
+		}
+		if(Analysisvar.getBaseoutputfile()!=null)
+		{
+			Element baseoutputfileprimitiveValEl = new Element("baseoutputfile");
+			baseoutputfileprimitiveValEl.addContent(Analysisvar.getBaseoutputfile().toString());
+			parentNode.addContent(baseoutputfileprimitiveValEl);
+		}
+		Element forParenttests = new Element("tests");
+		parentNode.addContent(forParenttests);
+		if(Analysisvar.getTests().size()!=0)
 		{
 			Element forParentLoopVar;
-			for(TestNominalValue testNominalValuesloopvar :TestTypevar.getTestNominalValues())
+			for(Test testsloopvar :Analysisvar.getTests())
 			{
-				forParentLoopVar = new Element("testNominalValues-el");
-				forParent.addContent(forParentLoopVar);
-				if(testNominalValuesloopvar!=null)
+				forParentLoopVar = new Element("tests-el");
+				forParenttests.addContent(forParentLoopVar);
+				if(testsloopvar!=null)
 				{
-					Integer indextestNominalValuesloopvar = TestNominalValuePMap.get(testNominalValuesloopvar);
-					Element wrappertestNominalValuesloopvar = forParentLoopVar;
-					if(indextestNominalValuesloopvar!=null)
+					Integer indextestsloopvar = TestPMap.get(testsloopvar);
+					Element wrappertestsloopvar = forParentLoopVar;
+					if(indextestsloopvar!=null)
 					{
-						Element refElementtestNominalValuesloopvar= new Element("reference");
-						wrappertestNominalValuesloopvar.addContent(refElementtestNominalValuesloopvar);
-						refElementtestNominalValuesloopvar.addContent(indextestNominalValuesloopvar.toString());
+						Element refElementtestsloopvar= new Element("reference");
+						wrappertestsloopvar.addContent(refElementtestsloopvar);
+						refElementtestsloopvar.addContent(indextestsloopvar.toString());
 					}
 					else
 					{
-						indextestNominalValuesloopvar = new Integer(TestNominalValuePMap.size());
-						Element refElementtestNominalValuesloopvar= new Element("reference");
-						wrappertestNominalValuesloopvar.addContent(refElementtestNominalValuesloopvar);
-						refElementtestNominalValuesloopvar.addContent(indextestNominalValuesloopvar.toString());
-						TestNominalValuePMap.put(testNominalValuesloopvar,indextestNominalValuesloopvar);
-						writeTestNominalValue(testNominalValuesloopvar,wrappertestNominalValuesloopvar);
+						indextestsloopvar = new Integer(TestPMap.size());
+						Element refElementtestsloopvar= new Element("reference");
+						wrappertestsloopvar.addContent(refElementtestsloopvar);
+						refElementtestsloopvar.addContent(indextestsloopvar.toString());
+						TestPMap.put(testsloopvar,indextestsloopvar);
+						writeTest(testsloopvar,wrappertestsloopvar);
 					}
 				}
 			}
+		}
+		Element forParentanalysisDatas = new Element("analysisDatas");
+		parentNode.addContent(forParentanalysisDatas);
+		if(Analysisvar.getAnalysisDatas().size()!=0)
+		{
+			Element forParentLoopVar;
+			for(AnalysisData analysisDatasloopvar :Analysisvar.getAnalysisDatas())
+			{
+				forParentLoopVar = new Element("analysisDatas-el");
+				forParentanalysisDatas.addContent(forParentLoopVar);
+				if(analysisDatasloopvar!=null)
+				{
+					Integer indexanalysisDatasloopvar = AnalysisDataPMap.get(analysisDatasloopvar);
+					Element wrapperanalysisDatasloopvar = forParentLoopVar;
+					if(indexanalysisDatasloopvar!=null)
+					{
+						Element refElementanalysisDatasloopvar= new Element("reference");
+						wrapperanalysisDatasloopvar.addContent(refElementanalysisDatasloopvar);
+						refElementanalysisDatasloopvar.addContent(indexanalysisDatasloopvar.toString());
+					}
+					else
+					{
+						indexanalysisDatasloopvar = new Integer(AnalysisDataPMap.size());
+						Element refElementanalysisDatasloopvar= new Element("reference");
+						wrapperanalysisDatasloopvar.addContent(refElementanalysisDatasloopvar);
+						refElementanalysisDatasloopvar.addContent(indexanalysisDatasloopvar.toString());
+						AnalysisDataPMap.put(analysisDatasloopvar,indexanalysisDatasloopvar);
+						writeAnalysisData(analysisDatasloopvar,wrapperanalysisDatasloopvar);
+					}
+				}
+			}
+		}
+	}
+	public void writeAaSequence(AaSequence AaSequencevar, Element parentNode)
+	{
+		if(AaSequencevar==null)
+		{
+			return;
+		}
+		if(AaSequencevar.getProtein()!=null &&AaSequencevar.getProtein().getAbbreviation()!=null)
+		{
+			Element proteinvar = new Element("protein");
+			parentNode.addContent(proteinvar);
+			proteinvar.addContent(AaSequencevar.getProtein().getAbbreviation());
+		}
+		Element firstAaPosprimitiveValEl = new Element("firstAaPos");
+		firstAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getFirstAaPos()));
+		parentNode.addContent(firstAaPosprimitiveValEl);
+		Element lastAaPosprimitiveValEl = new Element("lastAaPos");
+		lastAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getLastAaPos()));
+		parentNode.addContent(lastAaPosprimitiveValEl);
+		Element aaMutationsEl = new Element("aaMutations");
+		parentNode.addContent(aaMutationsEl);
+		for (AaMutation AaMutationloopvar : AaSequencevar.getAaMutations())
+		{
+			Element aaMutations_elEl = new Element("aaMutations-el");
+			aaMutationsEl.addContent(aaMutations_elEl);
+			writeAaMutation(AaMutationloopvar,aaMutations_elEl);
+		}
+		Element aaInsertionsEl = new Element("aaInsertions");
+		parentNode.addContent(aaInsertionsEl);
+		for (AaInsertion AaInsertionloopvar : AaSequencevar.getAaInsertions())
+		{
+			Element aaInsertions_elEl = new Element("aaInsertions-el");
+			aaInsertionsEl.addContent(aaInsertions_elEl);
+			writeAaInsertion(AaInsertionloopvar,aaInsertions_elEl);
 		}
 	}
 	public void writeAaInsertion(AaInsertion AaInsertionvar, Element parentNode)
@@ -248,112 +345,54 @@ public class ExportToXML
 			parentNode.addContent(ntInsertionCodonprimitiveValEl);
 		}
 	}
-	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
+	public void writeValueType(ValueType ValueTypevar, Element parentNode)
 	{
-		if(TherapyCommercialvar==null)
+		if(ValueTypevar==null)
 		{
 			return;
 		}
-		if(TherapyCommercialvar.getId().getDrugCommercial()!=null &&TherapyCommercialvar.getId().getDrugCommercial().getName()!=null)
+		if(ValueTypevar.getDescription()!=null)
 		{
-			Element drugCommercialvar = new Element("drugCommercial");
-			parentNode.addContent(drugCommercialvar);
-			drugCommercialvar.addContent(TherapyCommercialvar.getId().getDrugCommercial().getName());
+			Element descriptionprimitiveValEl = new Element("description");
+			descriptionprimitiveValEl.addContent(ValueTypevar.getDescription().toString());
+			parentNode.addContent(descriptionprimitiveValEl);
 		}
-		if(TherapyCommercialvar.getDayDosageUnits()!=null)
+		if(ValueTypevar.getMin()!=null)
 		{
-			Element dayDosageUnitsprimitiveValEl = new Element("dayDosageUnits");
-			dayDosageUnitsprimitiveValEl.addContent(TherapyCommercialvar.getDayDosageUnits().toString());
-			parentNode.addContent(dayDosageUnitsprimitiveValEl);
+			Element minprimitiveValEl = new Element("min");
+			minprimitiveValEl.addContent(ValueTypevar.getMin().toString());
+			parentNode.addContent(minprimitiveValEl);
+		}
+		if(ValueTypevar.getMax()!=null)
+		{
+			Element maxprimitiveValEl = new Element("max");
+			maxprimitiveValEl.addContent(ValueTypevar.getMax().toString());
+			parentNode.addContent(maxprimitiveValEl);
+		}
+		if(ValueTypevar.getMultiple()!=null)
+		{
+			Element multipleprimitiveValEl = new Element("multiple");
+			multipleprimitiveValEl.addContent(ValueTypevar.getMultiple().toString());
+			parentNode.addContent(multipleprimitiveValEl);
 		}
 	}
-	public void writeTestNominalValue(TestNominalValue TestNominalValuevar, Element parentNode)
+	public void writeTestObject(TestObject TestObjectvar, Element parentNode)
 	{
-		if(TestNominalValuevar==null)
+		if(TestObjectvar==null)
 		{
 			return;
 		}
-		if(TestNominalValuevar.getTestType()!=null)
+		if(TestObjectvar.getDescription()!=null)
 		{
-			Integer indextestType = TestTypePMap.get(TestNominalValuevar.getTestType());
-			Element wrappertestType = new Element("testType");
-			parentNode.addContent(wrappertestType);
-			if(indextestType!=null)
-			{
-				Element refElementtestType= new Element("reference");
-				wrappertestType.addContent(refElementtestType);
-				refElementtestType.addContent(indextestType.toString());
-			}
-			else
-			{
-				indextestType = new Integer(TestTypePMap.size());
-				Element refElementtestType= new Element("reference");
-				wrappertestType.addContent(refElementtestType);
-				refElementtestType.addContent(indextestType.toString());
-				TestTypePMap.put(TestNominalValuevar.getTestType(),indextestType);
-				writeTestType(TestNominalValuevar.getTestType(),wrappertestType);
-			}
+			Element descriptionprimitiveValEl = new Element("description");
+			descriptionprimitiveValEl.addContent(TestObjectvar.getDescription().toString());
+			parentNode.addContent(descriptionprimitiveValEl);
 		}
-		if(TestNominalValuevar.getValue()!=null)
+		if(TestObjectvar.getTestObjectId()!=null)
 		{
-			Element valueprimitiveValEl = new Element("value");
-			valueprimitiveValEl.addContent(TestNominalValuevar.getValue().toString());
-			parentNode.addContent(valueprimitiveValEl);
-		}
-	}
-	public void writePatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element parentNode)
-	{
-		if(PatientAttributeValuevar==null)
-		{
-			return;
-		}
-		if(PatientAttributeValuevar.getId().getAttribute()!=null)
-		{
-			Integer indexattribute = AttributePMap.get(PatientAttributeValuevar.getId().getAttribute());
-			Element wrapperattribute = new Element("attribute");
-			parentNode.addContent(wrapperattribute);
-			if(indexattribute!=null)
-			{
-				Element refElementattribute= new Element("reference");
-				wrapperattribute.addContent(refElementattribute);
-				refElementattribute.addContent(indexattribute.toString());
-			}
-			else
-			{
-				indexattribute = new Integer(AttributePMap.size());
-				Element refElementattribute= new Element("reference");
-				wrapperattribute.addContent(refElementattribute);
-				refElementattribute.addContent(indexattribute.toString());
-				AttributePMap.put(PatientAttributeValuevar.getId().getAttribute(),indexattribute);
-				writeAttribute(PatientAttributeValuevar.getId().getAttribute(),wrapperattribute);
-			}
-		}
-		if(PatientAttributeValuevar.getAttributeNominalValue()!=null)
-		{
-			Integer indexattributeNominalValue = AttributeNominalValuePMap.get(PatientAttributeValuevar.getAttributeNominalValue());
-			Element wrapperattributeNominalValue = new Element("attributeNominalValue");
-			parentNode.addContent(wrapperattributeNominalValue);
-			if(indexattributeNominalValue!=null)
-			{
-				Element refElementattributeNominalValue= new Element("reference");
-				wrapperattributeNominalValue.addContent(refElementattributeNominalValue);
-				refElementattributeNominalValue.addContent(indexattributeNominalValue.toString());
-			}
-			else
-			{
-				indexattributeNominalValue = new Integer(AttributeNominalValuePMap.size());
-				Element refElementattributeNominalValue= new Element("reference");
-				wrapperattributeNominalValue.addContent(refElementattributeNominalValue);
-				refElementattributeNominalValue.addContent(indexattributeNominalValue.toString());
-				AttributeNominalValuePMap.put(PatientAttributeValuevar.getAttributeNominalValue(),indexattributeNominalValue);
-				writeAttributeNominalValue(PatientAttributeValuevar.getAttributeNominalValue(),wrapperattributeNominalValue);
-			}
-		}
-		if(PatientAttributeValuevar.getValue()!=null)
-		{
-			Element valueprimitiveValEl = new Element("value");
-			valueprimitiveValEl.addContent(PatientAttributeValuevar.getValue().toString());
-			parentNode.addContent(valueprimitiveValEl);
+			Element testObjectIdprimitiveValEl = new Element("testObjectId");
+			testObjectIdprimitiveValEl.addContent(TestObjectvar.getTestObjectId().toString());
+			parentNode.addContent(testObjectIdprimitiveValEl);
 		}
 	}
 	public void writePatient(Patient Patientvar, Element parentNode)
@@ -433,6 +472,60 @@ public class ExportToXML
 			writeTherapy(Therapyloopvar,therapies_elEl);
 		}
 	}
+	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element parentNode)
+	{
+		if(AttributeNominalValuevar==null)
+		{
+			return;
+		}
+		if(AttributeNominalValuevar.getValue()!=null)
+		{
+			Element valueprimitiveValEl = new Element("value");
+			valueprimitiveValEl.addContent(AttributeNominalValuevar.getValue().toString());
+			parentNode.addContent(valueprimitiveValEl);
+		}
+	}
+	public void writeTherapy(Therapy Therapyvar, Element parentNode)
+	{
+		if(Therapyvar==null)
+		{
+			return;
+		}
+		if(Therapyvar.getStartDate()!=null)
+		{
+			Element startDateprimitiveValEl = new Element("startDate");
+			startDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStartDate()));
+			parentNode.addContent(startDateprimitiveValEl);
+		}
+		if(Therapyvar.getStopDate()!=null)
+		{
+			Element stopDateprimitiveValEl = new Element("stopDate");
+			stopDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStopDate()));
+			parentNode.addContent(stopDateprimitiveValEl);
+		}
+		if(Therapyvar.getComment()!=null)
+		{
+			Element commentprimitiveValEl = new Element("comment");
+			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
+			parentNode.addContent(commentprimitiveValEl);
+		}
+		Element therapyCommercialsEl = new Element("therapyCommercials");
+		parentNode.addContent(therapyCommercialsEl);
+		for (TherapyCommercial TherapyCommercialloopvar : Therapyvar.getTherapyCommercials())
+		{
+			Element therapyCommercials_elEl = new Element("therapyCommercials-el");
+			therapyCommercialsEl.addContent(therapyCommercials_elEl);
+			writeTherapyCommercial(TherapyCommercialloopvar,therapyCommercials_elEl);
+		}
+		Element therapyGenericsEl = new Element("therapyGenerics");
+		parentNode.addContent(therapyGenericsEl);
+		for (TherapyGeneric TherapyGenericloopvar : Therapyvar.getTherapyGenerics())
+		{
+			Element therapyGenerics_elEl = new Element("therapyGenerics-el");
+			therapyGenericsEl.addContent(therapyGenerics_elEl);
+			writeTherapyGeneric(TherapyGenericloopvar,therapyGenerics_elEl);
+		}
+	}
 	public void writeNtSequence(NtSequence NtSequencevar, Element parentNode)
 	{
 		if(NtSequencevar==null)
@@ -474,59 +567,6 @@ public class ExportToXML
 			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
-	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
-	{
-		if(TherapyGenericvar==null)
-		{
-			return;
-		}
-		if(TherapyGenericvar.getId().getDrugGeneric()!=null &&TherapyGenericvar.getId().getDrugGeneric().getGenericId()!=null)
-		{
-			Element drugGenericvar = new Element("drugGeneric");
-			parentNode.addContent(drugGenericvar);
-			drugGenericvar.addContent(TherapyGenericvar.getId().getDrugGeneric().getGenericId());
-		}
-		if(TherapyGenericvar.getDayDosageMg()!=null)
-		{
-			Element dayDosageMgprimitiveValEl = new Element("dayDosageMg");
-			dayDosageMgprimitiveValEl.addContent(TherapyGenericvar.getDayDosageMg().toString());
-			parentNode.addContent(dayDosageMgprimitiveValEl);
-		}
-	}
-	public void writeAaMutation(AaMutation AaMutationvar, Element parentNode)
-	{
-		if(AaMutationvar==null)
-		{
-			return;
-		}
-		Element positionprimitiveValEl = new Element("position");
-		positionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getPosition()));
-		parentNode.addContent(positionprimitiveValEl);
-		if(AaMutationvar.getAaReference()!=null)
-		{
-			Element aaReferenceprimitiveValEl = new Element("aaReference");
-			aaReferenceprimitiveValEl.addContent(AaMutationvar.getAaReference().toString());
-			parentNode.addContent(aaReferenceprimitiveValEl);
-		}
-		if(AaMutationvar.getAaMutation()!=null)
-		{
-			Element aaMutationprimitiveValEl = new Element("aaMutation");
-			aaMutationprimitiveValEl.addContent(AaMutationvar.getAaMutation().toString());
-			parentNode.addContent(aaMutationprimitiveValEl);
-		}
-		if(AaMutationvar.getNtReferenceCodon()!=null)
-		{
-			Element ntReferenceCodonprimitiveValEl = new Element("ntReferenceCodon");
-			ntReferenceCodonprimitiveValEl.addContent(AaMutationvar.getNtReferenceCodon().toString());
-			parentNode.addContent(ntReferenceCodonprimitiveValEl);
-		}
-		if(AaMutationvar.getNtMutationCodon()!=null)
-		{
-			Element ntMutationCodonprimitiveValEl = new Element("ntMutationCodon");
-			ntMutationCodonprimitiveValEl.addContent(AaMutationvar.getNtMutationCodon().toString());
-			parentNode.addContent(ntMutationCodonprimitiveValEl);
-		}
-	}
 	public void writeDataset(Dataset Datasetvar, Element parentNode)
 	{
 		if(Datasetvar==null)
@@ -558,58 +598,161 @@ public class ExportToXML
 			parentNode.addContent(revisionprimitiveValEl);
 		}
 	}
-	public void writeTestObject(TestObject TestObjectvar, Element parentNode)
+	public void writeTestType(TestType TestTypevar, Element parentNode)
 	{
-		if(TestObjectvar==null)
+		if(TestTypevar==null)
 		{
 			return;
 		}
-		if(TestObjectvar.getDescription()!=null)
+		if(TestTypevar.getValueType()!=null)
+		{
+			Integer indexvalueType = ValueTypePMap.get(TestTypevar.getValueType());
+			Element wrappervalueType = new Element("valueType");
+			parentNode.addContent(wrappervalueType);
+			if(indexvalueType!=null)
+			{
+				Element refElementvalueType= new Element("reference");
+				wrappervalueType.addContent(refElementvalueType);
+				refElementvalueType.addContent(indexvalueType.toString());
+			}
+			else
+			{
+				indexvalueType = new Integer(ValueTypePMap.size());
+				Element refElementvalueType= new Element("reference");
+				wrappervalueType.addContent(refElementvalueType);
+				refElementvalueType.addContent(indexvalueType.toString());
+				ValueTypePMap.put(TestTypevar.getValueType(),indexvalueType);
+				writeValueType(TestTypevar.getValueType(),wrappervalueType);
+			}
+		}
+		if(TestTypevar.getTestObject()!=null)
+		{
+			Integer indextestObject = TestObjectPMap.get(TestTypevar.getTestObject());
+			Element wrappertestObject = new Element("testObject");
+			parentNode.addContent(wrappertestObject);
+			if(indextestObject!=null)
+			{
+				Element refElementtestObject= new Element("reference");
+				wrappertestObject.addContent(refElementtestObject);
+				refElementtestObject.addContent(indextestObject.toString());
+			}
+			else
+			{
+				indextestObject = new Integer(TestObjectPMap.size());
+				Element refElementtestObject= new Element("reference");
+				wrappertestObject.addContent(refElementtestObject);
+				refElementtestObject.addContent(indextestObject.toString());
+				TestObjectPMap.put(TestTypevar.getTestObject(),indextestObject);
+				writeTestObject(TestTypevar.getTestObject(),wrappertestObject);
+			}
+		}
+		if(TestTypevar.getDescription()!=null)
 		{
 			Element descriptionprimitiveValEl = new Element("description");
-			descriptionprimitiveValEl.addContent(TestObjectvar.getDescription().toString());
+			descriptionprimitiveValEl.addContent(TestTypevar.getDescription().toString());
 			parentNode.addContent(descriptionprimitiveValEl);
 		}
-		if(TestObjectvar.getTestObjectId()!=null)
+		Element forParenttestNominalValues = new Element("testNominalValues");
+		parentNode.addContent(forParenttestNominalValues);
+		if(TestTypevar.getTestNominalValues().size()!=0)
 		{
-			Element testObjectIdprimitiveValEl = new Element("testObjectId");
-			testObjectIdprimitiveValEl.addContent(TestObjectvar.getTestObjectId().toString());
-			parentNode.addContent(testObjectIdprimitiveValEl);
+			Element forParentLoopVar;
+			for(TestNominalValue testNominalValuesloopvar :TestTypevar.getTestNominalValues())
+			{
+				forParentLoopVar = new Element("testNominalValues-el");
+				forParenttestNominalValues.addContent(forParentLoopVar);
+				if(testNominalValuesloopvar!=null)
+				{
+					Integer indextestNominalValuesloopvar = TestNominalValuePMap.get(testNominalValuesloopvar);
+					Element wrappertestNominalValuesloopvar = forParentLoopVar;
+					if(indextestNominalValuesloopvar!=null)
+					{
+						Element refElementtestNominalValuesloopvar= new Element("reference");
+						wrappertestNominalValuesloopvar.addContent(refElementtestNominalValuesloopvar);
+						refElementtestNominalValuesloopvar.addContent(indextestNominalValuesloopvar.toString());
+					}
+					else
+					{
+						indextestNominalValuesloopvar = new Integer(TestNominalValuePMap.size());
+						Element refElementtestNominalValuesloopvar= new Element("reference");
+						wrappertestNominalValuesloopvar.addContent(refElementtestNominalValuesloopvar);
+						refElementtestNominalValuesloopvar.addContent(indextestNominalValuesloopvar.toString());
+						TestNominalValuePMap.put(testNominalValuesloopvar,indextestNominalValuesloopvar);
+						writeTestNominalValue(testNominalValuesloopvar,wrappertestNominalValuesloopvar);
+					}
+				}
+			}
 		}
 	}
-	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)
+	public void writeAttribute(Attribute Attributevar, Element parentNode)
 	{
-		if(ViralIsolatevar==null)
+		if(Attributevar==null)
 		{
 			return;
 		}
-		if(ViralIsolatevar.getSampleId()!=null)
+		if(Attributevar.getValueType()!=null)
 		{
-			Element sampleIdprimitiveValEl = new Element("sampleId");
-			sampleIdprimitiveValEl.addContent(ViralIsolatevar.getSampleId().toString());
-			parentNode.addContent(sampleIdprimitiveValEl);
+			Integer indexvalueType = ValueTypePMap.get(Attributevar.getValueType());
+			Element wrappervalueType = new Element("valueType");
+			parentNode.addContent(wrappervalueType);
+			if(indexvalueType!=null)
+			{
+				Element refElementvalueType= new Element("reference");
+				wrappervalueType.addContent(refElementvalueType);
+				refElementvalueType.addContent(indexvalueType.toString());
+			}
+			else
+			{
+				indexvalueType = new Integer(ValueTypePMap.size());
+				Element refElementvalueType= new Element("reference");
+				wrappervalueType.addContent(refElementvalueType);
+				refElementvalueType.addContent(indexvalueType.toString());
+				ValueTypePMap.put(Attributevar.getValueType(),indexvalueType);
+				writeValueType(Attributevar.getValueType(),wrappervalueType);
+			}
 		}
-		if(ViralIsolatevar.getSampleDate()!=null)
+		if(Attributevar.getAttributeGroup()!=null &&Attributevar.getAttributeGroup().getGroupName()!=null)
 		{
-			Element sampleDateprimitiveValEl = new Element("sampleDate");
-			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
-			parentNode.addContent(sampleDateprimitiveValEl);
+			Element attributeGroupvar = new Element("attributeGroup");
+			parentNode.addContent(attributeGroupvar);
+			attributeGroupvar.addContent(Attributevar.getAttributeGroup().getGroupName());
 		}
-		Element ntSequencesEl = new Element("ntSequences");
-		parentNode.addContent(ntSequencesEl);
-		for (NtSequence NtSequenceloopvar : ViralIsolatevar.getNtSequences())
+		if(Attributevar.getName()!=null)
 		{
-			Element ntSequences_elEl = new Element("ntSequences-el");
-			ntSequencesEl.addContent(ntSequences_elEl);
-			writeNtSequence(NtSequenceloopvar,ntSequences_elEl);
+			Element nameprimitiveValEl = new Element("name");
+			nameprimitiveValEl.addContent(Attributevar.getName().toString());
+			parentNode.addContent(nameprimitiveValEl);
 		}
-		Element testResultsEl = new Element("testResults");
-		parentNode.addContent(testResultsEl);
-		for (TestResult TestResultloopvar : ViralIsolatevar.getTestResults())
+		Element forParentattributeNominalValues = new Element("attributeNominalValues");
+		parentNode.addContent(forParentattributeNominalValues);
+		if(Attributevar.getAttributeNominalValues().size()!=0)
 		{
-			Element testResults_elEl = new Element("testResults-el");
-			testResultsEl.addContent(testResults_elEl);
-			writeTestResult(TestResultloopvar,testResults_elEl);
+			Element forParentLoopVar;
+			for(AttributeNominalValue attributeNominalValuesloopvar :Attributevar.getAttributeNominalValues())
+			{
+				forParentLoopVar = new Element("attributeNominalValues-el");
+				forParentattributeNominalValues.addContent(forParentLoopVar);
+				if(attributeNominalValuesloopvar!=null)
+				{
+					Integer indexattributeNominalValuesloopvar = AttributeNominalValuePMap.get(attributeNominalValuesloopvar);
+					Element wrapperattributeNominalValuesloopvar = forParentLoopVar;
+					if(indexattributeNominalValuesloopvar!=null)
+					{
+						Element refElementattributeNominalValuesloopvar= new Element("reference");
+						wrapperattributeNominalValuesloopvar.addContent(refElementattributeNominalValuesloopvar);
+						refElementattributeNominalValuesloopvar.addContent(indexattributeNominalValuesloopvar.toString());
+					}
+					else
+					{
+						indexattributeNominalValuesloopvar = new Integer(AttributeNominalValuePMap.size());
+						Element refElementattributeNominalValuesloopvar= new Element("reference");
+						wrapperattributeNominalValuesloopvar.addContent(refElementattributeNominalValuesloopvar);
+						refElementattributeNominalValuesloopvar.addContent(indexattributeNominalValuesloopvar.toString());
+						AttributeNominalValuePMap.put(attributeNominalValuesloopvar,indexattributeNominalValuesloopvar);
+						writeAttributeNominalValue(attributeNominalValuesloopvar,wrapperattributeNominalValuesloopvar);
+					}
+				}
+			}
 		}
 	}
 	public void writeTestResult(TestResult TestResultvar, Element parentNode)
@@ -685,148 +828,187 @@ public class ExportToXML
 			parentNode.addContent(sampleIdprimitiveValEl);
 		}
 	}
-	public void writeAaSequence(AaSequence AaSequencevar, Element parentNode)
+	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
 	{
-		if(AaSequencevar==null)
+		if(TherapyCommercialvar==null)
 		{
 			return;
 		}
-		if(AaSequencevar.getProtein()!=null &&AaSequencevar.getProtein().getAbbreviation()!=null)
+		if(TherapyCommercialvar.getId().getDrugCommercial()!=null &&TherapyCommercialvar.getId().getDrugCommercial().getName()!=null)
 		{
-			Element proteinvar = new Element("protein");
-			parentNode.addContent(proteinvar);
-			proteinvar.addContent(AaSequencevar.getProtein().getAbbreviation());
+			Element drugCommercialvar = new Element("drugCommercial");
+			parentNode.addContent(drugCommercialvar);
+			drugCommercialvar.addContent(TherapyCommercialvar.getId().getDrugCommercial().getName());
 		}
-		Element firstAaPosprimitiveValEl = new Element("firstAaPos");
-		firstAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getFirstAaPos()));
-		parentNode.addContent(firstAaPosprimitiveValEl);
-		Element lastAaPosprimitiveValEl = new Element("lastAaPos");
-		lastAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getLastAaPos()));
-		parentNode.addContent(lastAaPosprimitiveValEl);
-		Element aaMutationsEl = new Element("aaMutations");
-		parentNode.addContent(aaMutationsEl);
-		for (AaMutation AaMutationloopvar : AaSequencevar.getAaMutations())
+		if(TherapyCommercialvar.getDayDosageUnits()!=null)
 		{
-			Element aaMutations_elEl = new Element("aaMutations-el");
-			aaMutationsEl.addContent(aaMutations_elEl);
-			writeAaMutation(AaMutationloopvar,aaMutations_elEl);
-		}
-		Element aaInsertionsEl = new Element("aaInsertions");
-		parentNode.addContent(aaInsertionsEl);
-		for (AaInsertion AaInsertionloopvar : AaSequencevar.getAaInsertions())
-		{
-			Element aaInsertions_elEl = new Element("aaInsertions-el");
-			aaInsertionsEl.addContent(aaInsertions_elEl);
-			writeAaInsertion(AaInsertionloopvar,aaInsertions_elEl);
+			Element dayDosageUnitsprimitiveValEl = new Element("dayDosageUnits");
+			dayDosageUnitsprimitiveValEl.addContent(TherapyCommercialvar.getDayDosageUnits().toString());
+			parentNode.addContent(dayDosageUnitsprimitiveValEl);
 		}
 	}
-	public void writeValueType(ValueType ValueTypevar, Element parentNode)
+	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)
 	{
-		if(ValueTypevar==null)
+		if(ViralIsolatevar==null)
 		{
 			return;
 		}
-		if(ValueTypevar.getDescription()!=null)
+		if(ViralIsolatevar.getSampleId()!=null)
 		{
-			Element descriptionprimitiveValEl = new Element("description");
-			descriptionprimitiveValEl.addContent(ValueTypevar.getDescription().toString());
-			parentNode.addContent(descriptionprimitiveValEl);
+			Element sampleIdprimitiveValEl = new Element("sampleId");
+			sampleIdprimitiveValEl.addContent(ViralIsolatevar.getSampleId().toString());
+			parentNode.addContent(sampleIdprimitiveValEl);
 		}
-		if(ValueTypevar.getMin()!=null)
+		if(ViralIsolatevar.getSampleDate()!=null)
 		{
-			Element minprimitiveValEl = new Element("min");
-			minprimitiveValEl.addContent(ValueTypevar.getMin().toString());
-			parentNode.addContent(minprimitiveValEl);
+			Element sampleDateprimitiveValEl = new Element("sampleDate");
+			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
+			parentNode.addContent(sampleDateprimitiveValEl);
 		}
-		if(ValueTypevar.getMax()!=null)
+		Element ntSequencesEl = new Element("ntSequences");
+		parentNode.addContent(ntSequencesEl);
+		for (NtSequence NtSequenceloopvar : ViralIsolatevar.getNtSequences())
 		{
-			Element maxprimitiveValEl = new Element("max");
-			maxprimitiveValEl.addContent(ValueTypevar.getMax().toString());
-			parentNode.addContent(maxprimitiveValEl);
+			Element ntSequences_elEl = new Element("ntSequences-el");
+			ntSequencesEl.addContent(ntSequences_elEl);
+			writeNtSequence(NtSequenceloopvar,ntSequences_elEl);
 		}
-		if(ValueTypevar.getMultiple()!=null)
+		Element testResultsEl = new Element("testResults");
+		parentNode.addContent(testResultsEl);
+		for (TestResult TestResultloopvar : ViralIsolatevar.getTestResults())
 		{
-			Element multipleprimitiveValEl = new Element("multiple");
-			multipleprimitiveValEl.addContent(ValueTypevar.getMultiple().toString());
-			parentNode.addContent(multipleprimitiveValEl);
+			Element testResults_elEl = new Element("testResults-el");
+			testResultsEl.addContent(testResults_elEl);
+			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
-	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element parentNode)
+	public void writeAnalysisData(AnalysisData AnalysisDatavar, Element parentNode)
 	{
-		if(AttributeNominalValuevar==null)
+		if(AnalysisDatavar==null)
 		{
 			return;
 		}
-		if(AttributeNominalValuevar.getValue()!=null)
+		if(AnalysisDatavar.getAnalysis()!=null)
 		{
-			Element valueprimitiveValEl = new Element("value");
-			valueprimitiveValEl.addContent(AttributeNominalValuevar.getValue().toString());
-			parentNode.addContent(valueprimitiveValEl);
-		}
-	}
-	public void writeAttribute(Attribute Attributevar, Element parentNode)
-	{
-		if(Attributevar==null)
-		{
-			return;
-		}
-		if(Attributevar.getValueType()!=null)
-		{
-			Integer indexvalueType = ValueTypePMap.get(Attributevar.getValueType());
-			Element wrappervalueType = new Element("valueType");
-			parentNode.addContent(wrappervalueType);
-			if(indexvalueType!=null)
+			Integer indexanalysis = AnalysisPMap.get(AnalysisDatavar.getAnalysis());
+			Element wrapperanalysis = new Element("analysis");
+			parentNode.addContent(wrapperanalysis);
+			if(indexanalysis!=null)
 			{
-				Element refElementvalueType= new Element("reference");
-				wrappervalueType.addContent(refElementvalueType);
-				refElementvalueType.addContent(indexvalueType.toString());
+				Element refElementanalysis= new Element("reference");
+				wrapperanalysis.addContent(refElementanalysis);
+				refElementanalysis.addContent(indexanalysis.toString());
 			}
 			else
 			{
-				indexvalueType = new Integer(ValueTypePMap.size());
-				Element refElementvalueType= new Element("reference");
-				wrappervalueType.addContent(refElementvalueType);
-				refElementvalueType.addContent(indexvalueType.toString());
-				ValueTypePMap.put(Attributevar.getValueType(),indexvalueType);
-				writeValueType(Attributevar.getValueType(),wrappervalueType);
+				indexanalysis = new Integer(AnalysisPMap.size());
+				Element refElementanalysis= new Element("reference");
+				wrapperanalysis.addContent(refElementanalysis);
+				refElementanalysis.addContent(indexanalysis.toString());
+				AnalysisPMap.put(AnalysisDatavar.getAnalysis(),indexanalysis);
+				writeAnalysis(AnalysisDatavar.getAnalysis(),wrapperanalysis);
 			}
 		}
-		if(Attributevar.getName()!=null)
+		if(AnalysisDatavar.getName()!=null)
 		{
 			Element nameprimitiveValEl = new Element("name");
-			nameprimitiveValEl.addContent(Attributevar.getName().toString());
+			nameprimitiveValEl.addContent(AnalysisDatavar.getName().toString());
 			parentNode.addContent(nameprimitiveValEl);
 		}
-		Element forParent = new Element("attributeNominalValues");
-		parentNode.addContent(forParent);
-		if(Attributevar.getAttributeNominalValues().size()!=0)
+		if(AnalysisDatavar.getData()!=null)
 		{
-			Element forParentLoopVar;
-			for(AttributeNominalValue attributeNominalValuesloopvar :Attributevar.getAttributeNominalValues())
+			Element dataprimitiveValEl = new Element("data");
+			dataprimitiveValEl.addContent(AnalysisDatavar.getData().toString());
+			parentNode.addContent(dataprimitiveValEl);
+		}
+	}
+	public void writePatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element parentNode)
+	{
+		if(PatientAttributeValuevar==null)
+		{
+			return;
+		}
+		if(PatientAttributeValuevar.getId().getAttribute()!=null)
+		{
+			Integer indexattribute = AttributePMap.get(PatientAttributeValuevar.getId().getAttribute());
+			Element wrapperattribute = new Element("attribute");
+			parentNode.addContent(wrapperattribute);
+			if(indexattribute!=null)
 			{
-				forParentLoopVar = new Element("attributeNominalValues-el");
-				forParent.addContent(forParentLoopVar);
-				if(attributeNominalValuesloopvar!=null)
-				{
-					Integer indexattributeNominalValuesloopvar = AttributeNominalValuePMap.get(attributeNominalValuesloopvar);
-					Element wrapperattributeNominalValuesloopvar = forParentLoopVar;
-					if(indexattributeNominalValuesloopvar!=null)
-					{
-						Element refElementattributeNominalValuesloopvar= new Element("reference");
-						wrapperattributeNominalValuesloopvar.addContent(refElementattributeNominalValuesloopvar);
-						refElementattributeNominalValuesloopvar.addContent(indexattributeNominalValuesloopvar.toString());
-					}
-					else
-					{
-						indexattributeNominalValuesloopvar = new Integer(AttributeNominalValuePMap.size());
-						Element refElementattributeNominalValuesloopvar= new Element("reference");
-						wrapperattributeNominalValuesloopvar.addContent(refElementattributeNominalValuesloopvar);
-						refElementattributeNominalValuesloopvar.addContent(indexattributeNominalValuesloopvar.toString());
-						AttributeNominalValuePMap.put(attributeNominalValuesloopvar,indexattributeNominalValuesloopvar);
-						writeAttributeNominalValue(attributeNominalValuesloopvar,wrapperattributeNominalValuesloopvar);
-					}
-				}
+				Element refElementattribute= new Element("reference");
+				wrapperattribute.addContent(refElementattribute);
+				refElementattribute.addContent(indexattribute.toString());
 			}
+			else
+			{
+				indexattribute = new Integer(AttributePMap.size());
+				Element refElementattribute= new Element("reference");
+				wrapperattribute.addContent(refElementattribute);
+				refElementattribute.addContent(indexattribute.toString());
+				AttributePMap.put(PatientAttributeValuevar.getId().getAttribute(),indexattribute);
+				writeAttribute(PatientAttributeValuevar.getId().getAttribute(),wrapperattribute);
+			}
+		}
+		if(PatientAttributeValuevar.getAttributeNominalValue()!=null)
+		{
+			Integer indexattributeNominalValue = AttributeNominalValuePMap.get(PatientAttributeValuevar.getAttributeNominalValue());
+			Element wrapperattributeNominalValue = new Element("attributeNominalValue");
+			parentNode.addContent(wrapperattributeNominalValue);
+			if(indexattributeNominalValue!=null)
+			{
+				Element refElementattributeNominalValue= new Element("reference");
+				wrapperattributeNominalValue.addContent(refElementattributeNominalValue);
+				refElementattributeNominalValue.addContent(indexattributeNominalValue.toString());
+			}
+			else
+			{
+				indexattributeNominalValue = new Integer(AttributeNominalValuePMap.size());
+				Element refElementattributeNominalValue= new Element("reference");
+				wrapperattributeNominalValue.addContent(refElementattributeNominalValue);
+				refElementattributeNominalValue.addContent(indexattributeNominalValue.toString());
+				AttributeNominalValuePMap.put(PatientAttributeValuevar.getAttributeNominalValue(),indexattributeNominalValue);
+				writeAttributeNominalValue(PatientAttributeValuevar.getAttributeNominalValue(),wrapperattributeNominalValue);
+			}
+		}
+		if(PatientAttributeValuevar.getValue()!=null)
+		{
+			Element valueprimitiveValEl = new Element("value");
+			valueprimitiveValEl.addContent(PatientAttributeValuevar.getValue().toString());
+			parentNode.addContent(valueprimitiveValEl);
+		}
+	}
+	public void writeTestNominalValue(TestNominalValue TestNominalValuevar, Element parentNode)
+	{
+		if(TestNominalValuevar==null)
+		{
+			return;
+		}
+		if(TestNominalValuevar.getTestType()!=null)
+		{
+			Integer indextestType = TestTypePMap.get(TestNominalValuevar.getTestType());
+			Element wrappertestType = new Element("testType");
+			parentNode.addContent(wrappertestType);
+			if(indextestType!=null)
+			{
+				Element refElementtestType= new Element("reference");
+				wrappertestType.addContent(refElementtestType);
+				refElementtestType.addContent(indextestType.toString());
+			}
+			else
+			{
+				indextestType = new Integer(TestTypePMap.size());
+				Element refElementtestType= new Element("reference");
+				wrappertestType.addContent(refElementtestType);
+				refElementtestType.addContent(indextestType.toString());
+				TestTypePMap.put(TestNominalValuevar.getTestType(),indextestType);
+				writeTestType(TestNominalValuevar.getTestType(),wrappertestType);
+			}
+		}
+		if(TestNominalValuevar.getValue()!=null)
+		{
+			Element valueprimitiveValEl = new Element("value");
+			valueprimitiveValEl.addContent(TestNominalValuevar.getValue().toString());
+			parentNode.addContent(valueprimitiveValEl);
 		}
 	}
 }
