@@ -33,7 +33,7 @@ public class InterpreteHbm
 		Element el = findProperty(parent, property);
 		if(el == null)
 		{
-			System.err.println("Property doesn't exist");
+			//System.err.println("Property doesn't exist");
 			return false;
 		}
 		return el.getName().equals(elName);
@@ -73,7 +73,7 @@ public class InterpreteHbm
 		Element el = findProperty(parent, property);
 		if(el == null)
 		{
-			System.err.println("Property doesn't exist: " + parent + " " +property);
+			//System.err.println("Property doesn't exist: " + parent + " " +property);
 			return null;
 		}
 		
