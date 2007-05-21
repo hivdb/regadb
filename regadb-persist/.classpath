@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/pg74.216.jdbc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ejb3-persistence.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/antlr-2.7.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-tools.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
+	<classpathentry kind="lib" path="lib/postgresql-8.2-505.jdbc3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
