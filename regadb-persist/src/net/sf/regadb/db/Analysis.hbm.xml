@@ -30,6 +30,12 @@
     <property name="baseoutputfile" type="string">
       <column name="baseoutputfile" length="50" />
     </property>
+    <set name="tests" inverse="false" cascade="all">
+      <key>
+        <column name="analysis_ii" unique="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.Test" />
+    </set>
     <set name="analysisDatas" inverse="true" cascade="all">
       <key>
         <column name="analysis_ii" not-null="true" />
