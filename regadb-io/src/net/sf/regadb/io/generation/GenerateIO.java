@@ -59,10 +59,14 @@ public class GenerateIO
         stringRepresentedFields_.add(dbPackage + "DrugGeneric");
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
         stringRepresentedFields_.add(dbPackage + "Protein");
+        stringRepresentedFields_.add(dbPackage + "AttributeGroup");
+        stringRepresentedFields_.add(dbPackage + "AnalysisType");
         
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AttributeGroup", "groupName"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
         
         pointerClasses_.add(dbPackage + "Test");
         pointerClasses_.add(dbPackage + "TestType");
@@ -72,6 +76,9 @@ public class GenerateIO
         
         pointerClasses_.add(dbPackage + "Attribute");
         pointerClasses_.add(dbPackage + "AttributeNominalValue");
+        
+        pointerClasses_.add(dbPackage + "Analysis");
+        pointerClasses_.add(dbPackage + "AnalysisData");
         
         nominalValues_.add(dbPackage + "TestNominalValue");
         nominalValues_.add(dbPackage + "AttributeNominalValue");
