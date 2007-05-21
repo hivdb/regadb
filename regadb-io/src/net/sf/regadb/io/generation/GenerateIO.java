@@ -344,13 +344,24 @@ public class GenerateIO
         }
         else //primitive field
         {
+            if(field.getName().equals("data"))
+            {
+                System.err.println("stop");
+            }
             XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
             XMLReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
             {
-                System.err.println("Ran into an unsupported primitive type!!!!" + field.getName());
+                try 
+                {
+                    throw new Exception("Ran into an unsupported primitive type!!!!" + field.getName());
+                } 
+                catch (Exception e) 
+                {
+                    e.printStackTrace();
+                }
             }
             else
             {
