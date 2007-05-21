@@ -1,8 +1,12 @@
 package net.sf.regadb.util.xml;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 public class XMLTools 
 {
@@ -17,5 +21,15 @@ public class XMLTools
     public static String dateToRelaxNgString(Date date)
     {
         return dfRelaxNg_.format(date);
+    }
+    
+    public static String base64Encoding(byte [] data)
+    {
+        return (new BASE64Encoder()).encode(data);
+    }
+    
+    public static byte[] base64Decoding(String data) throws IOException
+    {
+        return (new BASE64Decoder()).decodeBuffer(data);
     }
 }
