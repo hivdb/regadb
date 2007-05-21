@@ -2,13 +2,12 @@ package net.sf.regadb.ui.forms.account;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
@@ -88,7 +87,7 @@ public class AccountForm extends FormWidget
         
         //E-mail address
         emailL = new Label(tr("form.settings.user.label.email"));
-        emailTF = new TextField(getInteractionState(), this);
+        emailTF = new TextField(getInteractionState(), this, FieldType.EMAIL);
         emailTF.setMandatory(true);
         addLineToTable(loginGroupTable, emailL, emailTF);
         
@@ -124,10 +123,10 @@ public class AccountForm extends FormWidget
     
     private void fillData()
     {
-        Transaction t = login.createTransaction();
-            
         if(getInteractionState()!=InteractionState.Adding)
         {
+            Transaction t = login.createTransaction();
+            
             if(!administrator_)
             {
                 su_ = t.getSettingsUser(login.getUid());
@@ -145,36 +144,14 @@ public class AccountForm extends FormWidget
             lastNameTF.setText(su_.getLastName());
             emailTF.setText(su_.getEmail());
             uidTF.setText(su_.getUid());
+            
+            t.commit();
         }
-        
-        t.commit();
     }
     
-    //If nobody is logged in, set default login
-    //!! solve this problem see wiki chicken/egg
     private void authenticateLogin()
     {
-        if(RegaDBMain.getApp().getLogin()==null)
-        {
-            try
-            {
-                login = Login.authenticate("paashaas", "paashaas");
-            }
-            catch (WrongUidException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (WrongPasswordException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        else
-        {
-            login = RegaDBMain.getApp().getLogin();
-        }
+        login = RegaDBMain.getApp().getLogin();
     }
     
     private boolean validatePasswordFields()
@@ -204,8 +181,6 @@ public class AccountForm extends FormWidget
     {
         if(validatePasswordFields())
         {
-            Transaction t = login.createTransaction();
-            
             if(getInteractionState()==InteractionState.Adding)
             {
                 //Generate new userId
@@ -232,14 +207,18 @@ public class AccountForm extends FormWidget
                 su_.setEnabled(registeredCB.isChecked());
             }
             
-            update(su_, t);
-            t.commit();
-            
             if(getInteractionState()==InteractionState.Adding)
             {
+                Login.createNewAccount(su_);
                 MessageBox.showWarningMessage(tr("form.account.create.warning"));
             }
-            
+            else
+            {
+                Transaction t = login.createTransaction();
+                update(su_, t);
+                t.commit();                
+            }
+
             expandNode_.expand();
             expandNode_.refreshAllChildren();
             selectNode_.selectNode();

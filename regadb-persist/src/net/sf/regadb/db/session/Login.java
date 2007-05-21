@@ -6,6 +6,7 @@
  */
 package net.sf.regadb.db.session;
 
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
@@ -77,5 +78,14 @@ public class Login {
     public Login copyLogin()
     {
         return new Login(this.uid);
+    }
+    
+    public static void createNewAccount(SettingsUser user)
+    {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
     }
 }
