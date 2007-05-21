@@ -83,6 +83,14 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("queryDefinitionParameters")&& a.getKey().equals("net.sf.regadb.db.QueryDefinition")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
+                        if((e.getAttributeValue("name").equals("analysisDatas")&& a.getKey().equals("net.sf.regadb.db.Analysis")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                     if(e.getName().equals("id") )
                     {
