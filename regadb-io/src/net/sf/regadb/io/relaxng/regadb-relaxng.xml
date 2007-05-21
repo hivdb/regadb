@@ -137,6 +137,16 @@
   </define>
   <define name="net.sf.regadb.db.Test">
     <optional>
+      <element name="analysis">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Analysis" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
       <element name="testType">
         <element name="reference">
           <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
@@ -169,6 +179,99 @@
       <element name="serviceConfig">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
+    </optional>
+  </define>
+  <define name="net.sf.regadb.db.Analysis">
+    <optional>
+      <element name="analysisType">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="type">
+        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="url">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="account">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="password">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="baseinputfile">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="baseoutputfile">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <element name="tests">
+      <zeroOrMore>
+        <element name="tests-el">
+          <element name="reference">
+            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+          </element>
+          <optional>
+            <ref name="net.sf.regadb.db.Test" />
+          </optional>
+        </element>
+      </zeroOrMore>
+    </element>
+    <element name="analysisDatas">
+      <zeroOrMore>
+        <element name="analysisDatas-el">
+          <element name="reference">
+            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+          </element>
+          <optional>
+            <ref name="net.sf.regadb.db.AnalysisData" />
+          </optional>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="net.sf.regadb.db.AnalysisData">
+    <optional>
+      <element name="analysis">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Analysis" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="name">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="data" />
     </optional>
   </define>
   <define name="net.sf.regadb.db.TestType">
@@ -302,6 +405,11 @@
         <optional>
           <ref name="net.sf.regadb.db.ValueType" />
         </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="attributeGroup">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
