@@ -4,5 +4,6 @@ public enum FieldType
 {
     ALFANUMERIC,
     DOUBLE,
-    INTEGER;
+    INTEGER,
+    EMAIL;
 }

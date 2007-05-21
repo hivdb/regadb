@@ -9,6 +9,7 @@ import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WLineEdit;
 import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.validation.WDoubleValidator;
+import net.sf.witty.wt.validation.WEmailValidator;
 import net.sf.witty.wt.validation.WIntValidator;
 
 public class TextField extends FormField
@@ -46,6 +47,9 @@ public class TextField extends FormField
 	            case INTEGER:
 	                _fieldEdit.setValidator(new WIntValidator());
 	                break;
+                case EMAIL:
+                    _fieldEdit.setValidator(new WEmailValidator());
+                    break;
 	        }
 		}
 	}
