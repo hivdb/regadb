@@ -18,6 +18,7 @@ public class InitRegaDB
         admin.setAdmin(true);
         admin.setEnabled(true);
         admin.setPassword(Encrypt.encryptMD5("admin"));
+        admin.setEmail("regadb-admin@uz.kuleuven.ac.be");
         session.save(admin);
         session.getTransaction().commit();
         session.close();
