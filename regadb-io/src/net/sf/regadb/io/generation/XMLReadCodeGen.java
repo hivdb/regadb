@@ -49,9 +49,11 @@ public class XMLReadCodeGen {
             return "field" + parent.javaClass.getSimpleName()+"_"+name;
         }
 
-        public String typeName() {
+        public String typeName(boolean isMethod) {
             if (isSet())
                 return "Set<" + javaClass.getSimpleName() + ">";
+            else if(javaClass.getName().endsWith("[B") && isMethod)
+                return "byteArray";
             else
                 return javaClass.getSimpleName();
          }
@@ -279,7 +281,7 @@ public class XMLReadCodeGen {
             ObjectInfo o = objectIdMap.get(id);
 
             for (ObjectField f : o.fields) {
-                write(1, "private " + f.typeName() + " " + f.memberName() + ";\n");
+                write(1, "private " + f.typeName(false) + " " + f.memberName() + ";\n");
             }
         }
 
@@ -305,10 +307,10 @@ public class XMLReadCodeGen {
             
             for (ObjectField f : o.fields) {
                 if (f.isSet())
-                    write(3, f.memberName() + " = new Hash" + f.typeName() + "();\n");
+                    write(3, f.memberName() + " = new Hash" + f.typeName(true) + "();\n");
                 else
                     if (f.type == ObjectField.Type.Primitive)
-                        write(3, f.memberName() + " = nullValue" + f.typeName() + "();\n");
+                        write(3, f.memberName() + " = nullValue" + f.typeName(true) + "();\n");
                     else
                         write(3, f.memberName() + " = null;\n");
             }
@@ -376,7 +378,7 @@ public class XMLReadCodeGen {
                         write(4, "if (referenceResolved && !" + f.memberName() + ".isEmpty())\n");
                     } else {
                     String nullValue
-                        = (f.type == ObjectField.Type.Primitive ? "nullValue" + f.typeName() + "()" : "null");
+                        = (f.type == ObjectField.Type.Primitive ? "nullValue" + f.typeName(true) + "()" : "null");
                         write(4, "if (referenceResolved && " + f.memberName() + " != " + nullValue + ")\n");
                     }
                     write(5, "throw new SAXException(new ImportException(\"Cannot modify resolved reference\"));\n");
@@ -411,7 +413,7 @@ public class XMLReadCodeGen {
             for (ObjectField f : o.fields) {
                 write(3, "} else if (\"" + f.name + "\".equals(qName)) {\n");
                 if (f.type == ObjectField.Type.Primitive) {
-                    write(4, f.memberName() + " = parse" + f.javaClass.getSimpleName() + "(value);\n");
+                    write(4, f.memberName() + " = parse" + f.typeName(true) + "(value);\n");
                 } else if (f.type == ObjectField.Type.ObjectKey) {
                     write(4, f.memberName() + " = resolve" + f.javaClass.getSimpleName() + "(value);\n");
                 }

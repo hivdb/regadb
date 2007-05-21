@@ -271,7 +271,9 @@
       </element>
     </optional>
     <optional>
-      <element name="data" />
+      <element name="data">
+        <data type="base64Binary" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
     </optional>
   </define>
   <define name="net.sf.regadb.db.TestType">
@@ -409,7 +411,12 @@
     </optional>
     <optional>
       <element name="attributeGroup">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.AttributeGroup" />
+        </optional>
       </element>
     </optional>
     <optional>
@@ -431,6 +438,15 @@
         </element>
       </zeroOrMore>
     </element>
+  </define>
+  <define name="net.sf.regadb.db.AttributeGroup">
+    <optional>
+      <element name="groupName">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.AttributeNominalValue">
     <optional>

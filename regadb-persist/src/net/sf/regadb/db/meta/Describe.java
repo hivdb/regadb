@@ -9,7 +9,10 @@ package net.sf.regadb.db.meta;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Analysis;
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
@@ -117,6 +120,18 @@ public class Describe {
 
     public static String describe(Dataset o) {
         return "Data set '" + o.getDescription() + "'";
+    }
+    
+    public static String describe(AttributeGroup o) {
+        return "Attribute group '" + o.getGroupName() + "'";
+    }
+
+    public static String describe(Analysis o) {
+        return "Analysis for '" + describe(o.getTests().iterator().next());
+    }
+
+    public static String describe(AnalysisData o) {
+        return "Analysis data'" + o.getName() + "'";
     }
 
 }

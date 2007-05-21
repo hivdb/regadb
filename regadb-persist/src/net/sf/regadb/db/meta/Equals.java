@@ -9,7 +9,10 @@ package net.sf.regadb.db.meta;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Analysis;
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.NtSequence;
@@ -117,6 +120,21 @@ public class Equals {
     public static boolean isSameTestObject(TestObject o1, TestObject o2) {
         return o1 == o2
         || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()));
+    }
+    
+    public static boolean isSameAttributeGroup(AttributeGroup o1, AttributeGroup o2) {
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getGroupName().equals(o2.getGroupName()));
+    }
+
+    public static boolean isSameAnalysis(Analysis o1, Analysis o2) {
+        return o1 == o2
+        || (o1 != null && o2 !=null);
+    }
+
+    public static boolean isSameAnalysisData(AnalysisData o1, AnalysisData o2) {
+        return o1 == o2
+        || (o1 != null && o2 !=null && o1.getName().equals(o2.getName()));
     }
 
 }

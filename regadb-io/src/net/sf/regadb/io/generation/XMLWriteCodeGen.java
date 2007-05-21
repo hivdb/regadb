@@ -128,6 +128,10 @@ public class XMLWriteCodeGen
                 {
                     writeClassCode += startChar + primValEl + ".addContent(XMLTools.dateToRelaxNgString("+ var + "));";
                 }
+                else if(fieldType.indexOf("[B")>-1)
+                {
+                    writeClassCode += startChar + primValEl + ".addContent(XMLTools.base64Encoding("+ var + "));";
+                }
                 else
                 {
                     writeClassCode += startChar + primValEl + ".addContent("+ var + ".toString());";

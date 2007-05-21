@@ -45,41 +45,43 @@ public class ExportToXML
 	HashMap<TestObject, Integer> TestObjectPMap = new HashMap<TestObject, Integer>();
 	HashMap<TestNominalValue, Integer> TestNominalValuePMap = new HashMap<TestNominalValue, Integer>();
 	HashMap<Attribute, Integer> AttributePMap = new HashMap<Attribute, Integer>();
+	HashMap<AttributeGroup, Integer> AttributeGroupPMap = new HashMap<AttributeGroup, Integer>();
 	HashMap<AttributeNominalValue, Integer> AttributeNominalValuePMap = new HashMap<AttributeNominalValue, Integer>();
 	HashMap<Analysis, Integer> AnalysisPMap = new HashMap<Analysis, Integer>();
 	HashMap<AnalysisData, Integer> AnalysisDataPMap = new HashMap<AnalysisData, Integer>();
-	public void writeAaMutation(AaMutation AaMutationvar, Element parentNode)
+	public void writeAaSequence(AaSequence AaSequencevar, Element parentNode)
 	{
-		if(AaMutationvar==null)
+		if(AaSequencevar==null)
 		{
 			return;
 		}
-		Element positionprimitiveValEl = new Element("position");
-		positionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getPosition()));
-		parentNode.addContent(positionprimitiveValEl);
-		if(AaMutationvar.getAaReference()!=null)
+		if(AaSequencevar.getProtein()!=null &&AaSequencevar.getProtein().getAbbreviation()!=null)
 		{
-			Element aaReferenceprimitiveValEl = new Element("aaReference");
-			aaReferenceprimitiveValEl.addContent(AaMutationvar.getAaReference().toString());
-			parentNode.addContent(aaReferenceprimitiveValEl);
+			Element proteinvar = new Element("protein");
+			parentNode.addContent(proteinvar);
+			proteinvar.addContent(AaSequencevar.getProtein().getAbbreviation());
 		}
-		if(AaMutationvar.getAaMutation()!=null)
+		Element firstAaPosprimitiveValEl = new Element("firstAaPos");
+		firstAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getFirstAaPos()));
+		parentNode.addContent(firstAaPosprimitiveValEl);
+		Element lastAaPosprimitiveValEl = new Element("lastAaPos");
+		lastAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getLastAaPos()));
+		parentNode.addContent(lastAaPosprimitiveValEl);
+		Element aaMutationsEl = new Element("aaMutations");
+		parentNode.addContent(aaMutationsEl);
+		for (AaMutation AaMutationloopvar : AaSequencevar.getAaMutations())
 		{
-			Element aaMutationprimitiveValEl = new Element("aaMutation");
-			aaMutationprimitiveValEl.addContent(AaMutationvar.getAaMutation().toString());
-			parentNode.addContent(aaMutationprimitiveValEl);
+			Element aaMutations_elEl = new Element("aaMutations-el");
+			aaMutationsEl.addContent(aaMutations_elEl);
+			writeAaMutation(AaMutationloopvar,aaMutations_elEl);
 		}
-		if(AaMutationvar.getNtReferenceCodon()!=null)
+		Element aaInsertionsEl = new Element("aaInsertions");
+		parentNode.addContent(aaInsertionsEl);
+		for (AaInsertion AaInsertionloopvar : AaSequencevar.getAaInsertions())
 		{
-			Element ntReferenceCodonprimitiveValEl = new Element("ntReferenceCodon");
-			ntReferenceCodonprimitiveValEl.addContent(AaMutationvar.getNtReferenceCodon().toString());
-			parentNode.addContent(ntReferenceCodonprimitiveValEl);
-		}
-		if(AaMutationvar.getNtMutationCodon()!=null)
-		{
-			Element ntMutationCodonprimitiveValEl = new Element("ntMutationCodon");
-			ntMutationCodonprimitiveValEl.addContent(AaMutationvar.getNtMutationCodon().toString());
-			parentNode.addContent(ntMutationCodonprimitiveValEl);
+			Element aaInsertions_elEl = new Element("aaInsertions-el");
+			aaInsertionsEl.addContent(aaInsertions_elEl);
+			writeAaInsertion(AaInsertionloopvar,aaInsertions_elEl);
 		}
 	}
 	public void writeTest(Test Testvar, Element parentNode)
@@ -155,23 +157,23 @@ public class ExportToXML
 			parentNode.addContent(serviceConfigprimitiveValEl);
 		}
 	}
-	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
+	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
 	{
-		if(TherapyGenericvar==null)
+		if(TherapyCommercialvar==null)
 		{
 			return;
 		}
-		if(TherapyGenericvar.getId().getDrugGeneric()!=null &&TherapyGenericvar.getId().getDrugGeneric().getGenericId()!=null)
+		if(TherapyCommercialvar.getId().getDrugCommercial()!=null &&TherapyCommercialvar.getId().getDrugCommercial().getName()!=null)
 		{
-			Element drugGenericvar = new Element("drugGeneric");
-			parentNode.addContent(drugGenericvar);
-			drugGenericvar.addContent(TherapyGenericvar.getId().getDrugGeneric().getGenericId());
+			Element drugCommercialvar = new Element("drugCommercial");
+			parentNode.addContent(drugCommercialvar);
+			drugCommercialvar.addContent(TherapyCommercialvar.getId().getDrugCommercial().getName());
 		}
-		if(TherapyGenericvar.getDayDosageMg()!=null)
+		if(TherapyCommercialvar.getDayDosageUnits()!=null)
 		{
-			Element dayDosageMgprimitiveValEl = new Element("dayDosageMg");
-			dayDosageMgprimitiveValEl.addContent(TherapyGenericvar.getDayDosageMg().toString());
-			parentNode.addContent(dayDosageMgprimitiveValEl);
+			Element dayDosageUnitsprimitiveValEl = new Element("dayDosageUnits");
+			dayDosageUnitsprimitiveValEl.addContent(TherapyCommercialvar.getDayDosageUnits().toString());
+			parentNode.addContent(dayDosageUnitsprimitiveValEl);
 		}
 	}
 	public void writeAnalysis(Analysis Analysisvar, Element parentNode)
@@ -285,64 +287,79 @@ public class ExportToXML
 			}
 		}
 	}
-	public void writeAaSequence(AaSequence AaSequencevar, Element parentNode)
+	public void writeNtSequence(NtSequence NtSequencevar, Element parentNode)
 	{
-		if(AaSequencevar==null)
+		if(NtSequencevar==null)
 		{
 			return;
 		}
-		if(AaSequencevar.getProtein()!=null &&AaSequencevar.getProtein().getAbbreviation()!=null)
+		if(NtSequencevar.getNucleotides()!=null)
 		{
-			Element proteinvar = new Element("protein");
-			parentNode.addContent(proteinvar);
-			proteinvar.addContent(AaSequencevar.getProtein().getAbbreviation());
+			Element nucleotidesprimitiveValEl = new Element("nucleotides");
+			nucleotidesprimitiveValEl.addContent(NtSequencevar.getNucleotides().toString());
+			parentNode.addContent(nucleotidesprimitiveValEl);
 		}
-		Element firstAaPosprimitiveValEl = new Element("firstAaPos");
-		firstAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getFirstAaPos()));
-		parentNode.addContent(firstAaPosprimitiveValEl);
-		Element lastAaPosprimitiveValEl = new Element("lastAaPos");
-		lastAaPosprimitiveValEl.addContent(String.valueOf(AaSequencevar.getLastAaPos()));
-		parentNode.addContent(lastAaPosprimitiveValEl);
-		Element aaMutationsEl = new Element("aaMutations");
-		parentNode.addContent(aaMutationsEl);
-		for (AaMutation AaMutationloopvar : AaSequencevar.getAaMutations())
+		if(NtSequencevar.getLabel()!=null)
 		{
-			Element aaMutations_elEl = new Element("aaMutations-el");
-			aaMutationsEl.addContent(aaMutations_elEl);
-			writeAaMutation(AaMutationloopvar,aaMutations_elEl);
+			Element labelprimitiveValEl = new Element("label");
+			labelprimitiveValEl.addContent(NtSequencevar.getLabel().toString());
+			parentNode.addContent(labelprimitiveValEl);
 		}
-		Element aaInsertionsEl = new Element("aaInsertions");
-		parentNode.addContent(aaInsertionsEl);
-		for (AaInsertion AaInsertionloopvar : AaSequencevar.getAaInsertions())
+		if(NtSequencevar.getSequenceDate()!=null)
 		{
-			Element aaInsertions_elEl = new Element("aaInsertions-el");
-			aaInsertionsEl.addContent(aaInsertions_elEl);
-			writeAaInsertion(AaInsertionloopvar,aaInsertions_elEl);
+			Element sequenceDateprimitiveValEl = new Element("sequenceDate");
+			sequenceDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(NtSequencevar.getSequenceDate()));
+			parentNode.addContent(sequenceDateprimitiveValEl);
+		}
+		Element aaSequencesEl = new Element("aaSequences");
+		parentNode.addContent(aaSequencesEl);
+		for (AaSequence AaSequenceloopvar : NtSequencevar.getAaSequences())
+		{
+			Element aaSequences_elEl = new Element("aaSequences-el");
+			aaSequencesEl.addContent(aaSequences_elEl);
+			writeAaSequence(AaSequenceloopvar,aaSequences_elEl);
+		}
+		Element testResultsEl = new Element("testResults");
+		parentNode.addContent(testResultsEl);
+		for (TestResult TestResultloopvar : NtSequencevar.getTestResults())
+		{
+			Element testResults_elEl = new Element("testResults-el");
+			testResultsEl.addContent(testResults_elEl);
+			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
-	public void writeAaInsertion(AaInsertion AaInsertionvar, Element parentNode)
+	public void writeAaMutation(AaMutation AaMutationvar, Element parentNode)
 	{
-		if(AaInsertionvar==null)
+		if(AaMutationvar==null)
 		{
 			return;
 		}
 		Element positionprimitiveValEl = new Element("position");
-		positionprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getPosition()));
+		positionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getPosition()));
 		parentNode.addContent(positionprimitiveValEl);
-		Element insertionOrderprimitiveValEl = new Element("insertionOrder");
-		insertionOrderprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getInsertionOrder()));
-		parentNode.addContent(insertionOrderprimitiveValEl);
-		if(AaInsertionvar.getAaInsertion()!=null)
+		if(AaMutationvar.getAaReference()!=null)
 		{
-			Element aaInsertionprimitiveValEl = new Element("aaInsertion");
-			aaInsertionprimitiveValEl.addContent(AaInsertionvar.getAaInsertion().toString());
-			parentNode.addContent(aaInsertionprimitiveValEl);
+			Element aaReferenceprimitiveValEl = new Element("aaReference");
+			aaReferenceprimitiveValEl.addContent(AaMutationvar.getAaReference().toString());
+			parentNode.addContent(aaReferenceprimitiveValEl);
 		}
-		if(AaInsertionvar.getNtInsertionCodon()!=null)
+		if(AaMutationvar.getAaMutation()!=null)
 		{
-			Element ntInsertionCodonprimitiveValEl = new Element("ntInsertionCodon");
-			ntInsertionCodonprimitiveValEl.addContent(AaInsertionvar.getNtInsertionCodon().toString());
-			parentNode.addContent(ntInsertionCodonprimitiveValEl);
+			Element aaMutationprimitiveValEl = new Element("aaMutation");
+			aaMutationprimitiveValEl.addContent(AaMutationvar.getAaMutation().toString());
+			parentNode.addContent(aaMutationprimitiveValEl);
+		}
+		if(AaMutationvar.getNtReferenceCodon()!=null)
+		{
+			Element ntReferenceCodonprimitiveValEl = new Element("ntReferenceCodon");
+			ntReferenceCodonprimitiveValEl.addContent(AaMutationvar.getNtReferenceCodon().toString());
+			parentNode.addContent(ntReferenceCodonprimitiveValEl);
+		}
+		if(AaMutationvar.getNtMutationCodon()!=null)
+		{
+			Element ntMutationCodonprimitiveValEl = new Element("ntMutationCodon");
+			ntMutationCodonprimitiveValEl.addContent(AaMutationvar.getNtMutationCodon().toString());
+			parentNode.addContent(ntMutationCodonprimitiveValEl);
 		}
 	}
 	public void writeValueType(ValueType ValueTypevar, Element parentNode)
@@ -472,95 +489,73 @@ public class ExportToXML
 			writeTherapy(Therapyloopvar,therapies_elEl);
 		}
 	}
-	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element parentNode)
+	public void writeAttributeGroup(AttributeGroup AttributeGroupvar, Element parentNode)
 	{
-		if(AttributeNominalValuevar==null)
+		if(AttributeGroupvar==null)
 		{
 			return;
 		}
-		if(AttributeNominalValuevar.getValue()!=null)
+		if(AttributeGroupvar.getGroupName()!=null)
 		{
-			Element valueprimitiveValEl = new Element("value");
-			valueprimitiveValEl.addContent(AttributeNominalValuevar.getValue().toString());
-			parentNode.addContent(valueprimitiveValEl);
+			Element groupNameprimitiveValEl = new Element("groupName");
+			groupNameprimitiveValEl.addContent(AttributeGroupvar.getGroupName().toString());
+			parentNode.addContent(groupNameprimitiveValEl);
 		}
 	}
-	public void writeTherapy(Therapy Therapyvar, Element parentNode)
+	public void writeAaInsertion(AaInsertion AaInsertionvar, Element parentNode)
 	{
-		if(Therapyvar==null)
+		if(AaInsertionvar==null)
 		{
 			return;
 		}
-		if(Therapyvar.getStartDate()!=null)
+		Element positionprimitiveValEl = new Element("position");
+		positionprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getPosition()));
+		parentNode.addContent(positionprimitiveValEl);
+		Element insertionOrderprimitiveValEl = new Element("insertionOrder");
+		insertionOrderprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getInsertionOrder()));
+		parentNode.addContent(insertionOrderprimitiveValEl);
+		if(AaInsertionvar.getAaInsertion()!=null)
 		{
-			Element startDateprimitiveValEl = new Element("startDate");
-			startDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStartDate()));
-			parentNode.addContent(startDateprimitiveValEl);
+			Element aaInsertionprimitiveValEl = new Element("aaInsertion");
+			aaInsertionprimitiveValEl.addContent(AaInsertionvar.getAaInsertion().toString());
+			parentNode.addContent(aaInsertionprimitiveValEl);
 		}
-		if(Therapyvar.getStopDate()!=null)
+		if(AaInsertionvar.getNtInsertionCodon()!=null)
 		{
-			Element stopDateprimitiveValEl = new Element("stopDate");
-			stopDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStopDate()));
-			parentNode.addContent(stopDateprimitiveValEl);
-		}
-		if(Therapyvar.getComment()!=null)
-		{
-			Element commentprimitiveValEl = new Element("comment");
-			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
-			parentNode.addContent(commentprimitiveValEl);
-		}
-		Element therapyCommercialsEl = new Element("therapyCommercials");
-		parentNode.addContent(therapyCommercialsEl);
-		for (TherapyCommercial TherapyCommercialloopvar : Therapyvar.getTherapyCommercials())
-		{
-			Element therapyCommercials_elEl = new Element("therapyCommercials-el");
-			therapyCommercialsEl.addContent(therapyCommercials_elEl);
-			writeTherapyCommercial(TherapyCommercialloopvar,therapyCommercials_elEl);
-		}
-		Element therapyGenericsEl = new Element("therapyGenerics");
-		parentNode.addContent(therapyGenericsEl);
-		for (TherapyGeneric TherapyGenericloopvar : Therapyvar.getTherapyGenerics())
-		{
-			Element therapyGenerics_elEl = new Element("therapyGenerics-el");
-			therapyGenericsEl.addContent(therapyGenerics_elEl);
-			writeTherapyGeneric(TherapyGenericloopvar,therapyGenerics_elEl);
+			Element ntInsertionCodonprimitiveValEl = new Element("ntInsertionCodon");
+			ntInsertionCodonprimitiveValEl.addContent(AaInsertionvar.getNtInsertionCodon().toString());
+			parentNode.addContent(ntInsertionCodonprimitiveValEl);
 		}
 	}
-	public void writeNtSequence(NtSequence NtSequencevar, Element parentNode)
+	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)
 	{
-		if(NtSequencevar==null)
+		if(ViralIsolatevar==null)
 		{
 			return;
 		}
-		if(NtSequencevar.getNucleotides()!=null)
+		if(ViralIsolatevar.getSampleId()!=null)
 		{
-			Element nucleotidesprimitiveValEl = new Element("nucleotides");
-			nucleotidesprimitiveValEl.addContent(NtSequencevar.getNucleotides().toString());
-			parentNode.addContent(nucleotidesprimitiveValEl);
+			Element sampleIdprimitiveValEl = new Element("sampleId");
+			sampleIdprimitiveValEl.addContent(ViralIsolatevar.getSampleId().toString());
+			parentNode.addContent(sampleIdprimitiveValEl);
 		}
-		if(NtSequencevar.getLabel()!=null)
+		if(ViralIsolatevar.getSampleDate()!=null)
 		{
-			Element labelprimitiveValEl = new Element("label");
-			labelprimitiveValEl.addContent(NtSequencevar.getLabel().toString());
-			parentNode.addContent(labelprimitiveValEl);
+			Element sampleDateprimitiveValEl = new Element("sampleDate");
+			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
+			parentNode.addContent(sampleDateprimitiveValEl);
 		}
-		if(NtSequencevar.getSequenceDate()!=null)
+		Element ntSequencesEl = new Element("ntSequences");
+		parentNode.addContent(ntSequencesEl);
+		for (NtSequence NtSequenceloopvar : ViralIsolatevar.getNtSequences())
 		{
-			Element sequenceDateprimitiveValEl = new Element("sequenceDate");
-			sequenceDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(NtSequencevar.getSequenceDate()));
-			parentNode.addContent(sequenceDateprimitiveValEl);
-		}
-		Element aaSequencesEl = new Element("aaSequences");
-		parentNode.addContent(aaSequencesEl);
-		for (AaSequence AaSequenceloopvar : NtSequencevar.getAaSequences())
-		{
-			Element aaSequences_elEl = new Element("aaSequences-el");
-			aaSequencesEl.addContent(aaSequences_elEl);
-			writeAaSequence(AaSequenceloopvar,aaSequences_elEl);
+			Element ntSequences_elEl = new Element("ntSequences-el");
+			ntSequencesEl.addContent(ntSequences_elEl);
+			writeNtSequence(NtSequenceloopvar,ntSequences_elEl);
 		}
 		Element testResultsEl = new Element("testResults");
 		parentNode.addContent(testResultsEl);
-		for (TestResult TestResultloopvar : NtSequencevar.getTestResults())
+		for (TestResult TestResultloopvar : ViralIsolatevar.getTestResults())
 		{
 			Element testResults_elEl = new Element("testResults-el");
 			testResultsEl.addContent(testResults_elEl);
@@ -711,11 +706,26 @@ public class ExportToXML
 				writeValueType(Attributevar.getValueType(),wrappervalueType);
 			}
 		}
-		if(Attributevar.getAttributeGroup()!=null &&Attributevar.getAttributeGroup().getGroupName()!=null)
+		if(Attributevar.getAttributeGroup()!=null)
 		{
-			Element attributeGroupvar = new Element("attributeGroup");
-			parentNode.addContent(attributeGroupvar);
-			attributeGroupvar.addContent(Attributevar.getAttributeGroup().getGroupName());
+			Integer indexattributeGroup = AttributeGroupPMap.get(Attributevar.getAttributeGroup());
+			Element wrapperattributeGroup = new Element("attributeGroup");
+			parentNode.addContent(wrapperattributeGroup);
+			if(indexattributeGroup!=null)
+			{
+				Element refElementattributeGroup= new Element("reference");
+				wrapperattributeGroup.addContent(refElementattributeGroup);
+				refElementattributeGroup.addContent(indexattributeGroup.toString());
+			}
+			else
+			{
+				indexattributeGroup = new Integer(AttributeGroupPMap.size());
+				Element refElementattributeGroup= new Element("reference");
+				wrapperattributeGroup.addContent(refElementattributeGroup);
+				refElementattributeGroup.addContent(indexattributeGroup.toString());
+				AttributeGroupPMap.put(Attributevar.getAttributeGroup(),indexattributeGroup);
+				writeAttributeGroup(Attributevar.getAttributeGroup(),wrapperattributeGroup);
+			}
 		}
 		if(Attributevar.getName()!=null)
 		{
@@ -828,58 +838,58 @@ public class ExportToXML
 			parentNode.addContent(sampleIdprimitiveValEl);
 		}
 	}
-	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
+	public void writeTherapy(Therapy Therapyvar, Element parentNode)
 	{
-		if(TherapyCommercialvar==null)
+		if(Therapyvar==null)
 		{
 			return;
 		}
-		if(TherapyCommercialvar.getId().getDrugCommercial()!=null &&TherapyCommercialvar.getId().getDrugCommercial().getName()!=null)
+		if(Therapyvar.getStartDate()!=null)
 		{
-			Element drugCommercialvar = new Element("drugCommercial");
-			parentNode.addContent(drugCommercialvar);
-			drugCommercialvar.addContent(TherapyCommercialvar.getId().getDrugCommercial().getName());
+			Element startDateprimitiveValEl = new Element("startDate");
+			startDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStartDate()));
+			parentNode.addContent(startDateprimitiveValEl);
 		}
-		if(TherapyCommercialvar.getDayDosageUnits()!=null)
+		if(Therapyvar.getStopDate()!=null)
 		{
-			Element dayDosageUnitsprimitiveValEl = new Element("dayDosageUnits");
-			dayDosageUnitsprimitiveValEl.addContent(TherapyCommercialvar.getDayDosageUnits().toString());
-			parentNode.addContent(dayDosageUnitsprimitiveValEl);
+			Element stopDateprimitiveValEl = new Element("stopDate");
+			stopDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Therapyvar.getStopDate()));
+			parentNode.addContent(stopDateprimitiveValEl);
+		}
+		if(Therapyvar.getComment()!=null)
+		{
+			Element commentprimitiveValEl = new Element("comment");
+			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
+			parentNode.addContent(commentprimitiveValEl);
+		}
+		Element therapyCommercialsEl = new Element("therapyCommercials");
+		parentNode.addContent(therapyCommercialsEl);
+		for (TherapyCommercial TherapyCommercialloopvar : Therapyvar.getTherapyCommercials())
+		{
+			Element therapyCommercials_elEl = new Element("therapyCommercials-el");
+			therapyCommercialsEl.addContent(therapyCommercials_elEl);
+			writeTherapyCommercial(TherapyCommercialloopvar,therapyCommercials_elEl);
+		}
+		Element therapyGenericsEl = new Element("therapyGenerics");
+		parentNode.addContent(therapyGenericsEl);
+		for (TherapyGeneric TherapyGenericloopvar : Therapyvar.getTherapyGenerics())
+		{
+			Element therapyGenerics_elEl = new Element("therapyGenerics-el");
+			therapyGenericsEl.addContent(therapyGenerics_elEl);
+			writeTherapyGeneric(TherapyGenericloopvar,therapyGenerics_elEl);
 		}
 	}
-	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)
+	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element parentNode)
 	{
-		if(ViralIsolatevar==null)
+		if(AttributeNominalValuevar==null)
 		{
 			return;
 		}
-		if(ViralIsolatevar.getSampleId()!=null)
+		if(AttributeNominalValuevar.getValue()!=null)
 		{
-			Element sampleIdprimitiveValEl = new Element("sampleId");
-			sampleIdprimitiveValEl.addContent(ViralIsolatevar.getSampleId().toString());
-			parentNode.addContent(sampleIdprimitiveValEl);
-		}
-		if(ViralIsolatevar.getSampleDate()!=null)
-		{
-			Element sampleDateprimitiveValEl = new Element("sampleDate");
-			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
-			parentNode.addContent(sampleDateprimitiveValEl);
-		}
-		Element ntSequencesEl = new Element("ntSequences");
-		parentNode.addContent(ntSequencesEl);
-		for (NtSequence NtSequenceloopvar : ViralIsolatevar.getNtSequences())
-		{
-			Element ntSequences_elEl = new Element("ntSequences-el");
-			ntSequencesEl.addContent(ntSequences_elEl);
-			writeNtSequence(NtSequenceloopvar,ntSequences_elEl);
-		}
-		Element testResultsEl = new Element("testResults");
-		parentNode.addContent(testResultsEl);
-		for (TestResult TestResultloopvar : ViralIsolatevar.getTestResults())
-		{
-			Element testResults_elEl = new Element("testResults-el");
-			testResultsEl.addContent(testResults_elEl);
-			writeTestResult(TestResultloopvar,testResults_elEl);
+			Element valueprimitiveValEl = new Element("value");
+			valueprimitiveValEl.addContent(AttributeNominalValuevar.getValue().toString());
+			parentNode.addContent(valueprimitiveValEl);
 		}
 	}
 	public void writeAnalysisData(AnalysisData AnalysisDatavar, Element parentNode)
@@ -918,8 +928,27 @@ public class ExportToXML
 		if(AnalysisDatavar.getData()!=null)
 		{
 			Element dataprimitiveValEl = new Element("data");
-			dataprimitiveValEl.addContent(AnalysisDatavar.getData().toString());
+			dataprimitiveValEl.addContent(XMLTools.base64Encoding(AnalysisDatavar.getData()));
 			parentNode.addContent(dataprimitiveValEl);
+		}
+	}
+	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
+	{
+		if(TherapyGenericvar==null)
+		{
+			return;
+		}
+		if(TherapyGenericvar.getId().getDrugGeneric()!=null &&TherapyGenericvar.getId().getDrugGeneric().getGenericId()!=null)
+		{
+			Element drugGenericvar = new Element("drugGeneric");
+			parentNode.addContent(drugGenericvar);
+			drugGenericvar.addContent(TherapyGenericvar.getId().getDrugGeneric().getGenericId());
+		}
+		if(TherapyGenericvar.getDayDosageMg()!=null)
+		{
+			Element dayDosageMgprimitiveValEl = new Element("dayDosageMg");
+			dayDosageMgprimitiveValEl.addContent(TherapyGenericvar.getDayDosageMg().toString());
+			parentNode.addContent(dayDosageMgprimitiveValEl);
 		}
 	}
 	public void writePatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element parentNode)

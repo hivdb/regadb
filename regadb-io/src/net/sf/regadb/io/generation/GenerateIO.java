@@ -59,13 +59,11 @@ public class GenerateIO
         stringRepresentedFields_.add(dbPackage + "DrugGeneric");
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
         stringRepresentedFields_.add(dbPackage + "Protein");
-        stringRepresentedFields_.add(dbPackage + "AttributeGroup");
         stringRepresentedFields_.add(dbPackage + "AnalysisType");
         
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AttributeGroup", "groupName"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
         
         pointerClasses_.add(dbPackage + "Test");
@@ -75,6 +73,7 @@ public class GenerateIO
         pointerClasses_.add(dbPackage + "TestNominalValue");
         
         pointerClasses_.add(dbPackage + "Attribute");
+        pointerClasses_.add(dbPackage + "AttributeGroup");
         pointerClasses_.add(dbPackage + "AttributeNominalValue");
         
         pointerClasses_.add(dbPackage + "Analysis");
@@ -542,6 +541,12 @@ public class GenerateIO
         else if(fieldType.toLowerCase().indexOf("boolean")>-1)
         {
             data.setAttribute("type", "boolean");
+            data.setAttribute(getDataTypeLib());
+            return data;
+        }
+        else if(fieldType.toLowerCase().indexOf("[b")>-1)
+        {
+            data.setAttribute("type", "base64Binary");
             data.setAttribute(getDataTypeLib());
             return data;
         }

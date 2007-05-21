@@ -6,13 +6,16 @@
  */
 package net.sf.regadb.io.importXML;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
@@ -21,6 +24,7 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.util.xml.XMLTools;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -70,6 +74,14 @@ public class ImportFromXMLBase extends DefaultHandler{
         return value != null ? Integer.parseInt(value) : null;
     }
 
+    protected byte[] parsebyteArray(String value) throws SAXException{
+        try {
+            return XMLTools.base64Decoding(value);
+        } catch (IOException e) {
+            throw new SAXException(new ImportException("Cannot parse byte []: " + value));
+        }
+    }
+    
     protected Integer nullValueInteger() {
         return null;
     }
@@ -91,6 +103,10 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected String nullValueString() {
+        return null;
+    }
+    
+    protected byte[] nullValuebyteArray() {
         return null;
     }
 
@@ -116,6 +132,10 @@ public class ImportFromXMLBase extends DefaultHandler{
             throw new SAXException(new ImportException("Could not resolve commercial drug: '" + value + "'"));
         else
             return result;
+    }
+    protected AnalysisType resolveAnalysisType(String value) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void loadDatabaseObjects(Transaction t) {
@@ -213,9 +233,16 @@ public class ImportFromXMLBase extends DefaultHandler{
         return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
     }
 
+    protected boolean equals(AnalysisType analysisType, AnalysisType analysisType2) {
+        return analysisType == analysisType2;
+    }
+
     protected boolean equals(Integer revision, Integer revision2) {
-        // TODO Auto-generated method stub
-        return false;
+        return revision.equals(revision2);
+    }
+    
+    protected boolean equals(byte[] data, byte[] data2) {
+        return Arrays.equals(data, data2);
     }
 
     protected void sync(Transaction t, DrugGeneric o, DrugGeneric dbo, boolean simulate) {
@@ -227,4 +254,5 @@ public class ImportFromXMLBase extends DefaultHandler{
         // TODO Auto-generated method stub
         
     }
+
 }
