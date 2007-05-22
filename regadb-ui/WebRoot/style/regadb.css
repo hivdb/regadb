@@ -221,3 +221,12 @@
 {
 	padding: 3px;
 }
+
+*.form-field-textarea-edit-invalid
+{
+	background-color: red;
+}
+
+*.form-field-textarea-edit-valid
+{
+}
