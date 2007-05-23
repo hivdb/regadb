@@ -16,7 +16,6 @@ import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 
 public class EditableTable<DataType> extends WContainerWidget
 {
-    private WPushButton addButton_;
     private WPushButton removeButton_;
     
     private WTable itemTable_;
@@ -42,14 +41,6 @@ public class EditableTable<DataType> extends WContainerWidget
         //buttons
         WContainerWidget buttonContainer = new WContainerWidget(this);
         buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
-        addButton_ = new WPushButton(tr("editableDataTable.button.addItem"), buttonContainer);
-        addButton_.clicked.addListener(new SignalListener<WMouseEvent>()
-                {
-                    public void notify(WMouseEvent a)
-                    {
-                        addItem(null);
-                    }
-                });
         removeButton_ = new WPushButton(tr("editableDataTable.button.removeItem"), buttonContainer);
         removeButton_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
@@ -58,12 +49,6 @@ public class EditableTable<DataType> extends WContainerWidget
                         removeItems();
                     }
                 });
-        
-        if(editableList_.getInteractionState()==InteractionState.Viewing)
-        {
-            addButton_.setHidden(true);
-            removeButton_.setHidden(true);
-        }
         
         addWidget(buttonContainer);
         
@@ -80,12 +65,21 @@ public class EditableTable<DataType> extends WContainerWidget
         {
             addItem(item);
         }
+        
+        if(editableList_.getInteractionState()==InteractionState.Viewing)
+        {
+            removeButton_.setHidden(true);
+        }
+        else
+        {
+            addLine(editableList_.addRow(), true);
+        }
     }
     
     private void removeItems()
     {
         ArrayList<Integer> indexes = new ArrayList<Integer>();
-        for(int i = 1; i < itemTable_.numRows(); i++)
+        for(int i = 1; i < itemTable_.numRows()-1; i++)
         {
             if(((WCheckBox)itemTable_.elementAt(i, 0).children().get(0)).isChecked())
             {
@@ -105,21 +99,47 @@ public class EditableTable<DataType> extends WContainerWidget
     
     private void addItem(DataType item)
     {
+        addLine(editableList_.getWidgets(item), item==null);
+        
+        itemList_.add(item);
+    }
+    
+    private void addLine(WWidget[] widgets, boolean lineToAdd)
+    {
         int colIndex;
         int rowNum;
         
         rowNum = itemTable_.numRows();
-        if(editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing)
+        if((editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) && !lineToAdd)
         {
             itemTable_.putElementAt(rowNum, 0, new WCheckBox());
         }
         colIndex = 1;
-        for(WWidget widget : editableList_.getWidgets(item))
+        for(WWidget widget : widgets)
         {
+            widget.setParent(null);
             itemTable_.putElementAt(rowNum, colIndex, widget);
             colIndex++;
         }
-        itemList_.add(item);
+        
+        if(lineToAdd)
+        {
+            WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
+            itemTable_.putElementAt(rowNum, colIndex, addButton);
+            addButton.clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                        public void notify(WMouseEvent a) 
+                        {
+                            WWidget[] widgets = getWidgets(itemTable_.numRows()-1);
+                            widgets = editableList_.fixAddRow(widgets);
+                            itemTable_.deleteRow(itemTable_.numRows()-1);
+                            addLine(widgets, false);
+                            
+                            addLine(editableList_.addRow(), true);
+                            itemList_.add(null);
+                        }
+                    });
+        }
     }
     
     public void saveData()
@@ -146,11 +166,14 @@ public class EditableTable<DataType> extends WContainerWidget
     
     private WWidget[] getWidgets(int row)
     {
-        WWidget[] widgets = new WWidget[itemTable_.numColumns()-1];
+        int size = editableList_.getTableHeaders().length;
+        WWidget[] widgets = new WWidget[size];
         
-        for(int i = 1; i < itemTable_.numColumns(); i++)
+        int processedFields = 0;
+        for(int i =1 ; i < itemTable_.numColumns() && processedFields<size; i++)
         {
             widgets[i-1] = itemTable_.elementAt(row, i).children().get(0);
+            processedFields++;
         }
         
         return widgets;

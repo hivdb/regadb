@@ -5,11 +5,12 @@ import net.sf.witty.wt.WWidget;
 
 public interface IEditableTable<DataType>
 {
-    //this method gets a null value when adding an emtpy row
     public WWidget[] getWidgets(DataType type);
     public void changeData(DataType type, WWidget[] widgets);
     public void addData(WWidget[] widgets);
     public void deleteData(DataType type);
     public String[] getTableHeaders();
+    public WWidget[] addRow();
+    public WWidget[] fixAddRow(WWidget[] widgets);
     public InteractionState getInteractionState();
 }
