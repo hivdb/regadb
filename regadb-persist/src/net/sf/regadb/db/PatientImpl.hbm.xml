@@ -27,13 +27,13 @@
     <property name="deathDate" type="date">
       <column name="death_date" length="13" />
     </property>
-    <set name="patientDatasets" inverse="false" cascade="all">
+    <set name="patientDatasets" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
       <one-to-many class="net.sf.regadb.db.PatientDataset" />
     </set>
-    <set name="testResults" inverse="false" cascade="all">
+    <set name="testResults" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
@@ -45,13 +45,13 @@
       </key>
       <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
     </set>
-    <set name="viralIsolates" inverse="false" cascade="all">
+    <set name="viralIsolates" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
       <one-to-many class="net.sf.regadb.db.ViralIsolate" />
     </set>
-    <set name="therapies" inverse="false" cascade="all">
+    <set name="therapies" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
       </key>
