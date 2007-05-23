@@ -66,13 +66,13 @@ public class EditableTable<DataType> extends WContainerWidget
             addItem(item);
         }
         
-        if(editableList_.getInteractionState()==InteractionState.Viewing)
+        if(editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing)
         {
-            removeButton_.setHidden(true);
+            addLine(editableList_.addRow(), true);
         }
         else
         {
-            addLine(editableList_.addRow(), true);
+            removeButton_.setHidden(true);
         }
     }
     
@@ -176,6 +176,26 @@ public class EditableTable<DataType> extends WContainerWidget
             processedFields++;
         }
         
+        return widgets;
+    }
+    
+    public WWidget[] getAllWidgets(int column)
+    {
+        WWidget[] widgets;
+        if(itemTable_.numRows()==0)
+        {
+            widgets = new WWidget[0];
+        }
+        else
+        {
+            boolean addButton = itemTable_.elementAt(itemTable_.numRows()-1, itemTable_.numColumns()-1).children().get(0) instanceof WPushButton;
+            widgets = new WWidget[itemTable_.numRows()-1-(addButton?1:0)];
+            
+            for(int i = 1; i < widgets.length; i++)
+            {
+                widgets[i-1] = itemTable_.elementAt(i, column+1).children().get(0);
+            }
+        }
         return widgets;
     }
 }

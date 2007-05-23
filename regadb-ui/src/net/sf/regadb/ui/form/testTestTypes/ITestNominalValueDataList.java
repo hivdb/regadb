@@ -44,7 +44,7 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
     public void deleteData(TestNominalValue type) 
     {
     	testType_.getTestNominalValues().remove(type);
-    	if(type.getNominalValueIi()!=null)
+    	if(type!=null && type.getNominalValueIi()!=null)
     	{
     		transaction_.delete(type);
     	}
@@ -67,10 +67,7 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
         WWidget[] widgets = new WWidget[1];
         widgets[0] = tf;
         
-        if(type!=null)
-        {
         tf.setText(type.getValue());
-        }
         
         return widgets;
     }
@@ -88,5 +85,27 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
     public void setTransaction(Transaction transaction) 
     {
         this.transaction_ = transaction;
+    }
+
+    public WWidget[] addRow() 
+    {
+        TextField tf = new TextField(form_.getInteractionState(), form_);
+        
+        WWidget[] widgets = new WWidget[1];
+        widgets[0] = tf;
+        
+        return widgets;
+    }
+
+    public WWidget[] fixAddRow(WWidget[] widgets) 
+    {
+        TextField tf = new TextField(form_.getInteractionState(), form_);
+        
+        WWidget[] widgetsToReturn = new WWidget[1];
+        widgetsToReturn[0] = tf;
+        
+        tf.setText(((TextField)widgets[0]).text());
+        
+        return widgetsToReturn;
     }
 }

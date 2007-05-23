@@ -85,4 +85,21 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
     {
         this.transaction_ = transaction;
     }
+
+    public WWidget[] addRow()
+    {
+        WWidget[] widgets = new WWidget[1];
+        widgets[0] = new TextField(form_.getInteractionState(), form_);
+        
+        return widgets;
+    }
+
+    public WWidget[] fixAddRow(WWidget[] widgets)
+    {
+        WWidget[] widgetsToReturn = new WWidget[1];
+        TextField tf = new TextField(form_.getInteractionState(), form_);
+        tf.setText(((TextField)widgets[0]).text());
+        widgetsToReturn[0] = tf; 
+        return widgetsToReturn;
+    }
 }

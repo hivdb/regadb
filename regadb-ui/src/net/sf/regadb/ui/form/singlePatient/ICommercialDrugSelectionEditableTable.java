@@ -12,6 +12,7 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import net.sf.witty.wt.WWidget;
 
@@ -31,7 +32,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public void addData(WWidget[] widgets)
     {
         DrugCommercial dc = ((DataComboMessage<DrugCommercial>)((ComboBox)widgets[0]).currentText()).getValue();
-        TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(therapy_, dc), Double.parseDouble(((TextField)widgets[1]).text()));
+        TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(therapy_, dc), getDosage((TextField)widgets[1]));
         therapy_.getTherapyCommercials().add(tc);
     }
 
@@ -75,7 +76,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
 
     public WWidget[] getWidgets(TherapyCommercial tc)
     {
-        ComboBox combo = new ComboBox(form_.getInteractionState(), form_);
+        ComboBox combo = new ComboBox(InteractionState.Viewing, form_);
         TextField tf = new TextField(form_.getInteractionState(), form_);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -91,8 +92,11 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         widgets[1] = tf;
         
         if(tc!=null)
-        {
-            tf.setText(tc.getDayDosageUnits()+"");
+        {        
+            if(tc.getDayDosageUnits()!=null)
+            {
+                tf.setText(tc.getDayDosageUnits()+"");
+            }
             combo.selectItem(new DataComboMessage<DrugCommercial>(tc.getId().getDrugCommercial(), tc.getId().getDrugCommercial().getName()));
         }
         
@@ -102,5 +106,35 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public void setTransaction(Transaction transaction) 
     {
         this.transaction_ = transaction;
+    }
+
+    public WWidget[] addRow() 
+    {
+        ComboBox combo = new ComboBox(form_.getInteractionState(), form_);
+        TextField tf = new TextField(form_.getInteractionState(), form_);
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
+        for(DrugCommercial dc: commercialDrugs)
+        {
+            combo.addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
+        }
+        t.commit();
+        
+        WWidget[] widgets = new WWidget[2];
+        widgets[0] = combo;
+        widgets[1] = tf;
+        
+        return widgets;
+    }
+
+    public WWidget[] fixAddRow(WWidget[] widgets) 
+    {
+        DrugCommercial dc = ((DataComboMessage<DrugCommercial>)(((ComboBox)widgets[0]).currentText())).getValue();
+        Double units = getDosage((TextField)widgets[1]);
+        
+        TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(null, dc), units);
+        
+        return getWidgets(tc);
     }
 }

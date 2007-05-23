@@ -61,12 +61,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public WWidget[] getWidgets(DatasetAccess da)
     {
         WWidget[] widgets = new WWidget[2];
-        if(da==null) //adding new row
-        {
-            
-        }
-        else
-        {
+        
             //dataset
             TextField datasetTF = new TextField(InteractionState.Viewing, form_);
             datasetTF.setText(da.getId().getDataset().getDescription());
@@ -123,8 +118,17 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                 
                 comboRights.setCurrentItem(selected);
             }
-        }
         
         return widgets;
+    }
+
+    public WWidget[] addRow() 
+    {
+        return null;
+    }
+
+    public WWidget[] fixAddRow(WWidget[] widgets) 
+    {
+        return null;
     }
 }
