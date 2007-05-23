@@ -27,7 +27,8 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
     {
         type_ = item;
         
-        ((WArgMessage)label().text()).changeArgument(textVar_, getArgument(type_));
+        String value = item==null?"":getArgument(type_);
+        ((WArgMessage)label().text()).changeArgument(textVar_, value);
         
         refresh();
     }
