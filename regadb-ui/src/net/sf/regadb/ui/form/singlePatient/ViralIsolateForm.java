@@ -109,8 +109,12 @@ public class ViralIsolateForm extends FormWidget
         _mainForm.startAnalysis();
         
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
 	}
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
+    }
 }

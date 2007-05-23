@@ -197,8 +197,12 @@ public class TestTypeForm extends FormWidget
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(testType_);
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypesView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
 	}
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
+    }
 }

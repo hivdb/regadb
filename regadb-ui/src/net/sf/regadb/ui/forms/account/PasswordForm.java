@@ -133,9 +133,13 @@ public class PasswordForm extends FormWidget
             
             MessageBox.showWarningMessage(tr("form.settings.user.password.message"));
             
-            expandNode_.expand();
-            expandNode_.refreshAllChildren();
-            selectNode_.selectNode();
+            redirectToView(expandNode_, selectNode_);
         }
+    }
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(expandNode_, selectNode_);
     }
 }

@@ -112,8 +112,12 @@ private Test test_;
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(test_);
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().testView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
        }
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
+    }
 }

@@ -78,8 +78,12 @@ public class AttributeGroupForm extends FormWidget
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(attributeGroup_);
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
+    }
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
     }
 }

@@ -16,6 +16,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
@@ -207,8 +208,12 @@ public class AttributeForm extends FormWidget
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(attribute_);
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().attributesView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
+    }
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
     }
 }

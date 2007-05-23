@@ -28,4 +28,10 @@ public class UpdateForm extends FormWidget
     {        
         
     }
+    
+    @Override
+    public void cancel()
+    {
+        
+    }
 }

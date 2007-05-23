@@ -149,9 +149,13 @@ public class TherapyForm extends FormWidget
 		update(therapy_, t);
 		t.commit();
 		
-		RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesView.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
 	}
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
+    }
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
@@ -13,6 +14,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
@@ -88,6 +90,13 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                     }
                 });
         buttonContainer.addWidget(_cancelButton);
+        _cancelButton.clicked.addListener(new SignalListener<WMouseEvent>()
+                {
+            public void notify(WMouseEvent a) 
+            {
+                cancel();
+            }
+        });
         buttonContainer.addWidget(_helpButton);
         buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
         if(!isEditable())
@@ -113,6 +122,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     }
     
     public abstract void saveData();
+    
+    public abstract void cancel();
     
     protected void update(Serializable o, Transaction t)
     {
@@ -149,5 +160,12 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         {
             formValidation_.setHidden(false);
         }
+    }
+    
+    protected void redirectToView(TreeMenuNode expandNode, TreeMenuNode selectNode)
+    {
+        expandNode.expand();
+        expandNode.refreshAllChildren();
+        selectNode.selectNode();
     }
 }

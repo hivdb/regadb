@@ -14,6 +14,7 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
@@ -200,9 +201,13 @@ public class MeasurementForm extends FormWidget
 		update(testResult_, t);
 		t.commit();
 		
-		RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(testResult_);
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.refreshAllChildren();
-		RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(testResult_);
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().measurementSelected, RegaDBMain.getApp().getTree().getTreeContent().measurementView);
 	}
+    
+    @Override
+    public void cancel()
+    {
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().measurementSelected, RegaDBMain.getApp().getTree().getTreeContent().measurementView);
+    }
 }

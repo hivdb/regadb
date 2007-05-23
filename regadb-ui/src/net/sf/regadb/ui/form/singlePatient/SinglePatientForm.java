@@ -345,7 +345,13 @@ public class SinglePatientForm extends FormWidget
         update(patient_, t);
         t.commit();
         
-        //update the tree
+        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
+        RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+    }
+    
+    @Override
+    public void cancel()
+    {
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
     }
