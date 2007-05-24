@@ -12,6 +12,9 @@
     <property name="name" type="string">
       <column name="name" length="100" not-null="true" unique="true" />
     </property>
+    <property name="id" type="java.lang.Integer">
+      <column name="id" />
+    </property>
   </class>
 </hibernate-mapping>
 
