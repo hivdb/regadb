@@ -7,6 +7,7 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -29,6 +30,11 @@ public class TestMeasurement
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } 
+        catch (DisabledUserException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         
         Login login2 = null;
@@ -42,6 +48,11 @@ public class TestMeasurement
             e.printStackTrace();
         }
         catch (WrongPasswordException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+        catch (DisabledUserException e) 
         {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -2,6 +2,7 @@ package net.sf.regadb.ui.forms.login;
 
 import java.util.ArrayList;
 
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -106,7 +107,12 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 		{
 			passwordTF.flagErroneous();
 			return false;
-		}
+		} 
+        catch (DisabledUserException e) 
+        {
+            uidTF.flagErroneous();
+            return false;
+        }
 	}
 	
 	public WContainerWidget getWContainer()

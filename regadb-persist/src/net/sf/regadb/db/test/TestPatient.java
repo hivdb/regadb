@@ -1,6 +1,7 @@
 package net.sf.regadb.db.test;
 
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -23,7 +24,12 @@ public class TestPatient
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
+        catch (DisabledUserException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		
 		Transaction t = login.createTransaction();
 		

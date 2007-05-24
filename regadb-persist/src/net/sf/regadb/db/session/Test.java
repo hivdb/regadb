@@ -20,6 +20,7 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 
@@ -97,7 +98,11 @@ public class Test {
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (DisabledUserException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
         if (login == null) {
             throw new RuntimeException("Could not login with given username/password.");

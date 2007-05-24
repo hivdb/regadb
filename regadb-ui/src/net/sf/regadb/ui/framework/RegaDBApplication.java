@@ -1,12 +1,12 @@
 package net.sf.regadb.ui.framework;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -56,7 +56,7 @@ public class RegaDBApplication extends WApplication
         return login_;
     }
     
-    public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException
+    public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
     	login_ = Login.authenticate(uid, pwd);
     }

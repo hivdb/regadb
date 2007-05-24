@@ -8,6 +8,7 @@ package net.sf.regadb.db.session;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
@@ -38,12 +39,19 @@ public class Login {
      * @throws WrongPasswordException 
      * @throws WrongUidException 
      */
-    public static Login authenticate(String uid, String passwd) throws WrongUidException, WrongPasswordException {
+    public static Login authenticate(String uid, String passwd) throws WrongUidException, WrongPasswordException, DisabledUserException {
         Login login = new Login(uid);
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
-        if (loginMethod.authenticate(uid, passwd, login)!=null) 
+        SettingsUser su = loginMethod.authenticate(uid, passwd, login);
+        
+        if(su.getEnabled()==null || !su.getEnabled())
+        {
+            throw new DisabledUserException();
+        }
+        
+        if (su!=null)
         {
             return login;
         } 
