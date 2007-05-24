@@ -2,6 +2,8 @@ package net.sf.regadb.install.initdb;
 
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.QueryDefinitionParameterType;
+import net.sf.regadb.db.QueryDefinitionParameterTypes;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.ValueType;
@@ -22,12 +24,13 @@ public class InitRegaDB
         initValueTypes(session);
         initProteins(session);
         initAnalysisTypes(session);
+        initQueryDefinitionParameterTypes(session);
         
         session.getTransaction().commit();
         session.close();
     }
     
-    private static void addAdminUser(Session session)
+	private static void addAdminUser(Session session)
     {
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");
@@ -94,4 +97,27 @@ public class InitRegaDB
         
         session.save(wts);
     }
+    
+    private static void initQueryDefinitionParameterTypes(Session session) {
+		QueryDefinitionParameterType string = new QueryDefinitionParameterType("String", QueryDefinitionParameterTypes.STRING.getValue());
+		QueryDefinitionParameterType integer = new QueryDefinitionParameterType("Integer", QueryDefinitionParameterTypes.INTEGER.getValue());
+		QueryDefinitionParameterType doubleType = new QueryDefinitionParameterType("Double", QueryDefinitionParameterTypes.DOUBLE.getValue());
+		QueryDefinitionParameterType date = new QueryDefinitionParameterType("Date", QueryDefinitionParameterTypes.DATE.getValue());
+		QueryDefinitionParameterType genericDrug = new QueryDefinitionParameterType("GenericDrug", QueryDefinitionParameterTypes.GENERICDRUG.getValue());
+		QueryDefinitionParameterType commercialDrug = new QueryDefinitionParameterType("CommercialDrug", QueryDefinitionParameterTypes.COMMERCIALDRUG.getValue());
+		QueryDefinitionParameterType test = new QueryDefinitionParameterType("Test", QueryDefinitionParameterTypes.TEST.getValue());
+		QueryDefinitionParameterType testType = new QueryDefinitionParameterType("TestType", QueryDefinitionParameterTypes.TESTTYPE.getValue());
+		QueryDefinitionParameterType protein = new QueryDefinitionParameterType("Protein", QueryDefinitionParameterTypes.PROTEIN.getValue());
+		
+
+		session.save(string);
+		session.save(integer);
+		session.save(doubleType);
+		session.save(date);
+		session.save(genericDrug);
+		session.save(commercialDrug);
+		session.save(test);
+		session.save(testType);
+		session.save(protein);
+	}
 }
