@@ -200,9 +200,7 @@ public class Transaction {
      */
     @SuppressWarnings("unchecked")
     public List<Dataset> getCurrentUsersDatasets() {
-        Query q = session.createQuery("from Dataset dataset where dataset.datasetAccesses.permissions >= 1");
-
-        return q.list();
+        return getCurrentUsersDatasets(Privileges.ANONYMOUS_READONLY);
     }
     
     /**
@@ -211,8 +209,13 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Dataset> getCurrentUsersDatasets(Privileges privilege) 
     {
-        Query q = session.createQuery("from Dataset dataset where dataset.datasetAccesses.permissions >= :privilege");
+        Query q = session.createQuery("select dataset from Dataset dataset " +
+                "join dataset.datasetAccesses as dataset_access " +
+                "where dataset_access.permissions >= :privilege " +
+                "and dataset_access.id.settingsUser.uid = :uid ");
+        
         q.setParameter("privilege", privilege.getValue());
+        q.setParameter("uid", login.getUid());
         
         return q.list();
     }
