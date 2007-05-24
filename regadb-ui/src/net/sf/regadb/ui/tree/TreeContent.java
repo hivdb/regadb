@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetAccess.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryRunForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
@@ -13,6 +16,8 @@ import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetAccess.DatasetAccessForm;
+import net.sf.regadb.ui.form.query.QueryDefinitionForm;
+import net.sf.regadb.ui.form.query.QueryRunForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -36,6 +41,11 @@ import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
+import net.sf.regadb.ui.tree.items.queryDefinition.QueryDefinitionItem;
+import net.sf.regadb.ui.tree.items.queryDefinition.QueryDefinitionSelectedItem;
+import net.sf.regadb.ui.tree.items.queryDefinition.QueryItem;
+import net.sf.regadb.ui.tree.items.queryDefinition.QueryRunItem;
+import net.sf.regadb.ui.tree.items.queryDefinition.QueryRunSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.ui.tree.items.singlePatient.MeasurementSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
@@ -93,6 +103,19 @@ public class TreeContent
     public DatasetAccessSelectedItem datasetAccessSelected;
     public ActionItem datasetAccessView;
     public ActionItem datasetAccessEdit;
+    
+    public QueryItem queryMain;
+    public QueryDefinitionItem queryDefinitionMain;
+    public QueryDefinitionSelectedItem queryDefinitionSelected;
+    public ActionItem queryDefinitionSelect;
+    public ActionItem queryDefinitionAdd;
+    public ActionItem queryDefinitionSelectedView;
+    public ActionItem queryDefinitionSelectedEdit;
+    public QueryRunItem queryRunMain;
+    public QueryRunSelectedItem queryRunSelected;
+    public ActionItem queryRunSelect;
+    public ActionItem queryRunSelectedView;
+    public ActionItem queryRunSelectedRun;
     
     public AdministratorItem administratorMain;
     public ActionItem enabledUsers;
@@ -480,6 +503,61 @@ public class TreeContent
             public void performAction(TreeMenuNode node)
             {
                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
+            }
+        });
+        
+        queryMain = new QueryItem(rootItem);
+        queryDefinitionMain = new QueryDefinitionItem(queryMain);
+        queryDefinitionSelect = new ActionItem(rootItem.tr("menu.query.definition.select"), queryDefinitionMain, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new SelectQueryDefinitionForm());
+            }
+        });
+        queryDefinitionAdd = new ActionItem(rootItem.tr("menu.query.definition.add"), queryDefinitionMain, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.add") ,InteractionState.Adding, new QueryDefinition()));
+            }
+        });
+        queryDefinitionSelected = new QueryDefinitionSelectedItem(queryDefinitionMain);
+        queryDefinitionSelectedView = new ActionItem(rootItem.tr("menu.query.definition.selected.view"), queryDefinitionSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.selected.view"), InteractionState.Viewing, queryDefinitionSelected.getSelectedItem()));
+            }
+        });
+        queryDefinitionSelectedEdit = new ActionItem(rootItem.tr("menu.query.definition.selected.edit"), queryDefinitionSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+            	RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.selected.edit"), InteractionState.Editing, queryDefinitionSelected.getSelectedItem()));
+            }
+        });
+        queryRunMain = new QueryRunItem(queryMain);
+        queryRunSelect = new ActionItem(rootItem.tr("menu.query.run.select"), queryRunMain, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new SelectQueryRunForm());
+            }
+        });
+        queryRunSelected = new QueryRunSelectedItem(queryRunMain);
+        queryRunSelectedView = new ActionItem(rootItem.tr("menu.query.run.selected.view"), queryRunSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new QueryRunForm(WWidget.tr("form.query.run.selected.view"), InteractionState.Viewing, queryRunSelected.getSelectedItem()));
+            }
+        });
+        queryRunSelectedRun = new ActionItem(rootItem.tr("menu.query.run.selected.run"), queryRunSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+            	RegaDBMain.getApp().getFormContainer().setForm(new QueryRunForm(WWidget.tr("form.query.run.selected.run"), InteractionState.Viewing, queryRunSelected.getSelectedItem()));
             }
         });
            

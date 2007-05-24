@@ -1023,4 +1023,65 @@ public class Transaction {
         return (DrugCommercial)q.uniqueResult();
        
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<QueryDefinition> getQueryDefinitions(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, boolean ascending)
+    {
+        String queryString = "from QueryDefinition as queryDefinition ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        
+        queryString += " order by " + sortField + (ascending ? " asc" : " desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 
+    {
+         String queryString = "select count(queryDefinition) from QueryDefinition as queryDefinition ";
+            
+         if(!filterConstraints.clause_.equals(" "))
+         {
+             queryString += "where " + filterConstraints.clause_;
+         }
+          
+         Query q = session.createQuery(queryString);
+            
+         for(Pair<String, Object> arg : filterConstraints.arguments_)
+         {
+        	 q.setParameter(arg.getKey(), arg.getValue());
+         }
+            
+         return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    public boolean queryDefinitionStillExists(QueryDefinition queryDefinition)
+    {
+        Query q = session.createQuery("from QueryDefinition " + 
+                                    "where query_definition_ii = :queryDefinitionId");
+        
+        q.setParameter("queryDefinitionId", queryDefinition.getQueryDefinitionIi());
+    
+        return q.uniqueResult() !=null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<QueryDefinitionParameterType> getQueryDefinitionParameterTypes() 
+    {
+        Query q = session.createQuery("from QueryDefinitionParameterType");
+        return q.list();
+    }
 }
