@@ -398,6 +398,11 @@ public class Transaction {
         session.delete(object);
     }
     
+    public void delete(Patient patient)
+    {
+        session.delete(patient.getPatient());
+    }
+    
     public void attach(Serializable o)
     {
         session.lock(o, LockMode.READ);
