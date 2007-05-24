@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -204,5 +205,22 @@ public class TestTypeForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(testType_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().testTypesSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(null);
     }
 }

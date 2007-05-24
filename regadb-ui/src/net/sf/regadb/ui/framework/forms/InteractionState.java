@@ -5,4 +5,5 @@ public enum InteractionState
 	Adding,
 	Editing,
 	Viewing,
+    Deleting,
 }

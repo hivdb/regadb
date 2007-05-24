@@ -1,5 +1,9 @@
 package net.sf.regadb.ui.framework.forms.administrator;
 
+import java.io.Serializable;
+
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.WGroupBox;
@@ -31,6 +35,18 @@ public class UpdateForm extends FormWidget
     
     @Override
     public void cancel()
+    {
+        
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        
+    }
+
+    @Override
+    public void redirectAfterDelete() 
     {
         
     }

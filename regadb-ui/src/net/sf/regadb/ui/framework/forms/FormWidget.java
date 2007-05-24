@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
@@ -36,6 +37,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
     private WPushButton _cancelButton = new WPushButton(tr("form.general.button.cancel"));
     private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
+    private WPushButton _deleteButton = new WPushButton(tr("form.general.button.delete"));
     
     public FormWidget(WMessage formName, InteractionState interactionState)
 	{
@@ -81,31 +83,70 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     protected void addControlButtons()
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
-        buttonContainer.addWidget(_okButton);
-        _okButton.clicked.addListener(new SignalListener<WMouseEvent>()
-                {
-                    public void notify(WMouseEvent a) 
-                    {
-                        confirmAction();
-                    }
-                });
-        buttonContainer.addWidget(_cancelButton);
-        _cancelButton.clicked.addListener(new SignalListener<WMouseEvent>()
-                {
-            public void notify(WMouseEvent a) 
+        
+        if(getInteractionState()==InteractionState.Deleting)
+        {
+            buttonContainer.addWidget(_deleteButton);
+            _deleteButton.clicked.addListener(new SignalListener<WMouseEvent>()
             {
-                cancel();
+                public void notify(WMouseEvent a) 
+                {
+                    final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("msg.warning.delete"));
+                    cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                        public void notify(WMouseEvent a) 
+                        {
+                            deleteAction();
+                            
+                            cmb.hide();
+                        }
+                    });
+                    cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                        public void notify(WMouseEvent a) 
+                        {
+                            cmb.hide();
+                        }
+                    });
+                }
+                });
+        }
+        else
+        {
+            buttonContainer.addWidget(_okButton);
+            _okButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            {
+                public void notify(WMouseEvent a) 
+                {
+                    confirmAction();
+                }
+            });
+            buttonContainer.addWidget(_cancelButton);
+            _cancelButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            {
+                public void notify(WMouseEvent a) 
+                {
+                    cancel();
+                }
+            });
+
+            if(!isEditable())
+            {
+                _okButton.setEnabled(false);
+                _cancelButton.setEnabled(false);
             }
-        });
+        }
+        
         buttonContainer.addWidget(_helpButton);
         buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
-        if(!isEditable())
-        {
-            _okButton.setEnabled(false);
-            _cancelButton.setEnabled(false);
-        }
     }
     
+    private void deleteAction()
+    {
+        deleteObject();        
+        redirectAfterDelete();
+    }
+
     public FormField getTextField(ValueTypes type)
     {
         switch(type)
@@ -124,6 +165,10 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     public abstract void saveData();
     
     public abstract void cancel();
+    
+    public abstract void deleteObject();
+    
+    public abstract void redirectAfterDelete();
     
     protected void update(Serializable o, Transaction t)
     {

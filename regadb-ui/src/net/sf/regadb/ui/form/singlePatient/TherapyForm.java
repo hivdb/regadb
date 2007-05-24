@@ -1,9 +1,11 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -157,5 +159,25 @@ public class TherapyForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        p.getTherapies().remove(therapy_);
+        
+        t.delete(therapy_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(null);
     }
 }

@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,9 +126,9 @@ public class SinglePatientForm extends FormWidget
         firstNameTF.setText(patient.getFirstName());
         lastNameTF.setText(patient.getLastName());
         if(patient.getBirthDate()!=null)
-        birthDateTF.setText(patient.getBirthDate().toString());
+        birthDateTF.setDate(patient.getBirthDate());
         if(patient.getDeathDate()!=null)
-        deathDateTF.setText(patient.getDeathDate().toString());
+        deathDateTF.setDate(patient.getDeathDate());
         
         List<Attribute> attributes;
         if(isEditable())
@@ -354,6 +355,23 @@ public class SinglePatientForm extends FormWidget
     {
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(patient_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().patientSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(null);
     }
     
     private void storeAttributeTF(String text, PatientAttributeValue attributeValue, Attribute attribute, Patient p, Transaction t)

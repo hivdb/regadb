@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -215,5 +216,22 @@ public class AttributeForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(attribute_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().attributesSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(null);
     }
 }

@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
+import java.io.Serializable;
+
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -85,5 +87,22 @@ public class AttributeGroupForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(attributeGroup_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(null);
     }
 }

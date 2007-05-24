@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
+import java.io.Serializable;
 import java.util.List;
 
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
@@ -119,5 +121,22 @@ private Test test_;
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(test_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().testSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(null);
     }
 }

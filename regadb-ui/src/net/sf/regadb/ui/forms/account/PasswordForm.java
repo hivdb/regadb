@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.forms.account;
 
+import java.io.Serializable;
+
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -141,5 +143,17 @@ public class PasswordForm extends FormWidget
     public void cancel()
     {
         redirectToView(expandNode_, selectNode_);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        
     }
 }

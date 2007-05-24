@@ -63,15 +63,18 @@ public class TreeContent
     public ActionItem measurementView;
     public ActionItem measurementEdit;
     public ActionItem measurementsAdd;
+    public ActionItem measurementsDelete;
     public ActionItem therapies;
     public ActionItem therapiesSelect;
     public ActionItem therapiesAdd;
+    public ActionItem therapiesDelete;
     public TherapySelectedItem therapiesSelected;
     public ActionItem therapiesEdit;
     public ActionItem therapiesView;
     public ActionItem viralIsolates;
     public ActionItem viralIsolatesSelect;
     public ActionItem viralIsolatesAdd;
+    public ActionItem viralIsolatesDelete;
     public ViralIsolateSelectedItem viralIsolateSelected;
     public ActionItem viralIsolateView;
     public ActionItem viralIsolateEdit;
@@ -88,50 +91,59 @@ public class TreeContent
     public DatasetAccessItem datasetAccessMain;
     public ActionItem datasetAccessSelect;
     public DatasetAccessSelectedItem datasetAccessSelected;
-    public ActionItem datasetAccessEdit;
     public ActionItem datasetAccessView;
+    public ActionItem datasetAccessEdit;
     
     public AdministratorItem administratorMain;
     public ActionItem enabledUsers;
     public ActionItem registeredUsersSelect;
     public RegisteredUserSelectedItem registeredUserSelected;
+    public ActionItem registeredUserDelete;
     public ActionItem registeredUsersView;
     public ActionItem registeredUsersEdit;
+    public ActionItem registeredUsersDelete;
     public ActionItem registeredUsersChangePassword;
     public ActionItem disabledUsers;
     public ActionItem notRegisteredUsersSelect;
     public NotRegisteredUserSelectedItem notRegisteredUserSelected;
     public ActionItem notRegisteredUsersView;
     public ActionItem notRegisteredUsersEdit;
+    public ActionItem notRegisteredUsersDelete;
     public ActionItem notRegisteredUsersChangePassword;
+    public ActionItem updateFromCentralServer;
 
     public ActionItem attributesSettings;
     public ActionItem attributes;
     public ActionItem attributesSelect;
     public ActionItem attributesAdd;
     public AttributeSelectedItem attributesSelected;
-    public ActionItem attributesEdit;
     public ActionItem attributesView;
+    public ActionItem attributesEdit;
+    public ActionItem attributesDelete;
     public ActionItem attributeGroups;
     public ActionItem attributeGroupsSelect;
     public ActionItem attributeGroupsAdd;
     public AttributeGroupSelectedItem attributeGroupsSelected;
     public ActionItem attributeGroupsView;
     public ActionItem attributeGroupsEdit;
+    public ActionItem attributeGroupsDelete;
     
     public ActionItem testSettings;
     public ActionItem testTypes;
     public ActionItem testTypesSelect;
     public ActionItem testTypesAdd;
-    public ActionItem testTypesEdit;
     public ActionItem testTypesView;
+    public ActionItem testTypesEdit;
+    public ActionItem testTypesDelete;
     public TestTypeSelectedItem testTypeSelected;
     
     public ActionItem test;
     public ActionItem testSelect;
     public ActionItem testAdd;
-    public ActionItem testEdit;
     public ActionItem testView;
+    public ActionItem testEdit;
+    public ActionItem testDelete;
+    
     public TestSelectedItem testSelected;
     
 	public TreeMenuNode setContent(RootItem rootItem)
@@ -191,6 +203,13 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), measurementSelected.getSelectedItem()));
 						}
     				});
+                    measurementsDelete = new ActionItem(rootItem.tr("menu.singlePatient.measurement.delete"), measurementSelected, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Deleting, WWidget.tr("form.measurement.delete"), measurementSelected.getSelectedItem()));
+                        }
+                    });
 
     			therapies = new ActionItem(rootItem.tr("menu.singlePatient.therapies"), patientSelected);
     				therapiesSelect = new ActionItem(rootItem.tr("menu.singlePatient.therapies.select"), therapies, new ITreeAction()
@@ -222,6 +241,13 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedItem()));
 						}
     				});
+                    therapiesDelete = new ActionItem(rootItem.tr("menu.singlePatient.therapies.delete"), therapiesSelected, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Deleting, WWidget.tr("form.therapy.delete"), therapiesSelected.getSelectedItem()));
+                        }
+                    });
     				
     				viralIsolates = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates"), patientSelected);
     				viralIsolatesSelect = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.select"), viralIsolates, new ITreeAction()
@@ -251,6 +277,13 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Editing, WWidget.tr("form.viralIsolate.edit"), viralIsolateSelected.getSelectedItem()));
+                        }
+                    });
+                    viralIsolatesDelete = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.delete"), viralIsolateSelected, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), viralIsolateSelected.getSelectedItem()));
                         }
                     });
     		
@@ -292,6 +325,13 @@ public class TreeContent
                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attribute.edit"), attributesSelected.getSelectedItem()));
                }
            });
+           attributesDelete = new ActionItem(rootItem.tr("menu.attributeSettings.attributes.delete"), attributesSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attribute.delete"), attributesSelected.getSelectedItem()));
+               }
+           });
            
            attributeGroups = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups"), attributesSettings);
            attributeGroupsSelect  = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.select"), attributeGroups, new ITreeAction()
@@ -323,7 +363,13 @@ public class TreeContent
                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedItem()));
                }
            });
-           
+           attributeGroupsDelete = new ActionItem(rootItem.tr("menu.attributeSettings.attributeGroups.delete"), attributeGroupsSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attributeGroups.delete"), attributeGroupsSelected.getSelectedItem()));
+               }
+           });
            
           testSettings = new ActionItem(rootItem.tr("menu.testSettings.testSettings"), rootItem)
            {
@@ -365,7 +411,13 @@ public class TreeContent
                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Editing, WWidget.tr("form.testSettings.testType.edit"),testTypeSelected.getSelectedItem()));
                }
            });
-           
+           testTypesDelete = new ActionItem(rootItem.tr("menu.testSettings.testTypes.delete"), testTypeSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Deleting, WWidget.tr("form.testSettings.testType.delete"),testTypeSelected.getSelectedItem()));
+               }
+           });
            
            //test
            test = new ActionItem(rootItem.tr("menu.testSettings.tests"), testSettings);        
@@ -399,6 +451,13 @@ public class TreeContent
                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Editing, WWidget.tr("form.testSettings.test.edit"),testSelected.getSelectedItem()));
                }
            });
+           testDelete = new ActionItem(rootItem.tr("menu.testSettings.tests.delete"), testSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Deleting, WWidget.tr("form.testSettings.test.delete"),testSelected.getSelectedItem()));
+               }
+           });
 
         datasetAccessMain = new DatasetAccessItem(rootItem);
         datasetAccessSelect = new ActionItem(rootItem.tr("menu.dataset.access.select"), datasetAccessMain, new ITreeAction()
@@ -408,7 +467,7 @@ public class TreeContent
                 RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
             }
         });
-        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccessSelect);
+        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccessMain);
         datasetAccessView = new ActionItem(rootItem.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
         {
             public void performAction(TreeMenuNode node)
@@ -508,6 +567,13 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.edit"), InteractionState.Editing, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
                 }
             });
+            registeredUsersDelete = new ActionItem(rootItem.tr("form.settings.user.delete"), registeredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.delete"), InteractionState.Deleting, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
             registeredUsersChangePassword = new ActionItem(rootItem.tr("form.settings.user.password"), registeredUserSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
@@ -537,6 +603,13 @@ public class TreeContent
                 public void performAction(TreeMenuNode node)
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notRegisteredUser.edit"), InteractionState.Editing, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
+                }
+            });
+            notRegisteredUsersDelete = new ActionItem(rootItem.tr("form.settings.user.delete"), notRegisteredUserSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notregisteredUser.delete"), InteractionState.Deleting, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
                 }
             });
             notRegisteredUsersChangePassword = new ActionItem(rootItem.tr("form.settings.user.password"), notRegisteredUserSelected, new ITreeAction()

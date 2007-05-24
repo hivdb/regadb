@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.Serializable;
+
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -14,7 +16,6 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
@@ -209,5 +210,25 @@ public class MeasurementForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().measurementSelected, RegaDBMain.getApp().getTree().getTreeContent().measurementView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        p.getTestResults().remove(testResult_);
+        
+        t.delete(testResult_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().measurementsSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(null);
     }
 }

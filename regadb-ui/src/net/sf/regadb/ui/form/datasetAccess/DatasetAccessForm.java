@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.form.datasetAccess;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
@@ -56,6 +59,18 @@ public class DatasetAccessForm extends FormWidget
     
     @Override
     public void cancel()
+    {
+        
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        
+    }
+
+    @Override
+    public void redirectAfterDelete() 
     {
         
     }

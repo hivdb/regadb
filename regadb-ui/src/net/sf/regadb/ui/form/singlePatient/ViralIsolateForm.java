@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.Serializable;
+
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -116,5 +118,25 @@ public class ViralIsolateForm extends FormWidget
     public void cancel()
     {
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
+    }
+    
+    @Override
+    public void deleteObject()
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        p.getViralIsolates().remove(viralIsolate_);
+        
+        t.delete(viralIsolate_);
+        
+        t.commit();
+    }
+
+    @Override
+    public void redirectAfterDelete() 
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
     }
 }
