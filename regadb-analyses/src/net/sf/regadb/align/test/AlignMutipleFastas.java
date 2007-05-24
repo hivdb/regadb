@@ -14,6 +14,7 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -35,6 +36,10 @@ public class AlignMutipleFastas
         catch (WrongPasswordException e)
         {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+        catch (DisabledUserException e) 
+        {
             e.printStackTrace();
         }
         

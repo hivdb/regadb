@@ -10,6 +10,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -73,6 +74,11 @@ public class MutationList
                 e.printStackTrace();
             }
             catch (WrongPasswordException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } 
+            catch (DisabledUserException e) 
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
