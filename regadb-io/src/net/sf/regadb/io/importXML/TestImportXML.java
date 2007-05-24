@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
@@ -43,6 +44,11 @@ public class TestImportXML {
             e.printStackTrace();
         }
         catch (WrongPasswordException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+        catch (DisabledUserException e) 
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
