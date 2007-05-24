@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.QueryDefinitionParameterType" table="query_definition_parameter_type" schema="public">
+    <id name="queryDefinitionParameterTypeIi" type="java.lang.Integer">
+      <column name="query_definition_parameter_type_ii" />
+      <generator class="sequence">
+        <param name="sequence">query_definition_parameter_type_query_definition_parameter_type_ii_seq</param>
+      </generator>
+    </id>
+    <property name="name" type="string">
+      <column name="name" length="100" not-null="true" unique="true" />
+    </property>
+  </class>
+</hibernate-mapping>
+
