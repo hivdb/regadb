@@ -15,13 +15,14 @@
         <mapping resource="net/sf/regadb/db/AnalysisData.hbm.xml" />
         <mapping resource="net/sf/regadb/db/SettingsUser.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/QueryDefinitionParameterType.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AttributeGroup.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyDrugs.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestObject.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DatasetAccess.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Therapy.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AttributeNominalValue.hbm.xml" />
