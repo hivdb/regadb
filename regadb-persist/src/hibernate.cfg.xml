@@ -17,7 +17,6 @@
         <mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinitionParameterType.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AttributeGroup.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TherapyDrugs.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
