@@ -17,6 +17,9 @@
     <property name="permissions" type="int">
       <column name="permissions" not-null="true" />
     </property>
+    <property name="provider" type="string">
+      <column name="provider" length="50" not-null="true" />
+    </property>
   </class>
 </hibernate-mapping>
 
