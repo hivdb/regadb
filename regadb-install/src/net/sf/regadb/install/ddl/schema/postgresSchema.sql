@@ -54,7 +54,6 @@ create table public.test_result (test_result_ii integer default nextval('test_re
 create table public.test_type (test_type_ii integer default nextval('test_type_test_type_ii_seq'), version integer  not null, value_type_ii integer , test_object_ii integer  not null, description varchar(50) not null, primary key (test_type_ii));
 create table public.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
 create table public.therapy_commercial (therapy_ii integer  not null, commercial_ii integer  not null, version integer  not null, day_dosage_units float8, primary key (therapy_ii, commercial_ii));
-create table public.therapy_drugs (therapy_ii integer  not null, drugs varchar(255) not null, primary key (therapy_ii, drugs));
 create table public.therapy_generic (therapy_ii integer  not null, generic_ii integer  not null, version integer  not null, day_dosage_mg float8, primary key (therapy_ii, generic_ii));
 create table public.value_type (value_type_ii integer default nextval('value_type_value_type_ii_seq'), version integer  not null, description varchar(50) not null, min float8, max float8, multiple bool, primary key (value_type_ii));
 create table public.viral_isolate (viral_isolate_ii integer default nextval('viral_isolate_viral_isolate_ii_seq'), version integer  not null, patient_ii integer  not null, sample_id varchar(50), sample_date date, primary key (viral_isolate_ii));
