@@ -181,21 +181,20 @@ public class EditableTable<DataType> extends WContainerWidget
     
     public WWidget[] getAllWidgets(int column)
     {
-        WWidget[] widgets;
-        if(itemTable_.numRows()==0)
+        ArrayList<WWidget> widgets = new ArrayList<WWidget>();
+        
+        boolean ignoreLastLine = itemTable_.numColumns()>(editableList_.getTableHeaders().length+1);
+        
+        for(int i = 1; i < itemTable_.numRows(); i++)
         {
-            widgets = new WWidget[0];
+            widgets.add(itemTable_.elementAt(i, column).children().get(0));
         }
-        else
+        
+        if(ignoreLastLine)
         {
-            boolean addButton = itemTable_.elementAt(itemTable_.numRows()-1, itemTable_.numColumns()-1).children().get(0) instanceof WPushButton;
-            widgets = new WWidget[itemTable_.numRows()-1-(addButton?1:0)];
-            
-            for(int i = 1; i < widgets.length; i++)
-            {
-                widgets[i-1] = itemTable_.elementAt(i, column+1).children().get(0);
-            }
+            widgets.remove(widgets.size()-1);
         }
-        return widgets;
+        
+        return (WWidget[])widgets.toArray();
     }
 }
