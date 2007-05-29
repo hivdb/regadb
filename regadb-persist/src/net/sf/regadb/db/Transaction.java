@@ -1091,4 +1091,56 @@ public class Transaction {
         Query q = session.createQuery("from QueryDefinitionParameterType");
         return q.list();
     }
+    
+	public List<Dataset> getDatasets(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+	{
+String queryString = "from Dataset as dataset ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+	}
+
+	public long getDatasetCount(HibernateFilterConstraint filterConstraints) 
+	{
+		String queryString = "select count(description) from Dataset as dataset ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+      
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        return ((Long)q.uniqueResult()).longValue();
+	}
+
+	public boolean datasetStillExists(Dataset dataset) 
+	{
+		Query q = session.createQuery("from Dataset dataset " + 
+        "where dataset.id = :datasetId");
+
+		q.setParameter("datasetId", dataset.getDatasetIi());
+
+		return q.uniqueResult() !=null;
+	}
 }
