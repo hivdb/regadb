@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.datatable.datasetAccess;
+package net.sf.regadb.ui.datatable.datasetSettings;
 
 import java.util.List;
 

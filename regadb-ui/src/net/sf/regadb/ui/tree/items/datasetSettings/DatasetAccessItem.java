@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.tree.items.datasetAccess;
+package net.sf.regadb.ui.tree.items.datasetSettings;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;

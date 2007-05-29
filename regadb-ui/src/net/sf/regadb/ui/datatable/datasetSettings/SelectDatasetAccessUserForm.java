@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.datatable.datasetAccess;
+package net.sf.regadb.ui.datatable.datasetSettings;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.framework.forms.IForm;

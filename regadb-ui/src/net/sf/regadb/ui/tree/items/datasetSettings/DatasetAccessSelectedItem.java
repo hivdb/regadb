@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.tree.items.datasetAccess;
+package net.sf.regadb.ui.tree.items.datasetSettings;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.tree.GenericSelectedItem;

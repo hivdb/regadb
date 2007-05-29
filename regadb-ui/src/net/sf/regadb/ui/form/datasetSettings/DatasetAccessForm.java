@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.datasetAccess;
+package net.sf.regadb.ui.form.datasetSettings;
 
 import java.util.ArrayList;
 import java.util.List;
