@@ -27,6 +27,12 @@
       </key>
       <one-to-many class="net.sf.regadb.db.QueryDefinitionParameter" />
     </set>
+    <set name="queryDefinitionRuns" inverse="false" cascade="all">
+      <key>
+        <column name="query_definition_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.QueryDefinitionRun" />
+    </set>
   </class>
 </hibernate-mapping>
 

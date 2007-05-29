@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 21/05/2007 10:43:10 by Hibernate Tools 3.2.0.beta8
+// Generated 29/05/2007 14:55:59 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +25,9 @@ public class QueryDefinition implements java.io.Serializable {
     private Set<QueryDefinitionParameter> queryDefinitionParameters = new HashSet<QueryDefinitionParameter>(
             0);
 
+    private Set<QueryDefinitionRun> queryDefinitionRuns = new HashSet<QueryDefinitionRun>(
+            0);
+
     // Constructors
 
     /** default constructor */
@@ -34,12 +37,14 @@ public class QueryDefinition implements java.io.Serializable {
     /** full constructor */
     public QueryDefinition(SettingsUser settingsUser, String name,
             String description, String query,
-            Set<QueryDefinitionParameter> queryDefinitionParameters) {
+            Set<QueryDefinitionParameter> queryDefinitionParameters,
+            Set<QueryDefinitionRun> queryDefinitionRuns) {
         this.settingsUser = settingsUser;
         this.name = name;
         this.description = description;
         this.query = query;
         this.queryDefinitionParameters = queryDefinitionParameters;
+        this.queryDefinitionRuns = queryDefinitionRuns;
     }
 
     // Property accessors
@@ -90,6 +95,15 @@ public class QueryDefinition implements java.io.Serializable {
     public void setQueryDefinitionParameters(
             Set<QueryDefinitionParameter> queryDefinitionParameters) {
         this.queryDefinitionParameters = queryDefinitionParameters;
+    }
+
+    public Set<QueryDefinitionRun> getQueryDefinitionRuns() {
+        return this.queryDefinitionRuns;
+    }
+
+    public void setQueryDefinitionRuns(
+            Set<QueryDefinitionRun> queryDefinitionRuns) {
+        this.queryDefinitionRuns = queryDefinitionRuns;
     }
 
 }
