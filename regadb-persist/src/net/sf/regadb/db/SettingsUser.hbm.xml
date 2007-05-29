@@ -39,7 +39,7 @@
     <property name="enabled" type="java.lang.Boolean">
       <column name="enabled" />
     </property>
-    <set name="datasetAccesses" inverse="false" cascade="all">
+    <set name="datasetAccesses" inverse="true" cascade="all">
       <key>
         <column name="uid" length="50" not-null="true" />
       </key>
