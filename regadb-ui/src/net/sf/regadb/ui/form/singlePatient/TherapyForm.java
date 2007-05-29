@@ -14,12 +14,15 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class TherapyForm extends FormWidget
@@ -124,36 +127,63 @@ public class TherapyForm extends FormWidget
 	@Override
 	public void saveData()
 	{
-		Transaction t = RegaDBMain.getApp().createTransaction();
-		
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
-		t.attach(p);
-				
-		therapy_.setStartDate(startDateTF.getDate());
-		
-		therapy_.setStopDate(stopDateTF.getDate());
-		
-		if(canStore(commentTF.text()))
-		{
-			therapy_.setComment(commentTF.text());
-		}
-		else
-		{
-			therapy_.setComment(null);
-		}
-		
-        iCommercialDrugSelectionEditableTable_.setTransaction(t);
-        drugCommercialList_.saveData();
+        List<String> genericDrugs = new ArrayList<String>();
+        ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
+        for(WWidget widget : genericwidgets)
+        {
+            if(!genericDrugs.contains(((ComboBox)widget).currentText().value()))
+            {
+                genericDrugs.add(((ComboBox)widget).currentText().value());
+            }
+        }
         
-        iGenericDrugSelectionEditableTable_.setTransaction(t);
-        drugGenericList_.saveData();
+        List<String> commercialDrugs = new ArrayList<String>();
+        ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
+        for(WWidget widget : commercialwidgets)
+        {
+            if(!commercialDrugs.contains(((ComboBox)widget).currentText().value()))
+            {
+                commercialDrugs.add(((ComboBox)widget).currentText().value());
+            }
+        }
         
-		update(therapy_, t);
-		t.commit();
-		
-        RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
-	}
+        if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
+        {
+            MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
+        }
+        else
+        {
+            Transaction t = RegaDBMain.getApp().createTransaction();
+            
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+            t.attach(p);
+                    
+            therapy_.setStartDate(startDateTF.getDate());
+            
+            therapy_.setStopDate(stopDateTF.getDate());
+            
+            if(canStore(commentTF.text()))
+            {
+                therapy_.setComment(commentTF.text());
+            }
+            else
+            {
+                therapy_.setComment(null);
+            }
+            
+            iCommercialDrugSelectionEditableTable_.setTransaction(t);
+            drugCommercialList_.saveData();
+            
+            iGenericDrugSelectionEditableTable_.setTransaction(t);
+            drugGenericList_.saveData();
+            
+            update(therapy_, t);
+            t.commit();
+            
+            RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
+        }
+    }
     
     @Override
     public void cancel()
