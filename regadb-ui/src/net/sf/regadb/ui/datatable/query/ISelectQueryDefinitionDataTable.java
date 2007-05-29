@@ -12,13 +12,13 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
 {
-    private static String [] _colNames = {"dataTable.queryDefinition.colName.name", "dataTable.queryDefinition.colName.description"};
+    private static String [] _colNames = {"dataTable.queryDefinition.colName.name", "dataTable.queryDefinition.colName.description", "dataTable.queryDefinition.colName.uid"};
     
-    private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description"};
+    private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description", "queryDefinition.settingsUser.uid"};
         
-    private static boolean [] sortable_ = {true, true};
+    private static boolean [] sortable_ = {true, true, true};
     
-    private IFilter[] filters_ = new IFilter[2];
+    private IFilter[] filters_ = new IFilter[3];
     
     public String[] getColNames()
     {
@@ -47,10 +47,11 @@ public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefiniti
 
     public String[] getRowData(QueryDefinition queryDefinition)
     {
-        String[] row = new String[2];
+        String[] row = new String[3];
         
         row[0] = queryDefinition.getName();
         row[1] = queryDefinition.getDescription();
+        row[2] = queryDefinition.getSettingsUser().getUid();
         
         return row;
     }
@@ -59,11 +60,12 @@ public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefiniti
     {
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
+        filters_[2] = new StringFilter();
     }
 
     public void selectAction(QueryDefinition selectedItem)
     {
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(selectedItem);
+    	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView.selectNode();

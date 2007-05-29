@@ -16,4 +16,9 @@ public class QueryDefinitionSelectedItem extends GenericSelectedItem<QueryDefini
     {
         return "" + queryDefinition.getName();
     }
+    
+    public String getQueryDefinitionCreator(QueryDefinition queryDefinition) 
+    {
+        return "" + queryDefinition.getSettingsUser().getUid();
+    }
 }

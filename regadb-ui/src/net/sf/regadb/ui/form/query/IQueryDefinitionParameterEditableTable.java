@@ -50,8 +50,11 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 	public void deleteData(QueryDefinitionParameter qdp) 
 	{
 		queryDefinition.getQueryDefinitionParameters().remove(qdp);
-			
-		transaction.delete(qdp);
+		
+		if(qdp != null)
+		{
+			transaction.delete(qdp);
+		}
 	}
 
 	public InteractionState getInteractionState() 
@@ -126,5 +129,10 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 		QueryDefinitionParameter qdp = new QueryDefinitionParameter(queryDefinitionParameterType, queryDefinition, queryDefinitionParameterName);
         
         return getWidgets(qdp);
+	}
+	
+	public QueryDefinition getQueryDefinition()
+	{
+		return queryDefinition;
 	}
 }

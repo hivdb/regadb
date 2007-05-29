@@ -13,8 +13,10 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class QueryDefinitionForm extends FormWidget
@@ -34,10 +36,12 @@ public class QueryDefinitionForm extends FormWidget
     private TextArea descriptionTA;
     private Label queryL;
     private TextArea queryTA;
+    private Label creatorL;
+    private TextField creatorTF;
     
     public QueryDefinitionForm(WMessage formName, InteractionState interactionState, QueryDefinition queryDefinition)
     {
-        super(formName, interactionState);
+    	super(formName, interactionState);
         
         this.queryDefinition = queryDefinition;
         
@@ -67,6 +71,13 @@ public class QueryDefinitionForm extends FormWidget
         queryTA.setMandatory(true);
         addLineToTable(queryDefinitionGroupTable, queryL, queryTA);
         
+        if(getInteractionState() == InteractionState.Viewing)
+        {
+        	creatorL = new Label(tr("form.query.definition.label.creator"));
+            creatorTF = new TextField(getInteractionState(), this);
+            addLineToTable(queryDefinitionGroupTable, creatorL, creatorTF);
+        }
+        
         queryDefinitionParameterGroup_ = new WGroupBox(tr("form.query.definition.editableTable.parameters"), this);
     	
     	addControlButtons();
@@ -81,6 +92,11 @@ public class QueryDefinitionForm extends FormWidget
             nameTF.setText(queryDefinition.getName());
             descriptionTA.setText(queryDefinition.getDescription());
             queryTA.setText(queryDefinition.getQuery());
+        }
+        
+        if(getInteractionState() == InteractionState.Viewing)
+        {
+            creatorTF.setText(queryDefinition.getSettingsUser().getUid());
         }
         
         t.commit();
@@ -110,7 +126,7 @@ public class QueryDefinitionForm extends FormWidget
         	
         	queryDefinitionParameterEditableTable.setTransaction(t);
         	queryDefinitionParameterList.saveData();
-        	
+    		
         	update(queryDefinition, t);
         	
         	t.commit();
@@ -122,11 +138,41 @@ public class QueryDefinitionForm extends FormWidget
     
     private boolean validateQuery()
     {
-    	if (true)
+    	ArrayList<WWidget> queryDefinitionParameterNames = queryDefinitionParameterList.getAllWidgets(0);
+    	
+    	String[] qdpn = new String[queryDefinitionParameterNames.size()];
+    	
+    	for(int i = 0; i < qdpn.length; i++)
+    	{
+    		qdpn[i] = ((TextField)queryDefinitionParameterNames.get(i)).getFormText();
+    	}
+    	
+    	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+    	
+    	boolean validQuery = t.validateQuery(queryTA.text());
+    	
+    	t.commit();
+    	
+    	if(validQuery)
     	{
     		queryTA.flagValid();
     		
-    		return true;
+    		Transaction trans = RegaDBMain.getApp().getLogin().createTransaction();
+    		
+    		String validQueryParameters = t.validateQueryParameters(queryTA.text(), qdpn);
+        	
+        	trans.commit();
+        	
+        	if(validQueryParameters == null)
+        	{
+        		return true;
+        	}
+        	else
+        	{
+        		MessageBox.showWarningMessage(tr(validQueryParameters));
+        		
+        		return false;
+        	}
     	}
     	else
     	{
@@ -145,12 +191,19 @@ public class QueryDefinitionForm extends FormWidget
 	@Override
 	public void deleteObject() 
 	{
-
+		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+        
+		queryDefinition = RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.getSelectedItem();
+        
+        t.delete(queryDefinition);
+        
+        t.commit();
 	}
 
 	@Override
 	public void redirectAfterDelete() 
 	{
-		
+		RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(null);
 	}
 }
