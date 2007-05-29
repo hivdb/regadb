@@ -37,6 +37,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, DrugGeneric> genericDrugs;
     private Map<String, DrugCommercial> commercialDrugs;
     private Map<String, Protein> proteins;
+    private Map<String, AnalysisType> analysisTypes;
     
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -133,9 +134,12 @@ public class ImportFromXMLBase extends DefaultHandler{
         else
             return result;
     }
-    protected AnalysisType resolveAnalysisType(String value) {
-        // TODO Auto-generated method stub
-        return null;
+    protected AnalysisType resolveAnalysisType(String value) throws SAXException {
+        AnalysisType result = analysisTypes.get(value);
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve analysis type: '" + value + "'"));
+        else
+            return result;
     }
 
     public void loadDatabaseObjects(Transaction t) {
@@ -152,6 +156,11 @@ public class ImportFromXMLBase extends DefaultHandler{
         proteins = new TreeMap<String, Protein>();
         for (Protein p : t.getProteins()) {
             proteins.put(p.getAbbreviation(), p);
+        }
+
+        analysisTypes = new TreeMap<String, AnalysisType>();
+        for (AnalysisType a : t.getAnalysisTypes()) {
+            analysisTypes.put(a.getType(), a);
         }
     }
     

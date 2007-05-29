@@ -32,13 +32,16 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.io.util.Table;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -107,8 +110,6 @@ public class ImportPortugalDB {
     private int CTherapeuticsMonthCollection;
 
     private Map<String, Patient> patientMap;
-    private Test genericViralLoadTest;
-    private Test genericCD4Test;
 
     private ValueType stringValueType;
     private ValueType nominalValueType;
@@ -208,7 +209,7 @@ public class ImportPortugalDB {
 
         for (int i = 1; i < medicinsTable.numRows(); ++i) {
             String id = medicinsTable.valueAt(CMedicinsIdMedicins, i);
-            String code = medicinsTable.valueAt(CMedicinsMedicinCode, i);
+            String code = medicinsTable.valueAt(CMedicinsMedicinCode, i).toUpperCase();
 
             medicinsMap.put(id, new DrugGeneric(null, code, null)); // FIXME
         }
@@ -396,7 +397,7 @@ public class ImportPortugalDB {
           Patient p = patientMap.get(patientId);
           
           if (!viralLoad.equals("") && !viralLoad.equals("0")) {
-              TestResult t = p.createTestResult(genericViralLoadTest);
+              TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
               t.setValue("=" + viralLoad);
               t.setTestDate(createDate(collectionYear, collectionMonth));
               t.setSampleId(sampleId);
@@ -404,7 +405,7 @@ public class ImportPortugalDB {
           }
           
           if (!cd4Count.equals("") && !cd4Count.equals("0")) {
-              TestResult t = p.createTestResult(genericCD4Test);
+              TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
               t.setValue(cd4Count);
               t.setTestDate(createDate(collectionYear, collectionMonth));
               t.setSampleId(sampleId);
@@ -531,7 +532,104 @@ public class ImportPortugalDB {
         
         System.err.println("Sequences: " + seq_found);
     }
-    
+
+    public void importSequencesNoAlign(String sequencesFile) throws FileNotFoundException {
+        System.err.println("Importing sequences ...");
+
+        ExportToXML l = new ExportToXML();
+        Element root = new Element("viralIsolates");
+        
+        HashMap<String, Integer> sampleMap = new HashMap<String, Integer>();
+        for (int i = 1; i < sampleTable.numRows(); ++i) {
+            sampleMap.put(sampleTable.valueAt(CSampleSampleID, i), new Integer(i));
+        }
+
+        File dir = new File(sequenceDirName);
+        File[] files = dir.listFiles();
+        
+        Map<String, Protein> proteins = new HashMap<String, Protein>();
+        proteins.put("PRO", new Protein("PRO", "protease"));
+        proteins.put("RT", new Protein("RT", "reverse transcriptase"));
+
+        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins);
+        
+        int seq_found = 0;
+        for (int i = 0; i < files.length; ++i) {            
+            FastaRead fr = FastaHelper.readFastaFile(files[i], true);
+
+            switch (fr.status_) {
+            case Valid:
+            case ValidButFixed:
+
+                break;
+            case MultipleSequences:
+            case FileNotFound:
+            case Invalid:
+                
+                continue;
+            }
+
+            String seqSampleId = fr.seq_.getName();
+            String seqFileSampleId = files[i].getName();
+            seqFileSampleId = seqFileSampleId.substring(0, seqFileSampleId.indexOf('.'));
+            String seqAltName = seqSampleId;
+            if (seqSampleId.charAt(seqSampleId.length() - 1) == 's')
+                seqAltName = seqAltName.substring(0, seqAltName.length() - 1);
+                
+            String seqFinalSampleId = null;
+            if (sampleMap.containsKey(seqSampleId))
+                seqFinalSampleId = seqSampleId;
+            else
+                if (sampleMap.containsKey(seqFileSampleId))
+                    seqFinalSampleId = seqFileSampleId;
+                else if (sampleMap.containsKey(seqAltName))
+                    seqFinalSampleId = seqAltName;
+
+            if (seqFinalSampleId == null)
+                System.err.println("? " + seqSampleId + " " + seqFileSampleId);
+            else {
+                int row = ((Integer) sampleMap.get(seqFinalSampleId)).intValue();
+                ++seq_found;
+
+                String patientId = sampleTable.valueAt(CSamplePatientID, row);
+
+                Date sampleDate = createDate(sampleTable.valueAt(CSampleYearCollection, row),
+                        sampleTable.valueAt(CSampleMonthCollection, row));
+
+                Patient p = patientMap.get(patientId);
+                ViralIsolate vi = p.createViralIsolate();
+                vi.setSampleDate(sampleDate);
+                vi.setSampleId(seqFinalSampleId);
+                
+                NtSequence nts = new NtSequence(vi);
+                vi.getNtSequences().add(nts);
+                nts.setNucleotides(fr.xna_);
+                nts.setLabel("PT");
+                
+                Element viralIsolateE = new Element("viralIsolates-el");
+                root.addContent(viralIsolateE);
+
+                l.writeViralIsolate(vi, viralIsolateE);                
+            }
+        }
+        
+        Document n = new Document(root);
+        XMLOutputter outputter = new XMLOutputter();
+        outputter.setFormat(Format.getPrettyFormat());
+
+        java.io.FileWriter writer;
+        try {
+            writer = new java.io.FileWriter(sequencesFile);
+            outputter.output(n, writer);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        System.err.println("Sequences: " + seq_found);
+    }
+
     class NominalAttribute {
         int column;
         Attribute attribute;
@@ -689,7 +787,7 @@ public class ImportPortugalDB {
         instance.importViralLoad_CD4();
         instance.importTherapy();
 
-        instance.importSequences();
+        instance.importSequencesNoAlign("sequences.xml");
         instance.importPatientAttributes();
         instance.exportXML("result.xml");
     }

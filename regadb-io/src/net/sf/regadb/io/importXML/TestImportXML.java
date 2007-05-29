@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
@@ -36,7 +37,7 @@ public class TestImportXML {
         Login login = null;
         try
         {
-            login = Login.authenticate("jvsant1", "Kangoer1");
+            login = Login.authenticate("admin", "admin");
         }
         catch (WrongUidException e)
         {
@@ -62,9 +63,9 @@ public class TestImportXML {
         
         FileReader r = new FileReader(new File(args[0]));
 
-        List<Attribute> attributes = instance.readAttributes(new InputSource(r));
+        List<Patient> patients = instance.readPatients(new InputSource(r));
         
-        System.err.println("Read: " + attributes.size() + " attributes");
+        System.err.println("Read: " + patients.size() + " patients");
     }
 
 }

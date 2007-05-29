@@ -120,6 +120,13 @@ public class Transaction {
         return q.list();
     }
     
+    @SuppressWarnings("unchecked")
+    public List<AnalysisType> getAnalysisTypes() {
+        Query q = session.createQuery("from AnalysisType");
+        
+        return q.list();
+    }
+
     public boolean hasTests(TestType testType)
     {
         Query q = session.createQuery("select count(test) from Test test where test.testType.id = :testTypeIdParam");
