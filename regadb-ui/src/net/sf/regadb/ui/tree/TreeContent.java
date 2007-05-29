@@ -4,7 +4,7 @@ import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
-import net.sf.regadb.ui.datatable.datasetAccess.SelectDatasetAccessUserForm;
+import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
@@ -16,7 +16,7 @@ import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
-import net.sf.regadb.ui.form.datasetAccess.DatasetAccessForm;
+import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryRunForm;
@@ -38,8 +38,8 @@ import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
-import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessItem;
-import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessSelectedItem;
+import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessItem;
+import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
@@ -98,7 +98,7 @@ public class TreeContent
     public ActionItem myAccountEdit;
     public ActionItem myAccountCreate;
     public ActionItem myAccountEditPassword;
-    public ActionItem datasetAccess;
+    //public ActionItem datasetAccess;
     public LogoutItem myAccountLogout;
     
     public ActionItem datasetSettings;
@@ -110,7 +110,7 @@ public class TreeContent
     public ActionItem datasetDelete;
     public DatasetSelectedItem datasetSelected;
     
-    public DatasetAccessItem datasetAccessMain;
+    public ActionItem datasetAccess;
     public ActionItem datasetAccessSelect;
     public DatasetAccessSelectedItem datasetAccessSelected;
     public ActionItem datasetAccessView;
@@ -494,30 +494,7 @@ public class TreeContent
                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Deleting, WWidget.tr("form.testSettings.test.delete"),testSelected.getSelectedItem()));
                }
            });
-
-        datasetAccessMain = new DatasetAccessItem(rootItem);
-        datasetAccessSelect = new ActionItem(rootItem.tr("menu.dataset.access.select"), datasetAccessMain, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
-            }
-        });
-        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccessMain);
-        datasetAccessView = new ActionItem(rootItem.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Viewing, WWidget.tr("form.dataset.access.view"),datasetAccessSelected.getSelectedItem()));
-            }
-        });
-        datasetAccessEdit = new ActionItem(rootItem.tr("menu.dataset.access.edit"), datasetAccessSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
-            }
-        });
+        
         
         //DatasetSettings
         datasetSettings = new ActionItem(rootItem.tr("menu.datasetSettings.datasetSettings"), rootItem)
@@ -567,8 +544,36 @@ public class TreeContent
                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Deleting, WWidget.tr("form.datasetSettings.dataset.delete"), datasetSelected.getSelectedItem()));
             }
         });
-
-        
+        datasetAccess = new ActionItem(rootItem.tr("menu.dataset.access"), datasetSettings)
+        {
+            @Override
+            public boolean isEnabled()
+            {
+                return RegaDBMain.getApp().getLogin()!=null;
+            }
+        };
+        datasetAccessSelect = new ActionItem(rootItem.tr("menu.dataset.access.select"), datasetAccess, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
+            }
+        });
+        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccess);
+        datasetAccessView = new ActionItem(rootItem.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Viewing, WWidget.tr("form.dataset.access.view"),datasetAccessSelected.getSelectedItem()));
+            }
+        });
+        datasetAccessEdit = new ActionItem(rootItem.tr("menu.dataset.access.edit"), datasetAccessSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
+            }
+        });
         
         
         
