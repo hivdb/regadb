@@ -5,6 +5,7 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetAccess.SelectDatasetAccessUserForm;
+import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryRunForm;
@@ -16,6 +17,7 @@ import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetAccess.DatasetAccessForm;
+import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryRunForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
@@ -38,6 +40,7 @@ import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
 import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessItem;
 import net.sf.regadb.ui.tree.items.datasetAccess.DatasetAccessSelectedItem;
+import net.sf.regadb.ui.tree.items.datasetSettings.DatasetSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
@@ -97,6 +100,15 @@ public class TreeContent
     public ActionItem myAccountEditPassword;
     public ActionItem datasetAccess;
     public LogoutItem myAccountLogout;
+    
+    public ActionItem datasetSettings;
+    public ActionItem datasets;
+    public ActionItem datasetSelect;
+    public ActionItem datasetAdd;
+    public ActionItem datasetEdit;
+    public ActionItem datasetView;
+    public ActionItem datasetDelete;
+    public DatasetSelectedItem datasetSelected;
     
     public DatasetAccessItem datasetAccessMain;
     public ActionItem datasetAccessSelect;
@@ -505,6 +517,59 @@ public class TreeContent
                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
             }
         });
+        
+        //DatasetSettings
+        datasetSettings = new ActionItem(rootItem.tr("menu.datasetSettings.datasetSettings"), rootItem)
+        {
+             @Override
+             public boolean isEnabled()
+             {
+                 return RegaDBMain.getApp().getLogin()!=null;
+             }
+        }; 
+        
+        datasets = new ActionItem(rootItem.tr("menu.datasetSettings.dataset"), datasetSettings); 
+        datasetSelect  = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.select"), datasets, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetForm());
+            }
+        });
+        datasetAdd = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.add"), datasets, new ITreeAction()
+        {
+             public void performAction(TreeMenuNode node)
+             {
+                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Adding, WWidget.tr("form.datasetSettings.dataset.add"),null));
+                 
+             }
+         });
+        datasetSelected = new DatasetSelectedItem(datasets);
+       datasetView = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.view"), datasetSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Viewing, WWidget.tr("form.datasetSettings.dataset.view"),datasetSelected.getSelectedItem()));
+            }
+        });
+        datasetEdit = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.edit"), datasetSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Editing, WWidget.tr("form.datasetSettings.dataset.edit"),datasetSelected.getSelectedItem()));
+            }
+        });
+        datasetDelete = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.delete"), datasetSelected, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node)
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Deleting, WWidget.tr("form.datasetSettings.dataset.delete"), datasetSelected.getSelectedItem()));
+            }
+        });
+
+        
+        
+        
         
         queryMain = new QueryItem(rootItem);
         queryDefinitionMain = new QueryDefinitionItem(queryMain);
