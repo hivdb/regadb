@@ -948,18 +948,24 @@ public class Transaction {
     }
     
     @SuppressWarnings("unchecked")
-    public List<SettingsUser> getSettingsUsers(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints)
+    public List<SettingsUser> getUsersWhitoutLoggedin(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, String uid)
     {
         String queryString = "from SettingsUser as settingsUser ";
         
         if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += "where " + filterConstraints.clause_;
+            queryString += "where " + filterConstraints.clause_ + "and uid= :uid";
+        }
+        else
+        {
+            queryString += "where not uid= :uid";
         }
         
         queryString += " order by " + sortField;
     
         Query q = session.createQuery(queryString);
+        
+        q.setParameter("uid", uid);
         
         for(Pair<String, Object> arg : filterConstraints.arguments_)
         {
