@@ -1143,4 +1143,18 @@ String queryString = "from Dataset as dataset ";
 
 		return q.uniqueResult() !=null;
 	}
+	
+	public String[] validateQuery(String query)
+	{
+		try
+		{
+			Query q = session.createQuery(query);
+			
+			return q.getNamedParameters();
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
 }
