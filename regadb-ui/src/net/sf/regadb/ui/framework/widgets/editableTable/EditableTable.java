@@ -179,7 +179,7 @@ public class EditableTable<DataType> extends WContainerWidget
         return widgets;
     }
     
-    public WWidget[] getAllWidgets(int column)
+    public ArrayList<WWidget> getAllWidgets(int column)
     {
         ArrayList<WWidget> widgets = new ArrayList<WWidget>();
         
@@ -187,7 +187,7 @@ public class EditableTable<DataType> extends WContainerWidget
         
         for(int i = 1; i < itemTable_.numRows(); i++)
         {
-            widgets.add(itemTable_.elementAt(i, column).children().get(0));
+            widgets.add(itemTable_.elementAt(i, column+1).children().get(0));
         }
         
         if(ignoreLastLine)
@@ -195,6 +195,6 @@ public class EditableTable<DataType> extends WContainerWidget
             widgets.remove(widgets.size()-1);
         }
         
-        return (WWidget[])widgets.toArray();
+        return widgets;
     }
 }
