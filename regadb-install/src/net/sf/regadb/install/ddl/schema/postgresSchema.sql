@@ -15,6 +15,8 @@ create sequence protein_protein_ii_seq;
 create sequence query_definition_parameter_query_definition_parameter_ii_seq;
 create sequence query_definition_parameter_type_query_definition_parameter_type_ii_seq;
 create sequence query_definition_query_definition_ii_seq;
+create sequence query_definition_run_parameter_query_definition_run_parameter_ii_seq;
+create sequence query_definition_run_query_definition_run_ii_seq;
 create sequence test_nominal_value_test_nominal_value_ii_seq;
 create sequence test_object_test_object_ii_seq;
 create sequence test_result_test_result_ii_seq;
@@ -46,6 +48,8 @@ create table public.protein (protein_ii integer default nextval('protein_protein
 create table public.query_definition (query_definition_ii integer default nextval('query_definition_query_definition_ii_seq'), uid varchar(50), name varchar(50), description varchar(255), query varchar(255), primary key (query_definition_ii));
 create table public.query_definition_parameter (query_definition_parameter_ii integer default nextval('query_definition_parameter_query_definition_parameter_ii_seq'), query_definition_parameter_type_ii integer , query_definition_ii integer , name varchar(50), primary key (query_definition_parameter_ii));
 create table public.query_definition_parameter_type (query_definition_parameter_type_ii integer default nextval('query_definition_parameter_type_query_definition_parameter_type_ii_seq'), name varchar(100) not null unique, id integer  not null unique, primary key (query_definition_parameter_type_ii));
+create table public.query_definition_run (query_definition_run_ii integer default nextval('query_definition_run_query_definition_run_ii_seq'), query_definition_ii integer , uid varchar(50), startdate date, enddate date, status integer , result bytea, primary key (query_definition_run_ii));
+create table public.query_definition_run_parameter (query_definition_run_parameter_ii integer default nextval('query_definition_run_parameter_query_definition_run_parameter_ii_seq'), query_definition_parameter_ii integer , query_definition_run_ii integer , value varchar(50), primary key (query_definition_run_parameter_ii));
 create table public.settings_user (uid varchar(50) not null, version integer  not null, test_ii integer , dataset_ii integer , chart_width integer  not null, chart_height integer  not null, password varchar(50), email varchar(100), first_name varchar(50), last_name varchar(50), admin bool, enabled bool, primary key (uid));
 create table public.test (test_ii integer default nextval('test_test_ii_seq'), version integer  not null, analysis_ii integer  unique, test_type_ii integer  not null, description varchar(50) not null, service_class varchar(50), service_data varchar(255), service_config varchar(255), primary key (test_ii));
 create table public.test_nominal_value (nominal_value_ii integer default nextval('test_nominal_value_test_nominal_value_ii_seq'), version integer  not null, test_type_ii integer  not null, value varchar(100) not null, primary key (nominal_value_ii));
@@ -80,6 +84,10 @@ alter table public.patient_dataset add constraint "FK_patient_dataset_dataset" f
 alter table public.query_definition add constraint "FK_query_definition_settings_user" foreign key (uid) references public.settings_user(uid) ON UPDATE CASCADE;
 alter table public.query_definition_parameter add constraint "FK_query_definition_parameter_query_definition_parameter_type" foreign key (query_definition_parameter_type_ii) references public.query_definition_parameter_type(query_definition_parameter_type_ii) ON UPDATE CASCADE;
 alter table public.query_definition_parameter add constraint "FK_query_definition_parameter_query_definition" foreign key (query_definition_ii) references public.query_definition(query_definition_ii) ON UPDATE CASCADE;
+alter table public.query_definition_run add constraint "FK_query_definition_run_query_definition" foreign key (query_definition_ii) references public.query_definition(query_definition_ii) ON UPDATE CASCADE;
+alter table public.query_definition_run add constraint "FK_query_definition_run_settings_user" foreign key (uid) references public.settings_user(uid) ON UPDATE CASCADE;
+alter table public.query_definition_run_parameter add constraint "FK_query_definition_run_parameter_query_definition_parameter" foreign key (query_definition_parameter_ii) references public.query_definition_parameter(query_definition_parameter_ii) ON UPDATE CASCADE;
+alter table public.query_definition_run_parameter add constraint "FK_query_definition_run_parameter_query_definition_run" foreign key (query_definition_run_ii) references public.query_definition_run(query_definition_run_ii) ON UPDATE CASCADE;
 alter table public.settings_user add constraint "FK_settings_user_test" foreign key (test_ii) references public.test(test_ii) ON UPDATE CASCADE;
 alter table public.settings_user add constraint "FK_settings_user_dataset" foreign key (dataset_ii) references public.dataset(dataset_ii) ON UPDATE CASCADE;
 alter table public.test add constraint "FK_test_analysis" foreign key (analysis_ii) references public.analysis(analysis_ii) ON UPDATE CASCADE;
