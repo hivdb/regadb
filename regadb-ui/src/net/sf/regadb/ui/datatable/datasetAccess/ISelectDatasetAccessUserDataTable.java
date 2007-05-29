@@ -32,7 +32,7 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
 
     public List<SettingsUser> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean ascending)
     {
-        return t.getSettingsUsers(startIndex, amountOfRows, filterVarNames_[sortIndex], HibernateStringUtils.filterConstraintsQuery(this));
+        return t.getUsersWhitoutLoggedin(startIndex, amountOfRows, filterVarNames_[sortIndex], HibernateStringUtils.filterConstraintsQuery(this), RegaDBMain.getApp().getLogin().getUid());
     }
 
     public long getDataSetSize(Transaction t)

@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.datasetAccess;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +9,11 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class DatasetAccessForm extends FormWidget
@@ -54,13 +56,38 @@ public class DatasetAccessForm extends FormWidget
     @Override
     public void saveData()
     {
-        
+        List<String> datasets = new ArrayList<String>();
+        ArrayList<WWidget> widgets= datasetList_.getAllWidgets(0);
+        boolean contains=false;
+        for(WWidget widget : widgets)
+        {
+            if(!(datasets.contains(((TextField)widget).text())))
+            {
+                datasets.add(((TextField)widget).text());
+            }
+        }
+        if(widgets.size() != datasets.size())
+        {
+            MessageBox.showWarningMessage(tr("form.dataset.access.edit.warning"));
+        }
+        else
+        {
+            Transaction t = RegaDBMain.getApp().createTransaction();
+            iDatasetAccessSelectionEditableTable_.setTransaction(t);
+            datasetList_.saveData();
+            
+            update(user_,t);
+            t.commit();
+            
+            RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.setSelectedItem(user_);
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetAccessView);
+        }
     }
     
     @Override
     public void cancel()
     {
-        
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetAccessView);
     }
     
     @Override

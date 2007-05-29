@@ -23,6 +23,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
 {
     private FormWidget form_;
     private SettingsUser user_;
+    private Transaction transaction_;
     private Set<DatasetAccess> currentUserDatasetAccess;
     private SettingsUser currentUser_;
     
@@ -41,17 +42,34 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     
     public void addData(WWidget[] widgets)
     {
+        TextField dsTF = (TextField)widgets[0];
+        WComboBox priv = (WComboBox)widgets[1];
+        Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
         
+        for(DatasetAccess cuda : currentUserDatasetAccess)
+        {
+            if(cuda.getId().getDataset().getDescription().equals(dsTF.text()))
+            {
+                DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(user_, cuda.getId().getDataset()),privillege.getValue(), ((TextField)widgets[2]).text());
+                user_.getDatasetAccesses().add(dsa);
+            }
+        }
     }
 
     public void changeData(DatasetAccess da, WWidget[] widgets)
     {
-        
+        WComboBox priv = (WComboBox)widgets[1];
+        Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
+        da.setPermissions(privillege.getValue());
     }
     
     public void deleteData(DatasetAccess da)
     {
-        
+        user_.getDatasetAccesses().remove(da);
+        if(da!=null)
+        {
+            transaction_.delete(da);
+        }
     }
     
     public InteractionState getInteractionState()
@@ -66,7 +84,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     
     public WWidget[] getWidgets(DatasetAccess da)
     {
-        WWidget[] widgets = new WWidget[2];
+        WWidget[] widgets = new WWidget[3];
         
             //dataset
             TextField datasetTF = new TextField(InteractionState.Viewing, form_);
@@ -124,13 +142,23 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                 
                 comboRights.setCurrentItem(selected);
             }
-        
+            
+            //provider user
+            TextField providerTF = new TextField(InteractionState.Viewing, form_);
+            providerTF.setText(da.getProvider());
+            widgets[2] = providerTF;
+            
         return widgets;
+    }
+    
+    public void setTransaction(Transaction transaction) 
+    {
+        this.transaction_ = transaction;
     }
 
     public WWidget[] addRow() 
     {
-        WWidget[] widgets = new WWidget[2];
+        WWidget[] widgets = new WWidget[3];
         
         final WComboBox datasetCombo = new WComboBox();
         final WComboBox privilegesCombo = new WComboBox();
@@ -141,6 +169,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                 setRights(datasetCombo, privilegesCombo);
             }
         });
+        TextField providerTF = new TextField(InteractionState.Viewing, form_);
         
         for(DatasetAccess dsa : currentUserDatasetAccess)
         {
@@ -151,8 +180,11 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         
         setRights(datasetCombo, privilegesCombo);
         
+        providerTF.setText(currentUser_.getUid());
+        
         widgets[0] = datasetCombo;
         widgets[1] = privilegesCombo;
+        widgets[2] = providerTF;
         
         return widgets;
     }
@@ -168,15 +200,15 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         }
     }
 
-    public WWidget[] fixAddRow(WWidget[] widgets) 
+    public WWidget[] fixAddRow(WWidget[] widgets)
     {
         WComboBox ds = (WComboBox)widgets[0];
         DatasetAccess dsaFromAddRow = ((DataComboMessage<DatasetAccess>)ds.currentText()).getValue();
         WComboBox priv = (WComboBox)widgets[1];
         Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
     
-        DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(currentUser_, dsaFromAddRow.getId().getDataset()),privillege.getValue());
-    
+        DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(currentUser_, dsaFromAddRow.getId().getDataset()),privillege.getValue(), ((TextField)widgets[2]).text());
+        
         return getWidgets(dsa);
     }
 }
