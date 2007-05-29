@@ -11,7 +11,9 @@
         <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <mapping resource="net/sf/regadb/db/Analysis.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/QueryDefinitionRunParameter.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/QueryDefinitionRun.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AnalysisData.hbm.xml" />
         <mapping resource="net/sf/regadb/db/SettingsUser.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
@@ -26,8 +28,8 @@
         <mapping resource="net/sf/regadb/db/Therapy.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AttributeNominalValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinitionParameter.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DrugGeneric.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestNominalValue.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/DrugGeneric.hbm.xml" />
         <mapping resource="net/sf/regadb/db/NtSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientImpl.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Protein.hbm.xml" />
