@@ -18,6 +18,7 @@ import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WWidget;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class IDatasetAccessSelectionEditableTable implements IEditableTable<DatasetAccess>
 {
@@ -101,13 +102,17 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                     break;
                 }
             }
-            boolean isProvider = true;
+            boolean isProvider = false;
+            if(da.getProvider().equalsIgnoreCase(currentUser_.getUid()))
+            {
+                isProvider = true;
+            }
             Privileges daPermissions = Privileges.getPrivilege(da.getPermissions());
 
             if(getInteractionState()==InteractionState.Viewing)
             {
                 TextField rightTF = new TextField(InteractionState.Viewing, form_);
-                rightTF.setText(daPermissions.toString());
+                rightTF.setText(getPrivilegeString(daPermissions));
                 widgets[1] = rightTF;
             }
             else
@@ -115,7 +120,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                 WComboBox comboRights = new WComboBox();
                 widgets[1] = comboRights;
                 
-                DataComboMessage<Privileges> selected = new DataComboMessage<Privileges>(daPermissions, daPermissions.toString());
+                DataComboMessage<Privileges> selected = new DataComboMessage<Privileges>(daPermissions, getPrivilegeString(daPermissions));
                 comboRights.addItem(selected);
                 
                 if(loggedInDatasetAccess!=null)
@@ -126,7 +131,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                         for(int i = 1; i<daPermissions.getValue()&&i<=loggedInPermissions.getValue(); i++)
                         {
                             Privileges p = Privileges.getPrivilege(i);
-                            comboRights.insertItem(i-1, new DataComboMessage<Privileges>(p,p.toString()));
+                            comboRights.insertItem(i-1, new DataComboMessage<Privileges>(p,getPrivilegeString(p)));
                         }
                     }
                     
@@ -135,7 +140,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                         if(i<=loggedInDatasetAccess.getPermissions())
                         {
                             Privileges p = Privileges.getPrivilege(i);
-                            comboRights.addItem(new DataComboMessage<Privileges>(p,p.toString()));
+                            comboRights.addItem(new DataComboMessage<Privileges>(p,getPrivilegeString(p)));
                         }
                     }
                 }
@@ -149,6 +154,16 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
             widgets[2] = providerTF;
             
         return widgets;
+    }
+    
+    private WMessage getPrivilegeMessage(Privileges p)
+    {
+        return WWidget.tr("privilege.status."+p.toString());
+    }
+    
+    private String getPrivilegeString(Privileges p)
+    {
+        return WWidget.tr("privilege.status."+p.toString()).value();
     }
     
     public void setTransaction(Transaction transaction) 
@@ -196,7 +211,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         for(int i = 0; i<daPermissions.getValue(); i++)
         {
             Privileges p = Privileges.getPrivilege(i+1);
-            privilegesCombo.addItem(new DataComboMessage<Privileges>(p,p.toString()));
+            privilegesCombo.addItem(new DataComboMessage<Privileges>(p,getPrivilegeString(p)));
         }
     }
 
