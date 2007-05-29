@@ -29,8 +29,8 @@ public class ITestAnalysisDataList implements IEditableTable<AnalysisData>
 	public void addData(WWidget[] widgets) 
 	{
 		
-		  AnalysisData an = new AnalysisData(test_.getAnalysis(),((TextField) widgets[0]).text(), ((WFileUpload) widgets[1]));
-	      test_.getAnalysis().getAnalysisDatas().add(an);
+		  //AnalysisData an = new AnalysisData(test_.getAnalysis(),((TextField) widgets[0]).text(), ((WFileUpload) widgets[1]));
+	      //test_.getAnalysis().getAnalysisDatas().add(an);
 	}
 	
 	public InteractionState getInteractionState() 
@@ -48,7 +48,7 @@ public class ITestAnalysisDataList implements IEditableTable<AnalysisData>
 	public void changeData(AnalysisData analysisData, WWidget[] widgets) 
 	{
 		analysisData.setName(((TextField)widgets[0]).getFormText());
-		analysisData.setData(((WFileUpload)widgets[1]));
+		//analysisData.setData(((WFileUpload)widgets[1]));
 		Analysis a = new Analysis();
 		//a.setAnalysisDatas(analysisData);
 		test_.setAnalysis(a);
@@ -79,5 +79,15 @@ public class ITestAnalysisDataList implements IEditableTable<AnalysisData>
 		this.transaction_ = t;
 		
 	}
+
+    public WWidget[] addRow() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public WWidget[] fixAddRow(WWidget[] widgets) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
