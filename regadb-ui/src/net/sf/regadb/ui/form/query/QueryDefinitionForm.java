@@ -149,30 +149,72 @@ public class QueryDefinitionForm extends FormWidget
     	
     	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
     	
-    	boolean validQuery = t.validateQuery(queryTA.text());
+    	String[] validQueryParameters = t.validateQuery(queryTA.text());
     	
     	t.commit();
     	
-    	if(validQuery)
+    	if(validQueryParameters != null)
     	{
     		queryTA.flagValid();
     		
-    		Transaction trans = RegaDBMain.getApp().getLogin().createTransaction();
+    		int validParameters = 0;
     		
-    		String validQueryParameters = t.validateQueryParameters(queryTA.text(), qdpn);
-        	
-        	trans.commit();
-        	
-        	if(validQueryParameters == null)
-        	{
-        		return true;
-        	}
-        	else
-        	{
-        		MessageBox.showWarningMessage(tr(validQueryParameters));
-        		
-        		return false;
-        	}
+    		if(qdpn.length == 0)
+    		{
+    			if(validQueryParameters.length == 0)
+    			{
+    				return true;
+    			}
+    			else
+    			{
+    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.null"));
+    				
+    				return false;
+    			}
+    		}
+    		else
+    		{
+    			List<String> al = new ArrayList<String>();
+    			
+    			for (String s : qdpn)
+    			{
+    				if(!(al.contains(s)))
+    				{
+    					al.add(s);
+    				}
+    			}
+    			
+    			if(al.size() == qdpn.length)
+    			{
+    				for(String s : qdpn)
+    				{
+    					for(String str : validQueryParameters)
+    					{
+    						if(s.equals(str))
+    						{
+    							validParameters++;
+    						}
+    					}
+    				}
+    				
+    				if(validParameters == qdpn.length)
+    				{
+    					return true;
+    				}
+    				else
+    				{
+    					MessageBox.showWarningMessage(tr("form.query.validate.parameters.error"));
+    					
+    					return false;
+    				}
+    			}
+    			else
+    			{
+    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.duplicate"));
+    				
+    				return false;
+    			}
+    		}
     	}
     	else
     	{
