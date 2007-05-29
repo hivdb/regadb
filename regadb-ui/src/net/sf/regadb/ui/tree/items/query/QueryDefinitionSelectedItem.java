@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.tree.items.queryDefinition;
+package net.sf.regadb.ui.tree.items.query;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.ui.tree.GenericSelectedItem;

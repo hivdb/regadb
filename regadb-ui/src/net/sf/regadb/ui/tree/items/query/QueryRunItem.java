@@ -1,15 +1,15 @@
-package net.sf.regadb.ui.tree.items.queryDefinition;
+package net.sf.regadb.ui.tree.items.query;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
-public class QueryDefinitionItem extends TreeMenuNode
+public class QueryRunItem extends TreeMenuNode
 {
-    public QueryDefinitionItem(WTreeNode root)
+    public QueryRunItem(WTreeNode root)
     {
-        super(tr("menu.query.definition"), root);
+        super(tr("menu.query.run"), root);
     }
     
     @Override
