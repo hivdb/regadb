@@ -1,4 +1,4 @@
-package net.sf.regadb.io.util;
+package net.sf.regadb.csv;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
