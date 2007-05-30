@@ -31,6 +31,11 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+  	<jar jarfile="${dist}/${proj.name}-ioAssist-${proj.version}.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.service.ioAssist.IOAssist"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
