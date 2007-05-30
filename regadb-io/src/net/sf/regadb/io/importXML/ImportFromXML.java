@@ -307,10 +307,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Patient.class) {
                         elPatient = patient;
-                        if (importHandler != null)
-                            importHandler.importObject(elPatient);
-                        else
-                            topLevelObjects.add(elPatient);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -342,7 +338,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 {
                 }
-                importPatient(patient);
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elPatient);
+                    else
+                        topLevelObjects.add(elPatient);
+                }
             } else if ("patientId".equals(qName)) {
                 fieldPatient_patientId = parseString(value);
             } else if ("lastName".equals(qName)) {
@@ -369,10 +370,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Dataset.class) {
                         elDataset = new Dataset();
-                        if (importHandler != null)
-                            importHandler.importObject(elDataset);
-                        else
-                            topLevelObjects.add(elDataset);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -392,6 +389,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 {
                     elDataset.setRevision(fieldDataset_revision);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elDataset);
+                    else
+                        topLevelObjects.add(elDataset);
                 }
             } else if ("description".equals(qName)) {
                 fieldDataset_description = parseString(value);
@@ -413,10 +416,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == PatientAttributeValue.class) {
                         elPatientAttributeValue = new PatientAttributeValue();
                         elPatientAttributeValue.setId(new PatientAttributeValueId());
-                        if (importHandler != null)
-                            importHandler.importObject(elPatientAttributeValue);
-                        else
-                            topLevelObjects.add(elPatientAttributeValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -434,6 +433,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elPatientAttributeValue.setValue(fieldPatientAttributeValue_value);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elPatientAttributeValue);
+                    else
+                        topLevelObjects.add(elPatientAttributeValue);
+                }
             } else if ("attribute".equals(qName)) {
             } else if ("attributeNominalValue".equals(qName)) {
             } else if ("value".equals(qName)) {
@@ -450,10 +455,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Attribute.class) {
                         elAttribute = new Attribute();
-                        if (importHandler != null)
-                            importHandler.importObject(elAttribute);
-                        else
-                            topLevelObjects.add(elAttribute);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -493,6 +494,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (AttributeNominalValue o : fieldAttribute_attributeNominalValues)
                         o.setAttribute(elAttribute);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAttribute);
+                    else
+                        topLevelObjects.add(elAttribute);
+                }
             } else if ("valueType".equals(qName)) {
             } else if ("attributeGroup".equals(qName)) {
             } else if ("name".equals(qName)) {
@@ -512,10 +519,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AttributeGroup.class) {
                         elAttributeGroup = new AttributeGroup();
-                        if (importHandler != null)
-                            importHandler.importObject(elAttributeGroup);
-                        else
-                            topLevelObjects.add(elAttributeGroup);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -538,6 +541,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAttributeGroup.setGroupName(fieldAttributeGroup_groupName);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAttributeGroup);
+                    else
+                        topLevelObjects.add(elAttributeGroup);
+                }
             } else if ("groupName".equals(qName)) {
                 fieldAttributeGroup_groupName = parseString(value);
             } else if ("reference".equals(qName)) {
@@ -554,10 +563,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AttributeNominalValue.class) {
                         elAttributeNominalValue = new AttributeNominalValue();
-                        if (importHandler != null)
-                            importHandler.importObject(elAttributeNominalValue);
-                        else
-                            topLevelObjects.add(elAttributeNominalValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -591,6 +596,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAttributeNominalValue.setValue(fieldAttributeNominalValue_value);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAttributeNominalValue);
+                    else
+                        topLevelObjects.add(elAttributeNominalValue);
+                }
             } else if ("value".equals(qName)) {
                 fieldAttributeNominalValue_value = parseString(value);
             } else if ("reference".equals(qName)) {
@@ -606,10 +617,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == ViralIsolate.class) {
                         elViralIsolate = new ViralIsolate();
-                        if (importHandler != null)
-                            importHandler.importObject(elViralIsolate);
-                        else
-                            topLevelObjects.add(elViralIsolate);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -634,6 +641,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (TestResult o : fieldViralIsolate_testResults)
                         o.setViralIsolate(elViralIsolate);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elViralIsolate);
+                    else
+                        topLevelObjects.add(elViralIsolate);
+                }
             } else if ("sampleId".equals(qName)) {
                 fieldViralIsolate_sampleId = parseString(value);
             } else if ("sampleDate".equals(qName)) {
@@ -651,10 +664,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == NtSequence.class) {
                         elNtSequence = new NtSequence();
-                        if (importHandler != null)
-                            importHandler.importObject(elNtSequence);
-                        else
-                            topLevelObjects.add(elNtSequence);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -683,6 +692,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (TestResult o : fieldNtSequence_testResults)
                         o.setNtSequence(elNtSequence);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elNtSequence);
+                    else
+                        topLevelObjects.add(elNtSequence);
+                }
             } else if ("nucleotides".equals(qName)) {
                 fieldNtSequence_nucleotides = parseString(value);
             } else if ("label".equals(qName)) {
@@ -702,10 +717,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AaSequence.class) {
                         elAaSequence = new AaSequence();
-                        if (importHandler != null)
-                            importHandler.importObject(elAaSequence);
-                        else
-                            topLevelObjects.add(elAaSequence);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -734,6 +745,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (AaInsertion o : fieldAaSequence_aaInsertions)
                         o.getId().setAaSequence(elAaSequence);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAaSequence);
+                    else
+                        topLevelObjects.add(elAaSequence);
+                }
             } else if ("protein".equals(qName)) {
                 fieldAaSequence_protein = resolveProtein(value);
             } else if ("firstAaPos".equals(qName)) {
@@ -754,10 +771,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == AaMutation.class) {
                         elAaMutation = new AaMutation();
                         elAaMutation.setId(new AaMutationId());
-                        if (importHandler != null)
-                            importHandler.importObject(elAaMutation);
-                        else
-                            topLevelObjects.add(elAaMutation);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -783,6 +796,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elAaMutation.setNtMutationCodon(fieldAaMutation_ntMutationCodon);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAaMutation);
+                    else
+                        topLevelObjects.add(elAaMutation);
+                }
             } else if ("position".equals(qName)) {
                 fieldAaMutation_position = parseshort(value);
             } else if ("aaReference".equals(qName)) {
@@ -805,10 +824,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == AaInsertion.class) {
                         elAaInsertion = new AaInsertion();
                         elAaInsertion.setId(new AaInsertionId());
-                        if (importHandler != null)
-                            importHandler.importObject(elAaInsertion);
-                        else
-                            topLevelObjects.add(elAaInsertion);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -831,6 +846,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elAaInsertion.setNtInsertionCodon(fieldAaInsertion_ntInsertionCodon);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAaInsertion);
+                    else
+                        topLevelObjects.add(elAaInsertion);
+                }
             } else if ("position".equals(qName)) {
                 fieldAaInsertion_position = parseshort(value);
             } else if ("insertionOrder".equals(qName)) {
@@ -850,10 +871,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Therapy.class) {
                         elTherapy = new Therapy();
-                        if (importHandler != null)
-                            importHandler.importObject(elTherapy);
-                        else
-                            topLevelObjects.add(elTherapy);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -881,6 +898,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (TherapyGeneric o : fieldTherapy_therapyGenerics)
                         o.getId().setTherapy(elTherapy);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTherapy);
+                    else
+                        topLevelObjects.add(elTherapy);
+                }
             } else if ("startDate".equals(qName)) {
                 fieldTherapy_startDate = parseDate(value);
             } else if ("stopDate".equals(qName)) {
@@ -900,10 +923,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestResult.class) {
                         elTestResult = new TestResult();
-                        if (importHandler != null)
-                            importHandler.importObject(elTestResult);
-                        else
-                            topLevelObjects.add(elTestResult);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -937,6 +956,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elTestResult.setSampleId(fieldTestResult_sampleId);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestResult);
+                    else
+                        topLevelObjects.add(elTestResult);
+                }
             } else if ("test".equals(qName)) {
             } else if ("drugGeneric".equals(qName)) {
                 fieldTestResult_drugGeneric = resolveDrugGeneric(value);
@@ -959,10 +984,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == TherapyCommercial.class) {
                         elTherapyCommercial = new TherapyCommercial();
                         elTherapyCommercial.setId(new TherapyCommercialId());
-                        if (importHandler != null)
-                            importHandler.importObject(elTherapyCommercial);
-                        else
-                            topLevelObjects.add(elTherapyCommercial);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -978,6 +999,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 {
                     elTherapyCommercial.setDayDosageUnits(fieldTherapyCommercial_dayDosageUnits);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTherapyCommercial);
+                    else
+                        topLevelObjects.add(elTherapyCommercial);
                 }
             } else if ("drugCommercial".equals(qName)) {
                 fieldTherapyCommercial_drugCommercial = resolveDrugCommercial(value);
@@ -995,10 +1022,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == TherapyGeneric.class) {
                         elTherapyGeneric = new TherapyGeneric();
                         elTherapyGeneric.setId(new TherapyGenericId());
-                        if (importHandler != null)
-                            importHandler.importObject(elTherapyGeneric);
-                        else
-                            topLevelObjects.add(elTherapyGeneric);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1014,6 +1037,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 {
                     elTherapyGeneric.setDayDosageMg(fieldTherapyGeneric_dayDosageMg);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTherapyGeneric);
+                    else
+                        topLevelObjects.add(elTherapyGeneric);
                 }
             } else if ("drugGeneric".equals(qName)) {
                 fieldTherapyGeneric_drugGeneric = resolveDrugGeneric(value);
@@ -1031,10 +1060,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Test.class) {
                         elTest = new Test();
-                        if (importHandler != null)
-                            importHandler.importObject(elTest);
-                        else
-                            topLevelObjects.add(elTest);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1093,6 +1118,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elTest.setServiceConfig(fieldTest_serviceConfig);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTest);
+                    else
+                        topLevelObjects.add(elTest);
+                }
             } else if ("analysis".equals(qName)) {
             } else if ("testType".equals(qName)) {
             } else if ("description".equals(qName)) {
@@ -1117,10 +1148,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Analysis.class) {
                         elAnalysis = new Analysis();
-                        if (importHandler != null)
-                            importHandler.importObject(elAnalysis);
-                        else
-                            topLevelObjects.add(elAnalysis);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1198,6 +1225,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (AnalysisData o : fieldAnalysis_analysisDatas)
                         o.setAnalysis(elAnalysis);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAnalysis);
+                    else
+                        topLevelObjects.add(elAnalysis);
+                }
             } else if ("analysisType".equals(qName)) {
                 fieldAnalysis_analysisType = resolveAnalysisType(value);
             } else if ("type".equals(qName)) {
@@ -1228,10 +1261,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AnalysisData.class) {
                         elAnalysisData = new AnalysisData();
-                        if (importHandler != null)
-                            importHandler.importObject(elAnalysisData);
-                        else
-                            topLevelObjects.add(elAnalysisData);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1264,6 +1293,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysisData.setData(fieldAnalysisData_data);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAnalysisData);
+                    else
+                        topLevelObjects.add(elAnalysisData);
+                }
             } else if ("analysis".equals(qName)) {
             } else if ("name".equals(qName)) {
                 fieldAnalysisData_name = parseString(value);
@@ -1283,10 +1318,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestType.class) {
                         elTestType = new TestType();
-                        if (importHandler != null)
-                            importHandler.importObject(elTestType);
-                        else
-                            topLevelObjects.add(elTestType);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1337,6 +1368,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     for (TestNominalValue o : fieldTestType_testNominalValues)
                         o.setTestType(elTestType);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestType);
+                    else
+                        topLevelObjects.add(elTestType);
+                }
             } else if ("valueType".equals(qName)) {
             } else if ("testObject".equals(qName)) {
             } else if ("description".equals(qName)) {
@@ -1356,10 +1393,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == ValueType.class) {
                         elValueType = new ValueType();
-                        if (importHandler != null)
-                            importHandler.importObject(elValueType);
-                        else
-                            topLevelObjects.add(elValueType);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1408,6 +1441,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elValueType.setMultiple(fieldValueType_multiple);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elValueType);
+                    else
+                        topLevelObjects.add(elValueType);
+                }
             } else if ("description".equals(qName)) {
                 fieldValueType_description = parseString(value);
             } else if ("min".equals(qName)) {
@@ -1430,10 +1469,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestObject.class) {
                         elTestObject = new TestObject();
-                        if (importHandler != null)
-                            importHandler.importObject(elTestObject);
-                        else
-                            topLevelObjects.add(elTestObject);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1461,6 +1496,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elTestObject.setTestObjectId(fieldTestObject_testObjectId);
                 }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestObject);
+                    else
+                        topLevelObjects.add(elTestObject);
+                }
             } else if ("description".equals(qName)) {
                 fieldTestObject_description = parseString(value);
             } else if ("testObjectId".equals(qName)) {
@@ -1479,10 +1520,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestNominalValue.class) {
                         elTestNominalValue = new TestNominalValue();
-                        if (importHandler != null)
-                            importHandler.importObject(elTestNominalValue);
-                        else
-                            topLevelObjects.add(elTestNominalValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1520,6 +1557,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
                     elTestNominalValue.setValue(fieldTestNominalValue_value);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestNominalValue);
+                    else
+                        topLevelObjects.add(elTestNominalValue);
                 }
             } else if ("testType".equals(qName)) {
             } else if ("value".equals(qName)) {

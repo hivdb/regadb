@@ -350,10 +350,6 @@ public class XMLReadCodeGen {
                 write(6, "elPatient = patient;\n");
             }
 
-            write(6, "if (importHandler != null)\n");
-            write(7, "importHandler.importObject(" + o.varName() + ");\n");
-            write(6, "else\n");
-            write(7, "topLevelObjects.add(" + o.varName() + ");\n");
             write(5, "} else {\n");
             write(6, "throw new SAXException(new ImportException(\"Unexpected top level object: \" + qName));\n");
             write(5, "}\n");
@@ -407,10 +403,13 @@ public class XMLReadCodeGen {
                 write(4, "}\n");
             }
 
-            if (o.javaClass == Patient.class) {
-                write(4, "importPatient(patient);\n");
-            }
-            
+            write(4, "if (currentState() == ParseState.TopLevel) {\n");
+            write(5, "if (importHandler != null)\n");
+            write(6, "importHandler.importObject(" + o.varName() + ");\n");
+            write(5, "else\n");
+            write(6, "topLevelObjects.add(" + o.varName() + ");\n");
+            write(4, "}\n");
+
             /*
              * -- End elements of fields.
              */

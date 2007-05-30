@@ -162,29 +162,7 @@ public class ImportFromXMLBase extends DefaultHandler{
         for (AnalysisType a : t.getAnalysisTypes()) {
             analysisTypes.put(a.getType(), a);
         }
-    }
-    
-    protected void importPatient(Patient patient) {
-//        ExportToXML l = new ExportToXML();
-//        Element root = new Element("Patients");
-//        l.writePatient(patient, root);
-//        
-//        Document n = new Document(root);
-//        XMLOutputter outputter = new XMLOutputter();
-//        outputter.setFormat(Format.getPrettyFormat());
-//        try {
-//            outputter.output(n, System.out);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        
-//        try {
-//            System.err.println("New patient");
-//            outputter.output(n, System.out);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
+    }    
 
     protected Patient dbFindPatient(Transaction t, Patient o) {
         return t.getPatient(o.getSourceDataset(), o.getPatientId());
