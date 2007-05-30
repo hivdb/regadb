@@ -108,4 +108,12 @@ public class TextField extends FormField
             _fieldEdit.changed.addListener(listener);
         }
     }
+    
+    public void setEnabled(boolean enabled)
+    {
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.setEnabled(enabled);
+        }
+    }
 }
