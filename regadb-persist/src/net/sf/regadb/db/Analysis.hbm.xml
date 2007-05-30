@@ -30,6 +30,9 @@
     <property name="baseoutputfile" type="string">
       <column name="baseoutputfile" length="50" />
     </property>
+    <property name="serviceName" type="string">
+      <column name="service_name" length="100" />
+    </property>
     <set name="tests" inverse="false" cascade="all">
       <key>
         <column name="analysis_ii" unique="true" />
