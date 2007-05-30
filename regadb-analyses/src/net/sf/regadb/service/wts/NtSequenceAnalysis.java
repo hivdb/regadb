@@ -10,12 +10,8 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.exportXML.ExportToXML;
-import net.sf.regadb.io.util.IOUtil;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.wts.client.WtsClient;
-
-import org.jdom.Element;
 
 public class NtSequenceAnalysis implements IAnalysis
 {
@@ -24,32 +20,27 @@ public class NtSequenceAnalysis implements IAnalysis
     private Date endTime_;
     private String user_;
     
-    private String wtsAccount_;
-    private String wtsPassword_;
-    private String wtsService_;
-    private String wtsOutputFileName_;
-    private boolean fasta_;
     private Test test_;
     Patient patient_;
     
     private WtsClient client_;
+    private int waitDelay_;
     
-    public NtSequenceAnalysis(Integer ntseq, Patient p, String user, String wtsAccount, String wtsPassword, String wtsService, String wtsUrl, Test test, String wtsOutputFileName, boolean fasta)
+    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, int waitDelay)
     {
         seqIi_ = ntseq;
-        user_ = user;
-        
-        wtsAccount_ = wtsAccount;
-        wtsPassword_ = wtsPassword;
-        wtsService_ = wtsService;
-        wtsOutputFileName_ = wtsOutputFileName;
-        
-        fasta_ = fasta;
         
         patient_ = p;
         test_ = test;
         
-        client_ = new WtsClient(wtsUrl);
+        client_ = new WtsClient(test.getAnalysis().getUrl());
+        
+        waitDelay_ = waitDelay;
+    }
+    
+    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test)
+    {
+        this(ntseq, p, test, 5000);
     }
     
     public Date getEndTime() 
@@ -87,34 +78,23 @@ public class NtSequenceAnalysis implements IAnalysis
         
         t.commit();
         
-        String input;
-        if(fasta_)
-        {
-            input = '>' + ntseq.getLabel() + '\n' + ntseq.getNucleotides();
-        }
-        else
-        {    
-            ExportToXML export = new ExportToXML();
-            Element e = new Element("NtSequence");
-            export.writeNtSequence(ntseq, e);
-            input = IOUtil.getStringFromDoc(e);
-        }
+        String input = '>' + ntseq.getLabel() + '\n' + ntseq.getNucleotides();
         
         String challenge;
         String ticket = null;
         try 
         {
-            challenge = client_.getChallenge(wtsAccount_);
-            ticket = client_.login(wtsAccount_, challenge, wtsPassword_, wtsService_);
+            challenge = client_.getChallenge(test_.getAnalysis().getAccount());
+            ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
         } 
         catch (RemoteException e1) 
         {
             e1.printStackTrace();
         }
         
-        client_.upload(ticket, wtsService_, "nt_sequence", input.getBytes());
+        client_.upload(ticket, test_.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
         
-        client_.start(ticket, wtsService_);
+        client_.start(ticket, test_.getAnalysis().getServiceName());
         
         boolean finished = false;
         while(!finished)
@@ -127,13 +107,13 @@ public class NtSequenceAnalysis implements IAnalysis
             {
                 ie.printStackTrace();
             }
-            if(client_.monitorStatus(ticket, wtsService_).startsWith("ENDED"))
+            if(client_.monitorStatus(ticket, test_.getAnalysis().getServiceName()).startsWith("ENDED"))
             {
                 finished = true;
             }
         }
         
-        byte [] resultArray = client_.download(ticket, wtsService_, wtsOutputFileName_);
+        byte [] resultArray = client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile());
         
         t = sessionSafeLogin.createTransaction();
 
@@ -149,17 +129,17 @@ public class NtSequenceAnalysis implements IAnalysis
         
         t.commit();
         
-        client_.closeSession(ticket, wtsService_);
+        client_.closeSession(ticket, test_.getAnalysis().getServiceName());
                         
         endTime_ = new Date(System.currentTimeMillis());
     }
 
-    public void pause() 
+    public void pause()
     {
         
     }
 
-    public Long removeFromLogging() 
+    public Long removeFromLogging()
     {
         return 10000L;
     }
