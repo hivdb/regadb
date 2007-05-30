@@ -30,6 +30,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     List topLevelObjects = new ArrayList();
+    ImportHandler importHandler = null;
     Class topLevelClass = null;
 
     private Map<String, Attribute> refAttributeMap = new HashMap<String, Attribute>();
@@ -306,7 +307,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Patient.class) {
                         elPatient = patient;
-                        topLevelObjects.add(elPatient);
+                        if (importHandler != null)
+                            importHandler.importObject(elPatient);
+                        else
+                            topLevelObjects.add(elPatient);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -365,7 +369,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Dataset.class) {
                         elDataset = new Dataset();
-                        topLevelObjects.add(elDataset);
+                        if (importHandler != null)
+                            importHandler.importObject(elDataset);
+                        else
+                            topLevelObjects.add(elDataset);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -406,7 +413,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == PatientAttributeValue.class) {
                         elPatientAttributeValue = new PatientAttributeValue();
                         elPatientAttributeValue.setId(new PatientAttributeValueId());
-                        topLevelObjects.add(elPatientAttributeValue);
+                        if (importHandler != null)
+                            importHandler.importObject(elPatientAttributeValue);
+                        else
+                            topLevelObjects.add(elPatientAttributeValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -440,7 +450,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Attribute.class) {
                         elAttribute = new Attribute();
-                        topLevelObjects.add(elAttribute);
+                        if (importHandler != null)
+                            importHandler.importObject(elAttribute);
+                        else
+                            topLevelObjects.add(elAttribute);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -499,7 +512,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AttributeGroup.class) {
                         elAttributeGroup = new AttributeGroup();
-                        topLevelObjects.add(elAttributeGroup);
+                        if (importHandler != null)
+                            importHandler.importObject(elAttributeGroup);
+                        else
+                            topLevelObjects.add(elAttributeGroup);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -538,7 +554,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AttributeNominalValue.class) {
                         elAttributeNominalValue = new AttributeNominalValue();
-                        topLevelObjects.add(elAttributeNominalValue);
+                        if (importHandler != null)
+                            importHandler.importObject(elAttributeNominalValue);
+                        else
+                            topLevelObjects.add(elAttributeNominalValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -587,7 +606,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == ViralIsolate.class) {
                         elViralIsolate = new ViralIsolate();
-                        topLevelObjects.add(elViralIsolate);
+                        if (importHandler != null)
+                            importHandler.importObject(elViralIsolate);
+                        else
+                            topLevelObjects.add(elViralIsolate);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -629,7 +651,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == NtSequence.class) {
                         elNtSequence = new NtSequence();
-                        topLevelObjects.add(elNtSequence);
+                        if (importHandler != null)
+                            importHandler.importObject(elNtSequence);
+                        else
+                            topLevelObjects.add(elNtSequence);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -677,7 +702,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AaSequence.class) {
                         elAaSequence = new AaSequence();
-                        topLevelObjects.add(elAaSequence);
+                        if (importHandler != null)
+                            importHandler.importObject(elAaSequence);
+                        else
+                            topLevelObjects.add(elAaSequence);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -726,7 +754,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == AaMutation.class) {
                         elAaMutation = new AaMutation();
                         elAaMutation.setId(new AaMutationId());
-                        topLevelObjects.add(elAaMutation);
+                        if (importHandler != null)
+                            importHandler.importObject(elAaMutation);
+                        else
+                            topLevelObjects.add(elAaMutation);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -774,7 +805,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == AaInsertion.class) {
                         elAaInsertion = new AaInsertion();
                         elAaInsertion.setId(new AaInsertionId());
-                        topLevelObjects.add(elAaInsertion);
+                        if (importHandler != null)
+                            importHandler.importObject(elAaInsertion);
+                        else
+                            topLevelObjects.add(elAaInsertion);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -816,7 +850,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Therapy.class) {
                         elTherapy = new Therapy();
-                        topLevelObjects.add(elTherapy);
+                        if (importHandler != null)
+                            importHandler.importObject(elTherapy);
+                        else
+                            topLevelObjects.add(elTherapy);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -863,7 +900,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestResult.class) {
                         elTestResult = new TestResult();
-                        topLevelObjects.add(elTestResult);
+                        if (importHandler != null)
+                            importHandler.importObject(elTestResult);
+                        else
+                            topLevelObjects.add(elTestResult);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -919,7 +959,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == TherapyCommercial.class) {
                         elTherapyCommercial = new TherapyCommercial();
                         elTherapyCommercial.setId(new TherapyCommercialId());
-                        topLevelObjects.add(elTherapyCommercial);
+                        if (importHandler != null)
+                            importHandler.importObject(elTherapyCommercial);
+                        else
+                            topLevelObjects.add(elTherapyCommercial);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -952,7 +995,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (topLevelClass == TherapyGeneric.class) {
                         elTherapyGeneric = new TherapyGeneric();
                         elTherapyGeneric.setId(new TherapyGenericId());
-                        topLevelObjects.add(elTherapyGeneric);
+                        if (importHandler != null)
+                            importHandler.importObject(elTherapyGeneric);
+                        else
+                            topLevelObjects.add(elTherapyGeneric);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -985,7 +1031,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Test.class) {
                         elTest = new Test();
-                        topLevelObjects.add(elTest);
+                        if (importHandler != null)
+                            importHandler.importObject(elTest);
+                        else
+                            topLevelObjects.add(elTest);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1068,7 +1117,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == Analysis.class) {
                         elAnalysis = new Analysis();
-                        topLevelObjects.add(elAnalysis);
+                        if (importHandler != null)
+                            importHandler.importObject(elAnalysis);
+                        else
+                            topLevelObjects.add(elAnalysis);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1176,7 +1228,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == AnalysisData.class) {
                         elAnalysisData = new AnalysisData();
-                        topLevelObjects.add(elAnalysisData);
+                        if (importHandler != null)
+                            importHandler.importObject(elAnalysisData);
+                        else
+                            topLevelObjects.add(elAnalysisData);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1228,7 +1283,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestType.class) {
                         elTestType = new TestType();
-                        topLevelObjects.add(elTestType);
+                        if (importHandler != null)
+                            importHandler.importObject(elTestType);
+                        else
+                            topLevelObjects.add(elTestType);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1298,7 +1356,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == ValueType.class) {
                         elValueType = new ValueType();
-                        topLevelObjects.add(elValueType);
+                        if (importHandler != null)
+                            importHandler.importObject(elValueType);
+                        else
+                            topLevelObjects.add(elValueType);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1369,7 +1430,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestObject.class) {
                         elTestObject = new TestObject();
-                        topLevelObjects.add(elTestObject);
+                        if (importHandler != null)
+                            importHandler.importObject(elTestObject);
+                        else
+                            topLevelObjects.add(elTestObject);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1415,7 +1479,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == TestNominalValue.class) {
                         elTestNominalValue = new TestNominalValue();
-                        topLevelObjects.add(elTestNominalValue);
+                        if (importHandler != null)
+                            importHandler.importObject(elTestNominalValue);
+                        else
+                            topLevelObjects.add(elTestNominalValue);
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1467,155 +1534,177 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Patient> readPatients(InputSource source) throws SAXException, IOException {
+    public List<Patient> readPatients(InputSource source, ImportHandler<Patient> handler) throws SAXException, IOException {
         topLevelClass = Patient.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Dataset> readDatasets(InputSource source) throws SAXException, IOException {
+    public List<Dataset> readDatasets(InputSource source, ImportHandler<Dataset> handler) throws SAXException, IOException {
         topLevelClass = Dataset.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<PatientAttributeValue> readPatientAttributeValues(InputSource source) throws SAXException, IOException {
+    public List<PatientAttributeValue> readPatientAttributeValues(InputSource source, ImportHandler<PatientAttributeValue> handler) throws SAXException, IOException {
         topLevelClass = PatientAttributeValue.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Attribute> readAttributes(InputSource source) throws SAXException, IOException {
+    public List<Attribute> readAttributes(InputSource source, ImportHandler<Attribute> handler) throws SAXException, IOException {
         topLevelClass = Attribute.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AttributeGroup> readAttributeGroups(InputSource source) throws SAXException, IOException {
+    public List<AttributeGroup> readAttributeGroups(InputSource source, ImportHandler<AttributeGroup> handler) throws SAXException, IOException {
         topLevelClass = AttributeGroup.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AttributeNominalValue> readAttributeNominalValues(InputSource source) throws SAXException, IOException {
+    public List<AttributeNominalValue> readAttributeNominalValues(InputSource source, ImportHandler<AttributeNominalValue> handler) throws SAXException, IOException {
         topLevelClass = AttributeNominalValue.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<ViralIsolate> readViralIsolates(InputSource source) throws SAXException, IOException {
+    public List<ViralIsolate> readViralIsolates(InputSource source, ImportHandler<ViralIsolate> handler) throws SAXException, IOException {
         topLevelClass = ViralIsolate.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<NtSequence> readNtSequences(InputSource source) throws SAXException, IOException {
+    public List<NtSequence> readNtSequences(InputSource source, ImportHandler<NtSequence> handler) throws SAXException, IOException {
         topLevelClass = NtSequence.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AaSequence> readAaSequences(InputSource source) throws SAXException, IOException {
+    public List<AaSequence> readAaSequences(InputSource source, ImportHandler<AaSequence> handler) throws SAXException, IOException {
         topLevelClass = AaSequence.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AaMutation> readAaMutations(InputSource source) throws SAXException, IOException {
+    public List<AaMutation> readAaMutations(InputSource source, ImportHandler<AaMutation> handler) throws SAXException, IOException {
         topLevelClass = AaMutation.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AaInsertion> readAaInsertions(InputSource source) throws SAXException, IOException {
+    public List<AaInsertion> readAaInsertions(InputSource source, ImportHandler<AaInsertion> handler) throws SAXException, IOException {
         topLevelClass = AaInsertion.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Therapy> readTherapys(InputSource source) throws SAXException, IOException {
+    public List<Therapy> readTherapys(InputSource source, ImportHandler<Therapy> handler) throws SAXException, IOException {
         topLevelClass = Therapy.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TestResult> readTestResults(InputSource source) throws SAXException, IOException {
+    public List<TestResult> readTestResults(InputSource source, ImportHandler<TestResult> handler) throws SAXException, IOException {
         topLevelClass = TestResult.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TherapyCommercial> readTherapyCommercials(InputSource source) throws SAXException, IOException {
+    public List<TherapyCommercial> readTherapyCommercials(InputSource source, ImportHandler<TherapyCommercial> handler) throws SAXException, IOException {
         topLevelClass = TherapyCommercial.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TherapyGeneric> readTherapyGenerics(InputSource source) throws SAXException, IOException {
+    public List<TherapyGeneric> readTherapyGenerics(InputSource source, ImportHandler<TherapyGeneric> handler) throws SAXException, IOException {
         topLevelClass = TherapyGeneric.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Test> readTests(InputSource source) throws SAXException, IOException {
+    public List<Test> readTests(InputSource source, ImportHandler<Test> handler) throws SAXException, IOException {
         topLevelClass = Test.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Analysis> readAnalysiss(InputSource source) throws SAXException, IOException {
+    public List<Analysis> readAnalysiss(InputSource source, ImportHandler<Analysis> handler) throws SAXException, IOException {
         topLevelClass = Analysis.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<AnalysisData> readAnalysisDatas(InputSource source) throws SAXException, IOException {
+    public List<AnalysisData> readAnalysisDatas(InputSource source, ImportHandler<AnalysisData> handler) throws SAXException, IOException {
         topLevelClass = AnalysisData.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TestType> readTestTypes(InputSource source) throws SAXException, IOException {
+    public List<TestType> readTestTypes(InputSource source, ImportHandler<TestType> handler) throws SAXException, IOException {
         topLevelClass = TestType.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<ValueType> readValueTypes(InputSource source) throws SAXException, IOException {
+    public List<ValueType> readValueTypes(InputSource source, ImportHandler<ValueType> handler) throws SAXException, IOException {
         topLevelClass = ValueType.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TestObject> readTestObjects(InputSource source) throws SAXException, IOException {
+    public List<TestObject> readTestObjects(InputSource source, ImportHandler<TestObject> handler) throws SAXException, IOException {
         topLevelClass = TestObject.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }
 
     @SuppressWarnings("unchecked")
-    public List<TestNominalValue> readTestNominalValues(InputSource source) throws SAXException, IOException {
+    public List<TestNominalValue> readTestNominalValues(InputSource source, ImportHandler<TestNominalValue> handler) throws SAXException, IOException {
         topLevelClass = TestNominalValue.class;
+        importHandler = handler;
         parse(source);
         return topLevelObjects;
     }

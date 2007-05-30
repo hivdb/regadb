@@ -259,6 +259,7 @@ public class XMLReadCodeGen {
         write(1, "}\n\n");
 
         write(1, "List topLevelObjects = new ArrayList();\n");
+        write(1, "ImportHandler importHandler = null;\n");
         write(1, "Class topLevelClass = null;\n\n");
 
         /*
@@ -349,7 +350,10 @@ public class XMLReadCodeGen {
                 write(6, "elPatient = patient;\n");
             }
 
-            write(6, "topLevelObjects.add(" + o.varName() + ");\n");
+            write(6, "if (importHandler != null)\n");
+            write(7, "importHandler.importObject(" + o.varName() + ");\n");
+            write(6, "else\n");
+            write(7, "topLevelObjects.add(" + o.varName() + ");\n");
             write(5, "} else {\n");
             write(6, "throw new SAXException(new ImportException(\"Unexpected top level object: \" + qName));\n");
             write(5, "}\n");
@@ -443,9 +447,10 @@ public class XMLReadCodeGen {
 
             write(1, "@SuppressWarnings(\"unchecked\")\n");
             write(1, "public List<" + o.javaClass.getSimpleName() + "> read" + o.javaClass.getSimpleName()
-                    + "s(InputSource source) throws SAXException, IOException {\n");
+                    + "s(InputSource source, ImportHandler<" + o.javaClass.getSimpleName() + "> handler) throws SAXException, IOException {\n");
 
             write(2, "topLevelClass = " + o.javaClass.getSimpleName() + ".class;\n");
+            write(2, "importHandler = handler;\n");
             write(2, "parse(source);\n");
             write(2, "return topLevelObjects;\n");
             write(1, "}\n\n");

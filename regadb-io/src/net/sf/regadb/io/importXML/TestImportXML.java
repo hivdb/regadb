@@ -63,7 +63,7 @@ public class TestImportXML {
         
         FileReader r = new FileReader(new File(args[0]));
 
-        List<Patient> patients = instance.readPatients(new InputSource(r));
+        List<Patient> patients = instance.readPatients(new InputSource(r), null);
         
         System.err.println("Read: " + patients.size() + " patients");
     }
