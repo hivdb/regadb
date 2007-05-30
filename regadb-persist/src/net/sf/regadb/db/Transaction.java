@@ -1163,4 +1163,31 @@ String queryString = "from Dataset as dataset ";
 			return null;
 		}
 	}
+    
+    public DrugClass getDrugClass(String drugClassId)
+    {
+        Query q = session.createQuery("from DrugClass as drugclass where classId = :classId");
+        
+        q.setParameter("classId", drugClassId);
+        
+        return (DrugClass)q.uniqueResult();
+    }
+    
+    public DrugGeneric getDrugGeneric(String drugGenericId)
+    {
+        Query q = session.createQuery("from DrugGeneric as druggeneric where genericId = :genericId");
+        
+        q.setParameter("genericId", drugGenericId);
+        
+        return (DrugGeneric)q.uniqueResult();
+    }
+    
+    public DrugCommercial getDrugCommercial(String commercialName)
+    {
+        Query q = session.createQuery("from DrugCommercial as drugcommercial where name = :commercialName");
+        
+        q.setParameter("commercialName", commercialName);
+        
+        return (DrugCommercial)q.uniqueResult();
+    }
 }

@@ -32,13 +32,13 @@ import net.sf.regadb.ui.forms.account.PasswordForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
+import net.sf.regadb.ui.framework.forms.administrator.UpdateForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.administrator.AdministratorItem;
 import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
-import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
@@ -147,6 +147,7 @@ public class TreeContent
     public ActionItem notRegisteredUsersDelete;
     public ActionItem notRegisteredUsersChangePassword;
     public ActionItem updateFromCentralServer;
+    public ActionItem updateFromCentralServerUpdate;
 
     public ActionItem attributesSettings;
     public ActionItem attributes;
@@ -801,6 +802,15 @@ public class TreeContent
                 public void performAction(TreeMenuNode node)
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, registeredUsersView, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                }
+            });
+            
+            updateFromCentralServer = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer"), administratorMain);
+            updateFromCentralServerUpdate = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer.update"), updateFromCentralServer, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(InteractionState.Editing));
                 }
             });
 			
