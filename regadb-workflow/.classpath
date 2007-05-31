@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jgraph.jar" sourcepath="C:/Documents and Settings/jvsant1/Bureaublad/jgraph-5.9.2.1-lgpl-src.jar"/>
+	<classpathentry kind="lib" path="lib/miglayout-swing.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
