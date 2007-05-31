@@ -5,9 +5,11 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.QueryDefinitionParameterTypes;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.encrypt.Encrypt;
 
 import org.hibernate.Session;
@@ -20,11 +22,12 @@ public class InitRegaDB
         session.beginTransaction();
         
         addAdminUser(session);
-        initTestObjects(session);
+        TestObject seqAnalysis = initTestObjects(session);
         initValueTypes(session);
         initProteins(session);
-        initAnalysisTypes(session);
+        AnalysisType wts = initAnalysisTypes(session);
         initQueryDefinitionParameterTypes(session);
+        initTests(seqAnalysis, wts, session);
         
         session.getTransaction().commit();
         session.close();
@@ -42,7 +45,7 @@ public class InitRegaDB
         session.save(admin);
     }
     
-    private static void initTestObjects(Session session)
+    private static TestObject initTestObjects(Session session)
     {
         TestObject patientTest = new TestObject("Patient test", 0);
         TestObject seqAnalysis = new TestObject("Sequence analysis", 1);
@@ -55,6 +58,8 @@ public class InitRegaDB
         session.save(genericDrugTest);
         session.save(resistanceTest);
         session.save(viAnalysis);
+        
+        return seqAnalysis;
     }
     
     private static void initValueTypes(Session session)
@@ -91,14 +96,17 @@ public class InitRegaDB
         session.save(gp41);
     }
     
-    private static void initAnalysisTypes(Session session)
+    private static AnalysisType initAnalysisTypes(Session session)
     {
         AnalysisType wts = new AnalysisType("wts");
         
         session.save(wts);
+        
+        return wts;
     }
     
-    private static void initQueryDefinitionParameterTypes(Session session) {
+    private static void initQueryDefinitionParameterTypes(Session session) 
+    {
 		QueryDefinitionParameterType string = new QueryDefinitionParameterType("String", QueryDefinitionParameterTypes.STRING.getValue());
 		QueryDefinitionParameterType integer = new QueryDefinitionParameterType("Integer", QueryDefinitionParameterTypes.INTEGER.getValue());
 		QueryDefinitionParameterType doubleType = new QueryDefinitionParameterType("Double", QueryDefinitionParameterTypes.DOUBLE.getValue());
@@ -120,4 +128,13 @@ public class InitRegaDB
 		session.save(testType);
 		session.save(protein);
 	}
+    
+    private static void initTests(TestObject seqAnalysis, AnalysisType wts, Session session)
+    {
+        Test subType = RegaDBWtsServer.getHIV1SubTypeTest(seqAnalysis, wts);
+        Test type = RegaDBWtsServer.getHIVTypeTest(seqAnalysis, wts);
+        
+        session.save(subType);
+        session.save(type);
+    }
 }
