@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 29/05/2007 14:55:59 by Hibernate Tools 3.2.0.beta8
+// Generated 31/05/2007 13:34:26 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -27,6 +27,8 @@ public class QueryDefinitionRun implements java.io.Serializable {
 
     private byte[] result;
 
+    private String name;
+
     private Set<QueryDefinitionRunParameter> queryDefinitionRunParameters = new HashSet<QueryDefinitionRunParameter>(
             0);
 
@@ -36,10 +38,15 @@ public class QueryDefinitionRun implements java.io.Serializable {
     public QueryDefinitionRun() {
     }
 
+    /** minimal constructor */
+    public QueryDefinitionRun(String name) {
+        this.name = name;
+    }
+
     /** full constructor */
     public QueryDefinitionRun(QueryDefinition queryDefinition,
             SettingsUser settingsUser, Date startdate, Date enddate,
-            Integer status, byte[] result,
+            Integer status, byte[] result, String name,
             Set<QueryDefinitionRunParameter> queryDefinitionRunParameters) {
         this.queryDefinition = queryDefinition;
         this.settingsUser = settingsUser;
@@ -47,6 +54,7 @@ public class QueryDefinitionRun implements java.io.Serializable {
         this.enddate = enddate;
         this.status = status;
         this.result = result;
+        this.name = name;
         this.queryDefinitionRunParameters = queryDefinitionRunParameters;
     }
 
@@ -105,6 +113,14 @@ public class QueryDefinitionRun implements java.io.Serializable {
 
     public void setResult(byte[] result) {
         this.result = result;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<QueryDefinitionRunParameter> getQueryDefinitionRunParameters() {
