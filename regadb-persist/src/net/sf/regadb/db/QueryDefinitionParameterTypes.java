@@ -15,7 +15,9 @@ public enum QueryDefinitionParameterTypes {
     COMMERCIALDRUG (5),
     TEST (6),
     TESTTYPE (7),
-    PROTEIN (8);
+    PROTEIN (8),
+    ATTRIBUTE (9),
+    ATTRIBUTEGROUP (10);
     
     private final int value;
     
@@ -49,6 +51,10 @@ public enum QueryDefinitionParameterTypes {
 	            return QueryDefinitionParameterTypes.TESTTYPE;
 	        case 8:
 	            return QueryDefinitionParameterTypes.PROTEIN;
+	        case 9:
+	            return QueryDefinitionParameterTypes.ATTRIBUTE;
+	        case 10:
+	            return QueryDefinitionParameterTypes.ATTRIBUTEGROUP;
         }
         
         return null;

@@ -1100,7 +1100,7 @@ public class Transaction {
     
 	public List<Dataset> getDatasets(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
 	{
-String queryString = "from Dataset as dataset ";
+		String queryString = "from Dataset as dataset ";
         
         if(!filterConstraints.clause_.equals(" "))
         {
@@ -1163,6 +1163,64 @@ String queryString = "from Dataset as dataset ";
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+    public List<QueryDefinitionRun> getQueryDefinitionRuns(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, boolean ascending, String uid)
+    {
+        String queryString = "from QueryDefinitionRun as queryDefinitionRun ";
+        
+        queryString += "where queryDefinitionRun.settingsUser.uid = :userId ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "and " + filterConstraints.clause_;
+        }
+        
+        queryString += " order by " + sortField + (ascending ? " asc" : " desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        q.setParameter("userId", uid);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+	
+	public long getQueryDefinitionRunCount(HibernateFilterConstraint filterConstraints) 
+    {
+         String queryString = "select count(queryDefinitionRun) from QueryDefinitionRun as queryDefinitionRun ";
+            
+         if(!filterConstraints.clause_.equals(" "))
+         {
+             queryString += "where " + filterConstraints.clause_;
+         }
+          
+         Query q = session.createQuery(queryString);
+            
+         for(Pair<String, Object> arg : filterConstraints.arguments_)
+         {
+        	 q.setParameter(arg.getKey(), arg.getValue());
+         }
+            
+         return ((Long)q.uniqueResult()).longValue();
+    }
+	
+	public boolean queryDefinitionRunStillExists(QueryDefinitionRun queryDefinitionRun)
+    {
+        Query q = session.createQuery("from QueryDefinitionRun " + 
+                                    "where query_definition_run_ii = :queryDefinitionRunId");
+        
+        q.setParameter("queryDefinitionRunId", queryDefinitionRun.getQueryDefinitionRunIi());
+    
+        return q.uniqueResult() !=null;
+    }
     
     public DrugClass getDrugClass(String drugClassId)
     {

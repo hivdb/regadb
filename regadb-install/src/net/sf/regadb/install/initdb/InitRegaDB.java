@@ -116,7 +116,8 @@ public class InitRegaDB
 		QueryDefinitionParameterType test = new QueryDefinitionParameterType("Test", QueryDefinitionParameterTypes.TEST.getValue());
 		QueryDefinitionParameterType testType = new QueryDefinitionParameterType("TestType", QueryDefinitionParameterTypes.TESTTYPE.getValue());
 		QueryDefinitionParameterType protein = new QueryDefinitionParameterType("Protein", QueryDefinitionParameterTypes.PROTEIN.getValue());
-		
+		QueryDefinitionParameterType attribute = new QueryDefinitionParameterType("Attribute", QueryDefinitionParameterTypes.ATTRIBUTE.getValue());
+		QueryDefinitionParameterType attributeGroup = new QueryDefinitionParameterType("Attribute Group", QueryDefinitionParameterTypes.ATTRIBUTEGROUP.getValue());
 
 		session.save(string);
 		session.save(integer);
@@ -127,6 +128,8 @@ public class InitRegaDB
 		session.save(test);
 		session.save(testType);
 		session.save(protein);
+		session.save(attribute);
+		session.save(attributeGroup);
 	}
     
     private static void initTests(TestObject seqAnalysis, AnalysisType wts, Session session)
