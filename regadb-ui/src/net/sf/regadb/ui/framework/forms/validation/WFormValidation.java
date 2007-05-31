@@ -28,7 +28,7 @@ public class WFormValidation
         
         for(IFormField ff : formFields)
         {
-            if(ff.getFormWidget()!=null)
+            if(ff.getFormWidget()!=null && !ff.getFormWidget().isHidden())
             {
                 if(!ff.validate())
                 {
