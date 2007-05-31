@@ -5,11 +5,11 @@ import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
-public class QueryRunItem extends TreeMenuNode
+public class QueryDefinitionRunItem extends TreeMenuNode
 {
-    public QueryRunItem(WTreeNode root)
+    public QueryDefinitionRunItem(WTreeNode root)
     {
-        super(tr("menu.query.run"), root);
+        super(tr("menu.query.definition.run"), root);
     }
     
     @Override

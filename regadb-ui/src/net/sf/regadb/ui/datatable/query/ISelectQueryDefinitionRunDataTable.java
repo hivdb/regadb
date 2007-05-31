@@ -1,0 +1,87 @@
+package net.sf.regadb.ui.datatable.query;
+
+import java.util.List;
+
+import net.sf.regadb.db.QueryDefinitionRun;
+import net.sf.regadb.db.QueryDefinitionRunStatus;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
+import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
+import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+
+public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefinitionRun>
+{
+    private static String [] _colNames = {"dataTable.queryDefinitionRun.colName.name", "dataTable.queryDefinitionRun.colName.description", "dataTable.queryDefinitionRun.colName.status"};
+    
+    private static String[] filterVarNames_ = {"queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
+        
+    private static boolean [] sortable_ = {true, true, true};
+    
+    private IFilter[] filters_ = new IFilter[3];
+    
+    public String[] getColNames()
+    {
+        return _colNames;
+    }
+
+    public List<QueryDefinitionRun> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean ascending)
+    {
+        return t.getQueryDefinitionRuns(startIndex, amountOfRows, filterVarNames_[sortIndex], HibernateStringUtils.filterConstraintsQuery(this), ascending, RegaDBMain.getApp().getLogin().getUid());
+    }
+
+    public long getDataSetSize(Transaction t)
+    {
+        return t.getQueryDefinitionRunCount(HibernateStringUtils.filterConstraintsQuery(this));
+    }
+    
+    public String[] getFieldNames()
+    {
+        return filterVarNames_;
+    }
+
+    public IFilter[] getFilters()
+    {
+        return filters_;
+    }
+
+    public String[] getRowData(QueryDefinitionRun queryDefinitionRun)
+    {
+        String[] row = new String[3];
+        
+        row[0] = queryDefinitionRun.getQueryDefinition().getName();
+        row[1] = queryDefinitionRun.getQueryDefinition().getDescription();
+        row[2] = QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString();
+        
+        return row;
+    }
+
+    public void init(Transaction t)
+    {
+        filters_[0] = new StringFilter();
+        filters_[1] = new StringFilter();
+        filters_[2] = new StringFilter();
+    }
+
+    public void selectAction(QueryDefinitionRun selectedItem)
+    {
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.expand();
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView.selectNode();
+    }
+
+    public boolean[] sortableFields()
+    {
+        return sortable_;
+    }
+
+    public boolean stillExists(QueryDefinitionRun selectedItem)
+    {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        boolean state = t.queryDefinitionRunStillExists(selectedItem);
+        t.commit();
+        return state;
+    }
+}

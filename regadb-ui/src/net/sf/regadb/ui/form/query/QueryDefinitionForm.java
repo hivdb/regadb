@@ -227,7 +227,14 @@ public class QueryDefinitionForm extends FormWidget
 	@Override
 	public void cancel() 
 	{
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView);
+		if(getInteractionState() == InteractionState.Adding)
+		{
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionMain, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelect);
+		}
+		else
+		{
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView);
+		}
 	}
 
 	@Override
