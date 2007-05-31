@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
@@ -132,11 +133,18 @@ public class EditableTable<DataType> extends WContainerWidget
                         {
                             WWidget[] widgets = getWidgets(itemTable_.numRows()-1);
                             widgets = editableList_.fixAddRow(widgets);
-                            itemTable_.deleteRow(itemTable_.numRows()-1);
-                            addLine(widgets, false);
-                            
-                            addLine(editableList_.addRow(), true);
-                            itemList_.add(null);
+                            if(widgets!=null)
+                            {
+                                itemTable_.deleteRow(itemTable_.numRows()-1);
+                                addLine(widgets, false);
+                                
+                                addLine(editableList_.addRow(), true);
+                                itemList_.add(null);
+                            }
+                            else
+                            {
+                                MessageBox.showWarningMessage(tr("editableTable.add.warning.couldNotAdd"));
+                            }
                         }
                     });
         }
