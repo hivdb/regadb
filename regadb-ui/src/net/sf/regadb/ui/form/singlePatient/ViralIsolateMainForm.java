@@ -456,8 +456,12 @@ public class ViralIsolateMainForm extends WContainerWidget
             if(ntseq.getAaSequences().size()==0)
             {
             AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-subtype", "http://zolder:8080/wts/services/", subTypeTest, "subtype", true), RegaDBMain.getApp().getLogin()); 
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), RegaDBMain.getApp().getLogin().getUid(), "kdforc0", "Vitabis1", "regadb-hiv-type", "http://zolder:8080/wts/services/", typeTest, "type", true), RegaDBMain.getApp().getLogin()); 
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(), 
+                                                                                RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
+                                                                                subTypeTest), RegaDBMain.getApp().getLogin()); 
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(),
+                                                                                RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
+                                                                                typeTest), RegaDBMain.getApp().getLogin());
             }
         }
     }
