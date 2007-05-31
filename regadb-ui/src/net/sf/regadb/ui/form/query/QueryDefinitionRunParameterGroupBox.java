@@ -255,8 +255,11 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     	}
     }
     
-    public void saveData()
+    
+    public boolean saveData()
     {
+    	boolean saved = true;
+    	
     	int i = 1;
     	
     	for(QueryDefinitionRunParameter qdrp : qdrps)
@@ -266,42 +269,121 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     		switch (type) 
         	{
 		        case STRING:
-		        	qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+		        	{
+		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case INTEGER:
-		        	qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+		        	{
+		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case DOUBLE:
-		        	qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+		        	{
+		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case DATE:
-		        	qdrp.setValue(((DateField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(!((((DateField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+		        	{
+		        		qdrp.setValue(((DateField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case GENERICDRUG:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case COMMERCIALDRUG:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case TEST:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case TESTTYPE:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case PROTEIN:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case ATTRIBUTE:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
 		        case ATTRIBUTEGROUP:
-		        	qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+		        	{
+		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+		        	}
+		        	else
+		        	{
+		        		saved = false;
+		        	}
 		        break;
         	}
     		
     		i++;
     	}
+    	
+    	return saved;
     }
     
     public Set<QueryDefinitionRunParameter> getQueryDefinitionRunParameters()

@@ -12,6 +12,7 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
@@ -27,6 +28,8 @@ public class QueryDefinitionRunForm extends FormWidget
     
     private Label nameL;
     private TextField nameTF;
+    private Label queryNameL;
+    private TextField queryNameTF;
     private Label descriptionL;
     private TextArea descriptionTA;
     private Label queryL;
@@ -62,11 +65,16 @@ public class QueryDefinitionRunForm extends FormWidget
     	
     	queryDefinitionRunGroupTable = new WTable(queryDefinitionRunGroup_);
     	
-    	nameL = new Label(tr("form.query.definition.label.name"));
-    	nameTF = new TextField(InteractionState.Viewing, this);
+    	nameL = new Label(tr("form.query.definition.run.label.name"));
+    	nameTF = new TextField(getInteractionState(), this);
+    	nameTF.setMandatory(true);
         addLineToTable(queryDefinitionRunGroupTable, nameL, nameTF);
+    	
+    	queryNameL = new Label(tr("form.query.definition.run.label.query"));
+    	queryNameTF = new TextField(InteractionState.Viewing, this);
+        addLineToTable(queryDefinitionRunGroupTable, queryNameL, queryNameTF);
         
-        descriptionL = new Label(tr("form.query.definition.label.description"));
+        descriptionL = new Label(tr("form.query.definition.run.label.description"));
         descriptionTA = new TextArea(InteractionState.Viewing, this);
         addLineToTable(queryDefinitionRunGroupTable, descriptionL, descriptionTA);
         
@@ -96,7 +104,8 @@ public class QueryDefinitionRunForm extends FormWidget
     {
     	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
     	
-    	nameTF.setText(queryDefinitionRun.getQueryDefinition().getName());
+    	nameTF.setText(queryDefinitionRun.getName());
+    	queryNameTF.setText(queryDefinitionRun.getQueryDefinition().getName());
         descriptionTA.setText(queryDefinitionRun.getQueryDefinition().getDescription());
         queryTA.setText(queryDefinitionRun.getQueryDefinition().getQuery());
         
@@ -118,23 +127,32 @@ public class QueryDefinitionRunForm extends FormWidget
     @Override
 	public void saveData()
 	{
-    	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-    	
-    	queryDefinitionRun.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
-    	queryDefinitionRun.setStatus(0);
-    	queryDefinitionRun.setStartdate(new Date(System.currentTimeMillis()));
-    	
-    	queryDefinitionRunParameterGroup.saveData();
-    	queryDefinitionRun.setQueryDefinitionRunParameters(queryDefinitionRunParameterGroup.getQueryDefinitionRunParameters());
-		
-    	update(queryDefinitionRun, t);
-    	
-    	t.commit();
-    	
-    	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
-    	
-    	redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain);
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView);
+    	if(queryDefinitionRunParameterGroup.saveData())
+    	{
+    		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+        	
+        	queryDefinitionRun.setName(nameTF.getFormText());
+        	queryDefinitionRun.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
+        	queryDefinitionRun.setStatus(0);
+        	queryDefinitionRun.setStartdate(new Date(System.currentTimeMillis()));
+        	
+        	queryDefinitionRun.setQueryDefinitionRunParameters(queryDefinitionRunParameterGroup.getQueryDefinitionRunParameters());
+    		
+        	update(queryDefinitionRun, t);
+        	
+        	t.commit();
+        	
+        	//start query
+        	
+        	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
+        	
+        	redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain);
+    		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView);
+    	}
+    	else
+    	{
+    		MessageBox.showWarningMessage(tr("form.query.definition.run.validate.parameters.null"));
+    	}
 	}
 
 	@Override

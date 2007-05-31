@@ -13,13 +13,13 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefinitionRun>
 {
-    private static String [] _colNames = {"dataTable.queryDefinitionRun.colName.name", "dataTable.queryDefinitionRun.colName.description", "dataTable.queryDefinitionRun.colName.status"};
+    private static String [] _colNames = {"dataTable.queryDefinitionRun.colName.name", "dataTable.queryDefinitionRun.colName.query", "dataTable.queryDefinitionRun.colName.description", "dataTable.queryDefinitionRun.colName.status"};
     
-    private static String[] filterVarNames_ = {"queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
+    private static String[] filterVarNames_ = {"queryDefinitionRun.name", "queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
         
-    private static boolean [] sortable_ = {true, true, true};
+    private static boolean [] sortable_ = {true, true, true, true};
     
-    private IFilter[] filters_ = new IFilter[3];
+    private IFilter[] filters_ = new IFilter[4];
     
     public String[] getColNames()
     {
@@ -48,11 +48,12 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
 
     public String[] getRowData(QueryDefinitionRun queryDefinitionRun)
     {
-        String[] row = new String[3];
+        String[] row = new String[4];
         
-        row[0] = queryDefinitionRun.getQueryDefinition().getName();
-        row[1] = queryDefinitionRun.getQueryDefinition().getDescription();
-        row[2] = QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString();
+        row[0] = queryDefinitionRun.getName();
+        row[1] = queryDefinitionRun.getQueryDefinition().getName();
+        row[2] = queryDefinitionRun.getQueryDefinition().getDescription();
+        row[3] = QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString();
         
         return row;
     }
@@ -62,6 +63,7 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
+        filters_[3] = new StringFilter();
     }
 
     public void selectAction(QueryDefinitionRun selectedItem)
