@@ -458,10 +458,12 @@ public class ViralIsolateMainForm extends WContainerWidget
             AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
             AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(), 
                                                                                 RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
-                                                                                subTypeTest), RegaDBMain.getApp().getLogin()); 
+                                                                                subTypeTest, 
+                                                                                RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin()); 
             AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(),
                                                                                 RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
-                                                                                typeTest), RegaDBMain.getApp().getLogin());
+                                                                                typeTest,
+                                                                                RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
             }
         }
     }
