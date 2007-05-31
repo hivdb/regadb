@@ -21,7 +21,7 @@
       <column name="aa_insertion" length="30" not-null="true" />
     </property>
     <property name="ntInsertionCodon" type="java.lang.String">
-      <column name="nt_insertion_codon" not-null="true" />
+      <column name="nt_insertion_codon" length="3" not-null="true" />
     </property>
   </class>
 </hibernate-mapping>

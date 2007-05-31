@@ -21,10 +21,10 @@
       <column name="aa_mutation" length="30" />
     </property>
     <property name="ntReferenceCodon" type="java.lang.String">
-      <column name="nt_reference_codon" not-null="true" />
+      <column name="nt_reference_codon" length="3" not-null="true" />
     </property>
     <property name="ntMutationCodon" type="java.lang.String">
-      <column name="nt_mutation_codon" />
+      <column name="nt_mutation_codon" length="3" />
     </property>
   </class>
 </hibernate-mapping>
