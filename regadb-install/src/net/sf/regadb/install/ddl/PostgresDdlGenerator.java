@@ -86,11 +86,13 @@ public class PostgresDdlGenerator
 		    
 		try 
         {
-			FileUtils.writeByteArrayToFile(new File(fileName), buffer.toString().getBytes());
+            toWrite = buffer.toString();
+            toWrite = toWrite.replaceAll("varchar\\(255\\)", "text");
+			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
 		}
 		catch (IOException e) 
         {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
