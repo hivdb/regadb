@@ -61,7 +61,10 @@ public class TextField extends FormField
 	
 	public void setEchomode(WLineEditEchoMode mode)
 	{
-		_fieldEdit.setEchoMode(mode);
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.setEchoMode(mode);
+        }
 	}
 
 	public WFormWidget getFormWidget()
@@ -114,6 +117,18 @@ public class TextField extends FormField
         if(_fieldEdit!=null)
         {
             _fieldEdit.setEnabled(enabled);
+        }
+    }
+    
+    public void setHidden(boolean hide)
+    {
+        if(_fieldEdit!=null)
+        {
+            _fieldEdit.setHidden(hide);
+        }
+        else
+        {
+            getViewWidget().setHidden(hide);
         }
     }
 }

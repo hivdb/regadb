@@ -146,6 +146,9 @@ public class ComboBox extends FormField
     {
         if(isMandatory())
         {
+            if(fieldEdit_.currentText()==null)
+                return false;
+            
             return !(fieldEdit_.currentText().keyOrValue().equals(noSelectionItem));
         }
         else
@@ -160,5 +163,25 @@ public class ComboBox extends FormField
     	{
     		fieldEdit_.clear();
     	}
+    }
+    
+    public void setEnabled(boolean enabled)
+    {
+        if(fieldEdit_!=null)
+        {
+            fieldEdit_.setEnabled(enabled);
+        }
+    }
+    
+    public void setHidden(boolean hide)
+    {
+        if(fieldEdit_!=null)
+        {
+            fieldEdit_.setHidden(hide);
+        }
+        else
+        {
+            getViewWidget().setHidden(hide);
+        }
     }
 }
