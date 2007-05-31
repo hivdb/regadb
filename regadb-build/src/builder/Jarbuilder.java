@@ -43,7 +43,7 @@ public class Jarbuilder
     	else {
     		System.out.println("Wrong parameters");
     		System.out.println("First parameter for build dir");
-    		System.out.println("Second parameter for rapport dir");
+    		System.out.println("Second parameter for report dir");
     	}
     }
     
