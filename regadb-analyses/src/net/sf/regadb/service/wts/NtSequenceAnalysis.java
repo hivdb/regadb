@@ -26,7 +26,7 @@ public class NtSequenceAnalysis implements IAnalysis
     private WtsClient client_;
     private int waitDelay_;
     
-    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, int waitDelay)
+    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, String uid, int waitDelay)
     {
         seqIi_ = ntseq;
         
@@ -38,9 +38,9 @@ public class NtSequenceAnalysis implements IAnalysis
         waitDelay_ = waitDelay;
     }
     
-    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test)
+    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, String uid)
     {
-        this(ntseq, p, test, 5000);
+        this(ntseq, p, test, uid, 5000);
     }
     
     public Date getEndTime() 
@@ -92,7 +92,7 @@ public class NtSequenceAnalysis implements IAnalysis
             e1.printStackTrace();
         }
         
-        client_.upload(ticket, test_.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
+        client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), input.getBytes());
         
         client_.start(ticket, test_.getAnalysis().getServiceName());
         
@@ -101,7 +101,7 @@ public class NtSequenceAnalysis implements IAnalysis
         {
             try 
             {
-                Thread.sleep(5000);
+                Thread.sleep(waitDelay_);
             } 
             catch (InterruptedException ie) 
             {
