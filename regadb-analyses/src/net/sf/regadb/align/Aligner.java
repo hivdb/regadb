@@ -123,15 +123,15 @@ public class Aligner {
                                 aam.setId(new AaMutationId((short) protein.posInProtein(m.getAaPos()), s));
                                 aam.setAaMutation(asString(m.getTargetAminoAcids()));
                                 aam.setAaReference(aatok.tokenizeSymbol(m.getRefAminoAcid()));
-                                aam.setNtMutationCodon(asArray(nttok, m.getTargetCodon()));
-                                aam.setNtReferenceCodon(asArray(nttok, m.getRefCodon()));
+                                aam.setNtMutationCodon(asCodonString(nttok, m.getTargetCodon()));
+                                aam.setNtReferenceCodon(asCodonString(nttok, m.getRefCodon()));
                                 
                                 mutations.add(aam);
                             } else {
                                 AaInsertion aai = new AaInsertion();
                                 aai.setId(new AaInsertionId((short) protein.posInProtein(m.getAaPos()), s, (short) m.getInsIndex()));
                                 aai.setAaInsertion(asString(m.getTargetAminoAcids()));
-                                aai.setNtInsertionCodon(asArray(nttok, m.getTargetCodon()));
+                                aai.setNtInsertionCodon(asCodonString(nttok, m.getTargetCodon()));
                                 
                                 insertions.add(aai);
                             }
@@ -146,15 +146,12 @@ public class Aligner {
         }
     }
 
-    private String asArray(SymbolTokenization st, SymbolList codon) {
+    private String asCodonString(SymbolTokenization st, SymbolList codon) {
         try {
-            String result = "{";
+            String result = "";
             for (int i = 1; i <= codon.length(); ++i) {
-                if (i != 1)
-                    result += ",";
                 result += st.tokenizeSymbol(codon.symbolAt(i));
             }
-            result += "}";
             return result;
         } catch (IllegalSymbolException e) {
             throw new RuntimeException(e);
