@@ -10,6 +10,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import net.sf.regadb.util.date.DateUtils;
 
 public class IDatasetDataTable implements IDataTable<Dataset> 
 {
@@ -55,8 +56,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 		String [] row = new String[4];
         
         row[0] = dataset.getDescription();
-        row[1] = String.valueOf(dataset.getCreationDate());
-        row[2] = String.valueOf(dataset.getClosedDate());
+        row[1] = DateUtils.getEuropeanFormat(dataset.getCreationDate());
+        row[2] = DateUtils.getEuropeanFormat(dataset.getClosedDate());
         row[3] = String.valueOf(dataset.getRevision());
              
         return row;
