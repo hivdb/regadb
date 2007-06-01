@@ -1,5 +1,6 @@
 package net.sf.regadb.service.wts;
 
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -86,11 +87,7 @@ public class NtSequenceAnalysis implements IAnalysis
         {
             challenge = client_.getChallenge(test_.getAnalysis().getAccount());
             ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
-        } 
-        catch (RemoteException e1) 
-        {
-            e1.printStackTrace();
-        }
+
         
         client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), input.getBytes());
         
@@ -130,6 +127,15 @@ public class NtSequenceAnalysis implements IAnalysis
         t.commit();
         
         client_.closeSession(ticket, test_.getAnalysis().getServiceName());
+        } 
+        catch (RemoteException e1) 
+        {
+            e1.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
                         
         endTime_ = new Date(System.currentTimeMillis());
     }

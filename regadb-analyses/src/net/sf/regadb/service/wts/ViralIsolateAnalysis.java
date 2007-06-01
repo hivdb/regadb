@@ -1,6 +1,7 @@
 package net.sf.regadb.service.wts;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import net.sf.regadb.db.NtSequence;
@@ -45,13 +46,9 @@ public class ViralIsolateAnalysis
         String ticket = null;
         try 
         {
-            challenge = client_.getChallenge(test_.getAnalysis().getAccount());
-            ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
-        } 
-        catch (RemoteException e1) 
-        {
-            e1.printStackTrace();
-        }
+        challenge = client_.getChallenge(test_.getAnalysis().getAccount());
+        ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
+ 
         
         client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseinputfile(), input.getBytes());
         
@@ -77,5 +74,15 @@ public class ViralIsolateAnalysis
         client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), resultFile);
         
         client_.closeSession(ticket, test_.getAnalysis().getServiceName());
+        
+        } 
+        catch (RemoteException e1) 
+        {
+            e1.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }

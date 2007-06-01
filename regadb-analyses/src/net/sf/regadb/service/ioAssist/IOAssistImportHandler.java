@@ -2,6 +2,7 @@ package net.sf.regadb.service.ioAssist;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -132,11 +133,37 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         catch (RemoteException e1) 
         {
             e1.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
         }
         
-        client_.upload(ticket, test.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
+        try 
+        {
+            client_.upload(ticket, test.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
         
-        client_.start(ticket, test.getAnalysis().getServiceName());
+        try 
+        {
+            client_.start(ticket, test.getAnalysis().getServiceName());
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
         
         boolean finished = false;
         while(!finished)
@@ -149,15 +176,50 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
             {
                 ie.printStackTrace();
             }
-            if(client_.monitorStatus(ticket, test.getAnalysis().getServiceName()).startsWith("ENDED"))
+            
+            try 
             {
-                finished = true;
+                if(client_.monitorStatus(ticket, test.getAnalysis().getServiceName()).startsWith("ENDED"))
+                {
+                    finished = true;
+                }
+            } 
+            catch (RemoteException e) 
+            {
+                e.printStackTrace();
+            } 
+            catch (MalformedURLException e) 
+            {
+                e.printStackTrace();
             }
         }
         
-        byte [] resultArray = client_.download(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseoutputfile());
+        byte[] resultArray = null;
+        try 
+        {
+            resultArray = client_.download(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseoutputfile());
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
         
-        client_.closeSession(ticket, test.getAnalysis().getServiceName());
+        try 
+        {
+            client_.closeSession(ticket, test.getAnalysis().getServiceName());
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
         
         TestResult tr = new TestResult();
         tr.setNtSequence(ntseq);

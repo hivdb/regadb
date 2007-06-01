@@ -1,6 +1,7 @@
 package net.sf.regadb.service.wts;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import net.sf.wts.client.WtsClient;
@@ -18,6 +19,8 @@ public class FileProvider
     {
         WtsClient client = new WtsClient(RegaDBWtsServer.url_);
 
+        try
+        {
         String challenge = client.getChallenge("public");
         String ticket = client.login("public", challenge, "public", fileProviderServiceName);
         
@@ -34,5 +37,14 @@ public class FileProvider
         client.download(ticket, fileProviderServiceName, "file_provider_file", placeToDownload);
         
         client.closeSession(ticket, fileProviderServiceName);
+        }
+        catch(RemoteException re)
+        {
+            re.printStackTrace();
+        } 
+        catch (MalformedURLException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }
