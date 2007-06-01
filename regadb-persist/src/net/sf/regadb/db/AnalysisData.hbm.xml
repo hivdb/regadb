@@ -18,6 +18,9 @@
     <property name="data" type="binary">
       <column name="data" />
     </property>
+    <property name="mimetype" type="string">
+      <column name="mimetype" length="50" not-null="true" />
+    </property>
   </class>
 </hibernate-mapping>
 
