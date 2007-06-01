@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
+// Generated 1/06/2007 15:20:23 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -16,6 +16,8 @@ public class Dataset implements java.io.Serializable {
     private Integer datasetIi;
 
     private int version;
+
+    private SettingsUser settingsUser;
 
     private String description;
 
@@ -34,14 +36,18 @@ public class Dataset implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public Dataset(String description, Date creationDate) {
+    public Dataset(SettingsUser settingsUser, String description,
+            Date creationDate) {
+        this.settingsUser = settingsUser;
         this.description = description;
         this.creationDate = creationDate;
     }
 
     /** full constructor */
-    public Dataset(String description, Date creationDate, Date closedDate,
-            Integer revision, Set<DatasetAccess> datasetAccesses) {
+    public Dataset(SettingsUser settingsUser, String description,
+            Date creationDate, Date closedDate, Integer revision,
+            Set<DatasetAccess> datasetAccesses) {
+        this.settingsUser = settingsUser;
         this.description = description;
         this.creationDate = creationDate;
         this.closedDate = closedDate;
@@ -64,6 +70,14 @@ public class Dataset implements java.io.Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public SettingsUser getSettingsUser() {
+        return this.settingsUser;
+    }
+
+    public void setSettingsUser(SettingsUser settingsUser) {
+        this.settingsUser = settingsUser;
     }
 
     public String getDescription() {
