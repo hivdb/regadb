@@ -24,11 +24,11 @@
     <property name="status" type="java.lang.Integer">
       <column name="status" />
     </property>
-    <property name="result" type="binary">
-      <column name="result" />
-    </property>
     <property name="name" type="string">
       <column name="name" length="100" not-null="true" />
+    </property>
+    <property name="result" type="string">
+      <column name="result" length="100" />
     </property>
     <set name="queryDefinitionRunParameters" inverse="false" cascade="all">
       <key>
