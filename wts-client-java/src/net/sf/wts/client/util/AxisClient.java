@@ -29,16 +29,10 @@ public class AxisClient
         }
     }
     
-    public void setServiceUrl(String url, String service)
+    public void setServiceUrl(String url, String service) throws MalformedURLException
     {
-        try 
-        {
-            call.setTargetEndpointAddress(new java.net.URL(url+service));
-        } 
-        catch (MalformedURLException e) 
-        {
-            e.printStackTrace();
-        }
+        call.setTargetEndpointAddress(new java.net.URL(url+service));
+
         call.setOperationName(new javax.xml.namespace.QName("urn:"+service, "exec"));
     }
     

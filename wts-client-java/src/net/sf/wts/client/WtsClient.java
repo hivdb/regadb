@@ -2,6 +2,7 @@ package net.sf.wts.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import net.sf.wts.client.util.AxisClient;
@@ -19,7 +20,7 @@ public class WtsClient
         url_ = url;
     }
     
-    public String getChallenge(String userName) throws RemoteException
+    public String getChallenge(String userName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "GetChallenge");
@@ -33,7 +34,7 @@ public class WtsClient
         return challenge;
     }
     
-    public String login(String userName, String challenge, String password, String serviceName) throws RemoteException
+    public String login(String userName, String challenge, String password, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "Login");
@@ -50,7 +51,7 @@ public class WtsClient
         return sessionTicket;
     }
     
-    public void upload(String sessionTicket, String serviceName, String fileName, byte[] file)
+    public void upload(String sessionTicket, String serviceName, String fileName, byte[] file) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "Upload");
@@ -70,7 +71,7 @@ public class WtsClient
         }
     }
     
-    public byte[] download(String sessionTicket, String serviceName, String fileName)
+    public byte[] download(String sessionTicket, String serviceName, String fileName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "Download");
@@ -92,7 +93,7 @@ public class WtsClient
         return array;
     }
     
-    public void download(String sessionTicket, String serviceName, String fileName, File toWrite)
+    public void download(String sessionTicket, String serviceName, String fileName, File toWrite) throws RemoteException, MalformedURLException
     {
         byte[] array = download(sessionTicket, serviceName, fileName);
         if(array!=null)
@@ -108,7 +109,7 @@ public class WtsClient
         }
     }
     
-    public void upload(String sessionTicket, String serviceName, String fileName, File localLocation)
+    public void upload(String sessionTicket, String serviceName, String fileName, File localLocation) throws RemoteException, MalformedURLException
     {
         byte[] array = null;
         try 
@@ -123,7 +124,7 @@ public class WtsClient
         upload(sessionTicket, serviceName, fileName, array);
     }
     
-    public byte[] monitorLogFile(String sessionTicket, String serviceName)
+    public byte[] monitorLogFile(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "MonitorLogFile");
@@ -144,7 +145,7 @@ public class WtsClient
         return array;
     }
     
-    public byte[] monitorLogTail(String sessionTicket, String serviceName, int numberOfLines)
+    public byte[] monitorLogTail(String sessionTicket, String serviceName, int numberOfLines) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "MonitorLogTail");
@@ -166,7 +167,7 @@ public class WtsClient
         return array;
     }
     
-    public String monitorStatus(String sessionTicket, String serviceName)
+    public String monitorStatus(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "MonitorStatus");
@@ -188,7 +189,7 @@ public class WtsClient
         return status;
     }
     
-    public void start(String sessionTicket, String serviceName)
+    public void start(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "Start");
@@ -206,7 +207,7 @@ public class WtsClient
         }
     }
     
-    public void closeSession(String sessionTicket, String serviceName)
+    public void closeSession(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "CloseSession");
@@ -224,7 +225,7 @@ public class WtsClient
         }
     }
     
-    public void stop(String sessionTicket, String serviceName)
+    public void stop(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "Stop");
@@ -281,6 +282,10 @@ public class WtsClient
             client.closeSession(ticket, "regadb-align");
         } 
         catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        catch (MalformedURLException e)
         {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package net.sf.wts.client.meta;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,43 +25,29 @@ public class WtsMetaClient
         url_ = url;
     }
     
-    public String listServices()
+    public String listServices() throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "ListServices");
         
         String services = "";
         
-        try 
-        {
-            services = axisService.callAndGetStringResult();
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
+        services = axisService.callAndGetStringResult();
         
         return services;
     }
     
-    public byte[] getServiceDescription(String serviceName)
+    public byte[] getServiceDescription(String serviceName) throws RemoteException, MalformedURLException
     {
         axisService.removeParameters();
         axisService.setServiceUrl(url_, "GetServiceDescription");
-        
+
         byte [] result = null;
         
         axisService.addParameter(serviceName);
         
-        try 
-        {
-            result = axisService.callAndGetByteArrayResult();
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        
+        result = axisService.callAndGetByteArrayResult();
+
         return result;
     }
 
@@ -119,8 +106,25 @@ public class WtsMetaClient
     public static void main(String [] args)
     {
         WtsMetaClient client = new WtsMetaClient("http://zolder:8080/wts/services/");
-        System.err.println(client.listServices());
-        byte[] array = client.getServiceDescription("regadb-hiv-resist");
+        try {
+            System.err.println(client.listServices());
+        } catch (RemoteException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        byte[] array=null;
+        try {
+            array = client.getServiceDescription("regadb-hiv-resist");
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         System.err.println(new String(array));
     }
 }
