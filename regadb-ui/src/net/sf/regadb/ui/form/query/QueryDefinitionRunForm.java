@@ -3,6 +3,8 @@ package net.sf.regadb.ui.form.query;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
@@ -49,6 +51,8 @@ public class QueryDefinitionRunForm extends FormWidget
     private TextField statusTF;
     private Label resultL;
     private WAnchor resultLink;
+    
+    private static Map<String, QueryThread> queryThread = new HashMap<String, QueryThread>();
     
     public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
@@ -110,9 +114,9 @@ public class QueryDefinitionRunForm extends FormWidget
             resultL = new Label(tr("form.query.definition.run.label.result"));
             queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
             
-            if(queryDefinitionRun.getResult() != null)
+            if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-            	resultLink = new WAnchor("", lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
+            	resultLink = new WAnchor(null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
                 resultLink.setStyleClass("link");
             }
         }
@@ -140,7 +144,7 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
         	
-        	if(queryDefinitionRun.getResult() != null)
+        	if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
         	{
         		resultLink.setRef(new WFileResource("application/excel", Settings.getQueryResultDir() + queryDefinitionRun.getResult()).generateUrl());
         	}
@@ -168,7 +172,10 @@ public class QueryDefinitionRunForm extends FormWidget
         	t.commit();
         	
         	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun);
-        	qt.start();
+        	
+        	queryThread.put(qt.getFileName(), qt);
+        	
+        	qt.startQueryThread();
         	
         	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
         	
@@ -205,6 +212,8 @@ public class QueryDefinitionRunForm extends FormWidget
         
         t.commit();
         
+        queryThread.get(queryDefinitionRun.getResult()).stopQueryThread();
+                
         try
         {
 			FileUtils.forceDelete(new File(Settings.getQueryResultDir() + queryDefinitionRun.getResult()));

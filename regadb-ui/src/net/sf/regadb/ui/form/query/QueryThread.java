@@ -1,120 +1,53 @@
 package net.sf.regadb.ui.form.query;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
 import net.sf.regadb.db.QueryDefinitionRun;
-import net.sf.regadb.db.QueryDefinitionRunParameter;
-import net.sf.regadb.db.QueryDefinitionRunStatus;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.ui.settings.Settings;
 
-import org.hibernate.Query;
-
-public class QueryThread extends Thread
+public class QueryThread
 {
 	private static Object mutex_ = new Object();
 	
+	private Thread thread_;
+	private String fileName_;
+	
 	public QueryThread(final Login copiedLogin, final QueryDefinitionRun qdr)
 	{
-		super(new Runnable()
-        {
-            public String init()
-            {
-            	synchronized(mutex_)
-            	{
-            		try 
-            		{
-						Thread.sleep(2);
-            		}
-            		catch (InterruptedException e) 
-            		{
-						e.printStackTrace();
-					}
-            		
-					return copiedLogin.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
-            	}
-            }
-			
-			public void run() 
-            {
-				OutputStream os = null;
-				String fileName = init();
-				
-            	Transaction t = copiedLogin.createTransaction();
-            	
-            	try
-            	{
-					os = new FileOutputStream(Settings.getQueryResultDir() + fileName);
-				}
-            	catch (FileNotFoundException e1)
-            	{
-					e1.printStackTrace();
-				}
-            	
-            	try
-            	{
-            		Query q = t.createQuery(qdr.getQueryDefinition().getQuery());
-            		
-            		for(QueryDefinitionRunParameter qdrp : qdr.getQueryDefinitionRunParameters())
-                	{
-                		q.setParameter(qdrp.getQueryDefinitionParameter().getName(), qdrp.getValue());
-                	}
-            		
-            		List result = q.list();
-            		
-            		for(Object o : result)
-            		{
-            			if(q.getReturnTypes().length == 1)
-            			{
-            				os.write((o.toString()).getBytes());
-            			}
-            			else
-            			{
-            				Object[] array = (Object[])o;
-            				
-            				for(int i = 0; i < array.length - 1; i++)
-            				{
-            					os.write((array[i].toString()).getBytes());
-            					
-            					os.write((",").getBytes());
-            				}
-            				
-            				os.write((array[array.length - 1].toString()).getBytes());
-            			}
-            			
-            			os.write(("\n").getBytes());
-            		}
-            		
-            		qdr.setStatus((QueryDefinitionRunStatus.Finished).getValue());
-            		
-            		qdr.setResult(fileName);
-            		
-            		qdr.setEnddate(new Date(System.currentTimeMillis()));
-            	}
-            	catch(Exception e)
-            	{
-            		try
-            		{
-						os.write(("Query Failed").getBytes());
-					}
-            		catch (IOException e1)
-            		{
-						e1.printStackTrace();
-					}
-            		
-            		qdr.setStatus((QueryDefinitionRunStatus.Failed).getValue());
-            		
-            		qdr.setEnddate(new Date(System.currentTimeMillis()));
-            	}
-            	
-            	t.commit();
-            }
-        });
+		fileName_ = init(copiedLogin, qdr);
+		thread_ = new Thread(new QueryRunnable(copiedLogin, qdr, fileName_));
+	}
+		
+    private String init(final Login copiedLogin, final QueryDefinitionRun qdr)
+    {
+    	synchronized(mutex_)
+    	{
+    		try 
+    		{
+				Thread.sleep(2);
+    		}
+    		catch (InterruptedException e) 
+    		{
+				e.printStackTrace();
+			}
+    		
+			return copiedLogin.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
+    	}
+    }
+	
+    public void startQueryThread()
+	{
+		thread_.start();
+	}
+    
+    public void stopQueryThread()
+    {
+    	if(thread_.isAlive())
+    	{
+    		thread_.stop();
+    	}
+    }
+
+	public String getFileName() 
+	{
+		return fileName_;
 	}
 }

@@ -230,3 +230,8 @@
 *.form-field-textarea-edit-valid
 {
 }
+
+*.link span
+{
+	cursor: pointer;
+}
