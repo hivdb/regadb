@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.query;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import net.sf.regadb.db.QueryDefinitionRun;
@@ -13,9 +15,12 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
+import net.sf.regadb.ui.settings.Settings;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
+
+import org.apache.commons.io.FileUtils;
 
 public class QueryDefinitionRunForm extends FormWidget
 {
@@ -40,6 +45,8 @@ public class QueryDefinitionRunForm extends FormWidget
     private DateField endDateDF;
     private Label statusL;
     private TextField statusTF;
+    private Label resultL;
+    private TextField resultTF;
     
     public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
@@ -82,7 +89,7 @@ public class QueryDefinitionRunForm extends FormWidget
         queryTA = new TextArea(InteractionState.Viewing, this);
         addLineToTable(queryDefinitionRunGroupTable, queryL, queryTA);
         
-        if(getInteractionState() == InteractionState.Viewing)
+        if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
         	startDateL = new Label(tr("form.query.definition.run.label.startdate"));
             startDateDF = new DateField(getInteractionState(), this);
@@ -95,6 +102,10 @@ public class QueryDefinitionRunForm extends FormWidget
             statusL = new Label(tr("form.query.definition.run.label.status"));
             statusTF = new TextField(getInteractionState(), this);
             addLineToTable(queryDefinitionRunGroupTable, statusL, statusTF);
+            
+            resultL = new Label(tr("form.query.definition.run.label.result"));
+            resultTF = new TextField(getInteractionState(), this);
+            addLineToTable(queryDefinitionRunGroupTable, resultL, resultTF);
         }
         
         queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("form.query.definition.run.parameters"), this);
@@ -109,16 +120,18 @@ public class QueryDefinitionRunForm extends FormWidget
         descriptionTA.setText(queryDefinitionRun.getQueryDefinition().getDescription());
         queryTA.setText(queryDefinitionRun.getQueryDefinition().getQuery());
         
-        if(getInteractionState() == InteractionState.Viewing)
+        if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateDF.setText(queryDefinitionRun.getStartdate().toString());
+        	startDateDF.setDate(queryDefinitionRun.getStartdate());
         	
         	if(queryDefinitionRun.getEnddate() != null)
         	{
-        		endDateDF.setText(queryDefinitionRun.getEnddate().toString());
+        		endDateDF.setDate(queryDefinitionRun.getEnddate());
         	}
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
+        	
+        	resultTF.setText(queryDefinitionRun.getResult());
         }
         
         t.commit();
@@ -142,7 +155,8 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	t.commit();
         	
-        	//start query
+        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun);
+        	qt.start();
         	
         	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
         	
@@ -178,6 +192,15 @@ public class QueryDefinitionRunForm extends FormWidget
         t.delete(queryDefinitionRun);
         
         t.commit();
+        
+        try
+        {
+			FileUtils.forceDelete(new File(Settings.getQueryResultDir() + queryDefinitionRun.getResult()));
+		}
+        catch (IOException e)
+        {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
