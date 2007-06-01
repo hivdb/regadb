@@ -16,6 +16,8 @@ import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.settings.Settings;
+import net.sf.witty.wt.WAnchor;
+import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
@@ -46,7 +48,7 @@ public class QueryDefinitionRunForm extends FormWidget
     private Label statusL;
     private TextField statusTF;
     private Label resultL;
-    private TextField resultTF;
+    private WAnchor resultLink;
     
     public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
@@ -103,9 +105,16 @@ public class QueryDefinitionRunForm extends FormWidget
             statusTF = new TextField(getInteractionState(), this);
             addLineToTable(queryDefinitionRunGroupTable, statusL, statusTF);
             
+            int row = queryDefinitionRunGroupTable.numRows();
+            
             resultL = new Label(tr("form.query.definition.run.label.result"));
-            resultTF = new TextField(getInteractionState(), this);
-            addLineToTable(queryDefinitionRunGroupTable, resultL, resultTF);
+            queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
+            
+            if(queryDefinitionRun.getResult() != null)
+            {
+            	resultLink = new WAnchor("", lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
+                resultLink.setStyleClass("link");
+            }
         }
         
         queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("form.query.definition.run.parameters"), this);
@@ -131,7 +140,10 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
         	
-        	resultTF.setText(queryDefinitionRun.getResult());
+        	if(queryDefinitionRun.getResult() != null)
+        	{
+        		resultLink.setRef(new WFileResource("application/excel", Settings.getQueryResultDir() + queryDefinitionRun.getResult()).generateUrl());
+        	}
         }
         
         t.commit();

@@ -18,22 +18,33 @@ import org.hibernate.Query;
 
 public class QueryThread extends Thread
 {
-	private static String fileName;
-	
-	private static OutputStream os;
+	private static Object mutex_ = new Object();
 	
 	public QueryThread(final Login copiedLogin, final QueryDefinitionRun qdr)
 	{
 		super(new Runnable()
         {
-            public void init()
+            public String init()
             {
-            	fileName = copiedLogin.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
+            	synchronized(mutex_)
+            	{
+            		try 
+            		{
+						Thread.sleep(2);
+            		}
+            		catch (InterruptedException e) 
+            		{
+						e.printStackTrace();
+					}
+            		
+					return copiedLogin.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
+            	}
             }
 			
 			public void run() 
             {
-				init();
+				OutputStream os = null;
+				String fileName = init();
 				
             	Transaction t = copiedLogin.createTransaction();
             	
