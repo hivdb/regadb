@@ -51,6 +51,13 @@ public class Transaction {
     public void rollback() {
         session.getTransaction().rollback();
     }
+    
+    public Query createQuery(String query)
+    {
+    	Query q = session.createQuery(query);
+    	
+    	return q;
+    }
 
     //simple get by id
     
