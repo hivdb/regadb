@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import net.sf.regadb.db.Analysis;
@@ -206,18 +208,53 @@ public class TestForm extends FormWidget
         baseInputFileCB.clearItems();
         baseOutputFileCB.clearItems();
         
+        urlTF.flagValid();
+        serviceTF.flagValid();
+        
         if(!state)
         {
             WtsMetaClient wtsMC = new WtsMetaClient(urlTF.text());
-            byte[] array = wtsMC.getServiceDescription(serviceTF.text());
-            for(String input : wtsMC.parseInputNames(array))
+            byte[] array = null;
+            try
             {
-                baseInputFileCB.addItem(lt(input));
+                array = wtsMC.getServiceDescription(serviceTF.text());
+            }
+            catch(RemoteException re)
+            {
+                if(re.getMessage().equals("No client transport named 'null' found!"))
+                {
+                    urlTF.flagErroneous();
+                }
+                else if(re.getMessage().contains("java.net.UnknownHostException"))
+                {
+                    urlTF.flagErroneous();
+                }
+                else if(re.getMessage().equals("java.rmi.RemoteException: Service " + '"' + serviceTF.text() + '"' +" is not available"))
+                {
+                    serviceTF.flagErroneous();
+                }
+                else
+                {
+                    serviceTF.flagErroneous();
+                    urlTF.flagErroneous();
+                }
+            } 
+            catch (MalformedURLException e) 
+            {
+                urlTF.flagErroneous();
             }
             
-            for(String output : wtsMC.parseOutputNames(array))
+            if(array!=null)
             {
-                baseOutputFileCB.addItem(lt(output));
+                for(String input : wtsMC.parseInputNames(array))
+                {
+                    baseInputFileCB.addItem(lt(input));
+                }
+                
+                for(String output : wtsMC.parseOutputNames(array))
+                {
+                    baseOutputFileCB.addItem(lt(output));
+                }
             }
         }
     }
@@ -314,6 +351,8 @@ public class TestForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
+        if(test_.getAnalysis()!=null)
+        t.delete(test_.getAnalysis());        
         t.delete(test_);
         
         t.commit();
