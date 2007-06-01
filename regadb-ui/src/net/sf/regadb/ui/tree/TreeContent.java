@@ -1,8 +1,11 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
@@ -539,14 +542,28 @@ public class TreeContent
             {
                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Editing, WWidget.tr("form.datasetSettings.dataset.edit"),datasetSelected.getSelectedItem()));
             }
-        });
+        })
+        {
+            @Override
+            public boolean isEnabled()
+            {
+                return setDatasetSensitivity();
+            }
+        };
         datasetDelete = new ActionItem(rootItem.tr("menu.datasetSettings.dataset.delete"), datasetSelected, new ITreeAction()
         {
             public void performAction(TreeMenuNode node)
             {
                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Deleting, WWidget.tr("form.datasetSettings.dataset.delete"), datasetSelected.getSelectedItem()));
             }
-        });
+        })
+        {
+            @Override
+            public boolean isEnabled()
+            {
+                return setDatasetSensitivity();
+            }
+        };
         datasetAccess = new ActionItem(rootItem.tr("menu.dataset.access"), datasetSettings)
         {
             @Override
@@ -833,4 +850,25 @@ public class TreeContent
 			return myAccountLogin;
 		}
 	}
+    
+    private boolean setDatasetSensitivity()
+    {
+        Login login = RegaDBMain.getApp().getLogin();
+        if(login!=null)
+        {
+            Dataset ds = datasetSelected.getSelectedItem();
+            if(ds!=null)
+            {
+                return ds.getSettingsUser().getUid().equals(login.getUid());
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

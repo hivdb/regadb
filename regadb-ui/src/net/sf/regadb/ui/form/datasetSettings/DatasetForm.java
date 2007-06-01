@@ -3,6 +3,10 @@ package net.sf.regadb.ui.form.datasetSettings;
 import java.util.Date;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.DatasetAccessId;
+import net.sf.regadb.db.Privileges;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -91,34 +95,44 @@ public class DatasetForm extends FormWidget
         {
             t.attach(dataset_);
         }
-         
+        
+        SettingsUser user_ = t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid());
         dataset_.setDescription(descriptionTF.text());
         dataset_.setRevision(1);
         dataset_.setCreationDate(new Date(System.currentTimeMillis()));
+        dataset_.setSettingsUser(user_);
+        
+        user_.getDatasetAccesses().add(new DatasetAccess(new DatasetAccessId(user_, dataset_), Privileges.READWRITE.getValue(),user_.getUid()));
+        
         update(dataset_, t);
+        update(user_, t);
+        
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(dataset_);
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetView.selectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
 	}
 
 	@Override
 	public void cancel() 
 	{
-		
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
 	}
 
 	@Override
 	public void deleteObject() 
 	{
-		
+	    Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        t.delete(dataset_);
+        
+        t.commit();
 	}
 
 	@Override
 	public void redirectAfterDelete() 
 	{
-		
+        RegaDBMain.getApp().getTree().getTreeContent().datasetSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(null);
 	}
 }
