@@ -1,11 +1,16 @@
 package net.sf.regadb.ui.form.query;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.session.Login;
 
 public class QueryThread
 {
 	private static Object mutex_ = new Object();
+	
+	private static Map<String, QueryThread> queryThreads = new HashMap<String, QueryThread>();
 	
 	private Thread thread_;
 	private String fileName_;
@@ -36,18 +41,25 @@ public class QueryThread
     public void startQueryThread()
 	{
 		thread_.start();
+		
+		queryThreads.put(fileName_, this);
 	}
     
-    public void stopQueryThread()
+    @SuppressWarnings("deprecation")
+	public static void stopQueryThread(String fileName)
     {
-    	if(thread_.isAlive())
+    	Thread thread = queryThreads.get(fileName).thread_;
+    	
+    	if(!(thread.isInterrupted()))
     	{
-    		thread_.stop();
+    		thread.interrupt();
     	}
+    	
+    	removeQueryThread(fileName);
     }
-
-	public String getFileName() 
-	{
-		return fileName_;
-	}
+    
+    public static void removeQueryThread(String fileName)
+    {
+    	queryThreads.remove(fileName);
+    }
 }

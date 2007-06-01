@@ -44,6 +44,8 @@ public class QueryRunnable implements Runnable
 				e1.printStackTrace();
 			}
         	
+        	qdr_.setResult(fileName_);
+        	
         	try
         	{
         		Query q = t.createQuery(qdr_.getQueryDefinition().getQuery());
@@ -80,15 +82,15 @@ public class QueryRunnable implements Runnable
         		
         		qdr_.setStatus((QueryDefinitionRunStatus.Finished).getValue());
         		
-        		qdr_.setResult(fileName_);
-        		
         		qdr_.setEnddate(new Date(System.currentTimeMillis()));
+        		
+        		QueryThread.removeQueryThread(fileName_);
         	}
         	catch(Exception e)
         	{
         		try
         		{
-					os.write(("Query Failed").getBytes());
+					os.write((e.getMessage()).getBytes());
 				}
         		catch (IOException e1)
         		{
@@ -98,6 +100,8 @@ public class QueryRunnable implements Runnable
         		qdr_.setStatus((QueryDefinitionRunStatus.Failed).getValue());
         		
         		qdr_.setEnddate(new Date(System.currentTimeMillis()));
+        		
+        		QueryThread.removeQueryThread(fileName_);
         	}
         	
         	t.commit();

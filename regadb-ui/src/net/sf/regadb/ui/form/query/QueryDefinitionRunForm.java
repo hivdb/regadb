@@ -3,8 +3,6 @@ package net.sf.regadb.ui.form.query;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
@@ -51,8 +49,6 @@ public class QueryDefinitionRunForm extends FormWidget
     private TextField statusTF;
     private Label resultL;
     private WAnchor resultLink;
-    
-    private static Map<String, QueryThread> queryThread = new HashMap<String, QueryThread>();
     
     public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
@@ -173,8 +169,6 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun);
         	
-        	queryThread.put(qt.getFileName(), qt);
-        	
         	qt.startQueryThread();
         	
         	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
@@ -207,12 +201,15 @@ public class QueryDefinitionRunForm extends FormWidget
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         
 		queryDefinitionRun = RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.getSelectedItem();
+		
+		if(queryDefinitionRun.getStatus() == QueryDefinitionRunStatus.Running.getValue())
+		{
+			QueryThread.stopQueryThread(queryDefinitionRun.getResult());
+		}
         
         t.delete(queryDefinitionRun);
         
         t.commit();
-        
-        queryThread.get(queryDefinitionRun.getResult()).stopQueryThread();
                 
         try
         {
