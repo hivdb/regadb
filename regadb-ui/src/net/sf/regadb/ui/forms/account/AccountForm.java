@@ -71,7 +71,10 @@ public class AccountForm extends FormWidget
         if(getInteractionState()!=InteractionState.Adding)
         {
             uidL = new Label(tr("form.settings.user.label.uid"));
-            uidTF = new TextField(InteractionState.Viewing, this);
+            uidTF = new TextField(  su_!=null&&
+                                    su_.getEnabled()==null&&
+                                    getInteractionState()!=InteractionState.Viewing
+                                    ?InteractionState.Editing:InteractionState.Viewing, this);
             addLineToTable(loginGroupTable, uidL, uidTF);
         }
         
@@ -181,44 +184,61 @@ public class AccountForm extends FormWidget
     @Override
     public void saveData()
     {
+        boolean wasNotEnabled = su_.getEnabled()==null;
+        
+        Transaction t;
+        if(administrator_ && wasNotEnabled)
+        {
+            t = login.createTransaction();
+            boolean nonExistingName = t.getSettingsUser(uidTF.text())==null;
+            if(!nonExistingName)
+            {
+                MessageBox.showWarningMessage(tr("form.administrator.notRegisteredUser.edit.uid.warning"));
+                return;
+            }
+        }
+        
         if(validatePasswordFields())
         {
             if(getInteractionState()==InteractionState.Adding)
             {
-                //Generate new userId
-                int indexOfArobase = emailTF.getFormText().lastIndexOf('@');
-                String uid = emailTF.getFormText().substring(0, indexOfArobase);
-                
-                su_.setUid(uid);
+                su_.setUid(emailTF.text());
                 su_.setAdmin(false);
                 su_.setEnabled(null);
             }
             
-            su_.setFirstName(firstNameTF.getFormText());
-            su_.setLastName(lastNameTF.getFormText());
-            su_.setEmail(emailTF.getFormText());
+            su_.setFirstName(firstNameTF.text());
+            su_.setLastName(lastNameTF.text());
+            su_.setEmail(emailTF.text());
             
             if(newPasswordTF!=null)
             {
                 su_.setPassword(Encrypt.encryptMD5(newPasswordTF.getFormText()));
             }
-                
+            
             if(administrator_)
             {
                 su_.setAdmin(administratorCB.isChecked());
                 su_.setEnabled(registeredCB.isChecked());
             }
-            
+                
             if(getInteractionState()==InteractionState.Adding)
             {
                 Login.createNewAccount(su_);
                 MessageBox.showWarningMessage(tr("form.account.create.warning"));
             }
             else
-            {
-                Transaction t = login.createTransaction();
+            {                
+                t = login.createTransaction();
                 update(su_, t);
-                t.commit();                
+                t.commit(); 
+                
+                if(administrator_ && wasNotEnabled)
+                {
+                    t = login.createTransaction();
+                    su_ = t.changeUid(su_, uidTF.text());
+                    t.commit();
+                }
             }
             redirectToView(expandNode_, selectNode_);
         }
