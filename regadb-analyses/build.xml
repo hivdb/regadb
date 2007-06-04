@@ -34,6 +34,7 @@
   	<jar jarfile="${dist}/${proj.name}-ioAssist-${proj.version}.jar" basedir="${build}">
   		<manifest>
   			<attribute name="Main-Class" value="net.sf.regadb.service.ioAssist.IOAssist"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
   </target>
