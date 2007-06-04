@@ -21,7 +21,7 @@ public class IOAssist
         try 
         {
             r = new FileReader(new File(args[0]));
-            File outFile = new File("/home/plibin0/processedSequences.xml");
+            File outFile = new File(args[1]);
             FileWriter out = new FileWriter(outFile);
             imp.readViralIsolates(new InputSource(r), new IOAssistImportHandler(out));
             out.close();
