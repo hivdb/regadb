@@ -379,6 +379,24 @@ public class Transaction {
         
         return (SettingsUser) q.uniqueResult();
     }
+    
+    public SettingsUser changeUid(SettingsUser user, String newUid)
+    {
+        SettingsUser newSu = new SettingsUser(newUid, user.getChartWidth(), user.getChartHeight());
+        newSu.setDataset(user.getDataset());
+        newSu.setPassword(user.getPassword());
+        newSu.setEmail(user.getEmail());
+        newSu.setFirstName(user.getFirstName());
+        newSu.setLastName(user.getLastName());
+        newSu.setAdmin(user.getAdmin());
+        newSu.setEnabled(user.getEnabled());
+        
+        delete(user);
+        
+        save(newSu);
+        
+        return newSu;
+    }
 
     /**
      * Unauthenticated access to own settings.
