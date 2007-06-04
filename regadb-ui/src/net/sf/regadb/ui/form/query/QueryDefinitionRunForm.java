@@ -112,7 +112,7 @@ public class QueryDefinitionRunForm extends FormWidget
             
             if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-            	resultLink = new WAnchor(null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
+            	resultLink = new WAnchor((String)null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
                 resultLink.setStyleClass("link");
             }
         }
