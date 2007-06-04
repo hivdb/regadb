@@ -2,13 +2,16 @@ package net.sf.regadb.ui.form.testTestTypes;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.db.Analysis;
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.datatable.testSettings.IAnalysisDataEditableTable;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -17,6 +20,7 @@ import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
@@ -58,6 +62,12 @@ public class TestForm extends FormWidget
     private ComboBox baseInputFileCB;
     private Label baseOutputFileL;
     private ComboBox baseOutputFileCB;
+    
+    //analysis data group
+    private WGroupBox analysisDataGroup_;
+    private EditableTable<AnalysisData> analysisDataET;
+    private IAnalysisDataEditableTable ianalysisDataET;
+    //analysis data group -end-
   
 	public TestForm(InteractionState interactionState, WMessage formName, Test test ) 
 	{
@@ -180,6 +190,11 @@ public class TestForm extends FormWidget
         analysisTypeCB.selectItem(toSelect);
         t.commit();
         //analysis -end-
+        
+        //analysis data
+        analysisDataGroup_ = new WGroupBox(tr("form.testSettings.test.editView.analysisDataGroup"),this);
+        analysisDataGroup_.setHidden(true);
+        //analysis data -end-
 	       
  	    addControlButtons();
 	}
@@ -210,6 +225,8 @@ public class TestForm extends FormWidget
         
         urlTF.flagValid();
         serviceTF.flagValid();
+        
+        analysisDataGroup_.setHidden(true);
         
         if(!state)
         {
@@ -255,8 +272,39 @@ public class TestForm extends FormWidget
                 {
                     baseOutputFileCB.addItem(lt(output));
                 }
+                
+                showAnalysisData(wtsMC.parseInputNames(array));
             }
         }
+    }
+    
+    private void showAnalysisData(ArrayList<String> selectableItems)
+    {
+        if(ianalysisDataET==null)
+        {
+            ArrayList<AnalysisData> data = new ArrayList<AnalysisData>();
+            if(test_.getAnalysis()!=null)
+            {
+                for(AnalysisData ad : test_.getAnalysis().getAnalysisDatas())
+                {
+                    data.add(ad);
+                }
+            }
+            ianalysisDataET = new IAnalysisDataEditableTable(this);
+            analysisDataET = new EditableTable<AnalysisData>(analysisDataGroup_, ianalysisDataET, data);
+        }
+        else
+        {
+            analysisDataET.removeAllRows();
+        }
+        
+        if(selectableItems!=null)
+        {
+            ianalysisDataET.setInputFileNames(selectableItems);
+            analysisDataET.refreshAddRow();
+        }
+        
+        analysisDataGroup_.setHidden(false);
     }
 	
 	private void filldata() 
@@ -272,7 +320,6 @@ public class TestForm extends FormWidget
         {
             test_=new Test();
         }
-        
             
         testTF.setText(test_.getDescription());
         if(test_.getTestType()!=null)
@@ -289,6 +336,12 @@ public class TestForm extends FormWidget
             serviceTF.setText(test_.getAnalysis().getServiceName());
             accountTF.setText(test_.getAnalysis().getAccount());
             passwordTF.setText(test_.getAnalysis().getPassword());
+            
+            if(getInteractionState()!=InteractionState.Viewing)
+                setBaseFields();
+            else
+                showAnalysisData(null);
+            
             baseInputFileCB.selectItem(lt(test_.getAnalysis().getBaseinputfile()));
             baseOutputFileCB.selectItem(lt(test_.getAnalysis().getBaseoutputfile()));
         }
@@ -325,6 +378,10 @@ public class TestForm extends FormWidget
             test_.getAnalysis().setPassword(passwordTF.text());
             test_.getAnalysis().setBaseinputfile(baseInputFileCB.currentText().value());
             test_.getAnalysis().setBaseoutputfile(baseOutputFileCB.currentText().value());
+            
+            ianalysisDataET.setTransaction(t);
+            ianalysisDataET.setAnalysis(test_.getAnalysis());
+            analysisDataET.saveData();
             
             update(test_.getAnalysis(), t);
         }
