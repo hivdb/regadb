@@ -205,4 +205,23 @@ public class EditableTable<DataType> extends WContainerWidget
         
         return widgets;
     }
+    
+    public void removeAllRows()
+    {
+        for(int i = 1; i < itemTable_.numRows()-1; i++)
+        {
+            ((WCheckBox)itemTable_.elementAt(i, 0).children().get(0)).setChecked(true);
+        }
+        removeItems();
+    }
+    
+    public void refreshAddRow()
+    {
+        if((editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing))
+        {
+            itemTable_.deleteRow(itemTable_.numRows()-1);
+            
+            addLine(editableList_.addRow(), true);
+        }
+    }
 }
