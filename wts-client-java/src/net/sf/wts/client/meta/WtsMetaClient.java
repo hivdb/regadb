@@ -80,13 +80,18 @@ public class WtsMetaClient
         
         Element rootElement = doc.getRootElement();
         
-        List<Element> childrenOfInput = (rootElement.getChild(main)).getChild(sub).getChildren();
+        List<Element> childrenOfInput = (rootElement.getChild(main)).getChildren(sub);
         
-        for(Element e : childrenOfInput)
+        Element e;
+        for(Element child : childrenOfInput)
         {
-            if(e.getName().equals("name"))
+            for(Object o : child.getChildren())
             {
-                puts.add(e.getValue());
+                e = (Element)o;
+                if(e.getName().equals("name"))
+                {
+                puts.add(e.getTextTrim());
+                }
             }
         }
         
