@@ -1,7 +1,6 @@
 package net.sf.regadb.ui.forms.account;
 
-import java.io.Serializable;
-
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
@@ -9,6 +8,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
+import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -45,6 +45,8 @@ public class AccountForm extends FormWidget
     private TextField newPasswordTF;
     private Label retypePasswordL;
     private TextField retypePasswordTF;
+    private Label datasetL;
+    private ComboBox datasetCB;
     private Label administratorL;
     private CheckBox administratorCB;
     private Label registeredL;
@@ -76,6 +78,14 @@ public class AccountForm extends FormWidget
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
             addLineToTable(loginGroupTable, uidL, uidTF);
+            
+            datasetL = new Label(tr("form.settings.user.label.dataset"));
+            datasetCB= new ComboBox(su_!=null&&
+                                    su_.getEnabled()==null&&
+                                    getInteractionState()!=InteractionState.Viewing
+                                    ?InteractionState.Editing:InteractionState.Viewing, this);
+            datasetCB.setMandatory(true);
+            addLineToTable(loginGroupTable,datasetL, datasetCB);
         }
         
         //First name
@@ -143,8 +153,19 @@ public class AccountForm extends FormWidget
                 {
                     registeredCB.setChecked(su_.getEnabled());
                 }
+                else
+                {
+                    for(Dataset ds : t.getDatasets())
+                    {
+                        datasetCB.addItem(lt(ds.getDescription()));
+                    }
+                }
             }
             
+            if(su_.getDataset()!=null)
+            {
+                datasetCB.selectItem(lt(su_.getDataset().getDescription()));
+            }
             firstNameTF.setText(su_.getFirstName());
             lastNameTF.setText(su_.getLastName());
             emailTF.setText(su_.getEmail());
@@ -236,6 +257,7 @@ public class AccountForm extends FormWidget
                 if(administrator_ && wasNotEnabled)
                 {
                     t = login.createTransaction();
+                    su_.setDataset(t.getDataset(datasetCB.currentText().value()));
                     su_ = t.changeUid(su_, uidTF.text());
                     t.commit();
                 }
