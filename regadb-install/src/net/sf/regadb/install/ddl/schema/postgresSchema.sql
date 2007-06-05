@@ -23,6 +23,7 @@ create sequence test_result_test_result_ii_seq;
 create sequence test_test_ii_seq;
 create sequence test_type_test_type_ii_seq;
 create sequence therapy_therapy_ii_seq;
+create sequence user_attribute_user_attribute_ii_seq;
 create sequence value_type_value_type_ii_seq;
 create sequence viral_isolate_viral_isolate_ii_seq;
 create table commercial_generic (generic_ii integer  not null, commercial_ii integer  not null, primary key (commercial_ii, generic_ii));
@@ -40,7 +41,7 @@ create table public.dataset_access (uid varchar(50) not null, dataset_ii integer
 create table public.drug_class (drug_class_ii integer default nextval('drug_class_drug_class_ii_seq'), version integer  not null, class_id varchar(10) not null, class_name varchar(100) not null, primary key (drug_class_ii));
 create table public.drug_commercial (commercial_ii integer default nextval('drug_commercial_drug_commercial_ii_seq'), version integer  not null, name varchar(100) not null, primary key (commercial_ii));
 create table public.drug_generic (generic_ii integer default nextval('drug_generic_drug_generic_ii_seq'), version integer  not null, drug_class_ii integer  not null, generic_id varchar(10) not null, generic_name varchar(50) not null, primary key (generic_ii));
-create table public.nt_sequence (nt_sequence_ii integer default nextval('nt_sequence_nt_sequence_ii_seq'), version integer  not null, viral_isolate_ii integer  not null, nucleotides text, label varchar(50), sequence_date date, primary key (nt_sequence_ii));
+create table public.nt_sequence (nt_sequence_ii integer default nextval('nt_sequence_nt_sequence_ii_seq'), version integer  not null, viral_isolate_ii integer  not null, label varchar(50), sequence_date date, nucleotides text, primary key (nt_sequence_ii));
 create table public.patient (patient_ii integer default nextval('patient_patient_ii_seq'), version integer  not null, patient_id varchar(50) not null, last_name varchar(50), first_name varchar(50), birth_date date, death_date date, primary key (patient_ii));
 create table public.patient_attribute_value (patient_ii integer  not null, attribute_ii integer  not null, version integer  not null, nominal_value_ii integer , value varchar(100), primary key (patient_ii, attribute_ii));
 create table public.patient_dataset (dataset_ii integer  not null, patient_ii integer  not null, primary key (dataset_ii, patient_ii));
@@ -51,7 +52,7 @@ create table public.query_definition_parameter_type (query_definition_parameter_
 create table public.query_definition_run (query_definition_run_ii integer default nextval('query_definition_run_query_definition_run_ii_seq'), query_definition_ii integer , uid varchar(50), startdate date, enddate date, status integer , name varchar(100) not null, result varchar(100), primary key (query_definition_run_ii));
 create table public.query_definition_run_parameter (query_definition_run_parameter_ii integer default nextval('query_definition_run_parameter_query_definition_run_parameter_ii_seq'), query_definition_parameter_ii integer , query_definition_run_ii integer , value varchar(50), primary key (query_definition_run_parameter_ii));
 create table public.settings_user (uid varchar(50) not null, version integer  not null, test_ii integer , dataset_ii integer , chart_width integer  not null, chart_height integer  not null, password varchar(50), email varchar(100), first_name varchar(50), last_name varchar(50), admin bool, enabled bool, primary key (uid));
-create table public.test (test_ii integer default nextval('test_test_ii_seq'), version integer  not null, analysis_ii integer  unique, test_type_ii integer  not null, description varchar(50) not null, service_class varchar(50), service_data text, service_config text, primary key (test_ii));
+create table public.test (test_ii integer default nextval('test_test_ii_seq'), version integer  not null, analysis_ii integer  unique, test_type_ii integer  not null, description varchar(50) not null, primary key (test_ii));
 create table public.test_nominal_value (nominal_value_ii integer default nextval('test_nominal_value_test_nominal_value_ii_seq'), version integer  not null, test_type_ii integer  not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table public.test_object (test_object_ii integer default nextval('test_object_test_object_ii_seq'), version integer  not null, description varchar(50) not null, test_object_id integer , primary key (test_object_ii));
 create table public.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , nominal_value_ii integer , patient_ii integer  not null, nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), primary key (test_result_ii));
@@ -59,6 +60,7 @@ create table public.test_type (test_type_ii integer default nextval('test_type_t
 create table public.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
 create table public.therapy_commercial (therapy_ii integer  not null, commercial_ii integer  not null, version integer  not null, day_dosage_units float8, primary key (therapy_ii, commercial_ii));
 create table public.therapy_generic (therapy_ii integer  not null, generic_ii integer  not null, version integer  not null, day_dosage_mg float8, primary key (therapy_ii, generic_ii));
+create table public.user_attribute (user_attribute_ii integer default nextval('user_attribute_user_attribute_ii_seq'), value_type_ii integer , uid varchar(50), name varchar(50), value varchar(100), data text, primary key (user_attribute_ii));
 create table public.value_type (value_type_ii integer default nextval('value_type_value_type_ii_seq'), version integer  not null, description varchar(50) not null, min float8, max float8, multiple bool, primary key (value_type_ii));
 create table public.viral_isolate (viral_isolate_ii integer default nextval('viral_isolate_viral_isolate_ii_seq'), version integer  not null, patient_ii integer  not null, sample_id varchar(50), sample_date date, primary key (viral_isolate_ii));
 alter table commercial_generic add constraint "FK_commercial_generic_drug_generic" foreign key (generic_ii) references public.drug_generic(generic_ii) ON UPDATE CASCADE;
@@ -107,4 +109,6 @@ alter table public.therapy_commercial add constraint "FK_therapy_commercial_ther
 alter table public.therapy_commercial add constraint "FK_therapy_commercial_drug_commercial" foreign key (commercial_ii) references public.drug_commercial(commercial_ii) ON UPDATE CASCADE;
 alter table public.therapy_generic add constraint "FK_therapy_generic_therapy" foreign key (therapy_ii) references public.therapy(therapy_ii) ON UPDATE CASCADE;
 alter table public.therapy_generic add constraint "FK_therapy_generic_drug_generic" foreign key (generic_ii) references public.drug_generic(generic_ii) ON UPDATE CASCADE;
+alter table public.user_attribute add constraint "FK_user_attribute_value_type" foreign key (value_type_ii) references public.value_type(value_type_ii) ON UPDATE CASCADE;
+alter table public.user_attribute add constraint "FK_user_attribute_settings_user" foreign key (uid) references public.settings_user(uid) ON UPDATE CASCADE;
 alter table public.viral_isolate add constraint "FK_viral_isolate_patient" foreign key (patient_ii) references public.patient(patient_ii) ON UPDATE CASCADE;
