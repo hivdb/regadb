@@ -18,23 +18,23 @@ import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
@@ -140,24 +140,6 @@ public class ExportToXML
 			descriptionprimitiveValEl.addContent(Testvar.getDescription().toString());
 			parentNode.addContent(descriptionprimitiveValEl);
 		}
-		if(Testvar.getServiceClass()!=null)
-		{
-			Element serviceClassprimitiveValEl = new Element("serviceClass");
-			serviceClassprimitiveValEl.addContent(Testvar.getServiceClass().toString());
-			parentNode.addContent(serviceClassprimitiveValEl);
-		}
-		if(Testvar.getServiceData()!=null)
-		{
-			Element serviceDataprimitiveValEl = new Element("serviceData");
-			serviceDataprimitiveValEl.addContent(Testvar.getServiceData().toString());
-			parentNode.addContent(serviceDataprimitiveValEl);
-		}
-		if(Testvar.getServiceConfig()!=null)
-		{
-			Element serviceConfigprimitiveValEl = new Element("serviceConfig");
-			serviceConfigprimitiveValEl.addContent(Testvar.getServiceConfig().toString());
-			parentNode.addContent(serviceConfigprimitiveValEl);
-		}
 	}
 	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
 	{
@@ -225,6 +207,12 @@ public class ExportToXML
 			Element baseoutputfileprimitiveValEl = new Element("baseoutputfile");
 			baseoutputfileprimitiveValEl.addContent(Analysisvar.getBaseoutputfile().toString());
 			parentNode.addContent(baseoutputfileprimitiveValEl);
+		}
+		if(Analysisvar.getServiceName()!=null)
+		{
+			Element serviceNameprimitiveValEl = new Element("serviceName");
+			serviceNameprimitiveValEl.addContent(Analysisvar.getServiceName().toString());
+			parentNode.addContent(serviceNameprimitiveValEl);
 		}
 		Element forParenttests = new Element("tests");
 		parentNode.addContent(forParenttests);
@@ -932,6 +920,12 @@ public class ExportToXML
 			Element dataprimitiveValEl = new Element("data");
 			dataprimitiveValEl.addContent(XMLTools.base64Encoding(AnalysisDatavar.getData()));
 			parentNode.addContent(dataprimitiveValEl);
+		}
+		if(AnalysisDatavar.getMimetype()!=null)
+		{
+			Element mimetypeprimitiveValEl = new Element("mimetype");
+			mimetypeprimitiveValEl.addContent(AnalysisDatavar.getMimetype().toString());
+			parentNode.addContent(mimetypeprimitiveValEl);
 		}
 	}
 	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)

@@ -117,9 +117,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Analysis fieldTest_analysis;
     private TestType fieldTest_testType;
     private String fieldTest_description;
-    private String fieldTest_serviceClass;
-    private String fieldTest_serviceData;
-    private String fieldTest_serviceConfig;
     private AnalysisType fieldAnalysis_analysisType;
     private Integer fieldAnalysis_type;
     private String fieldAnalysis_url;
@@ -127,11 +124,13 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAnalysis_password;
     private String fieldAnalysis_baseinputfile;
     private String fieldAnalysis_baseoutputfile;
+    private String fieldAnalysis_serviceName;
     private Set<Test> fieldAnalysis_tests;
     private Set<AnalysisData> fieldAnalysis_analysisDatas;
     private Analysis fieldAnalysisData_analysis;
     private String fieldAnalysisData_name;
     private byte[] fieldAnalysisData_data;
+    private String fieldAnalysisData_mimetype;
     private ValueType fieldTestType_valueType;
     private TestObject fieldTestType_testObject;
     private String fieldTestType_description;
@@ -249,9 +248,6 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTest_analysis = null;
             fieldTest_testType = null;
             fieldTest_description = nullValueString();
-            fieldTest_serviceClass = nullValueString();
-            fieldTest_serviceData = nullValueString();
-            fieldTest_serviceConfig = nullValueString();
         } else if ("analysis".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
             pushState(ParseState.stateAnalysis);
             referenceAnalysis = null;
@@ -262,6 +258,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysis_password = nullValueString();
             fieldAnalysis_baseinputfile = nullValueString();
             fieldAnalysis_baseoutputfile = nullValueString();
+            fieldAnalysis_serviceName = nullValueString();
             fieldAnalysis_tests = new HashSet<Test>();
             fieldAnalysis_analysisDatas = new HashSet<AnalysisData>();
         } else if ("analysisData".equals(qName)|| "analysisDatas-el".equals(qName)) {
@@ -270,6 +267,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysisData_analysis = null;
             fieldAnalysisData_name = nullValueString();
             fieldAnalysisData_data = nullValuebyteArray();
+            fieldAnalysisData_mimetype = nullValueString();
         } else if ("testType".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
             pushState(ParseState.stateTestType);
             referenceTestType = null;
@@ -1103,21 +1101,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elTest.setDescription(fieldTest_description);
                 }
-                if (referenceResolved && fieldTest_serviceClass != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTest.setServiceClass(fieldTest_serviceClass);
-                }
-                if (referenceResolved && fieldTest_serviceData != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTest.setServiceData(fieldTest_serviceData);
-                }
-                if (referenceResolved && fieldTest_serviceConfig != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTest.setServiceConfig(fieldTest_serviceConfig);
-                }
                 if (currentState() == ParseState.TopLevel) {
                     if (importHandler != null)
                         importHandler.importObject(elTest);
@@ -1128,12 +1111,6 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("testType".equals(qName)) {
             } else if ("description".equals(qName)) {
                 fieldTest_description = parseString(value);
-            } else if ("serviceClass".equals(qName)) {
-                fieldTest_serviceClass = parseString(value);
-            } else if ("serviceData".equals(qName)) {
-                fieldTest_serviceData = parseString(value);
-            } else if ("serviceConfig".equals(qName)) {
-                fieldTest_serviceConfig = parseString(value);
             } else if ("reference".equals(qName)) {
                 referenceTest = value;
             } else {
@@ -1211,6 +1188,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysis.setBaseoutputfile(fieldAnalysis_baseoutputfile);
                 }
+                if (referenceResolved && fieldAnalysis_serviceName != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysis.setServiceName(fieldAnalysis_serviceName);
+                }
                 if (referenceResolved && !fieldAnalysis_tests.isEmpty())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -1245,6 +1227,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldAnalysis_baseinputfile = parseString(value);
             } else if ("baseoutputfile".equals(qName)) {
                 fieldAnalysis_baseoutputfile = parseString(value);
+            } else if ("serviceName".equals(qName)) {
+                fieldAnalysis_serviceName = parseString(value);
             } else if ("tests".equals(qName)) {
             } else if ("analysisDatas".equals(qName)) {
             } else if ("reference".equals(qName)) {
@@ -1293,6 +1277,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysisData.setData(fieldAnalysisData_data);
                 }
+                if (referenceResolved && fieldAnalysisData_mimetype != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysisData.setMimetype(fieldAnalysisData_mimetype);
+                }
                 if (currentState() == ParseState.TopLevel) {
                     if (importHandler != null)
                         importHandler.importObject(elAnalysisData);
@@ -1304,6 +1293,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldAnalysisData_name = parseString(value);
             } else if ("data".equals(qName)) {
                 fieldAnalysisData_data = parsebyteArray(value);
+            } else if ("mimetype".equals(qName)) {
+                fieldAnalysisData_mimetype = parseString(value);
             } else if ("reference".equals(qName)) {
                 referenceAnalysisData = value;
             } else {
@@ -2472,21 +2463,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 dbo.setDescription(o.getDescription());
             log.append(Describe.describe(o) + ": updating description\n");
         }
-        if (!equals(dbo.getServiceClass(), o.getServiceClass())) {
-            if (!simulate)
-                dbo.setServiceClass(o.getServiceClass());
-            log.append(Describe.describe(o) + ": updating serviceClass\n");
-        }
-        if (!equals(dbo.getServiceData(), o.getServiceData())) {
-            if (!simulate)
-                dbo.setServiceData(o.getServiceData());
-            log.append(Describe.describe(o) + ": updating serviceData\n");
-        }
-        if (!equals(dbo.getServiceConfig(), o.getServiceConfig())) {
-            if (!simulate)
-                dbo.setServiceConfig(o.getServiceConfig());
-            log.append(Describe.describe(o) + ": updating serviceConfig\n");
-        }
     }
 
     public void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
@@ -2524,6 +2500,11 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (!simulate)
                 dbo.setBaseoutputfile(o.getBaseoutputfile());
             log.append(Describe.describe(o) + ": updating baseoutputfile\n");
+        }
+        if (!equals(dbo.getServiceName(), o.getServiceName())) {
+            if (!simulate)
+                dbo.setServiceName(o.getServiceName());
+            log.append(Describe.describe(o) + ": updating serviceName\n");
         }
         for(Test e : o.getTests()) {
             Test dbe = null;
@@ -2602,6 +2583,11 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (!simulate)
                 dbo.setData(o.getData());
             log.append(Describe.describe(o) + ": updating data\n");
+        }
+        if (!equals(dbo.getMimetype(), o.getMimetype())) {
+            if (!simulate)
+                dbo.setMimetype(o.getMimetype());
+            log.append(Describe.describe(o) + ": updating mimetype\n");
         }
     }
 

@@ -163,23 +163,6 @@
         </data>
       </element>
     </optional>
-    <optional>
-      <element name="serviceClass">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">50</param>
-        </data>
-      </element>
-    </optional>
-    <optional>
-      <element name="serviceData">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
-      <element name="serviceConfig">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
   </define>
   <define name="net.sf.regadb.db.Analysis">
     <optional>
@@ -224,6 +207,13 @@
       <element name="baseoutputfile">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="serviceName">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">100</param>
         </data>
       </element>
     </optional>
@@ -273,6 +263,13 @@
     <optional>
       <element name="data">
         <data type="base64Binary" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="mimetype">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
       </element>
     </optional>
   </define>
@@ -569,12 +566,16 @@
     </optional>
     <optional>
       <element name="ntReferenceCodon">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">3</param>
+        </data>
       </element>
     </optional>
     <optional>
       <element name="ntMutationCodon">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">3</param>
+        </data>
       </element>
     </optional>
   </define>
@@ -594,7 +595,9 @@
     </optional>
     <optional>
       <element name="ntInsertionCodon">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">3</param>
+        </data>
       </element>
     </optional>
   </define>
