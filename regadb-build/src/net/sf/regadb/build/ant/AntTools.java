@@ -8,7 +8,7 @@ import org.apache.tools.ant.ProjectHelper;
 
 public class AntTools 
 {
-    public static void buildProject(String projectName, String localBuildDir) throws Exception
+    public static void buildProject(String projectName, String localBuildDir, String jarDeps) throws Exception
     {
         Project project = new Project();
         
@@ -41,10 +41,19 @@ public class AntTools
             System.err.println("Configuration file " + buildFile + " is invalid, or cannot be read.");
         }
         
-        System.out.println("Building project: " + projectName);
+        try
+        {
+        	project.setProperty("jar-dependencies", jarDeps);
+        }
+        catch(Exception e)
+        {
+        	System.err.println("Properties could not be set.");
+        }
         
         try
         {
+        	System.out.println("Building project: " + projectName);
+        	
         	project.executeTarget("all");
         }
         catch (BuildException e)

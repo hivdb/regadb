@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import net.sf.regadb.build.ant.AntTools;
@@ -23,6 +25,9 @@ public class Jarbuilder
 {
 	private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
     private final static String witty_cvs_url = ":pserver:anonymous@zolder:2401/cvsroot/witty";
+    
+    private static HashMap<String, ArrayList<String>> moduleJars_ = new HashMap<String, ArrayList<String>>();
+    private static HashMap<String, ArrayList<String>> moduleDependencies_ = new HashMap<String, ArrayList<String>>();
 	
 	private static String buildDir_;
     private static String rapportDir_;
@@ -59,8 +64,6 @@ public class Jarbuilder
         	handleError("jwt", e);
         }
         
-        buildModule(buildDir_, "jwt_src");
-        
         SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
         
         ArrayList<String> modules = SvnTools.getModules(svnrepos);
@@ -80,8 +83,17 @@ public class Jarbuilder
             
             ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
             moduleDependencies = filterRegaDBDependencies(moduleDependencies);
-            moduleDeps.put(m, moduleDependencies);
+            moduleDeps.put(m, moduleDependencies);       
         }
+        
+        for(String m : modules)
+        {
+        	ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
+            moduleDependencies = filterRegaDBDependencies(moduleDependencies);
+            moduleDependencies_.put(m, moduleDependencies);
+        }
+        
+        buildModule(buildDir_, "jwt_src");
         
         buildRegaDBProjects(moduleDeps);
     }
@@ -98,8 +110,10 @@ public class Jarbuilder
         }
     }
     
-    private static void copyDistJarsToLibPool(String buildDir, String moduleName)
+    private static ArrayList<String> copyDistJarsToLibPool(String buildDir, String moduleName)
     {
+    	ArrayList<String> dists = new ArrayList<String>();
+    	
         File distDir = new File(buildDir + moduleName + File.separatorChar + "dist");
         
         Collection jarFiles = FileUtils.listFiles(distDir, new String[] { "jar" }, false);
@@ -108,12 +122,15 @@ public class Jarbuilder
             try 
             {
                 FileUtils.copyFileToDirectory((File)o, new File(libPool_));
+                dists.add(((File)o).getAbsolutePath());
             } 
             catch (IOException e) 
             {
                 e.printStackTrace();
             }
         }
+        
+        return dists;
     }
     
     private static void buildRegaDBProjects(HashMap<String, ArrayList<String>> moduleDeps)
@@ -132,7 +149,7 @@ public class Jarbuilder
             //System.err.println("roundTrips:"+i);
             for(Entry<String, ArrayList<String>> entry : moduleDeps.entrySet())
             {
-                if(entry.getValue().size()==0)
+            	if(entry.getValue().size()==0)
                 {
                     buildModule(buildDir_, entry.getKey());
                     //System.err.println("building:"+entry.getKey());
@@ -157,18 +174,23 @@ public class Jarbuilder
     
     private static void buildModule(String buildDir, String moduleName)
     {
+    	ArrayList<String> deps = new ArrayList<String>();
+    	
         Collection jarFiles = FileUtils.listFiles(new File(buildDir + moduleName), new String[] { "jar" }, true);
         for(Object o : jarFiles)
         {
             try 
             {
                 FileUtils.copyFileToDirectory((File)o, new File(libPool_));
+                deps.add(((File)o).getAbsolutePath());
             } 
             catch (IOException e) 
             {
                 e.printStackTrace();
             }
         }
+        
+        moduleJars_.put(moduleName, deps);
         
         Collection jarFilesFromLibPool = FileUtils.listFiles(new File(libPool_), new String[] { "jar" }, false);
         
@@ -185,13 +207,25 @@ public class Jarbuilder
             }
         }
         try {
-        	AntTools.buildProject(moduleName, buildDir_);
+        	String jarDeps = getJardependenciesString(getOwnJarDependencies(moduleName));
+        	
+        	if(!(moduleName.equals("jwt_src")))
+        	{
+        		jarDeps = jarDeps.concat(" " + getJardependenciesString(getForeignJarDependencies(moduleName, new ArrayList<String>())));
+        	}
+        	
+        	AntTools.buildProject(moduleName, buildDir_, jarDeps);
+        	
+        	ArrayList<String> dists = copyDistJarsToLibPool(buildDir, moduleName);
+            
+            deps.addAll(dists);
+            
+            moduleJars_.put(moduleName, deps);
         }
         catch (Exception e) {
+        	e.printStackTrace();
         	handleError(moduleName, e);
         }
-        
-        copyDistJarsToLibPool(buildDir, moduleName);
     }
 
 	private static ArrayList<String> filterRegaDBSvnModules(ArrayList<String> modules)
@@ -220,7 +254,7 @@ public class Jarbuilder
         {
             String dependency = md.substring(1);
             
-            if(dependency.startsWith("regadb-") && dependency.indexOf('/')==-1)
+            if((dependency.startsWith("regadb-") || dependency.startsWith("wts")) && dependency.indexOf('/')==-1)
             {
                 filteredDependencies.add(dependency);
             }
@@ -229,6 +263,54 @@ public class Jarbuilder
         return filteredDependencies;
     }
     
+    private static Set<String> getOwnJarDependencies(String module)
+    {
+    	Set<String> jarDependencies = new HashSet<String>();
+    	
+    	for(String s : moduleJars_.get(module))
+    	{
+    		if(!(s.contains("dist")))
+    		{
+    			jarDependencies.add(s.substring(s.lastIndexOf(File.separatorChar) + 1));
+    		}
+    	}
+    	
+    	return jarDependencies;
+    }
+    
+    private static Set<String> getForeignJarDependencies(String module, ArrayList<String> handledModules)
+    {
+    	Set<String> jarDependencies = new HashSet<String>();
+    	
+    	for(String s : moduleDependencies_.get(module))
+    	{
+    		for(String str : moduleJars_.get(s))
+    		{
+    			jarDependencies.add(str.substring(str.lastIndexOf(File.separatorChar) + 1));
+    		}
+    		
+    		if(!handledModules.contains(s))
+    		{
+    			jarDependencies.addAll(getForeignJarDependencies(s, handledModules));
+    			handledModules.add(s);
+    		}
+    	}
+    	
+    	return jarDependencies;
+    }
+    
+    private static String getJardependenciesString(Set<String> jarDependenciesSet)
+    {
+    	String jarDependencies = new String();
+    	
+    	for(String s : jarDependenciesSet)
+    	{
+    		jarDependencies = jarDependencies.concat(s + " ");
+    	}
+    	
+    	return jarDependencies.trim();
+    }
+
     private static void performTests() {
     	System.out.println("Testing projects");
         
