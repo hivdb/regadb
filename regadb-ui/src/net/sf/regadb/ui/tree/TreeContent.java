@@ -838,14 +838,14 @@ public class TreeContent
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(InteractionState.Viewing));
+                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(WWidget.tr("form.update_central_server.view"), InteractionState.Viewing));
                 }
             });
             updateFromCentralServerUpdate = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer.update"), updateFromCentralServer, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(InteractionState.Editing));
+                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(WWidget.tr("form.update_central_server"),InteractionState.Editing));
                 }
             });
 			

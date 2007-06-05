@@ -21,6 +21,7 @@ import net.sf.witty.wt.WFontWeight;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WText;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class UpdateForm extends FormWidget
 {
@@ -44,9 +45,9 @@ public class UpdateForm extends FormWidget
     private WText drugCommercialsText_ = new WText();
 
     
-    public UpdateForm(InteractionState interactionState)
+    public UpdateForm(WMessage formName, InteractionState interactionState)
     {
-        super(tr("form.update_central_server"), interactionState);
+        super(formName, interactionState);
         init();
     }
     
@@ -95,7 +96,7 @@ public class UpdateForm extends FormWidget
             ArrayList<String> testDescriptions = new ArrayList<String>();
             for(Test test : tests)
             {
-                testDescriptions.add(test.getDescription());
+                testDescriptions.add(test.getDescription()+ " - " + test.getTestType().getDescription());
             }
             handleFields(null, testText_, testDescriptions);
             t.commit();
@@ -106,7 +107,7 @@ public class UpdateForm extends FormWidget
             ArrayList<String> attributesNames = new ArrayList<String>();
             for(Attribute attribute : attributes)
             {
-                attributesNames.add(attribute.getName());
+                attributesNames.add(attribute.getName()+ " - " + attribute.getAttributeGroup().getGroupName());
             }
             handleFields(null, attributesText_, attributesNames);
             t.commit();
