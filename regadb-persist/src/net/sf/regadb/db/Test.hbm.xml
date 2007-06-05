@@ -21,15 +21,6 @@
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />
     </property>
-    <property name="serviceClass" type="string">
-      <column name="service_class" length="50" />
-    </property>
-    <property name="serviceData" type="string">
-      <column name="service_data" />
-    </property>
-    <property name="serviceConfig" type="string">
-      <column name="service_config" />
-    </property>
   </class>
 </hibernate-mapping>
 
