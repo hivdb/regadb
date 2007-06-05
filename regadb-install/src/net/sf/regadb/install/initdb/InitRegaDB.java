@@ -182,7 +182,11 @@ public class InitRegaDB
         Test subType = RegaDBWtsServer.getHIV1SubTypeTest(seqAnalysis, wts, stringVT);
         Test type = RegaDBWtsServer.getHIVTypeTest(seqAnalysis, wts, stringVT);
         
+        session.save(subType.getTestType());
+        session.save(subType.getAnalysis());
         session.save(subType);
+        session.save(type.getTestType());
+        session.save(type.getAnalysis());
         session.save(type);
     }
     
