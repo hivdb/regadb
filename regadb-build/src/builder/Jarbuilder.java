@@ -33,6 +33,7 @@ public class Jarbuilder
 	private static String buildDir_;
     private static String rapportDir_;
     private static String libPool_;
+    private static String packageDir_;
 
     public static void main (String args[])
     {
@@ -41,6 +42,8 @@ public class Jarbuilder
     		rapportDir_ = args[1] + File.separatorChar;
     		
     		libPool_ = buildDir_ + "libPool" + File.separatorChar;
+    		
+    		packageDir_ = buildDir_ + "packages" + File.separatorChar;
     		
     		build();
     		
@@ -55,7 +58,7 @@ public class Jarbuilder
     
     public static void build()
     {
-        createLibPoolDir();
+        createDirs();
         
         try {
         	CvsTools.checkout(witty_cvs_url, buildDir_, "jwt/src", "jwt_src");
@@ -99,11 +102,12 @@ public class Jarbuilder
         buildRegaDBProjects(moduleDeps);
     }
     
-    private static void createLibPoolDir()
+    private static void createDirs()
     {
         try 
         {
             FileUtils.forceMkdir(new File(libPool_));
+            FileUtils.forceMkdir(new File(packageDir_));
         } 
         catch (IOException e) 
         {
@@ -227,6 +231,8 @@ public class Jarbuilder
         	e.printStackTrace();
         	handleError(moduleName, e);
         }
+        
+        createPackage(moduleName);
     }
 
 	private static List<String> filterRegaDBSvnModules(List<String> modules)
@@ -310,6 +316,62 @@ public class Jarbuilder
     	}
     	
     	return jarDependencies.trim();
+    }
+    
+    private static Set<String> getDists(String module)
+    {
+    	Set<String> dists = new HashSet<String>();
+    	
+    	for(String s : moduleJars_.get(module))
+    	{
+    		if(s.contains("dist"))
+    		{
+    			dists.add(s.substring(s.lastIndexOf(File.separatorChar) + 1));
+    		}
+    	}
+    	
+    	return dists;
+    }
+    
+    private static void createPackage(String moduleName)
+    {
+    	try 
+        {
+            FileUtils.forceMkdir(new File(packageDir_ + moduleName));
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    	
+    	Set<String> jars = new HashSet<String>();
+    	
+    	jars.addAll(getDists(moduleName));
+    	
+    	jars.addAll(getOwnJarDependencies(moduleName));
+    	
+    	if(!(moduleName.equals("jwt_src")))
+    	{
+    		jars.addAll(getForeignJarDependencies(moduleName, new ArrayList<String>()));
+    	}
+    	
+    	Collection jarFilesFromLibPool = FileUtils.listFiles(new File(libPool_), new String[] { "jar" }, true);
+        
+        for(Object o : jarFilesFromLibPool)
+        {
+            if(jars.contains((((File)o).getAbsolutePath()).substring((((File)o).getAbsolutePath()).lastIndexOf("/") + 1)))
+            {
+            	try 
+                {
+                    File to = new File(packageDir_ + moduleName + File.separatorChar + (((File)o).getAbsolutePath()).substring((((File)o).getAbsolutePath()).lastIndexOf("/") + 1));
+                    FileUtils.copyFileToDirectory((File)o, to);
+                } 
+                catch (IOException e) 
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static void performTests() {
