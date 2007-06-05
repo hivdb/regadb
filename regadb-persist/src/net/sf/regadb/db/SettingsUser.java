@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
+// Generated 5/06/2007 16:30:59 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +38,8 @@ public class SettingsUser implements java.io.Serializable {
 
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
+    private Set<UserAttribute> userAttributes = new HashSet<UserAttribute>(0);
+
     // Constructors
 
     /** default constructor */
@@ -55,7 +57,8 @@ public class SettingsUser implements java.io.Serializable {
     public SettingsUser(String uid, Test test, Dataset dataset, int chartWidth,
             int chartHeight, String password, String email, String firstName,
             String lastName, Boolean admin, Boolean enabled,
-            Set<DatasetAccess> datasetAccesses) {
+            Set<DatasetAccess> datasetAccesses,
+            Set<UserAttribute> userAttributes) {
         this.uid = uid;
         this.test = test;
         this.dataset = dataset;
@@ -68,6 +71,7 @@ public class SettingsUser implements java.io.Serializable {
         this.admin = admin;
         this.enabled = enabled;
         this.datasetAccesses = datasetAccesses;
+        this.userAttributes = userAttributes;
     }
 
     // Property accessors
@@ -173,6 +177,14 @@ public class SettingsUser implements java.io.Serializable {
 
     public void setDatasetAccesses(Set<DatasetAccess> datasetAccesses) {
         this.datasetAccesses = datasetAccesses;
+    }
+
+    public Set<UserAttribute> getUserAttributes() {
+        return this.userAttributes;
+    }
+
+    public void setUserAttributes(Set<UserAttribute> userAttributes) {
+        this.userAttributes = userAttributes;
     }
 
 }

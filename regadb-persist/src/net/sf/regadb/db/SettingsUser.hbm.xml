@@ -45,6 +45,12 @@
       </key>
       <one-to-many class="net.sf.regadb.db.DatasetAccess" />
     </set>
+    <set name="userAttributes" inverse="false" cascade="all">
+      <key>
+        <column name="uid" length="50" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.UserAttribute" />
+    </set>
   </class>
 </hibernate-mapping>
 

@@ -49,6 +49,7 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             || referencedTable.getName().equals("aa_sequence")
             || referencedTable.getName().equals("therapy")
             || referencedTable.getName().equals("analysis")
+            || (referencedTable.getName().equals("settings_user") && keyname.equals("FK_user_attribute_settings_user"))
             || referencedTable.getName().equals("query_definition_run")
             //|| referencedTable.getName().equals("query_definition_run_parameter")
             //|| referencedTable.getName().equals("query_definition_parameter")
