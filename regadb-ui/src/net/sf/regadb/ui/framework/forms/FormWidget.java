@@ -213,6 +213,12 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         selectNode.selectNode();
     }
     
+    protected void redirectToSelect(TreeMenuNode expandNode, TreeMenuNode selectNode)
+    {
+        expandNode.refreshAllChildren();
+        selectNode.selectNode();
+    }
+    
     public void enableOkButton(boolean enable)
     {
         this._okButton.setEnabled(enable);

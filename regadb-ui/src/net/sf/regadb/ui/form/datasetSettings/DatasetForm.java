@@ -116,7 +116,14 @@ public class DatasetForm extends FormWidget
 	@Override
 	public void cancel() 
 	{
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().datasets, RegaDBMain.getApp().getTree().getTreeContent().datasetSelect);
+        }
+        else
+        {
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
+        } 
 	}
 
 	@Override

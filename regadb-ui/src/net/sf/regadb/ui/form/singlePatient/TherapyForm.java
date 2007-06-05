@@ -188,7 +188,14 @@ public class TherapyForm extends FormWidget
     @Override
     public void cancel()
     {
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().therapies, RegaDBMain.getApp().getTree().getTreeContent().therapiesSelect);
+        }
+        else
+        {
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected, RegaDBMain.getApp().getTree().getTreeContent().therapiesView);
+        } 
     }
     
     @Override

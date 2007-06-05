@@ -204,7 +204,14 @@ public class TestTypeForm extends FormWidget
     @Override
     public void cancel()
     {
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().testTypes, RegaDBMain.getApp().getTree().getTreeContent().testTypesSelect);
+        }
+        else
+        {
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
+        } 
     }
     
     @Override

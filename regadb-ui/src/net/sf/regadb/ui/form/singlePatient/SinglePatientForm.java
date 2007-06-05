@@ -353,8 +353,15 @@ public class SinglePatientForm extends FormWidget
     @Override
     public void cancel()
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
-        RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().singlePatientMain, RegaDBMain.getApp().getTree().getTreeContent().patientSelect);
+        }
+        else
+        {
+            RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
+            RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+        } 
     }
     
     @Override

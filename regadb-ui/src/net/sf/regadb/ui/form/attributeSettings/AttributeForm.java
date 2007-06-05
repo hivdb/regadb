@@ -215,7 +215,14 @@ public class AttributeForm extends FormWidget
     @Override
     public void cancel()
     {
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().attributes, RegaDBMain.getApp().getTree().getTreeContent().attributesSelect);
+        }
+        else
+        {
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
+        } 
     }
     
     @Override

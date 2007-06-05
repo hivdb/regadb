@@ -86,7 +86,14 @@ public class AttributeGroupForm extends FormWidget
     @Override
     public void cancel()
     {
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().attributeGroups, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelect);
+        }
+        else
+        {
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
+        }
     }
     
     @Override
