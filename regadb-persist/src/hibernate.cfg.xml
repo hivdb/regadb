@@ -22,6 +22,7 @@
         <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/UserAttribute.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestObject.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DatasetAccess.hbm.xml" />
