@@ -383,7 +383,14 @@ public class TestForm extends FormWidget
             ianalysisDataET.setAnalysis(test_.getAnalysis());
             analysisDataET.saveData();
             
-            update(test_.getAnalysis(), t);
+            if(test_.getAnalysis().getAnalysisIi()==null)
+            {
+                t.save(test_.getAnalysis());
+            }
+            else
+            {
+                update(test_.getAnalysis(), t);
+            }
         }
         else
         {
