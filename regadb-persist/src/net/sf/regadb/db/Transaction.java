@@ -165,6 +165,13 @@ public class Transaction {
     }
     
     @SuppressWarnings("unchecked")
+    public List<DrugClass> getClassDrugs() 
+    {
+        Query q = session.createQuery("from DrugClass");
+        return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
     public List<Protein> getProteins() {
         Query q = session.createQuery("from Protein protein");
         return q.list();

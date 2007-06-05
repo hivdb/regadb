@@ -3,7 +3,13 @@ package net.sf.regadb.ui.framework.forms.administrator;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
+import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportDrugs;
 import net.sf.regadb.service.wts.FileProvider;
@@ -22,7 +28,10 @@ public class UpdateForm extends FormWidget
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
     
     private WGroupBox testGroup_ = new WGroupBox(tr("form.update_central_server.test"));
+    private WText testText_ = new WText();
+    
     private WGroupBox attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
+    private WText attributesText_ = new WText();
     
     private WGroupBox drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
     private WText drugClassTitle_ = new WText(tr("form.admin.update_central_server.drugClass.title"));
@@ -43,12 +52,19 @@ public class UpdateForm extends FormWidget
     
     public void init()
     {
-        addWidget(warningImage_);
-        addWidget(progressText_);
+        if(getInteractionState()==InteractionState.Editing)
+        {
+            addWidget(warningImage_);
+            addWidget(progressText_);
+        }
         
         addWidget(testGroup_);
         addWidget(attributesGroup_);
         addWidget(drugsGroup_);
+        
+        testGroup_.addWidget(testText_);
+        
+        attributesGroup_.addWidget(attributesText_);
         
         drugsGroup_.addWidget(drugClassTitle_);
         drugsGroup_.addWidget(new WBreak());
@@ -69,7 +85,69 @@ public class UpdateForm extends FormWidget
     
     public void fillData()
     {
-        handleDrugs(true);
+        if(getInteractionState()==InteractionState.Viewing)
+        {
+            Transaction t;
+            
+            //Tests
+            t = RegaDBMain.getApp().createTransaction();
+            List<Test> tests = t.getTests();
+            ArrayList<String> testDescriptions = new ArrayList<String>();
+            for(Test test : tests)
+            {
+                testDescriptions.add(test.getDescription());
+            }
+            handleFields(null, testText_, testDescriptions);
+            t.commit();
+            
+            //Attributes
+            t = RegaDBMain.getApp().createTransaction();
+            List<Attribute> attributes = t.getAttributes();
+            ArrayList<String> attributesNames = new ArrayList<String>();
+            for(Attribute attribute : attributes)
+            {
+                attributesNames.add(attribute.getName());
+            }
+            handleFields(null, attributesText_, attributesNames);
+            t.commit();
+            
+            //Drug Class
+            t = RegaDBMain.getApp().createTransaction();
+            List<DrugClass> classDrugs = t.getClassDrugs();
+            ArrayList<String> classDrugsNames = new ArrayList<String>();
+            for(DrugClass dc : classDrugs)
+            {
+                classDrugsNames.add(dc.getClassName());
+            }
+            handleFields(drugClassTitle_, drugClassText_, classDrugsNames);
+            t.commit();
+            
+            //Generic Drugs
+            t = RegaDBMain.getApp().createTransaction();
+            List<DrugGeneric> genericDrugs = t.getGenericDrugs();
+            ArrayList<String> genericDrugsNames = new ArrayList<String>();
+            for(DrugGeneric dg : genericDrugs)
+            {
+                genericDrugsNames.add(dg.getGenericName());
+            }
+            handleFields(drugGenericsTitle_, drugGenericsText_, genericDrugsNames);
+            t.commit();
+            
+            //Commercial Drugs
+            t = RegaDBMain.getApp().createTransaction();
+            List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
+            ArrayList<String> commercialDrugsNames = new ArrayList<String>();
+            for(DrugCommercial dc : commercialDrugs)
+            {
+                commercialDrugsNames.add(dc.getName());
+            }
+            handleFields(drugCommercialsTitle_, drugCommercialsText_, commercialDrugsNames);
+            t.commit();
+        }
+        else
+        {
+            handleDrugs(false);
+        }
     }
     
     private void handleDrugs(boolean simulate)
@@ -90,7 +168,7 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importDrugClasses(t, drugClasses, simulate);
-        handleDrug(drugClassTitle_, drugClassText_, report);
+        handleFields(drugClassTitle_, drugClassText_, report);
         drugClasses.delete();
         t.commit();
 
@@ -105,7 +183,7 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importGenericDrugs(t, drugGenerics, simulate);
-        handleDrug(drugGenericsTitle_, drugGenericsText_, report);
+        handleFields(drugGenericsTitle_, drugGenericsText_, report);
         drugGenerics.delete();
         t.commit();
         
@@ -120,12 +198,12 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importCommercialDrugs(t, drugCommercials, simulate);
-        handleDrug(drugCommercialsTitle_, drugCommercialsText_, report);
+        handleFields(drugCommercialsTitle_, drugCommercialsText_, report);
         drugCommercials.delete();
         t.commit();
     }
     
-    private void handleDrug(WText title, WText text, ArrayList<String> report)
+    private void handleFields(WText title, WText text, ArrayList<String> report)
     {
         String field = "";
         for(String line : report)
@@ -133,7 +211,10 @@ public class UpdateForm extends FormWidget
             field += line + "<br>";
         }
         
-        title.decorationStyle().font().setWeight(WFontWeight.Bold);
+        if(title!=null)
+        {
+            title.decorationStyle().font().setWeight(WFontWeight.Bold);
+        }
         text.setText(lt(field));
         
         report.clear();

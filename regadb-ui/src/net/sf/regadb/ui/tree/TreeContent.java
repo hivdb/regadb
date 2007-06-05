@@ -153,6 +153,7 @@ public class TreeContent
     public ActionItem notRegisteredUsersChangePassword;
     public ActionItem updateFromCentralServer;
     public ActionItem updateFromCentralServerUpdate;
+    public ActionItem updateFromCentralServerUpdateView;
 
     public ActionItem attributesSettings;
     public ActionItem attributes;
@@ -833,6 +834,13 @@ public class TreeContent
             });
             
             updateFromCentralServer = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer"), administratorMain);
+            updateFromCentralServerUpdateView = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer.update.view"), updateFromCentralServer, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(InteractionState.Viewing));
+                }
+            });
             updateFromCentralServerUpdate = new ActionItem(rootItem.tr("menu.administrator.updateFromRegaDBServer.update"), updateFromCentralServer, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
