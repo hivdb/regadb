@@ -13,9 +13,9 @@ import org.jdom.input.SAXBuilder;
 
 public class EclipseParseTools
 {
-    public static ArrayList<String> getDependenciesFromClasspathFile(String projectDir)
+    public static List<String> getDependenciesFromClasspathFile(String projectDir)
     {
-        ArrayList<String> dependencies;
+        List<String> dependencies;
         SAXBuilder builder;
         List classpathentries;
         

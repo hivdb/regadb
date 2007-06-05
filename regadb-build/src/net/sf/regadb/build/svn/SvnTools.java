@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -40,9 +41,9 @@ public class SvnTools
         }
     }
     
-    public static ArrayList<String> getModules(SVNRepository repository)
+    public static List<String> getModules(SVNRepository repository)
     {
-        ArrayList<String> modules = new ArrayList<String>(); 
+        List<String> modules = new ArrayList<String>(); 
         Collection entries = null;
         try 
         {
@@ -85,7 +86,7 @@ public class SvnTools
     public static void main(String [] args)
     {
         SVNRepository svnrepos = getSVNRepository("svn+ssh://zolder:3333/var/svn/repos", "jvsant1", "Kangoer1" );
-        ArrayList<String> modules = getModules(svnrepos);
+        List<String> modules = getModules(svnrepos);
         for(String m : modules)
         {
             System.out.println(m);

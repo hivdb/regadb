@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -26,8 +27,8 @@ public class Jarbuilder
 	private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
     private final static String witty_cvs_url = ":pserver:anonymous@zolder:2401/cvsroot/witty";
     
-    private static HashMap<String, ArrayList<String>> moduleJars_ = new HashMap<String, ArrayList<String>>();
-    private static HashMap<String, ArrayList<String>> moduleDependencies_ = new HashMap<String, ArrayList<String>>();
+    private static HashMap<String, List<String>> moduleJars_ = new HashMap<String, List<String>>();
+    private static HashMap<String, List<String>> moduleDependencies_ = new HashMap<String, List<String>>();
 	
 	private static String buildDir_;
     private static String rapportDir_;
@@ -66,11 +67,11 @@ public class Jarbuilder
         
         SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
         
-        ArrayList<String> modules = SvnTools.getModules(svnrepos);
+        List<String> modules = SvnTools.getModules(svnrepos);
         
         modules = filterRegaDBSvnModules(modules);
         
-        HashMap<String, ArrayList<String>> moduleDeps = new HashMap<String, ArrayList<String>>();
+        HashMap<String, List<String>> moduleDeps = new HashMap<String, List<String>>();
         
         for(String m : modules)
         {
@@ -81,14 +82,14 @@ public class Jarbuilder
             	handleError(m, e);
             }
             
-            ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
+            List<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
             moduleDependencies = filterRegaDBDependencies(moduleDependencies);
             moduleDeps.put(m, moduleDependencies);       
         }
         
         for(String m : modules)
         {
-        	ArrayList<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
+        	List<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
             moduleDependencies = filterRegaDBDependencies(moduleDependencies);
             moduleDependencies_.put(m, moduleDependencies);
         }
@@ -110,9 +111,9 @@ public class Jarbuilder
         }
     }
     
-    private static ArrayList<String> copyDistJarsToLibPool(String buildDir, String moduleName)
+    private static List<String> copyDistJarsToLibPool(String buildDir, String moduleName)
     {
-    	ArrayList<String> dists = new ArrayList<String>();
+    	List<String> dists = new ArrayList<String>();
     	
         File distDir = new File(buildDir + moduleName + File.separatorChar + "dist");
         
@@ -133,11 +134,11 @@ public class Jarbuilder
         return dists;
     }
     
-    private static void buildRegaDBProjects(HashMap<String, ArrayList<String>> moduleDeps)
+    private static void buildRegaDBProjects(HashMap<String, List<String>> moduleDeps)
     {
         int amountOfRoundTrips = moduleDeps.entrySet().size();
 
-        ArrayList<String> projectsToRemove = new ArrayList<String>();
+        List<String> projectsToRemove = new ArrayList<String>();
         
         for(int i = 0; i<amountOfRoundTrips; i++)
         {
@@ -147,7 +148,7 @@ public class Jarbuilder
                 break;
             }
             //System.err.println("roundTrips:"+i);
-            for(Entry<String, ArrayList<String>> entry : moduleDeps.entrySet())
+            for(Entry<String, List<String>> entry : moduleDeps.entrySet())
             {
             	if(entry.getValue().size()==0)
                 {
@@ -155,7 +156,7 @@ public class Jarbuilder
                     //System.err.println("building:"+entry.getKey());
                     projectsToRemove.add(entry.getKey());
                     
-                    for(Entry<String, ArrayList<String>> entryDeeper : moduleDeps.entrySet())
+                    for(Entry<String, List<String>> entryDeeper : moduleDeps.entrySet())
                     {
                         if(entryDeeper.getValue().remove(entry.getKey()))
                         {
@@ -174,7 +175,7 @@ public class Jarbuilder
     
     private static void buildModule(String buildDir, String moduleName)
     {
-    	ArrayList<String> deps = new ArrayList<String>();
+    	List<String> deps = new ArrayList<String>();
     	
         Collection jarFiles = FileUtils.listFiles(new File(buildDir + moduleName), new String[] { "jar" }, true);
         for(Object o : jarFiles)
@@ -216,7 +217,7 @@ public class Jarbuilder
         	
         	AntTools.buildProject(moduleName, buildDir_, jarDeps);
         	
-        	ArrayList<String> dists = copyDistJarsToLibPool(buildDir, moduleName);
+        	List<String> dists = copyDistJarsToLibPool(buildDir, moduleName);
             
             deps.addAll(dists);
             
@@ -228,9 +229,9 @@ public class Jarbuilder
         }
     }
 
-	private static ArrayList<String> filterRegaDBSvnModules(ArrayList<String> modules)
+	private static List<String> filterRegaDBSvnModules(List<String> modules)
     {
-        ArrayList<String> filteredModules = new ArrayList<String>(); 
+        List<String> filteredModules = new ArrayList<String>(); 
         
         for(String m : modules)
         {
@@ -246,9 +247,9 @@ public class Jarbuilder
         return filteredModules;
     }
     
-    private static ArrayList<String> filterRegaDBDependencies(ArrayList<String> moduleDependencies)
+    private static List<String> filterRegaDBDependencies(List<String> moduleDependencies)
     {
-        ArrayList<String> filteredDependencies = new ArrayList<String>();
+        List<String> filteredDependencies = new ArrayList<String>();
         
         for(String md : moduleDependencies)
         {
@@ -278,7 +279,7 @@ public class Jarbuilder
     	return jarDependencies;
     }
     
-    private static Set<String> getForeignJarDependencies(String module, ArrayList<String> handledModules)
+    private static Set<String> getForeignJarDependencies(String module, List<String> handledModules)
     {
     	Set<String> jarDependencies = new HashSet<String>();
     	
