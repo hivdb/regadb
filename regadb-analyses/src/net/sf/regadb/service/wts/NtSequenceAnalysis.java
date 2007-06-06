@@ -89,7 +89,7 @@ public class NtSequenceAnalysis implements IAnalysis
             ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
 
         
-        client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), input.getBytes());
+        client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseinputfile(), input.getBytes());
         
         client_.start(ticket, test_.getAnalysis().getServiceName());
         
