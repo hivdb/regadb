@@ -21,6 +21,7 @@ import net.sf.regadb.service.align.AlignmentAnalysis;
 import net.sf.regadb.service.wts.NtSequenceAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
@@ -125,7 +126,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
 		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, seqDateL, seqDateTF);
-        typeL = new Label(tr("form.viralIsolate.editView.sampleType"));
+        typeL = new Label(tr("form.viralIsolate.editView.HIVType"));
         typeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         viralIsolateForm_.addLineToTable(ntSeqGroupTable_, typeL, typeTF);
         subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
@@ -134,6 +135,10 @@ public class ViralIsolateMainForm extends WContainerWidget
         
         if(viralIsolateForm_.isEditable())
         {
+            typeL.setHidden(true);
+            typeTF.setHidden(true);
+            subTypeL.setHidden(true);
+            subTypeTF.setHidden(true);
             WTable ntFileTable = new WTable(ntSeqGroupTable_.elementAt(2, 1));
             WTable buttonTable = new WTable(ntFileTable.elementAt(0, 1));
             upLoadL = new Label(tr("form.viralIsolate.editView.uploadlabel"));
@@ -293,6 +298,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     private void setSequenceData(NtSequence seq)
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
+        if(seq.getNtSequenceIi()!=null)
         t.update(seq);
         t.commit();
         
