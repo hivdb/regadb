@@ -350,7 +350,7 @@ public class SinglePatientForm extends FormWidget
         t.commit();
         
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
-        RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientSelected, RegaDBMain.getApp().getTree().getTreeContent().viewPatient);
     }
     
     @Override
@@ -363,7 +363,7 @@ public class SinglePatientForm extends FormWidget
         else
         {
             RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
-            RegaDBMain.getApp().getTree().getTreeContent().viewPatient.prograSelectNode();
+            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientSelected, RegaDBMain.getApp().getTree().getTreeContent().viewPatient);
         } 
     }
     
