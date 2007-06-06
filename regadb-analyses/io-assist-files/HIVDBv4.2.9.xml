@@ -1,0 +1,1626 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE ALGORITHM SYSTEM 
+  "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+
+<ALGORITHM>
+    <ALGNAME>HIVDB</ALGNAME>
+    <ALGVERSION>4.2.9</ALGVERSION>
+
+    <PROCESSING_DIRECTIVES>
+	<SHOW_ATYPICAL_MUTATIONS/>
+        <RESTRICTED_POSITION_SCORING/>
+    </PROCESSING_DIRECTIVES>
+
+    <DEFINITIONS>
+        <LEVEL_DEFINITION>
+            <ORDER>1</ORDER>
+            <ORIGINAL>Susceptible</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>2</ORDER>
+            <ORIGINAL>Potential low-level resistance</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>3</ORDER>
+            <ORIGINAL>Low-level resistance</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>4</ORDER>
+            <ORIGINAL>Intermediate resistance</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>5</ORDER>
+            <ORIGINAL>High-level resistance</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+  
+        <DRUGCLASS>
+            <NAME>PI</NAME>
+            <DRUGLIST>FPV,IDV,LPV,NFV,SQV,ATV,TPV,DRV</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NRTI</NAME>
+            <DRUGLIST>AZT,D4T,DDI,3TC,FTC,ABC,TDF</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NNRTI</NAME>
+            <DRUGLIST>NVP,DLV,EFV</DRUGLIST>
+        </DRUGCLASS>
+
+        <GLOBALRANGE>
+            (-INF TO 10     => 1, 
+             10 TO 15   => 2, 
+             15 TO 30   => 3,
+             30 TO 60   => 4,
+             60 TO INF  => 5)
+        </GLOBALRANGE>
+
+	<COMMENT_DEFINITIONS>
+	    <COMMENT_STRING id="PR1">
+		<TEXT>The following $numberOfMutsIn{11I,32I,33F,47V,50V,54LM,73S,76V,84V,89V} of the 11 darunavir POWER study mutations were present: $listMutsIn{11I,32I,33F,47V,50V,54LM,73S,76V,84V,89V} (DeMeyer S et al, CROI 2006).
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="PR2">
+		<TEXT>The following $numberOfMutsIn{10V,13V,20MRV,33F,35G,36I,43T,46L,47V,54AMV,58E,69K,74P,82LT,83D,84V} of the 21 tipranavir RESIST study mutations were present: $listMutsIn{10V,13V,20MRV,33F,35G,36I,43T,46L,47V,54AMV,58E,69K,74P,82LT,83D,84V} (Baxter J et al J Virology 2006).
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="PR3">
+		<TEXT>$listHitsAt{76} increases ATV and SQV susceptibility.
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="PR4">
+		<TEXT>$listHitsAt{50} increases TPV susceptibility.
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="PR5">
+		<TEXT>$listHitsAt{50} increases DRV, FPV, IDV, LPV, NFV, SQV susceptibility.
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="PR6">
+		<TEXT>$listHitsAt{88} increases FPV susceptibility.
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="RT1">
+		<TEXT>$listHitsAt{215} does not cause AZT resistance. However, it represents a transition between wildtype and the AZT-resistance mutations T215Y and T215F.
+                </TEXT>
+		<SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT2">
+                <TEXT>$listHitsAt{65} increases AZT susceptibility.
+                </TEXT>
+		<SORT_TAG>2</SORT_TAG>
+            </COMMENT_STRING>
+	
+            <COMMENT_STRING id="RT3">
+                <TEXT>$listHitsAt{74} partially reverses AZT and possibly d4T resistance caused by other mutations. AZT mutations in this isolate include: $listHitsAt{41,67,70,210,215,219}.
+                </TEXT>
+		<SORT_TAG>2</SORT_TAG>
+            </COMMENT_STRING>
+	
+	    <COMMENT_STRING id="RT4">
+                <TEXT>$listHitsAt{184} partially reverses AZT, d4T, and TDF resistance caused by other AZT mutations (TAMs). AZT mutations in this isolate include: $listHitsAt{41,67,70,210,215,219}.
+                </TEXT>
+		<SORT_TAG>2</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="RT5">
+                <TEXT>$listHitsAt{100} partially reverses AZT and possibly d4T resistance caused by other mutations. AZT mutations in this isolate include: $listHitsAt{41,67,70,210,215,219}.
+                </TEXT>
+		<SORT_TAG>2</SORT_TAG>
+            </COMMENT_STRING>
+
+	    <COMMENT_STRING id="RT6">
+                <TEXT>$listHitsAt{181} partially reverses AZT and possibly d4T resistance caused by other mutations. AZT mutations in this isolate include: $listHitsAt{41,67,70,210,215,219}.
+                </TEXT>
+		<SORT_TAG>2</SORT_TAG>
+            </COMMENT_STRING>
+
+<!-- Begin the PR mutation-dependent comment strings. -->
+            <COMMENT_STRING id="PR_POS10">
+                <TEXT>L10I/V/F/R are associated with resistance to each of the PIs when present with other mutations. L10F may be more significant because it rarely occurs in the absence of PI therapy.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS11">
+                <TEXT>V11I us an uncommon nonpolymorphic accessory mutation that is weakly associated with PI therapy. It is one of the 11 mutations associated with decreased response to DRV in the POWER trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS13">
+                <TEXT>I13V is a common polymorphism that is slightly more common in treated compared with untreated subtype B isolates. In subtypes A, AE, AG, and G it is the consensus residue. I13V was weakly associated with decreased virological response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS16">
+                <TEXT>G16E is a highly polymorphic mutation occurring in 2% to 20% of viruses depending on subtype. Preliminary data suggests that it is selected by ATV and that it influences response to ATV treatment. Its effect on phenotype and other PIs is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS20">
+                <TEXT>K20R/M/I/T are weakly associated with resistance to each of the PIs when present with other mutations. Many variants at this position occur commonly in non-subtype B viruses.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS23">
+                <TEXT>L23I is a rare substrate cleft mutation that causes low-level resistance to NFV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS24">
+                <TEXT>L24I is associated with reduced susceptibility to IDV and possibly RTV, LPV, SQV, and ATV when present with other mutations. L24F is a rare mutation at this position; its phenotypic effect is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS30">
+                <TEXT>D30N causes intermediate resistance to NFV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS32">
+                <TEXT>V32I is a substrate cleft mutation that reduces susceptibility to IDV, RTV, APV, LPV, TPV, and DRV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS33">
+                <TEXT>L33F is selected by RTV, APV, LPV, TPV, and DRV and may contribute resistance to these drugs, as well as to ATV. L33I is a polymorphism that occurs at a higher frequency in persons receiving PIs. L33V is a polymorphism that is not related to PI therapy or drug resistance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS35">
+                <TEXT>E35G is a nonpolymorphic mutation that is slightly more common in viruses from PI-treated (particularly NFV-treated) compared with untreated persons. It was weakly associated a decreased virological response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS36">
+                <TEXT>M36I/V are weakly associated with PI resistance when present with other mutations. M36I occurs commonly in certain non-subtype B viruses. M36L/T are rare variants of uncertain significance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS43">
+                <TEXT>K43T is a nonpolymorphic mutation that is significantly more common in viruses from PI-treated compared with untreated persons. It was weakly associated with a decreased virological response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS46">
+                <TEXT>M46I/L decreases susceptibility to IDV, RTV, NFV, APV, LPV, ATV, TPV, and possibly SQV when present with other mutations. M46V is a rare mutation at this position of uncertain significance. The effect of mutations at this position on DRV is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS47">
+                <TEXT>I47V decrease susceptibility to APV, IDV, RTV, LPV, TPV, and DRV. Its effect on NFV, SQV, and ATV is not known. I47A is a 2-nucleotide mutation that confers intermediate-to-high level LPV resistance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS48">
+                <TEXT>G48V causes resistance to SQV and low-level cross-resistance to NFV, IDV, and RTV. It also appears to contribute to resistance to LPV and ATV. G48M occurs in heavily treated persons but its effect on phenotype and clinical outcome has not been reported.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS50L">
+                <TEXT>I50L causes intermediate-to-high level resistance to ATV and hypersusceptibility to each of the remaining PIs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS50V">
+                <TEXT>I50V causes intermediate-to-high-level resistance to APV and low-to-intermediate resistance to RTV, LPV, and DRV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS53">
+                <TEXT>F53L occurs only in isolates from treated patients nearly always in combinations with other PI-resistance mutations. It is associated with decreased susceptibility to IDV, LPV, and SQV and possibly other PIs. F53Y is a rare treatment-associated variant.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS54">
+                <TEXT>I54V contributes resistance to each of the PIs when present with other mutations. I54M/L occur in patients receiving APV and DRV and reduces susceptibility to these drugs and LPV. I54A is a two-base pair mutation that is common in heavily treated persons. I54T/S are also selected by PIs. Like I54A, their precise effect on drug susceptibility is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS58">
+                <TEXT>Q58E is a nonpolymorphic mutation that is significantly more common in viruses from PI-treated compared with untreated persons. It appears to be associated with reduced susceptibility to most of the PIs but its precise effect on PI susceptibility has not been quantified. It was weakly associated with a decreased virological response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS60">
+                <TEXT>D60E is a polymorphic mutation that is slightly more common in viruses from PI-treated compared with untreated persons. It was weakly associated with a decreased virologic response to ATV in one of three retrospective analyses.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS62">
+                <TEXT>I62V is a highly polymorphic mutation that is more common in PI-treated compared with untreated persons. It was weakly associated with a decreased virologic response to ATV in one of three retrospective analyses.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS63">
+                <TEXT>L63P is a common polymorphism that becomes even more common in persons receiving PIs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS69">
+                <TEXT>H69K is a highly polymorphic residue that was weakly associated with a decreased virologic response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS71">
+                <TEXT>A71T/V are polymorphisms that occur in 1-2% of untreated persons but which become much more frequent in persons receiving PIs. A71I is an uncommon mutation that appears to occur only with PI therapy; its significance is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS73">
+                <TEXT>G73S/T/C/A are associated with decreased susceptibility to most, if not all, PIs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS74">
+                <TEXT>T74P is an uncommon nonpolymorphic mutation that was associated with reduced virologic response to tipranavir in the RESIST trials. T74SA are polymorphic mutations that appear to be more common in viruses from persons receiving PIs (particularly NFV and SQV) than in PI-naive persons.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS76">
+                <TEXT>L76V is a nonpolymorphic recently recognized mutation that reduces susceptibility to APV, IDV, LPV, and DRV. It increases susceptibility to SQV and ATV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS77">
+                <TEXT>V77I is a common polymorphism that is associated with NFV therapy.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS82">
+                <TEXT>V82A/T/F/S reduce susceptibility to IDV, RTV, and LPV. When present with other mutations, V82A/T/F/S also reduce susceptibility to APV, NFV, SQV, ATV, and TPV. The effect of mutations at this position on DRV is likely to be low but is not known with certainty. V82L emerges during TPV therapy and reduces susceptibility to this PI. V82I is a polymorphism that is common in some non-B subtypes; it has little if any effect on PI susceptibility.  V82M is particularly common in subtype G isolates and also reduces IDV susceptibility.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS83">
+                <TEXT>N83D is a rare nonpolymorphic mutation that is more common in viruses from PI-treated compared with untreated persons. It was associated with a decreased response to TPV in the RESIST trials.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS84">
+                <TEXT>I84V reduces susceptibility to each of the PIs but appears to have the least impact on LPV. I84A/C are rare mutations that appear to have the same effect as I84V.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS85">
+                <TEXT>I85V is a nonpolymorphic mutation that is significantly more common in viruses from PI-treated compared with untreated persons. It was weakly associated with a decreased virologic response to ATV in one of three retrospective analyses.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS88">
+                <TEXT>N88D causes intermediate resistance to NFV and possibly low-level resistance to ATV and SQV. N88S causes intermediate resistance to NFV and ATV and low-level resistance to IDV. N88S causes increased susceptibility to APV. N88T/G have not been well-studied but appear to be similar in their occurrences and effects to N88S.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS89">
+                <TEXT>L89V is an uncommon nonpolymorphic accessory mutation that is weakly associated with PI therapy. It is one of the 11 mutations associated with decreased response to DRV in the POWER trials. It should be distinguished from L89M which is a common variant in all subtypes that has not been linked to decreased PI susceptibility.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS90">
+                <TEXT>L90M causes resistance to SQV and NFV. When present with other mutations it also compromises the activity of IDV, RTV, APV, LPV, ATV, and TPV. Its effect on DRV is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="PR_POS93">
+                <TEXT>I93L is a common polymorphism that becomes even more common in persons receiving PIs. I93M is a rare PI-associated mutation; its effect on susceptibility is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+<!-- End the PR mutation-dependent comment strings. -->
+
+<!-- Begin the RT mutation-dependent comment strings. -->
+            <COMMENT_STRING id="RT_POS41">
+                <TEXT>M41L usually occurs with T215Y. Together these mutations confer intermediate-to-high level resistance to AZT and d4T and a lower level of resistance to ddI, ABC, and TDF.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS44">
+                <TEXT>E44A/D occur in patients receiving multiple NRTIs. E44D causes low-level resistance to 3TC and probably to each of the other NRTIs when present with V118I or one or more TAMs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS62">
+                <TEXT>A62V is associated with multinucleoside resistance caused by Q151M. Its effect in the absence of Q151M is not known.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS65">
+                <TEXT>K65R causes intermediate resistance to ddI, ABC, 3TC, FTC, and TDF, and possibly low-level resistance to d4T. It causes AZT hypersusceptibility.  K65N is a rare, recently described mutation that is also associated with reduced susceptibility to ddI, ABC, 3TC, FTC and TDF.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS67NEG">
+                <TEXT>D67N contributes some degree of resistance to each of the NRTIs except 3TC and FTC. It usually occurs with mutations at positions 70 or 215. D67E/G occur in heavily treated patients and probably have a similar effect as D67N.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS67d">
+                <TEXT>Amino acid deletions (d) in this region occur uncommonly and are often assigned to position 67. They uniformly occur in combination with other NRTI mutations and in this setting they decrease susceptibility to each of the NRTIs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS69DNASIG">
+                <TEXT>T69D contributes resistance to ddI, d4T, and ABC when present with multiple TAMs. T69N/S/A/I are additional NRTI-related mutations but their effect on NRTI susceptibility is not known. T69G occurs in isolates with a deletion at position 67.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS69i">
+                <TEXT>Amino acid insertions (i) at this position occur in about 1%-2% of heavily treated persons. Together with TAMs, they confer high-level resistance to each of the NRTIs. Most susceptibility data are available for double amino acid insertions. However, insertions of 1 or >2 amino acids also occur.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS70">
+                <TEXT>K70R causes low-level AZT and probably d4T resistance but appears to have little effect on the other NRTIs. K70E reduces TDF, ABC, DDI, and to a lesser extent 3TC and FTC susceptibility. K70E does not reduce AZT or d4T susceptibility. K70G/N are rare variants of unknown significance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS74">
+                <TEXT>L74V causes intermediate resistance to ddI and low-level resistance to ABC. L74V increases AZT and TDF susceptibility, but in 2 studies was associated with reduced response to TDF.  L74I occurs in heavily treated persons but fewer phenotypic and clinical data are available for this mutation.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS75">
+                <TEXT>V75I increases multinucleoside resistance caused by Q151M when present with F77L and F116Y; its effect in the absence of Q151M is not known. V75T/M/A cause d4T and possibly ddI resistance. The significance of V75S and L are not known, although the former only occurs in treated persons.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS77">
+                <TEXT>F77L increases multinucleoside resistance caused by Q151M when present with V75I or F116Y.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS98">
+                <TEXT>A98G causes low-level (about 2-fold) decreased NVP susceptibility. It occurs in about 1% of NNRTI-naive persons and may not compromise drug activity. A98S is a common polymorphism that does not reduce NNRTI susceptibility.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS100">
+                <TEXT>L100I causes intermediate resistance to EFV and DLV, and low-level resistance to NVP. It occurs nearly always in combination with K103N.  L100I increases susceptibility to AZT and TDF.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS101">
+                <TEXT>K101E is associated with about 10-fold resistance to NVP and 2-fold resistance to EFV and DLV. K101P is associated with intermediate/high-level resistance to each of the NNRTIs. K101Q/R occasionally occur in untreated persons and do not decrease NNRTI susceptibility. K101HN are NNRTI-associated mutations of uncertain significance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS103">
+                <TEXT>K103N causes high-level resistance to NVP (50-fold), DLV (50-fold), and EFV (25-fold). K103S causes intermediate resistance to DLV and EFV and high-level resistance to NVP.  K103R occurs in about 1%-2% of untreated persons and by itself has no effect on NNRTI susceptibility. The combination of K103R + V179D, however, reduces susceptibility to each of the NNRTIs about 15-fold. K103Q/T are rare mutations at this position. Preliminary data suggest that K103Q causes minimal resistance whereas K103T causes intermediate resistance to each NNRTI.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS106">
+                <TEXT>V106A causes high-level NVP resistance, intermediate DLV resistance, and low-level EFV resistance. V106M causes high-level resistance to NVP, EFV, and DLV. V106I is a polymorphism that does not cause NNRTI resistance. V106L is a rare mutation of uncertain significance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS108">
+                <TEXT>V108I causes low-level (about 2-fold) resistance to each of the NNRTIs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS115">
+                <TEXT>Y115F causes low-level resistance to ABC.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS116">
+                <TEXT>F116Y increases multinucleoside resistance caused by Q151M when present with F77L or V75I.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS118">
+                <TEXT>V118I occurs in ~2% of untreated persons and with increased frequency in persons receiving multiple NRTIs. It causes low-level resistance to 3TC and possibly to other NRTIs when present with E44A/D and/or one or more TAMs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS151">
+                <TEXT>By itself, Q151M causes intermediate resistance to AZT, ddI, d4T, and ABC; and low-level resistance to TDF. With changes at the associated positions 75, 77, and 116, it confers high-level resistance to AZT, ddI, d4T, and ABC; intermediate resistance to TDF, and low-level resistance to 3TC and FTC. Q151L is a rarely observed transitional mutation that appears to precede the emergence of Q151M.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS179">
+                <TEXT>V179D/E cause low-level (about 2-fold) resistance to each of the available NNRTI. V179D occurs in about 1% of untreated persons. The combination of K103R + V179D reduces the susceptibility of each of the NNRTIs by about 15-fold. V179I is a common polymorphism.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS181">
+                <TEXT>Y181C/I/V cause high-level resistance to NVP and DLV and low-level resistance to EFV. Y181C increases susceptibility to AZT and TDF.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS184">
+                <TEXT>M184V/I cause high-level resistance to 3TC and FTC. It causes low-level in vitro resistance to ddI and ABC. However, it has not been shown to limit the effectiveness of ddI and it has been shown to limit the effectiveness of ABC only when it occurs in combination with multiple TAMs. M184V partially reverses T215Y-mediated resistance to AZT, TDF, and d4T.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS188">
+                <TEXT>Y188L causes high-level resistance to NVP and EFV and low-level resistance to DLV. Y188H causes low-level resistance to NVP, EFV, and DLV. Y188C causes high-level resistance to NVP and low-level resistance to EFV and DLV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS190">
+                <TEXT>G190A causes high level resistance to NVP and intermediate resistance to EFV. G190A and G190S increase DLV susceptibility. G190E/Q cause high-level resistance to EFV and NVP and intermediate resistance to DLV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS210">
+                <TEXT>L210W contributes resistance to each of the NRTIs except 3TC and probably FTC. It usually occurs with the mutations M41L and T215Y. L210F/S occur rarely and are of unknown significance.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS215">
+                <TEXT>T215Y/F cause AZT and D4T resistance and limits the effectiveness of ABC, ddI, and TDF particularly when it occurs in combination with M41L and L210W. 215S/C/D/E/I/V represent transitions between wild type and the mutations Y and F. Most of these have do not decrease drug susceptibility. But their presence suggests that a resistant virus that harbors T215Y or F may have been transmitted.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS219">
+                <TEXT>K219Q/E increase AZT and probably d4T resistance when present with K70R or T215Y/F but may not have any effect on the remaining NRTIs. K219N/R occur commonly in heavily NRTI-treated patients.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS225">
+                <TEXT>P225H is associated with EFV resistance when present with other NNRTI mutations. It confers hyper-susceptibility to DLV.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS227">
+                <TEXT>F227L is associated with resistance to NVP and possibly DLV and EFV when present with V106A.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS230">
+                <TEXT>M230L causes intermediate-to-high-level resistance to each of the available NNRTI.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS236">
+                <TEXT>P236L causes DLV resistance and increased susceptibility to NVP.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS238">
+                <TEXT>K238N/T are NNRTI-selected mutations that usually occur in combination with other NNRTI-resistance mutations and which appear to confer intermediate levels of resistance to NVP and possibly DLV and EFV. K238R is a naturally occurring variant that is common in some non-B subtypes and does not reduce NNRTI susceptibility.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS318">
+                <TEXT>Y318F is a rare mutation that causes high-level DLV resistance and low-level NVP resistance. It usually occurs with other NNRTI-associated mutations.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+
+            <COMMENT_STRING id="RT_POS333">
+                <TEXT>G333D/E are polymorphisms that occur slightly more frequently in persons receiving NRTIs than in untreated persons. It may facilitate AZT resistance in isolates that contain M184V and multiple TAMs.
+                </TEXT>
+                <SORT_TAG>1</SORT_TAG>
+            </COMMENT_STRING>
+<!-- End the RT mutation-dependent comment strings. -->
+
+	</COMMENT_DEFINITIONS>
+    </DEFINITIONS>
+
+    <DRUG>
+        <NAME>DLV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (98G => 5,
+                            100I => 40, 100V => 10,
+                            101P => 30, 101E => 20, 101HN => 15,
+                            103NST => 60, 103E => 15, 103Q => 10, 
+                            103R => 5,
+                            106M => 60, 106A => 50, 106L => 10,
+                            108I => 10,
+                            179F => 25, 179DEM => 10,
+                            181CIV => 60, 181S => 30,
+                            188L => 30, 188CH => 25,
+                            190EQ => 15,
+                            230L => 60,
+                            236L => 60, 236S => 25,
+                            238NT => 30,
+                            318F => 30
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>EFV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (98G => 5,
+                            100I => 40, 100V => 10,
+                            101P => 30, 101EHN => 10,
+                            103N => 60, 103ST => 50, 103EQ => 10, 
+                            103R => 5,
+                            106M => 60, 106A => 25, 106L => 5,
+                            108I => 10,
+                            179DEFM => 10,
+                            181CIV => 20, 181S => 10,
+                            188L => 60, 188CH => 25,
+                            190CEQSTV => 60, 190A => 40,
+                            225H => 30,
+                            230L => 40,
+                            238T => 15, 238N => 12,
+                            318F => 12
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>NVP</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (98G => 10,
+                            100I => 40, 100V => 10,
+                            101P => 30, 101E => 20, 101HN => 15,
+                            103N => 70, 103ST => 60, 103E => 15, 
+                            103Q => 10, 103R => 5,
+                            106AM => 60, 106L => 10,
+                            108I => 10,
+                            179F => 25, 179DEM => 10,
+                            181CIV => 60, 181S => 30,
+                            188CL => 60, 188H => 25,
+                            190ACEQSTV => 60,
+                            227L => 15, 227Y => 10,
+                            230L => 60,
+                            238NT => 30,
+                            318F => 12
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>3TC</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 4,
+                            44AD => 5,
+                            65R => 30, 65N => 15,
+                            67d => 15,
+                            69i => 25, 69d => 15, 69DGN => 5, 
+                            69AEIS => 2,
+                            70E => 15,
+                            75I => 5,
+                            77L => 5,
+                            116Y => 5,
+                            118I => 5,
+                            151M => 15, 151L => 10,
+                            184IV => 60,
+                            210W => 4,
+                            215FY => 4
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>FTC</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 4,
+                            44AD => 5,
+                            65R => 30, 65N => 15,
+                            67d => 15,
+                            69i => 25, 69d => 15, 69DGN => 5, 
+                            69AEIS => 2,
+                            70E => 15,
+                            75I => 5,
+                            77L => 5,
+                            116Y => 5,
+                            118I => 5,
+                            151M => 15, 151L => 10,
+                            184IV => 60,
+                            210W => 4,
+                            215FY => 4
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>ABC</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 12,
+                            44AD => 2,
+                            62V => 2,
+                            65R => 25, 65N => 10,
+                            67d => 25, 67GN => 8, 67EHST => 5,
+                            69i => 30, 69d => 25, 69DGN => 5, 
+                            69AEIS => 2,
+                            70E => 25,
+                            74V => 30, 74I => 20,
+                            75AIMST => 5, 75L => 2,
+                            77L => 10,
+                            115F => 25,
+                            116Y => 10,
+                            118I => 2,
+                            151M => 40, 151L => 20,
+                            184IV => 12,
+                            210W => 12,
+                            215(NOT TCDEFISVY) AND EXCLUDE 215T => 10, 215(NOT TCDEFISVY) => 5, 215FY => 20, 
+                            215CDEISV => 10,
+                            219TW => 5
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>AZT</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 15,
+                            44AD => 2,
+                            62V => 2,
+                            65R AND EXCLUDE 65(NOT NR) => -5,
+                            67d => 30, 67GN => 15, 67E => 10, 
+                            67HST => 5,
+                            69di => 30, 69DGN => 5, 69AEIS => 2,
+                            70R => 18, 70G => 12, 70NST => 5,
+                            74V AND EXCLUDE 74(NOT IV) => -5,
+                            75AIMST => 5, 75L => 2,
+                            77L => 10,
+                            100I AND EXCLUDE 100(NOT I) => -4,
+                            116Y => 10,
+                            118I => 2,
+                            151M => 50, 151L => 20,
+                            181C AND EXCLUDE 181(NOT C) => -4,
+                            184I AND EXCLUDE 184(NOT IV) => -8, 184V AND EXCLUDE 184(NOT IV) => -8,
+                            210W => 15,
+                            215(NOT TCDEFISVY) AND EXCLUDE 215T => 15, 215(NOT TCDEFISVY) => 7, 215FY => 35, 
+                            215CDEISV => 20,
+                            219ENQ => 15, 219RTW => 10,
+                            333DE => 5
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+
+	<RULE>
+	    <CONDITION>215SCDEIVAN AND EXCLUDE 215FY
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT1" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>65R AND EXCLUDE 65K
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT2" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>74VI AND EXCLUDE 74L 
+                       AND SELECT ATLEAST 1 FROM (74VI, 41(NOT M), 67(NOT D), 70(NOT K), 
+                                                  210(NOT L), 215(NOT T), 219(NOT K))
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT3" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>184VI AND EXCLUDE 184M
+                       AND SELECT ATLEAST 1 FROM (184VI, 41(NOT M), 67(NOT D), 70(NOT K), 
+                                                  210(NOT L), 215(NOT T), 219(NOT K))
+           </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT4" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>100I AND EXCLUDE 100L
+                       AND SELECT ATLEAST 1 FROM (100I, 41(NOT M), 67(NOT D), 70(NOT K), 
+                                                  210(NOT L), 215(NOT T), 219(NOT K))
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT5" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>181Y AND EXCLUDE 181I
+                       AND SELECT ATLEAST 1 FROM (181Y, 41(NOT M), 67(NOT D), 70(NOT K), 
+                                                  210(NOT L), 215(NOT T), 219(NOT K))
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="RT6" />
+	    </ACTIONS>
+	</RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>D4T</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 15,
+                            44AD => 2,
+                            62V => 2,
+                            65R => 15,
+                            67d => 30, 67GN => 12, 67E => 10, 
+                            67HST => 5,
+                            69di => 30, 69DGN => 10, 69AEIS => 2,
+                            70R => 10, 70NST => 5,
+                            75T => 30, 75MS => 20, 75A => 15, 
+                            75I => 10, 75L => 2,
+                            77L => 10,
+                            116Y => 10,
+                            118I => 2,
+                            151M => 50, 151L => 20,
+                            184I AND EXCLUDE 184(NOT IV) => -5, 184V AND EXCLUDE 184(NOT IV) => -5,
+                            210W => 15,
+                            215(NOT TCDEFISVY) AND EXCLUDE 215T => 15, 215(NOT TCDEFISVY) => 7, 215FY => 30, 
+                            215CDEISV => 20,
+                            219ENQW => 10, 219RT => 5
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>DDI</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 12,
+                            44AD => 2,
+                            62V => 2,
+                            65R => 30, 65N => 15,
+                            67d => 25, 67GN => 8, 67EHST => 5,
+                            69i => 40, 69d => 25, 69DG => 20, 
+                            69N => 10, 69AIS => 5, 69E => 2,
+                            70E => 25,
+                            74V => 55, 74I => 30,
+                            75AIMST => 10, 75L => 2,
+                            77L => 10,
+                            116Y => 10,
+                            118I => 2,
+                            151M => 50, 151L => 20,
+                            184IV => 5,
+                            210W => 12,
+                            215(NOT TCDEFISVY) AND EXCLUDE 215T => 15, 215(NOT TCDEFISVY) => 7, 215FY => 20, 
+                            215CDEISV => 10,
+                            219W => 5
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>TDF</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (41L => 12,
+                            44AD => 2,
+                            62V => 2,
+                            65R => 40, 65N => 15,
+                            67d => 15, 67GHNST => 5,
+                            69i => 40, 69d => 15, 69DGN => 5, 
+                            69AEIS => 2,
+                            70E => 25, 70R => 8,
+                            75AIMT => 5, 75L => 2,
+                            77L => 5,
+                            100I AND EXCLUDE 100(NOT I) => -4,
+                            116Y => 5,
+                            118I => 2,
+                            151M => 15, 151L => 10,
+                            181C AND EXCLUDE 181(NOT C) => -4,
+                            184I AND EXCLUDE 184(NOT IV) => -8, 184V AND EXCLUDE 184(NOT IV) => -8,
+                            210W => 12,
+                            215(NOT TCDEFISVY) AND EXCLUDE 215T => 10, 215(NOT TCDEFISVY) => 5, 215Y => 20, 
+                            215CDEFISV => 10,
+                            219W => 5
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>FPV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 4,
+                            24I => 2, 24F => 1,
+                            32I => 20, 32A => 5,
+                            33F => 5,
+                            46IL => 12, 46V => 10,
+                            47AV => 20,
+                            48MV => 5,
+                            50V => 50,
+                            53L => 3, 53Y => 2,
+                            54M => 20, 54L => 15, 54ASTV => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 2,
+                            76V => 12,
+                            82AFLMST => 10, 82C => 5,
+                            84AV => 35, 84C => 25,
+                            88S AND EXCLUDE 88(NOT DGST) => -10,
+                            89V => 4, 89IT => 2,
+                            90M => 15
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+
+	<RULE>
+	    <CONDITION>88S AND EXCLUDE 88N
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR6" />
+	    </ACTIONS>
+	</RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>DRV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10FIRVY => 2,
+                            11I => 4,
+                            24I => 2, 24F => 1,
+                            32I => 10, 32A => 5,
+                            33F => 5,
+                            46ILV => 6,
+                            47V => 12, 47A => 10,
+                            50V => 20,
+                            53L => 3, 53Y => 2,
+                            54M => 12, 54L => 10, 54ASTV => 6,
+                            71IV => 2, 71T => 1,
+                            73ST => 5, 73AC => 2,
+                            76V => 12,
+                            82ACFLMST => 6,
+                            84ACV => 12,
+                            89V => 4, 89IT => 2,
+                            90M => 6
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+
+	<RULE>
+	    <CONDITION>SELECT ATLEAST 1 FROM (11I,32I,33F,47V,50V,54LM,73S,76V,84V,89V)
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR1" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>50L AND EXCLUDE 50I
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR5" />
+	    </ACTIONS>
+	</RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>IDV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 2,
+                            24I => 5, 24F => 1,
+                            32I => 10, 32A => 5,
+                            46IL => 12, 46V => 10,
+                            47AV => 5,
+                            48MV => 10, 48AST => 5,
+                            53L => 3, 53Y => 2,
+                            54ALMSTV => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 5,
+                            76V => 12,
+                            82AFST => 35, 82M => 15, 82CL => 10,
+                            84AV => 25, 84C => 15,
+                            88S => 10, 88DGT => 5,
+                            89V => 2, 89IT => 1,
+                            90M => 20
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>LPV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 2,
+                            24I => 2, 24F => 1,
+                            32I => 10, 32A => 5,
+                            33F => 5,
+                            46IL => 12, 46V => 10,
+                            47A => 40, 47V => 10,
+                            48MV => 10, 48AST => 5,
+                            50V => 20,
+                            53L => 3, 53Y => 2,
+                            54LMV => 12, 54AST => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 2,
+                            76V => 8,
+                            82AFST => 20, 82CLM => 10,
+                            84V => 12, 84AC => 10,
+                            89ITV => 1,
+                            90M => 10
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>ATV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 2,
+                            24I => 2, 24F => 1,
+                            32I => 10, 32A => 5,
+                            33F => 5,
+                            46IL => 15, 46V => 10,
+                            47AV => 5,
+                            48MV => 10, 48AST => 5,
+                            50L => 50,
+                            53L => 3, 53Y => 2,
+                            54ALMSTV => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 5,
+                            76V AND EXCLUDE 76(NOT V) => -5,
+                            82FST => 20, 82A => 15, 82LM => 10, 
+                            82C => 5,
+                            84AV => 25, 84C => 20,
+                            88S => 30, 88GT => 15, 88D => 10,
+                            89ITV => 1,
+                            90M => 20
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+
+	<RULE>
+	    <CONDITION>76V AND EXCLUDE 76L
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR3" />
+	    </ACTIONS>
+	</RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>TPV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10V => 3, 10FIRY => 2,
+                            11I => 2,
+                            24I => 2, 24F => 1,
+                            32I => 8, 32A => 5,
+                            33F => 8,
+                            35G => 2,
+                            43T => 2,
+                            46ILV => 8,
+                            47V => 10, 47A => 5,
+                            50V AND EXCLUDE 50(NOT LV) => -5,
+                            53L => 3, 53Y => 2,
+                            54A => 15, 54V => 10, 54LMST => 5,
+                            58E => 2,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 2,
+                            74P => 2,
+                            82L => 40, 82T => 25, 82FS => 15, 
+                            82ACM => 10,
+                            83D => 2,
+                            84ACV => 25,
+                            89ITV => 1,
+                            90M => 6
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+
+	<RULE>
+	    <CONDITION>SELECT ATLEAST 1 FROM (10V,13V,20MRV,33F,35G,36I,43T,46L,47V,54AMV,58E,69K,74P,82LT,83D,84V)
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR2" />
+	    </ACTIONS>
+	</RULE>
+
+	<RULE>
+	    <CONDITION>50V AND EXCLUDE 50I
+            </CONDITION>
+	    <ACTIONS>
+	        <COMMENT ref="PR4" />
+	    </ACTIONS>
+	</RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>NFV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 2,
+                            23I => 15,
+                            24I => 2, 24F => 1,
+                            30N => 50,
+                            32AI => 5,
+                            46IL => 25, 46V => 20,
+                            47AV => 5,
+                            48MV => 25, 48AST => 15,
+                            50V => 5,
+                            53L => 3, 53Y => 2,
+                            54LMSTV => 15, 54A => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73ACST => 5,
+                            74P => 2,
+                            76V => 5,
+                            82AFST => 35, 82CLM => 10,
+                            84A => 40, 84V => 35, 84C => 25,
+                            88S => 40, 88DGT => 25,
+                            89V => 4, 89IT => 2,
+                            90M => 50
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <DRUG>
+        <NAME>SQV</NAME>
+        <RULE>
+            <CONDITION>
+                SCORE FROM (10F => 4, 10IRVY => 2,
+                            11I => 2,
+                            24I => 2, 24F => 1,
+                            32AI => 5,
+                            46ILV => 5,
+                            47AV => 5,
+                            48MV => 50, 48AST => 30,
+                            53L => 3, 53Y => 2,
+                            54V => 15, 54ALMST => 10,
+                            71V => 3, 71I => 2, 71T => 1,
+                            73CST => 10, 73A => 5,
+                            74P => 2,
+                            76V AND EXCLUDE 76(NOT V) => -5,
+                            82AFLMST => 10, 82C => 5,
+                            84A => 40, 84V => 35, 84C => 25,
+                            88D => 10, 88GST => 5,
+                            89ITV => 1,
+                            90M => 35
+                           )
+            </CONDITION>
+            <ACTIONS>
+                <SCORERANGE><USE_GLOBALRANGE/></SCORERANGE>
+            </ACTIONS>
+        </RULE>
+    </DRUG>
+
+    <MUTATION_COMMENTS>
+        <GENE>
+            <NAME>PR</NAME>
+            <RULE>
+                <CONDITION>10IVFRY</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS10" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>11I</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS11" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>13V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS13" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>16EA</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS16" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>20RMIVT</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS20" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>23I</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS23" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>24IF</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS24" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>30N</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS30" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>32I</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS32" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>33FVI</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS33" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>35G</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS35" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>36IVLT</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS36" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>43T</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS43" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>46ILV</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS46" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>47VA</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS47" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>48VM</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS48" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>50L</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS50L" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>50V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS50V" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>53LY</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS53" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>54VLTMAS</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS54" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>58E</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS58" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>60E</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS60" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>62V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS62" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>63P</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS63" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>69K</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS69" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>71VTI</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS71" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>73STCA</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS73" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>74SPA</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS74" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>76V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS76" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>77I</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS77" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>82ATFSIML</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS82" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>83D</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS83" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>84VAC</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS84" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>85V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS85" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>88DSTG</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS88" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>89V</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS89" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>90M</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS90" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>93LM</CONDITION>
+                <ACTIONS><COMMENT ref="PR_POS93" /></ACTIONS>
+            </RULE>
+        </GENE>
+        <GENE>
+            <NAME>RT</NAME>
+            <RULE>
+                <CONDITION>41L</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS41" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>44AD</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS44" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>62V</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS62" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>65RN</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS65" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>67NEG</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS67NEG" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>67d</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS67d" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>69DNASIG</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS69DNASIG" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>69i</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS69i" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>70REGN</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS70" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>74VI</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS74" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>75ITMASL</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS75" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>77L</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS77" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>98GS</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS98" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>100I</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS100" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>101EPQRHN</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS101" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>103NRSQT</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS103" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>106AMIL</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS106" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>108I</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS108" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>115F</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS115" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>116Y</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS116" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>118I</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS118" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>151ML</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS151" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>179DEI</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS179" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>181CIV</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS181" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>184VI</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS184" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>188LHC</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS188" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>190ASEQ</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS190" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>210WFS</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS210" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>215YFSCDEIVAN</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS215" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>219QENR</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS219" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>225H</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS225" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>227L</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS227" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>230L</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS230" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>236L</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS236" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>238NTR</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS238" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>318F</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS318" /></ACTIONS>
+            </RULE>
+
+            <RULE>
+                <CONDITION>333DE</CONDITION>
+                <ACTIONS><COMMENT ref="RT_POS333" /></ACTIONS>
+            </RULE>
+        </GENE>
+    </MUTATION_COMMENTS>
+</ALGORITHM>
