@@ -1,6 +1,9 @@
 package net.sf.regadb.ui.forms.account;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.DatasetAccessId;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
@@ -170,6 +173,10 @@ public class AccountForm extends FormWidget
             lastNameTF.setText(su_.getLastName());
             emailTF.setText(su_.getEmail());
             uidTF.setText(su_.getUid());
+            if(su_.getEnabled()==null)
+            {
+                uidTF.setText("");
+            }
             
             t.commit();
         }
@@ -259,6 +266,16 @@ public class AccountForm extends FormWidget
                     t = login.createTransaction();
                     su_.setDataset(t.getDataset(datasetCB.currentText().value()));
                     su_ = t.changeUid(su_, uidTF.text());
+                    update(su_, t);
+                    t.commit();
+                    
+                    t = login.createTransaction();
+                    DatasetAccess da = new DatasetAccess(new DatasetAccessId(su_, su_.getDataset()),Privileges.READWRITE.getValue(), login.getUid());
+                    t.save(da);
+                    t.commit();
+                    
+                    t = login.createTransaction();
+                    t.refresh(su_);
                     t.commit();
                 }
             }

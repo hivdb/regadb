@@ -932,18 +932,20 @@ public class Transaction {
     {
         String queryString = "from SettingsUser as settingsUser ";
         
+        queryString += "where not settingsUser.uid = :uid ";
+        
+        queryString += "and enabled " + (enabled?"is not null":"= null");
+        
         if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += "where " + filterConstraints.clause_ + "and enabled" + (enabled?" is not null":"= null");
-        }
-        else
-        {
-            queryString += "where enabled" + (enabled?" is not null":"= null");
+            queryString += " and " + filterConstraints.clause_;
         }
         
         queryString += " order by " + sortField + (ascending?" asc":" desc");
     
       	Query q = session.createQuery(queryString);
+        
+        q.setParameter("uid", login.getUid());
         
         for(Pair<String, Object> arg : filterConstraints.arguments_)
         {
@@ -960,23 +962,25 @@ public class Transaction {
     {
          String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
             
+         queryString += "where not settingsUser.uid = :uid ";
+         
+         queryString += "and enabled " + (enabled?"is not null":"= null");
+         
          if(!filterConstraints.clause_.equals(" "))
          {
-             queryString += "where " + filterConstraints.clause_ + "and enabled" + (enabled?" is not null":"= null");
+             queryString += " and " + filterConstraints.clause_;
          }
-         else
+         
+         Query q = session.createQuery(queryString);
+         
+         q.setParameter("uid", login.getUid());
+         
+         for(Pair<String, Object> arg : filterConstraints.arguments_)
          {
-             queryString += "where enabled" + (enabled?" is not null":"= null");
+             q.setParameter(arg.getKey(), arg.getValue());
          }
-          
-            Query q = session.createQuery(queryString);
-            
-            for(Pair<String, Object> arg : filterConstraints.arguments_)
-            {
-                q.setParameter(arg.getKey(), arg.getValue());
-            }
-            
-            return ((Long)q.uniqueResult()).longValue();
+         
+         return ((Long)q.uniqueResult()).longValue();
     }
     
     @SuppressWarnings("unchecked")
@@ -984,13 +988,11 @@ public class Transaction {
     {
         String queryString = "from SettingsUser as settingsUser ";
         
+        queryString += "where not settingsUser.uid = :uid";
+        
         if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += "where " + filterConstraints.clause_ + "and uid= :uid";
-        }
-        else
-        {
-            queryString += "where not uid= :uid";
+            queryString += " and " + filterConstraints.clause_;
         }
         
         queryString += " order by " + sortField;
