@@ -379,16 +379,16 @@ public class Jarbuilder
         
         JUnitRapport.startTesting();
         JUnitTest.executeTests(libPool_);
-        JUnitRapport.endTesting("testresult.xml");
+        JUnitRapport.endTesting(rapportDir_ + "testresult.xml");
         
         System.out.println("Generate testing report");
-        XsltTransformer.transform("testresult.xml", rapportDir_ + "testresult.html", "testresult.xsl");
+        XsltTransformer.transform(rapportDir_ + "testresult.xml", rapportDir_ + "testresult.html", "testresult.xsl");
 	}
     
     private static void handleError(String moduleName, Exception e) {
     	ErrorRapport.handleError("testresult.xml", moduleName, e);
     	
-    	XsltTransformer.transform("testresult.xml", rapportDir_ + "testresult.html", "error.xsl");
+    	XsltTransformer.transform(rapportDir_ + "testresult.xml", rapportDir_ + "testresult.html", "error.xsl");
     	
     	System.exit(1);
 	}
