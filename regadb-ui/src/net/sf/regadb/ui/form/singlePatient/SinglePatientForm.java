@@ -303,6 +303,8 @@ public class SinglePatientForm extends FormWidget
         String text;
         WMessage message;
         Attribute attribute;
+        if(attributesGroupTable_!=null)
+        {
         for(int row = 0; row < attributesGroupTable_.numRows(); row++)
         {
                 label = attributesGroupTable_.elementAt(row, 1).children().get(0);
@@ -341,6 +343,7 @@ public class SinglePatientForm extends FormWidget
                         }
                     }
             }
+        }
         }
 
         update(patient_, t);
