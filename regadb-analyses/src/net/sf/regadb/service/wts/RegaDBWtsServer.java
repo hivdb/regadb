@@ -13,9 +13,9 @@ public class RegaDBWtsServer
     
     public static Test getHIV1SubTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
-        TestType type = new TestType(to, "HIV-1 Subtype Test");
+        TestType type = new TestType(to, getSubTypeTestType());
         type.setValueType(valueType);
-        Test test = new Test(type, "Rega HIV-1 Subtype Tool");
+        Test test = new Test(type, getSubTypeTest());
         Analysis analysis = new Analysis(analysisType);
         analysis.setUrl(url_);
         analysis.setAccount("public");
@@ -28,11 +28,21 @@ public class RegaDBWtsServer
         return test;
     }
     
+    public static String getSubTypeTestType()
+    {
+        return "HIV-1 Subtype Test";
+    }
+    
+    public static String getSubTypeTest()
+    {
+        return "Rega HIV-1 Subtype Tool";
+    }
+    
     public static Test getHIVTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
-        TestType type = new TestType(to, "HIV Type Test");
+        TestType type = new TestType(to, getTypeTest());
         type.setValueType(valueType);
-        Test test = new Test(type, "Rega HIV Type Tool");
+        Test test = new Test(type, getTypeTest());
         Analysis analysis = new Analysis(analysisType);
         analysis.setUrl(url_);
         analysis.setAccount("public");
@@ -43,5 +53,15 @@ public class RegaDBWtsServer
         test.setAnalysis(analysis);
         
         return test;
+    }
+    
+    public static String getTypeTestType()
+    {
+        return "HIV Type Test";
+    }
+    
+    public static String getTypeTest()
+    {
+        return "Rega HIV Type Tool";
     }
 }

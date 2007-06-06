@@ -17,9 +17,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.DefaultServices;
 import net.sf.regadb.service.align.AlignmentAnalysis;
 import net.sf.regadb.service.wts.NtSequenceAnalysis;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -302,9 +302,9 @@ public class ViralIsolateMainForm extends WContainerWidget
         
         for(TestResult tr : seq.getTestResults())
         {
-            if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
+            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
                 subTypeTF.setText(tr.getValue());   
-            if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getTypeTestType()))
                 typeTF.setText(tr.getValue());
         }
     }
@@ -370,9 +370,9 @@ public class ViralIsolateMainForm extends WContainerWidget
             
             for(TestResult tr : currentSeq.getTestResults())
             {
-                if(tr.getTest().getDescription().equals(DefaultServices.subTyping_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.subtypingType_))
+                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
                     removedTestResults.add(tr);
-                else if(tr.getTest().getDescription().equals(DefaultServices.typing_) && tr.getTest().getTestType().getDescription().equals(DefaultServices.typingType_))
+                else if(tr.getTest().getDescription().equals(RegaDBWtsServer.getTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getTypeTestType()))
                     removedTestResults.add(tr);
             }
         }
@@ -447,8 +447,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     public void startAnalysis()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
-        Test subTypeTest = t.getTest(DefaultServices.subTyping_, DefaultServices.subtypingType_);
-        Test typeTest = t.getTest(DefaultServices.typing_, DefaultServices.typingType_);
+        Test subTypeTest = t.getTest(RegaDBWtsServer.getSubTypeTest(), RegaDBWtsServer.getSubTypeTestType());
+        Test typeTest = t.getTest(RegaDBWtsServer.getTypeTest(), RegaDBWtsServer.getTypeTestType());
         t.commit();
         
         for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
