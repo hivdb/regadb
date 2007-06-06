@@ -49,7 +49,7 @@ public class VisualizeAaSequence
             }
             else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getPosition()-1)*3==i)
             {
-                mutationCodon = extractMutationCodon(mutations[mutationIndex].getNtMutationCodon());
+                mutationCodon = mutations[mutationIndex].getNtMutationCodon();
                 addNt(proteinNt.charAt(i), mutationCodon.charAt(0));
                 addNt(proteinNt.charAt(i+1), mutationCodon.charAt(1));
                 addNt(proteinNt.charAt(i+2), mutationCodon.charAt(2));
@@ -66,7 +66,7 @@ public class VisualizeAaSequence
                 short pos = insertions[insertionIndex].getId().getPosition();
                 while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getPosition()==pos)
                 {
-                    mutationCodon = extractMutationCodon(insertions[insertionIndex].getNtInsertionCodon());
+                    mutationCodon = insertions[insertionIndex].getNtInsertionCodon();
                     addNt('-', mutationCodon.charAt(0));
                     addNt('-', mutationCodon.charAt(1));
                     addNt('-', mutationCodon.charAt(2));
@@ -86,12 +86,6 @@ public class VisualizeAaSequence
         //return refAa.toString() + '\n' +refNt.toString() + '\n'+  tarNt.toString() + '\n' + tarAa.toString() + '\n';
         //return '\n' +refNt.toString() + '\n' + tarNt.toString() + '\n';
         return page.toString();
-    }
-    
-    public String extractMutationCodon(String codon)
-    {
-        String r = codon.charAt(1) +""+ codon.charAt(3) +""+ codon.charAt(5);
-        return r.toLowerCase();
     }
     
     private void addNt(char reference, char target)
