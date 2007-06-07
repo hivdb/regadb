@@ -16,12 +16,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     private ArrayList<ParseState> parseStateStack = new ArrayList<ParseState>();
 
     void pushState(ParseState state) {
-        System.err.println("+ " + state.name());
         parseStateStack.add(state);
     }
 
     void popState() {
-        System.err.println("- " + parseStateStack.get(parseStateStack.size() - 1).name());
         parseStateStack.remove(parseStateStack.size() - 1);
     }
 
@@ -147,6 +145,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         value = null;
         if (false) {
+        } else if ("Patient".equals(qName)) {
         } else if ("patient".equals(qName)|| "patients-el".equals(qName)) {
             pushState(ParseState.statePatient);
             patient = new Patient();
@@ -160,17 +159,20 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldPatient_patientAttributeValues = new HashSet<PatientAttributeValue>();
             fieldPatient_viralIsolates = new HashSet<ViralIsolate>();
             fieldPatient_therapies = new HashSet<Therapy>();
+        } else if ("Dataset".equals(qName)) {
         } else if ("dataset".equals(qName)|| "patientDatasets-el".equals(qName)) {
             pushState(ParseState.stateDataset);
             fieldDataset_description = nullValueString();
             fieldDataset_creationDate = nullValueDate();
             fieldDataset_closedDate = nullValueDate();
             fieldDataset_revision = nullValueInteger();
+        } else if ("PatientAttributeValue".equals(qName)) {
         } else if ("patientAttributeValue".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
             pushState(ParseState.statePatientAttributeValue);
             fieldPatientAttributeValue_attribute = null;
             fieldPatientAttributeValue_attributeNominalValue = null;
             fieldPatientAttributeValue_value = nullValueString();
+        } else if ("Attribute".equals(qName)) {
         } else if ("attribute".equals(qName)|| "attribute".equals(qName)) {
             pushState(ParseState.stateAttribute);
             referenceAttribute = null;
@@ -178,20 +180,24 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAttribute_attributeGroup = null;
             fieldAttribute_name = nullValueString();
             fieldAttribute_attributeNominalValues = new HashSet<AttributeNominalValue>();
+        } else if ("AttributeGroup".equals(qName)) {
         } else if ("attributeGroup".equals(qName)|| "attributeGroup".equals(qName)) {
             pushState(ParseState.stateAttributeGroup);
             referenceAttributeGroup = null;
             fieldAttributeGroup_groupName = nullValueString();
+        } else if ("AttributeNominalValue".equals(qName)) {
         } else if ("attributeNominalValue".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
             pushState(ParseState.stateAttributeNominalValue);
             referenceAttributeNominalValue = null;
             fieldAttributeNominalValue_value = nullValueString();
+        } else if ("ViralIsolate".equals(qName)) {
         } else if ("viralIsolate".equals(qName)|| "viralIsolates-el".equals(qName)) {
             pushState(ParseState.stateViralIsolate);
             fieldViralIsolate_sampleId = nullValueString();
             fieldViralIsolate_sampleDate = nullValueDate();
             fieldViralIsolate_ntSequences = new HashSet<NtSequence>();
             fieldViralIsolate_testResults = new HashSet<TestResult>();
+        } else if ("NtSequence".equals(qName)) {
         } else if ("ntSequence".equals(qName)|| "ntSequences-el".equals(qName)) {
             pushState(ParseState.stateNtSequence);
             fieldNtSequence_nucleotides = nullValueString();
@@ -199,6 +205,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldNtSequence_sequenceDate = nullValueDate();
             fieldNtSequence_aaSequences = new HashSet<AaSequence>();
             fieldNtSequence_testResults = new HashSet<TestResult>();
+        } else if ("AaSequence".equals(qName)) {
         } else if ("aaSequence".equals(qName)|| "aaSequences-el".equals(qName)) {
             pushState(ParseState.stateAaSequence);
             fieldAaSequence_protein = null;
@@ -206,6 +213,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAaSequence_lastAaPos = nullValueshort();
             fieldAaSequence_aaMutations = new HashSet<AaMutation>();
             fieldAaSequence_aaInsertions = new HashSet<AaInsertion>();
+        } else if ("AaMutation".equals(qName)) {
         } else if ("aaMutation".equals(qName)|| "aaMutations-el".equals(qName)) {
             pushState(ParseState.stateAaMutation);
             fieldAaMutation_position = nullValueshort();
@@ -213,12 +221,14 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAaMutation_aaMutation = nullValueString();
             fieldAaMutation_ntReferenceCodon = nullValueString();
             fieldAaMutation_ntMutationCodon = nullValueString();
+        } else if ("AaInsertion".equals(qName)) {
         } else if ("aaInsertion".equals(qName)|| "aaInsertions-el".equals(qName)) {
             pushState(ParseState.stateAaInsertion);
             fieldAaInsertion_position = nullValueshort();
             fieldAaInsertion_insertionOrder = nullValueshort();
             fieldAaInsertion_aaInsertion = nullValueString();
             fieldAaInsertion_ntInsertionCodon = nullValueString();
+        } else if ("Therapy".equals(qName)) {
         } else if ("therapy".equals(qName)|| "therapies-el".equals(qName)) {
             pushState(ParseState.stateTherapy);
             fieldTherapy_startDate = nullValueDate();
@@ -226,6 +236,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTherapy_comment = nullValueString();
             fieldTherapy_therapyCommercials = new HashSet<TherapyCommercial>();
             fieldTherapy_therapyGenerics = new HashSet<TherapyGeneric>();
+        } else if ("TestResult".equals(qName)) {
         } else if ("testResult".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
             pushState(ParseState.stateTestResult);
             fieldTestResult_test = null;
@@ -234,20 +245,24 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTestResult_value = nullValueString();
             fieldTestResult_testDate = nullValueDate();
             fieldTestResult_sampleId = nullValueString();
+        } else if ("TherapyCommercial".equals(qName)) {
         } else if ("therapyCommercial".equals(qName)|| "therapyCommercials-el".equals(qName)) {
             pushState(ParseState.stateTherapyCommercial);
             fieldTherapyCommercial_drugCommercial = null;
             fieldTherapyCommercial_dayDosageUnits = nullValueDouble();
+        } else if ("TherapyGeneric".equals(qName)) {
         } else if ("therapyGeneric".equals(qName)|| "therapyGenerics-el".equals(qName)) {
             pushState(ParseState.stateTherapyGeneric);
             fieldTherapyGeneric_drugGeneric = null;
             fieldTherapyGeneric_dayDosageMg = nullValueDouble();
+        } else if ("Test".equals(qName)) {
         } else if ("test".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
             pushState(ParseState.stateTest);
             referenceTest = null;
             fieldTest_analysis = null;
             fieldTest_testType = null;
             fieldTest_description = nullValueString();
+        } else if ("Analysis".equals(qName)) {
         } else if ("analysis".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
             pushState(ParseState.stateAnalysis);
             referenceAnalysis = null;
@@ -261,6 +276,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysis_serviceName = nullValueString();
             fieldAnalysis_tests = new HashSet<Test>();
             fieldAnalysis_analysisDatas = new HashSet<AnalysisData>();
+        } else if ("AnalysisData".equals(qName)) {
         } else if ("analysisData".equals(qName)|| "analysisDatas-el".equals(qName)) {
             pushState(ParseState.stateAnalysisData);
             referenceAnalysisData = null;
@@ -268,6 +284,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysisData_name = nullValueString();
             fieldAnalysisData_data = nullValuebyteArray();
             fieldAnalysisData_mimetype = nullValueString();
+        } else if ("TestType".equals(qName)) {
         } else if ("testType".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
             pushState(ParseState.stateTestType);
             referenceTestType = null;
@@ -275,6 +292,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTestType_testObject = null;
             fieldTestType_description = nullValueString();
             fieldTestType_testNominalValues = new HashSet<TestNominalValue>();
+        } else if ("ValueType".equals(qName)) {
         } else if ("valueType".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
             pushState(ParseState.stateValueType);
             referenceValueType = null;
@@ -282,11 +300,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldValueType_min = nullValueDouble();
             fieldValueType_max = nullValueDouble();
             fieldValueType_multiple = nullValueBoolean();
+        } else if ("TestObject".equals(qName)) {
         } else if ("testObject".equals(qName)|| "testObject".equals(qName)) {
             pushState(ParseState.stateTestObject);
             referenceTestObject = null;
             fieldTestObject_description = nullValueString();
             fieldTestObject_testObjectId = nullValueInteger();
+        } else if ("TestNominalValue".equals(qName)) {
         } else if ("testNominalValue".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
             pushState(ParseState.stateTestNominalValue);
             referenceTestNominalValue = null;
@@ -298,6 +318,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     @SuppressWarnings("unchecked")
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (false) {
+        } else if ("Patient".equals(qName)) {
         } else if (currentState() == ParseState.statePatient) {
             if ("patient".equals(qName)|| "patients-el".equals(qName)) {
                 popState();
@@ -361,6 +382,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("Dataset".equals(qName)) {
         } else if (currentState() == ParseState.stateDataset) {
             if ("dataset".equals(qName)|| "patientDatasets-el".equals(qName)) {
                 popState();
@@ -406,6 +428,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("PatientAttributeValue".equals(qName)) {
         } else if (currentState() == ParseState.statePatientAttributeValue) {
             if ("patientAttributeValue".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
                 popState();
@@ -445,6 +468,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("Attribute".equals(qName)) {
         } else if (currentState() == ParseState.stateAttribute) {
             if ("attribute".equals(qName)|| "attribute".equals(qName)) {
                 popState();
@@ -509,6 +533,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AttributeGroup".equals(qName)) {
         } else if (currentState() == ParseState.stateAttributeGroup) {
             if ("attributeGroup".equals(qName)|| "attributeGroup".equals(qName)) {
                 popState();
@@ -553,6 +578,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AttributeNominalValue".equals(qName)) {
         } else if (currentState() == ParseState.stateAttributeNominalValue) {
             if ("attributeNominalValue".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
                 popState();
@@ -608,6 +634,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("ViralIsolate".equals(qName)) {
         } else if (currentState() == ParseState.stateViralIsolate) {
             if ("viralIsolate".equals(qName)|| "viralIsolates-el".equals(qName)) {
                 popState();
@@ -655,6 +682,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("NtSequence".equals(qName)) {
         } else if (currentState() == ParseState.stateNtSequence) {
             if ("ntSequence".equals(qName)|| "ntSequences-el".equals(qName)) {
                 popState();
@@ -708,6 +736,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AaSequence".equals(qName)) {
         } else if (currentState() == ParseState.stateAaSequence) {
             if ("aaSequence".equals(qName)|| "aaSequences-el".equals(qName)) {
                 popState();
@@ -761,6 +790,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AaMutation".equals(qName)) {
         } else if (currentState() == ParseState.stateAaMutation) {
             if ("aaMutation".equals(qName)|| "aaMutations-el".equals(qName)) {
                 popState();
@@ -814,6 +844,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AaInsertion".equals(qName)) {
         } else if (currentState() == ParseState.stateAaInsertion) {
             if ("aaInsertion".equals(qName)|| "aaInsertions-el".equals(qName)) {
                 popState();
@@ -862,6 +893,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("Therapy".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapy) {
             if ("therapy".equals(qName)|| "therapies-el".equals(qName)) {
                 popState();
@@ -914,6 +946,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TestResult".equals(qName)) {
         } else if (currentState() == ParseState.stateTestResult) {
             if ("testResult".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
                 popState();
@@ -974,6 +1007,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TherapyCommercial".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapyCommercial) {
             if ("therapyCommercial".equals(qName)|| "therapyCommercials-el".equals(qName)) {
                 popState();
@@ -1012,6 +1046,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TherapyGeneric".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapyGeneric) {
             if ("therapyGeneric".equals(qName)|| "therapyGenerics-el".equals(qName)) {
                 popState();
@@ -1050,6 +1085,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("Test".equals(qName)) {
         } else if (currentState() == ParseState.stateTest) {
             if ("test".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
                 popState();
@@ -1117,6 +1153,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("Analysis".equals(qName)) {
         } else if (currentState() == ParseState.stateAnalysis) {
             if ("analysis".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
                 popState();
@@ -1237,6 +1274,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("AnalysisData".equals(qName)) {
         } else if (currentState() == ParseState.stateAnalysisData) {
             if ("analysisData".equals(qName)|| "analysisDatas-el".equals(qName)) {
                 popState();
@@ -1301,6 +1339,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TestType".equals(qName)) {
         } else if (currentState() == ParseState.stateTestType) {
             if ("testType".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
                 popState();
@@ -1376,6 +1415,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("ValueType".equals(qName)) {
         } else if (currentState() == ParseState.stateValueType) {
             if ("valueType".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
                 popState();
@@ -1452,6 +1492,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TestObject".equals(qName)) {
         } else if (currentState() == ParseState.stateTestObject) {
             if ("testObject".equals(qName)|| "testObject".equals(qName)) {
                 popState();
@@ -1503,6 +1544,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
             }
+        } else if ("TestNominalValue".equals(qName)) {
         } else if (currentState() == ParseState.stateTestNominalValue) {
             if ("testNominalValue".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
                 popState();

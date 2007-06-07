@@ -112,7 +112,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected DrugGeneric resolveDrugGeneric(String value) throws SAXException {
-        DrugGeneric result = genericDrugs.get(value);
+        DrugGeneric result = genericDrugs.get(value.toUpperCase());
         if (result == null)
             throw new SAXException(new ImportException("Could not resolve generic drug: '" + value + "'"));
         else
@@ -120,7 +120,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected Protein resolveProtein(String value) throws SAXException {
-        Protein result = proteins.get(value);
+        Protein result = proteins.get(value.toUpperCase());
         if (result == null)
             throw new SAXException(new ImportException("Could not resolve protein: '" + value + "'"));
         else
@@ -128,14 +128,14 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected DrugCommercial resolveDrugCommercial(String value) throws SAXException {
-        DrugCommercial result = commercialDrugs.get(value);
+        DrugCommercial result = commercialDrugs.get(value.toUpperCase());
         if (result == null)
             throw new SAXException(new ImportException("Could not resolve commercial drug: '" + value + "'"));
         else
             return result;
     }
     protected AnalysisType resolveAnalysisType(String value) throws SAXException {
-        AnalysisType result = analysisTypes.get(value);
+        AnalysisType result = analysisTypes.get(value.toUpperCase());
         if (result == null)
             throw new SAXException(new ImportException("Could not resolve analysis type: '" + value + "'"));
         else
@@ -145,22 +145,22 @@ public class ImportFromXMLBase extends DefaultHandler{
     public void loadDatabaseObjects(Transaction t) {
         genericDrugs = new TreeMap<String, DrugGeneric>();
         for (DrugGeneric d : t.getGenericDrugs()) {
-            genericDrugs.put(d.getGenericId(), d);
+            genericDrugs.put(d.getGenericId().toUpperCase(), d);
         }
 
         commercialDrugs = new TreeMap<String, DrugCommercial>();
         for (DrugCommercial d : t.getCommercialDrugs()) {
-            commercialDrugs.put(d.getName(), d);
+            commercialDrugs.put(d.getName().toUpperCase(), d);
         }
 
         proteins = new TreeMap<String, Protein>();
         for (Protein p : t.getProteins()) {
-            proteins.put(p.getAbbreviation(), p);
+            proteins.put(p.getAbbreviation().toUpperCase(), p);
         }
 
         analysisTypes = new TreeMap<String, AnalysisType>();
         for (AnalysisType a : t.getAnalysisTypes()) {
-            analysisTypes.put(a.getType(), a);
+            analysisTypes.put(a.getType().toUpperCase(), a);
         }
     }    
 

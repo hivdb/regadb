@@ -161,7 +161,7 @@ public class XMLReadCodeGen {
             if (javaClass == Patient.class)
                 result += "|| \"patients-el\".equals(qName)";
             
-            return result; 
+            return result;
         }
 
         public ArrayList<ObjectField> getRefererringFields() {
@@ -245,12 +245,12 @@ public class XMLReadCodeGen {
         write(1, "private ArrayList<ParseState> parseStateStack = new ArrayList<ParseState>();\n\n");
         
         write(1, "void pushState(ParseState state) {\n");
-        write(2, "System.err.println(\"+ \" + state.name());\n");
+        //write(2, "System.err.println(\"+ \" + state.name());\n");
         write(2, "parseStateStack.add(state);\n");
         write(1, "}\n\n");
         
         write(1, "void popState() {\n");
-        write(2, "System.err.println(\"- \" + parseStateStack.get(parseStateStack.size() - 1).name());\n");
+        //write(2, "System.err.println(\"- \" + parseStateStack.get(parseStateStack.size() - 1).name());\n");
         write(2, "parseStateStack.remove(parseStateStack.size() - 1);\n");
         write(1, "}\n\n");
         
@@ -296,6 +296,7 @@ public class XMLReadCodeGen {
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
 
+            write(2, "} else if (\"" + o.javaClass.getSimpleName() + "\".equals(qName)" + ") {\n");
             write(2, "} else if ("+ o.matchesXMLElement() + ") {\n");
             
             write(3, "pushState(ParseState." + o.parseState() + ");\n");
@@ -331,6 +332,7 @@ public class XMLReadCodeGen {
             /*
              * -- End element of the object itself.
              */
+            write(2, "} else if (\"" + o.javaClass.getSimpleName() + "\".equals(qName)" + ") {\n");
             write(2, "} else if (currentState() == ParseState." + o.parseState() + ") {\n");
             write(3, "if ("+ o.matchesXMLElement() + ") {\n");
             write(4, "popState();\n");
