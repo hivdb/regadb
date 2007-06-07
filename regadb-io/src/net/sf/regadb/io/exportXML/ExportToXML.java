@@ -12,6 +12,7 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.DatasetAccess;
@@ -51,8 +52,10 @@ public class ExportToXML
 	HashMap<AttributeNominalValue, Integer> AttributeNominalValuePMap = new HashMap<AttributeNominalValue, Integer>();
 	HashMap<Analysis, Integer> AnalysisPMap = new HashMap<Analysis, Integer>();
 	HashMap<AnalysisData, Integer> AnalysisDataPMap = new HashMap<AnalysisData, Integer>();
-	public void writeAaSequence(AaSequence AaSequencevar, Element parentNode)
+	public void writeAaSequence(AaSequence AaSequencevar, Element rootNode)
 	{
+		Element parentNode = new Element("AaSequence");
+		rootNode.addContent(parentNode);
 		if(AaSequencevar==null)
 		{
 			return;
@@ -86,8 +89,10 @@ public class ExportToXML
 			writeAaInsertion(AaInsertionloopvar,aaInsertions_elEl);
 		}
 	}
-	public void writeTest(Test Testvar, Element parentNode)
+	public void writeTest(Test Testvar, Element rootNode)
 	{
+		Element parentNode = new Element("Test");
+		rootNode.addContent(parentNode);
 		if(Testvar==null)
 		{
 			return;
@@ -141,8 +146,10 @@ public class ExportToXML
 			parentNode.addContent(descriptionprimitiveValEl);
 		}
 	}
-	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element parentNode)
+	public void writeTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element rootNode)
 	{
+		Element parentNode = new Element("TherapyCommercial");
+		rootNode.addContent(parentNode);
 		if(TherapyCommercialvar==null)
 		{
 			return;
@@ -160,8 +167,10 @@ public class ExportToXML
 			parentNode.addContent(dayDosageUnitsprimitiveValEl);
 		}
 	}
-	public void writeAnalysis(Analysis Analysisvar, Element parentNode)
+	public void writeAnalysis(Analysis Analysisvar, Element rootNode)
 	{
+		Element parentNode = new Element("Analysis");
+		rootNode.addContent(parentNode);
 		if(Analysisvar==null)
 		{
 			return;
@@ -277,8 +286,10 @@ public class ExportToXML
 			}
 		}
 	}
-	public void writeNtSequence(NtSequence NtSequencevar, Element parentNode)
+	public void writeNtSequence(NtSequence NtSequencevar, Element rootNode)
 	{
+		Element parentNode = new Element("NtSequence");
+		rootNode.addContent(parentNode);
 		if(NtSequencevar==null)
 		{
 			return;
@@ -318,8 +329,10 @@ public class ExportToXML
 			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
-	public void writeAaMutation(AaMutation AaMutationvar, Element parentNode)
+	public void writeAaMutation(AaMutation AaMutationvar, Element rootNode)
 	{
+		Element parentNode = new Element("AaMutation");
+		rootNode.addContent(parentNode);
 		if(AaMutationvar==null)
 		{
 			return;
@@ -352,8 +365,10 @@ public class ExportToXML
 			parentNode.addContent(ntMutationCodonprimitiveValEl);
 		}
 	}
-	public void writeValueType(ValueType ValueTypevar, Element parentNode)
+	public void writeValueType(ValueType ValueTypevar, Element rootNode)
 	{
+		Element parentNode = new Element("ValueType");
+		rootNode.addContent(parentNode);
 		if(ValueTypevar==null)
 		{
 			return;
@@ -383,8 +398,10 @@ public class ExportToXML
 			parentNode.addContent(multipleprimitiveValEl);
 		}
 	}
-	public void writeTestObject(TestObject TestObjectvar, Element parentNode)
+	public void writeTestObject(TestObject TestObjectvar, Element rootNode)
 	{
+		Element parentNode = new Element("TestObject");
+		rootNode.addContent(parentNode);
 		if(TestObjectvar==null)
 		{
 			return;
@@ -402,8 +419,10 @@ public class ExportToXML
 			parentNode.addContent(testObjectIdprimitiveValEl);
 		}
 	}
-	public void writePatient(Patient Patientvar, Element parentNode)
+	public void writePatient(Patient Patientvar, Element rootNode)
 	{
+		Element parentNode = new Element("Patient");
+		rootNode.addContent(parentNode);
 		if(Patientvar==null)
 		{
 			return;
@@ -479,8 +498,10 @@ public class ExportToXML
 			writeTherapy(Therapyloopvar,therapies_elEl);
 		}
 	}
-	public void writeAttributeGroup(AttributeGroup AttributeGroupvar, Element parentNode)
+	public void writeAttributeGroup(AttributeGroup AttributeGroupvar, Element rootNode)
 	{
+		Element parentNode = new Element("AttributeGroup");
+		rootNode.addContent(parentNode);
 		if(AttributeGroupvar==null)
 		{
 			return;
@@ -492,8 +513,10 @@ public class ExportToXML
 			parentNode.addContent(groupNameprimitiveValEl);
 		}
 	}
-	public void writeAaInsertion(AaInsertion AaInsertionvar, Element parentNode)
+	public void writeAaInsertion(AaInsertion AaInsertionvar, Element rootNode)
 	{
+		Element parentNode = new Element("AaInsertion");
+		rootNode.addContent(parentNode);
 		if(AaInsertionvar==null)
 		{
 			return;
@@ -517,8 +540,10 @@ public class ExportToXML
 			parentNode.addContent(ntInsertionCodonprimitiveValEl);
 		}
 	}
-	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element parentNode)
+	public void writeViralIsolate(ViralIsolate ViralIsolatevar, Element rootNode)
 	{
+		Element parentNode = new Element("ViralIsolate");
+		rootNode.addContent(parentNode);
 		if(ViralIsolatevar==null)
 		{
 			return;
@@ -552,8 +577,10 @@ public class ExportToXML
 			writeTestResult(TestResultloopvar,testResults_elEl);
 		}
 	}
-	public void writeDataset(Dataset Datasetvar, Element parentNode)
+	public void writeDataset(Dataset Datasetvar, Element rootNode)
 	{
+		Element parentNode = new Element("Dataset");
+		rootNode.addContent(parentNode);
 		if(Datasetvar==null)
 		{
 			return;
@@ -583,8 +610,10 @@ public class ExportToXML
 			parentNode.addContent(revisionprimitiveValEl);
 		}
 	}
-	public void writeTestType(TestType TestTypevar, Element parentNode)
+	public void writeTestType(TestType TestTypevar, Element rootNode)
 	{
+		Element parentNode = new Element("TestType");
+		rootNode.addContent(parentNode);
 		if(TestTypevar==null)
 		{
 			return;
@@ -669,8 +698,10 @@ public class ExportToXML
 			}
 		}
 	}
-	public void writeAttribute(Attribute Attributevar, Element parentNode)
+	public void writeAttribute(Attribute Attributevar, Element rootNode)
 	{
+		Element parentNode = new Element("Attribute");
+		rootNode.addContent(parentNode);
 		if(Attributevar==null)
 		{
 			return;
@@ -755,8 +786,10 @@ public class ExportToXML
 			}
 		}
 	}
-	public void writeTestResult(TestResult TestResultvar, Element parentNode)
+	public void writeTestResult(TestResult TestResultvar, Element rootNode)
 	{
+		Element parentNode = new Element("TestResult");
+		rootNode.addContent(parentNode);
 		if(TestResultvar==null)
 		{
 			return;
@@ -828,8 +861,10 @@ public class ExportToXML
 			parentNode.addContent(sampleIdprimitiveValEl);
 		}
 	}
-	public void writeTherapy(Therapy Therapyvar, Element parentNode)
+	public void writeTherapy(Therapy Therapyvar, Element rootNode)
 	{
+		Element parentNode = new Element("Therapy");
+		rootNode.addContent(parentNode);
 		if(Therapyvar==null)
 		{
 			return;
@@ -869,8 +904,10 @@ public class ExportToXML
 			writeTherapyGeneric(TherapyGenericloopvar,therapyGenerics_elEl);
 		}
 	}
-	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element parentNode)
+	public void writeAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element rootNode)
 	{
+		Element parentNode = new Element("AttributeNominalValue");
+		rootNode.addContent(parentNode);
 		if(AttributeNominalValuevar==null)
 		{
 			return;
@@ -882,8 +919,10 @@ public class ExportToXML
 			parentNode.addContent(valueprimitiveValEl);
 		}
 	}
-	public void writeAnalysisData(AnalysisData AnalysisDatavar, Element parentNode)
+	public void writeAnalysisData(AnalysisData AnalysisDatavar, Element rootNode)
 	{
+		Element parentNode = new Element("AnalysisData");
+		rootNode.addContent(parentNode);
 		if(AnalysisDatavar==null)
 		{
 			return;
@@ -928,8 +967,10 @@ public class ExportToXML
 			parentNode.addContent(mimetypeprimitiveValEl);
 		}
 	}
-	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element parentNode)
+	public void writeTherapyGeneric(TherapyGeneric TherapyGenericvar, Element rootNode)
 	{
+		Element parentNode = new Element("TherapyGeneric");
+		rootNode.addContent(parentNode);
 		if(TherapyGenericvar==null)
 		{
 			return;
@@ -947,8 +988,10 @@ public class ExportToXML
 			parentNode.addContent(dayDosageMgprimitiveValEl);
 		}
 	}
-	public void writePatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element parentNode)
+	public void writePatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element rootNode)
 	{
+		Element parentNode = new Element("PatientAttributeValue");
+		rootNode.addContent(parentNode);
 		if(PatientAttributeValuevar==null)
 		{
 			return;
@@ -1002,8 +1045,10 @@ public class ExportToXML
 			parentNode.addContent(valueprimitiveValEl);
 		}
 	}
-	public void writeTestNominalValue(TestNominalValue TestNominalValuevar, Element parentNode)
+	public void writeTestNominalValue(TestNominalValue TestNominalValuevar, Element rootNode)
 	{
+		Element parentNode = new Element("TestNominalValue");
+		rootNode.addContent(parentNode);
 		if(TestNominalValuevar==null)
 		{
 			return;

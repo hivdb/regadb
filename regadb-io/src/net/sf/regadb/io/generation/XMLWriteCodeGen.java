@@ -43,8 +43,10 @@ public class XMLWriteCodeGen
     {
         String writeClassCode="";
         
-        writeClassCode += "public void write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element parentNode)";
+        writeClassCode += "public void write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element rootNode)";
         writeClassCode += "{";
+        writeClassCode += "Element parentNode = new Element(\""+toWrite.getSimpleName()+"\");";
+        writeClassCode += "rootNode.addContent(parentNode);";
         writeClassCode += "if("+toWrite.getSimpleName()+"var==null)";
         writeClassCode += "{";
         writeClassCode += "return;";
