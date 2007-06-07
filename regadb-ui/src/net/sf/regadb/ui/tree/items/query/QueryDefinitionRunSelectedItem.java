@@ -14,6 +14,6 @@ public class QueryDefinitionRunSelectedItem extends GenericSelectedItem<QueryDef
     @Override
     public String getArgument(QueryDefinitionRun queryDefinitionRun) 
     {
-        return "" + queryDefinitionRun.getQueryDefinition().getName();
+        return "" + queryDefinitionRun.getName();
     }
 }
