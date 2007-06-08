@@ -80,7 +80,6 @@ public class ViralIsolateMainForm extends WContainerWidget
     private WPushButton uploadFasta_;
     private Label ntL;
     private NucleotideField ntTF;
-    private WNucleotideValidator ntValidator;
     private Label typeL;
     private TextField typeTF;
 	private Label subTypeL;
@@ -149,7 +148,6 @@ public class ViralIsolateMainForm extends WContainerWidget
             ntFileTable.elementAt(0, 1).setVerticalAlignment(WVerticalAlignment.AlignBottom);
             upload_.decorationStyle().font().setSize(WFontSize.Smaller);
             
-            ntValidator = new WNucleotideValidator();
             uploadFasta_.clicked.addListener(new SignalListener<WMouseEvent>()
             {
                    public void notify(WMouseEvent a) 
