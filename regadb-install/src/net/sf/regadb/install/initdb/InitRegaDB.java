@@ -61,7 +61,17 @@ public class InitRegaDB
         admin.setEnabled(true);
         admin.setPassword(Encrypt.encryptMD5("admin"));
         admin.setEmail("regadb-admin@uz.kuleuven.ac.be");
+        
+        SettingsUser test = new SettingsUser("test", 0, 0);
+        test.setFirstName("test");
+        test.setLastName("test");
+        test.setAdmin(true);
+        test.setEnabled(true);
+        test.setPassword(Encrypt.encryptMD5("test"));
+        test.setEmail("test@uz.kuleuven.ac.be");
+        
         session.save(admin);
+        session.save(test);
     }
     
     private static ArrayList<TestObject> initTestObjects(Session session)
