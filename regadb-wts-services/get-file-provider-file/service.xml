@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	Get a file from a desired File Provider 
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		file_provider_name	
+		</name>
+		<description>
+		A file containing the name of the desired file provider
+		</description>
+	</input>
+        <input>
+		<name>
+		file_name
+		</name>
+		<description>
+		A file containing the name of the desired file provider's file
+		</description>
+	</input>
+														
+</inputs>
+<outputs>
+	<output>
+		<name>
+		file_provider_file
+		</name>
+		<description>
+		A file containing a specific file from the desired File Provider 
+		</description>
+	</output>
+</outputs>
+</service>

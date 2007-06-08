@@ -1,0 +1,21 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Preparing files..." >> $monitor_file
+
+file_provider_name="$1/inputs/file_provider_name"
+file_name="$1/inputs/file_name"
+
+file_provider_file="$1/outputs/file_provider_file"
+
+echo "Creating file providers list..." >> $monitor_file
+
+cp $2/file-providers/`cat $file_provider_name`/`cat $file_name` $file_provider_file 2>> $monitor_file
+
+echo "Finished" >> $monitor_file
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"
