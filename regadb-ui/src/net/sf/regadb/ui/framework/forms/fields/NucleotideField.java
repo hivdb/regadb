@@ -69,7 +69,18 @@ public class NucleotideField extends FormField
     
     public String getFormText()
     {
-        return replaceAllPatterns(_fieldEdit.text(), "\n", "");
+        String test = _fieldEdit.text();
+        
+        if(test.contains("\r\n"))
+        {
+           test = replaceAllPatterns(test, "\r\n", "");
+        }
+        else if(test.contains("\n"))
+        {
+            test = replaceAllPatterns(test, "\n", "");
+        }
+        
+        return test;
     }
     
     @Override
