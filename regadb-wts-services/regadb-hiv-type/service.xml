@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB Typing Tool 
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		nt_sequence
+		</name>
+		<description>
+		An FASTA file containing a nucleotide sequence 
+		</description>
+	</input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		type	
+		</name>
+		<description>
+		A file containing the HIV type of a sequence 
+		</description>
+	</output>
+</outputs>
+</service>
