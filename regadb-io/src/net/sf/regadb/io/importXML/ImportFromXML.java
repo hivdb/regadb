@@ -7,7 +7,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.IOException;
 
 public class ImportFromXML extends ImportFromXMLBase {
-    enum ParseState { TopLevel, statePatient, stateDataset, statePatientAttributeValue, stateAttribute, stateAttributeGroup, stateAttributeNominalValue, stateViralIsolate, stateNtSequence, stateAaSequence, stateAaMutation, stateAaInsertion, stateTherapy, stateTestResult, stateTherapyCommercial, stateTherapyGeneric, stateTest, stateAnalysis, stateAnalysisData, stateTestType, stateValueType, stateTestObject, stateTestNominalValue };
+    enum ParseState { TopLevel, statePatient, stateAnalysisData, stateTestType, stateValueType, stateTestObject, stateTestNominalValue, stateDataset, statePatientAttributeValue, stateAttribute, stateAttributeGroup, stateAttributeNominalValue, stateViralIsolate, stateNtSequence, stateAaSequence, stateAaMutation, stateAaInsertion, stateTherapy, stateTestResult, stateTherapyCommercial, stateTherapyGeneric, stateTest, stateAnalysis };
 
     public ImportFromXML() {
         parseStateStack.add(ParseState.TopLevel);
@@ -31,16 +31,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     ImportHandler importHandler = null;
     Class topLevelClass = null;
 
-    private Map<String, Attribute> refAttributeMap = new HashMap<String, Attribute>();
-    private String referenceAttribute = null;
-    private Map<String, AttributeGroup> refAttributeGroupMap = new HashMap<String, AttributeGroup>();
-    private String referenceAttributeGroup = null;
-    private Map<String, AttributeNominalValue> refAttributeNominalValueMap = new HashMap<String, AttributeNominalValue>();
-    private String referenceAttributeNominalValue = null;
-    private Map<String, Test> refTestMap = new HashMap<String, Test>();
-    private String referenceTest = null;
-    private Map<String, Analysis> refAnalysisMap = new HashMap<String, Analysis>();
-    private String referenceAnalysis = null;
     private Map<String, AnalysisData> refAnalysisDataMap = new HashMap<String, AnalysisData>();
     private String referenceAnalysisData = null;
     private Map<String, TestType> refTestTypeMap = new HashMap<String, TestType>();
@@ -51,6 +41,16 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String referenceTestObject = null;
     private Map<String, TestNominalValue> refTestNominalValueMap = new HashMap<String, TestNominalValue>();
     private String referenceTestNominalValue = null;
+    private Map<String, Attribute> refAttributeMap = new HashMap<String, Attribute>();
+    private String referenceAttribute = null;
+    private Map<String, AttributeGroup> refAttributeGroupMap = new HashMap<String, AttributeGroup>();
+    private String referenceAttributeGroup = null;
+    private Map<String, AttributeNominalValue> refAttributeNominalValueMap = new HashMap<String, AttributeNominalValue>();
+    private String referenceAttributeNominalValue = null;
+    private Map<String, Test> refTestMap = new HashMap<String, Test>();
+    private String referenceTest = null;
+    private Map<String, Analysis> refAnalysisMap = new HashMap<String, Analysis>();
+    private String referenceAnalysis = null;
     private String fieldPatient_patientId;
     private String fieldPatient_lastName;
     private String fieldPatient_firstName;
@@ -61,6 +61,21 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Set<PatientAttributeValue> fieldPatient_patientAttributeValues;
     private Set<ViralIsolate> fieldPatient_viralIsolates;
     private Set<Therapy> fieldPatient_therapies;
+    private String fieldAnalysisData_name;
+    private byte[] fieldAnalysisData_data;
+    private String fieldAnalysisData_mimetype;
+    private ValueType fieldTestType_valueType;
+    private TestObject fieldTestType_testObject;
+    private String fieldTestType_description;
+    private Set<TestNominalValue> fieldTestType_testNominalValues;
+    private String fieldValueType_description;
+    private Double fieldValueType_min;
+    private Double fieldValueType_max;
+    private Boolean fieldValueType_multiple;
+    private String fieldTestObject_description;
+    private Integer fieldTestObject_testObjectId;
+    private TestType fieldTestNominalValue_testType;
+    private String fieldTestNominalValue_value;
     private String fieldDataset_description;
     private Date fieldDataset_creationDate;
     private Date fieldDataset_closedDate;
@@ -123,24 +138,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAnalysis_baseinputfile;
     private String fieldAnalysis_baseoutputfile;
     private String fieldAnalysis_serviceName;
-    private Set<Test> fieldAnalysis_tests;
     private Set<AnalysisData> fieldAnalysis_analysisDatas;
-    private Analysis fieldAnalysisData_analysis;
-    private String fieldAnalysisData_name;
-    private byte[] fieldAnalysisData_data;
-    private String fieldAnalysisData_mimetype;
-    private ValueType fieldTestType_valueType;
-    private TestObject fieldTestType_testObject;
-    private String fieldTestType_description;
-    private Set<TestNominalValue> fieldTestType_testNominalValues;
-    private String fieldValueType_description;
-    private Double fieldValueType_min;
-    private Double fieldValueType_max;
-    private Boolean fieldValueType_multiple;
-    private String fieldTestObject_description;
-    private Integer fieldTestObject_testObjectId;
-    private TestType fieldTestNominalValue_testType;
-    private String fieldTestNominalValue_value;
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         value = null;
@@ -159,6 +157,41 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldPatient_patientAttributeValues = new HashSet<PatientAttributeValue>();
             fieldPatient_viralIsolates = new HashSet<ViralIsolate>();
             fieldPatient_therapies = new HashSet<Therapy>();
+        } else if ("AnalysisData".equals(qName)) {
+        } else if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
+            pushState(ParseState.stateAnalysisData);
+            referenceAnalysisData = null;
+            fieldAnalysisData_name = nullValueString();
+            fieldAnalysisData_data = nullValuebyteArray();
+            fieldAnalysisData_mimetype = nullValueString();
+        } else if ("TestType".equals(qName)) {
+        } else if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+            pushState(ParseState.stateTestType);
+            referenceTestType = null;
+            fieldTestType_valueType = null;
+            fieldTestType_testObject = null;
+            fieldTestType_description = nullValueString();
+            fieldTestType_testNominalValues = new HashSet<TestNominalValue>();
+        } else if ("ValueType".equals(qName)) {
+        } else if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
+            pushState(ParseState.stateValueType);
+            referenceValueType = null;
+            fieldValueType_description = nullValueString();
+            fieldValueType_min = nullValueDouble();
+            fieldValueType_max = nullValueDouble();
+            fieldValueType_multiple = nullValueBoolean();
+        } else if ("TestObject".equals(qName)) {
+        } else if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
+            pushState(ParseState.stateTestObject);
+            referenceTestObject = null;
+            fieldTestObject_description = nullValueString();
+            fieldTestObject_testObjectId = nullValueInteger();
+        } else if ("TestNominalValue".equals(qName)) {
+        } else if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)) {
+            pushState(ParseState.stateTestNominalValue);
+            referenceTestNominalValue = null;
+            fieldTestNominalValue_testType = null;
+            fieldTestNominalValue_value = nullValueString();
         } else if ("Dataset".equals(qName)) {
         } else if ("dataset".equals(qName) || "datasets-el".equals(qName)|| "patientDatasets-el".equals(qName)) {
             pushState(ParseState.stateDataset);
@@ -256,14 +289,14 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTherapyGeneric_drugGeneric = null;
             fieldTherapyGeneric_dayDosageMg = nullValueDouble();
         } else if ("Test".equals(qName)) {
-        } else if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
+        } else if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)) {
             pushState(ParseState.stateTest);
             referenceTest = null;
             fieldTest_analysis = null;
             fieldTest_testType = null;
             fieldTest_description = nullValueString();
         } else if ("Analysis".equals(qName)) {
-        } else if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
+        } else if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)) {
             pushState(ParseState.stateAnalysis);
             referenceAnalysis = null;
             fieldAnalysis_analysisType = null;
@@ -274,44 +307,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysis_baseinputfile = nullValueString();
             fieldAnalysis_baseoutputfile = nullValueString();
             fieldAnalysis_serviceName = nullValueString();
-            fieldAnalysis_tests = new HashSet<Test>();
             fieldAnalysis_analysisDatas = new HashSet<AnalysisData>();
-        } else if ("AnalysisData".equals(qName)) {
-        } else if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
-            pushState(ParseState.stateAnalysisData);
-            referenceAnalysisData = null;
-            fieldAnalysisData_analysis = null;
-            fieldAnalysisData_name = nullValueString();
-            fieldAnalysisData_data = nullValuebyteArray();
-            fieldAnalysisData_mimetype = nullValueString();
-        } else if ("TestType".equals(qName)) {
-        } else if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
-            pushState(ParseState.stateTestType);
-            referenceTestType = null;
-            fieldTestType_valueType = null;
-            fieldTestType_testObject = null;
-            fieldTestType_description = nullValueString();
-            fieldTestType_testNominalValues = new HashSet<TestNominalValue>();
-        } else if ("ValueType".equals(qName)) {
-        } else if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
-            pushState(ParseState.stateValueType);
-            referenceValueType = null;
-            fieldValueType_description = nullValueString();
-            fieldValueType_min = nullValueDouble();
-            fieldValueType_max = nullValueDouble();
-            fieldValueType_multiple = nullValueBoolean();
-        } else if ("TestObject".equals(qName)) {
-        } else if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
-            pushState(ParseState.stateTestObject);
-            referenceTestObject = null;
-            fieldTestObject_description = nullValueString();
-            fieldTestObject_testObjectId = nullValueInteger();
-        } else if ("TestNominalValue".equals(qName)) {
-        } else if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
-            pushState(ParseState.stateTestNominalValue);
-            referenceTestNominalValue = null;
-            fieldTestNominalValue_testType = null;
-            fieldTestNominalValue_value = nullValueString();
         }
     }
 
@@ -378,6 +374,332 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("patientAttributeValues".equals(qName)) {
             } else if ("viralIsolates".equals(qName)) {
             } else if ("therapies".equals(qName)) {
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("AnalysisData".equals(qName)) {
+        } else if (currentState() == ParseState.stateAnalysisData) {
+            if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
+                popState();
+                AnalysisData elAnalysisData = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == AnalysisData.class) {
+                        elAnalysisData = new AnalysisData();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateAnalysis) {
+                    if (referenceAnalysisData != null) { 
+                        elAnalysisData = refAnalysisDataMap.get(referenceAnalysisData);
+                        referenceResolved = elAnalysisData != null;
+                    }
+                    if (!referenceResolved) {
+                        elAnalysisData = new AnalysisData();
+                        if (referenceAnalysisData!= null)
+                            refAnalysisDataMap.put(referenceAnalysisData, elAnalysisData);
+                    }
+                    fieldAnalysis_analysisDatas.add(elAnalysisData);
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldAnalysisData_name != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysisData.setName(fieldAnalysisData_name);
+                }
+                if (referenceResolved && fieldAnalysisData_data != nullValuebyteArray())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysisData.setData(fieldAnalysisData_data);
+                }
+                if (referenceResolved && fieldAnalysisData_mimetype != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysisData.setMimetype(fieldAnalysisData_mimetype);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elAnalysisData);
+                    else
+                        topLevelObjects.add(elAnalysisData);
+                }
+            } else if ("name".equals(qName)) {
+                fieldAnalysisData_name = parseString(value);
+            } else if ("data".equals(qName)) {
+                fieldAnalysisData_data = parsebyteArray(value);
+            } else if ("mimetype".equals(qName)) {
+                fieldAnalysisData_mimetype = parseString(value);
+            } else if ("reference".equals(qName)) {
+                referenceAnalysisData = value;
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("TestType".equals(qName)) {
+        } else if (currentState() == ParseState.stateTestType) {
+            if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+                popState();
+                TestType elTestType = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == TestType.class) {
+                        elTestType = new TestType();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateTestNominalValue) {
+                    if (referenceTestType != null) { 
+                        elTestType = refTestTypeMap.get(referenceTestType);
+                        referenceResolved = elTestType != null;
+                    }
+                    if (!referenceResolved) {
+                        elTestType = new TestType();
+                        if (referenceTestType!= null)
+                            refTestTypeMap.put(referenceTestType, elTestType);
+                    }
+                    fieldTestNominalValue_testType = elTestType;
+                } else if (currentState() == ParseState.stateTest) {
+                    if (referenceTestType != null) { 
+                        elTestType = refTestTypeMap.get(referenceTestType);
+                        referenceResolved = elTestType != null;
+                    }
+                    if (!referenceResolved) {
+                        elTestType = new TestType();
+                        if (referenceTestType!= null)
+                            refTestTypeMap.put(referenceTestType, elTestType);
+                    }
+                    fieldTest_testType = elTestType;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldTestType_valueType != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestType.setValueType(fieldTestType_valueType);
+                }
+                if (referenceResolved && fieldTestType_testObject != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestType.setTestObject(fieldTestType_testObject);
+                }
+                if (referenceResolved && fieldTestType_description != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestType.setDescription(fieldTestType_description);
+                }
+                if (referenceResolved && !fieldTestType_testNominalValues.isEmpty())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestType.setTestNominalValues(fieldTestType_testNominalValues);
+                    for (TestNominalValue o : fieldTestType_testNominalValues)
+                        o.setTestType(elTestType);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestType);
+                    else
+                        topLevelObjects.add(elTestType);
+                }
+            } else if ("valueType".equals(qName)) {
+            } else if ("testObject".equals(qName)) {
+            } else if ("description".equals(qName)) {
+                fieldTestType_description = parseString(value);
+            } else if ("testNominalValues".equals(qName)) {
+            } else if ("reference".equals(qName)) {
+                referenceTestType = value;
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("ValueType".equals(qName)) {
+        } else if (currentState() == ParseState.stateValueType) {
+            if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
+                popState();
+                ValueType elValueType = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == ValueType.class) {
+                        elValueType = new ValueType();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateTestType) {
+                    if (referenceValueType != null) { 
+                        elValueType = refValueTypeMap.get(referenceValueType);
+                        referenceResolved = elValueType != null;
+                    }
+                    if (!referenceResolved) {
+                        elValueType = new ValueType();
+                        if (referenceValueType!= null)
+                            refValueTypeMap.put(referenceValueType, elValueType);
+                    }
+                    fieldTestType_valueType = elValueType;
+                } else if (currentState() == ParseState.stateAttribute) {
+                    if (referenceValueType != null) { 
+                        elValueType = refValueTypeMap.get(referenceValueType);
+                        referenceResolved = elValueType != null;
+                    }
+                    if (!referenceResolved) {
+                        elValueType = new ValueType();
+                        if (referenceValueType!= null)
+                            refValueTypeMap.put(referenceValueType, elValueType);
+                    }
+                    fieldAttribute_valueType = elValueType;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldValueType_description != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elValueType.setDescription(fieldValueType_description);
+                }
+                if (referenceResolved && fieldValueType_min != nullValueDouble())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elValueType.setMin(fieldValueType_min);
+                }
+                if (referenceResolved && fieldValueType_max != nullValueDouble())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elValueType.setMax(fieldValueType_max);
+                }
+                if (referenceResolved && fieldValueType_multiple != nullValueBoolean())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elValueType.setMultiple(fieldValueType_multiple);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elValueType);
+                    else
+                        topLevelObjects.add(elValueType);
+                }
+            } else if ("description".equals(qName)) {
+                fieldValueType_description = parseString(value);
+            } else if ("min".equals(qName)) {
+                fieldValueType_min = parseDouble(value);
+            } else if ("max".equals(qName)) {
+                fieldValueType_max = parseDouble(value);
+            } else if ("multiple".equals(qName)) {
+                fieldValueType_multiple = parseBoolean(value);
+            } else if ("reference".equals(qName)) {
+                referenceValueType = value;
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("TestObject".equals(qName)) {
+        } else if (currentState() == ParseState.stateTestObject) {
+            if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
+                popState();
+                TestObject elTestObject = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == TestObject.class) {
+                        elTestObject = new TestObject();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateTestType) {
+                    if (referenceTestObject != null) { 
+                        elTestObject = refTestObjectMap.get(referenceTestObject);
+                        referenceResolved = elTestObject != null;
+                    }
+                    if (!referenceResolved) {
+                        elTestObject = new TestObject();
+                        if (referenceTestObject!= null)
+                            refTestObjectMap.put(referenceTestObject, elTestObject);
+                    }
+                    fieldTestType_testObject = elTestObject;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldTestObject_description != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestObject.setDescription(fieldTestObject_description);
+                }
+                if (referenceResolved && fieldTestObject_testObjectId != nullValueInteger())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestObject.setTestObjectId(fieldTestObject_testObjectId);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestObject);
+                    else
+                        topLevelObjects.add(elTestObject);
+                }
+            } else if ("description".equals(qName)) {
+                fieldTestObject_description = parseString(value);
+            } else if ("testObjectId".equals(qName)) {
+                fieldTestObject_testObjectId = parseInteger(value);
+            } else if ("reference".equals(qName)) {
+                referenceTestObject = value;
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("TestNominalValue".equals(qName)) {
+        } else if (currentState() == ParseState.stateTestNominalValue) {
+            if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)) {
+                popState();
+                TestNominalValue elTestNominalValue = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == TestNominalValue.class) {
+                        elTestNominalValue = new TestNominalValue();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateTestType) {
+                    if (referenceTestNominalValue != null) { 
+                        elTestNominalValue = refTestNominalValueMap.get(referenceTestNominalValue);
+                        referenceResolved = elTestNominalValue != null;
+                    }
+                    if (!referenceResolved) {
+                        elTestNominalValue = new TestNominalValue();
+                        if (referenceTestNominalValue!= null)
+                            refTestNominalValueMap.put(referenceTestNominalValue, elTestNominalValue);
+                    }
+                    fieldTestType_testNominalValues.add(elTestNominalValue);
+                } else if (currentState() == ParseState.stateTestResult) {
+                    if (referenceTestNominalValue != null) { 
+                        elTestNominalValue = refTestNominalValueMap.get(referenceTestNominalValue);
+                        referenceResolved = elTestNominalValue != null;
+                    }
+                    if (!referenceResolved) {
+                        elTestNominalValue = new TestNominalValue();
+                        if (referenceTestNominalValue!= null)
+                            refTestNominalValueMap.put(referenceTestNominalValue, elTestNominalValue);
+                    }
+                    fieldTestResult_testNominalValue = elTestNominalValue;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldTestNominalValue_testType != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestNominalValue.setTestType(fieldTestNominalValue_testType);
+                }
+                if (referenceResolved && fieldTestNominalValue_value != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestNominalValue.setValue(fieldTestNominalValue_value);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elTestNominalValue);
+                    else
+                        topLevelObjects.add(elTestNominalValue);
+                }
+            } else if ("testType".equals(qName)) {
+            } else if ("value".equals(qName)) {
+                fieldTestNominalValue_value = parseString(value);
+            } else if ("reference".equals(qName)) {
+                referenceTestNominalValue = value;
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1087,7 +1409,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Test".equals(qName)) {
         } else if (currentState() == ParseState.stateTest) {
-            if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
+            if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)) {
                 popState();
                 Test elTest = null;
                 boolean referenceResolved = false;
@@ -1108,17 +1430,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                             refTestMap.put(referenceTest, elTest);
                     }
                     fieldTestResult_test = elTest;
-                } else if (currentState() == ParseState.stateAnalysis) {
-                    if (referenceTest != null) { 
-                        elTest = refTestMap.get(referenceTest);
-                        referenceResolved = elTest != null;
-                    }
-                    if (!referenceResolved) {
-                        elTest = new Test();
-                        if (referenceTest!= null)
-                            refTestMap.put(referenceTest, elTest);
-                    }
-                    fieldAnalysis_tests.add(elTest);
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
@@ -1155,7 +1466,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Analysis".equals(qName)) {
         } else if (currentState() == ParseState.stateAnalysis) {
-            if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
+            if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)) {
                 popState();
                 Analysis elAnalysis = null;
                 boolean referenceResolved = false;
@@ -1176,17 +1487,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                             refAnalysisMap.put(referenceAnalysis, elAnalysis);
                     }
                     fieldTest_analysis = elAnalysis;
-                } else if (currentState() == ParseState.stateAnalysisData) {
-                    if (referenceAnalysis != null) { 
-                        elAnalysis = refAnalysisMap.get(referenceAnalysis);
-                        referenceResolved = elAnalysis != null;
-                    }
-                    if (!referenceResolved) {
-                        elAnalysis = new Analysis();
-                        if (referenceAnalysis!= null)
-                            refAnalysisMap.put(referenceAnalysis, elAnalysis);
-                    }
-                    fieldAnalysisData_analysis = elAnalysis;
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
@@ -1230,13 +1530,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysis.setServiceName(fieldAnalysis_serviceName);
                 }
-                if (referenceResolved && !fieldAnalysis_tests.isEmpty())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysis.setTests(fieldAnalysis_tests);
-                    for (Test o : fieldAnalysis_tests)
-                        o.setAnalysis(elAnalysis);
-                }
                 if (referenceResolved && !fieldAnalysis_analysisDatas.isEmpty())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -1266,342 +1559,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldAnalysis_baseoutputfile = parseString(value);
             } else if ("serviceName".equals(qName)) {
                 fieldAnalysis_serviceName = parseString(value);
-            } else if ("tests".equals(qName)) {
             } else if ("analysisDatas".equals(qName)) {
             } else if ("reference".equals(qName)) {
                 referenceAnalysis = value;
-            } else {
-                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
-                System.err.println("Unrecognized element: " + qName);
-            }
-        } else if ("AnalysisData".equals(qName)) {
-        } else if (currentState() == ParseState.stateAnalysisData) {
-            if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
-                popState();
-                AnalysisData elAnalysisData = null;
-                boolean referenceResolved = false;
-                if (currentState() == ParseState.TopLevel) {
-                    if (topLevelClass == AnalysisData.class) {
-                        elAnalysisData = new AnalysisData();
-                    } else {
-                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
-                    }
-                } else if (currentState() == ParseState.stateAnalysis) {
-                    if (referenceAnalysisData != null) { 
-                        elAnalysisData = refAnalysisDataMap.get(referenceAnalysisData);
-                        referenceResolved = elAnalysisData != null;
-                    }
-                    if (!referenceResolved) {
-                        elAnalysisData = new AnalysisData();
-                        if (referenceAnalysisData!= null)
-                            refAnalysisDataMap.put(referenceAnalysisData, elAnalysisData);
-                    }
-                    fieldAnalysis_analysisDatas.add(elAnalysisData);
-                } else {
-                    throw new SAXException(new ImportException("Nested object problem: " + qName));
-                }
-                if (referenceResolved && fieldAnalysisData_analysis != null)
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysisData.setAnalysis(fieldAnalysisData_analysis);
-                }
-                if (referenceResolved && fieldAnalysisData_name != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysisData.setName(fieldAnalysisData_name);
-                }
-                if (referenceResolved && fieldAnalysisData_data != nullValuebyteArray())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysisData.setData(fieldAnalysisData_data);
-                }
-                if (referenceResolved && fieldAnalysisData_mimetype != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysisData.setMimetype(fieldAnalysisData_mimetype);
-                }
-                if (currentState() == ParseState.TopLevel) {
-                    if (importHandler != null)
-                        importHandler.importObject(elAnalysisData);
-                    else
-                        topLevelObjects.add(elAnalysisData);
-                }
-            } else if ("analysis".equals(qName)) {
-            } else if ("name".equals(qName)) {
-                fieldAnalysisData_name = parseString(value);
-            } else if ("data".equals(qName)) {
-                fieldAnalysisData_data = parsebyteArray(value);
-            } else if ("mimetype".equals(qName)) {
-                fieldAnalysisData_mimetype = parseString(value);
-            } else if ("reference".equals(qName)) {
-                referenceAnalysisData = value;
-            } else {
-                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
-                System.err.println("Unrecognized element: " + qName);
-            }
-        } else if ("TestType".equals(qName)) {
-        } else if (currentState() == ParseState.stateTestType) {
-            if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
-                popState();
-                TestType elTestType = null;
-                boolean referenceResolved = false;
-                if (currentState() == ParseState.TopLevel) {
-                    if (topLevelClass == TestType.class) {
-                        elTestType = new TestType();
-                    } else {
-                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
-                    }
-                } else if (currentState() == ParseState.stateTest) {
-                    if (referenceTestType != null) { 
-                        elTestType = refTestTypeMap.get(referenceTestType);
-                        referenceResolved = elTestType != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestType = new TestType();
-                        if (referenceTestType!= null)
-                            refTestTypeMap.put(referenceTestType, elTestType);
-                    }
-                    fieldTest_testType = elTestType;
-                } else if (currentState() == ParseState.stateTestNominalValue) {
-                    if (referenceTestType != null) { 
-                        elTestType = refTestTypeMap.get(referenceTestType);
-                        referenceResolved = elTestType != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestType = new TestType();
-                        if (referenceTestType!= null)
-                            refTestTypeMap.put(referenceTestType, elTestType);
-                    }
-                    fieldTestNominalValue_testType = elTestType;
-                } else {
-                    throw new SAXException(new ImportException("Nested object problem: " + qName));
-                }
-                if (referenceResolved && fieldTestType_valueType != null)
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestType.setValueType(fieldTestType_valueType);
-                }
-                if (referenceResolved && fieldTestType_testObject != null)
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestType.setTestObject(fieldTestType_testObject);
-                }
-                if (referenceResolved && fieldTestType_description != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestType.setDescription(fieldTestType_description);
-                }
-                if (referenceResolved && !fieldTestType_testNominalValues.isEmpty())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestType.setTestNominalValues(fieldTestType_testNominalValues);
-                    for (TestNominalValue o : fieldTestType_testNominalValues)
-                        o.setTestType(elTestType);
-                }
-                if (currentState() == ParseState.TopLevel) {
-                    if (importHandler != null)
-                        importHandler.importObject(elTestType);
-                    else
-                        topLevelObjects.add(elTestType);
-                }
-            } else if ("valueType".equals(qName)) {
-            } else if ("testObject".equals(qName)) {
-            } else if ("description".equals(qName)) {
-                fieldTestType_description = parseString(value);
-            } else if ("testNominalValues".equals(qName)) {
-            } else if ("reference".equals(qName)) {
-                referenceTestType = value;
-            } else {
-                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
-                System.err.println("Unrecognized element: " + qName);
-            }
-        } else if ("ValueType".equals(qName)) {
-        } else if (currentState() == ParseState.stateValueType) {
-            if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
-                popState();
-                ValueType elValueType = null;
-                boolean referenceResolved = false;
-                if (currentState() == ParseState.TopLevel) {
-                    if (topLevelClass == ValueType.class) {
-                        elValueType = new ValueType();
-                    } else {
-                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
-                    }
-                } else if (currentState() == ParseState.stateAttribute) {
-                    if (referenceValueType != null) { 
-                        elValueType = refValueTypeMap.get(referenceValueType);
-                        referenceResolved = elValueType != null;
-                    }
-                    if (!referenceResolved) {
-                        elValueType = new ValueType();
-                        if (referenceValueType!= null)
-                            refValueTypeMap.put(referenceValueType, elValueType);
-                    }
-                    fieldAttribute_valueType = elValueType;
-                } else if (currentState() == ParseState.stateTestType) {
-                    if (referenceValueType != null) { 
-                        elValueType = refValueTypeMap.get(referenceValueType);
-                        referenceResolved = elValueType != null;
-                    }
-                    if (!referenceResolved) {
-                        elValueType = new ValueType();
-                        if (referenceValueType!= null)
-                            refValueTypeMap.put(referenceValueType, elValueType);
-                    }
-                    fieldTestType_valueType = elValueType;
-                } else {
-                    throw new SAXException(new ImportException("Nested object problem: " + qName));
-                }
-                if (referenceResolved && fieldValueType_description != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elValueType.setDescription(fieldValueType_description);
-                }
-                if (referenceResolved && fieldValueType_min != nullValueDouble())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elValueType.setMin(fieldValueType_min);
-                }
-                if (referenceResolved && fieldValueType_max != nullValueDouble())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elValueType.setMax(fieldValueType_max);
-                }
-                if (referenceResolved && fieldValueType_multiple != nullValueBoolean())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elValueType.setMultiple(fieldValueType_multiple);
-                }
-                if (currentState() == ParseState.TopLevel) {
-                    if (importHandler != null)
-                        importHandler.importObject(elValueType);
-                    else
-                        topLevelObjects.add(elValueType);
-                }
-            } else if ("description".equals(qName)) {
-                fieldValueType_description = parseString(value);
-            } else if ("min".equals(qName)) {
-                fieldValueType_min = parseDouble(value);
-            } else if ("max".equals(qName)) {
-                fieldValueType_max = parseDouble(value);
-            } else if ("multiple".equals(qName)) {
-                fieldValueType_multiple = parseBoolean(value);
-            } else if ("reference".equals(qName)) {
-                referenceValueType = value;
-            } else {
-                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
-                System.err.println("Unrecognized element: " + qName);
-            }
-        } else if ("TestObject".equals(qName)) {
-        } else if (currentState() == ParseState.stateTestObject) {
-            if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
-                popState();
-                TestObject elTestObject = null;
-                boolean referenceResolved = false;
-                if (currentState() == ParseState.TopLevel) {
-                    if (topLevelClass == TestObject.class) {
-                        elTestObject = new TestObject();
-                    } else {
-                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
-                    }
-                } else if (currentState() == ParseState.stateTestType) {
-                    if (referenceTestObject != null) { 
-                        elTestObject = refTestObjectMap.get(referenceTestObject);
-                        referenceResolved = elTestObject != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestObject = new TestObject();
-                        if (referenceTestObject!= null)
-                            refTestObjectMap.put(referenceTestObject, elTestObject);
-                    }
-                    fieldTestType_testObject = elTestObject;
-                } else {
-                    throw new SAXException(new ImportException("Nested object problem: " + qName));
-                }
-                if (referenceResolved && fieldTestObject_description != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestObject.setDescription(fieldTestObject_description);
-                }
-                if (referenceResolved && fieldTestObject_testObjectId != nullValueInteger())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestObject.setTestObjectId(fieldTestObject_testObjectId);
-                }
-                if (currentState() == ParseState.TopLevel) {
-                    if (importHandler != null)
-                        importHandler.importObject(elTestObject);
-                    else
-                        topLevelObjects.add(elTestObject);
-                }
-            } else if ("description".equals(qName)) {
-                fieldTestObject_description = parseString(value);
-            } else if ("testObjectId".equals(qName)) {
-                fieldTestObject_testObjectId = parseInteger(value);
-            } else if ("reference".equals(qName)) {
-                referenceTestObject = value;
-            } else {
-                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
-                System.err.println("Unrecognized element: " + qName);
-            }
-        } else if ("TestNominalValue".equals(qName)) {
-        } else if (currentState() == ParseState.stateTestNominalValue) {
-            if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
-                popState();
-                TestNominalValue elTestNominalValue = null;
-                boolean referenceResolved = false;
-                if (currentState() == ParseState.TopLevel) {
-                    if (topLevelClass == TestNominalValue.class) {
-                        elTestNominalValue = new TestNominalValue();
-                    } else {
-                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
-                    }
-                } else if (currentState() == ParseState.stateTestResult) {
-                    if (referenceTestNominalValue != null) { 
-                        elTestNominalValue = refTestNominalValueMap.get(referenceTestNominalValue);
-                        referenceResolved = elTestNominalValue != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestNominalValue = new TestNominalValue();
-                        if (referenceTestNominalValue!= null)
-                            refTestNominalValueMap.put(referenceTestNominalValue, elTestNominalValue);
-                    }
-                    fieldTestResult_testNominalValue = elTestNominalValue;
-                } else if (currentState() == ParseState.stateTestType) {
-                    if (referenceTestNominalValue != null) { 
-                        elTestNominalValue = refTestNominalValueMap.get(referenceTestNominalValue);
-                        referenceResolved = elTestNominalValue != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestNominalValue = new TestNominalValue();
-                        if (referenceTestNominalValue!= null)
-                            refTestNominalValueMap.put(referenceTestNominalValue, elTestNominalValue);
-                    }
-                    fieldTestType_testNominalValues.add(elTestNominalValue);
-                } else {
-                    throw new SAXException(new ImportException("Nested object problem: " + qName));
-                }
-                if (referenceResolved && fieldTestNominalValue_testType != null)
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestNominalValue.setTestType(fieldTestNominalValue_testType);
-                }
-                if (referenceResolved && fieldTestNominalValue_value != nullValueString())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestNominalValue.setValue(fieldTestNominalValue_value);
-                }
-                if (currentState() == ParseState.TopLevel) {
-                    if (importHandler != null)
-                        importHandler.importObject(elTestNominalValue);
-                    else
-                        topLevelObjects.add(elTestNominalValue);
-                }
-            } else if ("testType".equals(qName)) {
-            } else if ("value".equals(qName)) {
-                fieldTestNominalValue_value = parseString(value);
-            } else if ("reference".equals(qName)) {
-                referenceTestNominalValue = value;
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1612,6 +1572,46 @@ public class ImportFromXML extends ImportFromXMLBase {
     @SuppressWarnings("unchecked")
     public List<Patient> readPatients(InputSource source, ImportHandler<Patient> handler) throws SAXException, IOException {
         topLevelClass = Patient.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<AnalysisData> readAnalysisDatas(InputSource source, ImportHandler<AnalysisData> handler) throws SAXException, IOException {
+        topLevelClass = AnalysisData.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TestType> readTestTypes(InputSource source, ImportHandler<TestType> handler) throws SAXException, IOException {
+        topLevelClass = TestType.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ValueType> readValueTypes(InputSource source, ImportHandler<ValueType> handler) throws SAXException, IOException {
+        topLevelClass = ValueType.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TestObject> readTestObjects(InputSource source, ImportHandler<TestObject> handler) throws SAXException, IOException {
+        topLevelClass = TestObject.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TestNominalValue> readTestNominalValues(InputSource source, ImportHandler<TestNominalValue> handler) throws SAXException, IOException {
+        topLevelClass = TestNominalValue.class;
         importHandler = handler;
         parse(source);
         return topLevelObjects;
@@ -1740,46 +1740,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     @SuppressWarnings("unchecked")
     public List<Analysis> readAnalysiss(InputSource source, ImportHandler<Analysis> handler) throws SAXException, IOException {
         topLevelClass = Analysis.class;
-        importHandler = handler;
-        parse(source);
-        return topLevelObjects;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<AnalysisData> readAnalysisDatas(InputSource source, ImportHandler<AnalysisData> handler) throws SAXException, IOException {
-        topLevelClass = AnalysisData.class;
-        importHandler = handler;
-        parse(source);
-        return topLevelObjects;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<TestType> readTestTypes(InputSource source, ImportHandler<TestType> handler) throws SAXException, IOException {
-        topLevelClass = TestType.class;
-        importHandler = handler;
-        parse(source);
-        return topLevelObjects;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<ValueType> readValueTypes(InputSource source, ImportHandler<ValueType> handler) throws SAXException, IOException {
-        topLevelClass = ValueType.class;
-        importHandler = handler;
-        parse(source);
-        return topLevelObjects;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<TestObject> readTestObjects(InputSource source, ImportHandler<TestObject> handler) throws SAXException, IOException {
-        topLevelClass = TestObject.class;
-        importHandler = handler;
-        parse(source);
-        return topLevelObjects;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<TestNominalValue> readTestNominalValues(InputSource source, ImportHandler<TestNominalValue> handler) throws SAXException, IOException {
-        topLevelClass = TestNominalValue.class;
         importHandler = handler;
         parse(source);
         return topLevelObjects;
@@ -1957,6 +1917,126 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.getTherapies().remove(dbe);
             }
+        }
+    }
+
+    public void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
+        if (!equals(dbo.getName(), o.getName())) {
+            if (!simulate)
+                dbo.setName(o.getName());
+            log.append(Describe.describe(o) + ": updating name\n");
+        }
+        if (!equals(dbo.getData(), o.getData())) {
+            if (!simulate)
+                dbo.setData(o.getData());
+            log.append(Describe.describe(o) + ": updating data\n");
+        }
+        if (!equals(dbo.getMimetype(), o.getMimetype())) {
+            if (!simulate)
+                dbo.setMimetype(o.getMimetype());
+            log.append(Describe.describe(o) + ": updating mimetype\n");
+        }
+    }
+
+    public void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
+        if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
+            sync(t, o.getValueType(), dbo.getValueType(), simulate);
+        else {
+            if (!simulate)
+                dbo.setValueType(o.getValueType());
+            log.append(Describe.describe(o) + ": updating valueType\n");
+        }
+        if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
+            sync(t, o.getTestObject(), dbo.getTestObject(), simulate);
+        else {
+            if (!simulate)
+                dbo.setTestObject(o.getTestObject());
+            log.append(Describe.describe(o) + ": updating testObject\n");
+        }
+        if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!simulate)
+                dbo.setDescription(o.getDescription());
+            log.append(Describe.describe(o) + ": updating description\n");
+        }
+        for(TestNominalValue e : o.getTestNominalValues()) {
+            TestNominalValue dbe = null;
+            for(TestNominalValue f : dbo.getTestNominalValues()) {
+                if (Equals.isSameTestNominalValue(e, f)) {
+                    dbe = f; break;
+                }
+            }
+            if (dbe == null) {
+                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                if (!simulate) {
+                    dbo.getTestNominalValues().add(e);
+                    e.setTestType(dbo);
+                }
+            } else
+                sync(t, e, dbe, simulate);
+        }
+        for(TestNominalValue dbe : dbo.getTestNominalValues()) {
+            TestNominalValue e = null;
+            for(TestNominalValue f : o.getTestNominalValues()) {
+                if (Equals.isSameTestNominalValue(e, f)) {
+                    e = f; break;
+                }
+            }
+            if (e == null) {
+                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                if (!simulate)
+                    dbo.getTestNominalValues().remove(dbe);
+            }
+        }
+    }
+
+    public void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
+        if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!simulate)
+                dbo.setDescription(o.getDescription());
+            log.append(Describe.describe(o) + ": updating description\n");
+        }
+        if (!equals(dbo.getMin(), o.getMin())) {
+            if (!simulate)
+                dbo.setMin(o.getMin());
+            log.append(Describe.describe(o) + ": updating min\n");
+        }
+        if (!equals(dbo.getMax(), o.getMax())) {
+            if (!simulate)
+                dbo.setMax(o.getMax());
+            log.append(Describe.describe(o) + ": updating max\n");
+        }
+        if (!equals(dbo.getMultiple(), o.getMultiple())) {
+            if (!simulate)
+                dbo.setMultiple(o.getMultiple());
+            log.append(Describe.describe(o) + ": updating multiple\n");
+        }
+    }
+
+    public void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
+        if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!simulate)
+                dbo.setDescription(o.getDescription());
+            log.append(Describe.describe(o) + ": updating description\n");
+        }
+        if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
+            if (!simulate)
+                dbo.setTestObjectId(o.getTestObjectId());
+            log.append(Describe.describe(o) + ": updating testObjectId\n");
+        }
+    }
+
+    public void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
+        if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
+            sync(t, o.getTestType(), dbo.getTestType(), simulate);
+        else {
+            if (!simulate)
+                dbo.setTestType(o.getTestType());
+            log.append(Describe.describe(o) + ": updating testType\n");
+        }
+        if (!equals(dbo.getValue(), o.getValue())) {
+            if (!simulate)
+                dbo.setValue(o.getValue());
+            log.append(Describe.describe(o) + ": updating value\n");
         }
     }
 
@@ -2548,35 +2628,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 dbo.setServiceName(o.getServiceName());
             log.append(Describe.describe(o) + ": updating serviceName\n");
         }
-        for(Test e : o.getTests()) {
-            Test dbe = null;
-            for(Test f : dbo.getTests()) {
-                if (Equals.isSameTest(e, f)) {
-                    dbe = f; break;
-                }
-            }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTests().add(e);
-                    e.setAnalysis(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
-        }
-        for(Test dbe : dbo.getTests()) {
-            Test e = null;
-            for(Test f : o.getTests()) {
-                if (Equals.isSameTest(e, f)) {
-                    e = f; break;
-                }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTests().remove(dbe);
-            }
-        }
         for(AnalysisData e : o.getAnalysisDatas()) {
             AnalysisData dbe = null;
             for(AnalysisData f : dbo.getAnalysisDatas()) {
@@ -2605,133 +2656,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.getAnalysisDatas().remove(dbe);
             }
-        }
-    }
-
-    public void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
-        if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
-            sync(t, o.getAnalysis(), dbo.getAnalysis(), simulate);
-        else {
-            if (!simulate)
-                dbo.setAnalysis(o.getAnalysis());
-            log.append(Describe.describe(o) + ": updating analysis\n");
-        }
-        if (!equals(dbo.getName(), o.getName())) {
-            if (!simulate)
-                dbo.setName(o.getName());
-            log.append(Describe.describe(o) + ": updating name\n");
-        }
-        if (!equals(dbo.getData(), o.getData())) {
-            if (!simulate)
-                dbo.setData(o.getData());
-            log.append(Describe.describe(o) + ": updating data\n");
-        }
-        if (!equals(dbo.getMimetype(), o.getMimetype())) {
-            if (!simulate)
-                dbo.setMimetype(o.getMimetype());
-            log.append(Describe.describe(o) + ": updating mimetype\n");
-        }
-    }
-
-    public void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
-        if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
-            sync(t, o.getValueType(), dbo.getValueType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setValueType(o.getValueType());
-            log.append(Describe.describe(o) + ": updating valueType\n");
-        }
-        if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
-            sync(t, o.getTestObject(), dbo.getTestObject(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestObject(o.getTestObject());
-            log.append(Describe.describe(o) + ": updating testObject\n");
-        }
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
-        }
-        for(TestNominalValue e : o.getTestNominalValues()) {
-            TestNominalValue dbe = null;
-            for(TestNominalValue f : dbo.getTestNominalValues()) {
-                if (Equals.isSameTestNominalValue(e, f)) {
-                    dbe = f; break;
-                }
-            }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTestNominalValues().add(e);
-                    e.setTestType(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
-        }
-        for(TestNominalValue dbe : dbo.getTestNominalValues()) {
-            TestNominalValue e = null;
-            for(TestNominalValue f : o.getTestNominalValues()) {
-                if (Equals.isSameTestNominalValue(e, f)) {
-                    e = f; break;
-                }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTestNominalValues().remove(dbe);
-            }
-        }
-    }
-
-    public void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
-        }
-        if (!equals(dbo.getMin(), o.getMin())) {
-            if (!simulate)
-                dbo.setMin(o.getMin());
-            log.append(Describe.describe(o) + ": updating min\n");
-        }
-        if (!equals(dbo.getMax(), o.getMax())) {
-            if (!simulate)
-                dbo.setMax(o.getMax());
-            log.append(Describe.describe(o) + ": updating max\n");
-        }
-        if (!equals(dbo.getMultiple(), o.getMultiple())) {
-            if (!simulate)
-                dbo.setMultiple(o.getMultiple());
-            log.append(Describe.describe(o) + ": updating multiple\n");
-        }
-    }
-
-    public void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
-        }
-        if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
-            if (!simulate)
-                dbo.setTestObjectId(o.getTestObjectId());
-            log.append(Describe.describe(o) + ": updating testObjectId\n");
-        }
-    }
-
-    public void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
-        if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-            sync(t, o.getTestType(), dbo.getTestType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestType(o.getTestType());
-            log.append(Describe.describe(o) + ": updating testType\n");
-        }
-        if (!equals(dbo.getValue(), o.getValue())) {
-            if (!simulate)
-                dbo.setValue(o.getValue());
-            log.append(Describe.describe(o) + ": updating value\n");
         }
     }
 

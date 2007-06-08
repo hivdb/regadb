@@ -39,6 +39,20 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
+    public static void writeTopMethod(Class toWrite, String id)
+    {
+        String writeClassCode="";
+        
+        writeClassCode += "public void writeTop"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element rootNode)";
+        writeClassCode += "{";
+        writeClassCode += "Element elNode = new Element(\""+toWrite.getSimpleName().toLowerCase()+"s-el"+"\");";
+        writeClassCode += "rootNode.addContent(elNode);";
+        writeClassCode += "write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+"var, elNode);";
+        writeClassCode += "}";
+        
+        addString(id, writeClassCode);
+    }
+    
     public static void writeMethodSig(Class toWrite, String id)
     {
         String writeClassCode="";

@@ -55,6 +55,8 @@ public class GenerateIO
         classToBeIgnored_.add(dbPackage + "DatasetAccess");
         
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
+        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
+        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
         
         stringRepresentedFields_.add(dbPackage + "DrugGeneric");
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
@@ -154,13 +156,20 @@ public class GenerateIO
        if(alreadyWritten(c))
            return;
 		
+       if(c.getSimpleName().equals("Test"))
+       {
+           System.err.println("analysis");
+       }
 		c = replacePatientDatasetByDataset(c);
 		
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
         String id = XMLWriteCodeGen.createString();
+        String id2 = XMLWriteCodeGen.createString();
         
+        XMLWriteCodeGen.writeTopMethod(c, id2);
         XMLWriteCodeGen.writeMethodSig(c, id);
+        
         XMLReadCodeGen.addObject(c, id);
 		
         Field[] fields = c.getDeclaredFields();

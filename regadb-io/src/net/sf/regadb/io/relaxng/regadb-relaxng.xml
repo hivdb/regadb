@@ -217,18 +217,6 @@
         </data>
       </element>
     </optional>
-    <element name="tests">
-      <zeroOrMore>
-        <element name="tests-el">
-          <element name="reference">
-            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-          </element>
-          <optional>
-            <ref name="net.sf.regadb.db.Test" />
-          </optional>
-        </element>
-      </zeroOrMore>
-    </element>
     <element name="analysisDatas">
       <zeroOrMore>
         <element name="analysisDatas-el">
@@ -243,16 +231,6 @@
     </element>
   </define>
   <define name="net.sf.regadb.db.AnalysisData">
-    <optional>
-      <element name="analysis">
-        <element name="reference">
-          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-        </element>
-        <optional>
-          <ref name="net.sf.regadb.db.Analysis" />
-        </optional>
-      </element>
-    </optional>
     <optional>
       <element name="name">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
