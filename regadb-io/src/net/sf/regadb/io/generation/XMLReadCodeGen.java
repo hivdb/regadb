@@ -150,7 +150,7 @@ public class XMLReadCodeGen {
             String n = Character.toLowerCase(javaClass.getSimpleName().charAt(0))
                 + javaClass.getSimpleName().substring(1);
 
-            String result = "\"" + n + "\".equals(qName)";
+            String result = "\"" + n + "\".equals(qName) || \"" + n + "s-el\".equals(qName)";
             
             for (ObjectField f: getRefererringFields())
                 if (f.isSet())

@@ -146,7 +146,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         value = null;
         if (false) {
         } else if ("Patient".equals(qName)) {
-        } else if ("patient".equals(qName)|| "patients-el".equals(qName)) {
+        } else if ("patient".equals(qName) || "patients-el".equals(qName)|| "patients-el".equals(qName)) {
             pushState(ParseState.statePatient);
             patient = new Patient();
             fieldPatient_patientId = nullValueString();
@@ -160,20 +160,20 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldPatient_viralIsolates = new HashSet<ViralIsolate>();
             fieldPatient_therapies = new HashSet<Therapy>();
         } else if ("Dataset".equals(qName)) {
-        } else if ("dataset".equals(qName)|| "patientDatasets-el".equals(qName)) {
+        } else if ("dataset".equals(qName) || "datasets-el".equals(qName)|| "patientDatasets-el".equals(qName)) {
             pushState(ParseState.stateDataset);
             fieldDataset_description = nullValueString();
             fieldDataset_creationDate = nullValueDate();
             fieldDataset_closedDate = nullValueDate();
             fieldDataset_revision = nullValueInteger();
         } else if ("PatientAttributeValue".equals(qName)) {
-        } else if ("patientAttributeValue".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
+        } else if ("patientAttributeValue".equals(qName) || "patientAttributeValues-el".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
             pushState(ParseState.statePatientAttributeValue);
             fieldPatientAttributeValue_attribute = null;
             fieldPatientAttributeValue_attributeNominalValue = null;
             fieldPatientAttributeValue_value = nullValueString();
         } else if ("Attribute".equals(qName)) {
-        } else if ("attribute".equals(qName)|| "attribute".equals(qName)) {
+        } else if ("attribute".equals(qName) || "attributes-el".equals(qName)|| "attribute".equals(qName)) {
             pushState(ParseState.stateAttribute);
             referenceAttribute = null;
             fieldAttribute_valueType = null;
@@ -181,24 +181,24 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAttribute_name = nullValueString();
             fieldAttribute_attributeNominalValues = new HashSet<AttributeNominalValue>();
         } else if ("AttributeGroup".equals(qName)) {
-        } else if ("attributeGroup".equals(qName)|| "attributeGroup".equals(qName)) {
+        } else if ("attributeGroup".equals(qName) || "attributeGroups-el".equals(qName)|| "attributeGroup".equals(qName)) {
             pushState(ParseState.stateAttributeGroup);
             referenceAttributeGroup = null;
             fieldAttributeGroup_groupName = nullValueString();
         } else if ("AttributeNominalValue".equals(qName)) {
-        } else if ("attributeNominalValue".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
+        } else if ("attributeNominalValue".equals(qName) || "attributeNominalValues-el".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
             pushState(ParseState.stateAttributeNominalValue);
             referenceAttributeNominalValue = null;
             fieldAttributeNominalValue_value = nullValueString();
         } else if ("ViralIsolate".equals(qName)) {
-        } else if ("viralIsolate".equals(qName)|| "viralIsolates-el".equals(qName)) {
+        } else if ("viralIsolate".equals(qName) || "viralIsolates-el".equals(qName)|| "viralIsolates-el".equals(qName)) {
             pushState(ParseState.stateViralIsolate);
             fieldViralIsolate_sampleId = nullValueString();
             fieldViralIsolate_sampleDate = nullValueDate();
             fieldViralIsolate_ntSequences = new HashSet<NtSequence>();
             fieldViralIsolate_testResults = new HashSet<TestResult>();
         } else if ("NtSequence".equals(qName)) {
-        } else if ("ntSequence".equals(qName)|| "ntSequences-el".equals(qName)) {
+        } else if ("ntSequence".equals(qName) || "ntSequences-el".equals(qName)|| "ntSequences-el".equals(qName)) {
             pushState(ParseState.stateNtSequence);
             fieldNtSequence_nucleotides = nullValueString();
             fieldNtSequence_label = nullValueString();
@@ -206,7 +206,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldNtSequence_aaSequences = new HashSet<AaSequence>();
             fieldNtSequence_testResults = new HashSet<TestResult>();
         } else if ("AaSequence".equals(qName)) {
-        } else if ("aaSequence".equals(qName)|| "aaSequences-el".equals(qName)) {
+        } else if ("aaSequence".equals(qName) || "aaSequences-el".equals(qName)|| "aaSequences-el".equals(qName)) {
             pushState(ParseState.stateAaSequence);
             fieldAaSequence_protein = null;
             fieldAaSequence_firstAaPos = nullValueshort();
@@ -214,7 +214,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAaSequence_aaMutations = new HashSet<AaMutation>();
             fieldAaSequence_aaInsertions = new HashSet<AaInsertion>();
         } else if ("AaMutation".equals(qName)) {
-        } else if ("aaMutation".equals(qName)|| "aaMutations-el".equals(qName)) {
+        } else if ("aaMutation".equals(qName) || "aaMutations-el".equals(qName)|| "aaMutations-el".equals(qName)) {
             pushState(ParseState.stateAaMutation);
             fieldAaMutation_position = nullValueshort();
             fieldAaMutation_aaReference = nullValueString();
@@ -222,14 +222,14 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAaMutation_ntReferenceCodon = nullValueString();
             fieldAaMutation_ntMutationCodon = nullValueString();
         } else if ("AaInsertion".equals(qName)) {
-        } else if ("aaInsertion".equals(qName)|| "aaInsertions-el".equals(qName)) {
+        } else if ("aaInsertion".equals(qName) || "aaInsertions-el".equals(qName)|| "aaInsertions-el".equals(qName)) {
             pushState(ParseState.stateAaInsertion);
             fieldAaInsertion_position = nullValueshort();
             fieldAaInsertion_insertionOrder = nullValueshort();
             fieldAaInsertion_aaInsertion = nullValueString();
             fieldAaInsertion_ntInsertionCodon = nullValueString();
         } else if ("Therapy".equals(qName)) {
-        } else if ("therapy".equals(qName)|| "therapies-el".equals(qName)) {
+        } else if ("therapy".equals(qName) || "therapys-el".equals(qName)|| "therapies-el".equals(qName)) {
             pushState(ParseState.stateTherapy);
             fieldTherapy_startDate = nullValueDate();
             fieldTherapy_stopDate = nullValueDate();
@@ -237,7 +237,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTherapy_therapyCommercials = new HashSet<TherapyCommercial>();
             fieldTherapy_therapyGenerics = new HashSet<TherapyGeneric>();
         } else if ("TestResult".equals(qName)) {
-        } else if ("testResult".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
+        } else if ("testResult".equals(qName) || "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
             pushState(ParseState.stateTestResult);
             fieldTestResult_test = null;
             fieldTestResult_drugGeneric = null;
@@ -246,24 +246,24 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTestResult_testDate = nullValueDate();
             fieldTestResult_sampleId = nullValueString();
         } else if ("TherapyCommercial".equals(qName)) {
-        } else if ("therapyCommercial".equals(qName)|| "therapyCommercials-el".equals(qName)) {
+        } else if ("therapyCommercial".equals(qName) || "therapyCommercials-el".equals(qName)|| "therapyCommercials-el".equals(qName)) {
             pushState(ParseState.stateTherapyCommercial);
             fieldTherapyCommercial_drugCommercial = null;
             fieldTherapyCommercial_dayDosageUnits = nullValueDouble();
         } else if ("TherapyGeneric".equals(qName)) {
-        } else if ("therapyGeneric".equals(qName)|| "therapyGenerics-el".equals(qName)) {
+        } else if ("therapyGeneric".equals(qName) || "therapyGenerics-el".equals(qName)|| "therapyGenerics-el".equals(qName)) {
             pushState(ParseState.stateTherapyGeneric);
             fieldTherapyGeneric_drugGeneric = null;
             fieldTherapyGeneric_dayDosageMg = nullValueDouble();
         } else if ("Test".equals(qName)) {
-        } else if ("test".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
+        } else if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
             pushState(ParseState.stateTest);
             referenceTest = null;
             fieldTest_analysis = null;
             fieldTest_testType = null;
             fieldTest_description = nullValueString();
         } else if ("Analysis".equals(qName)) {
-        } else if ("analysis".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
+        } else if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
             pushState(ParseState.stateAnalysis);
             referenceAnalysis = null;
             fieldAnalysis_analysisType = null;
@@ -277,7 +277,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysis_tests = new HashSet<Test>();
             fieldAnalysis_analysisDatas = new HashSet<AnalysisData>();
         } else if ("AnalysisData".equals(qName)) {
-        } else if ("analysisData".equals(qName)|| "analysisDatas-el".equals(qName)) {
+        } else if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
             pushState(ParseState.stateAnalysisData);
             referenceAnalysisData = null;
             fieldAnalysisData_analysis = null;
@@ -285,7 +285,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysisData_data = nullValuebyteArray();
             fieldAnalysisData_mimetype = nullValueString();
         } else if ("TestType".equals(qName)) {
-        } else if ("testType".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+        } else if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
             pushState(ParseState.stateTestType);
             referenceTestType = null;
             fieldTestType_valueType = null;
@@ -293,7 +293,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTestType_description = nullValueString();
             fieldTestType_testNominalValues = new HashSet<TestNominalValue>();
         } else if ("ValueType".equals(qName)) {
-        } else if ("valueType".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
+        } else if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
             pushState(ParseState.stateValueType);
             referenceValueType = null;
             fieldValueType_description = nullValueString();
@@ -301,13 +301,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldValueType_max = nullValueDouble();
             fieldValueType_multiple = nullValueBoolean();
         } else if ("TestObject".equals(qName)) {
-        } else if ("testObject".equals(qName)|| "testObject".equals(qName)) {
+        } else if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
             pushState(ParseState.stateTestObject);
             referenceTestObject = null;
             fieldTestObject_description = nullValueString();
             fieldTestObject_testObjectId = nullValueInteger();
         } else if ("TestNominalValue".equals(qName)) {
-        } else if ("testNominalValue".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
+        } else if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
             pushState(ParseState.stateTestNominalValue);
             referenceTestNominalValue = null;
             fieldTestNominalValue_testType = null;
@@ -320,7 +320,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (false) {
         } else if ("Patient".equals(qName)) {
         } else if (currentState() == ParseState.statePatient) {
-            if ("patient".equals(qName)|| "patients-el".equals(qName)) {
+            if ("patient".equals(qName) || "patients-el".equals(qName)|| "patients-el".equals(qName)) {
                 popState();
                 Patient elPatient = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -384,7 +384,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Dataset".equals(qName)) {
         } else if (currentState() == ParseState.stateDataset) {
-            if ("dataset".equals(qName)|| "patientDatasets-el".equals(qName)) {
+            if ("dataset".equals(qName) || "datasets-el".equals(qName)|| "patientDatasets-el".equals(qName)) {
                 popState();
                 Dataset elDataset = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -430,7 +430,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("PatientAttributeValue".equals(qName)) {
         } else if (currentState() == ParseState.statePatientAttributeValue) {
-            if ("patientAttributeValue".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
+            if ("patientAttributeValue".equals(qName) || "patientAttributeValues-el".equals(qName)|| "patientAttributeValues-el".equals(qName)) {
                 popState();
                 PatientAttributeValue elPatientAttributeValue = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -470,7 +470,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Attribute".equals(qName)) {
         } else if (currentState() == ParseState.stateAttribute) {
-            if ("attribute".equals(qName)|| "attribute".equals(qName)) {
+            if ("attribute".equals(qName) || "attributes-el".equals(qName)|| "attribute".equals(qName)) {
                 popState();
                 Attribute elAttribute = null;
                 boolean referenceResolved = false;
@@ -535,7 +535,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AttributeGroup".equals(qName)) {
         } else if (currentState() == ParseState.stateAttributeGroup) {
-            if ("attributeGroup".equals(qName)|| "attributeGroup".equals(qName)) {
+            if ("attributeGroup".equals(qName) || "attributeGroups-el".equals(qName)|| "attributeGroup".equals(qName)) {
                 popState();
                 AttributeGroup elAttributeGroup = null;
                 boolean referenceResolved = false;
@@ -580,7 +580,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AttributeNominalValue".equals(qName)) {
         } else if (currentState() == ParseState.stateAttributeNominalValue) {
-            if ("attributeNominalValue".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
+            if ("attributeNominalValue".equals(qName) || "attributeNominalValues-el".equals(qName)|| "attributeNominalValue".equals(qName)|| "attributeNominalValues-el".equals(qName)) {
                 popState();
                 AttributeNominalValue elAttributeNominalValue = null;
                 boolean referenceResolved = false;
@@ -636,7 +636,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("ViralIsolate".equals(qName)) {
         } else if (currentState() == ParseState.stateViralIsolate) {
-            if ("viralIsolate".equals(qName)|| "viralIsolates-el".equals(qName)) {
+            if ("viralIsolate".equals(qName) || "viralIsolates-el".equals(qName)|| "viralIsolates-el".equals(qName)) {
                 popState();
                 ViralIsolate elViralIsolate = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -684,7 +684,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("NtSequence".equals(qName)) {
         } else if (currentState() == ParseState.stateNtSequence) {
-            if ("ntSequence".equals(qName)|| "ntSequences-el".equals(qName)) {
+            if ("ntSequence".equals(qName) || "ntSequences-el".equals(qName)|| "ntSequences-el".equals(qName)) {
                 popState();
                 NtSequence elNtSequence = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -738,7 +738,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AaSequence".equals(qName)) {
         } else if (currentState() == ParseState.stateAaSequence) {
-            if ("aaSequence".equals(qName)|| "aaSequences-el".equals(qName)) {
+            if ("aaSequence".equals(qName) || "aaSequences-el".equals(qName)|| "aaSequences-el".equals(qName)) {
                 popState();
                 AaSequence elAaSequence = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -792,7 +792,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AaMutation".equals(qName)) {
         } else if (currentState() == ParseState.stateAaMutation) {
-            if ("aaMutation".equals(qName)|| "aaMutations-el".equals(qName)) {
+            if ("aaMutation".equals(qName) || "aaMutations-el".equals(qName)|| "aaMutations-el".equals(qName)) {
                 popState();
                 AaMutation elAaMutation = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -846,7 +846,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AaInsertion".equals(qName)) {
         } else if (currentState() == ParseState.stateAaInsertion) {
-            if ("aaInsertion".equals(qName)|| "aaInsertions-el".equals(qName)) {
+            if ("aaInsertion".equals(qName) || "aaInsertions-el".equals(qName)|| "aaInsertions-el".equals(qName)) {
                 popState();
                 AaInsertion elAaInsertion = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -895,7 +895,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Therapy".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapy) {
-            if ("therapy".equals(qName)|| "therapies-el".equals(qName)) {
+            if ("therapy".equals(qName) || "therapys-el".equals(qName)|| "therapies-el".equals(qName)) {
                 popState();
                 Therapy elTherapy = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -948,7 +948,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TestResult".equals(qName)) {
         } else if (currentState() == ParseState.stateTestResult) {
-            if ("testResult".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
+            if ("testResult".equals(qName) || "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)|| "testResults-el".equals(qName)) {
                 popState();
                 TestResult elTestResult = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -1009,7 +1009,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TherapyCommercial".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapyCommercial) {
-            if ("therapyCommercial".equals(qName)|| "therapyCommercials-el".equals(qName)) {
+            if ("therapyCommercial".equals(qName) || "therapyCommercials-el".equals(qName)|| "therapyCommercials-el".equals(qName)) {
                 popState();
                 TherapyCommercial elTherapyCommercial = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -1048,7 +1048,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TherapyGeneric".equals(qName)) {
         } else if (currentState() == ParseState.stateTherapyGeneric) {
-            if ("therapyGeneric".equals(qName)|| "therapyGenerics-el".equals(qName)) {
+            if ("therapyGeneric".equals(qName) || "therapyGenerics-el".equals(qName)|| "therapyGenerics-el".equals(qName)) {
                 popState();
                 TherapyGeneric elTherapyGeneric = null;
                 if (currentState() == ParseState.TopLevel) {
@@ -1087,7 +1087,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Test".equals(qName)) {
         } else if (currentState() == ParseState.stateTest) {
-            if ("test".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
+            if ("test".equals(qName) || "tests-el".equals(qName)|| "test".equals(qName)|| "tests-el".equals(qName)) {
                 popState();
                 Test elTest = null;
                 boolean referenceResolved = false;
@@ -1155,7 +1155,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("Analysis".equals(qName)) {
         } else if (currentState() == ParseState.stateAnalysis) {
-            if ("analysis".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
+            if ("analysis".equals(qName) || "analysiss-el".equals(qName)|| "analysis".equals(qName)|| "analysis".equals(qName)) {
                 popState();
                 Analysis elAnalysis = null;
                 boolean referenceResolved = false;
@@ -1276,7 +1276,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("AnalysisData".equals(qName)) {
         } else if (currentState() == ParseState.stateAnalysisData) {
-            if ("analysisData".equals(qName)|| "analysisDatas-el".equals(qName)) {
+            if ("analysisData".equals(qName) || "analysisDatas-el".equals(qName)|| "analysisDatas-el".equals(qName)) {
                 popState();
                 AnalysisData elAnalysisData = null;
                 boolean referenceResolved = false;
@@ -1341,7 +1341,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TestType".equals(qName)) {
         } else if (currentState() == ParseState.stateTestType) {
-            if ("testType".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+            if ("testType".equals(qName) || "testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
                 popState();
                 TestType elTestType = null;
                 boolean referenceResolved = false;
@@ -1417,7 +1417,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("ValueType".equals(qName)) {
         } else if (currentState() == ParseState.stateValueType) {
-            if ("valueType".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
+            if ("valueType".equals(qName) || "valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
                 popState();
                 ValueType elValueType = null;
                 boolean referenceResolved = false;
@@ -1494,7 +1494,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TestObject".equals(qName)) {
         } else if (currentState() == ParseState.stateTestObject) {
-            if ("testObject".equals(qName)|| "testObject".equals(qName)) {
+            if ("testObject".equals(qName) || "testObjects-el".equals(qName)|| "testObject".equals(qName)) {
                 popState();
                 TestObject elTestObject = null;
                 boolean referenceResolved = false;
@@ -1546,7 +1546,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TestNominalValue".equals(qName)) {
         } else if (currentState() == ParseState.stateTestNominalValue) {
-            if ("testNominalValue".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
+            if ("testNominalValue".equals(qName) || "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)|| "testNominalValues-el".equals(qName)) {
                 popState();
                 TestNominalValue elTestNominalValue = null;
                 boolean referenceResolved = false;

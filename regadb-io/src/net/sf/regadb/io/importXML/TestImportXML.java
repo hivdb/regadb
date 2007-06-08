@@ -15,6 +15,7 @@ import java.util.List;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
@@ -37,6 +38,7 @@ public class TestImportXML implements ImportHandler<Patient> {
     public TestImportXML() {
         instance = new ImportFromXML();
         patients = 0;
+        /*
         login = null;
         try
         {
@@ -65,6 +67,7 @@ public class TestImportXML implements ImportHandler<Patient> {
         t.save(dataset);
 
         t.commit();
+        */
     }
     
     /**
@@ -77,7 +80,9 @@ public class TestImportXML implements ImportHandler<Patient> {
     
         FileReader r = new FileReader(new File(args[0]));
 
-        self.instance.readPatients(new InputSource(r), self);
+
+        //self.instance.readPatients(new InputSource(r), self);
+        self.instance.readTests(new InputSource(r), null);
         System.err.println(self.instance.log);
         System.err.println("Read: " + self.patients + " patients");
     }
@@ -94,5 +99,4 @@ public class TestImportXML implements ImportHandler<Patient> {
         t.commit();
         ++patients;
     }
-
 }
