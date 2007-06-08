@@ -2659,7 +2659,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    enum SyncMode { Clean, Update };
+    public enum SyncMode { Clean, Update };
     StringBuffer log = new StringBuffer();
     public Patient sync(Transaction t, Patient o, SyncMode mode, boolean simulate) throws ImportException {
         Patient dbo = dbFindPatient(t, o);

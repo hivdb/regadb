@@ -555,7 +555,7 @@ public class XMLReadCodeGen {
          */
         Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class, DrugGeneric.class, DrugCommercial.class };
         
-        write(1, "enum SyncMode { Clean, Update };\n");
+        write(1, "public enum SyncMode { Clean, Update };\n");
         write(1, "StringBuffer log = new StringBuffer();\n");
         
         for (Class c : unscopedClasses) {
