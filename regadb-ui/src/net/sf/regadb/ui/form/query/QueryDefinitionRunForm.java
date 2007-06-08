@@ -104,17 +104,6 @@ public class QueryDefinitionRunForm extends FormWidget
             statusL = new Label(tr("form.query.definition.run.label.status"));
             statusTF = new TextField(getInteractionState(), this);
             addLineToTable(queryDefinitionRunGroupTable, statusL, statusTF);
-            
-            int row = queryDefinitionRunGroupTable.numRows();
-            
-            resultL = new Label(tr("form.query.definition.run.label.result"));
-            queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
-            
-            if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
-            {
-            	resultLink = new WAnchor((String)null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
-                resultLink.setStyleClass("link");
-            }
         }
         
         queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("form.query.definition.run.parameters"), this);
@@ -140,10 +129,17 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
         	
-        	if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
-        	{
-        		resultLink.setRef(new WFileResource("application/excel", Settings.getQueryResultDir() + queryDefinitionRun.getResult()).generateUrl());
-        	}
+        	int row = queryDefinitionRunGroupTable.numRows();
+            
+            resultL = new Label(tr("form.query.definition.run.label.result"));
+            queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
+            
+            if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
+            {
+            	resultLink = new WAnchor((String)null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
+                resultLink.setStyleClass("link");
+                resultLink.setRef(new WFileResource("application/excel", Settings.getQueryResultDir() + queryDefinitionRun.getResult()).generateUrl());
+            }
         }
         
         t.commit();
