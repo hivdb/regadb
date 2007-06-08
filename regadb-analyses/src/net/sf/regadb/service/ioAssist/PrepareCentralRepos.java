@@ -19,7 +19,12 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -34,39 +39,44 @@ import org.xml.sax.SAXException;
 
 public class PrepareCentralRepos
 {
+    private static ValueType nominalValue = new ValueType("nominal value");
+    private static ValueType number = new ValueType("number");
+    private static AttributeGroup regadb = new AttributeGroup("RegaDB");
+    private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), "Genotypic Susceptibility Score (GSS)");
+    
     public static void main(String [] args)
     {
         ExportToXML export = new ExportToXML();
         
-        Element attributes = new Element("Attributes");
+        Element attributes = new Element("attributes");
         
-        Element tests = new Element("Tests");
+        Element tests = new Element("tests");
         
         //Attributes
         Attribute country = createCountryOfOrigin();
-        export.writeAttribute(country, attributes);
+        export.writeTopAttribute(country, attributes);
         Attribute ethnicity = createEthnicity();
-        export.writeAttribute(ethnicity, attributes);
+        export.writeTopAttribute(ethnicity, attributes);
         Attribute geographicEthnicity = createGeographicOrigin();
-        export.writeAttribute(geographicEthnicity, attributes);
+        export.writeTopAttribute(geographicEthnicity, attributes);
         Attribute transmissionGroup = createTransmissionGroup();
-        export.writeAttribute(transmissionGroup, attributes);
+        export.writeTopAttribute(transmissionGroup, attributes);
         
         //Tests
         Test vl = createGenericViralLoad();
-        export.writeTest(vl, tests);
+        export.writeTopTest(vl, tests);
         Test cd4 = createGenericCD4();
-        export.writeTest(cd4, tests);
+        export.writeTopTest(cd4, tests);
         
         //Resistance tests
         Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
-        export.writeTest(anrs_2006_07, tests);
+        export.writeTopTest(anrs_2006_07, tests);
         Test hivdb_429 = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9");
-        export.writeTest(hivdb_429, tests);
+        export.writeTopTest(hivdb_429, tests);
         Test rega_641 = createResistanceTest("RegaV6.4.1.xml", "REGA v6.4.1");
-        export.writeTest(rega_641, tests);
+        export.writeTopTest(rega_641, tests);
         Test rega_71 = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
-        export.writeTest(rega_71, tests);
+        export.writeTopTest(rega_71, tests);
         
         //write files
         File attributesFile = new File(args[0]+File.separatorChar+"attributes.xml");
@@ -75,6 +85,19 @@ public class PrepareCentralRepos
         writeXMLFile(testsFile, tests);
         
         //testing
+        Login login=null;
+        try {
+            login = Login.authenticate("test", "test");
+        } catch (WrongUidException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (WrongPasswordException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (DisabledUserException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         ImportFromXML imp = new ImportFromXML();
         //synch method
         FileReader r = null;
@@ -85,6 +108,8 @@ public class PrepareCentralRepos
             e.printStackTrace();
         }
         try {
+            Transaction t = login.createTransaction();
+            imp.loadDatabaseObjects(t);
             List<Test> testsList = imp.readTests(new InputSource(r), null);
             for(Test test : testsList)
             {
@@ -96,6 +121,7 @@ public class PrepareCentralRepos
                     }
                 }
             }
+            t.commit();
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -125,8 +151,7 @@ public class PrepareCentralRepos
     
     private static Test createResistanceTest(String baseFileName, String algorithm)
     {
-        TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), "Genotypic Susceptibility Score (GSS)");
-        resistanceTestType.setValueType(new ValueType("number"));
+        resistanceTestType.setValueType(number);
         Test resistanceTest = new Test(resistanceTestType, algorithm);
         
         Analysis analysis = new Analysis();
@@ -166,7 +191,7 @@ public class PrepareCentralRepos
     private static Test createGenericCD4()
     {
         TestType cd4Type = new TestType(new TestObject("Patient test", 0), "CD4 Count (cells/ul)");
-        cd4Type.setValueType(new ValueType("number"));
+        cd4Type.setValueType(number);
         Test cd4Test = new Test(cd4Type, "CD4 Count (generic)");
         
         return cd4Test;
@@ -175,8 +200,8 @@ public class PrepareCentralRepos
     private static Attribute createTransmissionGroup()
     {
         Attribute transmissionGroup = new Attribute("Transmission group");
-        transmissionGroup.setAttributeGroup(new AttributeGroup("RegaDB"));
-        transmissionGroup.setValueType(new ValueType("nominal value"));
+        transmissionGroup.setAttributeGroup(regadb);
+        transmissionGroup.setValueType(nominalValue);
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "bisexual"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "heterosexual"));
@@ -192,8 +217,8 @@ public class PrepareCentralRepos
     private static Attribute createGeographicOrigin()
     {
         Attribute geographicOrigin = new Attribute("Geographic origin");
-        geographicOrigin.setAttributeGroup(new AttributeGroup("RegaDB"));
-        geographicOrigin.setValueType(new ValueType("nominal value"));
+        geographicOrigin.setAttributeGroup(regadb);
+        geographicOrigin.setValueType(nominalValue);
         
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Asia"));
@@ -207,8 +232,8 @@ public class PrepareCentralRepos
     private static Attribute createEthnicity()
     {
         Attribute ethnicity = new Attribute("Ethnicity");
-        ethnicity.setAttributeGroup(new AttributeGroup("RegaDB"));
-        ethnicity.setValueType(new ValueType("nominal value"));
+        ethnicity.setAttributeGroup(regadb);
+        ethnicity.setValueType(nominalValue);
         
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "african"));
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "asian"));
@@ -221,8 +246,8 @@ public class PrepareCentralRepos
     {
         Table countries = null;
         Attribute country = new Attribute("Country of origin");
-        country.setAttributeGroup(new AttributeGroup("RegaDB"));
-        country.setValueType(new ValueType("nominal value"));
+        country.setAttributeGroup(regadb);
+        country.setValueType(nominalValue);
         
         try 
         {
