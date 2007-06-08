@@ -250,7 +250,10 @@ public class WtsClient
     
     public static void main(String [] args)
     {
-        WtsClient client = new WtsClient("http://localhost:8080/wts/services/");
+    	System.setProperty("http.proxyHost", "www-proxy");
+    	System.setProperty("http.proxyPort", "3128");
+    	
+    	WtsClient client = new WtsClient("http://virolab.med.kuleuven.be/wts/services/");
         try 
         {
             String challenge = client.getChallenge("kdforc0");

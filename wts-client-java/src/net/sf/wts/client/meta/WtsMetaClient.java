@@ -110,7 +110,10 @@ public class WtsMetaClient
     
     public static void main(String [] args)
     {
-        WtsMetaClient client = new WtsMetaClient("http://zolder:8080/wts/services/");
+    	System.setProperty("http.proxyHost", "www-proxy");
+    	System.setProperty("http.proxyPort", "3128");
+    	
+    	WtsMetaClient client = new WtsMetaClient("http://virolab.med.kuleuven.be/wts/services/");
         try {
             System.err.println(client.listServices());
         } catch (RemoteException e1) {
