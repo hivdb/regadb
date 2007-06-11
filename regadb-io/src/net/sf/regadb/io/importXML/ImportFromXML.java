@@ -1753,6 +1753,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Patient o, Patient dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getPatientId(), o.getPatientId())) {
                 if (!simulate)
@@ -1961,6 +1963,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getName(), o.getName())) {
                 if (!simulate)
@@ -1985,6 +1989,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             ValueType d = Retrieve.retrieve(t, o.getValueType());
             if (d == null) {
@@ -2080,6 +2086,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
@@ -2111,6 +2119,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
@@ -2128,6 +2138,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             TestType d = Retrieve.retrieve(t, o.getTestType());
             if (d == null) {
@@ -2163,6 +2175,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Dataset o, Dataset dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
@@ -2194,6 +2208,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             Attribute d = Retrieve.retrieve(t, o.getId().getAttribute());
             if (d == null) {
@@ -2254,6 +2270,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Attribute o, Attribute dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             ValueType d = Retrieve.retrieve(t, o.getValueType());
             if (d == null) {
@@ -2349,6 +2367,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AttributeGroup o, AttributeGroup dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getGroupName(), o.getGroupName())) {
                 if (!simulate)
@@ -2359,6 +2379,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
@@ -2369,6 +2391,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, ViralIsolate o, ViralIsolate dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getSampleId(), o.getSampleId())) {
                 if (!simulate)
@@ -2456,6 +2480,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, NtSequence o, NtSequence dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
                 if (!simulate)
@@ -2550,6 +2576,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AaSequence o, AaSequence dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getProtein(), o.getProtein())) {
                 if (!simulate)
@@ -2644,6 +2672,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AaMutation o, AaMutation dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
                 if (!simulate)
@@ -2682,6 +2712,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AaInsertion o, AaInsertion dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
                 if (!simulate)
@@ -2713,6 +2745,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Therapy o, Therapy dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getStartDate(), o.getStartDate())) {
                 if (!simulate)
@@ -2807,6 +2841,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TestResult o, TestResult dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             Test d = Retrieve.retrieve(t, o.getTest());
             if (d == null) {
@@ -2888,6 +2924,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
                 if (!simulate)
@@ -2905,6 +2943,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
                 if (!simulate)
@@ -2922,6 +2962,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Test o, Test dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo == null) {
             Analysis d = Retrieve.retrieve(t, o.getAnalysis());
             if (d == null) {
@@ -2982,6 +3024,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
+        if (o == null)
+            return;
         if (dbo != null) {
             if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
                 if (!simulate)

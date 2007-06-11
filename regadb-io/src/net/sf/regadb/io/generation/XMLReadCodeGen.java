@@ -477,7 +477,9 @@ public class XMLReadCodeGen {
              * TODO: must decide: what if a referenced object is already in the database, do we also 'update' it ?
              *       currently we don't.
              */
-            
+
+            write(2, "if (o == null)\n");
+            write(3, "return;\n");
             /*
              * Set all members
              */
