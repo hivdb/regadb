@@ -12,9 +12,6 @@
     <many-to-one name="analysisType" class="net.sf.regadb.db.AnalysisType" fetch="select" cascade="save-update">
       <column name="analysis_type_ii" not-null="true" />
     </many-to-one>
-    <property name="type" type="java.lang.Integer">
-      <column name="type" />
-    </property>
     <property name="url" type="string">
       <column name="url" length="100" />
     </property>

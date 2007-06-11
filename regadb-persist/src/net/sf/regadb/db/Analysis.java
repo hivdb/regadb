@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 30/05/2007 17:25:33 by Hibernate Tools 3.2.0.beta8
+// Generated 11/06/2007 14:47:22 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,8 +15,6 @@ public class Analysis implements java.io.Serializable {
     private Integer analysisIi;
 
     private AnalysisType analysisType;
-
-    private Integer type;
 
     private String url;
 
@@ -46,12 +44,10 @@ public class Analysis implements java.io.Serializable {
     }
 
     /** full constructor */
-    public Analysis(AnalysisType analysisType, Integer type, String url,
-            String account, String password, String baseinputfile,
-            String baseoutputfile, String serviceName, Set<Test> tests,
-            Set<AnalysisData> analysisDatas) {
+    public Analysis(AnalysisType analysisType, String url, String account,
+            String password, String baseinputfile, String baseoutputfile,
+            String serviceName, Set<Test> tests, Set<AnalysisData> analysisDatas) {
         this.analysisType = analysisType;
-        this.type = type;
         this.url = url;
         this.account = account;
         this.password = password;
@@ -77,14 +73,6 @@ public class Analysis implements java.io.Serializable {
 
     public void setAnalysisType(AnalysisType analysisType) {
         this.analysisType = analysisType;
-    }
-
-    public Integer getType() {
-        return this.type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public String getUrl() {
