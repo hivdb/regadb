@@ -363,7 +363,7 @@ public class Jarbuilder
             {
             	try 
                 {
-                    File to = new File(packageDir_ + moduleName + File.separatorChar + (((File)o).getAbsolutePath()).substring((((File)o).getAbsolutePath()).lastIndexOf("/") + 1));
+                    File to = new File(packageDir_ + moduleName + File.separatorChar);
                     FileUtils.copyFileToDirectory((File)o, to);
                 } 
                 catch (IOException e) 
