@@ -26,7 +26,9 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.importXML.ImportException;
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 
 import org.apache.commons.io.FileUtils;
@@ -53,6 +55,8 @@ public class PrepareCentralRepos
         Element tests = new Element("tests");
         
         //Attributes
+        Attribute gender = createGender();
+        export.writeTopAttribute(gender, attributes);
         Attribute country = createCountryOfOrigin();
         export.writeTopAttribute(country, attributes);
         Attribute ethnicity = createEthnicity();
@@ -110,9 +114,18 @@ public class PrepareCentralRepos
         try {
             Transaction t = login.createTransaction();
             imp.loadDatabaseObjects(t);
+            
             List<Test> testsList = imp.readTests(new InputSource(r), null);
             for(Test test : testsList)
             {
+                try 
+                {
+                    imp.sync(t, test, SyncMode.Update, true);
+                } 
+                catch (ImportException e)
+                {
+                    e.printStackTrace();
+                }
                 if(test.getAnalysis()!=null)
                 {
                     for(AnalysisData ad : test.getAnalysis().getAnalysisDatas())
@@ -197,6 +210,18 @@ public class PrepareCentralRepos
         return cd4Test;
     }
 
+    private static Attribute createGender()
+    {
+        Attribute transmissionGroup = new Attribute("Gender");
+        transmissionGroup.setAttributeGroup(regadb);
+        transmissionGroup.setValueType(nominalValue);
+        
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "male"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "female"));
+        
+        return transmissionGroup;
+    }
+    
     private static Attribute createTransmissionGroup()
     {
         Attribute transmissionGroup = new Attribute("Transmission group");

@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.framework.forms.administrator;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,10 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportDrugs;
+import net.sf.regadb.io.importXML.ImportException;
+import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.importXML.ImportHandler;
+import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -21,7 +27,11 @@ import net.sf.witty.wt.WFontWeight;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WTextFormatting;
 import net.sf.witty.wt.i8n.WMessage;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class UpdateForm extends FormWidget
 {
@@ -88,67 +98,106 @@ public class UpdateForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Viewing)
         {
-            Transaction t;
-            
-            //Tests
-            t = RegaDBMain.getApp().createTransaction();
-            List<Test> tests = t.getTests();
-            ArrayList<String> testDescriptions = new ArrayList<String>();
-            for(Test test : tests)
-            {
-                testDescriptions.add(test.getDescription()+ " - " + test.getTestType().getDescription());
-            }
-            handleFields(null, testText_, testDescriptions);
-            t.commit();
-            
-            //Attributes
-            t = RegaDBMain.getApp().createTransaction();
-            List<Attribute> attributes = t.getAttributes();
-            ArrayList<String> attributesNames = new ArrayList<String>();
-            for(Attribute attribute : attributes)
-            {
-                attributesNames.add(attribute.getName()+ " - " + attribute.getAttributeGroup().getGroupName());
-            }
-            handleFields(null, attributesText_, attributesNames);
-            t.commit();
-            
-            //Drug Class
-            t = RegaDBMain.getApp().createTransaction();
-            List<DrugClass> classDrugs = t.getClassDrugs();
-            ArrayList<String> classDrugsNames = new ArrayList<String>();
-            for(DrugClass dc : classDrugs)
-            {
-                classDrugsNames.add(dc.getClassName());
-            }
-            handleFields(drugClassTitle_, drugClassText_, classDrugsNames);
-            t.commit();
-            
-            //Generic Drugs
-            t = RegaDBMain.getApp().createTransaction();
-            List<DrugGeneric> genericDrugs = t.getGenericDrugs();
-            ArrayList<String> genericDrugsNames = new ArrayList<String>();
-            for(DrugGeneric dg : genericDrugs)
-            {
-                genericDrugsNames.add(dg.getGenericName());
-            }
-            handleFields(drugGenericsTitle_, drugGenericsText_, genericDrugsNames);
-            t.commit();
-            
-            //Commercial Drugs
-            t = RegaDBMain.getApp().createTransaction();
-            List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
-            ArrayList<String> commercialDrugsNames = new ArrayList<String>();
-            for(DrugCommercial dc : commercialDrugs)
-            {
-                commercialDrugsNames.add(dc.getName());
-            }
-            handleFields(drugCommercialsTitle_, drugCommercialsText_, commercialDrugsNames);
-            t.commit();
+            showInstalledItems();
         }
         else
         {
-            handleDrugs(false);
+            handleAttributes(true);
+            handleTests(true);
+            handleDrugs(true);
         }
+    }
+    
+    private void handleTests(final boolean simulate)
+    {
+        FileProvider fp = new FileProvider();
+        File testsFile = RegaDBMain.getApp().createTempFile("tests", "xml");
+        try 
+        {
+            fp.getFile("regadb-tests", "tests.xml", testsFile);
+        }
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        final ImportFromXML imp = new ImportFromXML();
+        try 
+        {
+            final Transaction t = RegaDBMain.getApp().createTransaction();
+            imp.loadDatabaseObjects(t);
+            imp.readTests(new InputSource(new FileReader(testsFile)), new ImportHandler<Test>()
+                    {
+                        public void importObject(Test object) 
+                        {
+                            try 
+                            {
+                                imp.sync(t, object, SyncMode.Update, simulate);
+                            } 
+                            catch (ImportException e) 
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            t.commit();
+        } 
+        catch (SAXException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        testsFile.delete();
+        testText_.setFormatting(WTextFormatting.PlainFormatting);
+        testText_.setText(lt(imp.getLog().toString()));
+    }
+    
+    private void handleAttributes(final boolean simulate)
+    {
+        FileProvider fp = new FileProvider();
+        File attributesFile = RegaDBMain.getApp().createTempFile("attributes", "xml");
+        try 
+        {
+            fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
+        }
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        final ImportFromXML imp = new ImportFromXML();
+        try 
+        {
+            final Transaction t = RegaDBMain.getApp().createTransaction();
+            imp.loadDatabaseObjects(t);
+            imp.readAttributes(new InputSource(new FileReader(attributesFile)), new ImportHandler<Attribute>()
+                    {
+                        public void importObject(Attribute object) 
+                        {
+                            try 
+                            {
+                                imp.sync(t, object, SyncMode.Update, simulate);
+                            } 
+                            catch (ImportException e) 
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            t.commit();
+        } 
+        catch (SAXException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        attributesFile.delete();
+        attributesText_.setFormatting(WTextFormatting.PlainFormatting);
+        attributesText_.setText(lt(imp.getLog().toString()));
     }
     
     private void handleDrugs(boolean simulate)
@@ -204,6 +253,66 @@ public class UpdateForm extends FormWidget
         t.commit();
     }
     
+    private void showInstalledItems()
+    {
+        Transaction t;
+        
+        //Tests
+        t = RegaDBMain.getApp().createTransaction();
+        List<Test> tests = t.getTests();
+        ArrayList<String> testDescriptions = new ArrayList<String>();
+        for(Test test : tests)
+        {
+            testDescriptions.add(test.getDescription()+ " - " + test.getTestType().getDescription());
+        }
+        handleFields(null, testText_, testDescriptions);
+        t.commit();
+        
+        //Attributes
+        t = RegaDBMain.getApp().createTransaction();
+        List<Attribute> attributes = t.getAttributes();
+        ArrayList<String> attributesNames = new ArrayList<String>();
+        for(Attribute attribute : attributes)
+        {
+            attributesNames.add(attribute.getName()+ " - " + attribute.getAttributeGroup().getGroupName());
+        }
+        handleFields(null, attributesText_, attributesNames);
+        t.commit();
+        
+        //Drug Class
+        t = RegaDBMain.getApp().createTransaction();
+        List<DrugClass> classDrugs = t.getClassDrugs();
+        ArrayList<String> classDrugsNames = new ArrayList<String>();
+        for(DrugClass dc : classDrugs)
+        {
+            classDrugsNames.add(dc.getClassName());
+        }
+        handleFields(drugClassTitle_, drugClassText_, classDrugsNames);
+        t.commit();
+        
+        //Generic Drugs
+        t = RegaDBMain.getApp().createTransaction();
+        List<DrugGeneric> genericDrugs = t.getGenericDrugs();
+        ArrayList<String> genericDrugsNames = new ArrayList<String>();
+        for(DrugGeneric dg : genericDrugs)
+        {
+            genericDrugsNames.add(dg.getGenericName());
+        }
+        handleFields(drugGenericsTitle_, drugGenericsText_, genericDrugsNames);
+        t.commit();
+        
+        //Commercial Drugs
+        t = RegaDBMain.getApp().createTransaction();
+        List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
+        ArrayList<String> commercialDrugsNames = new ArrayList<String>();
+        for(DrugCommercial dc : commercialDrugs)
+        {
+            commercialDrugsNames.add(dc.getName());
+        }
+        handleFields(drugCommercialsTitle_, drugCommercialsText_, commercialDrugsNames);
+        t.commit();
+    }
+    
     private void handleFields(WText title, WText text, ArrayList<String> report)
     {
         String field = "";
@@ -223,8 +332,12 @@ public class UpdateForm extends FormWidget
     
     @Override
     public void saveData()
-    {        
+    {   
+        handleAttributes(false);
+        handleTests(false);
         handleDrugs(false);
+        
+        RegaDBMain.getApp().getTree().getTreeContent().updateFromCentralServerUpdateView.selectNode();
     }
     
     @Override

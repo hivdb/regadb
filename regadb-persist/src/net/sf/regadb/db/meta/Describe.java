@@ -130,7 +130,7 @@ public class Describe {
     }
 
     public static String describe(Analysis o) {
-        return "Analysis for '" + describe(o.getTests().iterator().next());
+        return "Analysis for '" + o.getUrl() + o.getServiceName();
     }
 
     public static String describe(AnalysisData o) {

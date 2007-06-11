@@ -171,11 +171,6 @@
       </element>
     </optional>
     <optional>
-      <element name="type">
-        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
       <element name="url">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">100</param>

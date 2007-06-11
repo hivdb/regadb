@@ -1,5 +1,7 @@
 package net.sf.regadb.service.ioAssist;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -21,7 +23,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
+import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.wts.client.WtsClient;
 
@@ -29,6 +33,8 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
 {
@@ -43,6 +49,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
     
     private FileWriter fileWriter_;
+    
+    private ImportFromXML importXML_;
     
     public IOAssistImportHandler(FileWriter fw)
     {
@@ -73,6 +81,24 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         
         export_ = new ExportToXML();
         fileWriter_ = fw;
+        
+        importXML_ = new ImportFromXML();
+        importXML_.loadDatabaseObjects(null);
+        try 
+        {
+            File tests =  File.createTempFile("test_from_central_repos",".xml");
+            FileProvider fp = new FileProvider();
+            fp.getFile("regadb-tests", "tests.xml", tests);
+            List<Test> testList = importXML_.readTests(new InputSource(new FileReader(tests)), null);
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (SAXException e)
+        {
+            e.printStackTrace();
+        }
     }
     
     public void importObject(ViralIsolate object)

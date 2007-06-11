@@ -131,7 +131,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     private TestType fieldTest_testType;
     private String fieldTest_description;
     private AnalysisType fieldAnalysis_analysisType;
-    private Integer fieldAnalysis_type;
     private String fieldAnalysis_url;
     private String fieldAnalysis_account;
     private String fieldAnalysis_password;
@@ -300,7 +299,6 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.stateAnalysis);
             referenceAnalysis = null;
             fieldAnalysis_analysisType = null;
-            fieldAnalysis_type = nullValueInteger();
             fieldAnalysis_url = nullValueString();
             fieldAnalysis_account = nullValueString();
             fieldAnalysis_password = nullValueString();
@@ -1495,11 +1493,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysis.setAnalysisType(fieldAnalysis_analysisType);
                 }
-                if (referenceResolved && fieldAnalysis_type != nullValueInteger())
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elAnalysis.setType(fieldAnalysis_type);
-                }
                 if (referenceResolved && fieldAnalysis_url != nullValueString())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -1545,8 +1538,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("analysisType".equals(qName)) {
                 fieldAnalysis_analysisType = resolveAnalysisType(value);
-            } else if ("type".equals(qName)) {
-                fieldAnalysis_type = parseInteger(value);
             } else if ("url".equals(qName)) {
                 fieldAnalysis_url = parseString(value);
             } else if ("account".equals(qName)) {
@@ -3108,13 +3099,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setAnalysisType(o.getAnalysisType());
                 log.append(Describe.describe(o) + ": updating analysisType\n");
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getType(), o.getType())) {
-                if (!simulate)
-                    dbo.setType(o.getType());
-                log.append(Describe.describe(o) + ": updating type\n");
             }
         }
         if (dbo != null) {
