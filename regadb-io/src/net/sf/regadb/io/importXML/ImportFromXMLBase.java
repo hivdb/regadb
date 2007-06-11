@@ -39,6 +39,9 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
     
+    protected StringBuffer log = new StringBuffer();
+    public enum SyncMode { Clean, Update };
+    
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (value == null)
@@ -144,23 +147,36 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public void loadDatabaseObjects(Transaction t) {
         genericDrugs = new TreeMap<String, DrugGeneric>();
+        if(t!=null)
+        {
         for (DrugGeneric d : t.getGenericDrugs()) {
             genericDrugs.put(d.getGenericId().toUpperCase(), d);
         }
+        }
 
         commercialDrugs = new TreeMap<String, DrugCommercial>();
+        if(t!=null)
+        {
         for (DrugCommercial d : t.getCommercialDrugs()) {
             commercialDrugs.put(d.getName().toUpperCase(), d);
         }
+        }
+        
 
         proteins = new TreeMap<String, Protein>();
+        if(t!=null)
+        {
         for (Protein p : t.getProteins()) {
             proteins.put(p.getAbbreviation().toUpperCase(), p);
         }
+        }
 
         analysisTypes = new TreeMap<String, AnalysisType>();
+        if(t!=null)
+        {
         for (AnalysisType a : t.getAnalysisTypes()) {
             analysisTypes.put(a.getType().toUpperCase(), a);
+        }
         }
     }    
 
@@ -242,4 +258,8 @@ public class ImportFromXMLBase extends DefaultHandler{
         
     }
 
+    public StringBuffer getLog() 
+    {
+        return log;
+    }
 }

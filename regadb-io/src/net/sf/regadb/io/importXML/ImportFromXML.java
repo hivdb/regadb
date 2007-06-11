@@ -1752,7 +1752,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         xmlReader.parse(source);
     }
 
-    public void sync(Transaction t, Patient o, Patient dbo, boolean simulate) {
+    private void sync(Transaction t, Patient o, Patient dbo, boolean simulate) {
         if (!equals(dbo.getPatientId(), o.getPatientId())) {
             if (!simulate)
                 dbo.setPatientId(o.getPatientId());
@@ -1920,7 +1920,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
+    private void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
         if (!equals(dbo.getName(), o.getName())) {
             if (!simulate)
                 dbo.setName(o.getName());
@@ -1938,7 +1938,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
+    private void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
         if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
             sync(t, o.getValueType(), dbo.getValueType(), simulate);
         else {
@@ -1989,7 +1989,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
+    private void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
         if (!equals(dbo.getDescription(), o.getDescription())) {
             if (!simulate)
                 dbo.setDescription(o.getDescription());
@@ -2012,7 +2012,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
+    private void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
         if (!equals(dbo.getDescription(), o.getDescription())) {
             if (!simulate)
                 dbo.setDescription(o.getDescription());
@@ -2025,7 +2025,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
+    private void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
         if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
             sync(t, o.getTestType(), dbo.getTestType(), simulate);
         else {
@@ -2040,7 +2040,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, Dataset o, Dataset dbo, boolean simulate) {
+    private void sync(Transaction t, Dataset o, Dataset dbo, boolean simulate) {
         if (!equals(dbo.getDescription(), o.getDescription())) {
             if (!simulate)
                 dbo.setDescription(o.getDescription());
@@ -2063,7 +2063,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, boolean simulate) {
+    private void sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, boolean simulate) {
         if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
             sync(t, o.getId().getAttribute(), dbo.getId().getAttribute(), simulate);
         else {
@@ -2085,7 +2085,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, Attribute o, Attribute dbo, boolean simulate) {
+    private void sync(Transaction t, Attribute o, Attribute dbo, boolean simulate) {
         if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
             sync(t, o.getValueType(), dbo.getValueType(), simulate);
         else {
@@ -2136,7 +2136,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AttributeGroup o, AttributeGroup dbo, boolean simulate) {
+    private void sync(Transaction t, AttributeGroup o, AttributeGroup dbo, boolean simulate) {
         if (!equals(dbo.getGroupName(), o.getGroupName())) {
             if (!simulate)
                 dbo.setGroupName(o.getGroupName());
@@ -2144,7 +2144,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, boolean simulate) {
+    private void sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, boolean simulate) {
         if (!equals(dbo.getValue(), o.getValue())) {
             if (!simulate)
                 dbo.setValue(o.getValue());
@@ -2152,7 +2152,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, ViralIsolate o, ViralIsolate dbo, boolean simulate) {
+    private void sync(Transaction t, ViralIsolate o, ViralIsolate dbo, boolean simulate) {
         if (!equals(dbo.getSampleId(), o.getSampleId())) {
             if (!simulate)
                 dbo.setSampleId(o.getSampleId());
@@ -2223,7 +2223,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, NtSequence o, NtSequence dbo, boolean simulate) {
+    private void sync(Transaction t, NtSequence o, NtSequence dbo, boolean simulate) {
         if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
             if (!simulate)
                 dbo.setNucleotides(o.getNucleotides());
@@ -2299,7 +2299,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AaSequence o, AaSequence dbo, boolean simulate) {
+    private void sync(Transaction t, AaSequence o, AaSequence dbo, boolean simulate) {
         if (!equals(dbo.getProtein(), o.getProtein())) {
             if (!simulate)
                 dbo.setProtein(o.getProtein());
@@ -2375,7 +2375,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AaMutation o, AaMutation dbo, boolean simulate) {
+    private void sync(Transaction t, AaMutation o, AaMutation dbo, boolean simulate) {
         if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
             if (!simulate)
                 dbo.getId().setPosition(o.getId().getPosition());
@@ -2403,7 +2403,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, AaInsertion o, AaInsertion dbo, boolean simulate) {
+    private void sync(Transaction t, AaInsertion o, AaInsertion dbo, boolean simulate) {
         if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
             if (!simulate)
                 dbo.getId().setPosition(o.getId().getPosition());
@@ -2426,7 +2426,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, Therapy o, Therapy dbo, boolean simulate) {
+    private void sync(Transaction t, Therapy o, Therapy dbo, boolean simulate) {
         if (!equals(dbo.getStartDate(), o.getStartDate())) {
             if (!simulate)
                 dbo.setStartDate(o.getStartDate());
@@ -2502,7 +2502,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TestResult o, TestResult dbo, boolean simulate) {
+    private void sync(Transaction t, TestResult o, TestResult dbo, boolean simulate) {
         if (Equals.isSameTest(o.getTest(), dbo.getTest()))
             sync(t, o.getTest(), dbo.getTest(), simulate);
         else {
@@ -2539,7 +2539,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, boolean simulate) {
+    private void sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, boolean simulate) {
         if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
             if (!simulate)
                 dbo.getId().setDrugCommercial(o.getId().getDrugCommercial());
@@ -2552,7 +2552,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, boolean simulate) {
+    private void sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, boolean simulate) {
         if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
             if (!simulate)
                 dbo.getId().setDrugGeneric(o.getId().getDrugGeneric());
@@ -2565,7 +2565,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, Test o, Test dbo, boolean simulate) {
+    private void sync(Transaction t, Test o, Test dbo, boolean simulate) {
         if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
             sync(t, o.getAnalysis(), dbo.getAnalysis(), simulate);
         else {
@@ -2587,7 +2587,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
+    private void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
         if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
             if (!simulate)
                 dbo.setAnalysisType(o.getAnalysisType());
@@ -2659,8 +2659,6 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
     }
 
-    public enum SyncMode { Clean, Update };
-    StringBuffer log = new StringBuffer();
     public Patient sync(Transaction t, Patient o, SyncMode mode, boolean simulate) throws ImportException {
         Patient dbo = dbFindPatient(t, o);
         if (dbo != null) {

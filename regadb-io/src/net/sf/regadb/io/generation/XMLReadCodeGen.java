@@ -471,7 +471,7 @@ public class XMLReadCodeGen {
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
             
-            write(1, "public void sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, boolean simulate) {\n");
+            write(1, "private void sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, boolean simulate) {\n");
 
             /*
              * Set all members
@@ -555,8 +555,8 @@ public class XMLReadCodeGen {
          */
         Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class, DrugGeneric.class, DrugCommercial.class };
         
-        write(1, "public enum SyncMode { Clean, Update };\n");
-        write(1, "StringBuffer log = new StringBuffer();\n");
+        //write(1, "public enum SyncMode { Clean, Update };\n");
+        //write(1, "StringBuffer log = new StringBuffer();\n");
         
         for (Class c : unscopedClasses) {
             write(1, "public " + c.getSimpleName() + " sync(Transaction t, " + c.getSimpleName() + " o, SyncMode mode, boolean simulate) throws ImportException {\n");

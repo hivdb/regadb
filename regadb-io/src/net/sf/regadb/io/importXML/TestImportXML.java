@@ -9,24 +9,15 @@ package net.sf.regadb.io.importXML;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.importXML.ImportFromXML.SyncMode;
+import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 public class TestImportXML implements ImportHandler<Patient> {
 
