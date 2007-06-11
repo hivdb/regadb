@@ -1811,7 +1811,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(Dataset dbe : dbo.getDatasets()) {
                 Dataset e = null;
                 for(Dataset f : o.getDatasets()) {
-                    if (Equals.isSameDataset(e, f)) {
+                    if (Equals.isSameDataset(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -1845,7 +1845,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TestResult dbe : dbo.getTestResults()) {
                 TestResult e = null;
                 for(TestResult f : o.getTestResults()) {
-                    if (Equals.isSameTestResult(e, f)) {
+                    if (Equals.isSameTestResult(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -1879,7 +1879,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(PatientAttributeValue dbe : dbo.getPatientAttributeValues()) {
                 PatientAttributeValue e = null;
                 for(PatientAttributeValue f : o.getPatientAttributeValues()) {
-                    if (Equals.isSamePatientAttributeValue(e, f)) {
+                    if (Equals.isSamePatientAttributeValue(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -1913,7 +1913,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(ViralIsolate dbe : dbo.getViralIsolates()) {
                 ViralIsolate e = null;
                 for(ViralIsolate f : o.getViralIsolates()) {
-                    if (Equals.isSameViralIsolate(e, f)) {
+                    if (Equals.isSameViralIsolate(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -1947,7 +1947,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(Therapy dbe : dbo.getTherapies()) {
                 Therapy e = null;
                 for(Therapy f : o.getTherapies()) {
-                    if (Equals.isSameTherapy(e, f)) {
+                    if (Equals.isSameTherapy(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2066,7 +2066,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TestNominalValue dbe : dbo.getTestNominalValues()) {
                 TestNominalValue e = null;
                 for(TestNominalValue f : o.getTestNominalValues()) {
-                    if (Equals.isSameTestNominalValue(e, f)) {
+                    if (Equals.isSameTestNominalValue(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2335,7 +2335,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(AttributeNominalValue dbe : dbo.getAttributeNominalValues()) {
                 AttributeNominalValue e = null;
                 for(AttributeNominalValue f : o.getAttributeNominalValues()) {
-                    if (Equals.isSameAttributeNominalValue(e, f)) {
+                    if (Equals.isSameAttributeNominalValue(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2407,7 +2407,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(NtSequence dbe : dbo.getNtSequences()) {
                 NtSequence e = null;
                 for(NtSequence f : o.getNtSequences()) {
-                    if (Equals.isSameNtSequence(e, f)) {
+                    if (Equals.isSameNtSequence(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2442,7 +2442,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TestResult dbe : dbo.getTestResults()) {
                 TestResult e = null;
                 for(TestResult f : o.getTestResults()) {
-                    if (Equals.isSameTestResult(e, f)) {
+                    if (Equals.isSameTestResult(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2501,7 +2501,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(AaSequence dbe : dbo.getAaSequences()) {
                 AaSequence e = null;
                 for(AaSequence f : o.getAaSequences()) {
-                    if (Equals.isSameAaSequence(e, f)) {
+                    if (Equals.isSameAaSequence(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2536,7 +2536,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TestResult dbe : dbo.getTestResults()) {
                 TestResult e = null;
                 for(TestResult f : o.getTestResults()) {
-                    if (Equals.isSameTestResult(e, f)) {
+                    if (Equals.isSameTestResult(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2595,7 +2595,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(AaMutation dbe : dbo.getAaMutations()) {
                 AaMutation e = null;
                 for(AaMutation f : o.getAaMutations()) {
-                    if (Equals.isSameAaMutation(e, f)) {
+                    if (Equals.isSameAaMutation(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2630,7 +2630,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(AaInsertion dbe : dbo.getAaInsertions()) {
                 AaInsertion e = null;
                 for(AaInsertion f : o.getAaInsertions()) {
-                    if (Equals.isSameAaInsertion(e, f)) {
+                    if (Equals.isSameAaInsertion(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2758,7 +2758,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TherapyCommercial dbe : dbo.getTherapyCommercials()) {
                 TherapyCommercial e = null;
                 for(TherapyCommercial f : o.getTherapyCommercials()) {
-                    if (Equals.isSameTherapyCommercial(e, f)) {
+                    if (Equals.isSameTherapyCommercial(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -2793,7 +2793,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(TherapyGeneric dbe : dbo.getTherapyGenerics()) {
                 TherapyGeneric e = null;
                 for(TherapyGeneric f : o.getTherapyGenerics()) {
-                    if (Equals.isSameTherapyGeneric(e, f)) {
+                    if (Equals.isSameTherapyGeneric(dbe, f)) {
                         e = f; break;
                     }
                 }
@@ -3062,7 +3062,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             for(AnalysisData dbe : dbo.getAnalysisDatas()) {
                 AnalysisData e = null;
                 for(AnalysisData f : o.getAnalysisDatas()) {
-                    if (Equals.isSameAnalysisData(e, f)) {
+                    if (Equals.isSameAnalysisData(dbe, f)) {
                         e = f; break;
                     }
                 }

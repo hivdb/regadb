@@ -575,7 +575,7 @@ public class XMLReadCodeGen {
                     write(3, "for(" + f.resolved.javaClass.getSimpleName() + " dbe : dbo." + f.getterName() + "()) {\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " e = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
-                    write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
+                    write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(dbe, f)) {\n");
                     write(6, "e = f; break;\n");
                     write(5, "}\n");
                     write(4, "}\n");
