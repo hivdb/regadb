@@ -243,7 +243,7 @@ public class Jarbuilder
         {
             if(m.startsWith("regadb-") || m.startsWith("wts-client-java"))
             {
-                if(!m.equals("regadb-sql") && !m.equals("regadb-build"))
+                if(!m.equals("regadb-sql") && !m.equals("regadb-build") && !m.startsWith("regadb-wts"))
                 {
                     filteredModules.add(m);
                 }
