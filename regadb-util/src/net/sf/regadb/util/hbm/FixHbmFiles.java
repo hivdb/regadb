@@ -29,6 +29,8 @@ public class FixHbmFiles
         Element toRemoveGeneratorFrom = null;
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
         {
+            cascadeAllManyToOne(a.getKey());
+            
            for(Iterator i = a.getValue().getDescendants(); i.hasNext();)
             {
                 o = i.next();
@@ -293,6 +295,28 @@ public class FixHbmFiles
                     a.setValue(newName);
                     el.removeAttribute("type");
                     el.setAttribute(new Attribute("class", newClass));
+                }
+            }
+        }
+    }
+    
+    private static void cascadeAllManyToOne(String className)
+    {
+        InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        //String className = getClassNameForFileName(hbmXmlName);
+        Element e = interpreter.classHbms_.get(className);
+        
+        Object o;
+        Element el;
+        for(Iterator i = e.getDescendants(); i.hasNext();)
+        {
+            o = i.next();
+            if(o instanceof Element)
+            {
+                el = (Element)o;
+                if(el.getName().equals("many-to-one"))
+                {
+                    el.setAttribute(new Attribute("cascade", "save-update"));
                 }
             }
         }

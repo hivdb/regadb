@@ -12,10 +12,10 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="analysis" class="net.sf.regadb.db.Analysis" fetch="select">
+    <many-to-one name="analysis" class="net.sf.regadb.db.Analysis" fetch="select" cascade="save-update">
       <column name="analysis_ii" unique="true" />
     </many-to-one>
-    <many-to-one name="testType" class="net.sf.regadb.db.TestType" fetch="select">
+    <many-to-one name="testType" class="net.sf.regadb.db.TestType" fetch="select" cascade="save-update">
       <column name="test_type_ii" not-null="true" />
     </many-to-one>
     <property name="description" type="string">

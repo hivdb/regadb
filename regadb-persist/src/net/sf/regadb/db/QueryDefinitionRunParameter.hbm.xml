@@ -9,10 +9,10 @@
         <param name="sequence">query_definition_run_parameter_query_definition_run_parameter_ii_seq</param>
       </generator>
     </id>
-    <many-to-one name="queryDefinitionParameter" class="net.sf.regadb.db.QueryDefinitionParameter" fetch="select">
+    <many-to-one name="queryDefinitionParameter" class="net.sf.regadb.db.QueryDefinitionParameter" fetch="select" cascade="save-update">
       <column name="query_definition_parameter_ii" />
     </many-to-one>
-    <many-to-one name="queryDefinitionRun" class="net.sf.regadb.db.QueryDefinitionRun" fetch="select">
+    <many-to-one name="queryDefinitionRun" class="net.sf.regadb.db.QueryDefinitionRun" fetch="select" cascade="save-update">
       <column name="query_definition_run_ii" />
     </many-to-one>
     <property name="value" type="string">

@@ -9,7 +9,7 @@
         <param name="sequence">query_definition_query_definition_ii_seq</param>
       </generator>
     </id>
-    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select">
+    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update">
       <column name="uid" length="50" />
     </many-to-one>
     <property name="name" type="string">

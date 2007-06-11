@@ -12,22 +12,22 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
+    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select" cascade="save-update">
       <column name="test_ii" not-null="true" />
     </many-to-one>
-    <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" fetch="select">
+    <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" fetch="select" cascade="save-update">
       <column name="generic_ii" />
     </many-to-one>
-    <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select">
+    <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select" cascade="save-update">
       <column name="viral_isolate_ii" />
     </many-to-one>
-    <many-to-one name="testNominalValue" class="net.sf.regadb.db.TestNominalValue" fetch="select">
+    <many-to-one name="testNominalValue" class="net.sf.regadb.db.TestNominalValue" fetch="select" cascade="save-update">
       <column name="nominal_value_ii" />
     </many-to-one>
-    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select">
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
-    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select">
+    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update">
       <column name="nt_sequence_ii" />
     </many-to-one>
     <property name="value" type="string">

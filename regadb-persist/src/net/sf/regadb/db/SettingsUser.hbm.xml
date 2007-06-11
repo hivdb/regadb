@@ -9,10 +9,10 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select">
+    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select" cascade="save-update">
       <column name="test_ii" />
     </many-to-one>
-    <many-to-one name="dataset" class="net.sf.regadb.db.Dataset" fetch="select">
+    <many-to-one name="dataset" class="net.sf.regadb.db.Dataset" fetch="select" cascade="save-update">
       <column name="dataset_ii" />
     </many-to-one>
     <property name="chartWidth" type="int">
