@@ -539,46 +539,52 @@ public class XMLReadCodeGen {
                      * Synchronize the set
                      */
                     write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
-                    write(3, f.resolved.javaClass.getSimpleName() + " dbe = null;\n");
-                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " f : dbo." + f.getterName() + "()) {\n");
-                    write(4, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
-                    write(5, "dbe = f; break;\n");
+                    write(3, "if (dbo == null)\n");
+                    write(4, "sync(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                    write(3, "else {\n");
+                    write(4, f.resolved.javaClass.getSimpleName() + " dbe = null;\n");
+                    write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : dbo." + f.getterName() + "()) {\n");
+                    write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
+                    write(6, "dbe = f; break;\n");
+                    write(5, "}\n");
                     write(4, "}\n");
-                    write(3, "}\n");
                     
-                    write(3, "if (dbe == null) {\n");
-                    write(4, "log.append(Describe.describe(dbo) + \": adding \" + Describe.describe(e) + \"\\n\");\n");
-                    write(4, "if (!simulate) {\n");
+                    write(4, "if (dbe == null) {\n");
+                    write(5, "log.append(Describe.describe(dbo) + \": adding \" + Describe.describe(e) + \"\\n\");\n");
+                    write(5, "if (!simulate) {\n");
                     if (o.javaClass == Patient.class) {
                         if (f.resolved.javaClass != Dataset.class)
-                            write(5, "o.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
+                            write(6, "o.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
                         else
-                            write(5, ";// TODO\n");
+                            write(6, ";// TODO\n");
                     } else {
-                        write(5, "dbo." + f.getterName() + "().add(e);\n");
+                        write(7, "dbo." + f.getterName() + "().add(e);\n");
                         if (f.resolved.hasCompositeId)
-                            write (5, "e.getId().");
+                            write (6, "e.getId().");
                         else
-                            write(5, "e.");
+                            write(6, "e.");
                         write(0, "set" + o.javaClass.getSimpleName() + "(dbo);\n");
                     }
-                    write(4, "}\n");
-                    write(3, "} else\n");
-                    write(4, "sync(t, e, dbe, simulate);\n");
+                    write(5, "}\n");
+                    write(4, "} else\n");
+                    write(5, "sync(t, e, dbe, simulate);\n");
+                    write(3, "}\n");
                     write(2, "}\n");
 
-                    write(2, "for(" + f.resolved.javaClass.getSimpleName() + " dbe : dbo." + f.getterName() + "()) {\n");
-                    write(3, f.resolved.javaClass.getSimpleName() + " e = null;\n");
-                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
-                    write(4, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
-                    write(5, "e = f; break;\n");
+                    write(2, "if (dbo != null) {\n");
+                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " dbe : dbo." + f.getterName() + "()) {\n");
+                    write(4, f.resolved.javaClass.getSimpleName() + " e = null;\n");
+                    write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
+                    write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
+                    write(6, "e = f; break;\n");
+                    write(5, "}\n");
                     write(4, "}\n");
-                    write(3, "}\n");
 
-                    write(3, "if (e == null) {\n");
-                    write(4, "log.append(Describe.describe(dbo) + \": removing: \" + Describe.describe(dbe) + \"\\n\");\n");
-                    write(4, "if (!simulate)\n");
-                    write(5, "dbo." + f.getterName() + "().remove(dbe);\n");
+                    write(4, "if (e == null) {\n");
+                    write(5, "log.append(Describe.describe(dbo) + \": removing: \" + Describe.describe(dbe) + \"\\n\");\n");
+                    write(5, "if (!simulate)\n");
+                    write(6, "dbo." + f.getterName() + "().remove(dbe);\n");
+                    write(4, "}\n");
                     write(3, "}\n");
                     write(2, "}\n");
                 }

@@ -1789,143 +1789,173 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(Dataset e : o.getDatasets()) {
-            Dataset dbe = null;
-            for(Dataset f : dbo.getDatasets()) {
-                if (Equals.isSameDataset(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (Dataset)null, simulate);
+            else {
+                Dataset dbe = null;
+                for(Dataset f : dbo.getDatasets()) {
+                    if (Equals.isSameDataset(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                        ;// TODO
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    ;// TODO
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(Dataset dbe : dbo.getDatasets()) {
-            Dataset e = null;
-            for(Dataset f : o.getDatasets()) {
-                if (Equals.isSameDataset(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(Dataset dbe : dbo.getDatasets()) {
+                Dataset e = null;
+                for(Dataset f : o.getDatasets()) {
+                    if (Equals.isSameDataset(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getDatasets().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getDatasets().remove(dbe);
+                }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            TestResult dbe = null;
-            for(TestResult f : dbo.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TestResult)null, simulate);
+            else {
+                TestResult dbe = null;
+                for(TestResult f : dbo.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                        o.addTestResult(e);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    o.addTestResult(e);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TestResult dbe : dbo.getTestResults()) {
-            TestResult e = null;
-            for(TestResult f : o.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TestResult dbe : dbo.getTestResults()) {
+                TestResult e = null;
+                for(TestResult f : o.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTestResults().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTestResults().remove(dbe);
+                }
             }
         }
         for(PatientAttributeValue e : o.getPatientAttributeValues()) {
-            PatientAttributeValue dbe = null;
-            for(PatientAttributeValue f : dbo.getPatientAttributeValues()) {
-                if (Equals.isSamePatientAttributeValue(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (PatientAttributeValue)null, simulate);
+            else {
+                PatientAttributeValue dbe = null;
+                for(PatientAttributeValue f : dbo.getPatientAttributeValues()) {
+                    if (Equals.isSamePatientAttributeValue(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                        o.addPatientAttributeValue(e);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    o.addPatientAttributeValue(e);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(PatientAttributeValue dbe : dbo.getPatientAttributeValues()) {
-            PatientAttributeValue e = null;
-            for(PatientAttributeValue f : o.getPatientAttributeValues()) {
-                if (Equals.isSamePatientAttributeValue(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(PatientAttributeValue dbe : dbo.getPatientAttributeValues()) {
+                PatientAttributeValue e = null;
+                for(PatientAttributeValue f : o.getPatientAttributeValues()) {
+                    if (Equals.isSamePatientAttributeValue(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getPatientAttributeValues().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getPatientAttributeValues().remove(dbe);
+                }
             }
         }
         for(ViralIsolate e : o.getViralIsolates()) {
-            ViralIsolate dbe = null;
-            for(ViralIsolate f : dbo.getViralIsolates()) {
-                if (Equals.isSameViralIsolate(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (ViralIsolate)null, simulate);
+            else {
+                ViralIsolate dbe = null;
+                for(ViralIsolate f : dbo.getViralIsolates()) {
+                    if (Equals.isSameViralIsolate(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                        o.addViralIsolate(e);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    o.addViralIsolate(e);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(ViralIsolate dbe : dbo.getViralIsolates()) {
-            ViralIsolate e = null;
-            for(ViralIsolate f : o.getViralIsolates()) {
-                if (Equals.isSameViralIsolate(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(ViralIsolate dbe : dbo.getViralIsolates()) {
+                ViralIsolate e = null;
+                for(ViralIsolate f : o.getViralIsolates()) {
+                    if (Equals.isSameViralIsolate(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getViralIsolates().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getViralIsolates().remove(dbe);
+                }
             }
         }
         for(Therapy e : o.getTherapies()) {
-            Therapy dbe = null;
-            for(Therapy f : dbo.getTherapies()) {
-                if (Equals.isSameTherapy(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (Therapy)null, simulate);
+            else {
+                Therapy dbe = null;
+                for(Therapy f : dbo.getTherapies()) {
+                    if (Equals.isSameTherapy(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                        o.addTherapy(e);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    o.addTherapy(e);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(Therapy dbe : dbo.getTherapies()) {
-            Therapy e = null;
-            for(Therapy f : o.getTherapies()) {
-                if (Equals.isSameTherapy(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(Therapy dbe : dbo.getTherapies()) {
+                Therapy e = null;
+                for(Therapy f : o.getTherapies()) {
+                    if (Equals.isSameTherapy(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTherapies().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTherapies().remove(dbe);
+                }
             }
         }
     }
@@ -2013,32 +2043,38 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(TestNominalValue e : o.getTestNominalValues()) {
-            TestNominalValue dbe = null;
-            for(TestNominalValue f : dbo.getTestNominalValues()) {
-                if (Equals.isSameTestNominalValue(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TestNominalValue)null, simulate);
+            else {
+                TestNominalValue dbe = null;
+                for(TestNominalValue f : dbo.getTestNominalValues()) {
+                    if (Equals.isSameTestNominalValue(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getTestNominalValues().add(e);
+                        e.setTestType(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTestNominalValues().add(e);
-                    e.setTestType(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TestNominalValue dbe : dbo.getTestNominalValues()) {
-            TestNominalValue e = null;
-            for(TestNominalValue f : o.getTestNominalValues()) {
-                if (Equals.isSameTestNominalValue(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TestNominalValue dbe : dbo.getTestNominalValues()) {
+                TestNominalValue e = null;
+                for(TestNominalValue f : o.getTestNominalValues()) {
+                    if (Equals.isSameTestNominalValue(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTestNominalValues().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTestNominalValues().remove(dbe);
+                }
             }
         }
     }
@@ -2276,32 +2312,38 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(AttributeNominalValue e : o.getAttributeNominalValues()) {
-            AttributeNominalValue dbe = null;
-            for(AttributeNominalValue f : dbo.getAttributeNominalValues()) {
-                if (Equals.isSameAttributeNominalValue(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (AttributeNominalValue)null, simulate);
+            else {
+                AttributeNominalValue dbe = null;
+                for(AttributeNominalValue f : dbo.getAttributeNominalValues()) {
+                    if (Equals.isSameAttributeNominalValue(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getAttributeNominalValues().add(e);
+                        e.setAttribute(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getAttributeNominalValues().add(e);
-                    e.setAttribute(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(AttributeNominalValue dbe : dbo.getAttributeNominalValues()) {
-            AttributeNominalValue e = null;
-            for(AttributeNominalValue f : o.getAttributeNominalValues()) {
-                if (Equals.isSameAttributeNominalValue(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(AttributeNominalValue dbe : dbo.getAttributeNominalValues()) {
+                AttributeNominalValue e = null;
+                for(AttributeNominalValue f : o.getAttributeNominalValues()) {
+                    if (Equals.isSameAttributeNominalValue(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getAttributeNominalValues().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getAttributeNominalValues().remove(dbe);
+                }
             }
         }
     }
@@ -2342,61 +2384,73 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(NtSequence e : o.getNtSequences()) {
-            NtSequence dbe = null;
-            for(NtSequence f : dbo.getNtSequences()) {
-                if (Equals.isSameNtSequence(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (NtSequence)null, simulate);
+            else {
+                NtSequence dbe = null;
+                for(NtSequence f : dbo.getNtSequences()) {
+                    if (Equals.isSameNtSequence(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getNtSequences().add(e);
+                        e.setViralIsolate(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getNtSequences().add(e);
-                    e.setViralIsolate(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(NtSequence dbe : dbo.getNtSequences()) {
-            NtSequence e = null;
-            for(NtSequence f : o.getNtSequences()) {
-                if (Equals.isSameNtSequence(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(NtSequence dbe : dbo.getNtSequences()) {
+                NtSequence e = null;
+                for(NtSequence f : o.getNtSequences()) {
+                    if (Equals.isSameNtSequence(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getNtSequences().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getNtSequences().remove(dbe);
+                }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            TestResult dbe = null;
-            for(TestResult f : dbo.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TestResult)null, simulate);
+            else {
+                TestResult dbe = null;
+                for(TestResult f : dbo.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getTestResults().add(e);
+                        e.setViralIsolate(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTestResults().add(e);
-                    e.setViralIsolate(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TestResult dbe : dbo.getTestResults()) {
-            TestResult e = null;
-            for(TestResult f : o.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TestResult dbe : dbo.getTestResults()) {
+                TestResult e = null;
+                for(TestResult f : o.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTestResults().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTestResults().remove(dbe);
+                }
             }
         }
     }
@@ -2424,61 +2478,73 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(AaSequence e : o.getAaSequences()) {
-            AaSequence dbe = null;
-            for(AaSequence f : dbo.getAaSequences()) {
-                if (Equals.isSameAaSequence(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (AaSequence)null, simulate);
+            else {
+                AaSequence dbe = null;
+                for(AaSequence f : dbo.getAaSequences()) {
+                    if (Equals.isSameAaSequence(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getAaSequences().add(e);
+                        e.setNtSequence(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getAaSequences().add(e);
-                    e.setNtSequence(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(AaSequence dbe : dbo.getAaSequences()) {
-            AaSequence e = null;
-            for(AaSequence f : o.getAaSequences()) {
-                if (Equals.isSameAaSequence(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(AaSequence dbe : dbo.getAaSequences()) {
+                AaSequence e = null;
+                for(AaSequence f : o.getAaSequences()) {
+                    if (Equals.isSameAaSequence(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getAaSequences().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getAaSequences().remove(dbe);
+                }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            TestResult dbe = null;
-            for(TestResult f : dbo.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TestResult)null, simulate);
+            else {
+                TestResult dbe = null;
+                for(TestResult f : dbo.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getTestResults().add(e);
+                        e.setNtSequence(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTestResults().add(e);
-                    e.setNtSequence(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TestResult dbe : dbo.getTestResults()) {
-            TestResult e = null;
-            for(TestResult f : o.getTestResults()) {
-                if (Equals.isSameTestResult(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TestResult dbe : dbo.getTestResults()) {
+                TestResult e = null;
+                for(TestResult f : o.getTestResults()) {
+                    if (Equals.isSameTestResult(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTestResults().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTestResults().remove(dbe);
+                }
             }
         }
     }
@@ -2506,61 +2572,73 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(AaMutation e : o.getAaMutations()) {
-            AaMutation dbe = null;
-            for(AaMutation f : dbo.getAaMutations()) {
-                if (Equals.isSameAaMutation(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (AaMutation)null, simulate);
+            else {
+                AaMutation dbe = null;
+                for(AaMutation f : dbo.getAaMutations()) {
+                    if (Equals.isSameAaMutation(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getAaMutations().add(e);
+                        e.getId().setAaSequence(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getAaMutations().add(e);
-                    e.getId().setAaSequence(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(AaMutation dbe : dbo.getAaMutations()) {
-            AaMutation e = null;
-            for(AaMutation f : o.getAaMutations()) {
-                if (Equals.isSameAaMutation(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(AaMutation dbe : dbo.getAaMutations()) {
+                AaMutation e = null;
+                for(AaMutation f : o.getAaMutations()) {
+                    if (Equals.isSameAaMutation(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getAaMutations().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getAaMutations().remove(dbe);
+                }
             }
         }
         for(AaInsertion e : o.getAaInsertions()) {
-            AaInsertion dbe = null;
-            for(AaInsertion f : dbo.getAaInsertions()) {
-                if (Equals.isSameAaInsertion(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (AaInsertion)null, simulate);
+            else {
+                AaInsertion dbe = null;
+                for(AaInsertion f : dbo.getAaInsertions()) {
+                    if (Equals.isSameAaInsertion(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getAaInsertions().add(e);
+                        e.getId().setAaSequence(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getAaInsertions().add(e);
-                    e.getId().setAaSequence(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(AaInsertion dbe : dbo.getAaInsertions()) {
-            AaInsertion e = null;
-            for(AaInsertion f : o.getAaInsertions()) {
-                if (Equals.isSameAaInsertion(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(AaInsertion dbe : dbo.getAaInsertions()) {
+                AaInsertion e = null;
+                for(AaInsertion f : o.getAaInsertions()) {
+                    if (Equals.isSameAaInsertion(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getAaInsertions().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getAaInsertions().remove(dbe);
+                }
             }
         }
     }
@@ -2657,61 +2735,73 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(TherapyCommercial e : o.getTherapyCommercials()) {
-            TherapyCommercial dbe = null;
-            for(TherapyCommercial f : dbo.getTherapyCommercials()) {
-                if (Equals.isSameTherapyCommercial(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TherapyCommercial)null, simulate);
+            else {
+                TherapyCommercial dbe = null;
+                for(TherapyCommercial f : dbo.getTherapyCommercials()) {
+                    if (Equals.isSameTherapyCommercial(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getTherapyCommercials().add(e);
+                        e.getId().setTherapy(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTherapyCommercials().add(e);
-                    e.getId().setTherapy(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TherapyCommercial dbe : dbo.getTherapyCommercials()) {
-            TherapyCommercial e = null;
-            for(TherapyCommercial f : o.getTherapyCommercials()) {
-                if (Equals.isSameTherapyCommercial(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TherapyCommercial dbe : dbo.getTherapyCommercials()) {
+                TherapyCommercial e = null;
+                for(TherapyCommercial f : o.getTherapyCommercials()) {
+                    if (Equals.isSameTherapyCommercial(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTherapyCommercials().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTherapyCommercials().remove(dbe);
+                }
             }
         }
         for(TherapyGeneric e : o.getTherapyGenerics()) {
-            TherapyGeneric dbe = null;
-            for(TherapyGeneric f : dbo.getTherapyGenerics()) {
-                if (Equals.isSameTherapyGeneric(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (TherapyGeneric)null, simulate);
+            else {
+                TherapyGeneric dbe = null;
+                for(TherapyGeneric f : dbo.getTherapyGenerics()) {
+                    if (Equals.isSameTherapyGeneric(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getTherapyGenerics().add(e);
+                        e.getId().setTherapy(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getTherapyGenerics().add(e);
-                    e.getId().setTherapy(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(TherapyGeneric dbe : dbo.getTherapyGenerics()) {
-            TherapyGeneric e = null;
-            for(TherapyGeneric f : o.getTherapyGenerics()) {
-                if (Equals.isSameTherapyGeneric(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(TherapyGeneric dbe : dbo.getTherapyGenerics()) {
+                TherapyGeneric e = null;
+                for(TherapyGeneric f : o.getTherapyGenerics()) {
+                    if (Equals.isSameTherapyGeneric(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getTherapyGenerics().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getTherapyGenerics().remove(dbe);
+                }
             }
         }
     }
@@ -2949,32 +3039,38 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(AnalysisData e : o.getAnalysisDatas()) {
-            AnalysisData dbe = null;
-            for(AnalysisData f : dbo.getAnalysisDatas()) {
-                if (Equals.isSameAnalysisData(e, f)) {
-                    dbe = f; break;
+            if (dbo == null)
+                sync(t, e, (AnalysisData)null, simulate);
+            else {
+                AnalysisData dbe = null;
+                for(AnalysisData f : dbo.getAnalysisDatas()) {
+                    if (Equals.isSameAnalysisData(e, f)) {
+                        dbe = f; break;
+                    }
                 }
+                if (dbe == null) {
+                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    if (!simulate) {
+                            dbo.getAnalysisDatas().add(e);
+                        e.setAnalysis(dbo);
+                    }
+                } else
+                    sync(t, e, dbe, simulate);
             }
-            if (dbe == null) {
-                log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
-                if (!simulate) {
-                    dbo.getAnalysisDatas().add(e);
-                    e.setAnalysis(dbo);
-                }
-            } else
-                sync(t, e, dbe, simulate);
         }
-        for(AnalysisData dbe : dbo.getAnalysisDatas()) {
-            AnalysisData e = null;
-            for(AnalysisData f : o.getAnalysisDatas()) {
-                if (Equals.isSameAnalysisData(e, f)) {
-                    e = f; break;
+        if (dbo != null) {
+            for(AnalysisData dbe : dbo.getAnalysisDatas()) {
+                AnalysisData e = null;
+                for(AnalysisData f : o.getAnalysisDatas()) {
+                    if (Equals.isSameAnalysisData(e, f)) {
+                        e = f; break;
+                    }
                 }
-            }
-            if (e == null) {
-                log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
-                if (!simulate)
-                    dbo.getAnalysisDatas().remove(dbe);
+                if (e == null) {
+                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    if (!simulate)
+                        dbo.getAnalysisDatas().remove(dbe);
+                }
             }
         }
     }
