@@ -360,6 +360,9 @@ public class ImportPortugalDB {
         //System.err.print("TH: " + patientId + " " + startDate + " - " + endDate + " (" + comment + "): ");
         
         Patient p = patientMap.get(patientId);
+        if (p == null)
+            return;
+
         Therapy t = p.createTherapy(startDate);
         t.setStopDate(endDate);
         t.setComment(comment);
@@ -392,6 +395,8 @@ public class ImportPortugalDB {
           //System.err.println(sampleId + " " + collectionYear + " " + collectionMonth);
 
           Patient p = patientMap.get(patientId);
+          if (p == null)
+              continue;
           
           if (!viralLoad.equals("") && !viralLoad.equals("0")) {
               TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
@@ -422,6 +427,11 @@ public class ImportPortugalDB {
             int row = sampleIndex.row(i);
             
             String patientId = sampleTable.valueAt(CSamplePatientID, row);
+            
+            if (patientId.length() == 0) {
+                System.err.println("Row: " + row + ": patient Id = '' ?");
+                continue;
+            }
             if (!patientId.equals(lastPatientId)) {
                 lastPatientId = patientId;
 
@@ -509,6 +519,9 @@ public class ImportPortugalDB {
                         sampleTable.valueAt(CSampleMonthCollection, row));
 
                 Patient p = patientMap.get(patientId);
+                if (p == null)
+                    continue;
+
                 ViralIsolate vi = p.createViralIsolate();
                 vi.setSampleDate(sampleDate);
                 vi.setSampleId(seqFinalSampleId);
@@ -594,6 +607,9 @@ public class ImportPortugalDB {
                         sampleTable.valueAt(CSampleMonthCollection, row));
 
                 Patient p = patientMap.get(patientId);
+                if (p == null)
+                    continue;
+
                 ViralIsolate vi = p.createViralIsolate();
                 vi.setSampleDate(sampleDate);
                 vi.setSampleId(seqFinalSampleId);
@@ -679,6 +695,8 @@ public class ImportPortugalDB {
                 lastPatientId = patientId;
                 
                 Patient p = patientMap.get(patientId);
+                if (p == null)
+                    continue;
 
                 String clinicalFileNumber = sampleTable.valueAt(CSampleClinicalFileNumber, row);
                 if (!clinicalFileNumber.equals("")) {

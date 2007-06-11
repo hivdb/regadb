@@ -474,6 +474,11 @@ public class XMLReadCodeGen {
             write(1, "private void sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, boolean simulate) {\n");
 
             /*
+             * TODO: must decide: what if a referenced object is already in the database, do we also 'update' it ?
+             *       currently we don't.
+             */
+            
+            /*
              * Set all members
              */
             for (ObjectField f : o.fields) {
@@ -483,18 +488,50 @@ public class XMLReadCodeGen {
 
                 if (!f.isSet())
                     if (f.resolved != null) {
-                        write(2, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
-                        write(3, "sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), simulate);\n");
-                        write(2, "else {\n");
-                        write(3, "if (!simulate)\n");
-                        write(4, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
-                        write(3, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(2, "if (dbo == null) {\n");
+                        if (!f.resolved.referenced)
+                            write(3, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                        else {
+                            // find the thing in the database
+                            write(3, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(3, "if (d == null) {\n");
+                            write(4, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
+                            write(4, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                            write(3, "} else\n");
+                            write(4, "if (!simulate)\n"); // <- sync deep here for alternative strategy
+                            write(5, "o." + comp + f.setterName() + "(d);\n");
+                        }
+                        write(2, "} else {\n");
+                        write(3, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
+                        write(4, "sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), simulate);\n");
+                        write(3, "else {\n");
+                        if (f.resolved.referenced) {
+                            // find the thing in the database
+                            write(4, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(4, "if (d == null) {\n");
+                            write(5, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
+                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                            write(5, "if (!simulate)\n");
+                            write(6, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                            write(4, "} else {\n");
+                            write(5, "if (!simulate)\n");  // <- sync deep here for alternative strategy
+                            write(6, "dbo." + comp + f.setterName() + "(d);\n");
+                            write(4, "}\n");
+                        } else {
+                            write(4, "if (!simulate)\n");
+                            write(5, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                        }
+
+                        write(4, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(3, "}\n");
                         write(2, "}\n");
                     } else {
-                        write(2, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())) {\n");
-                        write(3, "if (!simulate)\n");
-                        write(4, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
-                        write(3, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(2, "if (dbo != null) {\n");
+                        write(3, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())) {\n");
+                        write(4, "if (!simulate)\n");
+                        write(5, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                        write(4, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(3, "}\n");
                         write(2, "}\n");
                     }
                 else {
@@ -553,7 +590,7 @@ public class XMLReadCodeGen {
         /*
          * -- Synchronize methods: one for each unscoped object type
          */
-        Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class, DrugGeneric.class, DrugCommercial.class };
+        Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class };
         
         //write(1, "public enum SyncMode { Clean, Update };\n");
         //write(1, "StringBuffer log = new StringBuffer();\n");
@@ -570,6 +607,7 @@ public class XMLReadCodeGen {
             write(3, "return dbo;\n");
             write(2, "} else {\n");
             write(3, "log.append(\"Adding: \" + Describe.describe(o) + \"\\n\");\n");
+            write(3, "sync(t, o, (" + c.getSimpleName() + ")null, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.save(o);\n");
             write(3, "return o;\n");

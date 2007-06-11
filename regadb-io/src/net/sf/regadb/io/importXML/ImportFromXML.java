@@ -1753,30 +1753,40 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, Patient o, Patient dbo, boolean simulate) {
-        if (!equals(dbo.getPatientId(), o.getPatientId())) {
-            if (!simulate)
-                dbo.setPatientId(o.getPatientId());
-            log.append(Describe.describe(o) + ": updating patientId\n");
+        if (dbo != null) {
+            if (!equals(dbo.getPatientId(), o.getPatientId())) {
+                if (!simulate)
+                    dbo.setPatientId(o.getPatientId());
+                log.append(Describe.describe(o) + ": updating patientId\n");
+            }
         }
-        if (!equals(dbo.getLastName(), o.getLastName())) {
-            if (!simulate)
-                dbo.setLastName(o.getLastName());
-            log.append(Describe.describe(o) + ": updating lastName\n");
+        if (dbo != null) {
+            if (!equals(dbo.getLastName(), o.getLastName())) {
+                if (!simulate)
+                    dbo.setLastName(o.getLastName());
+                log.append(Describe.describe(o) + ": updating lastName\n");
+            }
         }
-        if (!equals(dbo.getFirstName(), o.getFirstName())) {
-            if (!simulate)
-                dbo.setFirstName(o.getFirstName());
-            log.append(Describe.describe(o) + ": updating firstName\n");
+        if (dbo != null) {
+            if (!equals(dbo.getFirstName(), o.getFirstName())) {
+                if (!simulate)
+                    dbo.setFirstName(o.getFirstName());
+                log.append(Describe.describe(o) + ": updating firstName\n");
+            }
         }
-        if (!equals(dbo.getBirthDate(), o.getBirthDate())) {
-            if (!simulate)
-                dbo.setBirthDate(o.getBirthDate());
-            log.append(Describe.describe(o) + ": updating birthDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getBirthDate(), o.getBirthDate())) {
+                if (!simulate)
+                    dbo.setBirthDate(o.getBirthDate());
+                log.append(Describe.describe(o) + ": updating birthDate\n");
+            }
         }
-        if (!equals(dbo.getDeathDate(), o.getDeathDate())) {
-            if (!simulate)
-                dbo.setDeathDate(o.getDeathDate());
-            log.append(Describe.describe(o) + ": updating deathDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDeathDate(), o.getDeathDate())) {
+                if (!simulate)
+                    dbo.setDeathDate(o.getDeathDate());
+                log.append(Describe.describe(o) + ": updating deathDate\n");
+            }
         }
         for(Dataset e : o.getDatasets()) {
             Dataset dbe = null;
@@ -1921,42 +1931,86 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
-        if (!equals(dbo.getName(), o.getName())) {
-            if (!simulate)
-                dbo.setName(o.getName());
-            log.append(Describe.describe(o) + ": updating name\n");
+        if (dbo != null) {
+            if (!equals(dbo.getName(), o.getName())) {
+                if (!simulate)
+                    dbo.setName(o.getName());
+                log.append(Describe.describe(o) + ": updating name\n");
+            }
         }
-        if (!equals(dbo.getData(), o.getData())) {
-            if (!simulate)
-                dbo.setData(o.getData());
-            log.append(Describe.describe(o) + ": updating data\n");
+        if (dbo != null) {
+            if (!equals(dbo.getData(), o.getData())) {
+                if (!simulate)
+                    dbo.setData(o.getData());
+                log.append(Describe.describe(o) + ": updating data\n");
+            }
         }
-        if (!equals(dbo.getMimetype(), o.getMimetype())) {
-            if (!simulate)
-                dbo.setMimetype(o.getMimetype());
-            log.append(Describe.describe(o) + ": updating mimetype\n");
+        if (dbo != null) {
+            if (!equals(dbo.getMimetype(), o.getMimetype())) {
+                if (!simulate)
+                    dbo.setMimetype(o.getMimetype());
+                log.append(Describe.describe(o) + ": updating mimetype\n");
+            }
         }
     }
 
     private void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
-        if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
-            sync(t, o.getValueType(), dbo.getValueType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setValueType(o.getValueType());
-            log.append(Describe.describe(o) + ": updating valueType\n");
+        if (dbo == null) {
+            ValueType d = Retrieve.retrieve(t, o.getValueType());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
+                sync(t, o.getValueType(), (ValueType)null, simulate);
+            } else
+                if (!simulate)
+                    o.setValueType(d);
+        } else {
+            if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
+                sync(t, o.getValueType(), dbo.getValueType(), simulate);
+            else {
+                ValueType d = Retrieve.retrieve(t, o.getValueType());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
+                    sync(t, o.getValueType(), (ValueType)null, simulate);
+                    if (!simulate)
+                        dbo.setValueType(o.getValueType());
+                } else {
+                    if (!simulate)
+                        dbo.setValueType(d);
+                }
+                log.append(Describe.describe(o) + ": updating valueType\n");
+            }
         }
-        if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
-            sync(t, o.getTestObject(), dbo.getTestObject(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestObject(o.getTestObject());
-            log.append(Describe.describe(o) + ": updating testObject\n");
+        if (dbo == null) {
+            TestObject d = Retrieve.retrieve(t, o.getTestObject());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getTestObject()) + "\n");
+                sync(t, o.getTestObject(), (TestObject)null, simulate);
+            } else
+                if (!simulate)
+                    o.setTestObject(d);
+        } else {
+            if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
+                sync(t, o.getTestObject(), dbo.getTestObject(), simulate);
+            else {
+                TestObject d = Retrieve.retrieve(t, o.getTestObject());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getTestObject()) + "\n");
+                    sync(t, o.getTestObject(), (TestObject)null, simulate);
+                    if (!simulate)
+                        dbo.setTestObject(o.getTestObject());
+                } else {
+                    if (!simulate)
+                        dbo.setTestObject(d);
+                }
+                log.append(Describe.describe(o) + ": updating testObject\n");
+            }
         }
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDescription(), o.getDescription())) {
+                if (!simulate)
+                    dbo.setDescription(o.getDescription());
+                log.append(Describe.describe(o) + ": updating description\n");
+            }
         }
         for(TestNominalValue e : o.getTestNominalValues()) {
             TestNominalValue dbe = null;
@@ -1990,120 +2044,236 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDescription(), o.getDescription())) {
+                if (!simulate)
+                    dbo.setDescription(o.getDescription());
+                log.append(Describe.describe(o) + ": updating description\n");
+            }
         }
-        if (!equals(dbo.getMin(), o.getMin())) {
-            if (!simulate)
-                dbo.setMin(o.getMin());
-            log.append(Describe.describe(o) + ": updating min\n");
+        if (dbo != null) {
+            if (!equals(dbo.getMin(), o.getMin())) {
+                if (!simulate)
+                    dbo.setMin(o.getMin());
+                log.append(Describe.describe(o) + ": updating min\n");
+            }
         }
-        if (!equals(dbo.getMax(), o.getMax())) {
-            if (!simulate)
-                dbo.setMax(o.getMax());
-            log.append(Describe.describe(o) + ": updating max\n");
+        if (dbo != null) {
+            if (!equals(dbo.getMax(), o.getMax())) {
+                if (!simulate)
+                    dbo.setMax(o.getMax());
+                log.append(Describe.describe(o) + ": updating max\n");
+            }
         }
-        if (!equals(dbo.getMultiple(), o.getMultiple())) {
-            if (!simulate)
-                dbo.setMultiple(o.getMultiple());
-            log.append(Describe.describe(o) + ": updating multiple\n");
+        if (dbo != null) {
+            if (!equals(dbo.getMultiple(), o.getMultiple())) {
+                if (!simulate)
+                    dbo.setMultiple(o.getMultiple());
+                log.append(Describe.describe(o) + ": updating multiple\n");
+            }
         }
     }
 
     private void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDescription(), o.getDescription())) {
+                if (!simulate)
+                    dbo.setDescription(o.getDescription());
+                log.append(Describe.describe(o) + ": updating description\n");
+            }
         }
-        if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
-            if (!simulate)
-                dbo.setTestObjectId(o.getTestObjectId());
-            log.append(Describe.describe(o) + ": updating testObjectId\n");
+        if (dbo != null) {
+            if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
+                if (!simulate)
+                    dbo.setTestObjectId(o.getTestObjectId());
+                log.append(Describe.describe(o) + ": updating testObjectId\n");
+            }
         }
     }
 
     private void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
-        if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-            sync(t, o.getTestType(), dbo.getTestType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestType(o.getTestType());
-            log.append(Describe.describe(o) + ": updating testType\n");
+        if (dbo == null) {
+            TestType d = Retrieve.retrieve(t, o.getTestType());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
+                sync(t, o.getTestType(), (TestType)null, simulate);
+            } else
+                if (!simulate)
+                    o.setTestType(d);
+        } else {
+            if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
+                sync(t, o.getTestType(), dbo.getTestType(), simulate);
+            else {
+                TestType d = Retrieve.retrieve(t, o.getTestType());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
+                    sync(t, o.getTestType(), (TestType)null, simulate);
+                    if (!simulate)
+                        dbo.setTestType(o.getTestType());
+                } else {
+                    if (!simulate)
+                        dbo.setTestType(d);
+                }
+                log.append(Describe.describe(o) + ": updating testType\n");
+            }
         }
-        if (!equals(dbo.getValue(), o.getValue())) {
-            if (!simulate)
-                dbo.setValue(o.getValue());
-            log.append(Describe.describe(o) + ": updating value\n");
+        if (dbo != null) {
+            if (!equals(dbo.getValue(), o.getValue())) {
+                if (!simulate)
+                    dbo.setValue(o.getValue());
+                log.append(Describe.describe(o) + ": updating value\n");
+            }
         }
     }
 
     private void sync(Transaction t, Dataset o, Dataset dbo, boolean simulate) {
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDescription(), o.getDescription())) {
+                if (!simulate)
+                    dbo.setDescription(o.getDescription());
+                log.append(Describe.describe(o) + ": updating description\n");
+            }
         }
-        if (!equals(dbo.getCreationDate(), o.getCreationDate())) {
-            if (!simulate)
-                dbo.setCreationDate(o.getCreationDate());
-            log.append(Describe.describe(o) + ": updating creationDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getCreationDate(), o.getCreationDate())) {
+                if (!simulate)
+                    dbo.setCreationDate(o.getCreationDate());
+                log.append(Describe.describe(o) + ": updating creationDate\n");
+            }
         }
-        if (!equals(dbo.getClosedDate(), o.getClosedDate())) {
-            if (!simulate)
-                dbo.setClosedDate(o.getClosedDate());
-            log.append(Describe.describe(o) + ": updating closedDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getClosedDate(), o.getClosedDate())) {
+                if (!simulate)
+                    dbo.setClosedDate(o.getClosedDate());
+                log.append(Describe.describe(o) + ": updating closedDate\n");
+            }
         }
-        if (!equals(dbo.getRevision(), o.getRevision())) {
-            if (!simulate)
-                dbo.setRevision(o.getRevision());
-            log.append(Describe.describe(o) + ": updating revision\n");
+        if (dbo != null) {
+            if (!equals(dbo.getRevision(), o.getRevision())) {
+                if (!simulate)
+                    dbo.setRevision(o.getRevision());
+                log.append(Describe.describe(o) + ": updating revision\n");
+            }
         }
     }
 
     private void sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, boolean simulate) {
-        if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
-            sync(t, o.getId().getAttribute(), dbo.getId().getAttribute(), simulate);
-        else {
-            if (!simulate)
-                dbo.getId().setAttribute(o.getId().getAttribute());
-            log.append(Describe.describe(o) + ": updating attribute\n");
+        if (dbo == null) {
+            Attribute d = Retrieve.retrieve(t, o.getId().getAttribute());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getId().getAttribute()) + "\n");
+                sync(t, o.getId().getAttribute(), (Attribute)null, simulate);
+            } else
+                if (!simulate)
+                    o.getId().setAttribute(d);
+        } else {
+            if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
+                sync(t, o.getId().getAttribute(), dbo.getId().getAttribute(), simulate);
+            else {
+                Attribute d = Retrieve.retrieve(t, o.getId().getAttribute());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getId().getAttribute()) + "\n");
+                    sync(t, o.getId().getAttribute(), (Attribute)null, simulate);
+                    if (!simulate)
+                        dbo.getId().setAttribute(o.getId().getAttribute());
+                } else {
+                    if (!simulate)
+                        dbo.getId().setAttribute(d);
+                }
+                log.append(Describe.describe(o) + ": updating attribute\n");
+            }
         }
-        if (Equals.isSameAttributeNominalValue(o.getAttributeNominalValue(), dbo.getAttributeNominalValue()))
-            sync(t, o.getAttributeNominalValue(), dbo.getAttributeNominalValue(), simulate);
-        else {
-            if (!simulate)
-                dbo.setAttributeNominalValue(o.getAttributeNominalValue());
-            log.append(Describe.describe(o) + ": updating attributeNominalValue\n");
+        if (dbo == null) {
+            AttributeNominalValue d = Retrieve.retrieve(t, o.getAttributeNominalValue());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getAttributeNominalValue()) + "\n");
+                sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, simulate);
+            } else
+                if (!simulate)
+                    o.setAttributeNominalValue(d);
+        } else {
+            if (Equals.isSameAttributeNominalValue(o.getAttributeNominalValue(), dbo.getAttributeNominalValue()))
+                sync(t, o.getAttributeNominalValue(), dbo.getAttributeNominalValue(), simulate);
+            else {
+                AttributeNominalValue d = Retrieve.retrieve(t, o.getAttributeNominalValue());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getAttributeNominalValue()) + "\n");
+                    sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, simulate);
+                    if (!simulate)
+                        dbo.setAttributeNominalValue(o.getAttributeNominalValue());
+                } else {
+                    if (!simulate)
+                        dbo.setAttributeNominalValue(d);
+                }
+                log.append(Describe.describe(o) + ": updating attributeNominalValue\n");
+            }
         }
-        if (!equals(dbo.getValue(), o.getValue())) {
-            if (!simulate)
-                dbo.setValue(o.getValue());
-            log.append(Describe.describe(o) + ": updating value\n");
+        if (dbo != null) {
+            if (!equals(dbo.getValue(), o.getValue())) {
+                if (!simulate)
+                    dbo.setValue(o.getValue());
+                log.append(Describe.describe(o) + ": updating value\n");
+            }
         }
     }
 
     private void sync(Transaction t, Attribute o, Attribute dbo, boolean simulate) {
-        if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
-            sync(t, o.getValueType(), dbo.getValueType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setValueType(o.getValueType());
-            log.append(Describe.describe(o) + ": updating valueType\n");
+        if (dbo == null) {
+            ValueType d = Retrieve.retrieve(t, o.getValueType());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
+                sync(t, o.getValueType(), (ValueType)null, simulate);
+            } else
+                if (!simulate)
+                    o.setValueType(d);
+        } else {
+            if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
+                sync(t, o.getValueType(), dbo.getValueType(), simulate);
+            else {
+                ValueType d = Retrieve.retrieve(t, o.getValueType());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
+                    sync(t, o.getValueType(), (ValueType)null, simulate);
+                    if (!simulate)
+                        dbo.setValueType(o.getValueType());
+                } else {
+                    if (!simulate)
+                        dbo.setValueType(d);
+                }
+                log.append(Describe.describe(o) + ": updating valueType\n");
+            }
         }
-        if (Equals.isSameAttributeGroup(o.getAttributeGroup(), dbo.getAttributeGroup()))
-            sync(t, o.getAttributeGroup(), dbo.getAttributeGroup(), simulate);
-        else {
-            if (!simulate)
-                dbo.setAttributeGroup(o.getAttributeGroup());
-            log.append(Describe.describe(o) + ": updating attributeGroup\n");
+        if (dbo == null) {
+            AttributeGroup d = Retrieve.retrieve(t, o.getAttributeGroup());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getAttributeGroup()) + "\n");
+                sync(t, o.getAttributeGroup(), (AttributeGroup)null, simulate);
+            } else
+                if (!simulate)
+                    o.setAttributeGroup(d);
+        } else {
+            if (Equals.isSameAttributeGroup(o.getAttributeGroup(), dbo.getAttributeGroup()))
+                sync(t, o.getAttributeGroup(), dbo.getAttributeGroup(), simulate);
+            else {
+                AttributeGroup d = Retrieve.retrieve(t, o.getAttributeGroup());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getAttributeGroup()) + "\n");
+                    sync(t, o.getAttributeGroup(), (AttributeGroup)null, simulate);
+                    if (!simulate)
+                        dbo.setAttributeGroup(o.getAttributeGroup());
+                } else {
+                    if (!simulate)
+                        dbo.setAttributeGroup(d);
+                }
+                log.append(Describe.describe(o) + ": updating attributeGroup\n");
+            }
         }
-        if (!equals(dbo.getName(), o.getName())) {
-            if (!simulate)
-                dbo.setName(o.getName());
-            log.append(Describe.describe(o) + ": updating name\n");
+        if (dbo != null) {
+            if (!equals(dbo.getName(), o.getName())) {
+                if (!simulate)
+                    dbo.setName(o.getName());
+                log.append(Describe.describe(o) + ": updating name\n");
+            }
         }
         for(AttributeNominalValue e : o.getAttributeNominalValues()) {
             AttributeNominalValue dbe = null;
@@ -2137,31 +2307,39 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AttributeGroup o, AttributeGroup dbo, boolean simulate) {
-        if (!equals(dbo.getGroupName(), o.getGroupName())) {
-            if (!simulate)
-                dbo.setGroupName(o.getGroupName());
-            log.append(Describe.describe(o) + ": updating groupName\n");
+        if (dbo != null) {
+            if (!equals(dbo.getGroupName(), o.getGroupName())) {
+                if (!simulate)
+                    dbo.setGroupName(o.getGroupName());
+                log.append(Describe.describe(o) + ": updating groupName\n");
+            }
         }
     }
 
     private void sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, boolean simulate) {
-        if (!equals(dbo.getValue(), o.getValue())) {
-            if (!simulate)
-                dbo.setValue(o.getValue());
-            log.append(Describe.describe(o) + ": updating value\n");
+        if (dbo != null) {
+            if (!equals(dbo.getValue(), o.getValue())) {
+                if (!simulate)
+                    dbo.setValue(o.getValue());
+                log.append(Describe.describe(o) + ": updating value\n");
+            }
         }
     }
 
     private void sync(Transaction t, ViralIsolate o, ViralIsolate dbo, boolean simulate) {
-        if (!equals(dbo.getSampleId(), o.getSampleId())) {
-            if (!simulate)
-                dbo.setSampleId(o.getSampleId());
-            log.append(Describe.describe(o) + ": updating sampleId\n");
+        if (dbo != null) {
+            if (!equals(dbo.getSampleId(), o.getSampleId())) {
+                if (!simulate)
+                    dbo.setSampleId(o.getSampleId());
+                log.append(Describe.describe(o) + ": updating sampleId\n");
+            }
         }
-        if (!equals(dbo.getSampleDate(), o.getSampleDate())) {
-            if (!simulate)
-                dbo.setSampleDate(o.getSampleDate());
-            log.append(Describe.describe(o) + ": updating sampleDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getSampleDate(), o.getSampleDate())) {
+                if (!simulate)
+                    dbo.setSampleDate(o.getSampleDate());
+                log.append(Describe.describe(o) + ": updating sampleDate\n");
+            }
         }
         for(NtSequence e : o.getNtSequences()) {
             NtSequence dbe = null;
@@ -2224,20 +2402,26 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, NtSequence o, NtSequence dbo, boolean simulate) {
-        if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
-            if (!simulate)
-                dbo.setNucleotides(o.getNucleotides());
-            log.append(Describe.describe(o) + ": updating nucleotides\n");
+        if (dbo != null) {
+            if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
+                if (!simulate)
+                    dbo.setNucleotides(o.getNucleotides());
+                log.append(Describe.describe(o) + ": updating nucleotides\n");
+            }
         }
-        if (!equals(dbo.getLabel(), o.getLabel())) {
-            if (!simulate)
-                dbo.setLabel(o.getLabel());
-            log.append(Describe.describe(o) + ": updating label\n");
+        if (dbo != null) {
+            if (!equals(dbo.getLabel(), o.getLabel())) {
+                if (!simulate)
+                    dbo.setLabel(o.getLabel());
+                log.append(Describe.describe(o) + ": updating label\n");
+            }
         }
-        if (!equals(dbo.getSequenceDate(), o.getSequenceDate())) {
-            if (!simulate)
-                dbo.setSequenceDate(o.getSequenceDate());
-            log.append(Describe.describe(o) + ": updating sequenceDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getSequenceDate(), o.getSequenceDate())) {
+                if (!simulate)
+                    dbo.setSequenceDate(o.getSequenceDate());
+                log.append(Describe.describe(o) + ": updating sequenceDate\n");
+            }
         }
         for(AaSequence e : o.getAaSequences()) {
             AaSequence dbe = null;
@@ -2300,20 +2484,26 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AaSequence o, AaSequence dbo, boolean simulate) {
-        if (!equals(dbo.getProtein(), o.getProtein())) {
-            if (!simulate)
-                dbo.setProtein(o.getProtein());
-            log.append(Describe.describe(o) + ": updating protein\n");
+        if (dbo != null) {
+            if (!equals(dbo.getProtein(), o.getProtein())) {
+                if (!simulate)
+                    dbo.setProtein(o.getProtein());
+                log.append(Describe.describe(o) + ": updating protein\n");
+            }
         }
-        if (!equals(dbo.getFirstAaPos(), o.getFirstAaPos())) {
-            if (!simulate)
-                dbo.setFirstAaPos(o.getFirstAaPos());
-            log.append(Describe.describe(o) + ": updating firstAaPos\n");
+        if (dbo != null) {
+            if (!equals(dbo.getFirstAaPos(), o.getFirstAaPos())) {
+                if (!simulate)
+                    dbo.setFirstAaPos(o.getFirstAaPos());
+                log.append(Describe.describe(o) + ": updating firstAaPos\n");
+            }
         }
-        if (!equals(dbo.getLastAaPos(), o.getLastAaPos())) {
-            if (!simulate)
-                dbo.setLastAaPos(o.getLastAaPos());
-            log.append(Describe.describe(o) + ": updating lastAaPos\n");
+        if (dbo != null) {
+            if (!equals(dbo.getLastAaPos(), o.getLastAaPos())) {
+                if (!simulate)
+                    dbo.setLastAaPos(o.getLastAaPos());
+                log.append(Describe.describe(o) + ": updating lastAaPos\n");
+            }
         }
         for(AaMutation e : o.getAaMutations()) {
             AaMutation dbe = null;
@@ -2376,71 +2566,95 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, AaMutation o, AaMutation dbo, boolean simulate) {
-        if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
-            if (!simulate)
-                dbo.getId().setPosition(o.getId().getPosition());
-            log.append(Describe.describe(o) + ": updating position\n");
+        if (dbo != null) {
+            if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
+                if (!simulate)
+                    dbo.getId().setPosition(o.getId().getPosition());
+                log.append(Describe.describe(o) + ": updating position\n");
+            }
         }
-        if (!equals(dbo.getAaReference(), o.getAaReference())) {
-            if (!simulate)
-                dbo.setAaReference(o.getAaReference());
-            log.append(Describe.describe(o) + ": updating aaReference\n");
+        if (dbo != null) {
+            if (!equals(dbo.getAaReference(), o.getAaReference())) {
+                if (!simulate)
+                    dbo.setAaReference(o.getAaReference());
+                log.append(Describe.describe(o) + ": updating aaReference\n");
+            }
         }
-        if (!equals(dbo.getAaMutation(), o.getAaMutation())) {
-            if (!simulate)
-                dbo.setAaMutation(o.getAaMutation());
-            log.append(Describe.describe(o) + ": updating aaMutation\n");
+        if (dbo != null) {
+            if (!equals(dbo.getAaMutation(), o.getAaMutation())) {
+                if (!simulate)
+                    dbo.setAaMutation(o.getAaMutation());
+                log.append(Describe.describe(o) + ": updating aaMutation\n");
+            }
         }
-        if (!equals(dbo.getNtReferenceCodon(), o.getNtReferenceCodon())) {
-            if (!simulate)
-                dbo.setNtReferenceCodon(o.getNtReferenceCodon());
-            log.append(Describe.describe(o) + ": updating ntReferenceCodon\n");
+        if (dbo != null) {
+            if (!equals(dbo.getNtReferenceCodon(), o.getNtReferenceCodon())) {
+                if (!simulate)
+                    dbo.setNtReferenceCodon(o.getNtReferenceCodon());
+                log.append(Describe.describe(o) + ": updating ntReferenceCodon\n");
+            }
         }
-        if (!equals(dbo.getNtMutationCodon(), o.getNtMutationCodon())) {
-            if (!simulate)
-                dbo.setNtMutationCodon(o.getNtMutationCodon());
-            log.append(Describe.describe(o) + ": updating ntMutationCodon\n");
+        if (dbo != null) {
+            if (!equals(dbo.getNtMutationCodon(), o.getNtMutationCodon())) {
+                if (!simulate)
+                    dbo.setNtMutationCodon(o.getNtMutationCodon());
+                log.append(Describe.describe(o) + ": updating ntMutationCodon\n");
+            }
         }
     }
 
     private void sync(Transaction t, AaInsertion o, AaInsertion dbo, boolean simulate) {
-        if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
-            if (!simulate)
-                dbo.getId().setPosition(o.getId().getPosition());
-            log.append(Describe.describe(o) + ": updating position\n");
+        if (dbo != null) {
+            if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
+                if (!simulate)
+                    dbo.getId().setPosition(o.getId().getPosition());
+                log.append(Describe.describe(o) + ": updating position\n");
+            }
         }
-        if (!equals(dbo.getId().getInsertionOrder(), o.getId().getInsertionOrder())) {
-            if (!simulate)
-                dbo.getId().setInsertionOrder(o.getId().getInsertionOrder());
-            log.append(Describe.describe(o) + ": updating insertionOrder\n");
+        if (dbo != null) {
+            if (!equals(dbo.getId().getInsertionOrder(), o.getId().getInsertionOrder())) {
+                if (!simulate)
+                    dbo.getId().setInsertionOrder(o.getId().getInsertionOrder());
+                log.append(Describe.describe(o) + ": updating insertionOrder\n");
+            }
         }
-        if (!equals(dbo.getAaInsertion(), o.getAaInsertion())) {
-            if (!simulate)
-                dbo.setAaInsertion(o.getAaInsertion());
-            log.append(Describe.describe(o) + ": updating aaInsertion\n");
+        if (dbo != null) {
+            if (!equals(dbo.getAaInsertion(), o.getAaInsertion())) {
+                if (!simulate)
+                    dbo.setAaInsertion(o.getAaInsertion());
+                log.append(Describe.describe(o) + ": updating aaInsertion\n");
+            }
         }
-        if (!equals(dbo.getNtInsertionCodon(), o.getNtInsertionCodon())) {
-            if (!simulate)
-                dbo.setNtInsertionCodon(o.getNtInsertionCodon());
-            log.append(Describe.describe(o) + ": updating ntInsertionCodon\n");
+        if (dbo != null) {
+            if (!equals(dbo.getNtInsertionCodon(), o.getNtInsertionCodon())) {
+                if (!simulate)
+                    dbo.setNtInsertionCodon(o.getNtInsertionCodon());
+                log.append(Describe.describe(o) + ": updating ntInsertionCodon\n");
+            }
         }
     }
 
     private void sync(Transaction t, Therapy o, Therapy dbo, boolean simulate) {
-        if (!equals(dbo.getStartDate(), o.getStartDate())) {
-            if (!simulate)
-                dbo.setStartDate(o.getStartDate());
-            log.append(Describe.describe(o) + ": updating startDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getStartDate(), o.getStartDate())) {
+                if (!simulate)
+                    dbo.setStartDate(o.getStartDate());
+                log.append(Describe.describe(o) + ": updating startDate\n");
+            }
         }
-        if (!equals(dbo.getStopDate(), o.getStopDate())) {
-            if (!simulate)
-                dbo.setStopDate(o.getStopDate());
-            log.append(Describe.describe(o) + ": updating stopDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getStopDate(), o.getStopDate())) {
+                if (!simulate)
+                    dbo.setStopDate(o.getStopDate());
+                log.append(Describe.describe(o) + ": updating stopDate\n");
+            }
         }
-        if (!equals(dbo.getComment(), o.getComment())) {
-            if (!simulate)
-                dbo.setComment(o.getComment());
-            log.append(Describe.describe(o) + ": updating comment\n");
+        if (dbo != null) {
+            if (!equals(dbo.getComment(), o.getComment())) {
+                if (!simulate)
+                    dbo.setComment(o.getComment());
+                log.append(Describe.describe(o) + ": updating comment\n");
+            }
         }
         for(TherapyCommercial e : o.getTherapyCommercials()) {
             TherapyCommercial dbe = null;
@@ -2503,130 +2717,236 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     private void sync(Transaction t, TestResult o, TestResult dbo, boolean simulate) {
-        if (Equals.isSameTest(o.getTest(), dbo.getTest()))
-            sync(t, o.getTest(), dbo.getTest(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTest(o.getTest());
-            log.append(Describe.describe(o) + ": updating test\n");
+        if (dbo == null) {
+            Test d = Retrieve.retrieve(t, o.getTest());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getTest()) + "\n");
+                sync(t, o.getTest(), (Test)null, simulate);
+            } else
+                if (!simulate)
+                    o.setTest(d);
+        } else {
+            if (Equals.isSameTest(o.getTest(), dbo.getTest()))
+                sync(t, o.getTest(), dbo.getTest(), simulate);
+            else {
+                Test d = Retrieve.retrieve(t, o.getTest());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getTest()) + "\n");
+                    sync(t, o.getTest(), (Test)null, simulate);
+                    if (!simulate)
+                        dbo.setTest(o.getTest());
+                } else {
+                    if (!simulate)
+                        dbo.setTest(d);
+                }
+                log.append(Describe.describe(o) + ": updating test\n");
+            }
         }
-        if (!equals(dbo.getDrugGeneric(), o.getDrugGeneric())) {
-            if (!simulate)
-                dbo.setDrugGeneric(o.getDrugGeneric());
-            log.append(Describe.describe(o) + ": updating drugGeneric\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDrugGeneric(), o.getDrugGeneric())) {
+                if (!simulate)
+                    dbo.setDrugGeneric(o.getDrugGeneric());
+                log.append(Describe.describe(o) + ": updating drugGeneric\n");
+            }
         }
-        if (Equals.isSameTestNominalValue(o.getTestNominalValue(), dbo.getTestNominalValue()))
-            sync(t, o.getTestNominalValue(), dbo.getTestNominalValue(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestNominalValue(o.getTestNominalValue());
-            log.append(Describe.describe(o) + ": updating testNominalValue\n");
+        if (dbo == null) {
+            TestNominalValue d = Retrieve.retrieve(t, o.getTestNominalValue());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getTestNominalValue()) + "\n");
+                sync(t, o.getTestNominalValue(), (TestNominalValue)null, simulate);
+            } else
+                if (!simulate)
+                    o.setTestNominalValue(d);
+        } else {
+            if (Equals.isSameTestNominalValue(o.getTestNominalValue(), dbo.getTestNominalValue()))
+                sync(t, o.getTestNominalValue(), dbo.getTestNominalValue(), simulate);
+            else {
+                TestNominalValue d = Retrieve.retrieve(t, o.getTestNominalValue());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getTestNominalValue()) + "\n");
+                    sync(t, o.getTestNominalValue(), (TestNominalValue)null, simulate);
+                    if (!simulate)
+                        dbo.setTestNominalValue(o.getTestNominalValue());
+                } else {
+                    if (!simulate)
+                        dbo.setTestNominalValue(d);
+                }
+                log.append(Describe.describe(o) + ": updating testNominalValue\n");
+            }
         }
-        if (!equals(dbo.getValue(), o.getValue())) {
-            if (!simulate)
-                dbo.setValue(o.getValue());
-            log.append(Describe.describe(o) + ": updating value\n");
+        if (dbo != null) {
+            if (!equals(dbo.getValue(), o.getValue())) {
+                if (!simulate)
+                    dbo.setValue(o.getValue());
+                log.append(Describe.describe(o) + ": updating value\n");
+            }
         }
-        if (!equals(dbo.getTestDate(), o.getTestDate())) {
-            if (!simulate)
-                dbo.setTestDate(o.getTestDate());
-            log.append(Describe.describe(o) + ": updating testDate\n");
+        if (dbo != null) {
+            if (!equals(dbo.getTestDate(), o.getTestDate())) {
+                if (!simulate)
+                    dbo.setTestDate(o.getTestDate());
+                log.append(Describe.describe(o) + ": updating testDate\n");
+            }
         }
-        if (!equals(dbo.getSampleId(), o.getSampleId())) {
-            if (!simulate)
-                dbo.setSampleId(o.getSampleId());
-            log.append(Describe.describe(o) + ": updating sampleId\n");
+        if (dbo != null) {
+            if (!equals(dbo.getSampleId(), o.getSampleId())) {
+                if (!simulate)
+                    dbo.setSampleId(o.getSampleId());
+                log.append(Describe.describe(o) + ": updating sampleId\n");
+            }
         }
     }
 
     private void sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, boolean simulate) {
-        if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
-            if (!simulate)
-                dbo.getId().setDrugCommercial(o.getId().getDrugCommercial());
-            log.append(Describe.describe(o) + ": updating drugCommercial\n");
+        if (dbo != null) {
+            if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
+                if (!simulate)
+                    dbo.getId().setDrugCommercial(o.getId().getDrugCommercial());
+                log.append(Describe.describe(o) + ": updating drugCommercial\n");
+            }
         }
-        if (!equals(dbo.getDayDosageUnits(), o.getDayDosageUnits())) {
-            if (!simulate)
-                dbo.setDayDosageUnits(o.getDayDosageUnits());
-            log.append(Describe.describe(o) + ": updating dayDosageUnits\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDayDosageUnits(), o.getDayDosageUnits())) {
+                if (!simulate)
+                    dbo.setDayDosageUnits(o.getDayDosageUnits());
+                log.append(Describe.describe(o) + ": updating dayDosageUnits\n");
+            }
         }
     }
 
     private void sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, boolean simulate) {
-        if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
-            if (!simulate)
-                dbo.getId().setDrugGeneric(o.getId().getDrugGeneric());
-            log.append(Describe.describe(o) + ": updating drugGeneric\n");
+        if (dbo != null) {
+            if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
+                if (!simulate)
+                    dbo.getId().setDrugGeneric(o.getId().getDrugGeneric());
+                log.append(Describe.describe(o) + ": updating drugGeneric\n");
+            }
         }
-        if (!equals(dbo.getDayDosageMg(), o.getDayDosageMg())) {
-            if (!simulate)
-                dbo.setDayDosageMg(o.getDayDosageMg());
-            log.append(Describe.describe(o) + ": updating dayDosageMg\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDayDosageMg(), o.getDayDosageMg())) {
+                if (!simulate)
+                    dbo.setDayDosageMg(o.getDayDosageMg());
+                log.append(Describe.describe(o) + ": updating dayDosageMg\n");
+            }
         }
     }
 
     private void sync(Transaction t, Test o, Test dbo, boolean simulate) {
-        if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
-            sync(t, o.getAnalysis(), dbo.getAnalysis(), simulate);
-        else {
-            if (!simulate)
-                dbo.setAnalysis(o.getAnalysis());
-            log.append(Describe.describe(o) + ": updating analysis\n");
+        if (dbo == null) {
+            Analysis d = Retrieve.retrieve(t, o.getAnalysis());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getAnalysis()) + "\n");
+                sync(t, o.getAnalysis(), (Analysis)null, simulate);
+            } else
+                if (!simulate)
+                    o.setAnalysis(d);
+        } else {
+            if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
+                sync(t, o.getAnalysis(), dbo.getAnalysis(), simulate);
+            else {
+                Analysis d = Retrieve.retrieve(t, o.getAnalysis());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getAnalysis()) + "\n");
+                    sync(t, o.getAnalysis(), (Analysis)null, simulate);
+                    if (!simulate)
+                        dbo.setAnalysis(o.getAnalysis());
+                } else {
+                    if (!simulate)
+                        dbo.setAnalysis(d);
+                }
+                log.append(Describe.describe(o) + ": updating analysis\n");
+            }
         }
-        if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-            sync(t, o.getTestType(), dbo.getTestType(), simulate);
-        else {
-            if (!simulate)
-                dbo.setTestType(o.getTestType());
-            log.append(Describe.describe(o) + ": updating testType\n");
+        if (dbo == null) {
+            TestType d = Retrieve.retrieve(t, o.getTestType());
+            if (d == null) {
+                log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
+                sync(t, o.getTestType(), (TestType)null, simulate);
+            } else
+                if (!simulate)
+                    o.setTestType(d);
+        } else {
+            if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
+                sync(t, o.getTestType(), dbo.getTestType(), simulate);
+            else {
+                TestType d = Retrieve.retrieve(t, o.getTestType());
+                if (d == null) {
+                    log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
+                    sync(t, o.getTestType(), (TestType)null, simulate);
+                    if (!simulate)
+                        dbo.setTestType(o.getTestType());
+                } else {
+                    if (!simulate)
+                        dbo.setTestType(d);
+                }
+                log.append(Describe.describe(o) + ": updating testType\n");
+            }
         }
-        if (!equals(dbo.getDescription(), o.getDescription())) {
-            if (!simulate)
-                dbo.setDescription(o.getDescription());
-            log.append(Describe.describe(o) + ": updating description\n");
+        if (dbo != null) {
+            if (!equals(dbo.getDescription(), o.getDescription())) {
+                if (!simulate)
+                    dbo.setDescription(o.getDescription());
+                log.append(Describe.describe(o) + ": updating description\n");
+            }
         }
     }
 
     private void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
-        if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
-            if (!simulate)
-                dbo.setAnalysisType(o.getAnalysisType());
-            log.append(Describe.describe(o) + ": updating analysisType\n");
+        if (dbo != null) {
+            if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
+                if (!simulate)
+                    dbo.setAnalysisType(o.getAnalysisType());
+                log.append(Describe.describe(o) + ": updating analysisType\n");
+            }
         }
-        if (!equals(dbo.getType(), o.getType())) {
-            if (!simulate)
-                dbo.setType(o.getType());
-            log.append(Describe.describe(o) + ": updating type\n");
+        if (dbo != null) {
+            if (!equals(dbo.getType(), o.getType())) {
+                if (!simulate)
+                    dbo.setType(o.getType());
+                log.append(Describe.describe(o) + ": updating type\n");
+            }
         }
-        if (!equals(dbo.getUrl(), o.getUrl())) {
-            if (!simulate)
-                dbo.setUrl(o.getUrl());
-            log.append(Describe.describe(o) + ": updating url\n");
+        if (dbo != null) {
+            if (!equals(dbo.getUrl(), o.getUrl())) {
+                if (!simulate)
+                    dbo.setUrl(o.getUrl());
+                log.append(Describe.describe(o) + ": updating url\n");
+            }
         }
-        if (!equals(dbo.getAccount(), o.getAccount())) {
-            if (!simulate)
-                dbo.setAccount(o.getAccount());
-            log.append(Describe.describe(o) + ": updating account\n");
+        if (dbo != null) {
+            if (!equals(dbo.getAccount(), o.getAccount())) {
+                if (!simulate)
+                    dbo.setAccount(o.getAccount());
+                log.append(Describe.describe(o) + ": updating account\n");
+            }
         }
-        if (!equals(dbo.getPassword(), o.getPassword())) {
-            if (!simulate)
-                dbo.setPassword(o.getPassword());
-            log.append(Describe.describe(o) + ": updating password\n");
+        if (dbo != null) {
+            if (!equals(dbo.getPassword(), o.getPassword())) {
+                if (!simulate)
+                    dbo.setPassword(o.getPassword());
+                log.append(Describe.describe(o) + ": updating password\n");
+            }
         }
-        if (!equals(dbo.getBaseinputfile(), o.getBaseinputfile())) {
-            if (!simulate)
-                dbo.setBaseinputfile(o.getBaseinputfile());
-            log.append(Describe.describe(o) + ": updating baseinputfile\n");
+        if (dbo != null) {
+            if (!equals(dbo.getBaseinputfile(), o.getBaseinputfile())) {
+                if (!simulate)
+                    dbo.setBaseinputfile(o.getBaseinputfile());
+                log.append(Describe.describe(o) + ": updating baseinputfile\n");
+            }
         }
-        if (!equals(dbo.getBaseoutputfile(), o.getBaseoutputfile())) {
-            if (!simulate)
-                dbo.setBaseoutputfile(o.getBaseoutputfile());
-            log.append(Describe.describe(o) + ": updating baseoutputfile\n");
+        if (dbo != null) {
+            if (!equals(dbo.getBaseoutputfile(), o.getBaseoutputfile())) {
+                if (!simulate)
+                    dbo.setBaseoutputfile(o.getBaseoutputfile());
+                log.append(Describe.describe(o) + ": updating baseoutputfile\n");
+            }
         }
-        if (!equals(dbo.getServiceName(), o.getServiceName())) {
-            if (!simulate)
-                dbo.setServiceName(o.getServiceName());
-            log.append(Describe.describe(o) + ": updating serviceName\n");
+        if (dbo != null) {
+            if (!equals(dbo.getServiceName(), o.getServiceName())) {
+                if (!simulate)
+                    dbo.setServiceName(o.getServiceName());
+                log.append(Describe.describe(o) + ": updating serviceName\n");
+            }
         }
         for(AnalysisData e : o.getAnalysisDatas()) {
             AnalysisData dbe = null;
@@ -2670,6 +2990,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             return dbo;
         } else {
             log.append("Adding: " + Describe.describe(o) + "\n");
+            sync(t, o, (Patient)null, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -2687,6 +3008,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             return dbo;
         } else {
             log.append("Adding: " + Describe.describe(o) + "\n");
+            sync(t, o, (Attribute)null, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -2704,6 +3026,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             return dbo;
         } else {
             log.append("Adding: " + Describe.describe(o) + "\n");
+            sync(t, o, (Test)null, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -2721,40 +3044,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             return dbo;
         } else {
             log.append("Adding: " + Describe.describe(o) + "\n");
-            if (!simulate)
-                t.save(o);
-            return o;
-        }
-    }
-
-    public DrugGeneric sync(Transaction t, DrugGeneric o, SyncMode mode, boolean simulate) throws ImportException {
-        DrugGeneric dbo = dbFindDrugGeneric(t, o);
-        if (dbo != null) {
-            if (mode == SyncMode.Clean)
-                throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
-            if (!simulate)
-                t.update(dbo);
-            return dbo;
-        } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
-            if (!simulate)
-                t.save(o);
-            return o;
-        }
-    }
-
-    public DrugCommercial sync(Transaction t, DrugCommercial o, SyncMode mode, boolean simulate) throws ImportException {
-        DrugCommercial dbo = dbFindDrugCommercial(t, o);
-        if (dbo != null) {
-            if (mode == SyncMode.Clean)
-                throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
-            if (!simulate)
-                t.update(dbo);
-            return dbo;
-        } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
+            sync(t, o, (TestType)null, simulate);
             if (!simulate)
                 t.save(o);
             return o;

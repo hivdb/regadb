@@ -1282,4 +1282,28 @@ public class Transaction {
         
         return (DrugCommercial)q.uniqueResult();
     }
+
+    public TestObject getTestObject(String description) {
+        Query q = session.createQuery("from TestObject as testobject where description = :description");
+        
+        q.setParameter("description", description);
+        
+        return (TestObject)q.uniqueResult();
+    }
+
+    public AttributeGroup getAttributeGroup(String groupName) {
+        Query q = session.createQuery("from AttributeGroup as attributegroup where groupName = :groupName");
+        
+        q.setParameter("groupName", groupName);
+        
+        return (AttributeGroup)q.uniqueResult();
+    }
+
+    public ValueType getValueType(String description) {
+        Query q = session.createQuery("from ValueType as valuetype where description = :description");
+        
+        q.setParameter("description", description);
+        
+        return (ValueType)q.uniqueResult();        
+    }
 }

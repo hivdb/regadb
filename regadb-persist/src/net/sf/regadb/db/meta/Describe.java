@@ -35,7 +35,7 @@ import net.sf.regadb.db.ViralIsolate;
 public class Describe {
 
     public static String describe(Patient o) {
-        return "Patient '" + describe(o.getSourceDataset()) + "':'" + o.getPatientId() + "'";
+        return "Patient (in " + describe(o.getSourceDataset()) + "): '" + o.getPatientId() + "'";
     }
 
     public static String describe(AttributeNominalValue o) {
@@ -119,7 +119,10 @@ public class Describe {
     }
 
     public static String describe(Dataset o) {
-        return "Data set '" + o.getDescription() + "'";
+        if (o == null)
+            return "null Data set";
+        else
+            return "Data set '" + o.getDescription() + "'";
     }
     
     public static String describe(AttributeGroup o) {
