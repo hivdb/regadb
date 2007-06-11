@@ -262,4 +262,8 @@ public class ImportFromXMLBase extends DefaultHandler{
     {
         return log;
     }
+
+    public Map<String, AnalysisType> getAnalysisTypes() {
+        return analysisTypes;
+    }
 }

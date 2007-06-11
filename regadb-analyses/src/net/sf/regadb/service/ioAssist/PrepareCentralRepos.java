@@ -173,7 +173,7 @@ public class PrepareCentralRepos
         analysis.setAccount("public");
         analysis.setPassword("public");
         analysis.setBaseinputfile("viral_isolate");
-        analysis.setBaseoutputfile("asi_rules");
+        analysis.setBaseoutputfile("interpretation");
         analysis.setServiceName("regadb-hiv-resist");
         
         byte[] algo = null;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.ViralIsolate;
@@ -51,6 +52,11 @@ public class ViralIsolateAnalysis
  
         
         client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseinputfile(), input.getBytes());
+        
+        for(AnalysisData ad : test_.getAnalysis().getAnalysisDatas())
+        {
+            client_.upload(ticket, test_.getAnalysis().getServiceName(), ad.getName(), ad.getData());
+        }
         
         client_.start(ticket, test_.getAnalysis().getServiceName());
         

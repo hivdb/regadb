@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.service.wts.ViralIsolateAnalysis;
 import net.sf.wts.client.WtsClient;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -51,6 +53,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private FileWriter fileWriter_;
     
     private ImportFromXML importXML_;
+    
+    private List<Test> resistanceTests_;
     
     public IOAssistImportHandler(FileWriter fw)
     {
@@ -82,14 +86,29 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         export_ = new ExportToXML();
         fileWriter_ = fw;
         
+        //find resistance tests --start
         importXML_ = new ImportFromXML();
         importXML_.loadDatabaseObjects(null);
+        importXML_.getAnalysisTypes().put("WTS", new AnalysisType("wts"));
         try 
         {
-            File tests =  File.createTempFile("test_from_central_repos",".xml");
+            File tests =  File.createTempFile("tests_from_central_repos",".xml");
             FileProvider fp = new FileProvider();
             fp.getFile("regadb-tests", "tests.xml", tests);
-            List<Test> testList = importXML_.readTests(new InputSource(new FileReader(tests)), null);
+            resistanceTests_ = importXML_.readTests(new InputSource(new FileReader(tests)), null);
+            //remove non-resistance tests
+            ArrayList<Test> toRemove = new ArrayList<Test>();
+            for(Test resTest : resistanceTests_)
+            {
+                if(!resTest.getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)"))
+                {
+                    toRemove.add(resTest);
+                }
+            }
+            for(Test remove : toRemove)
+            {
+                resistanceTests_.remove(remove);
+            }
         } 
         catch (IOException e) 
         {
@@ -99,6 +118,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         {
             e.printStackTrace();
         }
+        //find resistance tests --end
     }
     
     public void importObject(ViralIsolate object)
@@ -127,6 +147,12 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
             {
                 e.printStackTrace();
             }
+        }
+        
+        for(Test resistanceTest : resistanceTests_)
+        {
+            ViralIsolateAnalysis via = new ViralIsolateAnalysis(object, resistanceTest, 500);
+            via.run(new File("/home/plibin0/tmp/resistance/"+countViralIsolates+resistanceTest.getDescription()+".xml"));
         }
         
         Element parent = new Element("viralIsolates-el");
