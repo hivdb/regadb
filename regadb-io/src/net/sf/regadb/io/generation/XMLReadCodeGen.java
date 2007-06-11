@@ -491,37 +491,44 @@ public class XMLReadCodeGen {
                 if (!f.isSet())
                     if (f.resolved != null) {
                         write(2, "if (dbo == null) {\n");
+                        write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
                         if (!f.resolved.referenced)
-                            write(3, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                            write(4, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
                         else {
                             // find the thing in the database
-                            write(3, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
-                            write(3, "if (d == null) {\n");
-                            write(4, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
-                            write(4, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                            write(3, "} else\n");
-                            write(4, "if (!simulate)\n"); // <- sync deep here for alternative strategy
-                            write(5, "o." + comp + f.setterName() + "(d);\n");
+                            write(4, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(4, "if (d == null) {\n");
+                            write(5, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
+                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                            write(4, "} else\n");
+                            write(5, "if (!simulate)\n"); // <- sync deep here for alternative strategy
+                            write(6, "o." + comp + f.setterName() + "(d);\n");
                         }
+                        write(3, "}\n");
                         write(2, "} else {\n");
                         write(3, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
                         write(4, "sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), simulate);\n");
                         write(3, "else {\n");
                         if (f.resolved.referenced) {
                             // find the thing in the database
-                            write(4, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
-                            write(4, "if (d == null) {\n");
-                            write(5, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
-                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                            write(5, "if (!simulate)\n");
-                            write(6, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                            write(4, "if (o." + comp + f.getterName() + "() != null) {\n");
+                            write(5, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(5, "if (d == null) {\n");
+                            write(6, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
+                            write(6, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
+                            write(6, "if (!simulate)\n");
+                            write(7, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                            write(5, "} else {\n");
+                            write(6, "if (!simulate)\n");  // <- sync deep here for alternative strategy
+                            write(7, "dbo." + comp + f.setterName() + "(d);\n");
+                            write(5, "}\n");
                             write(4, "} else {\n");
                             write(5, "if (!simulate)\n");  // <- sync deep here for alternative strategy
-                            write(6, "dbo." + comp + f.setterName() + "(d);\n");
+                            write(6, "dbo." + comp + f.setterName() + "(null);\n");
                             write(4, "}\n");
                         } else {
-                            write(4, "if (!simulate)\n");
-                            write(5, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                            write(5, "if (!simulate)\n");
+                            write(6, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
                         }
 
                         write(4, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
