@@ -15,7 +15,8 @@ public class IOAssist
 {
     public static void main(String [] args)
     {
-        System.err.println("IOAssist run");
+        System.err.println("IOAssist started");
+        long start = System.currentTimeMillis();
         ImportFromXML imp = new ImportFromXML();
         FileReader r;
         try 
@@ -23,7 +24,9 @@ public class IOAssist
             r = new FileReader(new File(args[0]));
             File outFile = new File(args[1]);
             FileWriter out = new FileWriter(outFile);
+            out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <viralIsolates>");
             imp.readViralIsolates(new InputSource(r), new IOAssistImportHandler(out));
+            out.write("</viralIsolates>");
             out.close();
         } 
         catch (FileNotFoundException e) 
@@ -38,5 +41,7 @@ public class IOAssist
         {
             e.printStackTrace();
         }
+        long stop = System.currentTimeMillis();
+        System.err.println("IOAssist finished in:" + (stop-start)/1000.0);
     }
 }

@@ -1,5 +1,6 @@
 package net.sf.regadb.service.ioAssist;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,6 +17,7 @@ import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
@@ -26,6 +28,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ViralIsolateAnalysis;
@@ -55,7 +58,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private ImportFromXML importXML_;
     
     private List<Test> resistanceTests_;
-    
+        
     public IOAssistImportHandler(FileWriter fw)
     {
         Protein p6 = new Protein("p6", "Transframe peptide (partially)");
@@ -123,6 +126,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public void importObject(ViralIsolate object)
     {
+        long start = System.currentTimeMillis();
         List<AaSequence> aaSeqs = null;
         for(NtSequence ntseq : object.getNtSequences())
         {
@@ -149,10 +153,40 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
             }
         }
         
-        for(Test resistanceTest : resistanceTests_)
+        for(final Test resistanceTest : resistanceTests_)
         {
             ViralIsolateAnalysis via = new ViralIsolateAnalysis(object, resistanceTest, 500);
-            via.run(new File("/home/plibin0/tmp/resistance/"+countViralIsolates+resistanceTest.getDescription()+".xml"));
+            byte[] result = via.run();
+            final ViralIsolate isolate = object;
+            ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
+            {
+                @Override
+                public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
+                {
+                    TestResult resistanceInterpretation = new TestResult();
+                    resistanceInterpretation.setViralIsolate(isolate);
+                    resistanceInterpretation.setDrugGeneric(new DrugGeneric(null, drug, ""));
+                    resistanceInterpretation.setValue(gss+"");
+                    resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
+                    resistanceInterpretation.setTest(resistanceTest);
+                    
+                    isolate.getTestResults().add(resistanceInterpretation);
+                }
+            };
+            try 
+            {
+                inp.parse(new InputSource(new ByteArrayInputStream(result)));
+            } 
+            catch (SAXException e) 
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } 
+            catch (IOException e) 
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         
         Element parent = new Element("viralIsolates-el");
@@ -168,6 +202,9 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         
         countViralIsolates++;
         System.err.println("Processed viral isolate nr "+countViralIsolates);
+        
+        long stop = System.currentTimeMillis();
+        System.err.println("runtime:" + (stop-start)/1000.0);
     }
     
     private TestResult ntSeqAnalysis(NtSequence ntseq, Test test)
@@ -223,7 +260,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         {
             try 
             {
-                Thread.sleep(200);
+                Thread.sleep(500);
             } 
             catch (InterruptedException ie) 
             {

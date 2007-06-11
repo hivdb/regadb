@@ -35,8 +35,19 @@ public class ViralIsolateAnalysis
         this(vi, test, 5000);
     }
     
+    public byte[] run()
+    {
+        return runInternal(null);
+    }
+    
     public void run(File resultFile)
     {
+        runInternal(resultFile);
+    }
+    
+    private byte[] runInternal(File resultFile)
+    {
+        byte[] result = null;
         String input = "";
         for(NtSequence ntseq : vi_.getNtSequences())
         {
@@ -77,7 +88,10 @@ public class ViralIsolateAnalysis
             }
         }
         
-        client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), resultFile);
+        if(resultFile!=null)
+            client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile(), resultFile);
+        else
+            result = client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile());
         
         client_.closeSession(ticket, test_.getAnalysis().getServiceName());
         
@@ -90,5 +104,10 @@ public class ViralIsolateAnalysis
         {
             e.printStackTrace();
         }
+        
+        if(resultFile!=null)
+            return null;
+        else
+            return result;
     }
 }
