@@ -68,7 +68,7 @@ public class Test {
         v.getNtSequences().add(s);
         s.setNucleotides("ACGT");
         
-        TestResult result = p.createTestResult(t.getTest("CD4 Count (generic)"));
+        TestResult result = new TestResult(t.getTest("CD4 Count (generic)"));
         result.setTestDate(new Date());
         result.setValue("<1234");
         
