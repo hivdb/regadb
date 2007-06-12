@@ -60,7 +60,14 @@ public class XMLReadCodeGen {
 
         public void writeCreate(int tabs) throws IOException {
             if (javaClass == TestResult.class) {
-                write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
+                    /*
+                     * Depends on enclosing state (toplevel is already handled)
+                     */
+                    if (parent.javaClass == Patient.class) {
+                        write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
+                    } else {
+                        write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
+                    }
                 write(tabs, memberName() + ".add(" + resolved.varName() + ");\n");
             } else if (javaClass == Therapy.class) {
                 write(tabs, resolved.varName() + " = patient.createTherapy(fieldTherapy_startDate);\n");
@@ -150,7 +157,7 @@ public class XMLReadCodeGen {
             String n = Character.toLowerCase(javaClass.getSimpleName().charAt(0))
                 + javaClass.getSimpleName().substring(1);
 
-            String result = "\"" + n + "\".equals(qName) || \"" + n + "s-el\".equals(qName)";
+            String result = "\"" + /* n + "\".equals(qName) || \"" + */ n + "s-el\".equals(qName)";
             
             for (ObjectField f: getRefererringFields())
                 if (f.isSet())
