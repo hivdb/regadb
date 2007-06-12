@@ -333,6 +333,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         tr.setNtSequence(ntseq);
         tr.setValue(new String(resultArray));
         tr.setTestDate(new Date(System.currentTimeMillis()));
+        tr.setTest(test);
         
         return tr;
     }
