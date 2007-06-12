@@ -22,16 +22,14 @@ public class NtSequenceAnalysis implements IAnalysis
     private String user_;
     
     private Test test_;
-    Patient patient_;
     
     private WtsClient client_;
     private int waitDelay_;
     
-    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, String uid, int waitDelay)
+    public NtSequenceAnalysis(Integer ntseq, Test test, String uid, int waitDelay)
     {
         seqIi_ = ntseq;
         
-        patient_ = p;
         test_ = test;
         
         client_ = new WtsClient(test.getAnalysis().getUrl());
@@ -39,9 +37,9 @@ public class NtSequenceAnalysis implements IAnalysis
         waitDelay_ = waitDelay;
     }
     
-    public NtSequenceAnalysis(Integer ntseq, Patient p, Test test, String uid)
+    public NtSequenceAnalysis(Integer ntseq, Test test, String uid)
     {
-        this(ntseq, p, test, uid, 5000);
+        this(ntseq, test, uid, 5000);
     }
     
     public Date getEndTime() 
@@ -115,9 +113,8 @@ public class NtSequenceAnalysis implements IAnalysis
         t = sessionSafeLogin.createTransaction();
 
         t.attach(test_);
-        Patient p = t.getPatient(patient_.getPatientIi());
         
-        TestResult testResult = p.createTestResult(test_);
+        TestResult testResult = new TestResult(test_);
         
         testResult.setNtSequence(ntseq);
         testResult.setValue(new String(resultArray));
