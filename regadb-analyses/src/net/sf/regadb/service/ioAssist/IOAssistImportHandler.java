@@ -58,6 +58,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private ImportFromXML importXML_;
     
     private List<Test> resistanceTests_;
+    
+    private List<AaSequence> aaSeqs_;
         
     public IOAssistImportHandler(FileWriter fw)
     {
@@ -127,29 +129,45 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     public void importObject(ViralIsolate object)
     {
         long start = System.currentTimeMillis();
-        List<AaSequence> aaSeqs = null;
-        for(NtSequence ntseq : object.getNtSequences())
+        for(final NtSequence ntseq : object.getNtSequences())
         {
-            try
+            Thread alignThread = new Thread(new Runnable()
             {
-                aaSeqs = aligner_.alignHiv(ntseq);
-                
-                if(aaSeqs!=null)
+                public void run() 
                 {
-                    for(AaSequence aaseq : aaSeqs)
+                    try 
                     {
-                        aaseq.setNtSequence(ntseq);
-                        ntseq.getAaSequences().add(aaseq);
+                        aaSeqs_ = aligner_.alignHiv(ntseq);
+                    } 
+                    catch (IllegalSymbolException e) 
+                    {
+                        e.printStackTrace();
                     }
                 }
-                TestResult type = ntSeqAnalysis(ntseq, type_);
-                ntseq.getTestResults().add(type);
-                TestResult subType = ntSeqAnalysis(ntseq, subType_);
-                ntseq.getTestResults().add(subType);
-            }
-            catch (IllegalSymbolException e)
+            });
+            alignThread.start();
+                
+            TestResult type = ntSeqAnalysis(ntseq, type_);
+            ntseq.getTestResults().add(type);
+            TestResult subType = ntSeqAnalysis(ntseq, subType_);
+            ntseq.getTestResults().add(subType);
+            
+            try 
+            {
+                alignThread.join();
+            } 
+            catch (InterruptedException e) 
             {
                 e.printStackTrace();
+            }
+            
+            if(aaSeqs_!=null)
+            {
+                for(AaSequence aaseq : aaSeqs_)
+                {
+                    aaseq.setNtSequence(ntseq);
+                    ntseq.getAaSequences().add(aaseq);
+                }
             }
         }
         
