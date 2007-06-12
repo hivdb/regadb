@@ -13,7 +13,7 @@
       <column name="version" not-null="true" />
     </version>
     <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update">
-      <column name="creator" length="50" not-null="true" />
+      <column name="uid" length="50" not-null="true" />
     </many-to-one>
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />

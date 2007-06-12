@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
+// Generated 12/06/2007 14:20:31 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -40,9 +40,8 @@ public class TestResult implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public TestResult(Test test, PatientImpl patient) {
+    public TestResult(Test test) {
         this.test = test;
-        this.patient = patient;
     }
 
     /** full constructor */

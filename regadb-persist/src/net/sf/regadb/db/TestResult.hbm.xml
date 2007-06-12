@@ -25,7 +25,7 @@
       <column name="nominal_value_ii" />
     </many-to-one>
     <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
-      <column name="patient_ii" not-null="true" />
+      <column name="patient_ii" />
     </many-to-one>
     <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update">
       <column name="nt_sequence_ii" />

@@ -190,12 +190,6 @@ public class Patient {
         getViralIsolates().add(isolate);
         isolate.setPatient(patient);
     }
-    
-    public TestResult createTestResult(Test test) {
-        TestResult result = new TestResult(test, patient);
-        getTestResults().add(result);
-        return result;
-    }
 
     public void addTestResult(TestResult testResult) {
         getTestResults().add(testResult);
