@@ -45,16 +45,40 @@ public class StartImpl
         {
             public void run()
             {
+                Process p = null;
                 try 
                 {
                     ProcessBuilder pb = new ProcessBuilder(startScript.getAbsolutePath(), sessionPath.getAbsolutePath(), Settings.getWtsPath());
-                    Process p = pb.start();
+                    p = pb.start();
                     Sessions.getProcesses().add(new Job(p,sessionTicket));
+                    p.waitFor();
                 } 
                 catch (IOException e) 
                 {
                     e.printStackTrace();
                 } 
+                catch (InterruptedException e) 
+                {
+                    e.printStackTrace();
+                }
+                finally //anticipate java bug 6462165
+                {
+                    closeStreams(p);
+                }
+            }
+            
+            void closeStreams(Process p) 
+            {
+                try 
+                {
+                    p.getInputStream().close();
+                    p.getOutputStream().close();
+                    p.getErrorStream().close();
+                } 
+                catch (IOException e) 
+                {
+                    e.printStackTrace();
+                }
             }
         });
         
