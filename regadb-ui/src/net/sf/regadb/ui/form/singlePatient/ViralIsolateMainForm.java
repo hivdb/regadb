@@ -460,12 +460,10 @@ public class ViralIsolateMainForm extends WContainerWidget
             if(ntseq.getAaSequences().size()==0)
             {
             AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(), 
-                                                                                RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(),
                                                                                 subTypeTest, 
                                                                                 RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin()); 
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(),
-                                                                                RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem(), 
+            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq.getNtSequenceIi(), 
                                                                                 typeTest,
                                                                                 RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
             }
