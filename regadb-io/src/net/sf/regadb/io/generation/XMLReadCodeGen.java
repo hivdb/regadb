@@ -594,7 +594,8 @@ public class XMLReadCodeGen {
                     write(2, "}\n");
 
                     write(2, "if (dbo != null) {\n");
-                    write(3, "for(" + f.resolved.javaClass.getSimpleName() + " dbe : dbo." + f.getterName() + "()) {\n");
+                    write(3, "for(Iterator<" + f.resolved.javaClass.getSimpleName() + "> i = dbo." + f.getterName() + "().iterator(); i.hasNext();) {\n");
+                    write(4, f.resolved.javaClass.getSimpleName() + " dbe = i.next();\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " e = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
                     write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(dbe, f)) {\n");
@@ -606,7 +607,7 @@ public class XMLReadCodeGen {
                     write(5, "log.append(Describe.describe(dbo) + \": Removed \" + Describe.describe(dbe) + \"\\n\");\n");
                     write(5, "changed = true;\n");
                     write(5, "if (!simulate)\n");
-                    write(6, "dbo." + f.getterName() + "().remove(dbe);\n");
+                    write(6, "i.remove();\n");
                     write(4, "}\n");
                     write(3, "}\n");
                     write(2, "}\n");
