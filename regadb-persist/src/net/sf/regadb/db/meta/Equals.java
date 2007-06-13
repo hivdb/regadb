@@ -128,8 +128,7 @@ public class Equals {
     }
 
     public static boolean isSameAnalysis(Analysis o1, Analysis o2) {
-        return o1 == o2
-        || (o1 != null && o2 !=null);
+        return true; // only analysis in an object
     }
 
     public static boolean isSameAnalysisData(AnalysisData o1, AnalysisData o2) {

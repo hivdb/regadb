@@ -3,48 +3,60 @@
 "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.password">4yr1s1ly</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://zolder:5432/test_regadb</property>
-        <property name="hibernate.connection.username">regadb</property>
-        <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-        <mapping resource="net/sf/regadb/db/Analysis.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/QueryDefinitionRunParameter.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/QueryDefinitionRun.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AnalysisData.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/SettingsUser.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/QueryDefinitionParameterType.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AttributeGroup.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/UserAttribute.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TestObject.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DatasetAccess.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Therapy.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AttributeNominalValue.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/QueryDefinitionParameter.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TestNominalValue.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DrugGeneric.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/NtSequence.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/PatientImpl.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Protein.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Attribute.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TestResult.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AnalysisType.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TestType.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AaInsertion.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Test.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
-    </session-factory>
+<session-factory>
+	<property name="hibernate.connection.driver_class">
+		org.postgresql.Driver
+	</property>
+	<property name="hibernate.connection.password">4yr1s1ly</property>
+	<property name="hibernate.connection.url">
+		jdbc:postgresql://zolder:5432/test_regadb
+	</property>
+	<property name="hibernate.connection.username">regadb</property>
+	<property name="hibernate.current_session_context_class">
+		org.hibernate.context.ThreadLocalSessionContext
+	</property>
+	<property name="hibernate.dialect">
+		org.hibernate.dialect.PostgreSQLDialect
+	</property>
+	<property name="show_sql">true</property>
+	<mapping resource="net/sf/regadb/db/Analysis.hbm.xml" />
+	<mapping
+		resource="net/sf/regadb/db/QueryDefinitionRunParameter.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/QueryDefinitionRun.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AnalysisData.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/SettingsUser.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/DrugClass.hbm.xml" />
+	<mapping
+		resource="net/sf/regadb/db/QueryDefinitionParameterType.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AttributeGroup.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/UserAttribute.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TestObject.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/DatasetAccess.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/Therapy.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AttributeNominalValue.hbm.xml" />
+	<mapping
+		resource="net/sf/regadb/db/QueryDefinitionParameter.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TestNominalValue.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/DrugGeneric.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/NtSequence.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/PatientImpl.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/Protein.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/Attribute.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TestResult.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AnalysisType.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TestType.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AaInsertion.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/Test.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
+	<mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
+</session-factory>
 </hibernate-configuration>

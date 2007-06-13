@@ -1799,7 +1799,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
                         ;// TODO
                     }
@@ -1820,8 +1821,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -1837,9 +1840,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                        o.addTestResult(e);
+                        dbo.addTestResult(e);
                     }
                 } else {
                     if (sync(t, e, dbe, syncMode, simulate)) changed = true;
@@ -1858,8 +1862,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -1875,9 +1881,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                        o.addPatientAttributeValue(e);
+                        dbo.addPatientAttributeValue(e);
                     }
                 } else {
                     if (sync(t, e, dbe, syncMode, simulate)) changed = true;
@@ -1896,8 +1903,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -1913,9 +1922,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                        o.addViralIsolate(e);
+                        dbo.addViralIsolate(e);
                     }
                 } else {
                     if (sync(t, e, dbe, syncMode, simulate)) changed = true;
@@ -1934,8 +1944,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -1951,9 +1963,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                        o.addTherapy(e);
+                        dbo.addTherapy(e);
                     }
                 } else {
                     if (sync(t, e, dbe, syncMode, simulate)) changed = true;
@@ -1972,8 +1985,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2113,9 +2128,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestNominalValues().add(e);
+                        dbo.getTestNominalValues().add(e);
                         e.setTestType(dbo);
                     }
                 } else {
@@ -2135,8 +2151,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2493,9 +2511,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAttributeNominalValues().add(e);
+                        dbo.getAttributeNominalValues().add(e);
                         e.setAttribute(dbo);
                     }
                 } else {
@@ -2515,11 +2534,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
+        if (!simulate)
+            t.save(dbo == null ? o : dbo);
         return changed;
     }
 
@@ -2585,9 +2608,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getNtSequences().add(e);
+                        dbo.getNtSequences().add(e);
                         e.setViralIsolate(dbo);
                     }
                 } else {
@@ -2607,8 +2631,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2624,9 +2650,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestResults().add(e);
+                        dbo.getTestResults().add(e);
                         e.setViralIsolate(dbo);
                     }
                 } else {
@@ -2646,8 +2673,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2694,9 +2723,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaSequences().add(e);
+                        dbo.getAaSequences().add(e);
                         e.setNtSequence(dbo);
                     }
                 } else {
@@ -2716,8 +2746,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2733,9 +2765,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestResults().add(e);
+                        dbo.getTestResults().add(e);
                         e.setNtSequence(dbo);
                     }
                 } else {
@@ -2755,8 +2788,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2803,9 +2838,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaMutations().add(e);
+                        dbo.getAaMutations().add(e);
                         e.getId().setAaSequence(dbo);
                     }
                 } else {
@@ -2825,8 +2861,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2842,9 +2880,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaInsertions().add(e);
+                        dbo.getAaInsertions().add(e);
                         e.getId().setAaSequence(dbo);
                     }
                 } else {
@@ -2864,8 +2903,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -2998,9 +3039,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTherapyCommercials().add(e);
+                        dbo.getTherapyCommercials().add(e);
                         e.getId().setTherapy(dbo);
                     }
                 } else {
@@ -3020,8 +3062,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -3037,9 +3081,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTherapyGenerics().add(e);
+                        dbo.getTherapyGenerics().add(e);
                         e.getId().setTherapy(dbo);
                     }
                 } else {
@@ -3059,8 +3104,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -3395,9 +3442,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                changed = true;
+                    sync(t, e, null, syncMode, simulate);
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAnalysisDatas().add(e);
+                        dbo.getAnalysisDatas().add(e);
                         e.setAnalysis(dbo);
                     }
                 } else {
@@ -3417,8 +3465,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (e == null) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
-                    if (!simulate)
+                    if (!simulate) {
                         i.remove();
+                        t.delete(dbe);
+                    }
                 }
             }
         }
@@ -3426,10 +3476,11 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public Patient sync(Transaction t, Patient o, SyncMode mode, boolean simulate) throws ImportException {
-        Patient dbo = dbFindPatient(t, o);
+        Patient dbo = Retrieve.retrieve(t, o);
         if (dbo != null) {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
+            log.append("Synchronizing " + Describe.describe(o) + "\n");
             sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
@@ -3444,10 +3495,11 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public Attribute sync(Transaction t, Attribute o, SyncMode mode, boolean simulate) throws ImportException {
-        Attribute dbo = dbFindAttribute(t, o);
+        Attribute dbo = Retrieve.retrieve(t, o);
         if (dbo != null) {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
+            log.append("Synchronizing " + Describe.describe(o) + "\n");
             sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
@@ -3462,10 +3514,11 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public Test sync(Transaction t, Test o, SyncMode mode, boolean simulate) throws ImportException {
-        Test dbo = dbFindTest(t, o);
+        Test dbo = Retrieve.retrieve(t, o);
         if (dbo != null) {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
+            log.append("Synchronizing " + Describe.describe(o) + "\n");
             sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
@@ -3480,10 +3533,11 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public TestType sync(Transaction t, TestType o, SyncMode mode, boolean simulate) throws ImportException {
-        TestType dbo = dbFindTestType(t, o);
+        TestType dbo = Retrieve.retrieve(t, o);
         if (dbo != null) {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
+            log.append("Synchronizing " + Describe.describe(o) + "\n");
             sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);

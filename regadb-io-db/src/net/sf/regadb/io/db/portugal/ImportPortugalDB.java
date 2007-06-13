@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -174,7 +175,7 @@ public class ImportPortugalDB {
                 new boolean[] { false, true, true, false });
         System.err.println(" done");
         
-        this.nominalValueType = new ValueType("nominal");
+        this.nominalValueType = new ValueType("nominal value");
         this.stringValueType = new ValueType("string");
     }
 
@@ -268,7 +269,15 @@ public class ImportPortugalDB {
                 /* new patient */
                 if (lastPatientId != null && previousDrugs != null
                     && !previousDrugs.isEmpty()) {
-                    storeTherapy(medicinsMap, previousEndDate, previousStartDate, lastPatientId, previousDrugs,
+
+                    /*
+                     * Make it start one day earlier
+                     */
+                    Calendar c = new GregorianCalendar();
+                    c.setTime(previousStartDate);
+                    c.add(Calendar.DAY_OF_YEAR, -1);
+                    
+                    storeTherapy(medicinsMap, previousEndDate, c.getTime(), lastPatientId, previousDrugs,
                                  "previous therapies (dates unknown)");
                     ++therapy;
                     ++datesunknown;
@@ -358,6 +367,13 @@ public class ImportPortugalDB {
         if (p == null)
             return;
 
+        if (endDate != null) {
+            if (startDate.equals(endDate) || startDate.after(endDate)) {
+                System.err.println("Something wrong with treatment for patient '" + patientId + "': " + startDate + " - " + endDate + ": ignoring.");
+                return;
+            }   
+        }
+        
         Therapy t = p.createTherapy(startDate);
         t.setStopDate(endDate);
         t.setComment(comment);
@@ -440,9 +456,6 @@ public class ImportPortugalDB {
                     patient.setBirthDate(createDate(yearBirth, ""));
                     
                     patientMap.put(patientId, patient);
-                    
-                    if (patientMap.size() == 10)
-                        return;
                 }
             }
         }
@@ -671,6 +684,7 @@ public class ImportPortugalDB {
         System.err.println("Importing patient attributes");
 
         AttributeGroup portugal = new AttributeGroup("PT");
+        AttributeGroup regadb = new AttributeGroup("RegaDB");
 
         Attribute clinicalFileAttribute = new Attribute("Clinical File Number");
         clinicalFileAttribute.setAttributeGroup(portugal);
@@ -678,16 +692,18 @@ public class ImportPortugalDB {
 
 		ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();		
 		nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
-		nominals.add(new NominalAttribute("Transmission Group", CSampleIdTransmissionGroup, transmissionGroupTable));
-		nominals.add(new NominalAttribute("Geographic Origin", CSampleIdGeographicOrigin, geographicOriginTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
+		nominals.add(new NominalAttribute("Transmission group", CSampleIdTransmissionGroup, transmissionGroupTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
+		nominals.add(new NominalAttribute("Geographic origin", CSampleIdGeographicOrigin, geographicOriginTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
 		nominals.add(new NominalAttribute("Ethnicity", CSampleIdEthnicity, ethnicityTable));
-		nominals.add(new NominalAttribute("Country", CSampleIdCountry, countryTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
+		nominals.add(new NominalAttribute("Country of origin", CSampleIdCountry, countryTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
-                                          new String[] { "Male", "Female" } ));
-
-        for (NominalAttribute a : nominals) {
-            a.attribute.setAttributeGroup(portugal);
-        }
+                                          new String[] { "male", "female" } ));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
         
 		String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {
@@ -808,7 +824,7 @@ public class ImportPortugalDB {
         instance.importViralLoad_CD4();
         instance.importTherapy();
 
-        //instance.importSequencesNoAlign("sequences.xml");
+        instance.importSequencesNoAlign("sequences.xml");
         instance.importPatientAttributes();
         instance.exportXML("result.xml");
         System.err.println("All done sir.");

@@ -180,30 +180,6 @@ public class ImportFromXMLBase extends DefaultHandler{
         }
     }    
 
-    protected Patient dbFindPatient(Transaction t, Patient o) {
-        return t.getPatient(o.getSourceDataset(), o.getPatientId());
-    }
-
-    protected Attribute dbFindAttribute(Transaction t, Attribute o) {
-        return t.getAttribute(o.getName());
-    }
-
-    protected Test dbFindTest(Transaction t, Test o) {
-        return t.getTest(o.getDescription());
-    }
-
-    protected TestType dbFindTestType(Transaction t, TestType o) {
-        return t.getTestType(o.getDescription());
-    }
-
-    protected DrugGeneric dbFindDrugGeneric(Transaction t, DrugGeneric o) {
-        return t.getGenericDrug(o.getGenericId());
-    }
-
-    protected DrugCommercial dbFindDrugCommercial(Transaction t, DrugCommercial o) {
-        return t.getCommercialDrug(o.getName());
-    }
-
     protected boolean equals(Date o1, Date o2) {
         return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
     }
@@ -246,16 +222,6 @@ public class ImportFromXMLBase extends DefaultHandler{
     
     protected boolean equals(byte[] data, byte[] data2) {
         return Arrays.equals(data, data2);
-    }
-
-    protected void sync(Transaction t, DrugGeneric o, DrugGeneric dbo, boolean simulate) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    protected void sync(Transaction t, DrugCommercial o, DrugCommercial dbo, boolean simulate) {
-        // TODO Auto-generated method stub
-        
     }
 
     public StringBuffer getLog() 

@@ -65,6 +65,13 @@ public class TestImportXML implements ImportHandler<Patient> {
         t.commit();
         
         t = login.createTransaction();
+        loadDataset();
+    }
+
+    /**
+     * 
+     */
+    private void loadDataset() {
         dataset = t.getDataset("PT");
         if (dataset == null) {
             dataset = new Dataset(t.getSettingsUser(), "PT", new Date());
@@ -93,16 +100,22 @@ public class TestImportXML implements ImportHandler<Patient> {
 
     public void importObject(Patient patient) {
         try {
-            System.err.println("syncing:");
             patient.setSourceDataset(dataset, t);
             instance.sync(t, patient, SyncMode.Update, false);
             System.err.println(instance.getLog());
-            instance.getLog().delete(0, instance.getLog().length());
-         } catch (Exception e) {
+            instance.getLog().delete(0, instance.getLog().length());            
+        } catch (Exception e) {
             System.err.println("sync error:");
             System.err.println(instance.getLog());
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         ++patients;
+        
+        if (patients % 100 == 0) {
+            t.commit();
+            t = login.createTransaction();
+            loadDataset();
+        }
     }
 }

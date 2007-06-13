@@ -33,11 +33,43 @@ public class Transaction {
 
     private Login login;
     private Session session;
+    private final Query getTestQuery;
+    private final Query getTestObjectQuery;
+    private final Query getAttributeGroupQuery;
+    private final Query getValueTypeQuery;
+    private final Query getAttributeNominalValueQuery;
+    private final Query getTestNominalValueQuery;
+    private final Query getTestTypeQuery;
+    private final Query getAttributeQuery;
+    private final Query getPatientQuery;
+    private final Query getDrugGenericQuery;
+    private final Query getCommercialDrugQuery;
 
     public Transaction(Login login, Session session) {
         this.login = login;
         this.session = session;
         begin();
+        getTestQuery = session.createQuery("from Test test where test.description = :description");
+        getTestObjectQuery = session.createQuery("from TestObject as testobject where description = :description");
+        getAttributeGroupQuery = session.createQuery("from AttributeGroup as attributegroup where groupName = :groupName");
+        getValueTypeQuery = session.createQuery("from ValueType as valuetype where description = :description");
+        getAttributeNominalValueQuery = session.createQuery("from AttributeNominalValue as anv where attribute = :attribute and value = :value");
+        getTestNominalValueQuery = session.createQuery("from TestNominalValue as anv where testType = :type and value = :value");
+        getTestTypeQuery = session.createQuery("from TestType as testType where testType.description = :description");
+        getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name");
+        getPatientQuery = session.createQuery(
+                        "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
+                        "from PatientImpl as patient " +
+                        "join patient.patientDatasets as patient_dataset " +
+                        "join patient_dataset.id.dataset as dataset " +
+                        "join dataset.datasetAccesses access " +
+                        "where dataset = :dataset " +
+                        "and access.permissions >= 1 " +
+                        "and access.id.settingsUser.uid = :uid " +
+                        "and patient.patientId = :patientId " +
+                        "group by patient");
+        getDrugGenericQuery = session.createQuery("from DrugGeneric as drug where drug.genericId = :genericId");
+        getCommercialDrugQuery = session.createQuery("from DrugCommercial as drug where drug.name = :name");
     }
     
     private void begin() {
@@ -96,10 +128,9 @@ public class Transaction {
     }
 
     public Attribute getAttribute(String name) {
-        Query q = session.createQuery("from Attribute attribute where attribute.name = :name");
-        q.setParameter("name", name);
+        getAttributeQuery.setParameter("name", name);
         
-        return (Attribute) q.uniqueResult();
+        return (Attribute) getAttributeQuery.uniqueResult();
     }
     
     @SuppressWarnings("unchecked")
@@ -144,10 +175,9 @@ public class Transaction {
     }
 
     public Test getTest(String description) {
-        Query q = session.createQuery("from Test test where test.description = :description");
-        q.setParameter("description", description);
+        getTestQuery.setParameter("description", description);
         
-        return (Test) q.uniqueResult();
+        return (Test) getTestQuery.uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -354,23 +384,11 @@ public class Transaction {
     }
 
     public Patient getPatient(Dataset dataset, String id) {
-        Query q = session.createQuery(
-                "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
-                "from PatientImpl as patient " +
-                "join patient.patientDatasets as patient_dataset " +
-                "join patient_dataset.id.dataset as dataset " +
-                "join dataset.datasetAccesses access " +
-                "where dataset = :dataset " +
-                "and access.permissions >= 1 " +
-                "and access.id.settingsUser.uid = :uid " +
-                "and patient.patientId = :patientId " +
-                "group by patient");
+        getPatientQuery.setParameter("dataset", dataset);
+        getPatientQuery.setParameter("uid", login.getUid());
+        getPatientQuery.setParameter("patientId", id);
         
-        q.setParameter("dataset", dataset);
-        q.setParameter("uid", login.getUid());
-        q.setParameter("patientId", id);
-        
-        return (Patient) q.uniqueResult();
+        return (Patient) getPatientQuery.uniqueResult();
     }
     
     /*
@@ -1053,31 +1071,22 @@ public class Transaction {
     }
 
     public TestType getTestType(String description) {
-        String queryString = "from TestType as testType where testType.description = :description";
+        getTestTypeQuery.setParameter("description", description);
         
-        Query q = session.createQuery(queryString);
-        q.setParameter("description", description);
-        
-        return (TestType)q.uniqueResult();
+        return (TestType)getTestTypeQuery.uniqueResult();
        
     }
 
     public DrugGeneric getGenericDrug(String genericId) {
-        String queryString = "from DrugGeneric as drug where drug.genericId = :genericId";
+        getDrugGenericQuery.setParameter("genericId", genericId);
         
-        Query q = session.createQuery(queryString);
-        q.setParameter("genericId", genericId);
-        
-        return (DrugGeneric)q.uniqueResult();
+        return (DrugGeneric)getDrugGenericQuery.uniqueResult();
     }
 
     public DrugCommercial getCommercialDrug(String name) {
-        String queryString = "from DrugCommercial as drug where drug.name = :name";
+        getCommercialDrugQuery.setParameter("name", name);
         
-        Query q = session.createQuery(queryString);
-        q.setParameter("name", name);
-        
-        return (DrugCommercial)q.uniqueResult();
+        return (DrugCommercial)getCommercialDrugQuery.uniqueResult();
        
     }
     
@@ -1294,27 +1303,35 @@ public class Transaction {
     }
 
     public TestObject getTestObject(String description) {
-        Query q = session.createQuery("from TestObject as testobject where description = :description");
+        getTestObjectQuery.setParameter("description", description);
         
-        q.setParameter("description", description);
-        
-        return (TestObject)q.uniqueResult();
+        return (TestObject)getTestObjectQuery.uniqueResult();
     }
 
     public AttributeGroup getAttributeGroup(String groupName) {
-        Query q = session.createQuery("from AttributeGroup as attributegroup where groupName = :groupName");
+        getAttributeGroupQuery.setParameter("groupName", groupName);
         
-        q.setParameter("groupName", groupName);
-        
-        return (AttributeGroup)q.uniqueResult();
+        return (AttributeGroup)getAttributeGroupQuery.uniqueResult();
     }
 
     public ValueType getValueType(String description) {
-        Query q = session.createQuery("from ValueType as valuetype where description = :description");
+        getValueTypeQuery.setParameter("description", description);
         
-        q.setParameter("description", description);
+        return (ValueType)getValueTypeQuery.uniqueResult();        
+    }
+
+    public AttributeNominalValue getAttributeNominalValue(Attribute attribute, String value) {
+        getAttributeNominalValueQuery.setParameter("attribute", attribute);
+        getAttributeNominalValueQuery.setParameter("value", value);
         
-        return (ValueType)q.uniqueResult();        
+        return (AttributeNominalValue)getAttributeNominalValueQuery.uniqueResult();        
+    }
+
+    public TestNominalValue getTestNominalValue(TestType type, String value) {
+        getTestNominalValueQuery.setParameter("type", type);
+        getTestNominalValueQuery.setParameter("value", value);
+        
+        return (TestNominalValue)getTestNominalValueQuery.uniqueResult();        
     }
 
     public void clear() 

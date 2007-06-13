@@ -10,6 +10,9 @@ import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -36,7 +39,7 @@ public class Retrieve {
     }
 
     public static AttributeNominalValue retrieve(Transaction t, AttributeNominalValue attributeNominalValue) {
-        return null;
+        return t.getAttributeNominalValue(retrieve(t, attributeNominalValue.getAttribute()), attributeNominalValue.getValue());
     }
 
     public static AttributeGroup retrieve(Transaction t, AttributeGroup attributeGroup) {
@@ -44,7 +47,7 @@ public class Retrieve {
     }
 
     public static TestNominalValue retrieve(Transaction t, TestNominalValue testNominalValue) {
-        return null;
+        return t.getTestNominalValue(retrieve(t, testNominalValue.getTestType()), testNominalValue.getValue());
     }
 
     public static Analysis retrieve(Transaction t, Analysis analysis) {
@@ -55,4 +58,15 @@ public class Retrieve {
         return t.getValueType(valueType.getDescription());
     }
 
+    public static Patient retrieve(Transaction t, Patient o) {
+        return t.getPatient(o.getSourceDataset(), o.getPatientId());
+    }
+
+    public static DrugGeneric retrieve(Transaction t, DrugGeneric o) {
+        return t.getGenericDrug(o.getGenericId());
+    }
+
+    public static DrugCommercial retrieve(Transaction t, DrugCommercial o) {
+        return t.getCommercialDrug(o.getName());
+    }
 }

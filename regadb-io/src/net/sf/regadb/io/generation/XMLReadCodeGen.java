@@ -572,15 +572,16 @@ public class XMLReadCodeGen {
                     
                     write(4, "if (dbe == null) {\n");
                     write(5, "log.append(Describe.describe(dbo) + \": New \" + Describe.describe(e) + \"\\n\");\n");
-                    write(4, "changed = true;\n");
+                    write(5, "sync(t, e, null, syncMode, simulate);\n");
+                    write(5, "changed = true;\n");
                     write(5, "if (!simulate) {\n");
                     if (o.javaClass == Patient.class) {
                         if (f.resolved.javaClass != Dataset.class)
-                            write(6, "o.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
+                            write(6, "dbo.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
                         else
                             write(6, ";// TODO\n");
                     } else {
-                        write(7, "dbo." + f.getterName() + "().add(e);\n");
+                        write(6, "dbo." + f.getterName() + "().add(e);\n");
                         if (f.resolved.hasCompositeId)
                             write (6, "e.getId().");
                         else
@@ -607,14 +608,22 @@ public class XMLReadCodeGen {
                     write(4, "if (e == null) {\n");
                     write(5, "log.append(Describe.describe(dbo) + \": Removed \" + Describe.describe(dbe) + \"\\n\");\n");
                     write(5, "changed = true;\n");
-                    write(5, "if (!simulate)\n");
+                    write(5, "if (!simulate) {\n");
                     write(6, "i.remove();\n");
+                    write(6, "t.delete(dbe);\n");
+                    write(5, "}\n");
                     write(4, "}\n");
                     write(3, "}\n");
                     write(2, "}\n");
                 }
             }
 
+            
+            if (o.javaClass == Attribute.class) {
+                write(2, "if (!simulate)\n");
+                write(3, "t.save(dbo == null ? o : dbo);\n");
+            }
+            
             write(2, "return changed;\n");
             write(1, "}\n\n");
         }
@@ -626,10 +635,11 @@ public class XMLReadCodeGen {
         
         for (Class c : unscopedClasses) {
             write(1, "public " + c.getSimpleName() + " sync(Transaction t, " + c.getSimpleName() + " o, SyncMode mode, boolean simulate) throws ImportException {\n");
-            write(2, c.getSimpleName() + " dbo = dbFind" + c.getSimpleName() + "(t, o);\n");
+            write(2, c.getSimpleName() + " dbo = Retrieve.retrieve(t, o);\n");
             write(2, "if (dbo != null) {\n");
             write(3, "if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)\n");
             write(4, "throw new ImportException(Describe.describe(o) + \" already exists\");\n");
+            write(3, "log.append(\"Synchronizing \" + Describe.describe(o) + \"\\n\");\n");
             write(3, "sync(t, o, dbo, mode, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.update(dbo);\n");

@@ -14,6 +14,7 @@ import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
@@ -81,11 +82,17 @@ public class Login {
     private Login(String uid) {
         this.uid = uid;
         session_ = HibernateUtil.getSessionFactory().openSession();
+        
+        prepareQueries();
     }
     
     public Login copyLogin()
     {
         return new Login(this.uid);
+    }
+    
+    private void prepareQueries()
+    {
     }
     
     public static void createNewAccount(SettingsUser user)

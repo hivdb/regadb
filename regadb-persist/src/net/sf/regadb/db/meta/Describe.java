@@ -71,11 +71,11 @@ public class Describe {
     }
 
     public static String describe(TherapyCommercial o) {
-        return describe(o);
+        return "Drug " + o.getId().getDrugCommercial().getName();
     }
 
     public static String describe(TherapyGeneric o) {
-        return describe(o);
+        return "Drug " + o.getId().getDrugGeneric().getGenericId();
     }
 
     public static String describe(TestResult o) {
