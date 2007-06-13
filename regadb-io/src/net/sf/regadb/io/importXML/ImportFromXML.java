@@ -1743,48 +1743,54 @@ public class ImportFromXML extends ImportFromXMLBase {
         xmlReader.parse(source);
     }
 
-    private void sync(Transaction t, Patient o, Patient dbo, boolean simulate) {
+    private boolean sync(Transaction t, Patient o, Patient dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getPatientId(), o.getPatientId())) {
                 if (!simulate)
                     dbo.setPatientId(o.getPatientId());
-                log.append(Describe.describe(o) + ": updating patientId\n");
+                log.append(Describe.describe(o) + ": changed patientId\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getLastName(), o.getLastName())) {
                 if (!simulate)
                     dbo.setLastName(o.getLastName());
-                log.append(Describe.describe(o) + ": updating lastName\n");
+                log.append(Describe.describe(o) + ": changed lastName\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getFirstName(), o.getFirstName())) {
                 if (!simulate)
                     dbo.setFirstName(o.getFirstName());
-                log.append(Describe.describe(o) + ": updating firstName\n");
+                log.append(Describe.describe(o) + ": changed firstName\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getBirthDate(), o.getBirthDate())) {
                 if (!simulate)
                     dbo.setBirthDate(o.getBirthDate());
-                log.append(Describe.describe(o) + ": updating birthDate\n");
+                log.append(Describe.describe(o) + ": changed birthDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDeathDate(), o.getDeathDate())) {
                 if (!simulate)
                     dbo.setDeathDate(o.getDeathDate());
-                log.append(Describe.describe(o) + ": updating deathDate\n");
+                log.append(Describe.describe(o) + ": changed deathDate\n");
+                changed = true;
             }
         }
         for(Dataset e : o.getDatasets()) {
-            if (dbo == null)
-                sync(t, e, (Dataset)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (Dataset)null, syncMode, simulate)) changed = true;
+            } else {
                 Dataset dbe = null;
                 for(Dataset f : dbo.getDatasets()) {
                     if (Equals.isSameDataset(e, f)) {
@@ -1792,12 +1798,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
+                        sync(t, e, null, syncMode, simulate);
                         ;// TODO
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -1809,16 +1818,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getDatasets().remove(dbe);
                 }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            if (dbo == null)
-                sync(t, e, (TestResult)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+            } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
                     if (Equals.isSameTestResult(e, f)) {
@@ -1826,12 +1836,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                        o.addTestResult(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.addTestResult(e);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -1843,16 +1856,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTestResults().remove(dbe);
                 }
             }
         }
         for(PatientAttributeValue e : o.getPatientAttributeValues()) {
-            if (dbo == null)
-                sync(t, e, (PatientAttributeValue)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (PatientAttributeValue)null, syncMode, simulate)) changed = true;
+            } else {
                 PatientAttributeValue dbe = null;
                 for(PatientAttributeValue f : dbo.getPatientAttributeValues()) {
                     if (Equals.isSamePatientAttributeValue(e, f)) {
@@ -1860,12 +1874,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                        o.addPatientAttributeValue(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.addPatientAttributeValue(e);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -1877,16 +1894,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getPatientAttributeValues().remove(dbe);
                 }
             }
         }
         for(ViralIsolate e : o.getViralIsolates()) {
-            if (dbo == null)
-                sync(t, e, (ViralIsolate)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (ViralIsolate)null, syncMode, simulate)) changed = true;
+            } else {
                 ViralIsolate dbe = null;
                 for(ViralIsolate f : dbo.getViralIsolates()) {
                     if (Equals.isSameViralIsolate(e, f)) {
@@ -1894,12 +1912,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                        o.addViralIsolate(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.addViralIsolate(e);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -1911,16 +1932,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getViralIsolates().remove(dbe);
                 }
             }
         }
         for(Therapy e : o.getTherapies()) {
-            if (dbo == null)
-                sync(t, e, (Therapy)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (Therapy)null, syncMode, simulate)) changed = true;
+            } else {
                 Therapy dbe = null;
                 for(Therapy f : dbo.getTherapies()) {
                     if (Equals.isSameTherapy(e, f)) {
@@ -1928,12 +1950,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                        o.addTherapy(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.addTherapy(e);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -1945,118 +1970,141 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTherapies().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, AnalysisData o, AnalysisData dbo, boolean simulate) {
+    private boolean sync(Transaction t, AnalysisData o, AnalysisData dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getName(), o.getName())) {
                 if (!simulate)
                     dbo.setName(o.getName());
-                log.append(Describe.describe(o) + ": updating name\n");
+                log.append(Describe.describe(o) + ": changed name\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getData(), o.getData())) {
                 if (!simulate)
                     dbo.setData(o.getData());
-                log.append(Describe.describe(o) + ": updating data\n");
+                log.append(Describe.describe(o) + ": changed data\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getMimetype(), o.getMimetype())) {
                 if (!simulate)
                     dbo.setMimetype(o.getMimetype());
-                log.append(Describe.describe(o) + ": updating mimetype\n");
+                log.append(Describe.describe(o) + ": changed mimetype\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TestType o, TestType dbo, boolean simulate) {
+    private boolean sync(Transaction t, TestType o, TestType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getValueType() != null) {
-                ValueType d = Retrieve.retrieve(t, o.getValueType());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
-                    sync(t, o.getValueType(), (ValueType)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setValueType(d);
+            return changed;
+        {
+            ValueType dbf = null;
+            if (dbo == null) {
+                if (o.getValueType() != null)
+                    dbf = Retrieve.retrieve(t, o.getValueType());
+            } else {
+                if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
+                    dbf = dbo.getValueType();
+                else
+                    dbf = Retrieve.retrieve(t, o.getValueType());
             }
-        } else {
-            if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
-                sync(t, o.getValueType(), dbo.getValueType(), simulate);
-            else {
-                if (o.getValueType() != null) {
-                    ValueType d = Retrieve.retrieve(t, o.getValueType());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
-                        sync(t, o.getValueType(), (ValueType)null, simulate);
-                        if (!simulate)
-                            dbo.setValueType(o.getValueType());
-                    } else {
-                        if (!simulate)
-                            dbo.setValueType(d);
-                    }
+            if (o.getValueType() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getValueType()) + "\n");
+                    sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setValueType(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getValueType(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating valueType\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setValueType(dbf);
+                }
+            } else {
+                if (dbf != dbo.getValueType()) {
+                    if (!simulate)
+                        dbo.setValueType(dbf);
+                    log.append(Describe.describe(o) + ": changed valueType\n");
+                    changed = true;
+                }
             }
         }
-        if (dbo == null) {
-            if (o.getTestObject() != null) {
-                TestObject d = Retrieve.retrieve(t, o.getTestObject());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getTestObject()) + "\n");
-                    sync(t, o.getTestObject(), (TestObject)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setTestObject(d);
+        {
+            TestObject dbf = null;
+            if (dbo == null) {
+                if (o.getTestObject() != null)
+                    dbf = Retrieve.retrieve(t, o.getTestObject());
+            } else {
+                if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
+                    dbf = dbo.getTestObject();
+                else
+                    dbf = Retrieve.retrieve(t, o.getTestObject());
             }
-        } else {
-            if (Equals.isSameTestObject(o.getTestObject(), dbo.getTestObject()))
-                sync(t, o.getTestObject(), dbo.getTestObject(), simulate);
-            else {
-                if (o.getTestObject() != null) {
-                    TestObject d = Retrieve.retrieve(t, o.getTestObject());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getTestObject()) + "\n");
-                        sync(t, o.getTestObject(), (TestObject)null, simulate);
-                        if (!simulate)
-                            dbo.setTestObject(o.getTestObject());
-                    } else {
-                        if (!simulate)
-                            dbo.setTestObject(d);
-                    }
+            if (o.getTestObject() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getTestObject()) + "\n");
+                    sync(t, o.getTestObject(), (TestObject)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setTestObject(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getTestObject(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getTestObject(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating testObject\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setTestObject(dbf);
+                }
+            } else {
+                if (dbf != dbo.getTestObject()) {
+                    if (!simulate)
+                        dbo.setTestObject(dbf);
+                    log.append(Describe.describe(o) + ": changed testObject\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
-                log.append(Describe.describe(o) + ": updating description\n");
+                log.append(Describe.describe(o) + ": changed description\n");
+                changed = true;
             }
         }
         for(TestNominalValue e : o.getTestNominalValues()) {
-            if (dbo == null)
-                sync(t, e, (TestNominalValue)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TestNominalValue)null, syncMode, simulate)) changed = true;
+            } else {
                 TestNominalValue dbe = null;
                 for(TestNominalValue f : dbo.getTestNominalValues()) {
                     if (Equals.isSameTestNominalValue(e, f)) {
@@ -2064,13 +2112,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestNominalValues().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getTestNominalValues().add(e);
                         e.setTestType(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2082,297 +2133,358 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTestNominalValues().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, ValueType o, ValueType dbo, boolean simulate) {
+    private boolean sync(Transaction t, ValueType o, ValueType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
-                log.append(Describe.describe(o) + ": updating description\n");
+                log.append(Describe.describe(o) + ": changed description\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getMin(), o.getMin())) {
                 if (!simulate)
                     dbo.setMin(o.getMin());
-                log.append(Describe.describe(o) + ": updating min\n");
+                log.append(Describe.describe(o) + ": changed min\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getMax(), o.getMax())) {
                 if (!simulate)
                     dbo.setMax(o.getMax());
-                log.append(Describe.describe(o) + ": updating max\n");
+                log.append(Describe.describe(o) + ": changed max\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getMultiple(), o.getMultiple())) {
                 if (!simulate)
                     dbo.setMultiple(o.getMultiple());
-                log.append(Describe.describe(o) + ": updating multiple\n");
+                log.append(Describe.describe(o) + ": changed multiple\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TestObject o, TestObject dbo, boolean simulate) {
+    private boolean sync(Transaction t, TestObject o, TestObject dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
-                log.append(Describe.describe(o) + ": updating description\n");
+                log.append(Describe.describe(o) + ": changed description\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
                 if (!simulate)
                     dbo.setTestObjectId(o.getTestObjectId());
-                log.append(Describe.describe(o) + ": updating testObjectId\n");
+                log.append(Describe.describe(o) + ": changed testObjectId\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TestNominalValue o, TestNominalValue dbo, boolean simulate) {
+    private boolean sync(Transaction t, TestNominalValue o, TestNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getTestType() != null) {
-                TestType d = Retrieve.retrieve(t, o.getTestType());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
-                    sync(t, o.getTestType(), (TestType)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setTestType(d);
+            return changed;
+        {
+            TestType dbf = null;
+            if (dbo == null) {
+                if (o.getTestType() != null)
+                    dbf = Retrieve.retrieve(t, o.getTestType());
+            } else {
+                if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
+                    dbf = dbo.getTestType();
+                else
+                    dbf = Retrieve.retrieve(t, o.getTestType());
             }
-        } else {
-            if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-                sync(t, o.getTestType(), dbo.getTestType(), simulate);
-            else {
-                if (o.getTestType() != null) {
-                    TestType d = Retrieve.retrieve(t, o.getTestType());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
-                        sync(t, o.getTestType(), (TestType)null, simulate);
-                        if (!simulate)
-                            dbo.setTestType(o.getTestType());
-                    } else {
-                        if (!simulate)
-                            dbo.setTestType(d);
-                    }
+            if (o.getTestType() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getTestType()) + "\n");
+                    sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setTestType(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getTestType(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating testType\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setTestType(dbf);
+                }
+            } else {
+                if (dbf != dbo.getTestType()) {
+                    if (!simulate)
+                        dbo.setTestType(dbf);
+                    log.append(Describe.describe(o) + ": changed testType\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
-                log.append(Describe.describe(o) + ": updating value\n");
+                log.append(Describe.describe(o) + ": changed value\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, Dataset o, Dataset dbo, boolean simulate) {
+    private boolean sync(Transaction t, Dataset o, Dataset dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
-                log.append(Describe.describe(o) + ": updating description\n");
+                log.append(Describe.describe(o) + ": changed description\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getCreationDate(), o.getCreationDate())) {
                 if (!simulate)
                     dbo.setCreationDate(o.getCreationDate());
-                log.append(Describe.describe(o) + ": updating creationDate\n");
+                log.append(Describe.describe(o) + ": changed creationDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getClosedDate(), o.getClosedDate())) {
                 if (!simulate)
                     dbo.setClosedDate(o.getClosedDate());
-                log.append(Describe.describe(o) + ": updating closedDate\n");
+                log.append(Describe.describe(o) + ": changed closedDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getRevision(), o.getRevision())) {
                 if (!simulate)
                     dbo.setRevision(o.getRevision());
-                log.append(Describe.describe(o) + ": updating revision\n");
+                log.append(Describe.describe(o) + ": changed revision\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, boolean simulate) {
+    private boolean sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getId().getAttribute() != null) {
-                Attribute d = Retrieve.retrieve(t, o.getId().getAttribute());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getId().getAttribute()) + "\n");
-                    sync(t, o.getId().getAttribute(), (Attribute)null, simulate);
-                } else
-                    if (!simulate)
-                        o.getId().setAttribute(d);
+            return changed;
+        {
+            Attribute dbf = null;
+            if (dbo == null) {
+                if (o.getId().getAttribute() != null)
+                    dbf = Retrieve.retrieve(t, o.getId().getAttribute());
+            } else {
+                if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
+                    dbf = dbo.getId().getAttribute();
+                else
+                    dbf = Retrieve.retrieve(t, o.getId().getAttribute());
             }
-        } else {
-            if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
-                sync(t, o.getId().getAttribute(), dbo.getId().getAttribute(), simulate);
-            else {
-                if (o.getId().getAttribute() != null) {
-                    Attribute d = Retrieve.retrieve(t, o.getId().getAttribute());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getId().getAttribute()) + "\n");
-                        sync(t, o.getId().getAttribute(), (Attribute)null, simulate);
-                        if (!simulate)
-                            dbo.getId().setAttribute(o.getId().getAttribute());
-                    } else {
-                        if (!simulate)
-                            dbo.getId().setAttribute(d);
-                    }
+            if (o.getId().getAttribute() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getId().getAttribute()) + "\n");
+                    sync(t, o.getId().getAttribute(), (Attribute)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.getId().setAttribute(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getId().getAttribute(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getId().getAttribute(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating attribute\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.getId().setAttribute(dbf);
+                }
+            } else {
+                if (dbf != dbo.getId().getAttribute()) {
+                    if (!simulate)
+                        dbo.getId().setAttribute(dbf);
+                    log.append(Describe.describe(o) + ": changed attribute\n");
+                    changed = true;
+                }
             }
         }
-        if (dbo == null) {
-            if (o.getAttributeNominalValue() != null) {
-                AttributeNominalValue d = Retrieve.retrieve(t, o.getAttributeNominalValue());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getAttributeNominalValue()) + "\n");
-                    sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setAttributeNominalValue(d);
+        {
+            AttributeNominalValue dbf = null;
+            if (dbo == null) {
+                if (o.getAttributeNominalValue() != null)
+                    dbf = Retrieve.retrieve(t, o.getAttributeNominalValue());
+            } else {
+                if (Equals.isSameAttributeNominalValue(o.getAttributeNominalValue(), dbo.getAttributeNominalValue()))
+                    dbf = dbo.getAttributeNominalValue();
+                else
+                    dbf = Retrieve.retrieve(t, o.getAttributeNominalValue());
             }
-        } else {
-            if (Equals.isSameAttributeNominalValue(o.getAttributeNominalValue(), dbo.getAttributeNominalValue()))
-                sync(t, o.getAttributeNominalValue(), dbo.getAttributeNominalValue(), simulate);
-            else {
-                if (o.getAttributeNominalValue() != null) {
-                    AttributeNominalValue d = Retrieve.retrieve(t, o.getAttributeNominalValue());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getAttributeNominalValue()) + "\n");
-                        sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, simulate);
-                        if (!simulate)
-                            dbo.setAttributeNominalValue(o.getAttributeNominalValue());
-                    } else {
-                        if (!simulate)
-                            dbo.setAttributeNominalValue(d);
-                    }
+            if (o.getAttributeNominalValue() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getAttributeNominalValue()) + "\n");
+                    sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setAttributeNominalValue(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getAttributeNominalValue(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getAttributeNominalValue(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating attributeNominalValue\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setAttributeNominalValue(dbf);
+                }
+            } else {
+                if (dbf != dbo.getAttributeNominalValue()) {
+                    if (!simulate)
+                        dbo.setAttributeNominalValue(dbf);
+                    log.append(Describe.describe(o) + ": changed attributeNominalValue\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
-                log.append(Describe.describe(o) + ": updating value\n");
+                log.append(Describe.describe(o) + ": changed value\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, Attribute o, Attribute dbo, boolean simulate) {
+    private boolean sync(Transaction t, Attribute o, Attribute dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getValueType() != null) {
-                ValueType d = Retrieve.retrieve(t, o.getValueType());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
-                    sync(t, o.getValueType(), (ValueType)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setValueType(d);
+            return changed;
+        {
+            ValueType dbf = null;
+            if (dbo == null) {
+                if (o.getValueType() != null)
+                    dbf = Retrieve.retrieve(t, o.getValueType());
+            } else {
+                if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
+                    dbf = dbo.getValueType();
+                else
+                    dbf = Retrieve.retrieve(t, o.getValueType());
             }
-        } else {
-            if (Equals.isSameValueType(o.getValueType(), dbo.getValueType()))
-                sync(t, o.getValueType(), dbo.getValueType(), simulate);
-            else {
-                if (o.getValueType() != null) {
-                    ValueType d = Retrieve.retrieve(t, o.getValueType());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getValueType()) + "\n");
-                        sync(t, o.getValueType(), (ValueType)null, simulate);
-                        if (!simulate)
-                            dbo.setValueType(o.getValueType());
-                    } else {
-                        if (!simulate)
-                            dbo.setValueType(d);
-                    }
+            if (o.getValueType() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getValueType()) + "\n");
+                    sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setValueType(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getValueType(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating valueType\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setValueType(dbf);
+                }
+            } else {
+                if (dbf != dbo.getValueType()) {
+                    if (!simulate)
+                        dbo.setValueType(dbf);
+                    log.append(Describe.describe(o) + ": changed valueType\n");
+                    changed = true;
+                }
             }
         }
-        if (dbo == null) {
-            if (o.getAttributeGroup() != null) {
-                AttributeGroup d = Retrieve.retrieve(t, o.getAttributeGroup());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getAttributeGroup()) + "\n");
-                    sync(t, o.getAttributeGroup(), (AttributeGroup)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setAttributeGroup(d);
+        {
+            AttributeGroup dbf = null;
+            if (dbo == null) {
+                if (o.getAttributeGroup() != null)
+                    dbf = Retrieve.retrieve(t, o.getAttributeGroup());
+            } else {
+                if (Equals.isSameAttributeGroup(o.getAttributeGroup(), dbo.getAttributeGroup()))
+                    dbf = dbo.getAttributeGroup();
+                else
+                    dbf = Retrieve.retrieve(t, o.getAttributeGroup());
             }
-        } else {
-            if (Equals.isSameAttributeGroup(o.getAttributeGroup(), dbo.getAttributeGroup()))
-                sync(t, o.getAttributeGroup(), dbo.getAttributeGroup(), simulate);
-            else {
-                if (o.getAttributeGroup() != null) {
-                    AttributeGroup d = Retrieve.retrieve(t, o.getAttributeGroup());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getAttributeGroup()) + "\n");
-                        sync(t, o.getAttributeGroup(), (AttributeGroup)null, simulate);
-                        if (!simulate)
-                            dbo.setAttributeGroup(o.getAttributeGroup());
-                    } else {
-                        if (!simulate)
-                            dbo.setAttributeGroup(d);
-                    }
+            if (o.getAttributeGroup() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getAttributeGroup()) + "\n");
+                    sync(t, o.getAttributeGroup(), (AttributeGroup)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setAttributeGroup(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getAttributeGroup(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getAttributeGroup(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating attributeGroup\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setAttributeGroup(dbf);
+                }
+            } else {
+                if (dbf != dbo.getAttributeGroup()) {
+                    if (!simulate)
+                        dbo.setAttributeGroup(dbf);
+                    log.append(Describe.describe(o) + ": changed attributeGroup\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getName(), o.getName())) {
                 if (!simulate)
                     dbo.setName(o.getName());
-                log.append(Describe.describe(o) + ": updating name\n");
+                log.append(Describe.describe(o) + ": changed name\n");
+                changed = true;
             }
         }
         for(AttributeNominalValue e : o.getAttributeNominalValues()) {
-            if (dbo == null)
-                sync(t, e, (AttributeNominalValue)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (AttributeNominalValue)null, syncMode, simulate)) changed = true;
+            } else {
                 AttributeNominalValue dbe = null;
                 for(AttributeNominalValue f : dbo.getAttributeNominalValues()) {
                     if (Equals.isSameAttributeNominalValue(e, f)) {
@@ -2380,13 +2492,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAttributeNominalValues().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getAttributeNominalValues().add(e);
                         e.setAttribute(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2398,59 +2513,72 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getAttributeNominalValues().remove(dbe);
                 }
             }
         }
+        if (!simulate)
+            t.save(o);
+        return changed;
     }
 
-    private void sync(Transaction t, AttributeGroup o, AttributeGroup dbo, boolean simulate) {
+    private boolean sync(Transaction t, AttributeGroup o, AttributeGroup dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getGroupName(), o.getGroupName())) {
                 if (!simulate)
                     dbo.setGroupName(o.getGroupName());
-                log.append(Describe.describe(o) + ": updating groupName\n");
+                log.append(Describe.describe(o) + ": changed groupName\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, boolean simulate) {
+    private boolean sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
-                log.append(Describe.describe(o) + ": updating value\n");
+                log.append(Describe.describe(o) + ": changed value\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, ViralIsolate o, ViralIsolate dbo, boolean simulate) {
+    private boolean sync(Transaction t, ViralIsolate o, ViralIsolate dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getSampleId(), o.getSampleId())) {
                 if (!simulate)
                     dbo.setSampleId(o.getSampleId());
-                log.append(Describe.describe(o) + ": updating sampleId\n");
+                log.append(Describe.describe(o) + ": changed sampleId\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getSampleDate(), o.getSampleDate())) {
                 if (!simulate)
                     dbo.setSampleDate(o.getSampleDate());
-                log.append(Describe.describe(o) + ": updating sampleDate\n");
+                log.append(Describe.describe(o) + ": changed sampleDate\n");
+                changed = true;
             }
         }
         for(NtSequence e : o.getNtSequences()) {
-            if (dbo == null)
-                sync(t, e, (NtSequence)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (NtSequence)null, syncMode, simulate)) changed = true;
+            } else {
                 NtSequence dbe = null;
                 for(NtSequence f : dbo.getNtSequences()) {
                     if (Equals.isSameNtSequence(e, f)) {
@@ -2458,13 +2586,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getNtSequences().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getNtSequences().add(e);
                         e.setViralIsolate(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2476,16 +2607,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getNtSequences().remove(dbe);
                 }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            if (dbo == null)
-                sync(t, e, (TestResult)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+            } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
                     if (Equals.isSameTestResult(e, f)) {
@@ -2493,13 +2625,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestResults().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getTestResults().add(e);
                         e.setViralIsolate(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2511,42 +2646,48 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTestResults().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, NtSequence o, NtSequence dbo, boolean simulate) {
+    private boolean sync(Transaction t, NtSequence o, NtSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
                 if (!simulate)
                     dbo.setNucleotides(o.getNucleotides());
-                log.append(Describe.describe(o) + ": updating nucleotides\n");
+                log.append(Describe.describe(o) + ": changed nucleotides\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getLabel(), o.getLabel())) {
                 if (!simulate)
                     dbo.setLabel(o.getLabel());
-                log.append(Describe.describe(o) + ": updating label\n");
+                log.append(Describe.describe(o) + ": changed label\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getSequenceDate(), o.getSequenceDate())) {
                 if (!simulate)
                     dbo.setSequenceDate(o.getSequenceDate());
-                log.append(Describe.describe(o) + ": updating sequenceDate\n");
+                log.append(Describe.describe(o) + ": changed sequenceDate\n");
+                changed = true;
             }
         }
         for(AaSequence e : o.getAaSequences()) {
-            if (dbo == null)
-                sync(t, e, (AaSequence)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (AaSequence)null, syncMode, simulate)) changed = true;
+            } else {
                 AaSequence dbe = null;
                 for(AaSequence f : dbo.getAaSequences()) {
                     if (Equals.isSameAaSequence(e, f)) {
@@ -2554,13 +2695,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaSequences().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getAaSequences().add(e);
                         e.setNtSequence(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2572,16 +2716,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getAaSequences().remove(dbe);
                 }
             }
         }
         for(TestResult e : o.getTestResults()) {
-            if (dbo == null)
-                sync(t, e, (TestResult)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+            } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
                     if (Equals.isSameTestResult(e, f)) {
@@ -2589,13 +2734,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTestResults().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getTestResults().add(e);
                         e.setNtSequence(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2607,42 +2755,48 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTestResults().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, AaSequence o, AaSequence dbo, boolean simulate) {
+    private boolean sync(Transaction t, AaSequence o, AaSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getProtein(), o.getProtein())) {
                 if (!simulate)
                     dbo.setProtein(o.getProtein());
-                log.append(Describe.describe(o) + ": updating protein\n");
+                log.append(Describe.describe(o) + ": changed protein\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getFirstAaPos(), o.getFirstAaPos())) {
                 if (!simulate)
                     dbo.setFirstAaPos(o.getFirstAaPos());
-                log.append(Describe.describe(o) + ": updating firstAaPos\n");
+                log.append(Describe.describe(o) + ": changed firstAaPos\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getLastAaPos(), o.getLastAaPos())) {
                 if (!simulate)
                     dbo.setLastAaPos(o.getLastAaPos());
-                log.append(Describe.describe(o) + ": updating lastAaPos\n");
+                log.append(Describe.describe(o) + ": changed lastAaPos\n");
+                changed = true;
             }
         }
         for(AaMutation e : o.getAaMutations()) {
-            if (dbo == null)
-                sync(t, e, (AaMutation)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (AaMutation)null, syncMode, simulate)) changed = true;
+            } else {
                 AaMutation dbe = null;
                 for(AaMutation f : dbo.getAaMutations()) {
                     if (Equals.isSameAaMutation(e, f)) {
@@ -2650,13 +2804,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaMutations().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getAaMutations().add(e);
                         e.getId().setAaSequence(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2668,16 +2825,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getAaMutations().remove(dbe);
                 }
             }
         }
         for(AaInsertion e : o.getAaInsertions()) {
-            if (dbo == null)
-                sync(t, e, (AaInsertion)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (AaInsertion)null, syncMode, simulate)) changed = true;
+            } else {
                 AaInsertion dbe = null;
                 for(AaInsertion f : dbo.getAaInsertions()) {
                     if (Equals.isSameAaInsertion(e, f)) {
@@ -2685,13 +2843,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAaInsertions().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getAaInsertions().add(e);
                         e.getId().setAaSequence(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2703,115 +2864,134 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getAaInsertions().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, AaMutation o, AaMutation dbo, boolean simulate) {
+    private boolean sync(Transaction t, AaMutation o, AaMutation dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
                 if (!simulate)
                     dbo.getId().setPosition(o.getId().getPosition());
-                log.append(Describe.describe(o) + ": updating position\n");
+                log.append(Describe.describe(o) + ": changed position\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getAaReference(), o.getAaReference())) {
                 if (!simulate)
                     dbo.setAaReference(o.getAaReference());
-                log.append(Describe.describe(o) + ": updating aaReference\n");
+                log.append(Describe.describe(o) + ": changed aaReference\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getAaMutation(), o.getAaMutation())) {
                 if (!simulate)
                     dbo.setAaMutation(o.getAaMutation());
-                log.append(Describe.describe(o) + ": updating aaMutation\n");
+                log.append(Describe.describe(o) + ": changed aaMutation\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getNtReferenceCodon(), o.getNtReferenceCodon())) {
                 if (!simulate)
                     dbo.setNtReferenceCodon(o.getNtReferenceCodon());
-                log.append(Describe.describe(o) + ": updating ntReferenceCodon\n");
+                log.append(Describe.describe(o) + ": changed ntReferenceCodon\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getNtMutationCodon(), o.getNtMutationCodon())) {
                 if (!simulate)
                     dbo.setNtMutationCodon(o.getNtMutationCodon());
-                log.append(Describe.describe(o) + ": updating ntMutationCodon\n");
+                log.append(Describe.describe(o) + ": changed ntMutationCodon\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, AaInsertion o, AaInsertion dbo, boolean simulate) {
+    private boolean sync(Transaction t, AaInsertion o, AaInsertion dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
                 if (!simulate)
                     dbo.getId().setPosition(o.getId().getPosition());
-                log.append(Describe.describe(o) + ": updating position\n");
+                log.append(Describe.describe(o) + ": changed position\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getId().getInsertionOrder(), o.getId().getInsertionOrder())) {
                 if (!simulate)
                     dbo.getId().setInsertionOrder(o.getId().getInsertionOrder());
-                log.append(Describe.describe(o) + ": updating insertionOrder\n");
+                log.append(Describe.describe(o) + ": changed insertionOrder\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getAaInsertion(), o.getAaInsertion())) {
                 if (!simulate)
                     dbo.setAaInsertion(o.getAaInsertion());
-                log.append(Describe.describe(o) + ": updating aaInsertion\n");
+                log.append(Describe.describe(o) + ": changed aaInsertion\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getNtInsertionCodon(), o.getNtInsertionCodon())) {
                 if (!simulate)
                     dbo.setNtInsertionCodon(o.getNtInsertionCodon());
-                log.append(Describe.describe(o) + ": updating ntInsertionCodon\n");
+                log.append(Describe.describe(o) + ": changed ntInsertionCodon\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, Therapy o, Therapy dbo, boolean simulate) {
+    private boolean sync(Transaction t, Therapy o, Therapy dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getStartDate(), o.getStartDate())) {
                 if (!simulate)
                     dbo.setStartDate(o.getStartDate());
-                log.append(Describe.describe(o) + ": updating startDate\n");
+                log.append(Describe.describe(o) + ": changed startDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getStopDate(), o.getStopDate())) {
                 if (!simulate)
                     dbo.setStopDate(o.getStopDate());
-                log.append(Describe.describe(o) + ": updating stopDate\n");
+                log.append(Describe.describe(o) + ": changed stopDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getComment(), o.getComment())) {
                 if (!simulate)
                     dbo.setComment(o.getComment());
-                log.append(Describe.describe(o) + ": updating comment\n");
+                log.append(Describe.describe(o) + ": changed comment\n");
+                changed = true;
             }
         }
         for(TherapyCommercial e : o.getTherapyCommercials()) {
-            if (dbo == null)
-                sync(t, e, (TherapyCommercial)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TherapyCommercial)null, syncMode, simulate)) changed = true;
+            } else {
                 TherapyCommercial dbe = null;
                 for(TherapyCommercial f : dbo.getTherapyCommercials()) {
                     if (Equals.isSameTherapyCommercial(e, f)) {
@@ -2819,13 +2999,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTherapyCommercials().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getTherapyCommercials().add(e);
                         e.getId().setTherapy(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2837,16 +3020,17 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTherapyCommercials().remove(dbe);
                 }
             }
         }
         for(TherapyGeneric e : o.getTherapyGenerics()) {
-            if (dbo == null)
-                sync(t, e, (TherapyGeneric)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (TherapyGeneric)null, syncMode, simulate)) changed = true;
+            } else {
                 TherapyGeneric dbe = null;
                 for(TherapyGeneric f : dbo.getTherapyGenerics()) {
                     if (Equals.isSameTherapyGeneric(e, f)) {
@@ -2854,13 +3038,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getTherapyGenerics().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getTherapyGenerics().add(e);
                         e.getId().setTherapy(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -2872,281 +3059,336 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getTherapyGenerics().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TestResult o, TestResult dbo, boolean simulate) {
+    private boolean sync(Transaction t, TestResult o, TestResult dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getTest() != null) {
-                Test d = Retrieve.retrieve(t, o.getTest());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getTest()) + "\n");
-                    sync(t, o.getTest(), (Test)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setTest(d);
+            return changed;
+        {
+            Test dbf = null;
+            if (dbo == null) {
+                if (o.getTest() != null)
+                    dbf = Retrieve.retrieve(t, o.getTest());
+            } else {
+                if (Equals.isSameTest(o.getTest(), dbo.getTest()))
+                    dbf = dbo.getTest();
+                else
+                    dbf = Retrieve.retrieve(t, o.getTest());
             }
-        } else {
-            if (Equals.isSameTest(o.getTest(), dbo.getTest()))
-                sync(t, o.getTest(), dbo.getTest(), simulate);
-            else {
-                if (o.getTest() != null) {
-                    Test d = Retrieve.retrieve(t, o.getTest());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getTest()) + "\n");
-                        sync(t, o.getTest(), (Test)null, simulate);
-                        if (!simulate)
-                            dbo.setTest(o.getTest());
-                    } else {
-                        if (!simulate)
-                            dbo.setTest(d);
-                    }
+            if (o.getTest() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getTest()) + "\n");
+                    sync(t, o.getTest(), (Test)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setTest(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getTest(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getTest(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating test\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setTest(dbf);
+                }
+            } else {
+                if (dbf != dbo.getTest()) {
+                    if (!simulate)
+                        dbo.setTest(dbf);
+                    log.append(Describe.describe(o) + ": changed test\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDrugGeneric(), o.getDrugGeneric())) {
                 if (!simulate)
                     dbo.setDrugGeneric(o.getDrugGeneric());
-                log.append(Describe.describe(o) + ": updating drugGeneric\n");
+                log.append(Describe.describe(o) + ": changed drugGeneric\n");
+                changed = true;
             }
         }
-        if (dbo == null) {
-            if (o.getTestNominalValue() != null) {
-                TestNominalValue d = Retrieve.retrieve(t, o.getTestNominalValue());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getTestNominalValue()) + "\n");
-                    sync(t, o.getTestNominalValue(), (TestNominalValue)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setTestNominalValue(d);
+        {
+            TestNominalValue dbf = null;
+            if (dbo == null) {
+                if (o.getTestNominalValue() != null)
+                    dbf = Retrieve.retrieve(t, o.getTestNominalValue());
+            } else {
+                if (Equals.isSameTestNominalValue(o.getTestNominalValue(), dbo.getTestNominalValue()))
+                    dbf = dbo.getTestNominalValue();
+                else
+                    dbf = Retrieve.retrieve(t, o.getTestNominalValue());
             }
-        } else {
-            if (Equals.isSameTestNominalValue(o.getTestNominalValue(), dbo.getTestNominalValue()))
-                sync(t, o.getTestNominalValue(), dbo.getTestNominalValue(), simulate);
-            else {
-                if (o.getTestNominalValue() != null) {
-                    TestNominalValue d = Retrieve.retrieve(t, o.getTestNominalValue());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getTestNominalValue()) + "\n");
-                        sync(t, o.getTestNominalValue(), (TestNominalValue)null, simulate);
-                        if (!simulate)
-                            dbo.setTestNominalValue(o.getTestNominalValue());
-                    } else {
-                        if (!simulate)
-                            dbo.setTestNominalValue(d);
-                    }
+            if (o.getTestNominalValue() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getTestNominalValue()) + "\n");
+                    sync(t, o.getTestNominalValue(), (TestNominalValue)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setTestNominalValue(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getTestNominalValue(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getTestNominalValue(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating testNominalValue\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setTestNominalValue(dbf);
+                }
+            } else {
+                if (dbf != dbo.getTestNominalValue()) {
+                    if (!simulate)
+                        dbo.setTestNominalValue(dbf);
+                    log.append(Describe.describe(o) + ": changed testNominalValue\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
-                log.append(Describe.describe(o) + ": updating value\n");
+                log.append(Describe.describe(o) + ": changed value\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getTestDate(), o.getTestDate())) {
                 if (!simulate)
                     dbo.setTestDate(o.getTestDate());
-                log.append(Describe.describe(o) + ": updating testDate\n");
+                log.append(Describe.describe(o) + ": changed testDate\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getSampleId(), o.getSampleId())) {
                 if (!simulate)
                     dbo.setSampleId(o.getSampleId());
-                log.append(Describe.describe(o) + ": updating sampleId\n");
+                log.append(Describe.describe(o) + ": changed sampleId\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, boolean simulate) {
+    private boolean sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
                 if (!simulate)
                     dbo.getId().setDrugCommercial(o.getId().getDrugCommercial());
-                log.append(Describe.describe(o) + ": updating drugCommercial\n");
+                log.append(Describe.describe(o) + ": changed drugCommercial\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDayDosageUnits(), o.getDayDosageUnits())) {
                 if (!simulate)
                     dbo.setDayDosageUnits(o.getDayDosageUnits());
-                log.append(Describe.describe(o) + ": updating dayDosageUnits\n");
+                log.append(Describe.describe(o) + ": changed dayDosageUnits\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, boolean simulate) {
+    private boolean sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
                 if (!simulate)
                     dbo.getId().setDrugGeneric(o.getId().getDrugGeneric());
-                log.append(Describe.describe(o) + ": updating drugGeneric\n");
+                log.append(Describe.describe(o) + ": changed drugGeneric\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDayDosageMg(), o.getDayDosageMg())) {
                 if (!simulate)
                     dbo.setDayDosageMg(o.getDayDosageMg());
-                log.append(Describe.describe(o) + ": updating dayDosageMg\n");
+                log.append(Describe.describe(o) + ": changed dayDosageMg\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, Test o, Test dbo, boolean simulate) {
+    private boolean sync(Transaction t, Test o, Test dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
-        if (dbo == null) {
-            if (o.getAnalysis() != null) {
-                Analysis d = Retrieve.retrieve(t, o.getAnalysis());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getAnalysis()) + "\n");
-                    sync(t, o.getAnalysis(), (Analysis)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setAnalysis(d);
+            return changed;
+        {
+            Analysis dbf = null;
+            if (dbo == null) {
+                if (o.getAnalysis() != null)
+                    dbf = Retrieve.retrieve(t, o.getAnalysis());
+            } else {
+                if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
+                    dbf = dbo.getAnalysis();
+                else
+                    dbf = Retrieve.retrieve(t, o.getAnalysis());
             }
-        } else {
-            if (Equals.isSameAnalysis(o.getAnalysis(), dbo.getAnalysis()))
-                sync(t, o.getAnalysis(), dbo.getAnalysis(), simulate);
-            else {
-                if (o.getAnalysis() != null) {
-                    Analysis d = Retrieve.retrieve(t, o.getAnalysis());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getAnalysis()) + "\n");
-                        sync(t, o.getAnalysis(), (Analysis)null, simulate);
-                        if (!simulate)
-                            dbo.setAnalysis(o.getAnalysis());
-                    } else {
-                        if (!simulate)
-                            dbo.setAnalysis(d);
-                    }
+            if (o.getAnalysis() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getAnalysis()) + "\n");
+                    sync(t, o.getAnalysis(), (Analysis)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setAnalysis(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getAnalysis(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getAnalysis(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating analysis\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setAnalysis(dbf);
+                }
+            } else {
+                if (dbf != dbo.getAnalysis()) {
+                    if (!simulate)
+                        dbo.setAnalysis(dbf);
+                    log.append(Describe.describe(o) + ": changed analysis\n");
+                    changed = true;
+                }
             }
         }
-        if (dbo == null) {
-            if (o.getTestType() != null) {
-                TestType d = Retrieve.retrieve(t, o.getTestType());
-                if (d == null) {
-                    log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
-                    sync(t, o.getTestType(), (TestType)null, simulate);
-                } else
-                    if (!simulate)
-                        o.setTestType(d);
+        {
+            TestType dbf = null;
+            if (dbo == null) {
+                if (o.getTestType() != null)
+                    dbf = Retrieve.retrieve(t, o.getTestType());
+            } else {
+                if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
+                    dbf = dbo.getTestType();
+                else
+                    dbf = Retrieve.retrieve(t, o.getTestType());
             }
-        } else {
-            if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-                sync(t, o.getTestType(), dbo.getTestType(), simulate);
-            else {
-                if (o.getTestType() != null) {
-                    TestType d = Retrieve.retrieve(t, o.getTestType());
-                    if (d == null) {
-                        log.append("Adding: " + Describe.describe(o.getTestType()) + "\n");
-                        sync(t, o.getTestType(), (TestType)null, simulate);
-                        if (!simulate)
-                            dbo.setTestType(o.getTestType());
-                    } else {
-                        if (!simulate)
-                            dbo.setTestType(d);
-                    }
+            if (o.getTestType() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getTestType()) + "\n");
+                    sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
+                    changed = true;
                 } else {
-                    if (!simulate)
-                        dbo.setTestType(null);
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (sync(t, o.getTestType(), dbf, syncMode, true)) {
+                            throw new ImportException(Describe.describe(dbf) + " differs from database version, synchronize these first !");
+                        }
+                    } else
+                    if (sync(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
                 }
-                log.append(Describe.describe(o) + ": updating testType\n");
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setTestType(dbf);
+                }
+            } else {
+                if (dbf != dbo.getTestType()) {
+                    if (!simulate)
+                        dbo.setTestType(dbf);
+                    log.append(Describe.describe(o) + ": changed testType\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getDescription(), o.getDescription())) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
-                log.append(Describe.describe(o) + ": updating description\n");
+                log.append(Describe.describe(o) + ": changed description\n");
+                changed = true;
             }
         }
+        return changed;
     }
 
-    private void sync(Transaction t, Analysis o, Analysis dbo, boolean simulate) {
+    private boolean sync(Transaction t, Analysis o, Analysis dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        boolean changed = false;
         if (o == null)
-            return;
+            return changed;
         if (dbo != null) {
             if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
                 if (!simulate)
                     dbo.setAnalysisType(o.getAnalysisType());
-                log.append(Describe.describe(o) + ": updating analysisType\n");
+                log.append(Describe.describe(o) + ": changed analysisType\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getUrl(), o.getUrl())) {
                 if (!simulate)
                     dbo.setUrl(o.getUrl());
-                log.append(Describe.describe(o) + ": updating url\n");
+                log.append(Describe.describe(o) + ": changed url\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getAccount(), o.getAccount())) {
                 if (!simulate)
                     dbo.setAccount(o.getAccount());
-                log.append(Describe.describe(o) + ": updating account\n");
+                log.append(Describe.describe(o) + ": changed account\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getPassword(), o.getPassword())) {
                 if (!simulate)
                     dbo.setPassword(o.getPassword());
-                log.append(Describe.describe(o) + ": updating password\n");
+                log.append(Describe.describe(o) + ": changed password\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getBaseinputfile(), o.getBaseinputfile())) {
                 if (!simulate)
                     dbo.setBaseinputfile(o.getBaseinputfile());
-                log.append(Describe.describe(o) + ": updating baseinputfile\n");
+                log.append(Describe.describe(o) + ": changed baseinputfile\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getBaseoutputfile(), o.getBaseoutputfile())) {
                 if (!simulate)
                     dbo.setBaseoutputfile(o.getBaseoutputfile());
-                log.append(Describe.describe(o) + ": updating baseoutputfile\n");
+                log.append(Describe.describe(o) + ": changed baseoutputfile\n");
+                changed = true;
             }
         }
         if (dbo != null) {
             if (!equals(dbo.getServiceName(), o.getServiceName())) {
                 if (!simulate)
                     dbo.setServiceName(o.getServiceName());
-                log.append(Describe.describe(o) + ": updating serviceName\n");
+                log.append(Describe.describe(o) + ": changed serviceName\n");
+                changed = true;
             }
         }
         for(AnalysisData e : o.getAnalysisDatas()) {
-            if (dbo == null)
-                sync(t, e, (AnalysisData)null, simulate);
-            else {
+            if (dbo == null) {
+                if (sync(t, e, (AnalysisData)null, syncMode, simulate)) changed = true;
+            } else {
                 AnalysisData dbe = null;
                 for(AnalysisData f : dbo.getAnalysisDatas()) {
                     if (Equals.isSameAnalysisData(e, f)) {
@@ -3154,13 +3396,16 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (dbe == null) {
-                    log.append(Describe.describe(dbo) + ": adding " + Describe.describe(e) + "\n");
+                    log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
+                    changed = true;
                     if (!simulate) {
-                            dbo.getAnalysisDatas().add(e);
+                        sync(t, e, null, syncMode, simulate);
+                        dbo.getAnalysisDatas().add(e);
                         e.setAnalysis(dbo);
                     }
-                } else
-                    sync(t, e, dbe, simulate);
+                } else {
+                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -3172,26 +3417,28 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 }
                 if (e == null) {
-                    log.append(Describe.describe(dbo) + ": removing: " + Describe.describe(dbe) + "\n");
+                    log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
+                    changed = true;
                     if (!simulate)
                         dbo.getAnalysisDatas().remove(dbe);
                 }
             }
         }
+        return changed;
     }
 
     public Patient sync(Transaction t, Patient o, SyncMode mode, boolean simulate) throws ImportException {
         Patient dbo = dbFindPatient(t, o);
         if (dbo != null) {
-            if (mode == SyncMode.Clean)
+            if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
+            sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
-            sync(t, o, (Patient)null, simulate);
+            log.append("New " + Describe.describe(o) + "\n");
+            sync(t, o, (Patient)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3201,15 +3448,15 @@ public class ImportFromXML extends ImportFromXMLBase {
     public Attribute sync(Transaction t, Attribute o, SyncMode mode, boolean simulate) throws ImportException {
         Attribute dbo = dbFindAttribute(t, o);
         if (dbo != null) {
-            if (mode == SyncMode.Clean)
+            if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
+            sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
-            sync(t, o, (Attribute)null, simulate);
+            log.append("New " + Describe.describe(o) + "\n");
+            sync(t, o, (Attribute)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3219,15 +3466,15 @@ public class ImportFromXML extends ImportFromXMLBase {
     public Test sync(Transaction t, Test o, SyncMode mode, boolean simulate) throws ImportException {
         Test dbo = dbFindTest(t, o);
         if (dbo != null) {
-            if (mode == SyncMode.Clean)
+            if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
+            sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
-            sync(t, o, (Test)null, simulate);
+            log.append("New " + Describe.describe(o) + "\n");
+            sync(t, o, (Test)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3237,15 +3484,15 @@ public class ImportFromXML extends ImportFromXMLBase {
     public TestType sync(Transaction t, TestType o, SyncMode mode, boolean simulate) throws ImportException {
         TestType dbo = dbFindTestType(t, o);
         if (dbo != null) {
-            if (mode == SyncMode.Clean)
+            if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
-            sync(t, o, dbo, simulate);
+            sync(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
-            log.append("Adding: " + Describe.describe(o) + "\n");
-            sync(t, o, (TestType)null, simulate);
+            log.append("New " + Describe.describe(o) + "\n");
+            sync(t, o, (TestType)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;

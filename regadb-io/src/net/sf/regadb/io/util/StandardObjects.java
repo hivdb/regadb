@@ -19,7 +19,7 @@ public class StandardObjects {
     private static ValueType numberValueType = new ValueType("number");
     private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
     private static TestType viralLoadTestType = new TestType(numberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
-    private static TestType cd4TestType = new TestType(limitedNumberValueType, patientObject, "CD4 Count (cells/ul", new TreeSet<TestNominalValue>());
+    private static TestType cd4TestType = new TestType(limitedNumberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
 

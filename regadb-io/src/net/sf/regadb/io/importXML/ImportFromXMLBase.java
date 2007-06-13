@@ -40,7 +40,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, AnalysisType> analysisTypes;
     
     protected StringBuffer log = new StringBuffer();
-    public enum SyncMode { Clean, Update };
+    public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
     
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -240,8 +240,8 @@ public class ImportFromXMLBase extends DefaultHandler{
         return analysisType == analysisType2;
     }
 
-    protected boolean equals(Integer revision, Integer revision2) {
-        return revision.equals(revision2);
+    protected boolean equals(Integer a, Integer b) {
+        return a == b || (a != null && a.equals(b));
     }
     
     protected boolean equals(byte[] data, byte[] data2) {

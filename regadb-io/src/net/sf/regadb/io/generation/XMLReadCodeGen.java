@@ -23,6 +23,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.ViralIsolate;
 
 public class XMLReadCodeGen {
     private static class ObjectField {
@@ -60,14 +61,14 @@ public class XMLReadCodeGen {
 
         public void writeCreate(int tabs) throws IOException {
             if (javaClass == TestResult.class) {
-                    /*
-                     * Depends on enclosing state (toplevel is already handled)
-                     */
-                    if (parent.javaClass == Patient.class) {
-                        write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
-                    } else {
-                        write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
-                    }
+                /*
+                 * Depends on enclosing state (toplevel is already handled)
+                 */
+                if (parent.javaClass == Patient.class) {
+                    write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
+                } else {
+                    write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
+                }
                 write(tabs, memberName() + ".add(" + resolved.varName() + ");\n");
             } else if (javaClass == Therapy.class) {
                 write(tabs, resolved.varName() + " = patient.createTherapy(fieldTherapy_startDate);\n");
@@ -478,15 +479,11 @@ public class XMLReadCodeGen {
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
             
-            write(1, "private void sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, boolean simulate) {\n");
+            write(1, "private boolean sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, SyncMode syncMode, boolean simulate) throws ImportException {\n");
 
-            /*
-             * TODO: must decide: what if a referenced object is already in the database, do we also 'update' it ?
-             *       currently we don't.
-             */
-
+            write(2, "boolean changed = false;\n");
             write(2, "if (o == null)\n");
-            write(3, "return;\n");
+            write(3, "return changed;\n");
             /*
              * Set all members
              */
@@ -497,56 +494,63 @@ public class XMLReadCodeGen {
 
                 if (!f.isSet())
                     if (f.resolved != null) {
-                        write(2, "if (dbo == null) {\n");
-                        write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
-                        if (!f.resolved.referenced)
-                            write(4, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                        else {
-                            // find the thing in the database
-                            write(4, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
-                            write(4, "if (d == null) {\n");
-                            write(5, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
-                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                            write(4, "} else\n");
-                            write(5, "if (!simulate)\n"); // <- sync deep here for alternative strategy
-                            write(6, "o." + comp + f.setterName() + "(d);\n");
-                        }
-                        write(3, "}\n");
-                        write(2, "} else {\n");
-                        write(3, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
-                        write(4, "sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), simulate);\n");
-                        write(3, "else {\n");
-                        if (f.resolved.referenced) {
-                            // find the thing in the database
-                            write(4, "if (o." + comp + f.getterName() + "() != null) {\n");
-                            write(5, f.resolved.javaClass.getSimpleName() + " d = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
-                            write(5, "if (d == null) {\n");
-                            write(6, "log.append(\"Adding: \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
-                            write(6, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                            write(6, "if (!simulate)\n");
-                            write(7, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
-                            write(5, "} else {\n");
-                            write(6, "if (!simulate)\n");  // <- sync deep here for alternative strategy
-                            write(7, "dbo." + comp + f.setterName() + "(d);\n");
-                            write(5, "}\n");
-                            write(4, "} else {\n");
-                            write(5, "if (!simulate)\n");  // <- sync deep here for alternative strategy
-                            write(6, "dbo." + comp + f.setterName() + "(null);\n");
-                            write(4, "}\n");
+                        if (!f.resolved.referenced) {
+                            write(2, "if (dbo == null) {\n");
+                            write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
+                            write(4, "if (sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n"); 
+                            write(3, "}\n");
+                            write(2, "} else {\n");
+                            write(3, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "())) {\n");
+                            write(4, "if (sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), syncMode, simulate)) changed = true;\n");
+                            write(3, "}\n");
+                            write(2, "}\n");
                         } else {
+                            write(2, "{\n");
+                            write(3, f.resolved.javaClass.getSimpleName() + " dbf = null;\n"); // what we have
+                            write(3, "if (dbo == null) {\n");
+                            write(4, "if (o." + comp + f.getterName() + "() != null)\n");
+                            write(5, "dbf = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(3, "} else {\n");
+                            write(4, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "()))\n");
+                            write(5, "dbf = dbo." + comp + f.getterName() + "();\n");
+                            write(4, "else\n");
+                            write(5, "dbf = Retrieve.retrieve(t, o."  + comp + f.getterName() + "());\n");
+                            write(3, "}\n");
+                            write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
+                            write(4, "if (dbf == null) {\n");
+                            write(5, "log.append(\"New \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
+                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate);\n");
+                            write(5, "changed = true;\n");
+                            write(4, "} else {\n");
+                            write(5, "if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {\n");
+                            write(6, "if (sync(t, o." + comp + f.getterName() + "(), dbf, syncMode, true)) {\n");
+                            write(7, "throw new ImportException(\"Imported \" + Describe.describe(o) + \" is different, synchronize them first !\");\n");
+                            write(6, "}\n");
+                            write(5, "} else\n");
+                            write(5, "if (sync(t, o." + comp + f.getterName() + "(), dbf, syncMode, simulate)) changed = true;\n");
+                            write(4, "}\n");
+                            write(3, "}\n");
+                            write(3, "if (dbo == null) {\n");
+                            write(4, "if (dbf != null) {\n");
                             write(5, "if (!simulate)\n");
-                            write(6, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
+                            write(6, "o." + comp + f.setterName() + "(dbf);\n");
+                            write(4, "}\n");
+                            write(3, "} else {\n");
+                            write(4, "if (dbf != dbo." + comp + f.getterName() + "()) {\n");
+                            write(5, "if (!simulate)\n");
+                            write(6, "dbo." + comp + f.setterName() + "(dbf);\n");
+                            write(5, "log.append(Describe.describe(o) + \": changed " + f.name + "\\n\");\n");
+                            write(4, "}\n");
+                            write(3, "}\n");
+                            write(2, "}\n");
                         }
-
-                        write(4, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
-                        write(3, "}\n");
-                        write(2, "}\n");
                     } else {
                         write(2, "if (dbo != null) {\n");
                         write(3, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())) {\n");
                         write(4, "if (!simulate)\n");
                         write(5, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
-                        write(4, "log.append(Describe.describe(o) + \": updating " + f.name + "\\n\");\n");
+                        write(4, "log.append(Describe.describe(o) + \": changed " + f.name + "\\n\");\n");
+                        write(4, "changed = true;\n");
                         write(3, "}\n");
                         write(2, "}\n");
                     }
@@ -555,9 +559,9 @@ public class XMLReadCodeGen {
                      * Synchronize the set
                      */
                     write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
-                    write(3, "if (dbo == null)\n");
-                    write(4, "sync(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, simulate);\n");
-                    write(3, "else {\n");
+                    write(3, "if (dbo == null) {\n");
+                    write(4, "if (sync(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n");
+                    write(3, "} else {\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " dbe = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : dbo." + f.getterName() + "()) {\n");
                     write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(e, f)) {\n");
@@ -566,7 +570,8 @@ public class XMLReadCodeGen {
                     write(4, "}\n");
                     
                     write(4, "if (dbe == null) {\n");
-                    write(5, "log.append(Describe.describe(dbo) + \": adding \" + Describe.describe(e) + \"\\n\");\n");
+                    write(5, "log.append(Describe.describe(dbo) + \": New \" + Describe.describe(e) + \"\\n\");\n");
+                    write(4, "changed = true;\n");
                     write(5, "if (!simulate) {\n");
                     if (o.javaClass == Patient.class) {
                         if (f.resolved.javaClass != Dataset.class)
@@ -582,8 +587,9 @@ public class XMLReadCodeGen {
                         write(0, "set" + o.javaClass.getSimpleName() + "(dbo);\n");
                     }
                     write(5, "}\n");
-                    write(4, "} else\n");
-                    write(5, "sync(t, e, dbe, simulate);\n");
+                    write(4, "} else {\n");
+                    write(5, "if (sync(t, e, dbe, syncMode, simulate)) changed = true;\n");
+                    write(4, "}\n");
                     write(3, "}\n");
                     write(2, "}\n");
 
@@ -597,7 +603,8 @@ public class XMLReadCodeGen {
                     write(4, "}\n");
 
                     write(4, "if (e == null) {\n");
-                    write(5, "log.append(Describe.describe(dbo) + \": removing: \" + Describe.describe(dbe) + \"\\n\");\n");
+                    write(5, "log.append(Describe.describe(dbo) + \": Removed \" + Describe.describe(dbe) + \"\\n\");\n");
+                    write(5, "changed = true;\n");
                     write(5, "if (!simulate)\n");
                     write(6, "dbo." + f.getterName() + "().remove(dbe);\n");
                     write(4, "}\n");
@@ -605,7 +612,8 @@ public class XMLReadCodeGen {
                     write(2, "}\n");
                 }
             }
-            
+
+            write(2, "return changed;\n");
             write(1, "}\n\n");
         }
 
@@ -614,22 +622,19 @@ public class XMLReadCodeGen {
          */
         Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class };
         
-        //write(1, "public enum SyncMode { Clean, Update };\n");
-        //write(1, "StringBuffer log = new StringBuffer();\n");
-        
         for (Class c : unscopedClasses) {
             write(1, "public " + c.getSimpleName() + " sync(Transaction t, " + c.getSimpleName() + " o, SyncMode mode, boolean simulate) throws ImportException {\n");
             write(2, c.getSimpleName() + " dbo = dbFind" + c.getSimpleName() + "(t, o);\n");
             write(2, "if (dbo != null) {\n");
-            write(3, "if (mode == SyncMode.Clean)\n");
+            write(3, "if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)\n");
             write(4, "throw new ImportException(Describe.describe(o) + \" already exists\");\n");
-            write(3, "sync(t, o, dbo, simulate);\n");
+            write(3, "sync(t, o, dbo, mode, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.update(dbo);\n");
             write(3, "return dbo;\n");
             write(2, "} else {\n");
-            write(3, "log.append(\"Adding: \" + Describe.describe(o) + \"\\n\");\n");
-            write(3, "sync(t, o, (" + c.getSimpleName() + ")null, simulate);\n");
+            write(3, "log.append(\"New \" + Describe.describe(o) + \"\\n\");\n");
+            write(3, "sync(t, o, (" + c.getSimpleName() + ")null, mode, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.save(o);\n");
             write(3, "return o;\n");

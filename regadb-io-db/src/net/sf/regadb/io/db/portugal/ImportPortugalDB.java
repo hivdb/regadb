@@ -50,12 +50,7 @@ import org.jdom.output.XMLOutputter;
 /**
  * @author kdforc0
  */
-public class ImportPortugalDB {
-    static final int TEST_GENERIC_VIRAL_LOAD = 1;
-    static final int TEST_GENERIC_CD4 = 2;
-    static final int GENDER_MALE = 1;
-    static final int GENDER_FEMALE = 2;
-    
+public class ImportPortugalDB {    
     static final String SOURCE = "PT";
     
     private Table sampleTable;
@@ -445,6 +440,9 @@ public class ImportPortugalDB {
                     patient.setBirthDate(createDate(yearBirth, ""));
                     
                     patientMap.put(patientId, patient);
+                    
+                    if (patientMap.size() == 10)
+                        return;
                 }
             }
         }
@@ -663,6 +661,7 @@ public class ImportPortugalDB {
             this.nominalValueMap = new HashMap<String, AttributeNominalValue>();
             for (int i = 0; i < ids.length; ++i) {
                 AttributeNominalValue value = new AttributeNominalValue(attribute, values[i]);
+                attribute.getAttributeNominalValues().add(value);
                 nominalValueMap.put(ids[i], value);
             }
        }
@@ -686,6 +685,10 @@ public class ImportPortugalDB {
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "Male", "Female" } ));
 
+        for (NominalAttribute a : nominals) {
+            a.attribute.setAttributeGroup(portugal);
+        }
+        
 		String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {
             int row = sampleIndex.row(i);
@@ -707,9 +710,11 @@ public class ImportPortugalDB {
                 for (int j = 0; j < nominals.size(); ++j) {
                     NominalAttribute attr = (NominalAttribute) nominals.get(j);
                     String value = sampleTable.valueAt(attr.column, row);
-                    if (value.trim().length() != 0 && !value.equals("0")) {
+                    AttributeNominalValue vv = attr.nominalValueMap.get(value);
+                    if (vv != null) {
                         PatientAttributeValue v = p.createPatientAttributeValue(attr.attribute);
-                        v.setAttributeNominalValue(attr.nominalValueMap.get(value));
+                        v.setAttributeNominalValue(vv);
+                        System.err.println(value + " " + v.getAttributeNominalValue().getValue());
                     }
                 }
             }
@@ -728,6 +733,7 @@ public class ImportPortugalDB {
                 AttributeNominalValue nv = new AttributeNominalValue(attribute, value);
                 attribute.getAttributeNominalValues().add(nv);
 
+                System.err.println(id + " -> " + nv.getValue());
                 result.put(id, nv);
             }
         }
@@ -802,8 +808,9 @@ public class ImportPortugalDB {
         instance.importViralLoad_CD4();
         instance.importTherapy();
 
-        instance.importSequencesNoAlign("sequences.xml");
+        //instance.importSequencesNoAlign("sequences.xml");
         instance.importPatientAttributes();
         instance.exportXML("result.xml");
+        System.err.println("All done sir.");
     }
 }

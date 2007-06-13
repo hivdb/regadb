@@ -9,10 +9,17 @@ package net.sf.regadb.io.importXML;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 
@@ -25,11 +32,12 @@ public class TestImportXML implements ImportHandler<Patient> {
     int patients;
     ImportFromXML instance;
     private Dataset dataset;
+    private Transaction t;
 
     public TestImportXML() {
         instance = new ImportFromXML();
         patients = 0;
-        /*
+
         login = null;
         try
         {
@@ -51,14 +59,18 @@ public class TestImportXML implements ImportHandler<Patient> {
             e.printStackTrace();
         }        
         
-        Transaction t = login.createTransaction();
+        t = login.createTransaction();
         instance.loadDatabaseObjects(t);                
 
-        dataset = new Dataset(t.getSettingsUser(), "PT", new Date());
-        t.save(dataset);
-
         t.commit();
-        */
+        
+        t = login.createTransaction();
+        dataset = t.getDataset("PT");
+        if (dataset == null) {
+            dataset = new Dataset(t.getSettingsUser(), "PT", new Date());
+            t.getSettingsUser().getDatasetAccesses().add(new DatasetAccess(new DatasetAccessId(t.getSettingsUser(), dataset), Privileges.READWRITE.getValue(), "nobody"));
+            t.save(dataset);
+        }
     }
     
     /**
@@ -71,23 +83,26 @@ public class TestImportXML implements ImportHandler<Patient> {
     
         FileReader r = new FileReader(new File(args[0]));
 
-
-        //self.instance.readPatients(new InputSource(r), self);
-        self.instance.readTests(new InputSource(r), null);
+        self.instance.readPatients(new InputSource(r), self);
+        //self.instance.readTests(new InputSource(r), null);
         System.err.println(self.instance.log);
         System.err.println("Read: " + self.patients + " patients");
+
+        self.t.commit();
     }
 
     public void importObject(Patient patient) {
-        Transaction t = login.createTransaction();
         try {
+            System.err.println("syncing:");
             patient.setSourceDataset(dataset, t);
             instance.sync(t, patient, SyncMode.Update, false);
-        } catch (ImportException e) {
-            // TODO Auto-generated catch block
+            System.err.println(instance.getLog());
+            instance.getLog().delete(0, instance.getLog().length());
+         } catch (Exception e) {
+            System.err.println("sync error:");
+            System.err.println(instance.getLog());
             e.printStackTrace();
         }
-        t.commit();
         ++patients;
     }
 }

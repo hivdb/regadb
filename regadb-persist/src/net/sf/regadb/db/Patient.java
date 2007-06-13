@@ -214,9 +214,14 @@ public class Patient {
                 patient.getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds, getPatient())));
             }
         }
+        
+        // FIXME: throw exception if no access
     }
 
     public Dataset getSourceDataset() {
-        return null; // FIXME: get the Source Data set
+        for (PatientDataset d : patient.getPatientDatasets())
+            if (d.getId().getDataset().getClosedDate() == null)
+                return d.getId().getDataset();
+        return null;
     }
 }
