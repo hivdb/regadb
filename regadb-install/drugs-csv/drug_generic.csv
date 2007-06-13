@@ -1,0 +1,38 @@
+generic_ii,generic_id,class_ii,generic_name
+1,APV,1,amprenavir
+3,IDV,1,indinavir
+5,NFV,1,nelfinavir
+6,RTV,1,ritonavir
+7,SQV,1,saquinavir
+8,ABC,2,abacavir
+9,DDI,2,didanosine
+10,FTC,2,emtricitabine
+11,3TC,2,lamivudine
+12,D4T,2,stavudine
+13,TDF,2,tenofovir
+14,DDC,2,zalcitabine
+15,AZT,2,zidovudine
+16,DLV,3,delavirdine
+17,EFV,3,efavirenz
+18,NVP,3,nevirapine
+19,T20,4,enfuvirtide
+20,TPV,1,tipranavir
+2,ATV,1,atazanavir
+21,FPV,1,fosamprenavir
+22,ATV/r,1,atazanavir/r
+23,TPV/r,1,tipranavir/r
+24,PI,1,unknown PI
+25,NNRTI,3,unknown NNRTI
+26,NRTI,2,unknown NNRTI
+27,Unknown,5,Unknown
+28,ADV,2,Adefovir
+29,R82913,3,TIBO R82913
+30,aAPA,3,alpha-APA R 95845
+31,LPV/r,1,lopinavir/r
+32,SQV/r,1,saquinavir/r
+33,IDV/r,1,indinavir/r
+34,APV/r,1,amprenavir/r
+35,DRV,1,darunavir
+36,DRV/r,1,darunavir/r
+37,FPV/r,1,fosamprenavir/r
+38,ETV,3,etravirine

@@ -27,10 +27,10 @@ public class GenerateDrugsXML
         Table commercial_generic= null;
         try 
         {
-            classes = new Table(new BufferedInputStream(new FileInputStream(filesPath+File.separatorChar+"drug_class.csv")), false);
-            generic = new Table(new BufferedInputStream(new FileInputStream(filesPath+File.separatorChar+"drug_generic.csv")), false);
-            commercial = new Table(new BufferedInputStream(new FileInputStream(filesPath+File.separatorChar+"drug_commercial.csv")), false);
-            commercial_generic = new Table(new BufferedInputStream(new FileInputStream(filesPath+File.separatorChar+"commercial_generic.csv")), false);
+            classes = new Table(new BufferedInputStream(new FileInputStream("drugs-csv"+File.separatorChar+"drug_class.csv")), false);
+            generic = new Table(new BufferedInputStream(new FileInputStream("drugs-csv"+File.separatorChar+"drug_generic.csv")), false);
+            commercial = new Table(new BufferedInputStream(new FileInputStream("drugs-csv"+File.separatorChar+"drug_commercial.csv")), false);
+            commercial_generic = new Table(new BufferedInputStream(new FileInputStream("drugs-csv"+File.separatorChar+"commercial_generic.csv")), false);
         } 
         catch (FileNotFoundException e) 
         {
