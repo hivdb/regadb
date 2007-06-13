@@ -31,7 +31,7 @@ import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
-import net.sf.regadb.service.wts.ViralIsolateAnalysis;
+import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
 import net.sf.wts.client.WtsClient;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -173,8 +173,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         
         for(final Test resistanceTest : resistanceTests_)
         {
-            ViralIsolateAnalysis via = new ViralIsolateAnalysis(object, resistanceTest, 500);
-            byte[] result = via.run();
+            byte[] result = ViralIsolateAnalysisHelper.run(object, resistanceTest, 500);
             final ViralIsolate isolate = object;
             ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
             {
