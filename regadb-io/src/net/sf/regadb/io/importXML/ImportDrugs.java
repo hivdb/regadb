@@ -27,6 +27,8 @@ public class ImportDrugs
             List classes = root.getChildren("DrugClass");
             String id;
             String name;
+            String resistanceTableOrder;
+            Integer resistanceTableOrderI;
             DrugClass dc;
             for(Object c : classes)
             {
@@ -34,6 +36,15 @@ public class ImportDrugs
 
                 id = classEl.getChild("id").getTextTrim();
                 name = classEl.getChild("name").getTextTrim();
+                resistanceTableOrder = classEl.getChild("resistanceTableOrder").getTextTrim();
+                if("null".equals(resistanceTableOrder))
+                {
+                    resistanceTableOrderI = null;
+                }
+                else
+                {
+                    resistanceTableOrderI = Integer.parseInt(resistanceTableOrder);
+                }
                 if(t.getDrugClass(id)==null)
                 {
                     if(simulate)
@@ -44,6 +55,7 @@ public class ImportDrugs
                     {
                         report.add("Added: "+ id + " - " + name);
                         dc = new DrugClass(id, name);
+                        dc.setResistanceTableOrder(resistanceTableOrderI);
                         t.save(dc);
                     }
                 }
@@ -71,6 +83,8 @@ public class ImportDrugs
             String id;
             String name;
             String classId;
+            String resistanceTableOrder;
+            Integer resistanceTableOrderI;
             DrugClass dc;
             DrugGeneric dg;
             for(Object c : classes)
@@ -80,6 +94,15 @@ public class ImportDrugs
                 id = classEl.getChild("id").getTextTrim();
                 name = classEl.getChild("name").getTextTrim();
                 classId = classEl.getChild("class").getTextTrim();
+                resistanceTableOrder = classEl.getChild("resistanceTableOrder").getTextTrim();
+                if("null".equals(resistanceTableOrder))
+                {
+                    resistanceTableOrderI = null;
+                }
+                else
+                {
+                    resistanceTableOrderI = Integer.parseInt(resistanceTableOrder);
+                }
                 if(t.getDrugGeneric(id)==null)
                 {
                     if(simulate)
@@ -91,6 +114,7 @@ public class ImportDrugs
                         report.add("Added: "+ id + " - " + name);
                         dc = t.getDrugClass(classId);
                         dg = new DrugGeneric(dc, id, name);
+                        dg.setResistanceTableOrder(resistanceTableOrderI);
                         t.save(dg);
                     }
                 }
