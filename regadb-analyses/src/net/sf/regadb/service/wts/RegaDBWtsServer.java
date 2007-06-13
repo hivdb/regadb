@@ -40,7 +40,7 @@ public class RegaDBWtsServer
     
     public static Test getHIVTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
-        TestType type = new TestType(to, getTypeTest());
+        TestType type = new TestType(to, getTypeTestType());
         type.setValueType(valueType);
         Test test = new Test(type, getTypeTest());
         Analysis analysis = new Analysis(analysisType);

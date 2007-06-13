@@ -6,40 +6,37 @@ import java.util.Date;
 
 import net.sf.regadb.db.AnalysisStatus;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.wts.client.WtsClient;
 
 public class NtSequenceAnalysis implements IAnalysis
 {
-    private int seqIi_;
+    private Integer seq_ii_;
+    private Integer test_ii_;
+
     private Date startTime_;
     private Date endTime_;
     private String user_;
     
-    private Test test_;
-    
-    private WtsClient client_;
     private int waitDelay_;
     
-    public NtSequenceAnalysis(Integer ntseq, Test test, String uid, int waitDelay)
+    public NtSequenceAnalysis(NtSequence ntSequence, Test test, String uid, int waitDelay)
     {
-        seqIi_ = ntseq;
+        seq_ii_ = ntSequence.getNtSequenceIi();
         
-        test_ = test;
-        
-        client_ = new WtsClient(test.getAnalysis().getUrl());
+        test_ii_ = test.getTestIi();
         
         waitDelay_ = waitDelay;
     }
     
-    public NtSequenceAnalysis(Integer ntseq, Test test, String uid)
+    public NtSequenceAnalysis(NtSequence ntSequence, Test test, String uid)
     {
-        this(ntseq, test, uid, 5000);
+        this(ntSequence, test, uid, 5000);
     }
     
     public Date getEndTime() 
@@ -73,7 +70,10 @@ public class NtSequenceAnalysis implements IAnalysis
         
         Transaction t = sessionSafeLogin.createTransaction();
         
-        NtSequence ntseq = t.getSequence(seqIi_);
+        NtSequence ntseq = t.getSequence(seq_ii_);
+        Test test = t.getTest(test_ii_);
+        
+        WtsClient client_ = new WtsClient(test.getAnalysis().getUrl());
         
         t.commit();
         
@@ -83,47 +83,52 @@ public class NtSequenceAnalysis implements IAnalysis
         String ticket = null;
         try 
         {
-            challenge = client_.getChallenge(test_.getAnalysis().getAccount());
-            ticket = client_.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), test_.getAnalysis().getServiceName());
-
+            challenge = client_.getChallenge(test.getAnalysis().getAccount());
+            ticket = client_.login(test.getAnalysis().getAccount(), challenge, test.getAnalysis().getPassword(), test.getAnalysis().getServiceName());
         
-        client_.upload(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseinputfile(), input.getBytes());
-        
-        client_.start(ticket, test_.getAnalysis().getServiceName());
-        
-        boolean finished = false;
-        while(!finished)
-        {
-            try 
+            client_.upload(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseinputfile(), input.getBytes());
+            
+            client_.start(ticket, test.getAnalysis().getServiceName());
+            
+            boolean finished = false;
+            while(!finished)
             {
-                Thread.sleep(waitDelay_);
-            } 
-            catch (InterruptedException ie) 
-            {
-                ie.printStackTrace();
+                try 
+                {
+                    Thread.sleep(waitDelay_);
+                } 
+                catch (InterruptedException ie) 
+                {
+                    ie.printStackTrace();
+                }
+                if(client_.monitorStatus(ticket, test.getAnalysis().getServiceName()).startsWith("ENDED"))
+                {
+                    finished = true;
+                }
             }
-            if(client_.monitorStatus(ticket, test_.getAnalysis().getServiceName()).startsWith("ENDED"))
+            
+            byte [] resultArray = client_.download(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseoutputfile());
+            
+            t = sessionSafeLogin.createTransaction();
+            
+            synchronized(AnalysisThread.mutex_)
             {
-                finished = true;
+            t.clear();
+            ntseq = t.getSequence(seq_ii_);
+            test = t.getTest(test_ii_);
+            
+            TestResult testResult = new TestResult(test);
+            
+            testResult.setNtSequence(ntseq);
+            testResult.setValue(new String(resultArray));
+            ntseq.getTestResults().add(testResult);
+            
+            t.save(ntseq);
+            
+            t.commit();
             }
-        }
-        
-        byte [] resultArray = client_.download(ticket, test_.getAnalysis().getServiceName(), test_.getAnalysis().getBaseoutputfile());
-        
-        t = sessionSafeLogin.createTransaction();
-
-        t.attach(test_);
-        
-        TestResult testResult = new TestResult(test_);
-        
-        testResult.setNtSequence(ntseq);
-        testResult.setValue(new String(resultArray));
-        
-        t.save(testResult);
-        
-        t.commit();
-        
-        client_.closeSession(ticket, test_.getAnalysis().getServiceName());
+            
+            client_.closeSession(ticket, test.getAnalysis().getServiceName());
         } 
         catch (RemoteException e1) 
         {

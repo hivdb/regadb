@@ -6,6 +6,7 @@ import net.sf.regadb.db.session.Login;
 public class AnalysisThread extends Thread
 {
     private IAnalysis analysis_;
+    public final static Object mutex_ = new Object();
     
     public AnalysisThread(final IAnalysis analysis, final Login login)
     {

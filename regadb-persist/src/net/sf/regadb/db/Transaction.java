@@ -1041,6 +1041,16 @@ public class Transaction {
         
         return (Test)q.uniqueResult();
     }
+    
+    public Test getTest(int test_ii)
+    {
+        String queryString = "from Test as test where test.id = :id";
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("id", test_ii);
+        
+        return (Test)q.uniqueResult();
+    }
 
     public TestType getTestType(String description) {
         String queryString = "from TestType as testType where testType.description = :description";
@@ -1305,5 +1315,19 @@ public class Transaction {
         q.setParameter("description", description);
         
         return (ValueType)q.uniqueResult();        
+    }
+
+    public void clear() 
+    {
+        session.clear();
+    }
+    
+    public Protein getProtein(int proteinId)
+    {
+        Query q = session.createQuery("from Protein as protein where id = :id");
+        
+        q.setParameter("id", proteinId);
+        
+        return (Protein)q.uniqueResult();
     }
 }

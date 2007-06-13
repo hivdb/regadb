@@ -8,8 +8,10 @@ import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisStatus;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -76,20 +78,26 @@ public class AlignmentAnalysis implements IAnalysis
                 
         System.err.println("Committing results.");
         t = sessionSafeLogin.createTransaction();
-        ntseq = t.getSequence(seqIi_);
         
-        if(aaSeqs!=null)
+        synchronized(AnalysisThread.mutex_)
         {
-            for(AaSequence aaseq : aaSeqs)
+            t.clear();
+            ntseq = t.getSequence(seqIi_);
+            Protein protein;
+            if(aaSeqs!=null)
             {
-                aaseq.setNtSequence(ntseq);
-                ntseq.getAaSequences().add(aaseq);
+                for(AaSequence aaseq : aaSeqs)
+                {
+                    protein = t.getProtein(aaseq.getProtein().getProteinIi());
+                    aaseq.setProtein(protein);
+                    aaseq.setNtSequence(ntseq);
+                    ntseq.getAaSequences().add(aaseq);
+                }
             }
-        }
-        
-        t.update(ntseq);
-        t.commit();
-                
+            
+            t.update(ntseq);
+            t.commit();
+        }        
         endTime_ = new Date(System.currentTimeMillis());
     }
 
