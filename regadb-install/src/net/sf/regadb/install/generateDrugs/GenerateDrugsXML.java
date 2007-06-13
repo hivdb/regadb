@@ -1,12 +1,15 @@
 package net.sf.regadb.install.generateDrugs;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import net.sf.regadb.csv.Table;
 
@@ -37,21 +40,58 @@ public class GenerateDrugsXML
             e.printStackTrace();
         }
         
+        //className, genericDrugName, order
+        HashMap<String, HashMap<String,Integer>> resistanceTableOrder = new HashMap<String, HashMap<String,Integer>>();
+        
+        try 
+        {
+            BufferedReader in = new BufferedReader(new FileReader("drugs-csv"+File.separatorChar+"class_generic_resistance_table_order.txt"));
+            String str;
+            while ((str = in.readLine()) != null) 
+            {
+                StringTokenizer classTokenizer = new StringTokenizer(str,":");
+                String className = classTokenizer.nextToken();
+                className = className.trim().toLowerCase();
+                String drugList = classTokenizer.nextToken();
+                HashMap<String, Integer> drugOrderList = new HashMap<String, Integer>();
+                StringTokenizer drugOrderTokenizer = new StringTokenizer(drugList, ",");
+                int start = 0;
+                System.err.println(drugOrderTokenizer.countTokens());
+                while(drugOrderTokenizer.hasMoreTokens())
+                {
+                    String token = drugOrderTokenizer.nextToken();
+                    drugOrderList.put(token.trim().toLowerCase(), start);
+                    start++;
+                }
+                resistanceTableOrder.put(className, drugOrderList);
+            }
+            in.close();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        
         Element drugClassesEl = new Element("DrugClasses");
         HashMap<Integer, String> classesHM = new HashMap<Integer, String>();
         ArrayList<String> class_ii = classes.getColumn(0);
         ArrayList<String> class_id = classes.getColumn(1);
         ArrayList<String> class_name = classes.getColumn(2);
+        ArrayList<String> resistance_class_order = classes.getColumn(3);
         for(int i = 1; i < class_ii.size(); i++)
         {
             Element drugClassEl = new Element("DrugClass");
             Element drugClassIdEl = new Element("id");
             Element drugClassNameEl = new Element("name");
+            Element drugClassResistanceTableOrderEl = new Element("resistanceTableOrder");
             drugClassesEl.addContent(drugClassEl);
             drugClassEl.addContent(drugClassIdEl);
             drugClassIdEl.addContent(new Text(class_id.get(i)));
             drugClassEl.addContent(drugClassNameEl);
             drugClassNameEl.addContent(new Text(class_name.get(i)));
+            drugClassEl.addContent(drugClassResistanceTableOrderEl);
+            drugClassResistanceTableOrderEl.addContent(new Text(resistance_class_order.get(i)));
             
             classesHM.put(Integer.parseInt(class_ii.get(i)), class_id.get(i));
         }
@@ -72,13 +112,20 @@ public class GenerateDrugsXML
             Element drugGenericIdEl = new Element("id");
             Element drugGenericNameEl = new Element("name");
             Element drugGenericClassEl = new Element("class");
+            Element drugClassResistanceTableOrderEl = new Element("resistanceTableOrder");
             drugGenericEl.addContent(drugGenericIdEl);
             drugGenericEl.addContent(drugGenericNameEl);
             drugGenericEl.addContent(drugGenericClassEl);
+            drugGenericEl.addContent(drugClassResistanceTableOrderEl);
             
             drugGenericIdEl.addContent(new Text(generic_id.get(i)));
             drugGenericNameEl.addContent(new Text(generic_name.get(i)));
-            drugGenericClassEl.addContent(new Text(classesHM.get(Integer.parseInt(generic_class_ii.get(i)))));
+            String className = classesHM.get(Integer.parseInt(generic_class_ii.get(i)));
+            drugGenericClassEl.addContent(new Text(className));
+            Integer order = null;
+            if(resistanceTableOrder.get(className.toLowerCase())!=null)
+                order = resistanceTableOrder.get(className.toLowerCase()).get(generic_id.get(i).toLowerCase());
+            drugClassResistanceTableOrderEl.addContent(new Text(order+""));
             
             genericDrugsHM.put(Integer.parseInt(generic_ii.get(i)), generic_id.get(i));
         }
@@ -116,7 +163,7 @@ public class GenerateDrugsXML
             }
         }
         
-        writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials.xml");
+        //writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials.xml");
     }
     
     public static void writeXMLFile(Element root, String fileName)
