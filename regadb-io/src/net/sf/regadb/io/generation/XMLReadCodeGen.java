@@ -521,6 +521,7 @@ public class XMLReadCodeGen {
                             write(5, "log.append(\"New \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
                             write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate);\n");
                             write(5, "changed = true;\n");
+                            write(5, "dbf = o." + comp + f.getterName() + "();\n");
                             write(4, "} else {\n");
                             write(5, "if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {\n");
                             write(6, "if (sync(t, o." + comp + f.getterName() + "(), dbf, syncMode, true)) {\n");

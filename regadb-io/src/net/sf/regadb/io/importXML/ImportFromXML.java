@@ -2031,6 +2031,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getValueType()) + "\n");
                     sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getValueType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getValueType(), dbf, syncMode, true)) {
@@ -2069,6 +2070,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getTestObject()) + "\n");
                     sync(t, o.getTestObject(), (TestObject)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getTestObject();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getTestObject(), dbf, syncMode, true)) {
@@ -2223,6 +2225,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getTestType()) + "\n");
                     sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getTestType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getTestType(), dbf, syncMode, true)) {
@@ -2315,6 +2318,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getId().getAttribute()) + "\n");
                     sync(t, o.getId().getAttribute(), (Attribute)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getId().getAttribute();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getId().getAttribute(), dbf, syncMode, true)) {
@@ -2353,6 +2357,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getAttributeNominalValue()) + "\n");
                     sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getAttributeNominalValue();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getAttributeNominalValue(), dbf, syncMode, true)) {
@@ -2406,6 +2411,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getValueType()) + "\n");
                     sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getValueType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getValueType(), dbf, syncMode, true)) {
@@ -2444,6 +2450,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getAttributeGroup()) + "\n");
                     sync(t, o.getAttributeGroup(), (AttributeGroup)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getAttributeGroup();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getAttributeGroup(), dbf, syncMode, true)) {
@@ -3080,6 +3087,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getTest()) + "\n");
                     sync(t, o.getTest(), (Test)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getTest();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getTest(), dbf, syncMode, true)) {
@@ -3126,6 +3134,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getTestNominalValue()) + "\n");
                     sync(t, o.getTestNominalValue(), (TestNominalValue)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getTestNominalValue();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getTestNominalValue(), dbf, syncMode, true)) {
@@ -3241,6 +3250,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getAnalysis()) + "\n");
                     sync(t, o.getAnalysis(), (Analysis)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getAnalysis();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getAnalysis(), dbf, syncMode, true)) {
@@ -3279,6 +3289,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     log.append("New " + Describe.describe(o.getTestType()) + "\n");
                     sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
                     changed = true;
+                    dbf = o.getTestType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
                         if (sync(t, o.getTestType(), dbf, syncMode, true)) {
