@@ -18,6 +18,9 @@
     <property name="className" type="string">
       <column name="class_name" length="100" not-null="true" />
     </property>
+    <property name="resistanceTableOrder" type="java.lang.Integer">
+      <column name="resistance_table_order" />
+    </property>
     <set name="drugGenerics" inverse="false" cascade="all">
       <key>
         <column name="drug_class_ii" not-null="true" />

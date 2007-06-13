@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
+// Generated 13/06/2007 13:39:05 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +22,8 @@ public class DrugGeneric implements java.io.Serializable {
 
     private String genericName;
 
+    private Integer resistanceTableOrder;
+
     private Set<DrugCommercial> drugCommercials = new HashSet<DrugCommercial>(0);
 
     // Constructors
@@ -39,10 +41,12 @@ public class DrugGeneric implements java.io.Serializable {
 
     /** full constructor */
     public DrugGeneric(DrugClass drugClass, String genericId,
-            String genericName, Set<DrugCommercial> drugCommercials) {
+            String genericName, Integer resistanceTableOrder,
+            Set<DrugCommercial> drugCommercials) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
+        this.resistanceTableOrder = resistanceTableOrder;
         this.drugCommercials = drugCommercials;
     }
 
@@ -85,6 +89,14 @@ public class DrugGeneric implements java.io.Serializable {
 
     public void setGenericName(String genericName) {
         this.genericName = genericName;
+    }
+
+    public Integer getResistanceTableOrder() {
+        return this.resistanceTableOrder;
+    }
+
+    public void setResistanceTableOrder(Integer resistanceTableOrder) {
+        this.resistanceTableOrder = resistanceTableOrder;
     }
 
     public Set<DrugCommercial> getDrugCommercials() {
