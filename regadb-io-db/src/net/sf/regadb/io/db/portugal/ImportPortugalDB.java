@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -730,7 +731,7 @@ public class ImportPortugalDB {
                     if (vv != null) {
                         PatientAttributeValue v = p.createPatientAttributeValue(attr.attribute);
                         v.setAttributeNominalValue(vv);
-                        System.err.println(value + " " + v.getAttributeNominalValue().getValue());
+                        //System.err.println(value + " " + v.getAttributeNominalValue().getValue());
                     }
                 }
             }
@@ -741,16 +742,24 @@ public class ImportPortugalDB {
             Table codeTable) {
         Map<String, AttributeNominalValue> result = new HashMap<String, AttributeNominalValue>();
 
+        Map<String, AttributeNominalValue> unique = new HashMap<String, AttributeNominalValue>();
+        
         for (int i = 1; i < codeTable.numRows(); ++i) {
             String id = codeTable.valueAt(0, i);
             String value = codeTable.valueAt(1, i);
-            
-            if (value.trim().length() != 0) {
-                AttributeNominalValue nv = new AttributeNominalValue(attribute, value);
-                attribute.getAttributeNominalValues().add(nv);
 
-                System.err.println(id + " -> " + nv.getValue());
-                result.put(id, nv);
+            if (value.trim().length() != 0) {
+                if (unique.get(value) != null) {
+                    System.err.println("Duplicate nominal value: " + value);
+                    result.put(id, unique.get(value));
+                } else {                
+                    AttributeNominalValue nv = new AttributeNominalValue(attribute, value);
+                    attribute.getAttributeNominalValues().add(nv);
+
+                    //System.err.println(id + " -> " + nv.getValue());
+                    result.put(id, nv);
+                    unique.put(value, nv);
+                }
             }
         }
         
