@@ -1347,4 +1347,31 @@ public class Transaction {
         
         return (Protein)q.uniqueResult();
     }
+
+    public ViralIsolate getViralIsolate(Integer vi_ii) 
+    {
+        Query q = session.createQuery("from ViralIsolate as vi where id = :id");
+        
+        q.setParameter("id", vi_ii);
+        
+        return (ViralIsolate)q.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DrugClass> getDrugClassesSortedOnResistanceRanking() 
+    {
+        Query q = session.createQuery("from DrugClass as dc where dc.resistanceTableOrder is not null order by dc.resistanceTableOrder");
+        
+        return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<DrugGeneric> getDrugGenericSortedOnResistanceRanking(DrugClass drugClass) 
+    {
+        Query q = session.createQuery("from DrugGeneric as dg where dg.drugClass = :drugClass and dg.resistanceTableOrder is not null order by dg.resistanceTableOrder");
+        
+        q.setParameter("drugClass", drugClass);
+        
+        return q.list();
+    }
 }

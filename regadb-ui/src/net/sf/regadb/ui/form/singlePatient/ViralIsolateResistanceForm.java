@@ -1,0 +1,167 @@
+package net.sf.regadb.ui.form.singlePatient;
+
+import java.util.HashMap;
+import java.util.List;
+
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.witty.wt.WBorder;
+import net.sf.witty.wt.WColor;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTableCell;
+import net.sf.witty.wt.WText;
+import net.sf.witty.wt.WBorder.Style;
+import net.sf.witty.wt.WBorder.Width;
+import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
+
+public class ViralIsolateResistanceForm extends WContainerWidget
+{
+    private ViralIsolateForm viralIsolateForm_;
+    
+    private WGroupBox resistanceGroup_;
+    private WTable resistanceTable_;
+    
+    public ViralIsolateResistanceForm(ViralIsolateForm viralIsolateForm)
+    {
+        super();
+        viralIsolateForm_ = viralIsolateForm;
+
+        init();
+    }
+
+    public void init()
+    {
+        resistanceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.resistance"), this);
+        resistanceTable_ = new WTable(resistanceGroup_);
+
+        loadTable();
+    }
+    
+    private void loadTable()
+    {
+        resistanceTable_.clear();
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
+        
+        //drug names - column position
+        HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
+        int col = 0;
+        resistanceTable_.putElementAt(0, col, new WText());
+        int maxWidth = 0;
+        for(Test test : t.getTests())
+        {
+            if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
+            {
+                col = resistanceTable_.numColumns();
+                resistanceTable_.putElementAt(0, col, new TableHeader(lt(test.getDescription())));
+                algoColumn.put(test.getDescription(), col);
+                maxWidth += test.getDescription().length();
+            }
+        }
+        
+        //drug names - row position
+        HashMap<String, Integer> drugColumn = new HashMap<String, Integer>();
+        
+        List<DrugGeneric> genericDrugs;
+        int row;
+        for(DrugClass dc : sortedDrugClasses_)
+        {
+            genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
+            for(DrugGeneric dg : genericDrugs)
+            {
+                row = resistanceTable_.numRows();
+                resistanceTable_.putElementAt(row, 0, new TableHeader(lt(dg.getGenericId())));
+                drugColumn.put(dg.getGenericId(), row);
+            }
+        }
+        
+        //clear table
+        for(int i = 1; i < resistanceTable_.numRows(); i++)
+        {
+            for(int j = 1; j< resistanceTable_.numColumns(); j++)
+            {
+                putResistanceTableResult(null, resistanceTable_.elementAt(i, j));
+            }
+        }
+        
+        Integer colN;
+        Integer rowN;
+        for(TestResult tr : viralIsolateForm_.getViralIsolate().getTestResults())
+        {
+            colN = algoColumn.get(tr.getTest().getDescription());
+            rowN = drugColumn.get(tr.getDrugGeneric().getGenericId());
+            if(colN!=null && rowN!=null)
+            {
+                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN));
+            }
+        }
+        
+        resistanceTable_.resize(new WLength(maxWidth+maxWidth/2, WLengthUnit.FontEx), new WLength());
+        resistanceTable_.setCellPadding(4);
+    }
+    
+    private void putResistanceTableResult(Double gss, WTableCell cell)
+    {
+        WText toReturn;
+        
+        cell.clear();
+        
+        if(gss==null)
+        {
+            toReturn = new WText(lt("NA"));
+            cell.decorationStyle().setBackgroundColor(WColor.black);
+            cell.decorationStyle().setForegroundColor(WColor.white);
+            toReturn.decorationStyle().setBackgroundColor(WColor.black);
+            toReturn.decorationStyle().setForegroundColor(WColor.white);
+        }
+        else
+        {
+            if(gss == 0.0)
+            {
+                toReturn = new WText(lt("R"));
+                cell.decorationStyle().setBackgroundColor(WColor.red);
+                cell.decorationStyle().setForegroundColor(WColor.white);
+                toReturn.decorationStyle().setBackgroundColor(WColor.red);
+                toReturn.decorationStyle().setForegroundColor(WColor.white);
+            }
+            else if(gss == 0.5 || gss == 0.75)
+            {
+                toReturn = new WText(lt("I"));
+                cell.decorationStyle().setBackgroundColor(WColor.yellow);
+                cell.decorationStyle().setForegroundColor(WColor.black);
+                toReturn.decorationStyle().setBackgroundColor(WColor.yellow);
+                toReturn.decorationStyle().setForegroundColor(WColor.black);
+            }
+            else if(gss == 1.0 || gss == 1.5)
+            {
+                toReturn = new WText(lt("S"));
+                cell.decorationStyle().setBackgroundColor(WColor.green);
+                cell.decorationStyle().setForegroundColor(WColor.black);
+                toReturn.decorationStyle().setBackgroundColor(WColor.green);
+                toReturn.decorationStyle().setForegroundColor(WColor.black);
+            }
+            else 
+            {
+                toReturn = new WText(lt("Cannot interprete"));
+                cell.decorationStyle().setBackgroundColor(WColor.black);
+                cell.decorationStyle().setForegroundColor(WColor.white);
+                toReturn.decorationStyle().setBackgroundColor(WColor.black);
+                toReturn.decorationStyle().setForegroundColor(WColor.white);
+            }
+        }
+        
+        cell.decorationStyle().setBorder(new WBorder(Style.Solid, Width.Thin, WColor.black));
+        cell.setContentAlignment(WHorizontalAlignment.AlignCenter);
+        cell.addWidget(toReturn);
+    }
+}
