@@ -8,14 +8,16 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -41,13 +43,17 @@ import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.FileProvider;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author kdforc0
@@ -679,6 +685,42 @@ public class ImportPortugalDB {
                 nominalValueMap.put(ids[i], value);
             }
        }
+    }
+    
+    private static List<Attribute> prepareRegaDBAttributes()
+    {
+        FileProvider fp = new FileProvider();
+        List<Attribute> list = null;
+        File attributesFile = null;
+        try {
+            attributesFile = File.createTempFile("attributes", "xml");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        try 
+        {
+            fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
+        }
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        final ImportFromXML imp = new ImportFromXML();
+        try 
+        {
+            imp.loadDatabaseObjects(null);
+            list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
+        }
+        catch(SAXException saxe)
+        {
+            saxe.printStackTrace();
+        }
+        catch(IOException ioex)
+        {
+            ioex.printStackTrace();
+        }
+        
+        return list;
     }
     
     public void importPatientAttributes() {
