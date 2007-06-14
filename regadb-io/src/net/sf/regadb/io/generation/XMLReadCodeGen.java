@@ -14,8 +14,6 @@ import java.util.TreeMap;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientImpl;
@@ -23,7 +21,6 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.ViralIsolate;
 
 public class XMLReadCodeGen {
     private static class ObjectField {
@@ -426,15 +423,15 @@ public class XMLReadCodeGen {
             for (ObjectField f : o.fields) {
                 write(3, "} else if (\"" + f.name + "\".equals(qName)) {\n");
                 if (f.type == ObjectField.Type.Primitive) {
-                    write(4, f.memberName() + " = parse" + f.typeName(true) + "(value);\n");
+                    write(4, f.memberName() + " = parse" + f.typeName(true) + "(value == null ? null : value.toString());\n");
                 } else if (f.type == ObjectField.Type.ObjectKey) {
-                    write(4, f.memberName() + " = resolve" + f.javaClass.getSimpleName() + "(value);\n");
+                    write(4, f.memberName() + " = resolve" + f.javaClass.getSimpleName() + "(value == null ? null : value.toString());\n");
                 }
             }
             
             if (o.referenced) {                
                 write(3, "} else if (\"reference\".equals(qName)) {\n");
-                write(4, "reference" + o.javaClass.getSimpleName() + " = value;\n");
+                write(4, "reference" + o.javaClass.getSimpleName() + " = (value == null ? null : value.toString());\n");
             }
             
             write(3, "} else {\n");
@@ -479,7 +476,7 @@ public class XMLReadCodeGen {
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
             
-            write(1, "private boolean sync(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, SyncMode syncMode, boolean simulate) throws ImportException {\n");
+            write(1, "public boolean syncPair(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, SyncMode syncMode, boolean simulate) throws ImportException {\n");
 
             write(2, "boolean changed = false;\n");
             write(2, "if (o == null)\n");
@@ -497,11 +494,11 @@ public class XMLReadCodeGen {
                         if (!f.resolved.referenced) {
                             write(2, "if (dbo == null) {\n");
                             write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
-                            write(4, "if (sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n"); 
+                            write(4, "if (syncPair(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n"); 
                             write(3, "}\n");
                             write(2, "} else {\n");
                             write(3, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "())) {\n");
-                            write(4, "if (sync(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), syncMode, simulate)) changed = true;\n");
+                            write(4, "if (syncPair(t, o." + comp + f.getterName() + "(), dbo." + comp + f.getterName() + "(), syncMode, simulate)) changed = true;\n");
                             write(3, "}\n");
                             write(2, "}\n");
                         } else {
@@ -519,16 +516,16 @@ public class XMLReadCodeGen {
                             write(3, "if (o." + comp + f.getterName() + "() != null) {\n");
                             write(4, "if (dbf == null) {\n");
                             write(5, "log.append(\"New \" + Describe.describe(o."  + comp + f.getterName() + "()) + \"\\n\");\n");
-                            write(5, "sync(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate);\n");
+                            write(5, "syncPair(t, o."  + comp + f.getterName() + "(), (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate);\n");
                             write(5, "changed = true;\n");
                             write(5, "dbf = o." + comp + f.getterName() + "();\n");
                             write(4, "} else {\n");
                             write(5, "if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {\n");
-                            write(6, "if (sync(t, o." + comp + f.getterName() + "(), dbf, syncMode, true)) {\n");
+                            write(6, "if (syncPair(t, o." + comp + f.getterName() + "(), dbf, syncMode, true)) {\n");
                             write(7, "throw new ImportException(\"Imported \" + Describe.describe(o) + \" is different, synchronize them first !\");\n");
                             write(6, "}\n");
                             write(5, "} else\n");
-                            write(5, "if (sync(t, o." + comp + f.getterName() + "(), dbf, syncMode, simulate)) changed = true;\n");
+                            write(5, "if (syncPair(t, o." + comp + f.getterName() + "(), dbf, syncMode, simulate)) changed = true;\n");
                             write(4, "}\n");
                             write(3, "}\n");
                             write(3, "if (dbo == null) {\n");
@@ -541,6 +538,7 @@ public class XMLReadCodeGen {
                             write(5, "if (!simulate)\n");
                             write(6, "dbo." + comp + f.setterName() + "(dbf);\n");
                             write(5, "log.append(Describe.describe(o) + \": changed " + f.name + "\\n\");\n");
+                            write(5, "changed = true;\n");
                             write(4, "}\n");
                             write(3, "}\n");
                             write(2, "}\n");
@@ -561,7 +559,7 @@ public class XMLReadCodeGen {
                      */
                     write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
                     write(3, "if (dbo == null) {\n");
-                    write(4, "if (sync(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n");
+                    write(4, "if (syncPair(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n");
                     write(3, "} else {\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " dbe = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : dbo." + f.getterName() + "()) {\n");
@@ -572,7 +570,7 @@ public class XMLReadCodeGen {
                     
                     write(4, "if (dbe == null) {\n");
                     write(5, "log.append(Describe.describe(dbo) + \": New \" + Describe.describe(e) + \"\\n\");\n");
-                    write(5, "sync(t, e, null, syncMode, simulate);\n");
+                    write(5, "syncPair(t, e, null, syncMode, simulate);\n");
                     write(5, "changed = true;\n");
                     write(5, "if (!simulate) {\n");
                     if (o.javaClass == Patient.class) {
@@ -590,7 +588,7 @@ public class XMLReadCodeGen {
                     }
                     write(5, "}\n");
                     write(4, "} else {\n");
-                    write(5, "if (sync(t, e, dbe, syncMode, simulate)) changed = true;\n");
+                    write(5, "if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;\n");
                     write(4, "}\n");
                     write(3, "}\n");
                     write(2, "}\n");
@@ -640,13 +638,13 @@ public class XMLReadCodeGen {
             write(3, "if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)\n");
             write(4, "throw new ImportException(Describe.describe(o) + \" already exists\");\n");
             write(3, "log.append(\"Synchronizing \" + Describe.describe(o) + \"\\n\");\n");
-            write(3, "sync(t, o, dbo, mode, simulate);\n");
+            write(3, "syncPair(t, o, dbo, mode, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.update(dbo);\n");
             write(3, "return dbo;\n");
             write(2, "} else {\n");
             write(3, "log.append(\"New \" + Describe.describe(o) + \"\\n\");\n");
-            write(3, "sync(t, o, (" + c.getSimpleName() + ")null, mode, simulate);\n");
+            write(3, "syncPair(t, o, (" + c.getSimpleName() + ")null, mode, simulate);\n");
             write(3, "if (!simulate)\n");
             write(4, "t.save(o);\n");
             write(3, "return o;\n");

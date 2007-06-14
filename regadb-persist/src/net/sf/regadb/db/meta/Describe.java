@@ -79,7 +79,12 @@ public class Describe {
     }
 
     public static String describe(TestResult o) {
-        return "Result for " + describe(o.getTest()) + " on date " + o.getTestDate();
+        String s = "Result for " + describe(o.getTest()) + " on date " + o.getTestDate();
+        if (o.getDrugGeneric() != null)
+            s += " for " + describe(o.getDrugGeneric());
+        if (o.getViralIsolate() != null)
+            s += " for " + describe(o.getViralIsolate());
+        return s;
     }
 
     public static String describe(Test o) {

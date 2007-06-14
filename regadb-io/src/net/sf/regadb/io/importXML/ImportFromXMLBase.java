@@ -16,13 +16,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.sf.regadb.db.AnalysisType;
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.util.xml.XMLTools;
 
@@ -31,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class ImportFromXMLBase extends DefaultHandler{
     protected Patient patient = null;
-    protected String value = null;
+    protected StringBuffer value = null;
     private DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private Map<String, DrugGeneric> genericDrugs;
@@ -45,9 +42,8 @@ public class ImportFromXMLBase extends DefaultHandler{
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (value == null)
-            value = new String(ch, start, length);
-        else
-            value += new String(ch, start, length);
+            value = new StringBuffer();
+        value.append(new String(ch, start, length));
     }
 
     protected Date parseDate(String value) throws SAXException {
@@ -193,11 +189,11 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected boolean equals(Protein o1, Protein o2) {
-        return o1 == o2;
+        return o1 == o2 || (o1 != null && o2 != null && o1.getAbbreviation().equals(o2.getAbbreviation()));
     }
 
     protected boolean equals(DrugCommercial o1, DrugCommercial o2) {
-        return o1 == o2;
+        return o1 == o2 || (o1 != null && o2 != null && o1.getName().equals(o2.getName()));
     }
 
     protected boolean equals(Double o1, Double o2) {
@@ -205,7 +201,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected boolean equals(DrugGeneric o1, DrugGeneric o2) {
-        return o1 == o2;
+        return o1 == o2 || (o1 != null && o2 != null && o1.getGenericId().equals(o2.getGenericId()));
     }
 
     protected boolean equals(Boolean o1, Boolean o2) {
@@ -213,7 +209,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     }
 
     protected boolean equals(AnalysisType analysisType, AnalysisType analysisType2) {
-        return analysisType == analysisType2;
+        return analysisType.getType().equals(analysisType2.getType());
     }
 
     protected boolean equals(Integer a, Integer b) {

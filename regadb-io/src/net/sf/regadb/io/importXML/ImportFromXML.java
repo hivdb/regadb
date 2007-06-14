@@ -358,15 +358,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elPatient);
                 }
             } else if ("patientId".equals(qName)) {
-                fieldPatient_patientId = parseString(value);
+                fieldPatient_patientId = parseString(value == null ? null : value.toString());
             } else if ("lastName".equals(qName)) {
-                fieldPatient_lastName = parseString(value);
+                fieldPatient_lastName = parseString(value == null ? null : value.toString());
             } else if ("firstName".equals(qName)) {
-                fieldPatient_firstName = parseString(value);
+                fieldPatient_firstName = parseString(value == null ? null : value.toString());
             } else if ("birthDate".equals(qName)) {
-                fieldPatient_birthDate = parseDate(value);
+                fieldPatient_birthDate = parseDate(value == null ? null : value.toString());
             } else if ("deathDate".equals(qName)) {
-                fieldPatient_deathDate = parseDate(value);
+                fieldPatient_deathDate = parseDate(value == null ? null : value.toString());
             } else if ("patientDatasets".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else if ("patientAttributeValues".equals(qName)) {
@@ -424,13 +424,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAnalysisData);
                 }
             } else if ("name".equals(qName)) {
-                fieldAnalysisData_name = parseString(value);
+                fieldAnalysisData_name = parseString(value == null ? null : value.toString());
             } else if ("data".equals(qName)) {
-                fieldAnalysisData_data = parsebyteArray(value);
+                fieldAnalysisData_data = parsebyteArray(value == null ? null : value.toString());
             } else if ("mimetype".equals(qName)) {
-                fieldAnalysisData_mimetype = parseString(value);
+                fieldAnalysisData_mimetype = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceAnalysisData = value;
+                referenceAnalysisData = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -503,10 +503,10 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("valueType".equals(qName)) {
             } else if ("testObject".equals(qName)) {
             } else if ("description".equals(qName)) {
-                fieldTestType_description = parseString(value);
+                fieldTestType_description = parseString(value == null ? null : value.toString());
             } else if ("testNominalValues".equals(qName)) {
             } else if ("reference".equals(qName)) {
-                referenceTestType = value;
+                referenceTestType = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -575,15 +575,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elValueType);
                 }
             } else if ("description".equals(qName)) {
-                fieldValueType_description = parseString(value);
+                fieldValueType_description = parseString(value == null ? null : value.toString());
             } else if ("min".equals(qName)) {
-                fieldValueType_min = parseDouble(value);
+                fieldValueType_min = parseDouble(value == null ? null : value.toString());
             } else if ("max".equals(qName)) {
-                fieldValueType_max = parseDouble(value);
+                fieldValueType_max = parseDouble(value == null ? null : value.toString());
             } else if ("multiple".equals(qName)) {
-                fieldValueType_multiple = parseBoolean(value);
+                fieldValueType_multiple = parseBoolean(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceValueType = value;
+                referenceValueType = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -631,11 +631,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elTestObject);
                 }
             } else if ("description".equals(qName)) {
-                fieldTestObject_description = parseString(value);
+                fieldTestObject_description = parseString(value == null ? null : value.toString());
             } else if ("testObjectId".equals(qName)) {
-                fieldTestObject_testObjectId = parseInteger(value);
+                fieldTestObject_testObjectId = parseInteger(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceTestObject = value;
+                referenceTestObject = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -695,9 +695,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("testType".equals(qName)) {
             } else if ("value".equals(qName)) {
-                fieldTestNominalValue_value = parseString(value);
+                fieldTestNominalValue_value = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceTestNominalValue = value;
+                referenceTestNominalValue = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -737,13 +737,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elDataset);
                 }
             } else if ("description".equals(qName)) {
-                fieldDataset_description = parseString(value);
+                fieldDataset_description = parseString(value == null ? null : value.toString());
             } else if ("creationDate".equals(qName)) {
-                fieldDataset_creationDate = parseDate(value);
+                fieldDataset_creationDate = parseDate(value == null ? null : value.toString());
             } else if ("closedDate".equals(qName)) {
-                fieldDataset_closedDate = parseDate(value);
+                fieldDataset_closedDate = parseDate(value == null ? null : value.toString());
             } else if ("revision".equals(qName)) {
-                fieldDataset_revision = parseInteger(value);
+                fieldDataset_revision = parseInteger(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -783,7 +783,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("attribute".equals(qName)) {
             } else if ("attributeNominalValue".equals(qName)) {
             } else if ("value".equals(qName)) {
-                fieldPatientAttributeValue_value = parseString(value);
+                fieldPatientAttributeValue_value = parseString(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -845,10 +845,10 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("valueType".equals(qName)) {
             } else if ("attributeGroup".equals(qName)) {
             } else if ("name".equals(qName)) {
-                fieldAttribute_name = parseString(value);
+                fieldAttribute_name = parseString(value == null ? null : value.toString());
             } else if ("attributeNominalValues".equals(qName)) {
             } else if ("reference".equals(qName)) {
-                referenceAttribute = value;
+                referenceAttribute = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -891,9 +891,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAttributeGroup);
                 }
             } else if ("groupName".equals(qName)) {
-                fieldAttributeGroup_groupName = parseString(value);
+                fieldAttributeGroup_groupName = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceAttributeGroup = value;
+                referenceAttributeGroup = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -947,9 +947,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAttributeNominalValue);
                 }
             } else if ("value".equals(qName)) {
-                fieldAttributeNominalValue_value = parseString(value);
+                fieldAttributeNominalValue_value = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceAttributeNominalValue = value;
+                referenceAttributeNominalValue = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -993,9 +993,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elViralIsolate);
                 }
             } else if ("sampleId".equals(qName)) {
-                fieldViralIsolate_sampleId = parseString(value);
+                fieldViralIsolate_sampleId = parseString(value == null ? null : value.toString());
             } else if ("sampleDate".equals(qName)) {
-                fieldViralIsolate_sampleDate = parseDate(value);
+                fieldViralIsolate_sampleDate = parseDate(value == null ? null : value.toString());
             } else if ("ntSequences".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else {
@@ -1045,11 +1045,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elNtSequence);
                 }
             } else if ("nucleotides".equals(qName)) {
-                fieldNtSequence_nucleotides = parseString(value);
+                fieldNtSequence_nucleotides = parseString(value == null ? null : value.toString());
             } else if ("label".equals(qName)) {
-                fieldNtSequence_label = parseString(value);
+                fieldNtSequence_label = parseString(value == null ? null : value.toString());
             } else if ("sequenceDate".equals(qName)) {
-                fieldNtSequence_sequenceDate = parseDate(value);
+                fieldNtSequence_sequenceDate = parseDate(value == null ? null : value.toString());
             } else if ("aaSequences".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else {
@@ -1099,11 +1099,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAaSequence);
                 }
             } else if ("protein".equals(qName)) {
-                fieldAaSequence_protein = resolveProtein(value);
+                fieldAaSequence_protein = resolveProtein(value == null ? null : value.toString());
             } else if ("firstAaPos".equals(qName)) {
-                fieldAaSequence_firstAaPos = parseshort(value);
+                fieldAaSequence_firstAaPos = parseshort(value == null ? null : value.toString());
             } else if ("lastAaPos".equals(qName)) {
-                fieldAaSequence_lastAaPos = parseshort(value);
+                fieldAaSequence_lastAaPos = parseshort(value == null ? null : value.toString());
             } else if ("aaMutations".equals(qName)) {
             } else if ("aaInsertions".equals(qName)) {
             } else {
@@ -1151,15 +1151,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAaMutation);
                 }
             } else if ("position".equals(qName)) {
-                fieldAaMutation_position = parseshort(value);
+                fieldAaMutation_position = parseshort(value == null ? null : value.toString());
             } else if ("aaReference".equals(qName)) {
-                fieldAaMutation_aaReference = parseString(value);
+                fieldAaMutation_aaReference = parseString(value == null ? null : value.toString());
             } else if ("aaMutation".equals(qName)) {
-                fieldAaMutation_aaMutation = parseString(value);
+                fieldAaMutation_aaMutation = parseString(value == null ? null : value.toString());
             } else if ("ntReferenceCodon".equals(qName)) {
-                fieldAaMutation_ntReferenceCodon = parseString(value);
+                fieldAaMutation_ntReferenceCodon = parseString(value == null ? null : value.toString());
             } else if ("ntMutationCodon".equals(qName)) {
-                fieldAaMutation_ntMutationCodon = parseString(value);
+                fieldAaMutation_ntMutationCodon = parseString(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1202,13 +1202,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAaInsertion);
                 }
             } else if ("position".equals(qName)) {
-                fieldAaInsertion_position = parseshort(value);
+                fieldAaInsertion_position = parseshort(value == null ? null : value.toString());
             } else if ("insertionOrder".equals(qName)) {
-                fieldAaInsertion_insertionOrder = parseshort(value);
+                fieldAaInsertion_insertionOrder = parseshort(value == null ? null : value.toString());
             } else if ("aaInsertion".equals(qName)) {
-                fieldAaInsertion_aaInsertion = parseString(value);
+                fieldAaInsertion_aaInsertion = parseString(value == null ? null : value.toString());
             } else if ("ntInsertionCodon".equals(qName)) {
-                fieldAaInsertion_ntInsertionCodon = parseString(value);
+                fieldAaInsertion_ntInsertionCodon = parseString(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1255,11 +1255,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elTherapy);
                 }
             } else if ("startDate".equals(qName)) {
-                fieldTherapy_startDate = parseDate(value);
+                fieldTherapy_startDate = parseDate(value == null ? null : value.toString());
             } else if ("stopDate".equals(qName)) {
-                fieldTherapy_stopDate = parseDate(value);
+                fieldTherapy_stopDate = parseDate(value == null ? null : value.toString());
             } else if ("comment".equals(qName)) {
-                fieldTherapy_comment = parseString(value);
+                fieldTherapy_comment = parseString(value == null ? null : value.toString());
             } else if ("therapyCommercials".equals(qName)) {
             } else if ("therapyGenerics".equals(qName)) {
             } else {
@@ -1315,14 +1315,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("test".equals(qName)) {
             } else if ("drugGeneric".equals(qName)) {
-                fieldTestResult_drugGeneric = resolveDrugGeneric(value);
+                fieldTestResult_drugGeneric = resolveDrugGeneric(value == null ? null : value.toString());
             } else if ("testNominalValue".equals(qName)) {
             } else if ("value".equals(qName)) {
-                fieldTestResult_value = parseString(value);
+                fieldTestResult_value = parseString(value == null ? null : value.toString());
             } else if ("testDate".equals(qName)) {
-                fieldTestResult_testDate = parseDate(value);
+                fieldTestResult_testDate = parseDate(value == null ? null : value.toString());
             } else if ("sampleId".equals(qName)) {
-                fieldTestResult_sampleId = parseString(value);
+                fieldTestResult_sampleId = parseString(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1359,9 +1359,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elTherapyCommercial);
                 }
             } else if ("drugCommercial".equals(qName)) {
-                fieldTherapyCommercial_drugCommercial = resolveDrugCommercial(value);
+                fieldTherapyCommercial_drugCommercial = resolveDrugCommercial(value == null ? null : value.toString());
             } else if ("dayDosageUnits".equals(qName)) {
-                fieldTherapyCommercial_dayDosageUnits = parseDouble(value);
+                fieldTherapyCommercial_dayDosageUnits = parseDouble(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1398,9 +1398,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elTherapyGeneric);
                 }
             } else if ("drugGeneric".equals(qName)) {
-                fieldTherapyGeneric_drugGeneric = resolveDrugGeneric(value);
+                fieldTherapyGeneric_drugGeneric = resolveDrugGeneric(value == null ? null : value.toString());
             } else if ("dayDosageMg".equals(qName)) {
-                fieldTherapyGeneric_dayDosageMg = parseDouble(value);
+                fieldTherapyGeneric_dayDosageMg = parseDouble(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1455,9 +1455,9 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("analysis".equals(qName)) {
             } else if ("testType".equals(qName)) {
             } else if ("description".equals(qName)) {
-                fieldTest_description = parseString(value);
+                fieldTest_description = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
-                referenceTest = value;
+                referenceTest = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1537,22 +1537,22 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAnalysis);
                 }
             } else if ("analysisType".equals(qName)) {
-                fieldAnalysis_analysisType = resolveAnalysisType(value);
+                fieldAnalysis_analysisType = resolveAnalysisType(value == null ? null : value.toString());
             } else if ("url".equals(qName)) {
-                fieldAnalysis_url = parseString(value);
+                fieldAnalysis_url = parseString(value == null ? null : value.toString());
             } else if ("account".equals(qName)) {
-                fieldAnalysis_account = parseString(value);
+                fieldAnalysis_account = parseString(value == null ? null : value.toString());
             } else if ("password".equals(qName)) {
-                fieldAnalysis_password = parseString(value);
+                fieldAnalysis_password = parseString(value == null ? null : value.toString());
             } else if ("baseinputfile".equals(qName)) {
-                fieldAnalysis_baseinputfile = parseString(value);
+                fieldAnalysis_baseinputfile = parseString(value == null ? null : value.toString());
             } else if ("baseoutputfile".equals(qName)) {
-                fieldAnalysis_baseoutputfile = parseString(value);
+                fieldAnalysis_baseoutputfile = parseString(value == null ? null : value.toString());
             } else if ("serviceName".equals(qName)) {
-                fieldAnalysis_serviceName = parseString(value);
+                fieldAnalysis_serviceName = parseString(value == null ? null : value.toString());
             } else if ("analysisDatas".equals(qName)) {
             } else if ("reference".equals(qName)) {
-                referenceAnalysis = value;
+                referenceAnalysis = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1743,7 +1743,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         xmlReader.parse(source);
     }
 
-    private boolean sync(Transaction t, Patient o, Patient dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Patient o, Patient dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -1789,7 +1789,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(Dataset e : o.getDatasets()) {
             if (dbo == null) {
-                if (sync(t, e, (Dataset)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (Dataset)null, syncMode, simulate)) changed = true;
             } else {
                 Dataset dbe = null;
                 for(Dataset f : dbo.getDatasets()) {
@@ -1799,13 +1799,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         ;// TODO
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -1830,7 +1830,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TestResult e : o.getTestResults()) {
             if (dbo == null) {
-                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TestResult)null, syncMode, simulate)) changed = true;
             } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
@@ -1840,13 +1840,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.addTestResult(e);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -1871,7 +1871,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(PatientAttributeValue e : o.getPatientAttributeValues()) {
             if (dbo == null) {
-                if (sync(t, e, (PatientAttributeValue)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (PatientAttributeValue)null, syncMode, simulate)) changed = true;
             } else {
                 PatientAttributeValue dbe = null;
                 for(PatientAttributeValue f : dbo.getPatientAttributeValues()) {
@@ -1881,13 +1881,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.addPatientAttributeValue(e);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -1912,7 +1912,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(ViralIsolate e : o.getViralIsolates()) {
             if (dbo == null) {
-                if (sync(t, e, (ViralIsolate)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (ViralIsolate)null, syncMode, simulate)) changed = true;
             } else {
                 ViralIsolate dbe = null;
                 for(ViralIsolate f : dbo.getViralIsolates()) {
@@ -1922,13 +1922,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.addViralIsolate(e);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -1953,7 +1953,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(Therapy e : o.getTherapies()) {
             if (dbo == null) {
-                if (sync(t, e, (Therapy)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (Therapy)null, syncMode, simulate)) changed = true;
             } else {
                 Therapy dbe = null;
                 for(Therapy f : dbo.getTherapies()) {
@@ -1963,13 +1963,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.addTherapy(e);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -1995,7 +1995,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AnalysisData o, AnalysisData dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AnalysisData o, AnalysisData dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2026,7 +2026,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TestType o, TestType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TestType o, TestType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2044,16 +2044,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getValueType() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getValueType()) + "\n");
-                    sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
+                    syncPair(t, o.getValueType(), (ValueType)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getValueType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getValueType(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getValueType(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2066,6 +2066,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setValueType(dbf);
                     log.append(Describe.describe(o) + ": changed valueType\n");
+                    changed = true;
                 }
             }
         }
@@ -2083,16 +2084,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getTestObject() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getTestObject()) + "\n");
-                    sync(t, o.getTestObject(), (TestObject)null, syncMode, simulate);
+                    syncPair(t, o.getTestObject(), (TestObject)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getTestObject();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getTestObject(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getTestObject(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getTestObject(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getTestObject(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2105,6 +2106,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setTestObject(dbf);
                     log.append(Describe.describe(o) + ": changed testObject\n");
+                    changed = true;
                 }
             }
         }
@@ -2118,7 +2120,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TestNominalValue e : o.getTestNominalValues()) {
             if (dbo == null) {
-                if (sync(t, e, (TestNominalValue)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TestNominalValue)null, syncMode, simulate)) changed = true;
             } else {
                 TestNominalValue dbe = null;
                 for(TestNominalValue f : dbo.getTestNominalValues()) {
@@ -2128,14 +2130,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getTestNominalValues().add(e);
                         e.setTestType(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2161,7 +2163,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, ValueType o, ValueType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, ValueType o, ValueType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2200,7 +2202,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TestObject o, TestObject dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TestObject o, TestObject dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2223,7 +2225,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TestNominalValue o, TestNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TestNominalValue o, TestNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2241,16 +2243,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getTestType() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getTestType()) + "\n");
-                    sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
+                    syncPair(t, o.getTestType(), (TestType)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getTestType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getTestType(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getTestType(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2263,6 +2265,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setTestType(dbf);
                     log.append(Describe.describe(o) + ": changed testType\n");
+                    changed = true;
                 }
             }
         }
@@ -2277,7 +2280,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, Dataset o, Dataset dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Dataset o, Dataset dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2316,7 +2319,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, PatientAttributeValue o, PatientAttributeValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2334,16 +2337,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getId().getAttribute() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getId().getAttribute()) + "\n");
-                    sync(t, o.getId().getAttribute(), (Attribute)null, syncMode, simulate);
+                    syncPair(t, o.getId().getAttribute(), (Attribute)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getId().getAttribute();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getId().getAttribute(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getId().getAttribute(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getId().getAttribute(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getId().getAttribute(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2356,6 +2359,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.getId().setAttribute(dbf);
                     log.append(Describe.describe(o) + ": changed attribute\n");
+                    changed = true;
                 }
             }
         }
@@ -2373,16 +2377,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getAttributeNominalValue() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getAttributeNominalValue()) + "\n");
-                    sync(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, syncMode, simulate);
+                    syncPair(t, o.getAttributeNominalValue(), (AttributeNominalValue)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getAttributeNominalValue();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getAttributeNominalValue(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getAttributeNominalValue(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getAttributeNominalValue(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getAttributeNominalValue(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2395,6 +2399,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setAttributeNominalValue(dbf);
                     log.append(Describe.describe(o) + ": changed attributeNominalValue\n");
+                    changed = true;
                 }
             }
         }
@@ -2409,7 +2414,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, Attribute o, Attribute dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Attribute o, Attribute dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2427,16 +2432,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getValueType() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getValueType()) + "\n");
-                    sync(t, o.getValueType(), (ValueType)null, syncMode, simulate);
+                    syncPair(t, o.getValueType(), (ValueType)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getValueType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getValueType(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getValueType(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getValueType(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2449,6 +2454,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setValueType(dbf);
                     log.append(Describe.describe(o) + ": changed valueType\n");
+                    changed = true;
                 }
             }
         }
@@ -2466,16 +2472,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getAttributeGroup() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getAttributeGroup()) + "\n");
-                    sync(t, o.getAttributeGroup(), (AttributeGroup)null, syncMode, simulate);
+                    syncPair(t, o.getAttributeGroup(), (AttributeGroup)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getAttributeGroup();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getAttributeGroup(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getAttributeGroup(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getAttributeGroup(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getAttributeGroup(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -2488,6 +2494,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setAttributeGroup(dbf);
                     log.append(Describe.describe(o) + ": changed attributeGroup\n");
+                    changed = true;
                 }
             }
         }
@@ -2501,7 +2508,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(AttributeNominalValue e : o.getAttributeNominalValues()) {
             if (dbo == null) {
-                if (sync(t, e, (AttributeNominalValue)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (AttributeNominalValue)null, syncMode, simulate)) changed = true;
             } else {
                 AttributeNominalValue dbe = null;
                 for(AttributeNominalValue f : dbo.getAttributeNominalValues()) {
@@ -2511,14 +2518,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getAttributeNominalValues().add(e);
                         e.setAttribute(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2546,7 +2553,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AttributeGroup o, AttributeGroup dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AttributeGroup o, AttributeGroup dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2561,7 +2568,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2576,7 +2583,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, ViralIsolate o, ViralIsolate dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, ViralIsolate o, ViralIsolate dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2598,7 +2605,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(NtSequence e : o.getNtSequences()) {
             if (dbo == null) {
-                if (sync(t, e, (NtSequence)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (NtSequence)null, syncMode, simulate)) changed = true;
             } else {
                 NtSequence dbe = null;
                 for(NtSequence f : dbo.getNtSequences()) {
@@ -2608,14 +2615,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getNtSequences().add(e);
                         e.setViralIsolate(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2640,7 +2647,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TestResult e : o.getTestResults()) {
             if (dbo == null) {
-                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TestResult)null, syncMode, simulate)) changed = true;
             } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
@@ -2650,14 +2657,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getTestResults().add(e);
                         e.setViralIsolate(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2683,7 +2690,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, NtSequence o, NtSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, NtSequence o, NtSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2713,7 +2720,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(AaSequence e : o.getAaSequences()) {
             if (dbo == null) {
-                if (sync(t, e, (AaSequence)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (AaSequence)null, syncMode, simulate)) changed = true;
             } else {
                 AaSequence dbe = null;
                 for(AaSequence f : dbo.getAaSequences()) {
@@ -2723,14 +2730,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getAaSequences().add(e);
                         e.setNtSequence(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2755,7 +2762,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TestResult e : o.getTestResults()) {
             if (dbo == null) {
-                if (sync(t, e, (TestResult)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TestResult)null, syncMode, simulate)) changed = true;
             } else {
                 TestResult dbe = null;
                 for(TestResult f : dbo.getTestResults()) {
@@ -2765,14 +2772,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getTestResults().add(e);
                         e.setNtSequence(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2798,7 +2805,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AaSequence o, AaSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AaSequence o, AaSequence dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2828,7 +2835,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(AaMutation e : o.getAaMutations()) {
             if (dbo == null) {
-                if (sync(t, e, (AaMutation)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (AaMutation)null, syncMode, simulate)) changed = true;
             } else {
                 AaMutation dbe = null;
                 for(AaMutation f : dbo.getAaMutations()) {
@@ -2838,14 +2845,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getAaMutations().add(e);
                         e.getId().setAaSequence(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2870,7 +2877,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(AaInsertion e : o.getAaInsertions()) {
             if (dbo == null) {
-                if (sync(t, e, (AaInsertion)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (AaInsertion)null, syncMode, simulate)) changed = true;
             } else {
                 AaInsertion dbe = null;
                 for(AaInsertion f : dbo.getAaInsertions()) {
@@ -2880,14 +2887,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getAaInsertions().add(e);
                         e.getId().setAaSequence(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -2913,7 +2920,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AaMutation o, AaMutation dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AaMutation o, AaMutation dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2960,7 +2967,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, AaInsertion o, AaInsertion dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, AaInsertion o, AaInsertion dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2999,7 +3006,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, Therapy o, Therapy dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Therapy o, Therapy dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3029,7 +3036,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TherapyCommercial e : o.getTherapyCommercials()) {
             if (dbo == null) {
-                if (sync(t, e, (TherapyCommercial)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TherapyCommercial)null, syncMode, simulate)) changed = true;
             } else {
                 TherapyCommercial dbe = null;
                 for(TherapyCommercial f : dbo.getTherapyCommercials()) {
@@ -3039,14 +3046,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getTherapyCommercials().add(e);
                         e.getId().setTherapy(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -3071,7 +3078,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(TherapyGeneric e : o.getTherapyGenerics()) {
             if (dbo == null) {
-                if (sync(t, e, (TherapyGeneric)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (TherapyGeneric)null, syncMode, simulate)) changed = true;
             } else {
                 TherapyGeneric dbe = null;
                 for(TherapyGeneric f : dbo.getTherapyGenerics()) {
@@ -3081,14 +3088,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getTherapyGenerics().add(e);
                         e.getId().setTherapy(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -3114,7 +3121,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TestResult o, TestResult dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TestResult o, TestResult dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3132,16 +3139,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getTest() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getTest()) + "\n");
-                    sync(t, o.getTest(), (Test)null, syncMode, simulate);
+                    syncPair(t, o.getTest(), (Test)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getTest();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getTest(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getTest(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getTest(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getTest(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -3154,6 +3161,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setTest(dbf);
                     log.append(Describe.describe(o) + ": changed test\n");
+                    changed = true;
                 }
             }
         }
@@ -3179,16 +3187,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getTestNominalValue() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getTestNominalValue()) + "\n");
-                    sync(t, o.getTestNominalValue(), (TestNominalValue)null, syncMode, simulate);
+                    syncPair(t, o.getTestNominalValue(), (TestNominalValue)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getTestNominalValue();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getTestNominalValue(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getTestNominalValue(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getTestNominalValue(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getTestNominalValue(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -3201,6 +3209,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setTestNominalValue(dbf);
                     log.append(Describe.describe(o) + ": changed testNominalValue\n");
+                    changed = true;
                 }
             }
         }
@@ -3231,7 +3240,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TherapyCommercial o, TherapyCommercial dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TherapyCommercial o, TherapyCommercial dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3254,7 +3263,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, TherapyGeneric o, TherapyGeneric dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, TherapyGeneric o, TherapyGeneric dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3277,7 +3286,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, Test o, Test dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Test o, Test dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3295,16 +3304,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getAnalysis() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getAnalysis()) + "\n");
-                    sync(t, o.getAnalysis(), (Analysis)null, syncMode, simulate);
+                    syncPair(t, o.getAnalysis(), (Analysis)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getAnalysis();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getAnalysis(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getAnalysis(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getAnalysis(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getAnalysis(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -3317,6 +3326,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setAnalysis(dbf);
                     log.append(Describe.describe(o) + ": changed analysis\n");
+                    changed = true;
                 }
             }
         }
@@ -3334,16 +3344,16 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (o.getTestType() != null) {
                 if (dbf == null) {
                     log.append("New " + Describe.describe(o.getTestType()) + "\n");
-                    sync(t, o.getTestType(), (TestType)null, syncMode, simulate);
+                    syncPair(t, o.getTestType(), (TestType)null, syncMode, simulate);
                     changed = true;
                     dbf = o.getTestType();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (sync(t, o.getTestType(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getTestType(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (sync(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
@@ -3356,6 +3366,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     if (!simulate)
                         dbo.setTestType(dbf);
                     log.append(Describe.describe(o) + ": changed testType\n");
+                    changed = true;
                 }
             }
         }
@@ -3370,7 +3381,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         return changed;
     }
 
-    private boolean sync(Transaction t, Analysis o, Analysis dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+    public boolean syncPair(Transaction t, Analysis o, Analysis dbo, SyncMode syncMode, boolean simulate) throws ImportException {
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3432,7 +3443,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         }
         for(AnalysisData e : o.getAnalysisDatas()) {
             if (dbo == null) {
-                if (sync(t, e, (AnalysisData)null, syncMode, simulate)) changed = true;
+                if (syncPair(t, e, (AnalysisData)null, syncMode, simulate)) changed = true;
             } else {
                 AnalysisData dbe = null;
                 for(AnalysisData f : dbo.getAnalysisDatas()) {
@@ -3442,14 +3453,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 if (dbe == null) {
                     log.append(Describe.describe(dbo) + ": New " + Describe.describe(e) + "\n");
-                    sync(t, e, null, syncMode, simulate);
+                    syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
                         dbo.getAnalysisDatas().add(e);
                         e.setAnalysis(dbo);
                     }
                 } else {
-                    if (sync(t, e, dbe, syncMode, simulate)) changed = true;
+                    if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;
                 }
             }
         }
@@ -3481,13 +3492,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
             log.append("Synchronizing " + Describe.describe(o) + "\n");
-            sync(t, o, dbo, mode, simulate);
+            syncPair(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
             log.append("New " + Describe.describe(o) + "\n");
-            sync(t, o, (Patient)null, mode, simulate);
+            syncPair(t, o, (Patient)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3500,13 +3511,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
             log.append("Synchronizing " + Describe.describe(o) + "\n");
-            sync(t, o, dbo, mode, simulate);
+            syncPair(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
             log.append("New " + Describe.describe(o) + "\n");
-            sync(t, o, (Attribute)null, mode, simulate);
+            syncPair(t, o, (Attribute)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3519,13 +3530,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
             log.append("Synchronizing " + Describe.describe(o) + "\n");
-            sync(t, o, dbo, mode, simulate);
+            syncPair(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
             log.append("New " + Describe.describe(o) + "\n");
-            sync(t, o, (Test)null, mode, simulate);
+            syncPair(t, o, (Test)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;
@@ -3538,13 +3549,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (mode == SyncMode.Clean || mode == SyncMode.CleanBase)
                 throw new ImportException(Describe.describe(o) + " already exists");
             log.append("Synchronizing " + Describe.describe(o) + "\n");
-            sync(t, o, dbo, mode, simulate);
+            syncPair(t, o, dbo, mode, simulate);
             if (!simulate)
                 t.update(dbo);
             return dbo;
         } else {
             log.append("New " + Describe.describe(o) + "\n");
-            sync(t, o, (TestType)null, mode, simulate);
+            syncPair(t, o, (TestType)null, mode, simulate);
             if (!simulate)
                 t.save(o);
             return o;

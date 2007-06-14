@@ -44,6 +44,7 @@ public class Transaction {
     private final Query getPatientQuery;
     private final Query getDrugGenericQuery;
     private final Query getCommercialDrugQuery;
+    private final Query getViralIsolateQuery;
 
     public Transaction(Login login, Session session) {
         this.login = login;
@@ -70,6 +71,12 @@ public class Transaction {
                         "group by patient");
         getDrugGenericQuery = session.createQuery("from DrugGeneric as drug where drug.genericId = :genericId");
         getCommercialDrugQuery = session.createQuery("from DrugCommercial as drug where drug.name = :name");
+        getViralIsolateQuery = session.createQuery("select vi from ViralIsolate as vi "
+                        + "join vi.patient as p "
+                        + "join p.patientDatasets as patient_dataset "
+                        + "join patient_dataset.id.dataset as dataset "
+                        + "where dataset.closedDate = null "
+                        + "and vi.sampleId = :sampleId");
     }
     
     private void begin() {
@@ -79,11 +86,15 @@ public class Transaction {
     public void commit() {
         session.getTransaction().commit();
     }
-    
+
     public void rollback() {
         session.getTransaction().rollback();
     }
-    
+
+    public void clearCache() {
+        session.clear();
+    }
+
     public Query createQuery(String query)
     {
     	Query q = session.createQuery(query);
@@ -91,8 +102,10 @@ public class Transaction {
     	return q;
     }
 
-    //simple get by id
-    
+    /*
+     * FIXME: is this actually used ? is this the ii ? how does this work at all ??
+     *        -- koen
+     */
     public NtSequence getSequence(int id)
     {
         Query q = session.createQuery("from NtSequence where id = :id");
@@ -100,6 +113,15 @@ public class Transaction {
         q.setParameter("id", id);
         
         return (NtSequence)q.uniqueResult();
+    }
+
+    public ViralIsolate getViralIsolate(Dataset dataset, String sampleId) {
+        // TODO: check dataset access permissions before doing the query
+
+        getViralIsolateQuery.setParameter("sampleId", sampleId);
+
+        Object o = getViralIsolateQuery.uniqueResult();
+        return (ViralIsolate) o;
     }
     
     public Patient getPatient(int id)
@@ -1324,7 +1346,12 @@ public class Transaction {
         getAttributeNominalValueQuery.setParameter("attribute", attribute);
         getAttributeNominalValueQuery.setParameter("value", value);
         
-        return (AttributeNominalValue)getAttributeNominalValueQuery.uniqueResult();        
+        try {
+            return (AttributeNominalValue)getAttributeNominalValueQuery.uniqueResult();        
+        } catch (RuntimeException e) {
+            System.err.println("Exception for attribute value : " + attribute.getName() + " " + value);
+            throw e;
+        }
     }
 
     public TestNominalValue getTestNominalValue(TestType type, String value) {

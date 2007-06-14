@@ -15,6 +15,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
@@ -53,7 +54,14 @@ public class Equals {
     public static boolean isSameTestResult(TestResult o1, TestResult o2) {
         return o1 == o2
         || (o1 != null && o2 != null && o1.getTestDate().equals(o2.getTestDate())
-                && isSameTest(o1.getTest(), o2.getTest()));
+                && isSameTest(o1.getTest(), o2.getTest())
+                && isSameDrugGeneric(o1.getDrugGeneric(), o2.getDrugGeneric())
+                && isSameViralIsolate(o1.getViralIsolate(), o2.getViralIsolate())
+                && isSameNtSequence(o1.getNtSequence(), o2.getNtSequence()));
+    }
+
+    private static boolean isSameDrugGeneric(DrugGeneric o1, DrugGeneric o2) {
+        return o1 == o2;
     }
 
     public static boolean isSamePatientAttributeValue(PatientAttributeValue o1, PatientAttributeValue o2) {

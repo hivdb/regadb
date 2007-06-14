@@ -9,7 +9,9 @@ package net.sf.regadb.io.importXML;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -34,30 +36,11 @@ public class TestImportXML implements ImportHandler<Patient> {
     private Dataset dataset;
     private Transaction t;
 
-    public TestImportXML() {
+    public TestImportXML() throws WrongUidException, WrongPasswordException, DisabledUserException {
         instance = new ImportFromXML();
         patients = 0;
 
-        login = null;
-        try
-        {
-            login = Login.authenticate("test", "test");
-        }
-        catch (WrongUidException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (WrongPasswordException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
-        catch (DisabledUserException e) 
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }        
+        login = Login.authenticate("test", "test");
         
         t = login.createTransaction();
         instance.loadDatabaseObjects(t);                
@@ -84,14 +67,17 @@ public class TestImportXML implements ImportHandler<Patient> {
      * @param args
      * @throws SAXException 
      * @throws IOException 
+     * @throws DisabledUserException 
+     * @throws WrongPasswordException 
+     * @throws WrongUidException 
      */
-    public static void main(String[] args) throws SAXException, IOException {
+    public static void main(String[] args) throws SAXException, IOException, WrongUidException, WrongPasswordException, DisabledUserException {
         TestImportXML self = new TestImportXML();
     
         FileReader r = new FileReader(new File(args[0]));
 
         self.instance.readPatients(new InputSource(r), self);
-        //self.instance.readTests(new InputSource(r), null);
+ 
         System.err.println(self.instance.log);
         System.err.println("Read: " + self.patients + " patients");
 
@@ -111,9 +97,11 @@ public class TestImportXML implements ImportHandler<Patient> {
             throw new RuntimeException(e);
         }
         ++patients;
-        
-        if (patients % 100 == 0) {
+
+        if (patients % 50 == 0) {
             t.commit();
+            t.clearCache();
+            instance.loadDatabaseObjects(t);                
             t = login.createTransaction();
             loadDataset();
         }
