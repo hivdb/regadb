@@ -10,10 +10,13 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WBorder;
 import net.sf.witty.wt.WColor;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WTableCell;
 import net.sf.witty.wt.WText;
@@ -22,6 +25,7 @@ import net.sf.witty.wt.WBorder.Width;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
+import net.sf.witty.wt.core.utils.WSide;
 
 public class ViralIsolateResistanceForm extends WContainerWidget
 {
@@ -29,6 +33,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     
     private WGroupBox resistanceGroup_;
     private WTable resistanceTable_;
+    private WPushButton refreshButton_;
     
     public ViralIsolateResistanceForm(ViralIsolateForm viralIsolateForm)
     {
@@ -41,7 +46,24 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     public void init()
     {
         resistanceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.resistance"), this);
-        resistanceTable_ = new WTable(resistanceGroup_);
+        
+        WTable wrapper = new WTable(resistanceGroup_);
+        
+        resistanceTable_ = new WTable(wrapper.elementAt(0, 0));
+        
+        refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.elementAt(0, 1));
+        refreshButton_.setMargin(new WLength(15), WSide.Left);
+        refreshButton_.clicked.addListener(new SignalListener<WMouseEvent>()
+                {
+                    public void notify(WMouseEvent a) 
+                    {
+                        Transaction t = RegaDBMain.getApp().createTransaction();
+                        t.refresh(viralIsolateForm_.getViralIsolate());
+                        t.commit();
+                        
+                        loadTable();
+                    }
+                });
 
         loadTable();
     }
