@@ -79,6 +79,8 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
         int col = 0;
         resistanceTable_.putElementAt(0, col, new WText());
+        col = resistanceTable_.numColumns();
+        resistanceTable_.putElementAt(0, col, new WText());
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
@@ -96,13 +98,20 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         
         List<DrugGeneric> genericDrugs;
         int row;
+        boolean firstGenericDrugInThisClass;
         for(DrugClass dc : sortedDrugClasses_)
         {
             genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
+            firstGenericDrugInThisClass = true;
             for(DrugGeneric dg : genericDrugs)
             {
                 row = resistanceTable_.numRows();
-                resistanceTable_.putElementAt(row, 0, new TableHeader(lt(dg.getGenericId())));
+                if(firstGenericDrugInThisClass)
+                {
+                    resistanceTable_.putElementAt(row, 0, new TableHeader(lt(dc.getClassId()+ ":")));
+                    firstGenericDrugInThisClass = false;
+                }
+                resistanceTable_.putElementAt(row, 1, new TableHeader(lt(dg.getGenericId())));
                 drugColumn.put(dg.getGenericId(), row);
             }
         }
@@ -110,7 +119,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         //clear table
         for(int i = 1; i < resistanceTable_.numRows(); i++)
         {
-            for(int j = 1; j< resistanceTable_.numColumns(); j++)
+            for(int j = 2; j< resistanceTable_.numColumns(); j++)
             {
                 putResistanceTableResult(null, resistanceTable_.elementAt(i, j));
             }
