@@ -579,8 +579,6 @@ public class ImportPortugalDB {
         proteins.put("PRO", new Protein("PRO", "protease"));
         proteins.put("RT", new Protein("RT", "reverse transcriptase"));
 
-        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins);
-        
         int seq_found = 0;
         for (int i = 0; i < files.length; ++i) {            
             FastaRead fr = FastaHelper.readFastaFile(files[i], true);
@@ -868,8 +866,30 @@ public class ImportPortugalDB {
  	public static void main(String[] args)
         throws FileNotFoundException, ClassNotFoundException {
         
-        ImportPortugalDB instance = new ImportPortugalDB(args[0], args[1], args[2], args[3], args[4],
-                										 args[5], args[6], args[7], args[8], args[9]);
+        ImportPortugalDB instance; 
+        
+        File test = new File(args[0]);
+        if(test.isDirectory())
+        {
+            String dir = args[0];
+            instance = new ImportPortugalDB(
+                    dir+File.separatorChar+"Sample.csv",
+                    dir+File.separatorChar+"Country.csv",
+                    dir+File.separatorChar+"Ethnicity.csv",
+                    dir+File.separatorChar+"GeographicOrigin.csv",
+                    dir+File.separatorChar+"Institution.csv",
+                    dir+File.separatorChar+"Medicins.csv",
+                    dir+File.separatorChar+"Therapeutics.csv",
+                    dir+File.separatorChar+"TherapeuticMedicins.csv",
+                    dir+File.separatorChar+"TransmissionGroup.csv", 
+                    args[1]);
+                    
+        }
+        else
+        {
+            instance = new ImportPortugalDB(    args[0], args[1], args[2], args[3], args[4],
+                                                args[5], args[6], args[7], args[8], args[9]);
+        }
         
         instance.importPatients();
         instance.importViralLoad_CD4();
