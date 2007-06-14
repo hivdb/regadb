@@ -103,7 +103,7 @@ public class ImportXML {
         }        
     }
     
-    private void importPatients(InputSource s) throws SAXException, IOException {
+    void importPatients(InputSource s) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
@@ -158,7 +158,7 @@ public class ImportXML {
         }        
     }
     
-    private void importViralIsolates(InputSource s) throws SAXException, IOException {
+    void importViralIsolates(InputSource s) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
@@ -170,13 +170,5 @@ public class ImportXML {
 
         System.err.println(instance.getLog());
         System.err.println("Read: " + importHandler.isolatesRead + " isolates");
-    }
-
-    public static void main(String[] args) throws SAXException, IOException,
-            WrongUidException, WrongPasswordException, DisabledUserException {
-        ImportXML instance = new ImportXML();
-
-        //instance.importPatients(new InputSource(new FileReader(new File(args[0]))));
-        instance.importViralIsolates(new InputSource(new FileReader(new File(args[1]))));
     }
 }
