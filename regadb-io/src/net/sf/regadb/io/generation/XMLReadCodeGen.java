@@ -277,6 +277,8 @@ public class XMLReadCodeGen {
                 write(1, "private Map<String, " + o.javaClass.getSimpleName()+"> ref" + o.javaClass.getSimpleName() + "Map " +
                         "= new HashMap<String, " + o.javaClass.getSimpleName()+">();\n");
                 write(1, "private String reference" + o.javaClass.getSimpleName() + " = null;\n");
+                write(1, "private Set<" + o.javaClass.getSimpleName()+"> synced" + o.javaClass.getSimpleName() + "Set " +
+                        "= new HashSet<" + o.javaClass.getSimpleName()+">();\n");
             }
         }
         
@@ -478,6 +480,13 @@ public class XMLReadCodeGen {
             
             write(1, "public boolean syncPair(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, SyncMode syncMode, boolean simulate) throws ImportException {\n");
 
+            if (o.referenced) {
+                write(2, "if (synced" + o.javaClass.getSimpleName() + "Set.contains(o))\n");
+                write(3, "return false;\n");
+                write(2, "else\n");
+                write(3, "synced" + o.javaClass.getSimpleName() + "Set.add(o);\n");
+            }
+            
             write(2, "boolean changed = false;\n");
             write(2, "if (o == null)\n");
             write(3, "return changed;\n");

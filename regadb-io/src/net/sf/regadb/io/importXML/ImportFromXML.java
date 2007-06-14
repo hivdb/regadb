@@ -33,24 +33,34 @@ public class ImportFromXML extends ImportFromXMLBase {
 
     private Map<String, AnalysisData> refAnalysisDataMap = new HashMap<String, AnalysisData>();
     private String referenceAnalysisData = null;
+    private Set<AnalysisData> syncedAnalysisDataSet = new HashSet<AnalysisData>();
     private Map<String, TestType> refTestTypeMap = new HashMap<String, TestType>();
     private String referenceTestType = null;
+    private Set<TestType> syncedTestTypeSet = new HashSet<TestType>();
     private Map<String, ValueType> refValueTypeMap = new HashMap<String, ValueType>();
     private String referenceValueType = null;
+    private Set<ValueType> syncedValueTypeSet = new HashSet<ValueType>();
     private Map<String, TestObject> refTestObjectMap = new HashMap<String, TestObject>();
     private String referenceTestObject = null;
+    private Set<TestObject> syncedTestObjectSet = new HashSet<TestObject>();
     private Map<String, TestNominalValue> refTestNominalValueMap = new HashMap<String, TestNominalValue>();
     private String referenceTestNominalValue = null;
+    private Set<TestNominalValue> syncedTestNominalValueSet = new HashSet<TestNominalValue>();
     private Map<String, Attribute> refAttributeMap = new HashMap<String, Attribute>();
     private String referenceAttribute = null;
+    private Set<Attribute> syncedAttributeSet = new HashSet<Attribute>();
     private Map<String, AttributeGroup> refAttributeGroupMap = new HashMap<String, AttributeGroup>();
     private String referenceAttributeGroup = null;
+    private Set<AttributeGroup> syncedAttributeGroupSet = new HashSet<AttributeGroup>();
     private Map<String, AttributeNominalValue> refAttributeNominalValueMap = new HashMap<String, AttributeNominalValue>();
     private String referenceAttributeNominalValue = null;
+    private Set<AttributeNominalValue> syncedAttributeNominalValueSet = new HashSet<AttributeNominalValue>();
     private Map<String, Test> refTestMap = new HashMap<String, Test>();
     private String referenceTest = null;
+    private Set<Test> syncedTestSet = new HashSet<Test>();
     private Map<String, Analysis> refAnalysisMap = new HashMap<String, Analysis>();
     private String referenceAnalysis = null;
+    private Set<Analysis> syncedAnalysisSet = new HashSet<Analysis>();
     private String fieldPatient_patientId;
     private String fieldPatient_lastName;
     private String fieldPatient_firstName;
@@ -1996,6 +2006,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, AnalysisData o, AnalysisData dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedAnalysisDataSet.contains(o))
+            return false;
+        else
+            syncedAnalysisDataSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2027,6 +2041,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, TestType o, TestType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedTestTypeSet.contains(o))
+            return false;
+        else
+            syncedTestTypeSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2164,6 +2182,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, ValueType o, ValueType dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedValueTypeSet.contains(o))
+            return false;
+        else
+            syncedValueTypeSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2203,6 +2225,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, TestObject o, TestObject dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedTestObjectSet.contains(o))
+            return false;
+        else
+            syncedTestObjectSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2226,6 +2252,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, TestNominalValue o, TestNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedTestNominalValueSet.contains(o))
+            return false;
+        else
+            syncedTestNominalValueSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2415,6 +2445,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, Attribute o, Attribute dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedAttributeSet.contains(o))
+            return false;
+        else
+            syncedAttributeSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2554,6 +2588,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, AttributeGroup o, AttributeGroup dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedAttributeGroupSet.contains(o))
+            return false;
+        else
+            syncedAttributeGroupSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2569,6 +2607,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, AttributeNominalValue o, AttributeNominalValue dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedAttributeNominalValueSet.contains(o))
+            return false;
+        else
+            syncedAttributeNominalValueSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3287,6 +3329,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, Test o, Test dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedTestSet.contains(o))
+            return false;
+        else
+            syncedTestSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
@@ -3382,6 +3428,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     }
 
     public boolean syncPair(Transaction t, Analysis o, Analysis dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedAnalysisSet.contains(o))
+            return false;
+        else
+            syncedAnalysisSet.add(o);
         boolean changed = false;
         if (o == null)
             return changed;
