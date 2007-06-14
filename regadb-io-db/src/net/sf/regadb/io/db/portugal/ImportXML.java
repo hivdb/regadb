@@ -148,7 +148,7 @@ public class ImportXML {
 
             ++isolatesRead;
 
-            if (isolatesRead % 50 == 2) {
+            if (isolatesRead % 5 == 0) {
                 t.commit();
                 t.clearCache();
                 t = login.createTransaction();
