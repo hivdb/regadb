@@ -46,6 +46,7 @@ import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.util.fuzzyString.FuzzyString;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Document;
@@ -113,6 +114,8 @@ public class ImportPortugalDB {
 
     private ValueType stringValueType;
     private ValueType nominalValueType;
+    
+    private Map<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
  
     public ImportPortugalDB(String sampleFName, String countryFName,
             				String ethnicityFName, String geographicOriginFName,
@@ -132,6 +135,31 @@ public class ImportPortugalDB {
         this.therapeuticMedicinsTable = readTable(therapeuticMedicinsFname);
         this.transmissionGroupTable = readTable(transmissionGroupFName);
         System.err.println("done.");
+        
+        System.err.println("Fixing the country of origin list");
+        List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
+        Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
+        ArrayList<String> countryIndex = this.countryTable.getColumn(0);
+        ArrayList<String> countryName = this.countryTable.getColumn(1);
+        String country;
+        String bestCountryMatchForNow="";
+        int score;
+        for(int i = 1; i<countryIndex.size(); i++)
+        {
+            score = Integer.MAX_VALUE;
+            country = countryName.get(i);
+            for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
+            {
+                int oneScore = FuzzyString.getLevenshteinDistance(country, anv.getValue());
+                if(oneScore<score)
+                {
+                    bestCountryMatchForNow = anv.getValue();
+                    score = oneScore;
+                }
+            }
+            System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
+        }
+        System.err.println("done");
         
         this.sequenceDirName = sequenceDirName;
         
@@ -685,7 +713,22 @@ public class ImportPortugalDB {
        }
     }
     
-    private static List<Attribute> prepareRegaDBAttributes()
+    private Attribute selectAttribute(String attributeName, List<Attribute> list)
+    {
+        Attribute toReturn = null;
+        
+        for(Attribute a : list)
+        {
+            if(a.getName().equals(attributeName))
+            {
+                toReturn = a;
+            }
+        }
+        
+        return toReturn;
+    }
+    
+    private List<Attribute> prepareRegaDBAttributes()
     {
         FileProvider fp = new FileProvider();
         List<Attribute> list = null;
@@ -740,8 +783,8 @@ public class ImportPortugalDB {
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
 		nominals.add(new NominalAttribute("Ethnicity", CSampleIdEthnicity, ethnicityTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-		nominals.add(new NominalAttribute("Country of origin", CSampleIdCountry, countryTable));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
+		nominals.add(new NominalAttribute("Country of origin pt", CSampleIdCountry, countryTable));
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
