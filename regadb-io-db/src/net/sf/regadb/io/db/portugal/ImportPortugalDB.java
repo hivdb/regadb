@@ -136,7 +136,7 @@ public class ImportPortugalDB {
         this.transmissionGroupTable = readTable(transmissionGroupFName);
         System.err.println("done.");
         
-        System.err.println("Fixing the country of origin list");
+        /*System.err.println("Fixing the country of origin list");
         List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
         Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
@@ -159,7 +159,7 @@ public class ImportPortugalDB {
             }
             System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
         }
-        System.err.println("done");
+        System.err.println("done");*/
         
         this.sequenceDirName = sequenceDirName;
         
@@ -654,6 +654,8 @@ public class ImportPortugalDB {
                 if (p == null)
                     continue;
 
+                if(viralIsolateHM.get(seqFinalSampleId)==null)
+                {
                 ViralIsolate vi = p.createViralIsolate();
                 vi.setSampleDate(sampleDate);
                 vi.setSampleId(seqFinalSampleId);
@@ -666,7 +668,13 @@ public class ImportPortugalDB {
                 Element viralIsolateE = new Element("viralIsolates-el");
                 root.addContent(viralIsolateE);
 
-                l.writeViralIsolate(vi, viralIsolateE);                
+                l.writeViralIsolate(vi, viralIsolateE);
+                viralIsolateHM.put(seqFinalSampleId, vi);
+                }
+                else
+                {
+                    System.err.println("Duplicate viral isolate " +  seqFinalSampleId + " -> ignoring");
+                }
             }
         }
         
