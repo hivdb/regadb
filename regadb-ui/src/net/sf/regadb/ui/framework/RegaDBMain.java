@@ -22,8 +22,14 @@ public class RegaDBMain extends WebController
         String proxyHost = settings.getPropertyValue("http.proxy.url");
         String proxyPort = settings.getPropertyValue("http.proxy.port");
         
-        System.setProperty("http.proxyHost", proxyHost);
-        System.setProperty("http.proxyPort", proxyPort);
+        if(proxyHost!=null && !"default".equals(proxyHost))
+        {
+            System.setProperty("http.proxyHost", proxyHost);
+        }
+        if(proxyPort!=null && !"default".equals(proxyPort))
+        {
+            System.setProperty("http.proxyPort", proxyPort);
+        }
         
         return app;
 	}
