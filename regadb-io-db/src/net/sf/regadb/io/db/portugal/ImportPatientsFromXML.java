@@ -21,7 +21,10 @@ public class ImportPatientsFromXML
     {
         System.err.println("Provide a Patient xml input file as input parameter");
     }
-    
+    else
+    {
     instance.importPatients(new InputSource(new FileReader(new File(args[0]))));
+    }
+    
     }
 }

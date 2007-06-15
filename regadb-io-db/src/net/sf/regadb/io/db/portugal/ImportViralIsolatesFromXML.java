@@ -21,7 +21,10 @@ public class ImportViralIsolatesFromXML
     {
         System.err.println("Provide a ViralIsolate xml input file as input parameter");
     }
+    else
+    {
+        instance.importViralIsolates(new InputSource(new FileReader(new File(args[0]))));
+    }
     
-    instance.importViralIsolates(new InputSource(new FileReader(new File(args[0]))));
     }
 }
