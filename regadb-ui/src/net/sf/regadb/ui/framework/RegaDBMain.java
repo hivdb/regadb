@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework;
 
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.Configuration;
 import net.sf.witty.wt.WApplication;
 import net.sf.witty.wt.WEnvironment;
@@ -16,6 +17,13 @@ public class RegaDBMain extends WebController
 	public WApplication createApplication(WEnvironment env)
 	{
 		RegaDBApplication app = new RegaDBApplication(env, this.getServletContext());
+        
+        RegaDBSettings settings = RegaDBSettings.getInstance();
+        String proxyHost = settings.getPropertyValue("http.proxy.url");
+        String proxyPort = settings.getPropertyValue("http.proxy.port");
+        
+        System.setProperty("http.proxyHost", proxyHost);
+        System.setProperty("http.proxyPort", proxyPort);
         
         return app;
 	}

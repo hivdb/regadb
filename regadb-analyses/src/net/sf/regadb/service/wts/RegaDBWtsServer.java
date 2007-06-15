@@ -9,7 +9,7 @@ import net.sf.regadb.db.ValueType;
 
 public class RegaDBWtsServer 
 {
-    public static final String url_ = "http://zolder:8080/wts/services/";
+    public static final String url_ = "http://virolab.med.kuleuven.be/wts/services/";
     
     public static Test getHIV1SubTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
