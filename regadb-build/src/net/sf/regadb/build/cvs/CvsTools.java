@@ -53,6 +53,20 @@ public class CvsTools
         }
     }
     
+    public static void localCheckout(String localProjectName, String destinationProjectName, String srcPath, String destPath)
+    {
+        try 
+        {
+            File destDir = new File(destPath+File.separatorChar+destinationProjectName);
+            FileUtils.forceMkdir(destDir);
+            FileUtils.copyDirectory(new File(srcPath + File.separatorChar + localProjectName), destDir);
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    }
+    
     public static void main(String [] args)
     {
         try 

@@ -1,11 +1,13 @@
 package net.sf.regadb.build.svn;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -58,6 +60,48 @@ public class SvnTools
         {
             SVNDirEntry entry = ( SVNDirEntry ) iterator.next( );
             modules.add(entry.getName( ));
+        }
+        return modules;
+    }
+    
+    public static void localCheckout(String projectName, String srcPath, String destPath)
+    {
+        try 
+        {
+            File destDir = new File(destPath+File.separatorChar+projectName);
+            FileUtils.forceMkdir(destDir);
+            FileUtils.copyDirectory(new File(srcPath + File.separatorChar + projectName), destDir);
+        } 
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public static List<String> getLocalModules(String localPath)
+    {
+        File path = new File(localPath);
+        File[] contents = path.listFiles();
+        List<String> modules = new ArrayList<String>();
+        boolean svnDir = false;
+        for(File f : contents)
+        {
+            if(f.isDirectory())
+            {
+                for(File isSvnFile : f.listFiles())
+                {
+                    if(isSvnFile.getAbsolutePath().endsWith(".svn"))
+                    {
+                        svnDir = true;
+                        break;
+                    }
+                }
+            }
+            if(svnDir)
+            {
+                modules.add(f.getName());
+                svnDir = false;
+            }
         }
         return modules;
     }

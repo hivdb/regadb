@@ -34,16 +34,28 @@ public class Jarbuilder
     private static String rapportDir_;
     private static String libPool_;
     private static String packageDir_;
+    
+    private static String localCheckoutDir_ = null;
 
     public static void main (String args[])
     {
-    	if (args.length == 2) {
+    	if (args.length >= 2) {
     		buildDir_ = args[0] + File.separatorChar;
     		rapportDir_ = args[1] + File.separatorChar;
     		
     		libPool_ = buildDir_ + "libPool" + File.separatorChar;
     		
     		packageDir_ = buildDir_ + "packages" + File.separatorChar;
+            
+            if(args.length>2)
+            {
+                String localCheckoutArg = args[2];
+                if(localCheckoutArg.startsWith("--localCheckout="))
+                {
+                    localCheckoutArg = localCheckoutArg.substring(localCheckoutArg.indexOf("--localCheckout=")+"--localCheckout=".length(), localCheckoutArg.length());
+                    localCheckoutDir_ = localCheckoutArg;
+                }
+            }
     		
     		build();
     		
@@ -61,7 +73,10 @@ public class Jarbuilder
         createDirs();
         
         try {
-        	CvsTools.checkout(witty_cvs_url, buildDir_, "jwt/src", "jwt_src");
+            if(localCheckoutDir_==null)
+                CvsTools.checkout(witty_cvs_url, buildDir_, "jwt/src", "jwt_src");
+            else
+                CvsTools.localCheckout("jwt", "jwt_src",  localCheckoutDir_, buildDir_);
         }  
         
         catch (Exception e) {
@@ -70,7 +85,11 @@ public class Jarbuilder
         
         SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
         
-        List<String> modules = SvnTools.getModules(svnrepos);
+        List<String> modules;
+        if(localCheckoutDir_==null)
+            modules = SvnTools.getModules(svnrepos);
+        else
+            modules = SvnTools.getLocalModules(localCheckoutDir_);
         
         modules = filterRegaDBSvnModules(modules);
         
@@ -79,7 +98,10 @@ public class Jarbuilder
         for(String m : modules)
         {
         	try {
-        		SvnTools.checkout(regadb_svn_url_, m, buildDir_, svnrepos);
+                if(localCheckoutDir_==null)
+                    SvnTools.checkout(regadb_svn_url_, m, buildDir_, svnrepos);
+                else
+                    SvnTools.localCheckout(m, localCheckoutDir_, buildDir_);
             }
             catch (Exception e) {
             	handleError(m, e);
