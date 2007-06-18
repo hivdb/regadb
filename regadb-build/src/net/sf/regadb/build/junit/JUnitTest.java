@@ -49,6 +49,8 @@ public class JUnitTest {
 									
 									for (Method m : method) {
 										if (m.getName().contains("test")) {
+                                            try
+                                            {
 											TestCase tc = (TestCase)cls.newInstance();
 											
 											tc.setName(m.getName());
@@ -56,6 +58,11 @@ public class JUnitTest {
 											TestResult tr = tc.run();
 											
 											JUnitRapport.addRun(tr);
+                                            }
+                                            catch(InstantiationException ie)
+                                            {
+                                                System.err.println("Could not instantiate " + cls.getName());
+                                            }
 										}
 									}
 									
