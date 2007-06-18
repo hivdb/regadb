@@ -154,8 +154,9 @@ public class PatientChart
             }
 		}
 
-		IMAGE_WIDTH = us.getChartWidth();
-		CHART_HEIGHT = us.getChartHeight();
+        //TODO get width/height from user_attributes
+		//IMAGE_WIDTH = us.getChartWidth();
+		//CHART_HEIGHT = us.getChartHeight();
 
 		maxMutations = 0;
 		for (ViralIsolate vi : data.getViralIsolates())
