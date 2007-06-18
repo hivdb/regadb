@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
+	<classpathentry kind="lib" path="lib/simmetrics162.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

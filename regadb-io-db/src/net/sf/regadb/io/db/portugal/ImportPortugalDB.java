@@ -47,6 +47,7 @@ import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.fuzzyString.FuzzyString;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Document;
@@ -55,6 +56,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import uk.ac.shef.wit.simmetrics.similaritymetrics.NeedlemanWunch;
 
 /**
  * @author kdforc0
@@ -136,22 +139,23 @@ public class ImportPortugalDB {
         this.transmissionGroupTable = readTable(transmissionGroupFName);
         System.err.println("done.");
         
-        /*System.err.println("Fixing the country of origin list");
+        System.err.println("Fixing the country of origin list");
         List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
         Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
         ArrayList<String> countryName = this.countryTable.getColumn(1);
         String country;
         String bestCountryMatchForNow="";
-        int score;
+        float score;
+        NeedlemanWunch nmw = new NeedlemanWunch();
         for(int i = 1; i<countryIndex.size(); i++)
         {
-            score = Integer.MAX_VALUE;
+            score = Integer.MIN_VALUE;
             country = countryName.get(i);
             for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
             {
-                int oneScore = FuzzyString.getLevenshteinDistance(country, anv.getValue());
-                if(oneScore<score)
+                float oneScore = nmw.getSimilarity(country, anv.getValue());
+                if(oneScore>score)
                 {
                     bestCountryMatchForNow = anv.getValue();
                     score = oneScore;
@@ -159,7 +163,7 @@ public class ImportPortugalDB {
             }
             System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
         }
-        System.err.println("done");*/
+        System.err.println("Done fixing the country of origin list");
         
         this.sequenceDirName = sequenceDirName;
         
@@ -738,6 +742,8 @@ public class ImportPortugalDB {
     
     private List<Attribute> prepareRegaDBAttributes()
     {
+        RegaDBSettings.getInstance().initProxySettings();
+        
         FileProvider fp = new FileProvider();
         List<Attribute> list = null;
         File attributesFile = null;
