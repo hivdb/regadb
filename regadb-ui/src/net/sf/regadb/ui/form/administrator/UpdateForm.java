@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.framework.forms.administrator;
+package net.sf.regadb.ui.form.administrator;
 
 import java.io.File;
 import java.io.FileReader;
