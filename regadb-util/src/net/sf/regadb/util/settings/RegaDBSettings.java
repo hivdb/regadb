@@ -62,6 +62,21 @@ public class RegaDBSettings {
         }
         return instance_;
     }
+    
+    public void initProxySettings()
+    {
+        String proxyHost = this.getPropertyValue("http.proxy.url");
+        String proxyPort = this.getPropertyValue("http.proxy.port");
+        
+        if(proxyHost!=null && !"default".equals(proxyHost))
+        {
+            System.setProperty("http.proxyHost", proxyHost);
+        }
+        if(proxyPort!=null && !"default".equals(proxyPort))
+        {
+            System.setProperty("http.proxyPort", proxyPort);
+        }
+    }
 
     private void parseConfFile(File confFile) {
         SAXBuilder builder = new SAXBuilder();

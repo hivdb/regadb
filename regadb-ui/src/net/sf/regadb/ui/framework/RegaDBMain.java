@@ -18,18 +18,7 @@ public class RegaDBMain extends WebController
 	{
 		RegaDBApplication app = new RegaDBApplication(env, this.getServletContext());
         
-        RegaDBSettings settings = RegaDBSettings.getInstance();
-        String proxyHost = settings.getPropertyValue("http.proxy.url");
-        String proxyPort = settings.getPropertyValue("http.proxy.port");
-        
-        if(proxyHost!=null && !"default".equals(proxyHost))
-        {
-            System.setProperty("http.proxyHost", proxyHost);
-        }
-        if(proxyPort!=null && !"default".equals(proxyPort))
-        {
-            System.setProperty("http.proxyPort", proxyPort);
-        }
+        RegaDBSettings.getInstance().initProxySettings();
         
         return app;
 	}
