@@ -88,7 +88,8 @@ public class TherapyForm extends FormWidget
 		{
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
-            therapy_ = p.createTherapy(new Date(System.currentTimeMillis()));
+            therapy_ = new Therapy();
+            therapy_.setStartDate(new Date(System.currentTimeMillis()));
         }
         else
         {
@@ -161,6 +162,11 @@ public class TherapyForm extends FormWidget
             
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
+            
+            if(getInteractionState()==InteractionState.Adding)
+            {
+                p.addTherapy(therapy_);
+            }
                     
             therapy_.setStartDate(startDateTF.getDate());
             
