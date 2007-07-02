@@ -74,4 +74,27 @@ public class DateUtils
         
         return dd + "-" + mm + "-" + yyyy;
     }
+    
+    public static boolean compareDates(Date date1, Date date2)
+    {
+        int d1d, d2d, d1m, d2m, d1y, d2y;
+        calendar_.setTime(date1);
+        d1d = calendar_.get(Calendar.DAY_OF_MONTH);
+        d1m = calendar_.get(Calendar.MONTH)+1;
+        d1y = calendar_.get(Calendar.YEAR);
+        
+        calendar_.setTime(date2);
+        d2d = calendar_.get(Calendar.DAY_OF_MONTH);
+        d2m = calendar_.get(Calendar.MONTH)+1;
+        d2y = calendar_.get(Calendar.YEAR);
+        
+        if(d1d == d2d && d1m == d2m && d1y == d2y)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
