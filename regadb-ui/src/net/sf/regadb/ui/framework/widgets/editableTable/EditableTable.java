@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
@@ -148,6 +149,32 @@ public class EditableTable<DataType> extends WContainerWidget
                         }
                     });
         }
+    }
+    
+    public boolean validate()
+    {
+        boolean valid = true;
+        WWidget[] widgets;
+        FormField f;
+        for(int i = 0; i < itemList_.size(); i++)
+        {
+            widgets = getWidgets(i+1);
+            for(WWidget w : widgets)
+            {
+                if(w instanceof FormField)
+                {
+                    f = (FormField)w;
+                    if(f.getFormWidget()!=null)
+                    {
+                        if(!f.validate())
+                        {
+                            valid = false;
+                        }
+                    }
+                }
+            }
+        }
+        return valid;
     }
     
     public void saveData()

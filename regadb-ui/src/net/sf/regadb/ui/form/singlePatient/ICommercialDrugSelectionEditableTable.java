@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import net.sf.witty.wt.WWidget;
@@ -76,7 +77,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public WWidget[] getWidgets(TherapyCommercial tc)
     {
         ComboBox combo = new ComboBox(InteractionState.Viewing, form_);
-        TextField tf = new TextField(form_.getInteractionState(), form_);
+        TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
@@ -110,7 +111,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public WWidget[] addRow() 
     {
         ComboBox combo = new ComboBox(form_.getInteractionState(), form_);
-        TextField tf = new TextField(form_.getInteractionState(), form_);
+        TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
@@ -130,6 +131,13 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public WWidget[] fixAddRow(WWidget[] widgets) 
     {
         DrugCommercial dc = ((DataComboMessage<DrugCommercial>)(((ComboBox)widgets[0]).currentText())).getValue();
+        
+        if(!((TextField)widgets[1]).validate())
+        {
+            ((TextField)widgets[1]).flagErroneous();
+            return null;
+        }
+        
         Double units = getDosage((TextField)widgets[1]);
         
         TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(null, dc), units);

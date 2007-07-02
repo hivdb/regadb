@@ -151,6 +151,10 @@ public class TherapyForm extends FormWidget
         {
             MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
         }
+        else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
+        {
+            //invalid input
+        }
         else
         {
             Transaction t = RegaDBMain.getApp().createTransaction();

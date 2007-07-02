@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
@@ -77,7 +78,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     public WWidget[] getWidgets(TherapyGeneric tg)
     {
         ComboBox combo = new ComboBox(InteractionState.Viewing, form_);
-        TextField tf = new TextField(form_.getInteractionState(), form_);
+        TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<DrugGeneric> genericDrugs = t.getGenericDrugs();
@@ -108,7 +109,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     public WWidget[] addRow() 
     {
         ComboBox combo = new ComboBox(form_.getInteractionState(), form_);
-        TextField tf = new TextField(form_.getInteractionState(), form_);
+        TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<DrugGeneric> genericDrugs = t.getGenericDrugs();
@@ -128,6 +129,13 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     public WWidget[] fixAddRow(WWidget[] widgets) 
     {
         DrugGeneric dg = ((DataComboMessage<DrugGeneric>)(((ComboBox)widgets[0]).currentText())).getValue();
+        
+        if(!((TextField)widgets[1]).validate())
+        {
+            ((TextField)widgets[1]).flagErroneous();
+            return null;
+        }
+        
         Double units = getDosage((TextField)widgets[1]);
         
         TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(null, dg), units);
