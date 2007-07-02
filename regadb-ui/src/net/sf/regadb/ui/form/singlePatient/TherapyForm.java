@@ -1,11 +1,10 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -20,6 +19,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
@@ -65,7 +65,7 @@ public class TherapyForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
-        startDateTF = new DateField(getInteractionState(), this);
+        startDateTF = new DateField(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         startDateTF.setMandatory(true);
         addLineToTable(generalGroupTable_, startDateL, startDateTF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
@@ -148,6 +148,23 @@ public class TherapyForm extends FormWidget
             }
         }
         
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        t.attach(p);
+        t.commit();
+        
+        Set<Therapy> therapies = p.getTherapies();
+        boolean startDateExists = false;
+        for(Therapy therapy : therapies)
+        {
+            if(DateUtils.compareDates(therapy.getStartDate(), startDateTF.getDate()) && getInteractionState()==InteractionState.Adding)
+            {
+                startDateExists = true;
+                break;
+            }
+        }
+
         if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
         {
             MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
@@ -156,12 +173,13 @@ public class TherapyForm extends FormWidget
         {
             //invalid input
         }
+        else if(startDateExists)
+        {
+            MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
+        }
         else
         {
-            Transaction t = RegaDBMain.getApp().createTransaction();
-            
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
-            t.attach(p);
+            t = RegaDBMain.getApp().createTransaction();
             
             if(getInteractionState()==InteractionState.Adding)
             {
