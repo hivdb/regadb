@@ -1,7 +1,5 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.Serializable;
-
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -16,6 +14,7 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
@@ -29,6 +28,8 @@ public class MeasurementForm extends FormWidget
 	//General group
     private WGroupBox generalGroup_;
     private WTable generalGroupTable_;
+    private Label sampleIdL_;
+    private TextField sampleIdTF_;
     private Label dateL;
     private DateField dateTF;
     private Label testTypeL;
@@ -52,6 +53,9 @@ public class MeasurementForm extends FormWidget
         //general group
         generalGroup_ = new WGroupBox(tr("form.testResult.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
+        sampleIdL_ = new Label(tr("form.testResult.editView.sampleid"));
+        sampleIdTF_ = new TextField(getInteractionState(), this);
+        addLineToTable(generalGroupTable_, sampleIdL_, sampleIdTF_);
         dateL = new Label(tr("form.testResult.editView.date"));
         dateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, dateL, dateTF);
@@ -120,6 +124,8 @@ public class MeasurementForm extends FormWidget
 	        testNameCB.selectItem(new DataComboMessage<Test>(testResult_.getTest(), testResult_.getTest().getDescription()));
 	        
 	        dateTF.setDate(testResult_.getTestDate());
+            
+            sampleIdTF_.setText(testResult_.getSampleId());
 	        
 	        if(testResultNominalValueCB!=null)
 	        {
@@ -189,6 +195,7 @@ public class MeasurementForm extends FormWidget
 		}
 		
 		testResult_.setTestDate(dateTF.getDate());
+        testResult_.setSampleId(sampleIdTF_.text());
 			    
 		if(testResultNominalValueCB!=null)
 		{
