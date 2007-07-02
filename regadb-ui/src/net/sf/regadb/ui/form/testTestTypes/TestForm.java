@@ -364,6 +364,8 @@ public class TestForm extends FormWidget
         test_.setDescription(testTF.text());
         test_.setTestType(tt);
         
+        Analysis analysis = null;
+        
         if(analysisCK.isChecked())
         {
             if(test_.getAnalysis()==null)
@@ -394,11 +396,22 @@ public class TestForm extends FormWidget
         }
         else
         {
+        	analysis = test_.getAnalysis();
+        	
             test_.setAnalysis(null);
         }
 
         update(test_, t);
-        t.commit();
+		t.commit();
+        
+        if (analysis != null)
+        {
+        	Transaction tr = RegaDBMain.getApp().createTransaction();
+        	
+        	tr.delete(analysis);
+        	
+        	tr.commit();
+        }
         
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(test_);
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
