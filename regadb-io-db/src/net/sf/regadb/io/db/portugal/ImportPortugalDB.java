@@ -139,7 +139,7 @@ public class ImportPortugalDB {
         this.transmissionGroupTable = readTable(transmissionGroupFName);
         System.err.println("done.");
         
-        /*System.err.println("Fixing the country of origin list");
+        System.err.println("Fixing the country of origin list");
         List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
         Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
@@ -163,7 +163,7 @@ public class ImportPortugalDB {
             }
             System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
         }
-        System.err.println("Done fixing the country of origin list");*/
+        System.err.println("Done fixing the country of origin list");
         
         this.sequenceDirName = sequenceDirName;
         
@@ -185,7 +185,7 @@ public class ImportPortugalDB {
 
         this.CTherapeuticsIdSample = findColumn(therapeuticsTable, "Id_Sample");
 
-        System.err.println("Merging therapeutics data...");
+        System.err.println("Merging therapeutics data... (from "+therapeuticsFName+")");
         therapeuticsTable.merge(sampleTable, CTherapeuticsIdSample, CSampleId_Sample, true);
         System.err.println("OK.");
 
@@ -233,7 +233,7 @@ public class ImportPortugalDB {
     }
 
     private void importTherapy() throws NumberFormatException {
-        System.err.print("Importing therapy ...");
+        System.err.println("Importing therapy ...");
         int therapy = 0;
         int datesunknown = 0;
 
@@ -469,7 +469,7 @@ public class ImportPortugalDB {
     }
 
     private void importPatients()  {
-        System.err.print("Importing patients... ");
+        System.err.println("Importing patients... ");
 		patientMap = new TreeMap<String, Patient>();
 		
 		String lastPatientId = null;
@@ -500,97 +500,6 @@ public class ImportPortugalDB {
         }
 
         System.err.println(" n = " + patientMap.size());
-    }
-    
-    public void importSequences() throws FileNotFoundException {
-        System.err.println("Importing sequences ...");
-        /*
-         * strategy: for every sequence in the directory, we see if we find a description in the sequence
-         * file. if so, we see:
-         *   - if no nt_sequence is imported we try to import it
-         *   - if an nt_sequence is imported but not aa_sequences associated with them then we reimport
-         *     the sequence
-         */
-        HashMap<String, Integer> sampleMap = new HashMap<String, Integer>();
-        for (int i = 1; i < sampleTable.numRows(); ++i) {
-            sampleMap.put(sampleTable.valueAt(CSampleSampleID, i), new Integer(i));
-        }
-
-		File dir = new File(sequenceDirName);
-        File[] files = dir.listFiles();
-        
-        Map<String, Protein> proteins = new HashMap<String, Protein>();
-        proteins.put("PRO", new Protein("PRO", "protease"));
-        proteins.put("RT", new Protein("RT", "reverse transcriptase"));
-
-        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins);
-        
-        int seq_found = 0;
-        for (int i = 0; i < files.length; ++i) {            
-            FastaRead fr = FastaHelper.readFastaFile(files[i], true);
-
-            switch (fr.status_) {
-            case Valid:
-            case ValidButFixed:
-
-                break;
-            case MultipleSequences:
-            case FileNotFound:
-            case Invalid:
-                
-                continue;
-            }
-
-            String seqSampleId = fr.seq_.getName();
-            String seqFileSampleId = files[i].getName();
-            seqFileSampleId = seqFileSampleId.substring(0, seqFileSampleId.indexOf('.'));
-            String seqAltName = seqSampleId;
-            if (seqSampleId.charAt(seqSampleId.length() - 1) == 's')
-                seqAltName = seqAltName.substring(0, seqAltName.length() - 1);
-                
-            String seqFinalSampleId = null;
-            if (sampleMap.containsKey(seqSampleId))
-                seqFinalSampleId = seqSampleId;
-            else
-                if (sampleMap.containsKey(seqFileSampleId))
-                    seqFinalSampleId = seqFileSampleId;
-                else if (sampleMap.containsKey(seqAltName))
-                    seqFinalSampleId = seqAltName;
-
-            if (seqFinalSampleId == null)
-                System.err.println("? " + seqSampleId + " " + seqFileSampleId);
-            else {
-                int row = ((Integer) sampleMap.get(seqFinalSampleId)).intValue();
-                ++seq_found;
-
-                String patientId = sampleTable.valueAt(CSamplePatientID, row);
-
-                Date sampleDate = createDate(sampleTable.valueAt(CSampleYearCollection, row),
-                        sampleTable.valueAt(CSampleMonthCollection, row));
-
-                Patient p = patientMap.get(patientId);
-                if (p == null)
-                    continue;
-
-                ViralIsolate vi = p.createViralIsolate();
-                vi.setSampleDate(sampleDate);
-                vi.setSampleId(seqFinalSampleId);
-                
-                NtSequence nts = new NtSequence(vi);
-                vi.getNtSequences().add(nts);
-                nts.setNucleotides(fr.xna_);
-                nts.setLabel("PT");
-                
-                try {
-                    System.err.println("Starting import of " + files[i].getName());
-                    aligner.alignHiv(nts);
-                } catch (IllegalSymbolException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-        System.err.println("Sequences: " + seq_found);
     }
 
     public void importSequencesNoAlign(String sequencesFile) throws FileNotFoundException {
