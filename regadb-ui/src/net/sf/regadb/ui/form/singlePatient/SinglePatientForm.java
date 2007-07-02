@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.Serializable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -27,9 +29,20 @@ import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WAnchor;
+import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 public class SinglePatientForm extends FormWidget
 {
@@ -90,13 +103,47 @@ public class SinglePatientForm extends FormWidget
         deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
         deathDateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
+        WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
+        export.clicked.addListener(new SignalListener<WMouseEvent>()
+        {
+            public void notify(WMouseEvent a) 
+            {
+                final Patient pt = patient_;
+                File tmpFile = RegaDBMain.getApp().createTempFile("patient-export", ".xml");
+                exportXML(tmpFile.getAbsolutePath(), pt);
+                final WTable parent = generalGroupTable_;
+                WAnchor anchor = new WAnchor(new WFileResource("xml", tmpFile.getAbsolutePath()), WWidget.lt("patient xml file"), parent.elementAt(parent.numRows()-1, 1));
+            }
+        });
+        generalGroupTable_.numColumns();
         
         fillData(patient_);
         
         addControlButtons();
     }
     
+    private void exportXML(String fileName, Patient pt) {
+        ExportToXML l = new ExportToXML();
+        Element root = new Element("patients");
+        
+        Element patient_el = new Element("patients-el");
+        root.addContent(patient_el);
+        l.writePatient(pt, patient_el);        
+        
+        Document n = new Document(root);
+        XMLOutputter outputter = new XMLOutputter();
+        outputter.setFormat(Format.getPrettyFormat());
 
+        java.io.FileWriter writer;
+        try {
+            writer = new java.io.FileWriter(fileName);
+            outputter.output(n, writer);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     private void fillData(Patient patient)
     {
