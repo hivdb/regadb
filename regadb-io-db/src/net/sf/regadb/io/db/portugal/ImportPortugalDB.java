@@ -139,7 +139,7 @@ public class ImportPortugalDB {
         this.transmissionGroupTable = readTable(transmissionGroupFName);
         System.err.println("done.");
         
-        System.err.println("Fixing the country of origin list");
+        /*System.err.println("Fixing the country of origin list");
         List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
         Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
@@ -163,7 +163,7 @@ public class ImportPortugalDB {
             }
             System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
         }
-        System.err.println("Done fixing the country of origin list");
+        System.err.println("Done fixing the country of origin list");*/
         
         this.sequenceDirName = sequenceDirName;
         
@@ -955,6 +955,6 @@ public class ImportPortugalDB {
         instance.importSequencesNoAlign("sequences.xml");
         instance.importPatientAttributes();
         instance.exportXML("result.xml");
-        System.err.println("All done sir.");
+        System.err.println("Finished");
     }
 }

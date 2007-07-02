@@ -35,11 +35,11 @@ public class ImportXML {
 
     ImportFromXML instance;
 
-    public ImportXML() throws WrongUidException, WrongPasswordException,
+    public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException,
             DisabledUserException {
         instance = new ImportFromXML();
 
-        login = Login.authenticate("test", "test");
+        login = Login.authenticate(user, password);
     }
 
     /**

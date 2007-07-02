@@ -15,15 +15,14 @@ public class ImportPatientsFromXML
 {
     public static void main(String[] args) throws SAXException, IOException, WrongUidException, WrongPasswordException, DisabledUserException 
     {
-    ImportXML instance = new ImportXML();
-    
-    if(args.length<1)
+    if(args.length<3)
     {
-        System.err.println("Provide a Patient xml input file as input parameter");
+        System.err.println("Provide a Patient xml input file as input parameter, a user and a password");
     }
     else
     {
-    instance.importPatients(new InputSource(new FileReader(new File(args[0]))));
+        ImportXML instance = new ImportXML(args[1], args[2]);
+        instance.importPatients(new InputSource(new FileReader(new File(args[0]))));
     }
     
     }
