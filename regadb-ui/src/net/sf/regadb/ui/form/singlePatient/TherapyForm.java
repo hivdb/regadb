@@ -158,7 +158,7 @@ public class TherapyForm extends FormWidget
         boolean startDateExists = false;
         for(Therapy therapy : therapies)
         {
-            if(DateUtils.compareDates(therapy.getStartDate(), startDateTF.getDate()) && getInteractionState()==InteractionState.Adding)
+            if(DateUtils.compareDates(therapy.getStartDate(), startDateTF.getDate())==0 && getInteractionState()==InteractionState.Adding)
             {
                 startDateExists = true;
                 break;
@@ -177,6 +177,10 @@ public class TherapyForm extends FormWidget
         {
             MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
         }
+        else if(stopDateTF.getDate() != null && DateUtils.compareDates(startDateTF.getDate(), stopDateTF.getDate())>0)
+        {
+            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
+        }
         else
         {
             t = RegaDBMain.getApp().createTransaction();
@@ -185,7 +189,7 @@ public class TherapyForm extends FormWidget
             {
                 p.addTherapy(therapy_);
             }
-                    
+            
             therapy_.setStartDate(startDateTF.getDate());
             
             therapy_.setStopDate(stopDateTF.getDate());
