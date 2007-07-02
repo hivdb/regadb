@@ -37,6 +37,12 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	<jar jarfile="${dist}/fasta-merge.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.analysis.functions.FastaMerge"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
