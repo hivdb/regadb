@@ -1,7 +1,9 @@
 package net.sf.regadb.build.junit;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -26,8 +28,6 @@ public class JUnitTest {
 				
 				JarFile jf = new JarFile(u.getFile());
 				
-				//System.out.println(u.getFile());
-				
 				Enumeration entries = jf.entries();
 				
 				while (entries.hasMoreElements()) {
@@ -41,32 +41,43 @@ public class JUnitTest {
 						try {
 							Class cls = classLoader.loadClass(className);
 							
-							if (cls.getSuperclass() != null) {				
+							if ((!(Modifier.isAbstract(cls.getModifiers()))) && (cls.getSuperclass() != null)) {
 								if (cls.getSuperclass().getName().equals("junit.framework.TestCase")) {
-									JUnitRapport.startTest();
+									Constructor constructor = null;
 									
-									Method[] method = cls.getDeclaredMethods();
-									
-									for (Method m : method) {
-										if (m.getName().contains("test")) {
-                                            try
-                                            {
-											TestCase tc = (TestCase)cls.newInstance();
-											
-											tc.setName(m.getName());
-											
-											TestResult tr = tc.run();
-											
-											JUnitRapport.addRun(tr);
-                                            }
-                                            catch(InstantiationException ie)
-                                            {
-                                                System.err.println("Could not instantiate " + cls.getName());
-                                            }
+									for (Constructor con : cls.getConstructors()) {
+										if (con.getParameterTypes().length == 0) {
+											constructor = con;
 										}
 									}
 									
-									JUnitRapport.closeTest();
+									if (constructor != null) {
+										JUnitRapport.startTest();
+										
+										Method[] method = cls.getDeclaredMethods();
+										
+										for (Method m : method) {
+											if (m.getName().contains("test")) {
+	                                            try
+	                                            {
+	                                            	TestCase tc = (TestCase)constructor.newInstance();
+													//TestCase tc = (TestCase)cls.newInstance();
+													
+													tc.setName(m.getName());
+													
+													TestResult tr = tc.run();
+													
+													JUnitRapport.addRun(tr);
+	                                            }
+	                                            catch(InstantiationException ie)
+	                                            {
+	                                                System.err.println("Could not instantiate " + cls.getName());
+	                                            }
+											}
+										}
+										
+										JUnitRapport.closeTest();
+									}
 								}
 							}
 						}
