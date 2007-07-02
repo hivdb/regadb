@@ -337,7 +337,7 @@ public class TestForm extends FormWidget
             accountTF.setText(test_.getAnalysis().getAccount());
             passwordTF.setText(test_.getAnalysis().getPassword());
             
-            if(getInteractionState()!=InteractionState.Viewing)
+            if(getInteractionState()!=InteractionState.Viewing && getInteractionState()!=InteractionState.Deleting)
                 setBaseFields();
             else
                 showAnalysisData(null);
