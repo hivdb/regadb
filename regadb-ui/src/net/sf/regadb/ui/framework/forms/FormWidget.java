@@ -45,9 +45,12 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         formValidation_.init(this);
 	}
     
-    public boolean canStore(String toStore)
+    public String getNulled(String text)
     {
-        return toStore!=null && !toStore.equals("");
+        if("".equals(text))
+            return null;
+        else
+            return text;
     }
 	
 	public WContainerWidget getWContainer()

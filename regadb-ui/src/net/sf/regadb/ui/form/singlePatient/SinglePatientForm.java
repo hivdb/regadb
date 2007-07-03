@@ -329,19 +329,10 @@ public class SinglePatientForm extends FormWidget
             patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
         }
         
-        if(canStore(idTF.text()))
-        {
-        	patient_.setPatientId(idTF.text());
-        }
-        if(canStore(firstNameTF.text()))
-        {
-        	patient_.setFirstName(firstNameTF.text());
-        }
-        if(canStore(lastNameTF.text()))
-        {
-        	patient_.setLastName(lastNameTF.text());
-        }
-
+        patient_.setPatientId(getNulled(idTF.text()));
+        patient_.setFirstName(getNulled(firstNameTF.text()));
+        patient_.setLastName(getNulled(lastNameTF.text()));
+     
         patient_.setBirthDate(birthDateTF.getDate());
         patient_.setDeathDate(deathDateTF.getDate());
         
@@ -433,7 +424,7 @@ public class SinglePatientForm extends FormWidget
     
     private void storeAttributeTF(String text, PatientAttributeValue attributeValue, Attribute attribute, Patient p, Transaction t)
     {
-        if(canStore(text))
+        if(!"".equals(text) && text!=null)
         {
             if(attributeValue==null)
             {

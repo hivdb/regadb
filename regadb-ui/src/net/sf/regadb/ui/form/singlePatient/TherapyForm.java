@@ -194,14 +194,7 @@ public class TherapyForm extends FormWidget
             
             therapy_.setStopDate(stopDateTF.getDate());
             
-            if(canStore(commentTF.text()))
-            {
-                therapy_.setComment(commentTF.text());
-            }
-            else
-            {
-                therapy_.setComment(null);
-            }
+            therapy_.setComment(getNulled(commentTF.text()));
             
             iCommercialDrugSelectionEditableTable_.setTransaction(t);
             drugCommercialList_.saveData();
