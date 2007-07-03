@@ -528,6 +528,11 @@ public class Table {
 			
 			if (!found) {
 				System.err.println("Warning: could not find: '" + key1S + "'");
+                System.err.print("\tRow: "); 
+                for (int i = 0; i < dataRow.size(); ++i) {
+                    System.err.print(dataRow.get(i) +",");
+                }
+                System.err.println();
 				if (innerJoin) {
 					deleteRow(j);
 					--j;
