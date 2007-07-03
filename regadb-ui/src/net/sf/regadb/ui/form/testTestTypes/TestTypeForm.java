@@ -58,7 +58,7 @@ public class TestTypeForm extends FormWidget
 		mainFrameGroup_= new WGroupBox(tr("form.testSettings.testType.editView.general"), this);
 		mainFrameTable_ = new WTable(mainFrameGroup_);
 		testTypeL = new Label(tr("form.testSettings.testType.editView.testType"));
-		testTypeTF = new TextField(getInteractionState(), this);
+		testTypeTF = new TextField(getInteractionState()==InteractionState.Editing?InteractionState.Viewing:getInteractionState(), this);
 	    testTypeTF.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testTypeL, testTypeTF);
 	    valueTypeL = new Label(tr("form.testSettings.testType.editView.valueType"));
