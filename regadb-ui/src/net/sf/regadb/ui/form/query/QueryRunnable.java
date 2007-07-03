@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.query;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import net.sf.regadb.db.QueryDefinitionRunParameter;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.ui.settings.Settings;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
@@ -37,7 +38,7 @@ public class QueryRunnable implements Runnable
         	
         	try
         	{
-				os = new FileOutputStream(Settings.getQueryResultDir() + fileName_);
+				os = new FileOutputStream(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + fileName_);
 			}
         	catch (FileNotFoundException e1)
         	{

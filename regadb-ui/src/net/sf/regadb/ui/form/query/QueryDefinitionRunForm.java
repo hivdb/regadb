@@ -15,7 +15,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.regadb.ui.settings.Settings;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.WAnchor;
 import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
@@ -138,7 +138,7 @@ public class QueryDefinitionRunForm extends FormWidget
             {
             	resultLink = new WAnchor((String)null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
                 resultLink.setStyleClass("link");
-                resultLink.setRef(new WFileResource("application/excel", Settings.getQueryResultDir() + queryDefinitionRun.getResult()).generateUrl());
+                resultLink.setRef(new WFileResource("application/excel", RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult()).generateUrl());
             }
         }
         
@@ -209,7 +209,7 @@ public class QueryDefinitionRunForm extends FormWidget
                 
         try
         {
-			FileUtils.forceDelete(new File(Settings.getQueryResultDir() + queryDefinitionRun.getResult()));
+			FileUtils.forceDelete(new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult()));
 		}
         catch (IOException e)
         {
