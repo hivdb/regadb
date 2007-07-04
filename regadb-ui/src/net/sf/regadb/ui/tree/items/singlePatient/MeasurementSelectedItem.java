@@ -15,6 +15,13 @@ public class MeasurementSelectedItem extends GenericSelectedItem<TestResult>
     @Override
     public String getArgument(TestResult type) 
     {
-        return DateUtils.getEuropeanFormat(type.getTestDate());
+    	String result = type.getTest().getTestType().getDescription();
+    	
+    	if (type.getTestDate() != null)
+    	{
+    		result += " - " + DateUtils.getEuropeanFormat(type.getTestDate());
+    	}
+    	
+        return result;
     }
 }
