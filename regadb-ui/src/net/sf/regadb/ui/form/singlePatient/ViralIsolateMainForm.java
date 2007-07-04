@@ -151,8 +151,11 @@ public class ViralIsolateMainForm extends WContainerWidget
             uploadFasta_.clicked.addListener(new SignalListener<WMouseEvent>()
             {
                    public void notify(WMouseEvent a) 
-                   {                
-                       upload_.upload();
+                   {
+                       if(!upload_.emptyFileName())
+                       {
+                           upload_.upload();
+                       }
                    }
             });
             
