@@ -102,4 +102,9 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
         widgetsToReturn[0] = tf; 
         return widgetsToReturn;
     }
+    
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }

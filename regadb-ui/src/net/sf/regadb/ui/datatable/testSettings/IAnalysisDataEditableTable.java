@@ -160,4 +160,9 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     {
         transaction_ = transaction;
     }
+
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }

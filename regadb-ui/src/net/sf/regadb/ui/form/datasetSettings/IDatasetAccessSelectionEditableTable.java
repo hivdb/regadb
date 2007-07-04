@@ -226,4 +226,9 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         
         return getWidgets(dsa);
     }
+    
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }

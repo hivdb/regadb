@@ -142,4 +142,9 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         
         return getWidgets(tg);
     }
+
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }

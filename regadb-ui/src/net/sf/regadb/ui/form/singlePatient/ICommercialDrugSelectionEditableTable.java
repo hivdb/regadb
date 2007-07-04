@@ -144,4 +144,9 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         
         return getWidgets(tc);
     }
+
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }

@@ -1401,4 +1401,9 @@ public class Transaction {
         
         return q.list();
     }
+
+    public void flush() 
+    {
+        session.flush();
+    }
 }

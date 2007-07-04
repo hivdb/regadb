@@ -13,4 +13,5 @@ public interface IEditableTable<DataType>
     public WWidget[] addRow();
     public WWidget[] fixAddRow(WWidget[] widgets);
     public InteractionState getInteractionState();
+    public void flush();
 }

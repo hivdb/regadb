@@ -179,6 +179,13 @@ public class EditableTable<DataType> extends WContainerWidget
     
     public void saveData()
     {
+        for(DataType type : removedItemList_)
+        {
+            editableList_.deleteData(type);
+        }
+        
+        editableList_.flush();
+        
         DataType dt;
         for(int i = 0; i < itemList_.size(); i++)
         {
@@ -191,11 +198,6 @@ public class EditableTable<DataType> extends WContainerWidget
             {
                 editableList_.changeData(dt, getWidgets(i+1));
             }
-        }
-        
-        for(DataType type : removedItemList_)
-        {
-            editableList_.deleteData(type);
         }
     }
     

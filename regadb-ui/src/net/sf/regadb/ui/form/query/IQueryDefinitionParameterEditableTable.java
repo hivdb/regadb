@@ -135,4 +135,9 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 	{
 		return queryDefinition;
 	}
+    
+    public void flush() 
+    {
+        transaction.flush();
+    }
 }

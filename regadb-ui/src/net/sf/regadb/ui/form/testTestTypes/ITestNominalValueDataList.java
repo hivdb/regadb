@@ -108,4 +108,9 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
         
         return widgetsToReturn;
     }
+    
+    public void flush() 
+    {
+        transaction_.flush();
+    }
 }
