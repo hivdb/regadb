@@ -21,12 +21,10 @@ import net.sf.regadb.service.align.AlignmentAnalysis;
 import net.sf.regadb.service.wts.NtSequenceAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.forms.fields.WNucleotideValidator;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
@@ -102,9 +100,11 @@ public class ViralIsolateMainForm extends WContainerWidget
 		generalGroupTable_ = new WTable(generalGroup_);
 		sampleDateL = new Label(tr("form.viralIsolate.editView.sampleDate"));
 		sampleDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+		sampleDateTF.setMandatory(true);
 		viralIsolateForm_.addLineToTable(generalGroupTable_, sampleDateL, sampleDateTF);
 		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
 		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+		sampleIdTF.setMandatory(true);
 		viralIsolateForm_.addLineToTable(generalGroupTable_, sampleIdL, sampleIdTF);
 
 		// Sequence group
