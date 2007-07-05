@@ -32,8 +32,16 @@ public class UploadFile extends WContainerWidget
                 {
                    public void notify(WEmptyEvent a) 
                    {
-                       clear();
-                       uploadedFile_ = new WText(lt("Uploaded " + upload_.clientFileName()), UploadFile.this);
+                	   if(upload_.clientFileName()!=null)
+                	   {
+	                       clear();
+	                       uploadedFile_ = new WText(lt("Uploaded " + upload_.clientFileName()), UploadFile.this);
+                	   }
+                	   else
+                	   {
+                           uploadButton_.setText(tr("analysis.uploadField.upload"));
+                           uploadButton_.setEnabled(true);
+                	   }
                    }
                 });
     }
