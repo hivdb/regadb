@@ -152,10 +152,7 @@ public class ViralIsolateMainForm extends WContainerWidget
             {
                    public void notify(WMouseEvent a) 
                    {
-                       if(!upload_.emptyFileName())
-                       {
-                           upload_.upload();
-                       }
+                	   upload_.upload();
                    }
             });
             
@@ -163,36 +160,39 @@ public class ViralIsolateMainForm extends WContainerWidget
             {
                    public void notify(WEmptyEvent a) 
                    {                
-                       File fastaFile = new File(upload_.spoolFileName());
-                            
-                       FastaRead read = FastaHelper.readFastaFile(fastaFile, autoFix_.isChecked());
-                            
-                       fastaFile.delete();
-                            
-                       if(read.status_==FastaReadStatus.Invalid)
+                       if(upload_.spoolFileName()!=null)
                        {
-                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.invalidFastaFile"));
-                       }
-                       else if(read.status_==FastaReadStatus.FileNotFound)
-                       {
-                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.fastaFileNotFound"));
-                       }
-                       else if(read.status_==FastaReadStatus.MultipleSequences)
-                       {
-                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.multipleSequences"));
-                       }
-                       else if (read.status_==FastaReadStatus.ValidButFixed)
-                       {
-                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.autoFixedSequence"));
-                           ntTF.setText(read.xna_);
-                           seqComboBox.disable();
-                           addButton.disable();
-                       }
-                       else
-                       {
-                           ntTF.setText(read.xna_);
-                           seqComboBox.disable();
-                           addButton.disable();
+	                	   File fastaFile = new File(upload_.spoolFileName());
+	                            
+	                       FastaRead read = FastaHelper.readFastaFile(fastaFile, autoFix_.isChecked());
+	                            
+	                       fastaFile.delete();
+	                            
+	                       if(read.status_==FastaReadStatus.Invalid)
+	                       {
+	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.invalidFastaFile"));
+	                       }
+	                       else if(read.status_==FastaReadStatus.FileNotFound)
+	                       {
+	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.fastaFileNotFound"));
+	                       }
+	                       else if(read.status_==FastaReadStatus.MultipleSequences)
+	                       {
+	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.multipleSequences"));
+	                       }
+	                       else if (read.status_==FastaReadStatus.ValidButFixed)
+	                       {
+	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.autoFixedSequence"));
+	                           ntTF.setText(read.xna_);
+	                           seqComboBox.disable();
+	                           addButton.disable();
+	                       }
+	                       else
+	                       {
+	                           ntTF.setText(read.xna_);
+	                           seqComboBox.disable();
+	                           addButton.disable();
+	                       }
                        }
                    }
             });
