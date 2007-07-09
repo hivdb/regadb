@@ -17,48 +17,55 @@ public class CreateCsvFiles
         generateCsvFiles("/home/plibin0/pt_regadb/v8/export");
     }
     
-    public static void generateCsvFiles(String workingDir)
+    public static void generateCsvFile(File txtFile)
     {
-        File work = new File(workingDir);
         String thisLine;
         StringBuffer outputFile = new StringBuffer();
         String token;
+        try
+        {
+            InputStream is = new FileInputStream(txtFile);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            while ((thisLine = br.readLine()) != null)
+            {
+                StringTokenizer st = new StringTokenizer(thisLine, ";");
+                st.setReturnEmptyTokens(true);
+                while(st.hasMoreTokens())
+                {
+                    token = st.nextToken();
+                    if(token.startsWith("\""))
+                    {
+                        outputFile.append(token + ",");
+                    }
+                    else
+                    {
+                        outputFile.append("\"" + token + "\"" + ",");
+                    }
+                }
+                outputFile.deleteCharAt(outputFile.length()-1);
+                outputFile.append('\n');
+            }
+            File fileToWriteTo = new File(txtFile.getAbsolutePath().replaceAll(".txt", ".csv"));
+            FileUtils.writeStringToFile(fileToWriteTo, outputFile.toString(), null);
+            System.err.println("Processed file: " + txtFile.getAbsolutePath());
+            outputFile.delete(0, outputFile.length());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+    
+    public static void generateCsvFiles(String workingDir)
+    {
+        File work = new File(workingDir);
+
         for(File txtFile : work.listFiles())
         {
             if(txtFile.getAbsolutePath().endsWith(".txt"))
             {
-                try
-                {
-                    InputStream is = new FileInputStream(txtFile);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    while ((thisLine = br.readLine()) != null)
-                    {
-                        StringTokenizer st = new StringTokenizer(thisLine, ";");
-                        st.setReturnEmptyTokens(true);
-                        while(st.hasMoreTokens())
-                        {
-                            token = st.nextToken();
-                            if(token.startsWith("\""))
-                            {
-                                outputFile.append(token + ",");
-                            }
-                            else
-                            {
-                                outputFile.append("\"" + token + "\"" + ",");
-                            }
-                        }
-                        outputFile.deleteCharAt(outputFile.length()-1);
-                        outputFile.append('\n');
-                    }
-                    File fileToWriteTo = new File(txtFile.getAbsolutePath().replaceAll(".txt", ".csv"));
-                    FileUtils.writeStringToFile(fileToWriteTo, outputFile.toString(), null);
-                    System.err.println("Processed file: " + txtFile.getAbsolutePath());
-                    outputFile.delete(0, outputFile.length());
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+                generateCsvFile(txtFile);
             }
         }
     }
