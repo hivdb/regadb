@@ -13,6 +13,7 @@ import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
+import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
@@ -29,6 +30,7 @@ import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
+import net.sf.regadb.ui.form.testTestTypes.ResistanceInterpretationTemplateForm;
 import net.sf.regadb.ui.form.testTestTypes.TestForm;
 import net.sf.regadb.ui.form.testTestTypes.TestTypeForm;
 import net.sf.regadb.ui.forms.account.AccountForm;
@@ -60,6 +62,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
+import net.sf.regadb.ui.tree.items.testSettings.ResRepTemplateSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestTypeSelectedItem;
 import net.sf.witty.wt.WWidget;
@@ -186,8 +189,15 @@ public class TreeContent
     public ActionItem testView;
     public ActionItem testEdit;
     public ActionItem testDelete;
-    
     public TestSelectedItem testSelected;
+    
+    public ActionItem resRepTemplate;
+    public ActionItem resRepTemplateSelect;
+    public ActionItem resRepTemplateAdd;
+    public ActionItem resRepTemplateView;
+    public ActionItem resRepTemplateEdit;
+    public ActionItem resRepTemplateDelete;
+    public ResRepTemplateSelectedItem resRepTemplateSelected;
     
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
@@ -506,6 +516,46 @@ public class TreeContent
                public void performAction(TreeMenuNode node)
                {
                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Deleting, WWidget.tr("form.testSettings.test.delete"),testSelected.getSelectedItem()));
+               }
+           });
+           
+           //resistance report template
+           resRepTemplate = new ActionItem(rootItem.tr("menu.resistance.report.template"), testSettings);        
+           resRepTemplateSelect  = new ActionItem(rootItem.tr("menu.resistance.report.template.select"), resRepTemplate, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node) 
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new SelectResRepTemplateForm());
+               }
+           });
+           resRepTemplateAdd = new ActionItem(rootItem.tr("menu.resistance.report.template.add"), resRepTemplate, new ITreeAction()
+           {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Adding, WWidget.tr("form.resistance.report.template.add"), null));
+                    
+                }
+            });
+           resRepTemplateSelected = new ResRepTemplateSelectedItem(resRepTemplate);
+           resRepTemplateView = new ActionItem(rootItem.tr("menu.resistance.report.template.view"), resRepTemplateSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Viewing, WWidget.tr("form.resistance.report.template.view"), resRepTemplateSelected.getSelectedItem()));
+               }
+           });
+           resRepTemplateEdit = new ActionItem(rootItem.tr("menu.resistance.report.template.edit"), resRepTemplateSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Editing, WWidget.tr("form.resistance.report.template.edit"), resRepTemplateSelected.getSelectedItem()));
+               }
+           });
+           resRepTemplateDelete = new ActionItem(rootItem.tr("menu.resistance.report.template.delete"), resRepTemplateSelected, new ITreeAction()
+           {
+               public void performAction(TreeMenuNode node)
+               {
+                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Deleting, WWidget.tr("form.resistance.report.template.delete"), resRepTemplateSelected.getSelectedItem()));
                }
            });
         

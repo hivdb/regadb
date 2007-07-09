@@ -34,6 +34,7 @@ public class Transaction {
     private Login login;
     private Session session;
     private final Query getTestQuery;
+    private final Query getResistanceInterpretationTemplateQuery;
     private final Query getTestObjectQuery;
     private final Query getAttributeGroupQuery;
     private final Query getValueTypeQuery;
@@ -51,6 +52,7 @@ public class Transaction {
         this.session = session;
         begin();
         getTestQuery = session.createQuery("from Test test where test.description = :description");
+        getResistanceInterpretationTemplateQuery = session.createQuery("from ResistanceInterpretationTemplate resistanceInterpretationTemplate where resistanceInterpretationTemplate.name = :name");
         getTestObjectQuery = session.createQuery("from TestObject as testobject where description = :description");
         getAttributeGroupQuery = session.createQuery("from AttributeGroup as attributegroup where groupName = :groupName");
         getValueTypeQuery = session.createQuery("from ValueType as valuetype where description = :description");
@@ -196,6 +198,12 @@ public class Transaction {
         return ((Long)q.uniqueResult())>0;
     }
 
+    public ResistanceInterpretationTemplate getResRepTemplate(String name) {
+        getResistanceInterpretationTemplateQuery.setParameter("name", name);
+        
+        return (ResistanceInterpretationTemplate) getResistanceInterpretationTemplateQuery.uniqueResult();
+    }
+    
     public Test getTest(String description) {
         getTestQuery.setParameter("description", description);
         
@@ -956,6 +964,59 @@ public class Transaction {
         
         return q.list();
 	}
+    
+    public long getResRepTemplatesCount(HibernateFilterConstraint filterConstraints) 
+    {
+         String queryString = "select count(templateIi) from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
+            
+            if(!filterConstraints.clause_.equals(" "))
+            {
+                queryString += "where " + filterConstraints.clause_;
+            }
+          
+            Query q = session.createQuery(queryString);
+            
+            for(Pair<String, Object> arg : filterConstraints.arguments_)
+            {
+                q.setParameter(arg.getKey(), arg.getValue());
+            }
+            
+            return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<ResistanceInterpretationTemplate> getResRepTemplates(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
+        
+        if(!filterConstraints.clause_.equals(" "))
+        {
+            queryString += "where " + filterConstraints.clause_;
+        }
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
+    
+        Query q = session.createQuery(queryString);
+        
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        
+        return q.list();
+    }
+    
+    public boolean resRepTemplateStillExists(ResistanceInterpretationTemplate resRepTemplate)
+    {
+        Query q = session.createQuery("from ResistanceInterpretationTemplate resistanceInterpretationTemplate " + 
+        "where resistanceInterpretationTemplate.id = :resRepTemplateId");
+
+        q.setParameter("resRepTemplateId", resRepTemplate.getTemplateIi());
+
+        return q.uniqueResult() !=null;
+    }
 
 	public boolean testStillExists(Test test) 
 	{
