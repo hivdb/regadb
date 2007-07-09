@@ -21,6 +21,11 @@ public class FilterOperatorCombo extends WComboBox
 			{
 				//disable if the first element is selected
 				filterTF_.setEnabled(i!=0);
+				
+				if(!(filterTF_.isEnabled() && "".equals(filterTF_.text())))
+				{
+					FilterTools.findDataTable(filterTF_).applyFilter();
+				}
 			}
 		});
 	}

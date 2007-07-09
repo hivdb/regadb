@@ -133,10 +133,7 @@ public class DataTable<DataType> extends WTable
 			{
 				public void notify(WMouseEvent me)
 				{
-                    Transaction trans = RegaDBMain.getApp().createTransaction();
-                    currentPage_ = 0;
-					refreshData(trans, true);
-                    trans.commit();
+					applyFilter();
 				}
 			});
 			row++;
@@ -347,5 +344,13 @@ public class DataTable<DataType> extends WTable
 			return emptyLiteral_;
 		}
 		return lt(col);
+	}
+	
+	public void applyFilter()
+	{
+		Transaction trans = RegaDBMain.getApp().createTransaction();
+        currentPage_ = 0;
+		refreshData(trans, true);
+        trans.commit();
 	}
 }

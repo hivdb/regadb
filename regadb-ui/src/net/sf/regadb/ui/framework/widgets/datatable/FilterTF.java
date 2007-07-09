@@ -38,6 +38,14 @@ public class FilterTF extends WLineEdit
 				inputChanged();
 			}
 		});
+		
+		enterPressed.addListener(new SignalListener<WEmptyEvent>()
+				{
+					public void notify(WEmptyEvent a) 
+					{
+						FilterTools.findDataTable(FilterTF.this).applyFilter();
+					}
+				});
 	}
 	
 	private void inputChanged()

@@ -1,8 +1,10 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
 import net.sf.regadb.db.Transaction;
+import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.i8n.WMessage;
 
 public abstract class ListFilter extends WContainerWidget implements IFilter 
@@ -20,6 +22,14 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 		combo_.addItem(tr("dataTable.filter.listFilter.noFilter"));
 		
 		setComboBox(combo_);
+		
+		combo_.changed.addListener(new SignalListener<WEmptyEvent>()
+				{
+					public void notify(WEmptyEvent a)
+					{
+						FilterTools.findDataTable(combo_).applyFilter();
+					}
+				});
 	}
 
 	public WContainerWidget getFilterWidget()
