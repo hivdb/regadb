@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 12/06/2007 14:20:31 by Hibernate Tools 3.2.0.beta8
+// Generated 9/07/2007 15:34:21 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
@@ -33,6 +33,8 @@ public class TestResult implements java.io.Serializable {
 
     private String sampleId;
 
+    private byte[] data;
+
     // Constructors
 
     /** default constructor */
@@ -48,7 +50,7 @@ public class TestResult implements java.io.Serializable {
     public TestResult(Test test, DrugGeneric drugGeneric,
             ViralIsolate viralIsolate, TestNominalValue testNominalValue,
             PatientImpl patient, NtSequence ntSequence, String value,
-            Date testDate, String sampleId) {
+            Date testDate, String sampleId, byte[] data) {
         this.test = test;
         this.drugGeneric = drugGeneric;
         this.viralIsolate = viralIsolate;
@@ -58,6 +60,7 @@ public class TestResult implements java.io.Serializable {
         this.value = value;
         this.testDate = testDate;
         this.sampleId = sampleId;
+        this.data = data;
     }
 
     // Property accessors
@@ -147,6 +150,14 @@ public class TestResult implements java.io.Serializable {
 
     public void setSampleId(String sampleId) {
         this.sampleId = sampleId;
+    }
+
+    public byte[] getData() {
+        return this.data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
 }

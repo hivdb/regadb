@@ -39,6 +39,9 @@
     <property name="sampleId" type="string">
       <column name="sample_id" length="50" />
     </property>
+    <property name="data" type="binary">
+      <column name="data" />
+    </property>
   </class>
 </hibernate-mapping>
 
