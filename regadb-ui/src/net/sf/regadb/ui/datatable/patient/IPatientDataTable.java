@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.datatable.patient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -7,10 +8,12 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import net.sf.regadb.ui.tree.GenericSelectedItem;
 
 public class IPatientDataTable implements IDataTable<Patient>
 {
@@ -87,6 +90,21 @@ public class IPatientDataTable implements IDataTable<Patient>
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.selectNode();
+        
+        ArrayList<TreeMenuNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getChildren();
+        
+        for(TreeMenuNode tn : patientAttributes)
+        {
+        	ArrayList<TreeMenuNode> children = tn.getChildren();
+        	
+        	for(TreeMenuNode tmn : children)
+        	{
+	        	if(tmn instanceof GenericSelectedItem)
+	        	{
+					((GenericSelectedItem)tmn).setSelectedItem(null);
+				}
+        	}
+        }
     }
 
     public boolean stillExists(Patient selectedItem) 
