@@ -105,6 +105,11 @@ public class Mutation {
         }
     }
     
+    public String aaToString()
+    {
+        return asString(targetAminoAcids);
+    }
+    
     private static String asString(Set<Symbol> targetAminoAcids) {
         try {
             SymbolTokenization aatok = ProteinTools.getTAlphabet().getTokenization("token");
