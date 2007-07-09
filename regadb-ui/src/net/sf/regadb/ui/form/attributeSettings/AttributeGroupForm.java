@@ -99,11 +99,22 @@ public class AttributeGroupForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.delete(attributeGroup_);
+        try
+        {
+        	t.delete(attributeGroup_);
+            
+            t.commit();
+            
+            return null;
+        }
+        catch(Exception e)
+        {
+        	t.clear();
+        	t.rollback();
+        	
+        	return tr("form.delete.restriction");
+        }
         
-        t.commit();
-        
-        return null;
     }
 
     @Override
