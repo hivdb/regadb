@@ -4,7 +4,6 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.SettingsUser;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
@@ -73,6 +72,7 @@ public class TreeContent
     public PatientSelectedItem patientSelected;
     public ActionItem viewPatient;
     public ActionItem editPatient;
+    public ActionItem deletePatient;
     public ActionItem chart;
     public ActionItem measurements;
     public ActionItem measurementsSelect;
@@ -207,6 +207,13 @@ public class TreeContent
                     public void performAction(TreeMenuNode node) 
                     {
                         RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Editing, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedItem()));
+                    }
+                });
+                deletePatient = new ActionItem(rootItem.tr("menu.singlePatient.delete"), patientSelected, new ITreeAction()
+                {
+                    public void performAction(TreeMenuNode node) 
+                    {
+                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Deleting, WWidget.tr("form.singlePatient.delete"), patientSelected.getSelectedItem()));
                     }
                 });
 				chart = new ActionItem(rootItem.tr("menu.singlePatient.chart"), patientSelected, new ITreeAction()
