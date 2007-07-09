@@ -98,9 +98,9 @@ public class DatasetAccessForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
-        
+        return null;
     }
 
     @Override

@@ -347,9 +347,9 @@ public class UpdateForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
-        
+        return null;
     }
 
     @Override

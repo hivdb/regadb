@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
@@ -226,13 +224,25 @@ public class AttributeForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.delete(attribute_);
-        
-        t.commit();
+        try
+        {
+        	t.delete(attribute_);
+        	
+        	t.commit();
+        	
+        	return null;
+        }
+        catch(Exception e)
+        {
+        	t.clear();
+        	t.rollback();
+        	
+        	return tr("form.delete.restriction");
+        }
     }
 
     @Override

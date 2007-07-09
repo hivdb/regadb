@@ -127,13 +127,26 @@ public class DatasetForm extends FormWidget
 	}
 
 	@Override
-	public void deleteObject() 
+	public WMessage deleteObject() 
 	{
 	    Transaction t = RegaDBMain.getApp().createTransaction();
+	    
+	    try
+	    {
+	    	t.delete(dataset_);
+	        
+	        t.commit();
+	        
+	        return null;
+	    }
+        catch(Exception e)
+        {
+        	t.clear();
+        	t.rollback();
+        	
+        	return tr("form.delete.restriction");
+        }
         
-        t.delete(dataset_);
-        
-        t.commit();
 	}
 
 	@Override

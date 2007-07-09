@@ -238,7 +238,7 @@ public class QueryDefinitionForm extends FormWidget
 	}
 
 	@Override
-	public void deleteObject() 
+	public WMessage deleteObject() 
 	{
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         
@@ -247,6 +247,8 @@ public class QueryDefinitionForm extends FormWidget
         t.delete(queryDefinition);
         
         t.commit();
+        
+        return null;
 	}
 
 	@Override

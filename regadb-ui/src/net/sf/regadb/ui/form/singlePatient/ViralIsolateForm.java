@@ -172,7 +172,7 @@ public class ViralIsolateForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -182,6 +182,8 @@ public class ViralIsolateForm extends FormWidget
         t.delete(viralIsolate_);
         
         t.commit();
+        
+        return null;
     }
 
     @Override

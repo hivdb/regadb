@@ -224,7 +224,7 @@ public class TherapyForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -234,6 +234,8 @@ public class TherapyForm extends FormWidget
         t.delete(therapy_);
         
         t.commit();
+        
+        return null;
     }
 
     @Override

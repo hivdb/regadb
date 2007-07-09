@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -215,13 +214,25 @@ public class TestTypeForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.delete(testType_);
-        
-        t.commit();
+        try
+        {
+        	t.delete(testType_);
+            
+            t.commit();
+            
+            return null;
+        }
+        catch(Exception e)
+        {
+        	t.clear();
+        	t.rollback();
+        	
+        	return tr("form.delete.restriction");
+        }
     }
 
     @Override

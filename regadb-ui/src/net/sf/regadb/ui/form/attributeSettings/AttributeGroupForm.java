@@ -1,7 +1,5 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
-import java.io.Serializable;
-
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -97,13 +95,15 @@ public class AttributeGroupForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         t.delete(attributeGroup_);
         
         t.commit();
+        
+        return null;
     }
 
     @Override

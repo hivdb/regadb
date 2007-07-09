@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
@@ -145,8 +146,18 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     private void deleteAction()
     {
-        deleteObject();        
-        redirectAfterDelete();
+    	WMessage message = deleteObject();
+    	
+        if(message == null)
+        {
+        	redirectAfterDelete();
+        }
+        else
+        {
+        	MessageBox.showWarningMessage(message);
+        	
+        	redirectAfterDelete();
+        }
     }
 
     public FormField getTextField(ValueTypes type)
@@ -168,7 +179,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     public abstract void cancel();
     
-    public abstract void deleteObject();
+    public abstract WMessage deleteObject();
     
     public abstract void redirectAfterDelete();
     

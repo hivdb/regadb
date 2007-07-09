@@ -290,13 +290,15 @@ public class AccountForm extends FormWidget
     }
 
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         t.delete(su_);
         
         t.commit();
+        
+        return null;
     }
 
     @Override

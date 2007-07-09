@@ -507,15 +507,30 @@ public class TestForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        
-        if(test_.getAnalysis()!=null)
-        t.delete(test_.getAnalysis());        
-        t.delete(test_);
-        
-        t.commit();
+    	Transaction t = RegaDBMain.getApp().createTransaction();
+    	
+    	try
+    	{
+    		if(test_.getAnalysis()!=null)
+    		{
+    	        t.delete(test_.getAnalysis());        
+    		}
+    		
+    		t.delete(test_);
+	        
+	        t.commit();
+	        
+	        return null;
+    	}
+    	catch(Exception e)
+    	{
+    		t.clear();
+    		t.rollback();
+    		
+    		return tr("form.delete.restriction");
+    	}
     }
 
     @Override

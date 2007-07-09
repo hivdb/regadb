@@ -227,7 +227,7 @@ public class MeasurementForm extends FormWidget
     }
     
     @Override
-    public void deleteObject()
+    public WMessage deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -237,6 +237,8 @@ public class MeasurementForm extends FormWidget
         t.delete(testResult_);
         
         t.commit();
+        
+        return null;
     }
 
     @Override
