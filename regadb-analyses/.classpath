@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-persist"/>
 	<classpathentry exported="true" kind="lib" path="/regadb-persist/bin" sourcepath="/regadb-persist/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/biojava-1.5-beta2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bytecode.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-collections-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-pool-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/bytecode.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli.jar"/>
+	<classpathentry kind="lib" path="lib/commons-dbcp-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-pool-1.1.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/wts-client-java"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-io"/>
 	<classpathentry kind="output" path="bin"/>
