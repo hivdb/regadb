@@ -15,6 +15,9 @@
     <property name="document" type="binary">
       <column name="document" />
     </property>
+    <property name="filename" type="string">
+      <column name="filename" length="100" />
+    </property>
   </class>
 </hibernate-mapping>
 
