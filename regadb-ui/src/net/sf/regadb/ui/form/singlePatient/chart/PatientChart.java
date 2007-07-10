@@ -330,7 +330,7 @@ public class PatientChart
             x2 = Math.max(x2, x1 + 1);
 
             vg.setColor(COLOR_DRUG_USED);
-            vg.fillRect(x1, ytop + 2, x2 - x1, DRUG_HEIGHT - 4);
+            vg.fillRect(x1, ytop + 3, x2 - x1, DRUG_HEIGHT - 5);
     }
 
 	private int getTestType(TestResult result)
