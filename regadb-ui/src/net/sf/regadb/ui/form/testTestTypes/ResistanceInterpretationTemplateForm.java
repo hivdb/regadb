@@ -13,7 +13,6 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFileUpload;
 import net.sf.witty.wt.WGroupBox;
@@ -87,6 +86,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
                     try 
                     {
                         resRepTemplate_.setDocument(FileUtils.readFileToByteArray(new File(uploadFile_.spoolFileName())));
+                        resRepTemplate_.setFilename(lastPartOfFilename(uploadFile_.clientFileName()));
                     } 
                     catch (IOException e) 
                     {
@@ -100,16 +100,18 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         addControlButtons();
     }
     
+    private String lastPartOfFilename(final String fileName)
+    {
+        String toReturn = fileName;
+        int pathSeparatorPos = fileName.lastIndexOf(File.separatorChar);
+        if(pathSeparatorPos!=-1)
+            toReturn = fileName.substring(fileName.lastIndexOf(File.separatorChar)+1);
+        return toReturn;
+    }
+    
     private void setAnchor()
     {
-        if(templateTF.text()==null || "".equals(templateTF.text()))
-        {
-            reportLink.label().setText(lt(uploadFile_.clientFileName()));
-        }
-        else
-        {
-            reportLink.label().setText(lt(templateTF.text()));
-        }
+        reportLink.label().setText(lt(resRepTemplate_.getFilename()));
         reportLink.setRef(new WMemoryResource("application/rtf", resRepTemplate_.getDocument()).generateUrl());
     }
     
