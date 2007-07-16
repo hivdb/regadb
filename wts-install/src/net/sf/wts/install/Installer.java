@@ -30,11 +30,14 @@ public class Installer {
 			configDirectory = "C:/Program Files/wt/wts/";
 		}
 		
-		//show error messqge
 		if (configDirectory != null || !"".equals(configDirectory)) {
 			createConfiguration();
 			
 			install();
+		}
+		else
+		{
+			showError("Invalid configuration directory");
 		}
 	}
 	
@@ -75,7 +78,8 @@ public class Installer {
 			}
 		}
 		catch (Exception e) {
-			//shoz error
+			showError("Invalid installation directory");
+			
 			e.printStackTrace();
 		}
 	}
