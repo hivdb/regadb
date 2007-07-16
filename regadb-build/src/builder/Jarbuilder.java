@@ -263,9 +263,9 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-") || m.startsWith("wts-client-java"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-"))
             {
-                if(!m.equals("regadb-sql") && !m.equals("regadb-build") && !m.startsWith("regadb-wts"))
+                if(!m.equals("regadb-sql") && !m.equals("regadb-build") && !m.equals("wts-build"))
                 {
                     filteredModules.add(m);
                 }
@@ -283,7 +283,7 @@ public class Jarbuilder
         {
             String dependency = md.substring(1);
             
-            if((dependency.startsWith("regadb-") || dependency.startsWith("wts")) && dependency.indexOf('/')==-1)
+            if((dependency.startsWith("regadb") || dependency.startsWith("wts")) && dependency.indexOf('/')==-1)
             {
                 filteredDependencies.add(dependency);
             }
