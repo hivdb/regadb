@@ -1,8 +1,6 @@
 package net.sf.regadb.service.ioAssist;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,9 +27,9 @@ import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
-import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
+import net.sf.regadb.service.wts.util.Utils;
 import net.sf.wts.client.WtsClient;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -54,8 +52,6 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
     
     private FileWriter fileWriter_;
-    
-    private ImportFromXML importXML_;
     
     private List<Test> resistanceTests_;
     
@@ -92,37 +88,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         fileWriter_ = fw;
         
         //find resistance tests --start
-        importXML_ = new ImportFromXML();
-        importXML_.loadDatabaseObjects(null);
-        importXML_.getAnalysisTypes().put("WTS", new AnalysisType("wts"));
-        try 
-        {
-            File tests =  File.createTempFile("tests_from_central_repos",".xml");
-            FileProvider fp = new FileProvider();
-            fp.getFile("regadb-tests", "tests.xml", tests);
-            resistanceTests_ = importXML_.readTests(new InputSource(new FileReader(tests)), null);
-            //remove non-resistance tests
-            ArrayList<Test> toRemove = new ArrayList<Test>();
-            for(Test resTest : resistanceTests_)
-            {
-                if(!resTest.getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)"))
-                {
-                    toRemove.add(resTest);
-                }
-            }
-            for(Test remove : toRemove)
-            {
-                resistanceTests_.remove(remove);
-            }
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (SAXException e)
-        {
-            e.printStackTrace();
-        }
+        resistanceTests_ = Utils.getResistanceTests();
         //find resistance tests --end
     }
     
