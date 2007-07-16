@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.regadb.util.pair.Pair;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -19,6 +21,8 @@ public class RegaDBSettings {
     private List<String> settings_ = new ArrayList<String>();
 
     private Map<String, String> settingsMap_ = new HashMap<String, String>();
+    
+    private ArrayList<Pair<String, String>> proxyList_ = new ArrayList<Pair<String, String>>();
 
     private static RegaDBSettings instance_ = null;
 
@@ -65,8 +69,16 @@ public class RegaDBSettings {
     
     public void initProxySettings()
     {
-        String proxyHost = this.getPropertyValue("http.proxy.url");
-        String proxyPort = this.getPropertyValue("http.proxy.port");
+        if(proxyList_.size()==1)
+        {
+            setProxySettings(proxyList_.get(0));
+        }
+    }
+    
+    public void setProxySettings(Pair<String, String> proxyInfo)
+    {
+        String proxyHost = proxyInfo.getKey();
+        String proxyPort = proxyInfo.getValue();
         
         if(proxyHost!=null && !"default".equals(proxyHost))
         {
@@ -75,9 +87,10 @@ public class RegaDBSettings {
         if(proxyPort!=null && !"default".equals(proxyPort))
         {
             System.setProperty("http.proxyPort", proxyPort);
+            System.out.println(System.getProperty("http.proxyHost"));
         }
     }
-
+    
     private void parseConfFile(File confFile) {
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
@@ -103,6 +116,30 @@ public class RegaDBSettings {
                 settingsMap_.put(name, e.getTextTrim());
             }
         }
+        
+        List proxys = root.getChildren("proxy");
+        Element proxy;
+        for (Object o : proxys)
+        {
+            proxy = ((Element) o);
+            Element ee;
+            String proxyUrl = "";
+            String proxyPort = "";
+            
+            for (Object oo : proxy.getChildren("property"))
+            {
+                ee = ((Element) oo);
+                if(ee.getAttributeValue("name").equals("http.proxy.url")) proxyUrl = ee.getTextTrim();
+                if(ee.getAttributeValue("name").equals("http.proxy.port")) proxyPort = ee.getTextTrim();
+            }
+            proxyList_.add(new Pair<String, String>(proxyUrl,proxyPort));
+        }
+        
+    }
+    
+    public ArrayList<Pair<String, String>> getProxyList()
+    {
+        return proxyList_;
     }
 
     private void writeConfFileSkeleton(File confFile) {
@@ -113,6 +150,16 @@ public class RegaDBSettings {
             property.addContent(new Text("default"));
             root.addContent(property);
         }
+        Element proxy = new Element("proxy");
+        Element proxyPropertyUrl = new Element("property");
+        proxyPropertyUrl.setAttribute("name", "http.proxy.url");
+        proxyPropertyUrl.addContent(new Text("default"));
+        Element proxyPropertyPort = new Element("property");
+        proxyPropertyPort.setAttribute("name", "http.proxy.port");
+        proxyPropertyPort.addContent(new Text("default"));
+        proxy.addContent(proxyPropertyUrl);
+        proxy.addContent(proxyPropertyPort);
+        root.addContent(proxy);
         writeXMLFile(root, confFile.getAbsolutePath());
     }
 
