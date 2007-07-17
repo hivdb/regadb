@@ -17,6 +17,7 @@ create sequence query_definition_parameter_type_query_definition_parameter_type_
 create sequence query_definition_query_definition_ii_seq;
 create sequence query_definition_run_parameter_query_definition_run_parameter_ii_seq;
 create sequence query_definition_run_query_definition_run_ii_seq;
+create sequence resistance_interpretation_template_resistance_interpretation_template_ii_seq;
 create sequence test_nominal_value_test_nominal_value_ii_seq;
 create sequence test_object_test_object_ii_seq;
 create sequence test_result_test_result_ii_seq;
@@ -51,11 +52,12 @@ create table public.query_definition_parameter (query_definition_parameter_ii in
 create table public.query_definition_parameter_type (query_definition_parameter_type_ii integer default nextval('query_definition_parameter_type_query_definition_parameter_type_ii_seq'), name varchar(100) not null unique, id integer  not null unique, primary key (query_definition_parameter_type_ii));
 create table public.query_definition_run (query_definition_run_ii integer default nextval('query_definition_run_query_definition_run_ii_seq'), query_definition_ii integer , uid varchar(50), startdate date, enddate date, status integer , name varchar(100) not null, result varchar(100), primary key (query_definition_run_ii));
 create table public.query_definition_run_parameter (query_definition_run_parameter_ii integer default nextval('query_definition_run_parameter_query_definition_run_parameter_ii_seq'), query_definition_parameter_ii integer , query_definition_run_ii integer , value varchar(50), primary key (query_definition_run_parameter_ii));
+create table public.resistance_interpretation_template (template_ii integer default nextval('resistance_interpretation_template_resistance_interpretation_template_ii_seq'), name varchar(100), document bytea, filename varchar(100), primary key (template_ii));
 create table public.settings_user (uid varchar(50) not null, version integer  not null, test_ii integer , dataset_ii integer , chart_width integer  not null, chart_height integer  not null, password varchar(50), email varchar(100), first_name varchar(50), last_name varchar(50), admin bool, enabled bool, primary key (uid));
 create table public.test (test_ii integer default nextval('test_test_ii_seq'), version integer  not null, analysis_ii integer  unique, test_type_ii integer  not null, description varchar(50) not null, primary key (test_ii));
 create table public.test_nominal_value (nominal_value_ii integer default nextval('test_nominal_value_test_nominal_value_ii_seq'), version integer  not null, test_type_ii integer  not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table public.test_object (test_object_ii integer default nextval('test_object_test_object_ii_seq'), version integer  not null, description varchar(50) not null, test_object_id integer , primary key (test_object_ii));
-create table public.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , nominal_value_ii integer , patient_ii integer , nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), primary key (test_result_ii));
+create table public.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , nominal_value_ii integer , patient_ii integer , nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), data bytea, primary key (test_result_ii));
 create table public.test_type (test_type_ii integer default nextval('test_type_test_type_ii_seq'), version integer  not null, value_type_ii integer , test_object_ii integer  not null, description varchar(50) not null, primary key (test_type_ii));
 create table public.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
 create table public.therapy_commercial (therapy_ii integer  not null, commercial_ii integer  not null, version integer  not null, day_dosage_units float8, primary key (therapy_ii, commercial_ii));
