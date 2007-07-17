@@ -91,6 +91,7 @@ public class AccountForm extends FormWidget
                                     su_.getEnabled()==null&&
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
+            uidTF.setMandatory(true);
             addLineToTable(loginGroupTable, uidL, uidTF);
             
             datasetL = new Label(tr("form.settings.user.label.dataset"));
