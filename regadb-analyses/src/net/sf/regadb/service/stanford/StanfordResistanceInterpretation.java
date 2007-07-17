@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sf.regadb.csv.Table;
@@ -44,7 +45,6 @@ public class StanfordResistanceInterpretation
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                 }
-                System.err.println("monitor...");
                 if(client.monitorStatus(sessionTicket, serviceName).startsWith("ENDED")) {
                     break;
                 }
@@ -58,7 +58,7 @@ public class StanfordResistanceInterpretation
         }
     }
     
-    public List<TestResult> calculate(ViralIsolate vi, Test test, Transaction t) throws IOException {
+    public List<TestResult> calculate(ViralIsolate vi, Test test, final HashMap<String, DrugGeneric> drugGenerics) throws IOException {
         File resultFile = File.createTempFile("stanford_score_result_file", "txt");
         File algorithmFile = File.createTempFile("algo", "xml");
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(algorithmFile)); 
@@ -66,13 +66,13 @@ public class StanfordResistanceInterpretation
         bos.flush();
         bos.close();
         calculate(algorithmFile, vi, resultFile);
-        List<TestResult> testResults = interpreteResultFile(resultFile, t);
+        List<TestResult> testResults = interpreteResultFile(resultFile, drugGenerics);
         algorithmFile.delete();
         resultFile.delete();
         return testResults;
     }
     
-    public ArrayList<TestResult> interpreteResultFile(File resultFile, Transaction t) throws FileNotFoundException {
+    public ArrayList<TestResult> interpreteResultFile(File resultFile, final HashMap<String, DrugGeneric> drugGenerics) throws FileNotFoundException {
         Table scoreTable = new Table(new BufferedInputStream(new FileInputStream(resultFile)), false);
 
         ArrayList<TestResult> resistanceResults = new ArrayList<TestResult>();
@@ -98,7 +98,7 @@ public class StanfordResistanceInterpretation
                 else if (drug.equals("LPV"))
                     drug = "LPV/r";
                 
-                DrugGeneric d = t.getDrugGeneric(drug);
+                DrugGeneric d = drugGenerics.get(drug);
                 if (d != null) {
                     TestResult tr = new TestResult();
                     double gss;
@@ -161,11 +161,11 @@ public class StanfordResistanceInterpretation
         for (AaMutation mut : aaseq.getAaMutations()) {
                 //also handle deletions (adds a d)
                 if(mut.getAaMutation()!=null)
-                result += " " + mut.getId().getPosition() + (mut.getAaMutation().equals("-")?"d":mut.getAaMutation());
+                result += " " + mut.getId().getMutationPosition() + (mut.getAaMutation().equals("-")?"d":mut.getAaMutation());
         }
         
         for(AaInsertion ins : aaseq.getAaInsertions()) {
-            result += " " + ins.getId().getPosition() + "i";
+            result += " " + ins.getId().getInsertionPosition() + "i";
         }
 
         return result;

@@ -47,7 +47,7 @@ public class VisualizeAaSequence
             {
                 addNt(proteinNt.charAt(i), '-');
             }
-            else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getPosition()-1)*3==i)
+            else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getMutationPosition()-1)*3==i)
             {
                 mutationCodon = mutations[mutationIndex].getNtMutationCodon();
                 addNt(proteinNt.charAt(i), mutationCodon.charAt(0));
@@ -61,10 +61,10 @@ public class VisualizeAaSequence
                 addNt(proteinNt.charAt(i), proteinNt.charAt(i));
             }
             
-            if(insertions.length != insertionIndex && (insertions[insertionIndex].getId().getPosition()-1)*3==i)
+            if(insertions.length != insertionIndex && (insertions[insertionIndex].getId().getInsertionPosition()-1)*3==i)
             {
-                short pos = insertions[insertionIndex].getId().getPosition();
-                while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getPosition()==pos)
+                short pos = insertions[insertionIndex].getId().getInsertionPosition();
+                while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getInsertionPosition()==pos)
                 {
                     mutationCodon = insertions[insertionIndex].getNtInsertionCodon();
                     addNt('-', mutationCodon.charAt(0));

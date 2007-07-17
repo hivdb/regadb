@@ -52,12 +52,12 @@ public class MutationList
     {
         for(AaMutation mut : aaSequence.getAaMutations())
         {
-            buffer.append(" " + mut.getId().getPosition() + mut.getAaMutation());
+            buffer.append(" " + mut.getId().getMutationPosition() + mut.getAaMutation());
         }
         
         for(AaInsertion ins : aaSequence.getAaInsertions())
         {
-            buffer.append(" " + ins.getId().getPosition() + "i");
+            buffer.append(" " + ins.getId().getInsertionPosition() + "i");
         }
     }
     
