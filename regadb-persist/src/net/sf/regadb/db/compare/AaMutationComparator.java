@@ -8,8 +8,8 @@ public class AaMutationComparator implements Comparator<AaMutation>
 {
     public int compare(AaMutation o1, AaMutation o2) 
     {
-        Short a = o1.getId().getPosition();
-        Short b = o2.getId().getPosition();
+        Short a = o1.getId().getMutationPosition();
+        Short b = o2.getId().getMutationPosition();
         
         return a.compareTo(b);
     }

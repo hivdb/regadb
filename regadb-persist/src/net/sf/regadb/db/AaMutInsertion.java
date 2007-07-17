@@ -29,9 +29,9 @@ public class AaMutInsertion implements Comparable<AaMutInsertion>
     public int getPosition()
     {
         if(mutation_==null)
-            return insertion_.getId().getPosition();
+            return insertion_.getId().getInsertionPosition();
         else
-            return mutation_.getId().getPosition();
+            return mutation_.getId().getMutationPosition();
     }
     
     public String getAaMutationString()

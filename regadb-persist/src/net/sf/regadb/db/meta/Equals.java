@@ -91,7 +91,7 @@ public class Equals {
 
     public static boolean isSameAaInsertion(AaInsertion o1, AaInsertion o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getPosition() == o2.getId().getPosition()
+        || (o1 != null && o2 != null && o1.getId().getInsertionPosition() == o2.getId().getInsertionPosition()
                 && o1.getId().getInsertionOrder() == o2.getId().getInsertionOrder());
     }
 
@@ -107,7 +107,7 @@ public class Equals {
 
     public static boolean isSameAaMutation(AaMutation o1, AaMutation o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getPosition() == o2.getId().getPosition());
+        || (o1 != null && o2 != null && o1.getId().getMutationPosition() == o2.getId().getMutationPosition());
     }
 
     public static boolean isSameAttribute(Attribute o1, Attribute o2) {

@@ -59,11 +59,11 @@ public class Describe {
     }
 
     public static String describe(AaMutation o) {
-        return "Mutation at position " + o.getId().getPosition();
+        return "Mutation at position " + o.getId().getMutationPosition();
     }
 
     public static String describe(AaInsertion o) {
-        return "Insertion " + o.getId().getInsertionOrder() + " at position " + o.getId().getPosition();
+        return "Insertion " + o.getId().getInsertionOrder() + " at position " + o.getId().getInsertionPosition();
     }
 
     public static String describe(Therapy o) {
