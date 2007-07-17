@@ -1028,6 +1028,17 @@ public class Transaction {
 		return q.uniqueResult() !=null;
 	}
     
+    public UserAttribute getUserAttribute(SettingsUser uid, String name)
+    {
+        Query q = session.createQuery("from UserAttribute ua " + 
+        "where ua.settingsUser = :uid and ua.name = :name");
+
+        q.setParameter("uid", uid);
+        q.setParameter("name", name);
+
+        return (UserAttribute)q.uniqueResult();
+    }
+    
     @SuppressWarnings("unchecked")
     public List<SettingsUser> getUsersByEnabled(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
     {

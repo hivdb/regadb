@@ -6,6 +6,8 @@ import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.UserAttribute;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -55,6 +57,14 @@ public class AccountForm extends FormWidget
     private Label registeredL;
     private CheckBox registeredCB;
     
+    //Attribute fields
+    private WGroupBox attributeGroup_;
+    private WTable attributeGroupTable;
+    private Label chartWidthL;
+    private TextField chartWidthTF;
+    private Label chartHeightL;
+    private TextField chartHeightTF;
+    
     public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
         super(formName, interactionState);
@@ -68,7 +78,8 @@ public class AccountForm extends FormWidget
     }
     
     public void init()
-    {         
+    {
+        //Account fields
         accountGroup_ = new WGroupBox(tr("form.account.editView.general"));
         loginGroupTable = new WTable(accountGroup_);
         
@@ -135,7 +146,23 @@ public class AccountForm extends FormWidget
             addLineToTable(loginGroupTable, registeredL, registeredCB);
         }
         
+        if(getInteractionState()!=InteractionState.Adding)
+        {
+            //Attribute fields
+            attributeGroup_ = new WGroupBox(tr("form.account.editView.attributes"));
+            attributeGroupTable = new WTable(attributeGroup_);
+            chartWidthL = new Label(tr("form.settings.user.label.chartWidth"));
+            chartWidthTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
+            addLineToTable(attributeGroupTable, chartWidthL, chartWidthTF);
+            chartHeightL = new Label(tr("form.settings.user.label.chartHeight"));
+            chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
+            addLineToTable(attributeGroupTable, chartHeightL, chartHeightTF);
+        }
+        
         addWidget(accountGroup_);
+        if(attributeGroup_!=null)
+            addWidget(attributeGroup_);
+        
         addControlButtons();
     }
     
@@ -178,8 +205,23 @@ public class AccountForm extends FormWidget
                 uidTF.setText("");
             }
             
+            if(attributeGroup_!=null)
+            {
+                chartWidthTF.setText(getAttributeValue("chart.width", t));
+                chartHeightTF.setText(getAttributeValue("chart.height", t));
+            }
+
             t.commit();
         }
+    }
+    
+    private String getAttributeValue(String attributeName, Transaction t)
+    {
+        UserAttribute ua = t.getUserAttribute(su_, attributeName);
+        if(ua!=null)
+            return ua.getValue();
+        else 
+            return null;
     }
     
     private void authenticateLogin()
@@ -207,6 +249,22 @@ public class AccountForm extends FormWidget
         }
         
         return valid;
+    }
+    
+    private void saveUserAttribute(String attributeName, String attributeText, Transaction t)
+    {
+        UserAttribute ua = t.getUserAttribute(su_, attributeName);
+        
+        if(ua==null && !"".equals(attributeText))
+        {
+            ua  = new UserAttribute(t.getValueType("number"), su_, attributeName, attributeText, "");
+            t.save(ua);
+        }
+        else if(ua!=null)
+        {
+            ua.setValue(attributeText);
+            t.update(ua);
+        }
     }
     
     @Override
@@ -279,6 +337,15 @@ public class AccountForm extends FormWidget
                     t.commit();
                 }
             }
+            
+            if(attributeGroup_!=null)
+            {
+                t = login.createTransaction();
+                saveUserAttribute("chart.height", chartHeightTF.text(), t);
+                saveUserAttribute("chart.width", chartWidthTF.text(), t);
+                t.commit();
+            }
+            
             redirectToView(expandNode_, selectNode_);
         }
     }
