@@ -15,11 +15,11 @@
     <property name="description" type="string">
       <column name="description" length="50" not-null="true" />
     </property>
-    <property name="min" type="java.lang.Double">
-      <column name="min" precision="17" scale="17" />
+    <property name="minimum" type="java.lang.Double">
+      <column name="minimum" precision="17" scale="17" />
     </property>
-    <property name="max" type="java.lang.Double">
-      <column name="max" precision="17" scale="17" />
+    <property name="maximum" type="java.lang.Double">
+      <column name="maximum" precision="17" scale="17" />
     </property>
     <property name="multiple" type="java.lang.Boolean">
       <column name="multiple" />
