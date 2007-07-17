@@ -8,6 +8,7 @@ import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.QueryDefinition;
@@ -19,23 +20,23 @@ import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
@@ -274,6 +275,12 @@ public class ExportToXML
 			sampleIdprimitiveValEl.addContent(TestResultvar.getSampleId().toString());
 			parentNode.addContent(sampleIdprimitiveValEl);
 		}
+		if(TestResultvar.getData()!=null)
+		{
+			Element dataprimitiveValEl = new Element("data");
+			dataprimitiveValEl.addContent(XMLTools.base64Encoding(TestResultvar.getData()));
+			parentNode.addContent(dataprimitiveValEl);
+		}
 	}
 	public void writeTopAttribute(Attribute Attributevar, Element rootNode)
 	{
@@ -444,9 +451,9 @@ public class ExportToXML
 		{
 			return;
 		}
-		Element positionprimitiveValEl = new Element("position");
-		positionprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getPosition()));
-		parentNode.addContent(positionprimitiveValEl);
+		Element insertionPositionprimitiveValEl = new Element("insertionPosition");
+		insertionPositionprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getInsertionPosition()));
+		parentNode.addContent(insertionPositionprimitiveValEl);
 		Element insertionOrderprimitiveValEl = new Element("insertionOrder");
 		insertionOrderprimitiveValEl.addContent(String.valueOf(AaInsertionvar.getId().getInsertionOrder()));
 		parentNode.addContent(insertionOrderprimitiveValEl);
@@ -898,17 +905,17 @@ public class ExportToXML
 			descriptionprimitiveValEl.addContent(ValueTypevar.getDescription().toString());
 			parentNode.addContent(descriptionprimitiveValEl);
 		}
-		if(ValueTypevar.getMin()!=null)
+		if(ValueTypevar.getMinimum()!=null)
 		{
-			Element minprimitiveValEl = new Element("min");
-			minprimitiveValEl.addContent(ValueTypevar.getMin().toString());
-			parentNode.addContent(minprimitiveValEl);
+			Element minimumprimitiveValEl = new Element("minimum");
+			minimumprimitiveValEl.addContent(ValueTypevar.getMinimum().toString());
+			parentNode.addContent(minimumprimitiveValEl);
 		}
-		if(ValueTypevar.getMax()!=null)
+		if(ValueTypevar.getMaximum()!=null)
 		{
-			Element maxprimitiveValEl = new Element("max");
-			maxprimitiveValEl.addContent(ValueTypevar.getMax().toString());
-			parentNode.addContent(maxprimitiveValEl);
+			Element maximumprimitiveValEl = new Element("maximum");
+			maximumprimitiveValEl.addContent(ValueTypevar.getMaximum().toString());
+			parentNode.addContent(maximumprimitiveValEl);
 		}
 		if(ValueTypevar.getMultiple()!=null)
 		{
@@ -1115,9 +1122,9 @@ public class ExportToXML
 		{
 			return;
 		}
-		Element positionprimitiveValEl = new Element("position");
-		positionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getPosition()));
-		parentNode.addContent(positionprimitiveValEl);
+		Element mutationPositionprimitiveValEl = new Element("mutationPosition");
+		mutationPositionprimitiveValEl.addContent(String.valueOf(AaMutationvar.getId().getMutationPosition()));
+		parentNode.addContent(mutationPositionprimitiveValEl);
 		if(AaMutationvar.getAaReference()!=null)
 		{
 			Element aaReferenceprimitiveValEl = new Element("aaReference");

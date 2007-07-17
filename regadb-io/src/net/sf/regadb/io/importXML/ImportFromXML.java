@@ -79,8 +79,8 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldTestType_description;
     private Set<TestNominalValue> fieldTestType_testNominalValues;
     private String fieldValueType_description;
-    private Double fieldValueType_min;
-    private Double fieldValueType_max;
+    private Double fieldValueType_minimum;
+    private Double fieldValueType_maximum;
     private Boolean fieldValueType_multiple;
     private String fieldTestObject_description;
     private Integer fieldTestObject_testObjectId;
@@ -113,12 +113,12 @@ public class ImportFromXML extends ImportFromXMLBase {
     private short fieldAaSequence_lastAaPos;
     private Set<AaMutation> fieldAaSequence_aaMutations;
     private Set<AaInsertion> fieldAaSequence_aaInsertions;
-    private short fieldAaMutation_position;
+    private short fieldAaMutation_mutationPosition;
     private String fieldAaMutation_aaReference;
     private String fieldAaMutation_aaMutation;
     private String fieldAaMutation_ntReferenceCodon;
     private String fieldAaMutation_ntMutationCodon;
-    private short fieldAaInsertion_position;
+    private short fieldAaInsertion_insertionPosition;
     private short fieldAaInsertion_insertionOrder;
     private String fieldAaInsertion_aaInsertion;
     private String fieldAaInsertion_ntInsertionCodon;
@@ -133,6 +133,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldTestResult_value;
     private Date fieldTestResult_testDate;
     private String fieldTestResult_sampleId;
+    private byte[] fieldTestResult_data;
     private DrugCommercial fieldTherapyCommercial_drugCommercial;
     private Double fieldTherapyCommercial_dayDosageUnits;
     private DrugGeneric fieldTherapyGeneric_drugGeneric;
@@ -186,8 +187,8 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.stateValueType);
             referenceValueType = null;
             fieldValueType_description = nullValueString();
-            fieldValueType_min = nullValueDouble();
-            fieldValueType_max = nullValueDouble();
+            fieldValueType_minimum = nullValueDouble();
+            fieldValueType_maximum = nullValueDouble();
             fieldValueType_multiple = nullValueBoolean();
         } else if ("TestObject".equals(qName)) {
         } else if ("testObjects-el".equals(qName)|| "testObject".equals(qName)) {
@@ -258,7 +259,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("AaMutation".equals(qName)) {
         } else if ("aaMutations-el".equals(qName)|| "aaMutations-el".equals(qName)) {
             pushState(ParseState.stateAaMutation);
-            fieldAaMutation_position = nullValueshort();
+            fieldAaMutation_mutationPosition = nullValueshort();
             fieldAaMutation_aaReference = nullValueString();
             fieldAaMutation_aaMutation = nullValueString();
             fieldAaMutation_ntReferenceCodon = nullValueString();
@@ -266,7 +267,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("AaInsertion".equals(qName)) {
         } else if ("aaInsertions-el".equals(qName)|| "aaInsertions-el".equals(qName)) {
             pushState(ParseState.stateAaInsertion);
-            fieldAaInsertion_position = nullValueshort();
+            fieldAaInsertion_insertionPosition = nullValueshort();
             fieldAaInsertion_insertionOrder = nullValueshort();
             fieldAaInsertion_aaInsertion = nullValueString();
             fieldAaInsertion_ntInsertionCodon = nullValueString();
@@ -287,6 +288,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTestResult_value = nullValueString();
             fieldTestResult_testDate = nullValueDate();
             fieldTestResult_sampleId = nullValueString();
+            fieldTestResult_data = nullValuebyteArray();
         } else if ("TherapyCommercial".equals(qName)) {
         } else if ("therapyCommercials-el".equals(qName)|| "therapyCommercials-el".equals(qName)) {
             pushState(ParseState.stateTherapyCommercial);
@@ -563,15 +565,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elValueType.setDescription(fieldValueType_description);
                 }
-                if (referenceResolved && fieldValueType_min != nullValueDouble())
+                if (referenceResolved && fieldValueType_minimum != nullValueDouble())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
-                    elValueType.setMin(fieldValueType_min);
+                    elValueType.setMinimum(fieldValueType_minimum);
                 }
-                if (referenceResolved && fieldValueType_max != nullValueDouble())
+                if (referenceResolved && fieldValueType_maximum != nullValueDouble())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
-                    elValueType.setMax(fieldValueType_max);
+                    elValueType.setMaximum(fieldValueType_maximum);
                 }
                 if (referenceResolved && fieldValueType_multiple != nullValueBoolean())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
@@ -586,10 +588,10 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("description".equals(qName)) {
                 fieldValueType_description = parseString(value == null ? null : value.toString());
-            } else if ("min".equals(qName)) {
-                fieldValueType_min = parseDouble(value == null ? null : value.toString());
-            } else if ("max".equals(qName)) {
-                fieldValueType_max = parseDouble(value == null ? null : value.toString());
+            } else if ("minimum".equals(qName)) {
+                fieldValueType_minimum = parseDouble(value == null ? null : value.toString());
+            } else if ("maximum".equals(qName)) {
+                fieldValueType_maximum = parseDouble(value == null ? null : value.toString());
             } else if ("multiple".equals(qName)) {
                 fieldValueType_multiple = parseBoolean(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
@@ -1140,7 +1142,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
                 {
-                    elAaMutation.getId().setPosition(fieldAaMutation_position);
+                    elAaMutation.getId().setMutationPosition(fieldAaMutation_mutationPosition);
                 }
                 {
                     elAaMutation.setAaReference(fieldAaMutation_aaReference);
@@ -1160,8 +1162,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                     else
                         topLevelObjects.add(elAaMutation);
                 }
-            } else if ("position".equals(qName)) {
-                fieldAaMutation_position = parseshort(value == null ? null : value.toString());
+            } else if ("mutationPosition".equals(qName)) {
+                fieldAaMutation_mutationPosition = parseshort(value == null ? null : value.toString());
             } else if ("aaReference".equals(qName)) {
                 fieldAaMutation_aaReference = parseString(value == null ? null : value.toString());
             } else if ("aaMutation".equals(qName)) {
@@ -1194,7 +1196,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
                 {
-                    elAaInsertion.getId().setPosition(fieldAaInsertion_position);
+                    elAaInsertion.getId().setInsertionPosition(fieldAaInsertion_insertionPosition);
                 }
                 {
                     elAaInsertion.getId().setInsertionOrder(fieldAaInsertion_insertionOrder);
@@ -1211,8 +1213,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                     else
                         topLevelObjects.add(elAaInsertion);
                 }
-            } else if ("position".equals(qName)) {
-                fieldAaInsertion_position = parseshort(value == null ? null : value.toString());
+            } else if ("insertionPosition".equals(qName)) {
+                fieldAaInsertion_insertionPosition = parseshort(value == null ? null : value.toString());
             } else if ("insertionOrder".equals(qName)) {
                 fieldAaInsertion_insertionOrder = parseshort(value == null ? null : value.toString());
             } else if ("aaInsertion".equals(qName)) {
@@ -1317,6 +1319,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elTestResult.setSampleId(fieldTestResult_sampleId);
                 }
+                {
+                    elTestResult.setData(fieldTestResult_data);
+                }
                 if (currentState() == ParseState.TopLevel) {
                     if (importHandler != null)
                         importHandler.importObject(elTestResult);
@@ -1333,6 +1338,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldTestResult_testDate = parseDate(value == null ? null : value.toString());
             } else if ("sampleId".equals(qName)) {
                 fieldTestResult_sampleId = parseString(value == null ? null : value.toString());
+            } else if ("data".equals(qName)) {
+                fieldTestResult_data = parsebyteArray(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -2198,18 +2205,18 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMin(), o.getMin())) {
+            if (!equals(dbo.getMinimum(), o.getMinimum())) {
                 if (!simulate)
-                    dbo.setMin(o.getMin());
-                log.append(Describe.describe(o) + ": changed min\n");
+                    dbo.setMinimum(o.getMinimum());
+                log.append(Describe.describe(o) + ": changed minimum\n");
                 changed = true;
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMax(), o.getMax())) {
+            if (!equals(dbo.getMaximum(), o.getMaximum())) {
                 if (!simulate)
-                    dbo.setMax(o.getMax());
-                log.append(Describe.describe(o) + ": changed max\n");
+                    dbo.setMaximum(o.getMaximum());
+                log.append(Describe.describe(o) + ": changed maximum\n");
                 changed = true;
             }
         }
@@ -2967,10 +2974,10 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
+            if (!equals(dbo.getId().getMutationPosition(), o.getId().getMutationPosition())) {
                 if (!simulate)
-                    dbo.getId().setPosition(o.getId().getPosition());
-                log.append(Describe.describe(o) + ": changed position\n");
+                    dbo.getId().setMutationPosition(o.getId().getMutationPosition());
+                log.append(Describe.describe(o) + ": changed mutationPosition\n");
                 changed = true;
             }
         }
@@ -3014,10 +3021,10 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getPosition(), o.getId().getPosition())) {
+            if (!equals(dbo.getId().getInsertionPosition(), o.getId().getInsertionPosition())) {
                 if (!simulate)
-                    dbo.getId().setPosition(o.getId().getPosition());
-                log.append(Describe.describe(o) + ": changed position\n");
+                    dbo.getId().setInsertionPosition(o.getId().getInsertionPosition());
+                log.append(Describe.describe(o) + ": changed insertionPosition\n");
                 changed = true;
             }
         }
@@ -3276,6 +3283,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setSampleId(o.getSampleId());
                 log.append(Describe.describe(o) + ": changed sampleId\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getData(), o.getData())) {
+                if (!simulate)
+                    dbo.setData(o.getData());
+                log.append(Describe.describe(o) + ": changed data\n");
                 changed = true;
             }
         }

@@ -134,6 +134,11 @@
         </data>
       </element>
     </optional>
+    <optional>
+      <element name="data">
+        <data type="base64Binary" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.Test">
     <optional>
@@ -296,12 +301,12 @@
       </element>
     </optional>
     <optional>
-      <element name="min">
+      <element name="minimum">
         <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <optional>
-      <element name="max">
+      <element name="maximum">
         <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
@@ -520,7 +525,7 @@
     </element>
   </define>
   <define name="net.sf.regadb.db.AaMutation">
-    <element name="position">
+    <element name="mutationPosition">
       <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <optional>
@@ -553,7 +558,7 @@
     </optional>
   </define>
   <define name="net.sf.regadb.db.AaInsertion">
-    <element name="position">
+    <element name="insertionPosition">
       <data type="short" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
     </element>
     <element name="insertionOrder">
