@@ -23,6 +23,8 @@ public class PostgresDdlGenerator
 	public void createDdl(String fileName)
 	{
 		Configuration config = new Configuration().configure();
+		config.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+		config.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
 		SchemaExport export = new SchemaExport(config);
 		export.setOutputFile(fileName);
 		export.create(true, false); 
@@ -142,38 +144,37 @@ public class PostgresDdlGenerator
     {
         String strBackup = str;
 
-        int indexOfForeignKey = str.indexOf("foreign key");
+        int indexOfForeignKey = strBackup.indexOf("foreign key");
         if(indexOfForeignKey!=-1)
         {
-            int firstBracket = str.indexOf('(', indexOfForeignKey);
-            String key = str.substring(firstBracket+1, str.indexOf(')', firstBracket));
-            //System.err.println("key"+key);
-            str += "("+key+") ON UPDATE CASCADE";
+            int firstBracket = strBackup.indexOf('(', indexOfForeignKey);
+            String key = strBackup.substring(firstBracket+1, strBackup.indexOf(')', firstBracket));
+            strBackup += "("+key+") ON UPDATE CASCADE";
             
             String alterTablePublic = "alter table public.";
             String alterTable = "alter table ";
             String tableName = null;
-            if(str.indexOf(alterTablePublic)!=-1)
+            if(strBackup.indexOf(alterTablePublic)!=-1)
             {
                 alterTable = alterTablePublic;
             }
             
-            if(str.indexOf("add constraint ")!=-1)
+            if(strBackup.indexOf("add constraint ")!=-1)
             {
-            tableName = str.substring(str.indexOf(alterTable)+alterTable.length(),str.indexOf(" ", str.indexOf(alterTable)+alterTable.length()));
-            int referenceIndex = str.indexOf("references")+"references".length();
-            String referencingTable = str.substring(referenceIndex, str.indexOf('(', referenceIndex));
-            referencingTable = referencingTable.trim();
-            referencingTable = referencingTable.replaceAll("public.", "");
-            String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
-            StringBuffer strBuffer = new StringBuffer(str);
-            int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
-            strBuffer.delete(indexOfAddConstraint, str.indexOf(" ", indexOfAddConstraint));
-            strBuffer.insert(indexOfAddConstraint, fk_name);
-            str = strBuffer.toString();
+	            tableName = strBackup.substring(strBackup.indexOf(alterTable)+alterTable.length(),strBackup.indexOf(" ", strBackup.indexOf(alterTable)+alterTable.length()));
+	            int referenceIndex = strBackup.indexOf("references")+"references".length();
+	            String referencingTable = strBackup.substring(referenceIndex, strBackup.indexOf('(', referenceIndex));
+	            referencingTable = referencingTable.trim();
+	            referencingTable = referencingTable.replaceAll("public.", "");
+	            String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
+	            StringBuffer strBuffer = new StringBuffer(strBackup);
+	            int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
+	            strBuffer.delete(indexOfAddConstraint, strBackup.indexOf(" ", indexOfAddConstraint));
+	            strBuffer.insert(indexOfAddConstraint, fk_name);
+	            strBackup = strBuffer.toString();
             }
         }
         
-        return str;
+        return strBackup;
     }
 }
