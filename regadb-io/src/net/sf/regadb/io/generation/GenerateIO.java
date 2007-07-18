@@ -45,7 +45,7 @@ public class GenerateIO
     {
         try
         {
-            regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getInstance().getClasses(Patient.class.getPackage().getName());
+            regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getClasses(Patient.class.getPackage().getName());
         }
         catch (ClassNotFoundException e)
         {
@@ -62,11 +62,13 @@ public class GenerateIO
         stringRepresentedFields_.add(dbPackage + "DrugCommercial");
         stringRepresentedFields_.add(dbPackage + "Protein");
         stringRepresentedFields_.add(dbPackage + "AnalysisType");
+        stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
         
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "TherapyMotivation", "value"));
         
         pointerClasses_.add(dbPackage + "Test");
         pointerClasses_.add(dbPackage + "TestType");

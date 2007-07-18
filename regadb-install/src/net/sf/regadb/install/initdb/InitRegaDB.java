@@ -10,6 +10,7 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -43,6 +44,7 @@ public class InitRegaDB
         
         ArrayList<ValueType> valueTypes = initValueTypes(session);
         initProteins(session);
+        initTherapyChangeMotivations(session);
         AnalysisType wts = initAnalysisTypes(session);
         initQueryDefinitionParameterTypes(session);
         initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
@@ -52,7 +54,15 @@ public class InitRegaDB
         session.close();
     }
     
-	private static void addAdminUser(Session session)
+	private static void initTherapyChangeMotivations(Session session) {
+        session.save(new TherapyMotivation("Unknown"));
+        session.save(new TherapyMotivation("Toxicity"));
+        session.save(new TherapyMotivation("Treatment failure, resistance"));
+        session.save(new TherapyMotivation("Treatment failure, other"));
+        session.save(new TherapyMotivation("Other"));
+    }
+
+    private static void addAdminUser(Session session)
     {
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");

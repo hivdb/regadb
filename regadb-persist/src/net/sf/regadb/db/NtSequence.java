@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 18/05/2007 15:38:06 by Hibernate Tools 3.2.0.beta8
+// Generated Jul 18, 2007 4:05:12 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -19,11 +19,11 @@ public class NtSequence implements java.io.Serializable {
 
     private ViralIsolate viralIsolate;
 
-    private String nucleotides;
-
     private String label;
 
     private Date sequenceDate;
+
+    private String nucleotides;
 
     private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
 
@@ -41,13 +41,13 @@ public class NtSequence implements java.io.Serializable {
     }
 
     /** full constructor */
-    public NtSequence(ViralIsolate viralIsolate, String nucleotides,
-            String label, Date sequenceDate, Set<AaSequence> aaSequences,
+    public NtSequence(ViralIsolate viralIsolate, String label,
+            Date sequenceDate, String nucleotides, Set<AaSequence> aaSequences,
             Set<TestResult> testResults) {
         this.viralIsolate = viralIsolate;
-        this.nucleotides = nucleotides;
         this.label = label;
         this.sequenceDate = sequenceDate;
+        this.nucleotides = nucleotides;
         this.aaSequences = aaSequences;
         this.testResults = testResults;
     }
@@ -77,14 +77,6 @@ public class NtSequence implements java.io.Serializable {
         this.viralIsolate = viralIsolate;
     }
 
-    public String getNucleotides() {
-        return this.nucleotides;
-    }
-
-    public void setNucleotides(String nucleotides) {
-        this.nucleotides = nucleotides;
-    }
-
     public String getLabel() {
         return this.label;
     }
@@ -99,6 +91,14 @@ public class NtSequence implements java.io.Serializable {
 
     public void setSequenceDate(Date sequenceDate) {
         this.sequenceDate = sequenceDate;
+    }
+
+    public String getNucleotides() {
+        return this.nucleotides;
+    }
+
+    public void setNucleotides(String nucleotides) {
+        this.nucleotides = nucleotides;
     }
 
     public Set<AaSequence> getAaSequences() {

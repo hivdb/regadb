@@ -41,6 +41,7 @@
         <mapping resource="net/sf/regadb/db/TestType.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaInsertion.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/TherapyMotivation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Test.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />

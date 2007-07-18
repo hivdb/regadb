@@ -79,22 +79,24 @@ public class ImportDrugs
             Document doc = builder.build(genericDrugXMLFile);  
 
             Element root = doc.getRootElement();
-            List classes = root.getChildren("DrugGeneric");
+            List drugs = root.getChildren("DrugGeneric");
             String id;
             String name;
             String classId;
+            String atcCode;
             String resistanceTableOrder;
             Integer resistanceTableOrderI;
             DrugClass dc;
             DrugGeneric dg;
-            for(Object c : classes)
+            for(Object c : drugs)
             {
-                Element classEl = (Element)c;
+                Element drugEl = (Element)c;
 
-                id = classEl.getChild("id").getTextTrim();
-                name = classEl.getChild("name").getTextTrim();
-                classId = classEl.getChild("class").getTextTrim();
-                resistanceTableOrder = classEl.getChild("resistanceTableOrder").getTextTrim();
+                id = drugEl.getChild("id").getTextTrim();
+                name = drugEl.getChild("name").getTextTrim();
+                classId = drugEl.getChild("class").getTextTrim();
+                atcCode = drugEl.getChild("atcCode").getTextTrim();
+                resistanceTableOrder = drugEl.getChild("resistanceTableOrder").getTextTrim();
                 if("null".equals(resistanceTableOrder))
                 {
                     resistanceTableOrderI = null;
@@ -114,6 +116,7 @@ public class ImportDrugs
                         report.add("Added: "+ id + " - " + name);
                         dc = t.getDrugClass(classId);
                         dg = new DrugGeneric(dc, id, name);
+                        dg.setAtcCode(atcCode);
                         dg.setResistanceTableOrder(resistanceTableOrderI);
                         t.save(dg);
                     }
@@ -141,6 +144,7 @@ public class ImportDrugs
             List drugs = root.getChildren("DrugCommercial");
             String name;
             String genericId;
+            String atcCode;
             DrugGeneric dg;
             DrugCommercial dc;
             List generics;
@@ -149,7 +153,8 @@ public class ImportDrugs
                 Element drugEl = (Element)c;
 
                 name = drugEl.getChild("name").getTextTrim();
-                
+                atcCode = drugEl.getChild("atcCode").getTextTrim();
+               
                 generics = drugEl.getChild("DrugGenerics").getChildren("DrugGeneric");
                 
                 if(t.getDrugCommercial(name)==null)
@@ -162,6 +167,8 @@ public class ImportDrugs
                     { 
                         report.add("Added: "+ name);
                         dc = new DrugCommercial(name);
+                        dc.setAtcCode(atcCode);
+
                         for(Object g : generics)
                         {
                             genericId = ((Element)g).getChild("id").getTextTrim();

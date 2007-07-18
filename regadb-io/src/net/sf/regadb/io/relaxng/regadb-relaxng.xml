@@ -462,11 +462,6 @@
   </define>
   <define name="net.sf.regadb.db.NtSequence">
     <optional>
-      <element name="nucleotides">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
       <element name="label">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
@@ -476,6 +471,11 @@
     <optional>
       <element name="sequenceDate">
         <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="nucleotides">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="aaSequences">
@@ -595,6 +595,11 @@
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="motivation">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="therapyCommercials">

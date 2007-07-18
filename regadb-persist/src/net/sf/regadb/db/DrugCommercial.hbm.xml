@@ -15,6 +15,9 @@
     <property name="name" type="string">
       <column name="name" length="100" not-null="true" />
     </property>
+    <property name="atcCode" type="string">
+      <column name="atc_code" length="50" />
+    </property>
     <set name="drugGenerics" inverse="false" table="commercial_generic" cascade="all">
       <key>
         <column name="commercial_ii" not-null="true" />

@@ -24,6 +24,9 @@
     <property name="comment" type="string">
       <column name="comment" length="50" />
     </property>
+    <many-to-one name="motivation" class="net.sf.regadb.db.TherapyMotivation" fetch="select" cascade="save-update">
+      <column name="therapy_motivation_ii" not-null="false"/>
+    </many-to-one>
     <set name="therapyCommercials" inverse="true" cascade="all">
       <key>
         <column name="therapy_ii" not-null="true" />

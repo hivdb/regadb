@@ -104,6 +104,8 @@ public class GenerateDrugsXML
         ArrayList<String> generic_id = generic.getColumn(1);
         ArrayList<String> generic_class_ii = generic.getColumn(2);
         ArrayList<String> generic_name = generic.getColumn(3);
+        ArrayList<String> generic_atc_code = generic.getColumn(4);
+
         for(int i = 1; i < generic_ii.size(); i++)
         {
             Element drugGenericEl = new Element("DrugGeneric");
@@ -112,16 +114,20 @@ public class GenerateDrugsXML
             Element drugGenericIdEl = new Element("id");
             Element drugGenericNameEl = new Element("name");
             Element drugGenericClassEl = new Element("class");
+            Element drugGenericAtcCodeEl = new Element("atc_code");
             Element drugClassResistanceTableOrderEl = new Element("resistanceTableOrder");
             drugGenericEl.addContent(drugGenericIdEl);
             drugGenericEl.addContent(drugGenericNameEl);
             drugGenericEl.addContent(drugGenericClassEl);
             drugGenericEl.addContent(drugClassResistanceTableOrderEl);
+            drugGenericEl.addContent(drugGenericAtcCodeEl);
             
             drugGenericIdEl.addContent(new Text(generic_id.get(i)));
             drugGenericNameEl.addContent(new Text(generic_name.get(i)));
             String className = classesHM.get(Integer.parseInt(generic_class_ii.get(i)));
             drugGenericClassEl.addContent(new Text(className));
+            drugGenericAtcCodeEl.addContent(new Text(generic_atc_code.get(i)));
+
             Integer order = null;
             if(resistanceTableOrder.get(className.toLowerCase())!=null)
                 order = resistanceTableOrder.get(className.toLowerCase()).get(generic_id.get(i).toLowerCase());
@@ -138,14 +144,21 @@ public class GenerateDrugsXML
         
         ArrayList<String> commercial_ii = commercial.getColumn(0);
         ArrayList<String> commercial_name = commercial.getColumn(1);
+        ArrayList<String> commercial_atc_code = commercial.getColumn(2);
         
         for(int i = 1; i < commercial_ii.size(); i++)
         {
             Element drugCommercialEl = new Element("DrugCommercial");
             drugCommercialsEl.addContent(drugCommercialEl);
+
             Element drugCommercialNameEl = new Element("name");
             drugCommercialEl.addContent(drugCommercialNameEl);
             drugCommercialNameEl.addContent(new Text(commercial_name.get(i)));
+
+            Element drugCommercialAtcCodeEl = new Element("atcCode");
+            drugCommercialEl.addContent(drugCommercialAtcCodeEl);
+            drugCommercialAtcCodeEl.addContent(new Text(commercial_atc_code.get(i)));
+            
             Element drugCommercialGenericsEl = new Element("DrugGenerics");
             drugCommercialEl.addContent(drugCommercialGenericsEl);
             for(int j = 1; j < commmercial_comb_ii.size(); j++)
@@ -163,7 +176,7 @@ public class GenerateDrugsXML
             }
         }
         
-        //writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials.xml");
+        writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials.xml");
     }
     
     public static void writeXMLFile(Element root, String fileName)

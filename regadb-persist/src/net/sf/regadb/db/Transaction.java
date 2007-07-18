@@ -104,10 +104,6 @@ public class Transaction {
     	return q;
     }
 
-    /*
-     * FIXME: is this actually used ? is this the ii ? how does this work at all ??
-     *        -- koen
-     */
     public NtSequence getSequence(int id)
     {
         Query q = session.createQuery("from NtSequence where id = :id");
@@ -185,6 +181,13 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<AnalysisType> getAnalysisTypes() {
         Query q = session.createQuery("from AnalysisType");
+        
+        return q.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TherapyMotivation> getTherapyMotivations() {
+        Query q = session.createQuery("from TherapyMotivation");
         
         return q.list();
     }

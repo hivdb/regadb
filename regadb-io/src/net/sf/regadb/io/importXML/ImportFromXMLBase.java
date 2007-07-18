@@ -20,6 +20,7 @@ import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.util.xml.XMLTools;
 
@@ -35,6 +36,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, DrugCommercial> commercialDrugs;
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
+    private Map<String, TherapyMotivation> therapyMotivations;
     
     protected StringBuffer log = new StringBuffer();
     public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
@@ -140,39 +142,48 @@ public class ImportFromXMLBase extends DefaultHandler{
         else
             return result;
     }
+    protected TherapyMotivation resolveTherapyMotivation(String value) throws SAXException {
+        TherapyMotivation result = therapyMotivations.get(value.toUpperCase());
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve therapy motivation: '" + value + "'"));
+        else
+            return result;
+    }
 
     public void loadDatabaseObjects(Transaction t) {
         genericDrugs = new TreeMap<String, DrugGeneric>();
-        if(t!=null)
-        {
-        for (DrugGeneric d : t.getGenericDrugs()) {
-            genericDrugs.put(d.getGenericId().toUpperCase(), d);
-        }
+        if (t!=null) {
+            for (DrugGeneric d : t.getGenericDrugs()) {
+                genericDrugs.put(d.getGenericId().toUpperCase(), d);
+            }
         }
 
         commercialDrugs = new TreeMap<String, DrugCommercial>();
-        if(t!=null)
-        {
-        for (DrugCommercial d : t.getCommercialDrugs()) {
-            commercialDrugs.put(d.getName().toUpperCase(), d);
-        }
+        if (t!=null) {
+            for (DrugCommercial d : t.getCommercialDrugs()) {
+                commercialDrugs.put(d.getName().toUpperCase(), d);
+            }
         }
         
-
         proteins = new TreeMap<String, Protein>();
-        if(t!=null)
-        {
-        for (Protein p : t.getProteins()) {
-            proteins.put(p.getAbbreviation().toUpperCase(), p);
-        }
+        if (t!=null) {
+            for (Protein p : t.getProteins()) {
+                proteins.put(p.getAbbreviation().toUpperCase(), p);
+            }
         }
 
         analysisTypes = new TreeMap<String, AnalysisType>();
-        if(t!=null)
-        {
-        for (AnalysisType a : t.getAnalysisTypes()) {
-            analysisTypes.put(a.getType().toUpperCase(), a);
+        if (t!=null) {
+            for (AnalysisType a : t.getAnalysisTypes()) {
+                analysisTypes.put(a.getType().toUpperCase(), a);
+            }
         }
+
+        therapyMotivations = new TreeMap<String, TherapyMotivation>();
+        if (t!=null) {
+            for (TherapyMotivation a : t.getTherapyMotivations()) {
+                therapyMotivations.put(a.getValue().toUpperCase(), a);
+            }
         }
     }    
 
@@ -194,6 +205,10 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     protected boolean equals(DrugCommercial o1, DrugCommercial o2) {
         return o1 == o2 || (o1 != null && o2 != null && o1.getName().equals(o2.getName()));
+    }
+
+    protected boolean equals(TherapyMotivation o1, TherapyMotivation o2) {
+        return o1 == o2 || (o1 != null && o2 != null && o1.getValue().equals(o2.getValue()));
     }
 
     protected boolean equals(Double o1, Double o2) {

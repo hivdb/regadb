@@ -103,9 +103,9 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Date fieldViralIsolate_sampleDate;
     private Set<NtSequence> fieldViralIsolate_ntSequences;
     private Set<TestResult> fieldViralIsolate_testResults;
-    private String fieldNtSequence_nucleotides;
     private String fieldNtSequence_label;
     private Date fieldNtSequence_sequenceDate;
+    private String fieldNtSequence_nucleotides;
     private Set<AaSequence> fieldNtSequence_aaSequences;
     private Set<TestResult> fieldNtSequence_testResults;
     private Protein fieldAaSequence_protein;
@@ -125,6 +125,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Date fieldTherapy_startDate;
     private Date fieldTherapy_stopDate;
     private String fieldTherapy_comment;
+    private TherapyMotivation fieldTherapy_motivation;
     private Set<TherapyCommercial> fieldTherapy_therapyCommercials;
     private Set<TherapyGeneric> fieldTherapy_therapyGenerics;
     private Test fieldTestResult_test;
@@ -243,9 +244,9 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("NtSequence".equals(qName)) {
         } else if ("ntSequences-el".equals(qName)|| "ntSequences-el".equals(qName)) {
             pushState(ParseState.stateNtSequence);
-            fieldNtSequence_nucleotides = nullValueString();
             fieldNtSequence_label = nullValueString();
             fieldNtSequence_sequenceDate = nullValueDate();
+            fieldNtSequence_nucleotides = nullValueString();
             fieldNtSequence_aaSequences = new HashSet<AaSequence>();
             fieldNtSequence_testResults = new HashSet<TestResult>();
         } else if ("AaSequence".equals(qName)) {
@@ -277,6 +278,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldTherapy_startDate = nullValueDate();
             fieldTherapy_stopDate = nullValueDate();
             fieldTherapy_comment = nullValueString();
+            fieldTherapy_motivation = null;
             fieldTherapy_therapyCommercials = new HashSet<TherapyCommercial>();
             fieldTherapy_therapyGenerics = new HashSet<TherapyGeneric>();
         } else if ("TestResult".equals(qName)) {
@@ -1032,13 +1034,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
                 {
-                    elNtSequence.setNucleotides(fieldNtSequence_nucleotides);
-                }
-                {
                     elNtSequence.setLabel(fieldNtSequence_label);
                 }
                 {
                     elNtSequence.setSequenceDate(fieldNtSequence_sequenceDate);
+                }
+                {
+                    elNtSequence.setNucleotides(fieldNtSequence_nucleotides);
                 }
                 {
                     elNtSequence.setAaSequences(fieldNtSequence_aaSequences);
@@ -1056,12 +1058,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                     else
                         topLevelObjects.add(elNtSequence);
                 }
-            } else if ("nucleotides".equals(qName)) {
-                fieldNtSequence_nucleotides = parseString(value == null ? null : value.toString());
             } else if ("label".equals(qName)) {
                 fieldNtSequence_label = parseString(value == null ? null : value.toString());
             } else if ("sequenceDate".equals(qName)) {
                 fieldNtSequence_sequenceDate = parseDate(value == null ? null : value.toString());
+            } else if ("nucleotides".equals(qName)) {
+                fieldNtSequence_nucleotides = parseString(value == null ? null : value.toString());
             } else if ("aaSequences".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else {
@@ -1251,6 +1253,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elTherapy.setComment(fieldTherapy_comment);
                 }
                 {
+                    elTherapy.setMotivation(fieldTherapy_motivation);
+                }
+                {
                     elTherapy.setTherapyCommercials(fieldTherapy_therapyCommercials);
                     for (TherapyCommercial o : fieldTherapy_therapyCommercials)
                         o.getId().setTherapy(elTherapy);
@@ -1272,6 +1277,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldTherapy_stopDate = parseDate(value == null ? null : value.toString());
             } else if ("comment".equals(qName)) {
                 fieldTherapy_comment = parseString(value == null ? null : value.toString());
+            } else if ("motivation".equals(qName)) {
+                fieldTherapy_motivation = resolveTherapyMotivation(value == null ? null : value.toString());
             } else if ("therapyCommercials".equals(qName)) {
             } else if ("therapyGenerics".equals(qName)) {
             } else {
@@ -2744,14 +2751,6 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
-                if (!simulate)
-                    dbo.setNucleotides(o.getNucleotides());
-                log.append(Describe.describe(o) + ": changed nucleotides\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
             if (!equals(dbo.getLabel(), o.getLabel())) {
                 if (!simulate)
                     dbo.setLabel(o.getLabel());
@@ -2764,6 +2763,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setSequenceDate(o.getSequenceDate());
                 log.append(Describe.describe(o) + ": changed sequenceDate\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
+                if (!simulate)
+                    dbo.setNucleotides(o.getNucleotides());
+                log.append(Describe.describe(o) + ": changed nucleotides\n");
                 changed = true;
             }
         }
@@ -3080,6 +3087,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setComment(o.getComment());
                 log.append(Describe.describe(o) + ": changed comment\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getMotivation(), o.getMotivation())) {
+                if (!simulate)
+                    dbo.setMotivation(o.getMotivation());
+                log.append(Describe.describe(o) + ": changed motivation\n");
                 changed = true;
             }
         }
