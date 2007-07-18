@@ -256,14 +256,14 @@ public class AccountForm extends FormWidget
     {
         UserAttribute ua = t.getUserAttribute(su_, attributeName);
         
-        if(ua==null && !"".equals(attributeText))
+        if(ua==null)
         {
             ua  = new UserAttribute(t.getValueType("number"), su_, attributeName, attributeText, "");
             t.save(ua);
         }
-        else if(ua!=null)
+        else
         {
-            ua.setValue(attributeText);
+            ua.setValue("".equals(attributeText)?null:attributeText);
             t.update(ua);
         }
     }
