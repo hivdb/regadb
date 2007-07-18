@@ -36,9 +36,12 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.compare.DrugGenericComparator;
 import net.sf.regadb.db.compare.TestResultComparator;
+import net.sf.regadb.ui.framework.RegaDBMain;
 
 public class PatientChart
 {
@@ -153,10 +156,18 @@ public class PatientChart
                 }
             }
 		}
-
-        //TODO get width/height from user_attributes
-		//IMAGE_WIDTH = us.getChartWidth();
-		//CHART_HEIGHT = us.getChartHeight();
+        
+        for(UserAttribute ua : us.getUserAttributes())
+        {
+            if("chart.width".equals(ua.getName()) && ua.getValue()!=null)
+            {
+                IMAGE_WIDTH = Integer.parseInt(ua.getValue());
+            }
+            else if("chart.height".equals(ua.getName()) && ua.getValue()!=null)
+            {
+                CHART_HEIGHT = Integer.parseInt(ua.getValue());
+            }
+        }
 
 		maxMutations = 0;
 		for (ViralIsolate vi : data.getViralIsolates())
