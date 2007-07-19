@@ -1,43 +1,43 @@
 <project name="wts-client-java" default="all" basedir=".">
-    <description>
-        RegaDB build file for regadb-util
-    </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
-  <property name="dist" location="dist"/>
-	<property name="proj.name" value="wts-client-java"/>
-	<property name="proj.version" value="0.9"/>
-
+	<description>Build file for wts-client-java</description>
+	
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<property name="proj.name" value="wts-client-java" />
+	<property name="proj.version" value="0.9" />
+	
 	<path id="project.classpath">
 		<fileset dir="lib">
-	      <include name="*.jar"/>
-	    </fileset>
+			<include name="*.jar"/>
+		</fileset>
 	</path>
 	
-  <target name="init" depends="clean">
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-    <mkdir dir="${dist}"/>
-  </target>
-
-  <target name="compile" description="compile the source" depends="init" >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
-  		<classpath refid="project.classpath"/>
-    </javac>
-  </target>
-
-  <target name="dist" description="Make jar file" depends="compile" >
-    <!-- Put everything in ${build} into the jar file -->
-    <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-  </target>
-  
-  <!-- Clean up -->
-  <target name="clean">
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-  </target>
-
-  <target name="all" description="Do the build" depends="dist" />
+	<target name="clean">
+			<delete dir="${build}" />
+			<delete dir="${dist}" />
+		</target>
+	
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+	
+	<target name="dist" depends="compile">
+		<jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}" />
+		<jar jarfile="${dist}/wts-cli-${proj.version}.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="net.sf.wts.client.cli.WtsClientCli" />
+				<attribute name="Class-Path" value="${jar-dependencies}" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="all" depends="dist" />
 </project>
