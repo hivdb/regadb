@@ -107,32 +107,4 @@ public class WtsMetaClient
     {
         return parseIONames(array, "outputs", "output");
     }
-    
-    public static void main(String [] args)
-    {
-    	System.setProperty("http.proxyHost", "www-proxy");
-    	System.setProperty("http.proxyPort", "3128");
-    	
-    	WtsMetaClient client = new WtsMetaClient("http://virolab.med.kuleuven.be/wts/services/");
-        try {
-            System.err.println(client.listServices());
-        } catch (RemoteException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (MalformedURLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        byte[] array=null;
-        try {
-            array = client.getServiceDescription("regadb-hiv-resist");
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.err.println(new String(array));
-    }
 }
