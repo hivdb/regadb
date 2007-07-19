@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
