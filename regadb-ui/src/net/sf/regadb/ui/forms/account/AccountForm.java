@@ -1,13 +1,17 @@
 package net.sf.regadb.ui.forms.account;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
-import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -64,6 +68,8 @@ public class AccountForm extends FormWidget
     private TextField chartWidthTF;
     private Label chartHeightL;
     private TextField chartHeightTF;
+    private Label chartMutationL;
+    private ComboBox chartMutationCB;
     
     public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
@@ -158,6 +164,9 @@ public class AccountForm extends FormWidget
             chartHeightL = new Label(tr("form.settings.user.label.chartHeight"));
             chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
             addLineToTable(attributeGroupTable, chartHeightL, chartHeightTF);
+            chartMutationL = new Label(tr("form.settings.user.label.chartMutation"));
+            chartMutationCB = new ComboBox(getInteractionState(), this);
+            addLineToTable(attributeGroupTable, chartMutationL, chartMutationCB);
         }
         
         addWidget(accountGroup_);
@@ -210,6 +219,27 @@ public class AccountForm extends FormWidget
             {
                 chartWidthTF.setText(getAttributeValue("chart.width", t));
                 chartHeightTF.setText(getAttributeValue("chart.height", t));
+                
+                chartMutationCB.addItem(lt("Default"));                
+                List<String> list = new ArrayList<String>();
+                
+                for(Test test : t.getTests())
+                {
+                    if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()))
+                    {
+                        chartMutationCB.addItem(lt(test.getDescription()));
+                        list.add(test.getDescription());
+                    }
+                }
+                String value = getAttributeValue("chart.mutation", t);
+                if(list.contains(value))
+                {
+                    chartMutationCB.selectItem(lt(value));
+                }
+                else
+                {
+                    chartMutationCB.selectItem(lt("Default"));
+                }
             }
 
             t.commit();
@@ -252,13 +282,13 @@ public class AccountForm extends FormWidget
         return valid;
     }
     
-    private void saveUserAttribute(String attributeName, String attributeText, Transaction t)
+    private void saveUserAttribute(String valueType, String attributeName, String attributeText, Transaction t)
     {
         UserAttribute ua = t.getUserAttribute(su_, attributeName);
         
         if(ua==null)
         {
-            ua  = new UserAttribute(t.getValueType("number"), su_, attributeName, attributeText, "");
+            ua  = new UserAttribute(t.getValueType(valueType), su_, attributeName, attributeText, "");
             t.save(ua);
         }
         else
@@ -342,8 +372,11 @@ public class AccountForm extends FormWidget
             if(attributeGroup_!=null)
             {
                 t = login.createTransaction();
-                saveUserAttribute("chart.height", chartHeightTF.text(), t);
-                saveUserAttribute("chart.width", chartWidthTF.text(), t);
+                saveUserAttribute("number", "chart.height", chartHeightTF.text(), t);
+                saveUserAttribute("number", "chart.width", chartWidthTF.text(), t);
+                String chartMutation = chartMutationCB.currentText().value(); 
+                chartMutation = "Default".equals(chartMutation)?null:chartMutation;
+                saveUserAttribute("string", "chart.mutation", chartMutation, t);
                 t.commit();
             }
             
