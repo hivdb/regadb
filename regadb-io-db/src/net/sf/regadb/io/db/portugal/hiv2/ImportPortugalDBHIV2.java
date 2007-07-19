@@ -182,7 +182,7 @@ public class ImportPortugalDBHIV2
     
     private String clearCountry(String country)
     {
-        String toReturn = country.toLowerCase().replace('�', 'a');
+        String toReturn = country.toLowerCase().replace('\ufffd', 'a');
         if(toReturn.contains("tome"))
         {
             toReturn += " e principe";
@@ -539,7 +539,7 @@ public class ImportPortugalDBHIV2
                 if(parseDate(therapyTable.valueAt(2, i)).equals(sampleDate))
                 {
                     toReturn = therapyTable.valueAt(3, i);
-                    toReturn = toReturn.toLowerCase().replace('�', 'a');
+                    toReturn = toReturn.toLowerCase().replace('\ufffd', 'a');
                     if(toReturn.equals("nao"))
                         return "NO";
                     else if(toReturn.equals("sim"))
