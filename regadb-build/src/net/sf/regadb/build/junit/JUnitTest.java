@@ -36,7 +36,7 @@ public class JUnitTest {
 					if (je.getName().contains(".class")) {
 						String className = je.getName();
 						
-						className = className.substring(0,className.indexOf(".class")).replaceAll("" + File.separatorChar, ".");
+						className = className.substring(0,className.indexOf(".class")).replaceAll("" + '/', ".");
 						
 						try {
 							Class cls = classLoader.loadClass(className);
