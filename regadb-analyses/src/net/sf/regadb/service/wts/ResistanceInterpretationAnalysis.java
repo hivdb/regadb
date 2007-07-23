@@ -18,7 +18,7 @@ import net.sf.regadb.service.IAnalysis;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class ViralIsolateAnalysis implements IAnalysis
+public class ResistanceInterpretationAnalysis implements IAnalysis
 {
     private Integer vi_ii_;
     private Integer test_ii_;
@@ -27,7 +27,7 @@ public class ViralIsolateAnalysis implements IAnalysis
     private Date endTime_;
     private String user_;
     
-    public ViralIsolateAnalysis(ViralIsolate isolate, Test test, String uid)
+    public ResistanceInterpretationAnalysis(ViralIsolate isolate, Test test, String uid)
     {
         vi_ii_ = isolate.getViralIsolateIi();
         test_ii_ = test.getTestIi();

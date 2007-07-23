@@ -10,7 +10,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.wts.ViralIsolateAnalysis;
+import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -152,7 +152,7 @@ public class ViralIsolateForm extends FormWidget
             {
                 if(test.getAnalysis()!=null)
                 {
-                    AnalysisPool.getInstance().launchAnalysis(new ViralIsolateAnalysis(viralIsolate_, test, uid), RegaDBMain.getApp().getLogin());
+                    AnalysisPool.getInstance().launchAnalysis(new ResistanceInterpretationAnalysis(viralIsolate_, test, uid), RegaDBMain.getApp().getLogin());
                 }
             }
         }
