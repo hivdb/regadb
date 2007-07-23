@@ -83,14 +83,16 @@ public class ComboBox<ComboDataType> extends FormField
     
     public boolean isNoSelectionItem(DataComboMessage msg)
     {
-        return msg==null || msg.getValue()==null;
+        return msg.getValue()==null;
     }
     
     public DataComboMessage<ComboDataType> currentItem()
     {
     	if(fieldEdit_!=null)
     	{
-            if(isNoSelectionItem((DataComboMessage)fieldEdit_.currentText()))
+            if(fieldEdit_.currentText()==null)
+                return null;
+            else if(isNoSelectionItem((DataComboMessage)fieldEdit_.currentText()))
                 return null;
             else
                 return (DataComboMessage<ComboDataType>)fieldEdit_.currentText();
