@@ -55,6 +55,9 @@ public class DateFilter extends WContainerWidget implements IFilter
 				{
 					public void notify(WEmptyEvent a)
 					{
+						tf1_.setText("");
+						tf1_.setText("");
+						
 						tf2_.setEnabled(combo_.currentText().key().equals(between_));
 					}
 				});
