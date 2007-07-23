@@ -9,6 +9,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -20,6 +21,8 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
@@ -36,6 +39,8 @@ public class TherapyForm extends FormWidget
     private DateField startDateTF;
     private Label stopDateL;
     private DateField stopDateTF;
+    private Label motivationL;
+    private ComboBox motivationCB;
     private Label commentL;
     private TextField commentTF;
     
@@ -71,6 +76,18 @@ public class TherapyForm extends FormWidget
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
         stopDateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, stopDateL, stopDateTF);
+        
+        stopDateTF.addChangeListener(new SignalListener<WEmptyEvent>()
+        {
+            public void notify(WEmptyEvent a)
+            {
+                setMotivations();
+            }
+        });
+        
+        motivationL = new Label(tr("form.therapy.editView.motivation"));
+        motivationCB = new ComboBox(getInteractionState(), this);
+        addLineToTable(generalGroupTable_, motivationL, motivationCB);
         commentL = new Label(tr("form.therapy.editView.comment"));
         commentTF = new TextField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, commentL, commentTF);
@@ -98,9 +115,11 @@ public class TherapyForm extends FormWidget
         
         t.commit();
 	        
-		startDateTF.setDate(therapy_.getStartDate());
-		stopDateTF.setDate(therapy_.getStopDate());
+        startDateTF.setDate(therapy_.getStartDate());
+        stopDateTF.setDate(therapy_.getStopDate());
 		commentTF.setText(therapy_.getComment());
+        
+        setMotivations();
         
 		//generic drugs group
         t = RegaDBMain.getApp().createTransaction();
@@ -124,6 +143,30 @@ public class TherapyForm extends FormWidget
         iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, therapy_);
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
 	}
+    
+    private void setMotivations()
+    {
+        if(stopDateTF.getDate()!=null)
+        {
+            Transaction t = RegaDBMain.getApp().createTransaction();
+                
+            motivationCB.clearItems();
+                
+            for(TherapyMotivation therapyMotivation : t.getTherapyMotivations())
+            {
+                motivationCB.addItem(new DataComboMessage<TherapyMotivation>(therapyMotivation, therapyMotivation.getValue()));
+            }
+                
+            t.commit();
+            
+            if(therapy_.getMotivation()!=null)
+            {
+                motivationCB.selectItem(lt(therapy_.getMotivation().getValue()));
+            }
+        }
+        
+        motivationCB.setEnabled(stopDateTF.getDate()!=null);
+    }
 	
 	@Override
 	public void saveData()
@@ -193,6 +236,15 @@ public class TherapyForm extends FormWidget
             therapy_.setStartDate(startDateTF.getDate());
             
             therapy_.setStopDate(stopDateTF.getDate());
+            
+            if(therapy_.getStopDate()!=null)
+            {
+                therapy_.setMotivation(((DataComboMessage<TherapyMotivation>)motivationCB.currentText()).getValue());
+            }
+            else
+            {
+                therapy_.setMotivation(null);
+            }
             
             therapy_.setComment(getNulled(commentTF.text()));
             
