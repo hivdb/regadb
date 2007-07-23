@@ -20,6 +20,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
@@ -269,114 +270,37 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     		switch (type) 
         	{
 		        case STRING:
-		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
-		        	{
-		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataFormField(qdrp, i);
 		        break;
 		        case INTEGER:
-		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
-		        	{
-		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataFormField(qdrp, i);
 		        break;
 		        case DOUBLE:
-		        	if(!((((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
-		        	{
-		        		qdrp.setValue(((TextField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataFormField(qdrp, i);
 		        break;
 		        case DATE:
-		        	if(!((((DateField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
-		        	{
-		        		qdrp.setValue(((DateField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataFormField(qdrp, i);
 		        break;
 		        case GENERICDRUG:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case COMMERCIALDRUG:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case TEST:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case TESTTYPE:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case PROTEIN:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case ATTRIBUTE:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
 		        case ATTRIBUTEGROUP:
-		        	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
-		        	{
-		        		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-		        	}
-		        	else
-		        	{
-		        		saved = false;
-		        	}
+		        	saved = saveDataComboBox(qdrp, i);
 		        break;
         	}
     		
@@ -389,5 +313,32 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     public Set<QueryDefinitionRunParameter> getQueryDefinitionRunParameters()
     {
     	return qdrps;
+    }
+    
+    private boolean saveDataFormField(QueryDefinitionRunParameter qdrp, int i)
+    {
+    	if(!((((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+    	{
+    		qdrp.setValue(((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+    private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i)
+    {
+    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+    	{
+    		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+    		
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
     }
 }
