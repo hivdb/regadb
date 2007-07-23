@@ -22,6 +22,11 @@ public class InitRegaDB
 {
     public static void main(String [] args)
     {
+        InitRegaDB init = new InitRegaDB();
+        init.run();
+    }
+    
+    public void run() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         
@@ -54,7 +59,7 @@ public class InitRegaDB
         session.close();
     }
     
-	private static void initTherapyChangeMotivations(Session session) {
+	private void initTherapyChangeMotivations(Session session) {
         session.save(new TherapyMotivation("Unknown"));
         session.save(new TherapyMotivation("Toxicity"));
         session.save(new TherapyMotivation("Treatment failure, resistance"));
@@ -62,7 +67,7 @@ public class InitRegaDB
         session.save(new TherapyMotivation("Other"));
     }
 
-    private static void addAdminUser(Session session)
+    private void addAdminUser(Session session)
     {
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");
@@ -84,7 +89,7 @@ public class InitRegaDB
         session.save(test);
     }
     
-    private static ArrayList<TestObject> initTestObjects(Session session)
+    private ArrayList<TestObject> initTestObjects(Session session)
     {
         ArrayList<TestObject> tos = new ArrayList<TestObject>();
         
@@ -109,7 +114,7 @@ public class InitRegaDB
         return tos;
     }
     
-    private static ArrayList<ValueType> initValueTypes(Session session)
+    private ArrayList<ValueType> initValueTypes(Session session)
     {
         ArrayList<ValueType> valueTypes = new ArrayList<ValueType>();
         
@@ -131,7 +136,7 @@ public class InitRegaDB
         return valueTypes;
     }
     
-    private static void initProteins(Session session)
+    private void initProteins(Session session)
     {
         Protein p6 = new Protein("p6", "Transframe peptide (partially)");
         Protein pro = new Protein("PRO", "Protease");
@@ -152,7 +157,7 @@ public class InitRegaDB
         session.save(gp41);
     }
     
-    private static AnalysisType initAnalysisTypes(Session session)
+    private AnalysisType initAnalysisTypes(Session session)
     {
         AnalysisType wts = new AnalysisType("wts");
         
@@ -161,7 +166,7 @@ public class InitRegaDB
         return wts;
     }
     
-    private static void initQueryDefinitionParameterTypes(Session session) 
+    private void initQueryDefinitionParameterTypes(Session session) 
     {
 		QueryDefinitionParameterType string = new QueryDefinitionParameterType("String", QueryDefinitionParameterTypes.STRING.getValue());
 		QueryDefinitionParameterType integer = new QueryDefinitionParameterType("Integer", QueryDefinitionParameterTypes.INTEGER.getValue());
@@ -188,7 +193,7 @@ public class InitRegaDB
 		session.save(attributeGroup);
 	}
     
-    private static void initSubTypeTests(TestObject seqAnalysis, AnalysisType wts, ArrayList<ValueType> valueTypes, Session session)
+    private void initSubTypeTests(TestObject seqAnalysis, AnalysisType wts, ArrayList<ValueType> valueTypes, Session session)
     {
         ValueType stringVT = null;
         for(ValueType vt : valueTypes)
@@ -210,7 +215,7 @@ public class InitRegaDB
         session.save(type);
     }
     
-    private static void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
+    private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
     {
         TestType gss = new TestType(to, "Genotypic Susceptibility Score (GSS)");
         
