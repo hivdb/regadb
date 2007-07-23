@@ -114,7 +114,7 @@ public class GenerateDrugsXML
             Element drugGenericIdEl = new Element("id");
             Element drugGenericNameEl = new Element("name");
             Element drugGenericClassEl = new Element("class");
-            Element drugGenericAtcCodeEl = new Element("atc_code");
+            Element drugGenericAtcCodeEl = new Element("atcCode");
             Element drugClassResistanceTableOrderEl = new Element("resistanceTableOrder");
             drugGenericEl.addContent(drugGenericIdEl);
             drugGenericEl.addContent(drugGenericNameEl);
