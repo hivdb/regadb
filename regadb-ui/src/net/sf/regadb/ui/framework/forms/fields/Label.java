@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.ui.framework.forms.FormWidget;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WLabel;
@@ -32,4 +34,10 @@ public class Label extends WLabel
 			setImage(asterisk_);
 		}	
 	}
+    
+    public void setLabelUIMandatory(FormWidget form)
+    {
+        if(form.getInteractionState()==InteractionState.Editing || form.getInteractionState()==InteractionState.Adding)
+            setImage(asterisk_);
+    }
 }
