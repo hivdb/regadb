@@ -1,8 +1,5 @@
 package net.sf.regadb.ui.forms.account;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
@@ -13,6 +10,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
+import net.sf.regadb.ui.form.singlePatient.StringComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -220,7 +218,7 @@ public class AccountForm extends FormWidget
                 chartWidthTF.setText(getAttributeValue("chart.width", t));
                 chartHeightTF.setText(getAttributeValue("chart.height", t));
                 
-                chartMutationCB.addItem(new DataComboMessage<String>("Default", "Default"));
+                chartMutationCB.addNoSelectionItem();
                 
                 for(Test test : t.getTests())
                 {
@@ -367,7 +365,6 @@ public class AccountForm extends FormWidget
                 saveUserAttribute("number", "chart.height", chartHeightTF.text(), t);
                 saveUserAttribute("number", "chart.width", chartWidthTF.text(), t);
                 String chartMutation = chartMutationCB.currentValue();
-                chartMutation = "Default".equals(chartMutation)?null:chartMutation;
                 saveUserAttribute("string", "chart.mutation", chartMutation, t);
                 t.commit();
             }

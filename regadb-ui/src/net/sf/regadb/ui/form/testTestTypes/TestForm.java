@@ -13,6 +13,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.testSettings.IAnalysisDataEditableTable;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
+import net.sf.regadb.ui.form.singlePatient.StringComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -379,12 +380,12 @@ public class TestForm extends FormWidget
     {
     	for(String input : wtsMC.parseInputNames(array))
         {
-            baseInputFileCB.addItem(new DataComboMessage<String>(input, input));
+            baseInputFileCB.addItem(new StringComboMessage(input));
         }
         
         for(String output : wtsMC.parseOutputNames(array))
         {
-            baseOutputFileCB.addItem(new DataComboMessage<String>(output, output));
+            baseOutputFileCB.addItem(new StringComboMessage(output));
         }
     }
     

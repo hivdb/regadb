@@ -339,7 +339,7 @@ public class SinglePatientForm extends FormWidget
         Object label;
         Object tf;
         String text;
-        WMessage message;
+        DataComboMessage message;
         Attribute attribute;
         if(attributesGroupTable_!=null)
         {
@@ -366,7 +366,7 @@ public class SinglePatientForm extends FormWidget
                     {
                         message = ((ComboBox)tf).currentItem();
                         
-                        if(message instanceof DataComboMessage)
+                        if(message!=null)
                         {
                             if(attributeValue==null)
                             {
