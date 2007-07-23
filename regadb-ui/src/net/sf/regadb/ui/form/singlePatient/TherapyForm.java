@@ -36,9 +36,9 @@ public class TherapyForm extends FormWidget
     private WGroupBox generalGroup_;
     private WTable generalGroupTable_;
     private Label startDateL;
-    private DateField startDateTF;
+    private DateField startDateDF;
     private Label stopDateL;
-    private DateField stopDateTF;
+    private DateField stopDateDF;
     private Label motivationL;
     private ComboBox motivationCB;
     private Label commentL;
@@ -70,14 +70,14 @@ public class TherapyForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
-        startDateTF = new DateField(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
-        startDateTF.setMandatory(true);
-        addLineToTable(generalGroupTable_, startDateL, startDateTF);
+        startDateDF = new DateField(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
+        startDateDF.setMandatory(true);
+        addLineToTable(generalGroupTable_, startDateL, startDateDF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
-        stopDateTF = new DateField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, stopDateL, stopDateTF);
+        stopDateDF = new DateField(getInteractionState(), this);
+        addLineToTable(generalGroupTable_, stopDateL, stopDateDF);
         
-        stopDateTF.addChangeListener(new SignalListener<WEmptyEvent>()
+        stopDateDF.addChangeListener(new SignalListener<WEmptyEvent>()
         {
             public void notify(WEmptyEvent a)
             {
@@ -115,8 +115,8 @@ public class TherapyForm extends FormWidget
         
         t.commit();
 	        
-        startDateTF.setDate(therapy_.getStartDate());
-        stopDateTF.setDate(therapy_.getStopDate());
+        startDateDF.setDate(therapy_.getStartDate());
+        stopDateDF.setDate(therapy_.getStopDate());
 		commentTF.setText(therapy_.getComment());
         
         setMotivations();
@@ -146,7 +146,7 @@ public class TherapyForm extends FormWidget
     
     private void setMotivations()
     {
-        if(stopDateTF.getDate()!=null)
+        if(stopDateDF.getDate()!=null)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
                 
@@ -165,7 +165,7 @@ public class TherapyForm extends FormWidget
             }
         }
         
-        motivationCB.setEnabled(stopDateTF.getDate()!=null);
+        motivationCB.setEnabled(stopDateDF.getDate()!=null);
     }
 	
 	@Override
@@ -201,7 +201,7 @@ public class TherapyForm extends FormWidget
         boolean startDateExists = false;
         for(Therapy therapy : therapies)
         {
-            if(DateUtils.compareDates(therapy.getStartDate(), startDateTF.getDate())==0 && getInteractionState()==InteractionState.Adding)
+            if(DateUtils.compareDates(therapy.getStartDate(), startDateDF.getDate())==0 && getInteractionState()==InteractionState.Adding)
             {
                 startDateExists = true;
                 break;
@@ -220,7 +220,7 @@ public class TherapyForm extends FormWidget
         {
             MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
         }
-        else if(stopDateTF.getDate() != null && DateUtils.compareDates(startDateTF.getDate(), stopDateTF.getDate())>0)
+        else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
         {
             MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
         }
@@ -233,9 +233,9 @@ public class TherapyForm extends FormWidget
                 p.addTherapy(therapy_);
             }
             
-            therapy_.setStartDate(startDateTF.getDate());
+            therapy_.setStartDate(startDateDF.getDate());
             
-            therapy_.setStopDate(stopDateTF.getDate());
+            therapy_.setStopDate(stopDateDF.getDate());
             
             if(therapy_.getStopDate()!=null)
             {
