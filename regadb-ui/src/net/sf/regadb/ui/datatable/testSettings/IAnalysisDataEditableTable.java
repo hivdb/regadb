@@ -39,6 +39,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         TextField tf = new TextField(InteractionState.Viewing, form_);
         tf.setText(type.getName());
         WAnchor anchor = new WAnchor(new WMemoryResource(type.getMimetype(), type.getData()), WWidget.lt(type.getName()));
+        anchor.setStyleClass("link");
         
         widgets[0] = tf;
         widgets[1] = anchor;
