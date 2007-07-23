@@ -344,27 +344,33 @@ public class TestForm extends FormWidget
         }
         catch(RemoteException re)
         {
-            if(re.getMessage().equals("No client transport named 'null' found!"))
+            if(this.getInteractionState() == InteractionState.Adding || this.getInteractionState() == InteractionState.Editing)
             {
-                urlTF.flagErroneous();
-            }
-            else if(re.getMessage().contains("java.net.UnknownHostException"))
-            {
-                urlTF.flagErroneous();
-            }
-            else if(re.getMessage().equals("java.rmi.RemoteException: Service " + '"' + serviceTF.text() + '"' +" is not available"))
-            {
-                serviceTF.flagErroneous();
-            }
-            else
-            {
-                serviceTF.flagErroneous();
-                urlTF.flagErroneous();
+                if(re.getMessage().equals("No client transport named 'null' found!"))
+                {
+                    urlTF.flagErroneous();
+                }
+                else if(re.getMessage().contains("java.net.UnknownHostException"))
+                {
+                    urlTF.flagErroneous();
+                }
+                else if(re.getMessage().equals("java.rmi.RemoteException: Service " + '"' + serviceTF.text() + '"' +" is not available"))
+                {
+                    serviceTF.flagErroneous();
+                }
+                else
+                {
+                    serviceTF.flagErroneous();
+                    urlTF.flagErroneous();
+                }
             }
         } 
         catch (MalformedURLException e) 
         {
-            urlTF.flagErroneous();
+            if(this.getInteractionState() == InteractionState.Adding || this.getInteractionState() == InteractionState.Editing)
+            {
+                urlTF.flagErroneous();
+            }
         }
     	
     	return array;
