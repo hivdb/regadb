@@ -168,7 +168,6 @@ public class MeasurementForm extends FormWidget
         {
             testResultField_ = getTextField(ValueTypes.getValueType(valueType));
         }
-        addFormField(testResultField_);
         testResultField_.setMandatory(true);
         testResultC.clear();
         testResultC.addWidget(testResultField_);
