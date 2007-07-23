@@ -63,6 +63,11 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 	{
         formFields_.add(field);
 	}
+    
+    public void removeFormField(IFormField field)
+    {
+        formFields_.remove(field);
+    }
 	
     public int addLineToTable(WTable table, Label label, IFormField field)
     {
