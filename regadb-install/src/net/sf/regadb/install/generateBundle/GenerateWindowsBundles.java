@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import net.sf.regadb.util.pair.Pair;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -21,6 +22,12 @@ public class GenerateWindowsBundles {
     }
     
     public void deployRegaDB(String buildPath, String bundlePath) {
+        try {
+            FileUtils.forceMkdir(new File(bundlePath + File.separatorChar + "tmp" + File.separatorChar));
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
+        
         ArrayList<Pair<String, String>> properties = new ArrayList<Pair<String, String>>();
         properties.add(new Pair<String, String>("tomcat.home", bundlePath + File.separatorChar + "tomcat"));
         properties.add(new Pair<String, String>("warfile", buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")));
@@ -51,7 +58,7 @@ public class GenerateWindowsBundles {
             }
         }
         if(start!=-1){
-            System.err.println("Someting went wrong when deploying the war, exiting.");
+            System.err.println("Something went wrong when deploying the war, exiting.");
             System.exit(1);
         } else {
         System.err.println("War was deployed succesfully,\nwaiting 10 seconds before shutting down tomcat");
