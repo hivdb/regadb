@@ -242,4 +242,12 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     {
         this._okButton.setEnabled(enable);
     }
+    
+    public WMessage leaveForm() {
+        if(isEditable()) {
+            return tr("form.warning.stillEditing");
+        } else {
+            return null;
+        }
+    }
 }

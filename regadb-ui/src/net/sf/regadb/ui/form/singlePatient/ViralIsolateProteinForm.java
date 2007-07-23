@@ -44,7 +44,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private TextField nonSynonymousTF;
     
     private WPushButton refreshAlignments_;
-    private WTimer refreshAlignmentsTimer_;
+    WTimer refreshAlignmentsTimer_;
     
 	private VisualizeAaSequence visAaSeq_ = new VisualizeAaSequence();
 	

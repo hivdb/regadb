@@ -1,13 +1,10 @@
 package net.sf.regadb.ui.datatable.attributeSettings;
 
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 
-public class SelectAttributeForm extends WGroupBox implements IForm
+public class SelectAttributeForm extends SelectForm
 {
     private DataTable<Attribute> dataTable_;
     private IAttributeDataTable dataTableI_;
@@ -16,16 +13,6 @@ public class SelectAttributeForm extends WGroupBox implements IForm
     {
         super(tr("form.attributes.attribute.selectAttributeForm"));
         init();
-    }
-    
-    public void addFormField(IFormField field)
-    {
-        
-    }
-
-    public WContainerWidget getWContainer()
-    {
-        return this;
     }
 
     public void init() 

@@ -192,4 +192,10 @@ public class ViralIsolateForm extends FormWidget
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesSelect.selectNode();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
     }
+    
+    @Override
+    public WMessage leaveForm() {
+        //proteinForm_.refreshAlignmentsTimer_.stop();
+        return super.leaveForm();
+    }
 }

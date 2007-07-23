@@ -27,6 +27,7 @@ import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 {	
@@ -165,5 +166,9 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         {
             formValidation_.setHidden(false);
         }
+    }
+
+    public WMessage leaveForm() {
+        return tr("form.login.tree.warning");
     }
 }

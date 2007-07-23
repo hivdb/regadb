@@ -11,6 +11,7 @@ import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {
@@ -41,4 +42,8 @@ public class PatientChartForm extends WGroupBox implements IForm
 	{
 		return this;
 	}
+
+    public WMessage leaveForm() {
+        return null;
+    }
 }

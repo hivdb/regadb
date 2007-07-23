@@ -3,7 +3,9 @@ package net.sf.regadb.ui.framework.tree;
 import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.i8n.WMessage;
@@ -27,7 +29,16 @@ public abstract class TreeMenuNode extends WTreeNode
 		{
 			public void notify(WMouseEvent a)
 			{
-				selectNode();
+                IForm form = RegaDBMain.getApp().getFormContainer().getForm();
+                
+                WMessage leaveMessage = null;
+                if(form!=null)
+                    leaveMessage = form.leaveForm();
+                
+                if(leaveMessage==null)
+                    selectNode();
+                else
+                    MessageBox.showWarningMessage(leaveMessage);
 			}
 		});
 	}

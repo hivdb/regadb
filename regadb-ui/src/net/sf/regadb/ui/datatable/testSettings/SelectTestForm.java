@@ -1,13 +1,10 @@
 package net.sf.regadb.ui.datatable.testSettings;
 
 import net.sf.regadb.db.Test;
-import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 
-public class SelectTestForm  extends WGroupBox implements IForm
+public class SelectTestForm  extends SelectForm
 {
 	private DataTable<Test> dataTable_;
 
@@ -17,16 +14,6 @@ public class SelectTestForm  extends WGroupBox implements IForm
 	{
 		super(tr("form.testSetting.test.selectTestForm"));
 		init();
-	}
-
-	public void addFormField(IFormField field) 
-	{
-
-	}
-
-	public WContainerWidget getWContainer() 
-	{
-		return this;
 	}
 
 	public void init() 

@@ -1,13 +1,12 @@
 package net.sf.regadb.ui.datatable.query;
 
 import net.sf.regadb.db.QueryDefinitionRun;
-import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 
-public class SelectQueryDefinitionRunForm extends WGroupBox implements IForm
+public class SelectQueryDefinitionRunForm extends SelectForm
 {
     private DataTable<QueryDefinitionRun> dataTable_;
     private ISelectQueryDefinitionRunDataTable dataTableI_;
@@ -17,16 +16,6 @@ public class SelectQueryDefinitionRunForm extends WGroupBox implements IForm
         super(tr("form.query.definition.run.select"));
         
         init();
-    }
-    
-    public void addFormField(IFormField field)
-    {
-        
-    }
-
-    public WContainerWidget getWContainer()
-    {
-        return this;
     }
 
     public void init()

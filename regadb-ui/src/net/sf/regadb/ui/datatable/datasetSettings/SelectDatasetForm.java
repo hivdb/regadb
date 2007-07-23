@@ -1,13 +1,10 @@
 package net.sf.regadb.ui.datatable.datasetSettings;
 
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 
-public class SelectDatasetForm extends WGroupBox implements IForm 
+public class SelectDatasetForm extends SelectForm 
 {
 	private DataTable<Dataset> dataTable_;
 
@@ -18,18 +15,8 @@ public class SelectDatasetForm extends WGroupBox implements IForm
 		super(tr("form.DatasetSettings.dataset.selectDatasetForm"));
 		init();
 	}
-	public void addFormField(IFormField field)
-	{
-		
 
-	}
-
-	public WContainerWidget getWContainer() 
-	{
-		
-		return this;
-	}
-	public void init() 
+    public void init() 
 	{
 		dataTableI_ = new IDatasetDataTable();
 		dataTable_ = new DataTable<Dataset>(dataTableI_, 10);
