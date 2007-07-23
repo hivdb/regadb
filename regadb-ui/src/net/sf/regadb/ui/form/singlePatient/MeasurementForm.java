@@ -6,6 +6,7 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -16,6 +17,7 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
@@ -37,8 +39,8 @@ public class MeasurementForm extends FormWidget
     private Label testNameL;
     private ComboBox testNameCB;
     private Label testResultL;
-    private ComboBox testResultNominalValueCB;
-    private FormField testResultValueTF;
+    private FormField testResultField_;
+    private WContainerWidget testResultC;
     
 	public MeasurementForm(InteractionState interactionState, WMessage formName, TestResult testResult)
 	{
@@ -69,6 +71,11 @@ public class MeasurementForm extends FormWidget
         testNameCB.setMandatory(true);
         addLineToTable(generalGroupTable_, testNameL, testNameCB);
         testResultL = new Label(tr("form.testResult.editView.testResult"));
+        testResultL.setLabelUIMandatory(this);
+        testResultC = new WContainerWidget();
+        int row = generalGroupTable_.numRows();
+        generalGroupTable_.putElementAt(row, 0, testResultL);
+        generalGroupTable_.putElementAt(row, 1, testResultC);
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -92,25 +99,6 @@ public class MeasurementForm extends FormWidget
         
         t.commit();
         
-        ValueTypes valueType = ValueTypes.getValueType(type.getValueType());
-        if(valueType == ValueTypes.NOMINAL_VALUE)
-        {
-        	testResultNominalValueCB = new ComboBox(getInteractionState(), this);
-        	for(TestNominalValue tnv : type.getTestNominalValues())
-        	{
-        		testResultNominalValueCB.addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
-        	}
-
-        	testResultNominalValueCB.setMandatory(true);
-        	addLineToTable(generalGroupTable_, testResultL, testResultNominalValueCB);
-        }
-        else
-        {
-        	testResultValueTF = getTextField(valueType);
-            testResultValueTF.setMandatory(true);
-            addLineToTable(generalGroupTable_, testResultL, testResultValueTF);
-        }
-        
         fillData();
         
         addControlButtons();
@@ -126,32 +114,38 @@ public class MeasurementForm extends FormWidget
 	        dateTF.setDate(testResult_.getTestDate());
             
             sampleIdTF_.setText(testResult_.getSampleId());
-	        
-	        if(testResultNominalValueCB!=null)
-	        {
-		    	if(testResult_.getTestNominalValue()!=null)
-		    	{
-		    		testResultNominalValueCB.selectItem(new DataComboMessage<TestNominalValue>(testResult_.getTestNominalValue(),testResult_.getTestNominalValue().getValue()));
-		    	}
-	        }
-	        else
-	        {
-	        	testResultValueTF.setText(testResult_.getValue());
-	        }
 		}
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         TestType type = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
         setTestCombo(t, type);
         t.commit();
+        
+        setResultField(type.getValueType(), type);
+        
+        if(!(getInteractionState()==InteractionState.Adding))
+        {
+            if(testResultField_ instanceof ComboBox)
+            {
+                ((ComboBox)testResultField_).selectItem(new DataComboMessage<TestNominalValue>(testResult_.getTestNominalValue(),testResult_.getTestNominalValue().getValue()));
+            }
+            else
+            {
+                testResultField_.setText(testResult_.getValue());
+            }
+        }
 		
         testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
                 {
         			public void notify(WEmptyEvent a)
         			{
+                        TestType testType = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
+                        
         				Transaction t = RegaDBMain.getApp().createTransaction();
-        				setTestCombo(t, ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue());
+        				setTestCombo(t, testType);
         				t.commit();
+                        
+                        setResultField(testType.getValueType(), testType);
         			}
                 });
 	}
@@ -174,6 +168,27 @@ public class MeasurementForm extends FormWidget
  
         testNameCB.selectItem(first);
 	}
+    
+    private void setResultField(ValueType valueType, TestType type)
+    {
+        removeFormField(testResultField_);
+        if(ValueTypes.getValueType(valueType) == ValueTypes.NOMINAL_VALUE)
+        {
+            testResultField_ = new ComboBox(getInteractionState(), this);
+            for(TestNominalValue tnv : type.getTestNominalValues())
+            {
+                ((ComboBox)testResultField_).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
+            }
+        }
+        else
+        {
+            testResultField_ = getTextField(ValueTypes.getValueType(valueType));
+        }
+        addFormField(testResultField_);
+        testResultField_.setMandatory(true);
+        testResultC.clear();
+        testResultC.addWidget(testResultField_);
+    }
 
 	@Override
 	public void saveData()
@@ -197,13 +212,15 @@ public class MeasurementForm extends FormWidget
 		testResult_.setTestDate(dateTF.getDate());
         testResult_.setSampleId(sampleIdTF_.text());
 			    
-		if(testResultNominalValueCB!=null)
+		if(testResultField_ instanceof ComboBox)
 		{
-			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)testResultNominalValueCB.currentText()).getValue());
-		}
+			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentText()).getValue());
+            testResult_.setValue(null);
+        }
 		else
 		{
-			testResult_.setValue(testResultValueTF.text());
+			testResult_.setValue(testResultField_.text());
+            testResult_.setTestNominalValue(null);
 		}
 		
 		update(testResult_, t);
