@@ -41,7 +41,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 	private Label passwordL = new Label(tr("form.login.label.password"));
 	private TextField passwordTF = new TextField(InteractionState.Editing, this);
     private Label proxyL;
-    private ComboBox proxyCB;
+    private ComboBox<Pair<String, String>> proxyCB;
     private WText createAccountLink_ = new WText(tr("form.login.link.create"));
 	
 	//control
@@ -75,7 +75,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         if(RegaDBSettings.getInstance().getProxyList().size() > 1)
         {
             proxyL = new Label(tr("form.login.label.proxy"));
-            proxyCB = new ComboBox(InteractionState.Editing, this);
+            proxyCB = new ComboBox<Pair<String, String>>(InteractionState.Editing, this);
             loginGroupTable.putElementAt(2, 0, proxyL);
             loginGroupTable.putElementAt(2, 1, proxyCB);
             for(Pair<String,String> proxy : RegaDBSettings.getInstance().getProxyList())
@@ -153,8 +153,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
                 
                 if(proxyCB!=null)
                 {
-                    DataComboMessage<Pair<String, String>> proxy = (DataComboMessage<Pair<String, String>>)proxyCB.currentText();
-                    RegaDBSettings.getInstance().setProxySettings(proxy.getValue());
+                    RegaDBSettings.getInstance().setProxySettings(proxyCB.currentValue());
                 }
             }
             else

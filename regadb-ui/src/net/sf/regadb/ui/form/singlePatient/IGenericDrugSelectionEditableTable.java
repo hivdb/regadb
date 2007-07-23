@@ -32,14 +32,14 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     
     public void addData(WWidget[] widgets)
     {
-        DrugGeneric dg = ((DataComboMessage<DrugGeneric>)((ComboBox)widgets[0]).currentText()).getValue();
+        DrugGeneric dg = ((ComboBox<DrugGeneric>)widgets[0]).currentValue();
         TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(therapy_, dg), getDosage(((TextField)widgets[1])));
         therapy_.getTherapyGenerics().add(tg);
     }
 
     public void changeData(TherapyGeneric tg, WWidget[] widgets)
     {
-        DrugGeneric dg = ((DataComboMessage<DrugGeneric>)((ComboBox)widgets[0]).currentText()).getValue();
+        DrugGeneric dg = ((ComboBox<DrugGeneric>)widgets[0]).currentValue();
         tg.setDayDosageMg(getDosage(((TextField)widgets[1])));
         tg.getId().setDrugGeneric(dg);
     }
@@ -77,7 +77,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
 
     public WWidget[] getWidgets(TherapyGeneric tg)
     {
-        ComboBox combo = new ComboBox(InteractionState.Viewing, form_);
+        ComboBox<DrugGeneric> combo = new ComboBox<DrugGeneric>(InteractionState.Viewing, form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -96,7 +96,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         {
             tf.setText(tg.getDayDosageMg()+"");
         }
-        combo.selectItem(new DataComboMessage<DrugGeneric>(tg.getId().getDrugGeneric(), tg.getId().getDrugGeneric().getGenericName()));
+        combo.selectItem(tg.getId().getDrugGeneric().getGenericName());
         
         return widgets;
     }
@@ -108,7 +108,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
 
     public WWidget[] addRow() 
     {
-        ComboBox combo = new ComboBox(form_.getInteractionState(), form_);
+        ComboBox<DrugGeneric> combo = new ComboBox<DrugGeneric>(form_.getInteractionState(), form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -128,7 +128,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
 
     public WWidget[] fixAddRow(WWidget[] widgets) 
     {
-        DrugGeneric dg = ((DataComboMessage<DrugGeneric>)(((ComboBox)widgets[0]).currentText())).getValue();
+        DrugGeneric dg = ((ComboBox<DrugGeneric>)widgets[0]).currentValue();
         
         if(!((TextField)widgets[1]).validate())
         {

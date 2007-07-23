@@ -28,9 +28,9 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	
 	private WGroupBox proteinGroup_;
 	private Label ntSequenceComboL_;
-	private ComboBox ntSequenceCombo_;
+	private ComboBox<NtSequence> ntSequenceCombo_;
 	private Label aaSequenceComboL_;
-	private ComboBox aaSequenceCombo_;
+	private ComboBox<AaSequence> aaSequenceCombo_;
 	private WTable proteinGroupTable_;
 	private Label proteinL;
 	private TextField proteinTF;
@@ -61,7 +61,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		proteinGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.protein"), this);
 		proteinGroupTable_ = new WTable(proteinGroup_);
 		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
-		ntSequenceCombo_ = new ComboBox(InteractionState.Editing, null);
+		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
         int row = viralIsolateForm_.addLineToTable(proteinGroupTable_, ntSequenceComboL_, ntSequenceCombo_);
         //alignment refresh
         boolean aligning = false;
@@ -91,7 +91,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
         }
         //alignment refresh
         aaSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.aaSequence"));
-		aaSequenceCombo_ = new ComboBox(InteractionState.Editing, null);
+		aaSequenceCombo_ = new ComboBox<AaSequence>(InteractionState.Editing, null);
 		viralIsolateForm_.addLineToTable(proteinGroupTable_, aaSequenceComboL_, aaSequenceCombo_);
 		proteinL = new Label(tr("form.viralIsolate.editView.label.protein"));
 		proteinTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
@@ -182,11 +182,10 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        DataComboMessage<AaSequence> dcm = (DataComboMessage<AaSequence>)aaSequenceCombo_.currentText();
+        AaSequence aaSequence = aaSequenceCombo_.currentValue();
 		
-        if(dcm!=null)
+        if(aaSequence!=null)
         {
-            AaSequence aaSequence = dcm.getValue();
             t.attach(aaSequence);
         
     		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
@@ -201,14 +200,14 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	
 	private void setAaSequenceCombo()
 	{
-		DataComboMessage<NtSequence> currentSequence = (DataComboMessage<NtSequence>)ntSequenceCombo_.currentText();
+		NtSequence ntSeq = ntSequenceCombo_.currentValue();
 		
 		aaSequenceCombo_.clearItems();
 		
         Transaction t = RegaDBMain.getApp().createTransaction();
 
-        if(currentSequence!=null)
-        for(AaSequence aaseq : currentSequence.getValue().getAaSequences())
+        if(ntSeq!=null)
+        for(AaSequence aaseq : ntSeq.getAaSequences())
 		{
 			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
 		}

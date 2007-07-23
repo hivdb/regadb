@@ -9,10 +9,10 @@ import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -55,7 +55,7 @@ public class AccountForm extends FormWidget
     private Label retypePasswordL;
     private TextField retypePasswordTF;
     private Label datasetL;
-    private ComboBox datasetCB;
+    private ComboBox<Dataset> datasetCB;
     private Label administratorL;
     private CheckBox administratorCB;
     private Label registeredL;
@@ -69,7 +69,7 @@ public class AccountForm extends FormWidget
     private Label chartHeightL;
     private TextField chartHeightTF;
     private Label chartMutationL;
-    private ComboBox chartMutationCB;
+    private ComboBox<String> chartMutationCB;
     
     public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
@@ -101,7 +101,7 @@ public class AccountForm extends FormWidget
             addLineToTable(loginGroupTable, uidL, uidTF);
             
             datasetL = new Label(tr("form.settings.user.label.dataset"));
-            datasetCB= new ComboBox(su_!=null&&
+            datasetCB= new ComboBox<Dataset>(su_!=null&&
                                     su_.getEnabled()==null&&
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
@@ -165,7 +165,7 @@ public class AccountForm extends FormWidget
             chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
             addLineToTable(attributeGroupTable, chartHeightL, chartHeightTF);
             chartMutationL = new Label(tr("form.settings.user.label.chartMutation"));
-            chartMutationCB = new ComboBox(getInteractionState(), this);
+            chartMutationCB = new ComboBox<String>(getInteractionState(), this);
             addLineToTable(attributeGroupTable, chartMutationL, chartMutationCB);
         }
         
@@ -197,14 +197,14 @@ public class AccountForm extends FormWidget
                 {
                     for(Dataset ds : t.getDatasets())
                     {
-                        datasetCB.addItem(lt(ds.getDescription()));
+                        datasetCB.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
                     }
                 }
             }
             
             if(su_.getDataset()!=null)
             {
-                datasetCB.selectItem(lt(su_.getDataset().getDescription()));
+                datasetCB.selectItem(su_.getDataset().getDescription());
             }
             firstNameTF.setText(su_.getFirstName());
             lastNameTF.setText(su_.getLastName());
@@ -220,26 +220,18 @@ public class AccountForm extends FormWidget
                 chartWidthTF.setText(getAttributeValue("chart.width", t));
                 chartHeightTF.setText(getAttributeValue("chart.height", t));
                 
-                chartMutationCB.addItem(lt("Default"));                
-                List<String> list = new ArrayList<String>();
+                chartMutationCB.addItem(new DataComboMessage<String>("Default", "Default"));
                 
                 for(Test test : t.getTests())
                 {
                     if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()))
                     {
-                        chartMutationCB.addItem(lt(test.getDescription()));
-                        list.add(test.getDescription());
+                        chartMutationCB.addItem(new DataComboMessage<String>(test.getDescription(), test.getDescription()));
                     }
                 }
                 String value = getAttributeValue("chart.mutation", t);
-                if(list.contains(value))
-                {
-                    chartMutationCB.selectItem(lt(value));
-                }
-                else
-                {
-                    chartMutationCB.selectItem(lt("Default"));
-                }
+                chartMutationCB.selectIndex(0);
+                chartMutationCB.selectItem(value);
             }
 
             t.commit();
@@ -353,7 +345,7 @@ public class AccountForm extends FormWidget
                 if(administrator_ && wasNotEnabled)
                 {
                     t = login.createTransaction();
-                    su_.setDataset(t.getDataset(datasetCB.currentText().value()));
+                    su_.setDataset(t.getDataset(datasetCB.currentItem().value()));
                     su_ = t.changeUid(su_, uidTF.text());
                     update(su_, t);
                     t.commit();
@@ -374,7 +366,7 @@ public class AccountForm extends FormWidget
                 t = login.createTransaction();
                 saveUserAttribute("number", "chart.height", chartHeightTF.text(), t);
                 saveUserAttribute("number", "chart.width", chartWidthTF.text(), t);
-                String chartMutation = chartMutationCB.currentText().value(); 
+                String chartMutation = chartMutationCB.currentValue();
                 chartMutation = "Default".equals(chartMutation)?null:chartMutation;
                 saveUserAttribute("string", "chart.mutation", chartMutation, t);
                 t.commit();

@@ -31,7 +31,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 	public void addData(WWidget[] widgets) 
 	{
 		String queryDefinitionParameterName = ((TextField)widgets[0]).getFormText();
-		QueryDefinitionParameterType queryDefinitionParameterType = ((DataComboMessage<QueryDefinitionParameterType>)((ComboBox)widgets[1]).currentText()).getValue();
+		QueryDefinitionParameterType queryDefinitionParameterType = ((ComboBox<QueryDefinitionParameterType>)widgets[1]).currentValue();
 		
 		QueryDefinitionParameter qdp = new QueryDefinitionParameter(queryDefinitionParameterType, queryDefinition, queryDefinitionParameterName);
 		
@@ -41,7 +41,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 	public void changeData(QueryDefinitionParameter queryDefinitionParameter, WWidget[] widgets) 
 	{
 		String queryDefinitionParameterName = ((TextField)widgets[0]).getFormText();
-		QueryDefinitionParameterType queryDefinitionParameterType = ((DataComboMessage<QueryDefinitionParameterType>)((ComboBox)widgets[1]).currentText()).getValue();
+		QueryDefinitionParameterType queryDefinitionParameterType = ((ComboBox<QueryDefinitionParameterType>)widgets[1]).currentValue();
 		
 		queryDefinitionParameter.setQueryDefinitionParameterType(queryDefinitionParameterType);
 		queryDefinitionParameter.setName(queryDefinitionParameterName);
@@ -69,7 +69,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 
 	public WWidget[] getWidgets(QueryDefinitionParameter queryDefinitionParameter) 
 	{
-		ComboBox combo = new ComboBox(form.getInteractionState(), form);
+		ComboBox<QueryDefinitionParameterType> combo = new ComboBox<QueryDefinitionParameterType>(form.getInteractionState(), form);
         TextField tf = new TextField(form.getInteractionState(), form);
         
         Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
@@ -87,7 +87,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
         widgets[0] = tf;
         widgets[1] = combo;
         
-        combo.selectItem(new DataComboMessage<QueryDefinitionParameterType>(queryDefinitionParameter.getQueryDefinitionParameterType(), queryDefinitionParameter.getQueryDefinitionParameterType().getName()));
+        combo.selectItem(queryDefinitionParameter.getQueryDefinitionParameterType().getName());
         tf.setText(queryDefinitionParameter.getName());
         
         return widgets;
@@ -100,7 +100,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 
 	public WWidget[] addRow() 
 	{
-		ComboBox combo = new ComboBox(form.getInteractionState(), form);
+		ComboBox<QueryDefinitionParameterType> combo = new ComboBox<QueryDefinitionParameterType>(form.getInteractionState(), form);
         TextField tf = new TextField(form.getInteractionState(), form);
         
         Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
@@ -124,7 +124,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
 	public WWidget[] fixAddRow(WWidget[] widgets) 
 	{
 		String queryDefinitionParameterName = ((TextField)widgets[0]).getFormText();
-		QueryDefinitionParameterType queryDefinitionParameterType = ((DataComboMessage<QueryDefinitionParameterType>)((ComboBox)widgets[1]).currentText()).getValue();
+		QueryDefinitionParameterType queryDefinitionParameterType = ((ComboBox<QueryDefinitionParameterType>)widgets[1]).currentValue();
 		
 		QueryDefinitionParameter qdp = new QueryDefinitionParameter(queryDefinitionParameterType, queryDefinition, queryDefinitionParameterName);
         

@@ -130,7 +130,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case COMMERCIALDRUG:
@@ -149,7 +149,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case TEST:
@@ -168,7 +168,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case TESTTYPE:
@@ -187,7 +187,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case PROTEIN:
@@ -206,7 +206,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case ATTRIBUTE:
@@ -225,7 +225,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
 		        case ATTRIBUTEGROUP:
@@ -244,7 +244,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        
 			        if(interactionState != InteractionState.Adding)
 			        {
-			        	((ComboBox)w).selectItem(new DataComboMessage<QueryDefinitionRunParameter>(qdrp, qdrp.getValue()));
+			        	((ComboBox)w).selectItem(qdrp.getValue());
 			        }
 		        break;
         	}
@@ -330,7 +330,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     
     private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i)
     {
-    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentText() != null)
+    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentItem() != null)
     	{
     		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
     		

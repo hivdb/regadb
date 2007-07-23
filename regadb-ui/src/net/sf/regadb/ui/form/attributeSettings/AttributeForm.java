@@ -33,9 +33,9 @@ public class AttributeForm extends FormWidget
     private Label nameL;
     private TextField nameTF;
     private Label valueTypeL;
-    private ComboBox valueTypeCB;
+    private ComboBox<ValueType> valueTypeCB;
     private Label groupL;
-    private ComboBox groupCB;
+    private ComboBox<AttributeGroup> groupCB;
     private Label usageL;
     private TextField usageTF;
     
@@ -63,11 +63,11 @@ public class AttributeForm extends FormWidget
         nameTF.setMandatory(true);
         addLineToTable(generalGroupTable_, nameL, nameTF);
         valueTypeL = new Label(tr("form.attributeSettings.attribute.editView.valueType"));
-        valueTypeCB = new ComboBox(getInteractionState(), this);
+        valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
         addLineToTable(generalGroupTable_, valueTypeL, valueTypeCB);
         groupL = new Label(tr("form.attributeSettings.attribute.editView.group"));
-        groupCB = new ComboBox(getInteractionState(), this);
+        groupCB = new ComboBox<AttributeGroup>(getInteractionState(), this);
         groupCB.setMandatory(true);
         addLineToTable(generalGroupTable_, groupL, groupCB);
         if(getInteractionState()!=InteractionState.Adding)
@@ -79,34 +79,18 @@ public class AttributeForm extends FormWidget
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<ValueType> valueTypes = t.getValueTypes();
-        boolean first = true;
-        WMessage msg;
-        WMessage toSelect = null;
         for(ValueType vt : valueTypes)
         {
-            msg = new DataComboMessage<ValueType>(vt, vt.getDescription());
-            if(first)
-            {
-                toSelect = msg;
-                first = false;
-            }
-            valueTypeCB.addItem(msg);
+            valueTypeCB.addItem(new DataComboMessage<ValueType>(vt, vt.getDescription()));
         }
-        valueTypeCB.selectItem(toSelect);
+        valueTypeCB.selectIndex(0);
         
         List<AttributeGroup> attributeGroups = t.getAttributeGroups();
-        first = true;
         for(AttributeGroup ag : attributeGroups)
         {
-            msg = new DataComboMessage<AttributeGroup>(ag, ag.getGroupName());
-            if(first)
-            {
-                toSelect = msg;
-                first = false;
-            }
-            groupCB.addItem(msg);
+            groupCB.addItem(new DataComboMessage<AttributeGroup>(ag, ag.getGroupName()));
         }
-        groupCB.selectItem(toSelect);
+        groupCB.selectIndex(0);
 
         t.commit();
         
@@ -117,7 +101,7 @@ public class AttributeForm extends FormWidget
     
     private void setNominalValuesGroup()
     {
-        boolean visible = (ValueTypes.getValueType(((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue()) == ValueTypes.NOMINAL_VALUE);
+        boolean visible = (ValueTypes.getValueType(valueTypeCB.currentValue()) == ValueTypes.NOMINAL_VALUE);
         
         if(!visible)
         {
@@ -161,8 +145,8 @@ public class AttributeForm extends FormWidget
             t.attach(attribute_);
             
             nameTF.setText(attribute_.getName());
-            valueTypeCB.selectItem(new DataComboMessage<ValueType>(attribute_.getValueType(), attribute_.getValueType().getDescription()));
-            groupCB.selectItem(new DataComboMessage<AttributeGroup>(attribute_.getAttributeGroup(), attribute_.getAttributeGroup().getGroupName()));
+            valueTypeCB.selectItem(attribute_.getValueType().getDescription());
+            groupCB.selectItem(attribute_.getAttributeGroup().getGroupName());
             
             usageTF.setText(t.getAttributeUsage(attribute_)+"");
             
@@ -188,9 +172,9 @@ public class AttributeForm extends FormWidget
         {
             t.attach(attribute_);
         }
-        AttributeGroup ag = ((DataComboMessage<AttributeGroup>)groupCB.currentText()).getValue();
+        AttributeGroup ag = groupCB.currentValue();
         t.attach(ag);
-        ValueType vt = ((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue();
+        ValueType vt = valueTypeCB.currentValue();
         t.attach(vt);
         attribute_.setName(nameTF.text());
         attribute_.setValueType(vt);

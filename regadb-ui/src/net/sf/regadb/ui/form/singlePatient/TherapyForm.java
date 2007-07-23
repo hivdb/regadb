@@ -40,7 +40,7 @@ public class TherapyForm extends FormWidget
     private Label stopDateL;
     private DateField stopDateDF;
     private Label motivationL;
-    private ComboBox motivationCB;
+    private ComboBox<TherapyMotivation> motivationCB;
     private Label commentL;
     private TextField commentTF;
     
@@ -86,7 +86,7 @@ public class TherapyForm extends FormWidget
         });
         
         motivationL = new Label(tr("form.therapy.editView.motivation"));
-        motivationCB = new ComboBox(getInteractionState(), this);
+        motivationCB = new ComboBox<TherapyMotivation>(getInteractionState(), this);
         addLineToTable(generalGroupTable_, motivationL, motivationCB);
         commentL = new Label(tr("form.therapy.editView.comment"));
         commentTF = new TextField(getInteractionState(), this);
@@ -161,7 +161,7 @@ public class TherapyForm extends FormWidget
             
             if(therapy_.getMotivation()!=null)
             {
-                motivationCB.selectItem(lt(therapy_.getMotivation().getValue()));
+                motivationCB.selectItem(therapy_.getMotivation().getValue());
             }
         }
         
@@ -175,9 +175,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
         for(WWidget widget : genericwidgets)
         {
-            if(!genericDrugs.contains(((ComboBox)widget).currentText().value()))
+            if(!genericDrugs.contains(((ComboBox)widget).currentItem().value()))
             {
-                genericDrugs.add(((ComboBox)widget).currentText().value());
+                genericDrugs.add(((ComboBox)widget).currentItem().value());
             }
         }
         
@@ -185,9 +185,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
         for(WWidget widget : commercialwidgets)
         {
-            if(!commercialDrugs.contains(((ComboBox)widget).currentText().value()))
+            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().value()))
             {
-                commercialDrugs.add(((ComboBox)widget).currentText().value());
+                commercialDrugs.add(((ComboBox)widget).currentItem().value());
             }
         }
         
@@ -239,7 +239,7 @@ public class TherapyForm extends FormWidget
             
             if(therapy_.getStopDate()!=null)
             {
-                therapy_.setMotivation(((DataComboMessage<TherapyMotivation>)motivationCB.currentText()).getValue());
+                therapy_.setMotivation(motivationCB.currentValue());
             }
             else
             {

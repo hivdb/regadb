@@ -1,16 +1,20 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import java.util.ArrayList;
+
+import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.i8n.WMessage;
 
-public class ComboBox extends FormField
+public class ComboBox<ComboDataType> extends FormField
 {
     private WComboBox fieldEdit_;
+    private ArrayList<DataComboMessage<ComboDataType>> list_ = null;
+    private int selectedIndex = -1;
     private boolean mandatory_ = false;
     private final static String noSelectionItem = "form.combobox.noSelectionItem";
     
@@ -25,6 +29,7 @@ public class ComboBox extends FormField
         }
         else
         {
+            list_ = new ArrayList<DataComboMessage<ComboDataType>>();
             initViewWidget();
         }
         
@@ -42,46 +47,53 @@ public class ComboBox extends FormField
     	}
     }
     
-    public void addItem(WMessage item)
+    public void addItem(DataComboMessage<ComboDataType> item)
     {
         if(fieldEdit_!=null)
         {
             fieldEdit_.addItem(item);
         }
-    }
-    
-    public void removeItem(WMessage toRemove)
-    {
-        if(fieldEdit_!=null)
+        else
         {
-            int index = -1;
-            for(int i = 0; i<fieldEdit_.count(); i++)
-            {
-                if(fieldEdit_.itemText(i).equals(toRemove))
-                {
-                    index = i;
-                }
-            }
-            if(index!=-1)
-            {
-                fieldEdit_.removeItem(index);
-            }
+            list_.add(item);
         }
     }
     
-    public WMessage currentText()
+    public void removeCurrentItem()
+    {
+        if(fieldEdit_!=null)
+        {
+            if(fieldEdit_.currentIndex()!=-1)
+                fieldEdit_.removeItem(fieldEdit_.currentIndex());
+        }
+        else
+        {
+            if(selectedIndex!=-1)
+                list_.remove(selectedIndex);
+        }
+    }
+    
+    public ComboDataType currentValue()
+    {
+        return currentItem().getValue();
+    }
+    
+    public DataComboMessage<ComboDataType> currentItem()
     {
     	if(fieldEdit_!=null)
     	{
-    		return fieldEdit_.currentText();
+    		return (DataComboMessage<ComboDataType>)fieldEdit_.currentText();
     	}
     	else
     	{
-    		return getViewMessage();
+            if(selectedIndex!=-1)
+                return list_.get(selectedIndex);
+            else
+                return null;
     	}
     }
     
-    public void selectItem(WMessage itemToSelect)
+    /*public void selectItem(DataComboMessage<ComboDataType> itemToSelect)
     {
         if(fieldEdit_!=null)
         {
@@ -89,7 +101,48 @@ public class ComboBox extends FormField
         }
         else
         {
-            setViewMessage(itemToSelect);
+            selectedIndex = list_.indexOf(itemToSelect);
+            if(selectedIndex!=-1)
+                setViewMessage(itemToSelect);
+        }
+    }*/
+    
+    public void selectItem(String messageValueRepresentation)
+    {
+        if(fieldEdit_!=null)
+        {
+            for(int i = 0; i < fieldEdit_.count(); i++) {
+                if(fieldEdit_.itemText(i).value().equals(messageValueRepresentation)) {
+                    selectIndex(i);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < list_.size(); i++) {
+                if(list_.get(i).value().equals(messageValueRepresentation)) {
+                    selectIndex(i);
+                    return;
+                }
+            }
+        }
+    }
+    
+    public void selectIndex(int index)
+    {
+        if(fieldEdit_!=null)
+        {
+            if(fieldEdit_.count()>0)
+                fieldEdit_.setCurrentIndex(index);
+        }
+        else
+        {
+            if(list_.size()>0)
+            {
+                selectedIndex = index;
+                setViewMessage(list_.get(selectedIndex));
+            }
         }
     }
 
@@ -101,13 +154,13 @@ public class ComboBox extends FormField
     public void flagErroneous()
     {
         if(fieldEdit_!=null)
-        fieldEdit_.setStyleClass("form-field-combo-edit-invalid");
+            fieldEdit_.setStyleClass("form-field-combo-edit-invalid");
     }
 
     public void flagValid()
     {
         if(fieldEdit_!=null)
-        fieldEdit_.setStyleClass("form-field-combo-edit-valid");
+            fieldEdit_.setStyleClass("form-field-combo-edit-valid");
     }
 
     public String getFormText() 
@@ -122,7 +175,7 @@ public class ComboBox extends FormField
 
     public void addNoSelectionItem() 
     {
-        addItem(tr(noSelectionItem));
+        addItem(new DataComboMessage<ComboDataType>((ComboDataType)null, tr(noSelectionItem).value()));
     }
     
     public void setMandatory(boolean mandatory)
@@ -163,6 +216,10 @@ public class ComboBox extends FormField
     	{
     		fieldEdit_.clear();
     	}
+        else
+        {
+            list_.clear();
+        }
     }
     
     public void setEnabled(boolean enabled)

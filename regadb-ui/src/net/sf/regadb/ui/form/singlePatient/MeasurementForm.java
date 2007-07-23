@@ -35,9 +35,9 @@ public class MeasurementForm extends FormWidget
     private Label dateL;
     private DateField dateTF;
     private Label testTypeL;
-    private ComboBox testTypeCB;
+    private ComboBox<TestType> testTypeCB;
     private Label testNameL;
-    private ComboBox testNameCB;
+    private ComboBox<Test> testNameCB;
     private Label testResultL;
     private FormField testResultField_;
     private WContainerWidget testResultC;
@@ -62,12 +62,12 @@ public class MeasurementForm extends FormWidget
         dateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, dateL, dateTF);
         testTypeL = new Label(tr("form.testResult.editView.testType"));
-        testTypeCB = new ComboBox(getInteractionState(), this);
+        testTypeCB = new ComboBox<TestType>(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
         addLineToTable(generalGroupTable_, testTypeL, testTypeCB);
         testNameL = new Label(tr("form.testResult.editView.testName"));
-        testNameCB = new ComboBox(getInteractionState(), this);
+        testNameCB = new ComboBox<Test>(getInteractionState(), this);
         testNameCB.setMandatory(true);
         addLineToTable(generalGroupTable_, testNameL, testNameCB);
         testResultL = new Label(tr("form.testResult.editView.testResult"));
@@ -79,24 +79,15 @@ public class MeasurementForm extends FormWidget
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
-        WMessage first = null;
-        WMessage current = null;
         for(TestType testType : t.getTestTypes())
         {
         	if(t.hasTests(testType))
         	{
-	        	current = new DataComboMessage<TestType>(testType, testType.getDescription());
-	        	if(first==null)
-	        	{
-	        		first = current;
-	        	}
-	        	testTypeCB.addItem(current);
+	        	testTypeCB.addItem(new DataComboMessage<TestType>(testType, testType.getDescription()));
         	}
         }
-        testTypeCB.selectItem(first);
+        testTypeCB.selectIndex(0);
 
-        TestType type = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
-        
         t.commit();
         
         fillData();
@@ -108,8 +99,8 @@ public class MeasurementForm extends FormWidget
 	{
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
-	       	testTypeCB.selectItem(new DataComboMessage<TestType>(testResult_.getTest().getTestType(), testResult_.getTest().getTestType().getDescription()));
-	        testNameCB.selectItem(new DataComboMessage<Test>(testResult_.getTest(), testResult_.getTest().getDescription()));
+	       	testTypeCB.selectItem(testResult_.getTest().getTestType().getDescription());
+	        testNameCB.selectItem(testResult_.getTest().getDescription());
 	        
 	        dateTF.setDate(testResult_.getTestDate());
             
@@ -117,7 +108,7 @@ public class MeasurementForm extends FormWidget
 		}
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        TestType type = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
+        TestType type = testTypeCB.currentValue();
         setTestCombo(t, type);
         t.commit();
         
@@ -127,7 +118,7 @@ public class MeasurementForm extends FormWidget
         {
             if(testResultField_ instanceof ComboBox)
             {
-                ((ComboBox)testResultField_).selectItem(new DataComboMessage<TestNominalValue>(testResult_.getTestNominalValue(),testResult_.getTestNominalValue().getValue()));
+                ((ComboBox)testResultField_).selectItem(testResult_.getTestNominalValue().getValue());
             }
             else
             {
@@ -139,7 +130,7 @@ public class MeasurementForm extends FormWidget
                 {
         			public void notify(WEmptyEvent a)
         			{
-                        TestType testType = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
+                        TestType testType = testTypeCB.currentValue();
                         
         				Transaction t = RegaDBMain.getApp().createTransaction();
         				setTestCombo(t, testType);
@@ -154,19 +145,12 @@ public class MeasurementForm extends FormWidget
 	{
 		testNameCB.clearItems();
 		
-        WMessage first = null;
-        WMessage current = null;
         for(Test test : t.getTests(testType))
         {
-        	current = new DataComboMessage<Test>(test, test.getDescription());
-        	if(first==null)
-        	{
-        		first = current;
-        	}
-        	testNameCB.addItem(current);
+        	testNameCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
         }
- 
-        testNameCB.selectItem(first);
+        
+        testNameCB.selectIndex(0);
 	}
     
     private void setResultField(ValueType valueType, TestType type)
@@ -198,7 +182,7 @@ public class MeasurementForm extends FormWidget
 		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 		t.attach(p);
 		
-		Test test = ((DataComboMessage<Test>)testNameCB.currentText()).getValue();
+		Test test = testNameCB.currentValue();
 		
 		if(getInteractionState()==InteractionState.Adding)
 		{
@@ -214,7 +198,7 @@ public class MeasurementForm extends FormWidget
 			    
 		if(testResultField_ instanceof ComboBox)
 		{
-			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentText()).getValue());
+			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getValue());
             testResult_.setValue(null);
         }
 		else

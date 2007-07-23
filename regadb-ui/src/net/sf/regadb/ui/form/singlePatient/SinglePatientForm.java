@@ -50,7 +50,7 @@ public class SinglePatientForm extends FormWidget
     private WGroupBox generalGroup_;
     private WTable generalGroupTable_;
     private Label sourceDatasetL;
-    private ComboBox sourceDatasetCB;
+    private ComboBox<Dataset> sourceDatasetCB;
     private Label idL;
     private TextField idTF;
     private Label firstNameL;
@@ -84,7 +84,7 @@ public class SinglePatientForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
-        sourceDatasetCB = new ComboBox(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
+        sourceDatasetCB = new ComboBox<Dataset>(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         sourceDatasetCB.setMandatory(true);
         addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
@@ -165,7 +165,7 @@ public class SinglePatientForm extends FormWidget
         {
             if(ds.getClosedDate()==null)
             {
-                sourceDatasetCB.selectItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
+                sourceDatasetCB.selectItem(ds.getDescription());
             }
         }
         
@@ -209,7 +209,7 @@ public class SinglePatientForm extends FormWidget
             WMessage groupMessage;
             Label attributeLabel;
             FormField attributeFieldTF = null;
-            ComboBox attributeFieldCB;
+            ComboBox<AttributeNominalValue> attributeFieldCB;
             AttributeNominalValue selectedNominalVal;
             for(Map.Entry<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> entry : groups.entrySet())
             {
@@ -234,7 +234,7 @@ public class SinglePatientForm extends FormWidget
                     attributesGroupTable_.putElementAt(rowToPlace, 1, attributeLabel);
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
-                        attributeFieldCB = new ComboBox(getInteractionState(), this);
+                        attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
                         attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldCB);
                         attributeFieldCB.addNoSelectionItem();
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
@@ -246,7 +246,7 @@ public class SinglePatientForm extends FormWidget
                             selectedNominalVal = attrEl.getValue().getAttributeNominalValue();
                             if(selectedNominalVal!=null)
                             {
-                                attributeFieldCB.selectItem(new DataComboMessage<AttributeNominalValue>(selectedNominalVal,selectedNominalVal.getValue()));
+                                attributeFieldCB.selectItem(selectedNominalVal.getValue());
                             }
                         }
                     }
@@ -326,7 +326,7 @@ public class SinglePatientForm extends FormWidget
         
         if(getInteractionState() == InteractionState.Adding)
         {
-            patient_.setSourceDataset(((DataComboMessage<Dataset>)sourceDatasetCB.currentText()).getValue(), t);
+            patient_.setSourceDataset(sourceDatasetCB.currentValue(), t);
         }
         
         patient_.setPatientId(getNulled(idTF.text()));
@@ -364,7 +364,7 @@ public class SinglePatientForm extends FormWidget
                     }
                     else if(tf instanceof ComboBox)
                     {
-                        message = ((ComboBox)tf).currentText();
+                        message = ((ComboBox)tf).currentItem();
                         
                         if(message instanceof DataComboMessage)
                         {

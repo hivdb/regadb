@@ -42,7 +42,7 @@ public class TestForm extends FormWidget
     private Label testL ;
     private TextField testTF ;
     private Label testTypeL;
-    private ComboBox testTypeCB;
+    private ComboBox<TestType> testTypeCB;
     private Label analysisL;
     private CheckBox analysisCK;
     
@@ -54,16 +54,16 @@ public class TestForm extends FormWidget
     private Label urlL;
     private TextField urlTF;
     private Label analysisTypeL;
-    private ComboBox analysisTypeCB;
+    private ComboBox<AnalysisType> analysisTypeCB;
     private Label accountL;
     private TextField accountTF;
     private Label passwordL;
     private TextField passwordTF;
     private WPushButton refreshButton;
     private Label baseInputFileL;
-    private ComboBox baseInputFileCB;
+    private ComboBox<String> baseInputFileCB;
     private Label baseOutputFileL;
-    private ComboBox baseOutputFileCB;
+    private ComboBox<String> baseOutputFileCB;
     
     //analysis data group
     private WGroupBox analysisDataGroup_;
@@ -93,7 +93,7 @@ public class TestForm extends FormWidget
         addLineToTable(mainFrameTable_, testL, testTF);
         
 	    testTypeL=new Label(tr("form.testSettings.test.editView.testType"));
-	    testTypeCB= new ComboBox (getInteractionState(),this);
+	    testTypeCB= new ComboBox<TestType>(getInteractionState(),this);
 	    testTypeCB.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testTypeL, testTypeCB);
 	    
@@ -115,7 +115,6 @@ public class TestForm extends FormWidget
         
         for(TestType tt : testTypes)
         {
-            
             testTypeCB.addItem(new DataComboMessage<TestType>(tt, tt.getDescription()));
         }
         
@@ -127,7 +126,7 @@ public class TestForm extends FormWidget
         analysisTable_  = new WTable(analysisGroup_);
         
         analysisTypeL = new Label(tr("form.testSettings.test.editView.analysis.analysisType"));
-        analysisTypeCB = new ComboBox(getInteractionState(), this);
+        analysisTypeCB = new ComboBox<AnalysisType>(getInteractionState(), this);
         analysisTypeCB.setMandatory(true);
         addLineToTable(analysisTable_,analysisTypeL, analysisTypeCB);
         
@@ -168,12 +167,12 @@ public class TestForm extends FormWidget
         }
         
         baseInputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseInputFile"));
-        baseInputFileCB= new ComboBox(getInteractionState(), this);
+        baseInputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseInputFileCB.setMandatory(true);
         addLineToTable(analysisTable_,baseInputFileL, baseInputFileCB);
 
         baseOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseOutputFile"));
-        baseOutputFileCB= new ComboBox(getInteractionState(), this);
+        baseOutputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseOutputFileCB.setMandatory(true);
         addLineToTable(analysisTable_,baseOutputFileL, baseOutputFileCB);
         
@@ -211,21 +210,21 @@ public class TestForm extends FormWidget
         
         if(test_.getTestType() != null)
         {
-            testTypeCB.selectItem(new DataComboMessage<TestType>(test_.getTestType(), test_.getTestType().getDescription()));
+            testTypeCB.selectItem(test_.getTestType().getDescription());
         }
         
         if(test_.getAnalysis() != null)
         {
             analysisCK.setChecked(true);
             
-            analysisTypeCB.selectItem(new DataComboMessage<AnalysisType>(test_.getAnalysis().getAnalysisType(), test_.getAnalysis().getAnalysisType().getType()));
+            analysisTypeCB.selectItem(test_.getAnalysis().getAnalysisType().getType());
             urlTF.setText(test_.getAnalysis().getUrl());
             serviceTF.setText(test_.getAnalysis().getServiceName());
             accountTF.setText(test_.getAnalysis().getAccount());
             passwordTF.setText(test_.getAnalysis().getPassword());
             
-            baseInputFileCB.selectItem(lt(test_.getAnalysis().getBaseinputfile()));
-            baseOutputFileCB.selectItem(lt(test_.getAnalysis().getBaseoutputfile()));
+            baseInputFileCB.selectItem(test_.getAnalysis().getBaseinputfile());
+            baseOutputFileCB.selectItem(test_.getAnalysis().getBaseoutputfile());
         }
         else
         {
@@ -380,12 +379,12 @@ public class TestForm extends FormWidget
     {
     	for(String input : wtsMC.parseInputNames(array))
         {
-            baseInputFileCB.addItem(lt(input));
+            baseInputFileCB.addItem(new DataComboMessage<String>(input, input));
         }
         
         for(String output : wtsMC.parseOutputNames(array))
         {
-            baseOutputFileCB.addItem(lt(output));
+            baseOutputFileCB.addItem(new DataComboMessage<String>(output, output));
         }
     }
     
@@ -410,7 +409,7 @@ public class TestForm extends FormWidget
         {
         	for (WWidget w : analysisDataET.getAllWidgets(0))
     		{
-        		if (!((TextField)w).text().equals(baseInputFileCB.currentText().value()))
+        		if (!((TextField)w).text().equals(baseInputFileCB.currentValue()))
         		{
         			analysisDataET.removeAllRows();
         		}
@@ -435,7 +434,7 @@ public class TestForm extends FormWidget
 	            t.attach(test_);
 	        }
 	        
-	        TestType tt = ((DataComboMessage<TestType>)testTypeCB.currentText()).getValue();
+	        TestType tt = testTypeCB.currentValue();
 	        t.attach(tt);
 
 	        test_.setDescription(testTF.text());
@@ -450,13 +449,13 @@ public class TestForm extends FormWidget
 	                test_.setAnalysis(new Analysis());
 	            }
 	            
-	            test_.getAnalysis().setAnalysisType(((DataComboMessage<AnalysisType>)analysisTypeCB.currentText()).getValue());
+	            test_.getAnalysis().setAnalysisType(analysisTypeCB.currentValue());
 	            test_.getAnalysis().setUrl(urlTF.text());
 	            test_.getAnalysis().setServiceName(serviceTF.text());
 	            test_.getAnalysis().setAccount(accountTF.text());
 	            test_.getAnalysis().setPassword(passwordTF.text());
-	            test_.getAnalysis().setBaseinputfile(baseInputFileCB.currentText().value());
-	            test_.getAnalysis().setBaseoutputfile(baseOutputFileCB.currentText().value());
+	            test_.getAnalysis().setBaseinputfile(baseInputFileCB.currentValue());
+	            test_.getAnalysis().setBaseoutputfile(baseOutputFileCB.currentValue());
 	            
 	            ianalysisDataET.setTransaction(t);
 	            ianalysisDataET.setAnalysis(test_.getAnalysis());

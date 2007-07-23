@@ -33,9 +33,9 @@ public class TestTypeForm extends FormWidget
     private Label testTypeL ;
     private TextField testTypeTF ;
     private Label valueTypeL;
-    private ComboBox valueTypeCB;
+    private ComboBox<ValueType> valueTypeCB;
     private Label testObjectL;
-    private ComboBox testObjectCB;    
+    private ComboBox<TestObject> testObjectCB;    
     
 //  nominal values group
     private WGroupBox nominalValuesGroup_;
@@ -61,44 +61,27 @@ public class TestTypeForm extends FormWidget
 	    testTypeTF.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testTypeL, testTypeTF);
 	    valueTypeL = new Label(tr("form.testSettings.testType.editView.valueType"));
-        valueTypeCB = new ComboBox(getInteractionState(), this);
+        valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
         addLineToTable(mainFrameTable_, valueTypeL, valueTypeCB);
 	    testObjectL=new Label(tr("form.testSettings.testType.editView.testobject"));
-	    testObjectCB= new ComboBox (getInteractionState(),this);
+	    testObjectCB= new ComboBox<TestObject>(getInteractionState(),this);
 	    testObjectCB.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testObjectL, testObjectCB);
 	    Transaction t = RegaDBMain.getApp().createTransaction();
 	    List<ValueType> valueTypes=t.getValueTypes();
-	    boolean first = true;
-        WMessage msg;
-        WMessage toSelect = null;
         for(ValueType vt : valueTypes)
         {
-            msg = new DataComboMessage<ValueType>(vt, vt.getDescription());
-            if(first)
-            {
-                toSelect = msg;
-                first = false;
-            }
-            valueTypeCB.addItem(msg);
+            valueTypeCB.addItem(new DataComboMessage<ValueType>(vt, vt.getDescription()));
         }
-        valueTypeCB.selectItem(toSelect);
+        valueTypeCB.selectIndex(0);
 	    
         List<TestObject> testObjects=t.getTestObjects();
-	    first = true;
-        toSelect = null;
         for(TestObject to : testObjects)
         {
-            msg = new DataComboMessage<TestObject>(to, to.getDescription());
-            if(first)
-            {
-                toSelect = msg;
-                first = false;
-            }
-            testObjectCB.addItem(msg);
+            testObjectCB.addItem(new DataComboMessage<TestObject>(to, to.getDescription()));
         }
-        testObjectCB.selectItem(toSelect);
+        testObjectCB.selectIndex(0);
         
         nominalValuesGroup_ = new WGroupBox(tr("form.testSettings.testType.editView.nominalValues"), this);
                
@@ -107,7 +90,7 @@ public class TestTypeForm extends FormWidget
 	
 	private void setNominalValuesGroup()
     {
-        boolean visible = (ValueTypes.getValueType(((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue()) == ValueTypes.NOMINAL_VALUE);
+        boolean visible = (ValueTypes.getValueType(valueTypeCB.currentValue()) == ValueTypes.NOMINAL_VALUE);
         
         if(!visible)
         {
@@ -151,9 +134,9 @@ public class TestTypeForm extends FormWidget
             t.attach(testType_);
             
             testTypeTF.setText(testType_.getDescription());
-            valueTypeCB.selectItem(new DataComboMessage<ValueType>(testType_.getValueType(), testType_.getValueType().getDescription()));
+            valueTypeCB.selectItem(testType_.getValueType().getDescription());
             
-            testObjectCB.selectItem(new DataComboMessage<TestObject>(testType_.getTestObject(), testType_.getTestObject().getDescription()));           
+            testObjectCB.selectItem(testType_.getTestObject().getDescription());
             t.commit();
          }
          
@@ -176,10 +159,10 @@ public class TestTypeForm extends FormWidget
             t.attach(testType_);
         }
         
-        TestObject to = ((DataComboMessage<TestObject>)testObjectCB.currentText()).getValue();
+        TestObject to = testObjectCB.currentValue();
         t.attach(to);
         
-        ValueType vt = ((DataComboMessage<ValueType>)valueTypeCB.currentText()).getValue();
+        ValueType vt = valueTypeCB.currentValue();
         t.attach(vt);
         
         testType_.setDescription(testTypeTF.text());
