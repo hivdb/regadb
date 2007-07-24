@@ -15,6 +15,7 @@ import net.sf.witty.wt.validation.WIntValidator;
 public class TextField extends FormField
 {
 	private WLineEdit _fieldEdit;
+    private WLineEditEchoMode echoMode_;
 	
 	public TextField(InteractionState state, IForm form, FieldType type)
 	{
@@ -61,10 +62,25 @@ public class TextField extends FormField
 	
 	public void setEchomode(WLineEditEchoMode mode)
 	{
+		echoMode_ = mode;
         if(_fieldEdit!=null)
         {
             _fieldEdit.setEchoMode(mode);
         }
+	}
+
+	@Override
+	public void setText(String text) {
+    	if(echoMode_ == WLineEditEchoMode.Password && _fieldEdit==null) {
+    		String passwordText = "";
+    		
+    		for(int i = 0; i < text.length(); i++) {
+    			passwordText += '*';
+    		}
+    		
+    		text = passwordText;
+    	}
+		super.setText(text);
 	}
 
 	public WFormWidget getFormWidget()
