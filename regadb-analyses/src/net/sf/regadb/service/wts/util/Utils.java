@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Utils {
     public static List<Test> getResistanceTests() {
@@ -30,7 +31,7 @@ public class Utils {
             ArrayList<Test> toRemove = new ArrayList<Test>();
             for(Test resTest : resistanceTests)
             {
-                if(!resTest.getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)"))
+                if(!resTest.getTestType().getDescription().equals(StandardObjects.getGssId()))
                 {
                     toRemove.add(resTest);
                 }

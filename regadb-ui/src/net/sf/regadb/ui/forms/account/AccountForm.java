@@ -9,6 +9,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.form.singlePatient.StringComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -222,7 +223,7 @@ public class AccountForm extends FormWidget
                 
                 for(Test test : t.getTests())
                 {
-                    if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()))
+                    if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
                     {
                         chartMutationCB.addItem(new DataComboMessage<String>(test.getDescription(), test.getDescription()));
                     }

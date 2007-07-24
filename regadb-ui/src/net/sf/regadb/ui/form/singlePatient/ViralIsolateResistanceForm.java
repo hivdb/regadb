@@ -8,6 +8,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
@@ -84,7 +85,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
-            if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
+            if(StandardObjects.getGssId().equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
             {
                 col = resistanceTable_.numColumns();
                 resistanceTable_.putElementAt(0, col, new TableHeader(lt(test.getDescription())));

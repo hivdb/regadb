@@ -13,6 +13,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.pair.Pair;
@@ -244,7 +245,7 @@ public class InitRegaDB
     
     private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
     {
-        TestType gss = new TestType(to, "Genotypic Susceptibility Score (GSS)");
+        TestType gss = new TestType(to, StandardObjects.getGssId());
         
         ValueType numberVT = null;
         for(ValueType vt : valueTypes)

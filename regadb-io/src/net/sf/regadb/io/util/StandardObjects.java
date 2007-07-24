@@ -18,10 +18,12 @@ public class StandardObjects {
     private static TestObject patientObject = new TestObject("Patient test", 0);
     private static ValueType numberValueType = new ValueType("number");
     private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
+    private static ValueType nominalValueType = new ValueType("nominal value");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
+    private static String gssId = "Genotypic Susceptibility Score (GSS)";
 
     public static TestType getCd4TestType() {
         return cd4TestType;
@@ -43,6 +45,12 @@ public class StandardObjects {
     }
     public static TestType getViralLoadTestType() {
         return viralLoadTestType;
+    }
+    public static ValueType getNominalValueType() {
+        return nominalValueType;
+    }
+    public static String getGssId() {
+        return gssId;
     }
 
 }

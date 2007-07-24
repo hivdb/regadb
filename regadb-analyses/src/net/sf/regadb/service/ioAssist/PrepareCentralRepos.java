@@ -29,6 +29,7 @@ import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportException;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 
 import org.apache.commons.io.FileUtils;
@@ -44,7 +45,7 @@ public class PrepareCentralRepos
     private static ValueType nominalValue = new ValueType("nominal value");
     private static ValueType number = new ValueType("number");
     private static AttributeGroup regadb = new AttributeGroup("RegaDB");
-    private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), "Genotypic Susceptibility Score (GSS)");
+    private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), StandardObjects.getGssId());
     
     public static void main(String [] args)
     {

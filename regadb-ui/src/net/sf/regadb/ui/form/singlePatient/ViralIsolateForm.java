@@ -9,6 +9,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -120,7 +121,7 @@ public class ViralIsolateForm extends FormWidget
         for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
         {
             TestResult test = i.next();
-            if("Genotypic Susceptibility Score (GSS)".equals(test.getTest().getTestType().getDescription()))
+            if(StandardObjects.getGssId().equals(test.getTest().getTestType().getDescription()))
             {
                 if(test.getTest().getAnalysis()!=null)
                 {
@@ -148,7 +149,7 @@ public class ViralIsolateForm extends FormWidget
         String uid = RegaDBMain.getApp().getLogin().getUid();
         for(Test test : tests)
         {
-            if("Genotypic Susceptibility Score (GSS)".equals(test.getTestType().getDescription()))
+            if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
             {
                 if(test.getAnalysis()!=null)
                 {
