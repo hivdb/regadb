@@ -74,7 +74,7 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     public boolean stillExists(ResistanceInterpretationTemplate selectedItem)
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.resRepTemplateStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
     }

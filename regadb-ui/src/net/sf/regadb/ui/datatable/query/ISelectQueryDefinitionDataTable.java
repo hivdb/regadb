@@ -79,7 +79,7 @@ public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefiniti
     public boolean stillExists(QueryDefinition selectedItem)
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
-        boolean state = t.queryDefinitionStillExists(selectedItem);
+        boolean state = t.stillExists(selectedItem);
         t.commit();
         return state;
     }

@@ -30,7 +30,8 @@ public class LogoutItem extends TreeMenuNode
                     {
                         RegaDBMain.getApp().getFormContainer().setForm(new LoginForm());
                         RegaDBMain.getApp().logout();
-                        RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
+                        RegaDBMain.getApp().getWindow().newTree();
+                        //RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
                         cmb.hide();
                     }
                 });

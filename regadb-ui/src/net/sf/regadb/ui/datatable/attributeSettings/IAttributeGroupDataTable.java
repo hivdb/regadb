@@ -74,7 +74,7 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     public boolean stillExists(AttributeGroup selectedItem)
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.attributeGroupStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
     }

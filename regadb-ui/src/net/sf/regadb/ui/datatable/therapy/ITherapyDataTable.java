@@ -118,7 +118,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	public boolean stillExists(Therapy selectedItem)
 	{
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.therapyStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
 	}

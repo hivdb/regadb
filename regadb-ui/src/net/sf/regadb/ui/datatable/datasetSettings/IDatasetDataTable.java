@@ -87,7 +87,7 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	public boolean stillExists(Dataset selectedItem) 
 	{
 		Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.datasetStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
 	}

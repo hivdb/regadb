@@ -103,7 +103,7 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     public boolean stillExists(SettingsUser selectedItem)
     {
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.settingsUserStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
     }

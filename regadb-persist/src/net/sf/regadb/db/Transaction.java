@@ -537,46 +537,15 @@ public class Transaction {
         return q.uniqueResult()!=null;
     }
     
-    public boolean testResultStillExists(TestResult testResult)
+    public boolean stillExists(Serializable obj)
     {
-        Query q = session.createQuery("from TestResult testResult " + 
-                                    "where testResult.testResultIi = :testResultId");
+        Query q = session.createQuery("from " + obj.getClass().getName() + " obj where obj = :obj");
         
-        q.setParameter("testResultId", testResult.getTestResultIi());
+        q.setParameter("obj", obj);
     
         return q.uniqueResult() !=null;
     }
-    
-    public boolean therapyStillExists(Therapy therapy)
-    {
-        Query q = session.createQuery("from Therapy therapy " + 
-                                    "where therapy.id = :therapyId");
-        
-        q.setParameter("therapyId", therapy.getTherapyIi());
-    
-        return q.uniqueResult() !=null;
-    }
-    
-    public boolean viralIsolateStillExists(ViralIsolate viralIsolate)
-    {
-        Query q = session.createQuery("from ViralIsolate viralIsolate " + 
-                                    "where viralIsolate.id = :viralIsolateId");
-        
-        q.setParameter("viralIsolateId", viralIsolate.getViralIsolateIi());
-    
-        return q.uniqueResult() !=null;
-    }
-    
-    public boolean settingsUserStillExists(SettingsUser settingsUser)
-    {
-        Query q = session.createQuery("from SettingsUser settingsUser " + 
-                                    "where settingsUser.uid = :settingsUserId");
-        
-        q.setParameter("settingsUserId", settingsUser.getUid());
-    
-        return q.uniqueResult() !=null;
-    }
-    
+       
     /**
      * Returns a Page of TestResults,
      * checking all the filter constraints and grouped by the selected col.
@@ -784,17 +753,7 @@ public class Transaction {
         
         return ((Long)q.uniqueResult()).longValue();
     }
-    
-    public boolean attributeStillExists(Attribute attribute)
-    {
-        Query q = session.createQuery("from Attribute attribute " + 
-                                    "where attribute.attributeIi = :attributeId");
         
-        q.setParameter("attributeId", attribute.getAttributeIi());
-    
-        return q.uniqueResult() !=null;
-    }
-    
     public long getAttributeUsage(Attribute attribute)
     {
         Query q = session.createQuery("select count(attributeValue.id.attribute) from PatientAttributeValue attributeValue where attributeValue.id.attribute = :idParam");
@@ -856,16 +815,6 @@ public class Transaction {
         return ((Long)q.uniqueResult()).longValue();
     }
     
-    public boolean attributeGroupStillExists(AttributeGroup attribute)
-    {
-        Query q = session.createQuery("from AttributeGroup attributeGroup " + 
-                                    "where attributeGroup.id = :attributeGroupId");
-        
-        q.setParameter("attributeGroupId", attribute.getAttributeGroupIi());
-    
-        return q.uniqueResult() !=null;
-    }
-
     @SuppressWarnings("unchecked")
 	public List<TestObject> getTestObjects() 
 	{
@@ -873,16 +822,6 @@ public class Transaction {
 		return q.list();
 	}
 
-	public boolean testTypeStillExists(TestType testType)
-	{
-		Query q = session.createQuery("from TestType testType " + 
-        "where testType.id = :testTypeId");
-
-		q.setParameter("testTypeId", testType.getTestTypeIi());
-
-		return q.uniqueResult() !=null;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public List<TestType> getTestTypes(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) 
 	{
@@ -1011,26 +950,6 @@ public class Transaction {
         
         return q.list();
     }
-    
-    public boolean resRepTemplateStillExists(ResistanceInterpretationTemplate resRepTemplate)
-    {
-        Query q = session.createQuery("from ResistanceInterpretationTemplate resistanceInterpretationTemplate " + 
-        "where resistanceInterpretationTemplate.id = :resRepTemplateId");
-
-        q.setParameter("resRepTemplateId", resRepTemplate.getTemplateIi());
-
-        return q.uniqueResult() !=null;
-    }
-
-	public boolean testStillExists(Test test) 
-	{
-		Query q = session.createQuery("from Test test " + 
-        "where test.id = :testId");
-
-		q.setParameter("testId", test.getTestIi());
-
-		return q.uniqueResult() !=null;
-	}
     
     public UserAttribute getUserAttribute(SettingsUser uid, String name)
     {
@@ -1232,16 +1151,6 @@ public class Transaction {
          return ((Long)q.uniqueResult()).longValue();
     }
     
-    public boolean queryDefinitionStillExists(QueryDefinition queryDefinition)
-    {
-        Query q = session.createQuery("from QueryDefinition " + 
-                                    "where query_definition_ii = :queryDefinitionId");
-        
-        q.setParameter("queryDefinitionId", queryDefinition.getQueryDefinitionIi());
-    
-        return q.uniqueResult() !=null;
-    }
-    
     @SuppressWarnings("unchecked")
     public List<QueryDefinitionParameterType> getQueryDefinitionParameterTypes() 
     {
@@ -1291,16 +1200,6 @@ public class Transaction {
         return ((Long)q.uniqueResult()).longValue();
 	}
 
-	public boolean datasetStillExists(Dataset dataset) 
-	{
-		Query q = session.createQuery("from Dataset dataset " + 
-        "where dataset.id = :datasetId");
-
-		q.setParameter("datasetId", dataset.getDatasetIi());
-
-		return q.uniqueResult() !=null;
-	}
-	
 	public String[] validateQuery(String query)
 	{
 		try
@@ -1363,16 +1262,6 @@ public class Transaction {
          return ((Long)q.uniqueResult()).longValue();
     }
 	
-	public boolean queryDefinitionRunStillExists(QueryDefinitionRun queryDefinitionRun)
-    {
-        Query q = session.createQuery("from QueryDefinitionRun " + 
-                                    "where query_definition_run_ii = :queryDefinitionRunId");
-        
-        q.setParameter("queryDefinitionRunId", queryDefinitionRun.getQueryDefinitionRunIi());
-    
-        return q.uniqueResult() !=null;
-    }
-    
     public DrugClass getDrugClass(String drugClassId)
     {
         Query q = session.createQuery("from DrugClass as drugclass where classId = :classId");

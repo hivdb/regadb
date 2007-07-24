@@ -2,6 +2,7 @@ package net.sf.regadb.ui.framework;
 
 import net.sf.witty.wt.WApplication;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTableCell;
 import net.sf.witty.wt.i8n.WStdMessageResource;
 
 public class RegaDBWindow extends WTable
@@ -50,4 +51,10 @@ public class RegaDBWindow extends WTable
 	{
 		tree_.init();
 	}
+    
+    public void newTree() {
+        WTableCell cell = ((WTableCell)tree_.parent());
+        cell.clear();
+        tree_ = new Tree(cell);
+    }
 }

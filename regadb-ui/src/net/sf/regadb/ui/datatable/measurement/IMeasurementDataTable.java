@@ -87,7 +87,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 	public boolean stillExists(TestResult selectedItem)
 	{
         Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.testResultStillExists(selectedItem);
+        boolean state = trans.stillExists(selectedItem);
         trans.commit();
         return state;
 	}
