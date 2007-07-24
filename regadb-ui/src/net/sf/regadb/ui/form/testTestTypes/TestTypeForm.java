@@ -17,6 +17,7 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
@@ -152,7 +153,13 @@ public class TestTypeForm extends FormWidget
 
 	@Override
 	public void saveData() 
-	{
+	{        
+        WMessage duplicates = nominalValuesList_.removeDuplicates(0);
+        if(duplicates!=null)
+        {
+            MessageBox.showWarningMessage(duplicates);
+        }
+        
 		Transaction t = RegaDBMain.getApp().createTransaction();
         if(!(getInteractionState()==InteractionState.Adding))
         {
