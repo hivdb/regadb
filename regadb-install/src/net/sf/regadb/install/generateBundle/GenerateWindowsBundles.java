@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.sf.regadb.install.generateHsqldb.HsqldbDatabaseCreator;
 import net.sf.regadb.util.pair.Pair;
 
 import org.apache.commons.io.FileUtils;
@@ -18,7 +19,6 @@ public class GenerateWindowsBundles {
         String javaTomcatLocation = buildPath + replaceByPS("/regadb-install/src/net/sf/regadb/install/generateBundle/winResources/");
         tarxzvf(javaTomcatLocation + "jre.tgz", bundlePath);
         tarxzvf(javaTomcatLocation + "tomcat.tgz", bundlePath);
-        deployRegaDB(buildPath, bundlePath);
     }
     
     public void deployRegaDB(String buildPath, String bundlePath) {
@@ -90,7 +90,7 @@ public class GenerateWindowsBundles {
         tarFile.delete();
     }
     
-    private String replaceByPS(String path) {
+    private static String replaceByPS(String path) {
         String result = "";
         for(int i = 0; i < path.length(); i++) {
             if(path.charAt(i)=='/')
@@ -103,7 +103,16 @@ public class GenerateWindowsBundles {
     
     public static void main(String [] args) {
         GenerateWindowsBundles gen = new GenerateWindowsBundles();
-        gen.unpackJavaTomcat("C:\\jvsant1\\build_dir\\", "C:\\jvsant1\\bundle\\");
+        String buildDir = "C:\\jvsant1\\build_dir\\";
+        String bundleDir = "C:\\jvsant1\\bundle\\";
+        gen.unpackJavaTomcat(buildDir, bundleDir);
+        gen.deployRegaDB(buildDir, bundleDir);
+        HsqldbDatabaseCreator hsqldb = new HsqldbDatabaseCreator(   bundleDir + File.separatorChar + "hsqldb", 
+                                                                    "regadb", 
+                                                                    "regadb", 
+                                                                    "regadb", 
+                                                                    buildDir + File.separatorChar + replaceByPS("regadb-install/src/net/sf/regadb/install/ddl/schema/hsqldbSchema.sql"));
+        hsqldb.run();
     }
     
     public void runBuildFile(String buildFile, String bundlePath, String target, ArrayList<Pair<String, String>> properties) throws BuildException {
