@@ -107,6 +107,11 @@ public class GenerateWindowsBundles {
         String bundleDir = "C:\\jvsant1\\bundle\\";
         gen.unpackJavaTomcat(buildDir, bundleDir);
         gen.deployRegaDB(buildDir, bundleDir);
+        try {
+            FileUtils.forceMkdir(new File(bundleDir + File.separatorChar + "hsqldb"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         HsqldbDatabaseCreator hsqldb = new HsqldbDatabaseCreator(   bundleDir + File.separatorChar + "hsqldb", 
                                                                     "regadb", 
                                                                     "regadb", 
