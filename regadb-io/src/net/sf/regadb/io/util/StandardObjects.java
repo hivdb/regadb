@@ -52,5 +52,10 @@ public class StandardObjects {
     public static String getGssId() {
         return gssId;
     }
-
+    public static boolean isViralLoad(TestType tt) {
+        return viralLoadTestType.getDescription().equals(tt.getDescription());
+    }
+    public static boolean isCD4(TestType tt) {
+        return cd4TestType.getDescription().equals(tt.getDescription());
+    }
 }
