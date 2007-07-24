@@ -2,5 +2,6 @@ class_ii,class_id,class_name,resistance_table_order
 3,NNRTI,Non Nucleoside analog Reverse Transcriptase Inhibitor,1
 2,NRTI,Nucleoside analog Reverse Transcriptase Inhibitor,0
 1,PI,Protease Inhibitor,2
-4,FI,Envelope Fusion Inhibitor,3
+4,EI,Entry Inhibitor,3
 5,Unknown,Unknown,null
+6,INI,Integrase Inhibitor,4

@@ -36,3 +36,5 @@ generic_ii,generic_id,class_ii,generic_name,atc_code
 36,DRV/r,1,darunavir/r,J05AE10+J05AE03
 37,FPV/r,1,fosamprenavir/r,J05AE07+J05AE03
 38,ETV,3,etravirine,J05AG ETV
+39,RTG,6,raltegravir,
+40,MVC,4,maraviroc,
