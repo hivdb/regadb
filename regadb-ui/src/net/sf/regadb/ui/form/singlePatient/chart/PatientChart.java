@@ -33,15 +33,15 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.compare.DrugGenericComparator;
 import net.sf.regadb.db.compare.TestResultComparator;
-import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class PatientChart
 {
@@ -62,15 +62,6 @@ public class PatientChart
 	private static final int ALIGNMENT_BOTTOM = 4;
 
 	private static final int ALIGNMENT_TOP = 5;
-
-	private static final int TEST_TYPE_VL = 1;
-
-	private static final int TEST_TYPE_CD4 = 2;
-
-	private static final int TEST_SYMBOLS[] = { 0, VectorGraphicsConstants.SYMBOL_STAR,
-			VectorGraphicsConstants.SYMBOL_UP_TRIANGLE };
-
-	private static final Color TEST_COLORS[] = { null, COLOR_VL, COLOR_CD4 };
 
 	private int IMAGE_WIDTH = 1000;
 
@@ -250,8 +241,7 @@ public class PatientChart
 		determineCD4Limits();
 		determineVLLimits();
 		drawAxes(vg);
-		drawValues(vg, TEST_TYPE_CD4);
-		drawValues(vg, TEST_TYPE_VL);
+		drawValues(vg);
 		drawDrugUsage(vg);
 		drawSequenceInformation(vg);
 
@@ -344,11 +334,6 @@ public class PatientChart
             vg.fillRect(x1, ytop + 3, x2 - x1, DRUG_HEIGHT - 5);
     }
 
-	private int getTestType(TestResult result)
-	{
-		return result.getTest().getTestType().getTestTypeIi();
-	}
-
 	private double getNumberValue(TestResult result)
 	{
 		if (result.getTest().getTestType().getValueType().getValueTypeIi().intValue() == 2)
@@ -365,7 +350,7 @@ public class PatientChart
 			return false;
 	}
 
-	private void drawValues(Graphics2D vg, int testType)
+	private void drawValues(Graphics2D vg)
 	{
 		double lastValue = 0;
 		Date lastDate = null;
@@ -374,7 +359,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (getTestType(r) == testType)
+			if (StandardObjects.isViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				boolean clipped = isClipped(r);
@@ -382,7 +367,7 @@ public class PatientChart
 
 				if (v != 0)
 				{
-					drawValue(vg, testType, lastValue, lastDate, v, d, clipped);
+					drawValue(vg, r.getTest().getTestType(), lastValue, lastDate, v, d, clipped);
 
 					lastValue = v;
 					lastDate = d;
@@ -393,19 +378,21 @@ public class PatientChart
 		vg.setStroke(new BasicStroke());
 	}
 
-	private void drawValue(Graphics2D vg, int testType, double lastValue, Date lastDate, double v, Date d,
+	private void drawValue(Graphics2D vg, TestType testType, double lastValue, Date lastDate, double v, Date d,
 			boolean clipped)
 	{
 		int x1, y1;
 		int x2 = 0, y2 = 0;
 		Color c;
+        int symbol;
 
-		if (testType == TEST_TYPE_CD4)
+		if (StandardObjects.isCD4(testType))
 		{
 			y1 = computeCD4Y(v);
 			if (lastDate != null)
 				y2 = computeCD4Y(lastValue);
 			c = COLOR_CD4;
+            symbol = VectorGraphicsConstants.SYMBOL_STAR;
 		}
 		else
 		{
@@ -413,16 +400,17 @@ public class PatientChart
 			if (lastDate != null)
 				y2 = computeVLY(lastValue);
 			c = COLOR_VL;
+            symbol = VectorGraphicsConstants.SYMBOL_UP_TRIANGLE;
 		}
 
 		x1 = computeX(d);
 		if (lastDate != null)
 			x2 = computeX(lastDate);
 
-		vg.setColor(TEST_COLORS[testType]);
+		vg.setColor(c);
 
 		SymbolDrawer.drawSymbol(x1 + 1, y1 + 1, SYMBOL_SIZE, clipped ? VectorGraphicsConstants.SYMBOL_CIRCLE
-				: TEST_SYMBOLS[testType], vg);
+				: symbol, vg);
 
 		if (lastDate != null)
 		{
@@ -437,7 +425,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (getTestType(r) == TEST_TYPE_VL)
+			if (StandardObjects.isViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				if (v != 0)
@@ -458,7 +446,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (getTestType(r) == TEST_TYPE_CD4)
+			if (StandardObjects.isCD4(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				minCD4 = Math.min(minCD4, v);
@@ -480,7 +468,7 @@ public class PatientChart
 		drawString(vg, "CD4", ALIGNMENT_RIGHT, ALIGNMENT_TOP, BORDER_H - 3, BORDER_V + 2);
 		drawString(vg, "(cells/ul)", ALIGNMENT_RIGHT, ALIGNMENT_TOP, BORDER_H - 3, BORDER_V + 15);
 		SymbolDrawer.drawSymbol(BORDER_H + 3 + SYMBOL_SIZE / 2, BORDER_V + 20, SYMBOL_SIZE,
-				TEST_SYMBOLS[TEST_TYPE_CD4], vg);
+                VectorGraphicsConstants.SYMBOL_STAR, vg);
 		drawCD4Label(vg, 0);
 		int step = Math.max(200, (((int) maxCD4 / 6) / 200) * 200);
 		for (int i = 200; i < maxCD4; i += 200)
@@ -491,7 +479,7 @@ public class PatientChart
 		drawString(vg, "VL", ALIGNMENT_LEFT, ALIGNMENT_TOP, IMAGE_WIDTH - BORDER_H + 3, BORDER_V + 2);
 		drawString(vg, "(copies/ml)", ALIGNMENT_LEFT, ALIGNMENT_TOP, IMAGE_WIDTH - BORDER_H + 3, BORDER_V + 15);
 		SymbolDrawer.drawSymbol(IMAGE_WIDTH - BORDER_H - 3 - SYMBOL_SIZE / 2, BORDER_V + 20, SYMBOL_SIZE,
-				TEST_SYMBOLS[TEST_TYPE_VL], vg);
+                VectorGraphicsConstants.SYMBOL_UP_TRIANGLE, vg);
 		drawVLLabel(vg, 10, "10");
 		drawVLLabel(vg, 50, "50");
 		drawVLLabel(vg, 100, "100");
@@ -620,7 +608,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if ((getTestType(r) == TEST_TYPE_CD4) || (getTestType(r) == TEST_TYPE_VL))
+			if (StandardObjects.isViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
 			{
 				expandBounds(r.getTestDate());
 			}
