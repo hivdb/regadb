@@ -67,10 +67,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public void deleteData(DatasetAccess da)
     {
         user_.getDatasetAccesses().remove(da);
-        if(da!=null)
-        {
-            transaction_.delete(da);
-        }
+        transaction_.delete(da);
     }
     
     public InteractionState getInteractionState()

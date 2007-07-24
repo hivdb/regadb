@@ -43,11 +43,8 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
 
     public void deleteData(TestNominalValue type) 
     {
-    	testType_.getTestNominalValues().remove(type);
-    	if(type!=null && type.getNominalValueIi()!=null)
-    	{
-    		transaction_.delete(type);
-    	}
+    	testType_.getTestNominalValues().remove(type); 
+        transaction_.delete(type);
     }
 
     public InteractionState getInteractionState() 

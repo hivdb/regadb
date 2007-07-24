@@ -75,10 +75,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     public void deleteData(AnalysisData type)
     {
         analysis_.getAnalysisDatas().remove(type);
-        if(type!=null)
-        {
-            transaction_.delete(type);
-        }
+        transaction_.delete(type);
     }
     
     public String[] getTableHeaders()
