@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -8,27 +10,38 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WResource;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {
-	//TODO remove image when leaving the form
-	
-	private WImage chartImage_;
-	
 	public PatientChartForm(Patient p)
 	{
 		super(tr("form.singlePatient.viewChart"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);
-		PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
-		File tmpFile = RegaDBMain.getApp().createTempFile("regadb-chart", ".png");
-		chartDrawer.writePngChartToFile(800, tmpFile);
-		chartImage_ = new WImage(new WFileResource("image/png", tmpFile.getAbsolutePath()), this);
+		final PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
+        
+        WImage chartImage = new WImage(new WResource() {
+
+            @Override
+            public String resourceMimeType() {
+                return "image/png";
+            }
+
+            @Override
+            protected void streamResourceData(OutputStream stream) {
+                try {
+                    chartDrawer.writePngChart(800, stream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        }, this);
 
 		t.commit();
 	}
