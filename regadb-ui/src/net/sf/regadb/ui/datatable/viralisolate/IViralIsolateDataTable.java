@@ -105,12 +105,4 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	{
 		return sortable_;
 	}
-
-	public boolean stillExists(ViralIsolate selectedItem)
-	{
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-	}
 }

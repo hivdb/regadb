@@ -157,7 +157,7 @@ public class DataTable<DataType> extends WTable
                         {
                             public void notify(WMouseEvent a) 
                             {
-                                if(dataTableInterface_.stillExists(rawDataArray_.get(index)))
+                                if(stillExists(rawDataArray_.get(index)))
                                 {
                                     dataTableInterface_.selectAction(rawDataArray_.get(index));
                                 }
@@ -353,4 +353,11 @@ public class DataTable<DataType> extends WTable
 		refreshData(trans, true);
         trans.commit();
 	}
+    
+    public boolean stillExists(Object obj) {
+        Transaction trans = RegaDBMain.getApp().createTransaction();
+        boolean state = trans.stillExists(obj);
+        trans.commit();
+        return state;
+    }
 }

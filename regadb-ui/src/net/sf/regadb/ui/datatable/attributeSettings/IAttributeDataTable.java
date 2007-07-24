@@ -74,12 +74,4 @@ public class IAttributeDataTable implements IDataTable<Attribute>
     {
         return sortable_;
     }
-
-    public boolean stillExists(Attribute selectedItem)
-    {
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-    }
 }

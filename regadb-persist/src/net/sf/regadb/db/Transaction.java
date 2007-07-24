@@ -521,24 +521,11 @@ public class Transaction {
         return session.createCriteria(c);
     }
     
-    public boolean patientStillExists(Patient p)
+    public boolean stillExists(Object obj)
     {
-        Query q = session.createQuery(
-                "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
-                "from PatientImpl as patient " +
-                "join patient.patientDatasets as patient_dataset " +
-                "join patient_dataset.id.dataset as dataset " +
-                "join dataset.datasetAccesses access " +
-                "where patient.patientIi = :patientIi " +
-                "group by patient");
+        if(obj instanceof Patient)
+            obj = ((Patient)obj).getPatient();
         
-        q.setParameter("patientIi", p.getPatient().getPatientIi());
-        
-        return q.uniqueResult()!=null;
-    }
-    
-    public boolean stillExists(Serializable obj)
-    {
         Query q = session.createQuery("from " + obj.getClass().getName() + " obj where obj = :obj");
         
         q.setParameter("obj", obj);

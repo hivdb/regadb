@@ -114,12 +114,4 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	{
 		return sortable_;
 	}
-
-	public boolean stillExists(Therapy selectedItem)
-	{
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-	}
 }

@@ -84,15 +84,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
         RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();
 	}
 
-	public boolean stillExists(TestResult selectedItem)
-	{
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-	}
-
-	public boolean[] sortableFields()
+    public boolean[] sortableFields()
 	{
 		return sortable_;
 	}

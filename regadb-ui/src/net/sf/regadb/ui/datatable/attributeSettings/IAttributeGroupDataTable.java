@@ -70,12 +70,4 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     {
         return sortable_;
     }
-
-    public boolean stillExists(AttributeGroup selectedItem)
-    {
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-    }
 }

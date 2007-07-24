@@ -107,14 +107,6 @@ public class IPatientDataTable implements IDataTable<Patient>
         }
     }
 
-    public boolean stillExists(Patient selectedItem) 
-    {
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.patientStillExists(selectedItem);
-        trans.commit();
-        return state;
-    }
-
 	public boolean[] sortableFields()
 	{
 		return sortable_;

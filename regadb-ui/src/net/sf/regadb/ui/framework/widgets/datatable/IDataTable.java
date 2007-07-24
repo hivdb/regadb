@@ -22,8 +22,6 @@ public interface IDataTable <DataType>
     
     public long getDataSetSize(Transaction t);
     
-    public boolean stillExists(DataType selectedItem);
-    
     public void selectAction(DataType selectedItem);
     
     public boolean[] sortableFields();

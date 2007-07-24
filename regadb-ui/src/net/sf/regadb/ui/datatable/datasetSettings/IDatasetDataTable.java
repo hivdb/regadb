@@ -83,12 +83,4 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	{
 		return sortable_;
 	}
-
-	public boolean stillExists(Dataset selectedItem) 
-	{
-		Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-	}
 }

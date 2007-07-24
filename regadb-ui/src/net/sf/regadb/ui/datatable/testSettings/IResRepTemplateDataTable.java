@@ -70,12 +70,4 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     {
         return sortable_;
     }
-
-    public boolean stillExists(ResistanceInterpretationTemplate selectedItem)
-    {
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(selectedItem);
-        trans.commit();
-        return state;
-    }
 }
