@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.framework.widgets.editableTable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
@@ -15,6 +18,7 @@ import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class EditableTable<DataType> extends WContainerWidget
 {
@@ -181,7 +185,10 @@ public class EditableTable<DataType> extends WContainerWidget
     {
         for(DataType type : removedItemList_)
         {
-            editableList_.deleteData(type);
+            if(type!=null)
+            {
+                editableList_.deleteData(type);
+            }
         }
         
         editableList_.flush();
@@ -252,5 +259,36 @@ public class EditableTable<DataType> extends WContainerWidget
             
             addLine(editableList_.addRow(), true);
         }
+    }
+    
+    public WMessage removeDuplicates(int column)
+    {
+        Set<String> uniqueNominalValues = new HashSet<String>();
+        ArrayList<String> duplicates = new ArrayList<String>();
+        for(WWidget widget : getAllWidgets(column))
+        {
+            if(!(uniqueNominalValues.add(((TextField)widget).text())))
+            {
+                duplicates.add(((TextField)widget).text());
+            }
+        }
+        
+        ArrayList<WWidget> widgets = getAllWidgets(column);
+        for(String d : duplicates) {
+            for(int i = 0; i<widgets.size(); i++) {
+                if(((TextField)widgets.get(i)).text().equals(d)) {
+                    if(itemList_.get(i)==null) {
+                        ((WCheckBox)itemTable_.elementAt(i+1, 0).children().get(0)).setChecked(true);
+                    }
+                }
+            }
+        }
+        
+        removeItems();
+        
+        if(duplicates.size()>0)
+            return new WMessage("editableTable.add.warning.duplicatesRemoved");
+        else
+            return null;
     }
 }
