@@ -522,17 +522,9 @@ public class Transaction {
     
         return q.uniqueResult() !=null;
     }
-       
-    /**
-     * Returns a Page of TestResults,
-     * checking all the filter constraints and grouped by the selected col.
-     */
-    @SuppressWarnings("unchecked")
-    public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
-    {
-        String queryString = "from TestResult as testResult " +
-                            "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
-                            "and testResult.viralIsolate is null";
+     
+    //Get a limited, filtered and sorted list
+    private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) {
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += " and" + filterConstraints.clause_;
@@ -550,6 +542,19 @@ public class Transaction {
         q.setMaxResults(maxResults);
         
         return q.list();
+    }
+    
+    /**
+     * Returns a Page of TestResults,
+     * checking all the filter constraints and grouped by the selected col.
+     */
+    @SuppressWarnings("unchecked")
+    public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+        String queryString = "from TestResult as testResult " +
+                            "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
+                            "and testResult.viralIsolate is null";
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
@@ -582,23 +587,7 @@ public class Transaction {
     {
         String queryString = "from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += " and" + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     /**
@@ -610,23 +599,7 @@ public class Transaction {
     {
         String queryString = "from ViralIsolate as viralIsolate " +
                             "where viralIsolate.patient.id = " + patient.getPatientIi();
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += " and" + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     /**
@@ -688,23 +661,7 @@ public class Transaction {
     {
         String queryString = "from Attribute as attribute ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     /**
@@ -749,23 +706,7 @@ public class Transaction {
     {
         String queryString = "from AttributeGroup as attributeGroup ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     /**
@@ -804,23 +745,7 @@ public class Transaction {
 	{
 		String queryString = "from TestType as testType ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
 	}
 
 	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
@@ -866,23 +791,7 @@ public class Transaction {
 	{
 		String queryString = "from Test as test ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
 	}
     
     public long getResRepTemplatesCount(HibernateFilterConstraint filterConstraints) 
@@ -909,23 +818,7 @@ public class Transaction {
     {
         String queryString = "from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     public UserAttribute getUserAttribute(SettingsUser uid, String name)
@@ -1089,24 +982,7 @@ public class Transaction {
     {
         String queryString = "from QueryDefinition as queryDefinition ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        
-        queryString += " order by " + sortField + (ascending ? " asc" : " desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
     }
     
     public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 
@@ -1135,27 +1011,12 @@ public class Transaction {
         return q.list();
     }
     
+    @SuppressWarnings("unchecked")
 	public List<Dataset> getDatasets(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
 	{
 		String queryString = "from Dataset as dataset ";
         
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "where " + filterConstraints.clause_;
-        }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
-    
-        Query q = session.createQuery(queryString);
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        
-        return q.list();
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
 	}
 
 	public long getDatasetCount(HibernateFilterConstraint filterConstraints) 
