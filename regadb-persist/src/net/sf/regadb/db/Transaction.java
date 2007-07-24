@@ -59,7 +59,7 @@ public class Transaction {
         getAttributeNominalValueQuery = session.createQuery("from AttributeNominalValue as anv where attribute = :attribute and value = :value");
         getTestNominalValueQuery = session.createQuery("from TestNominalValue as anv where testType = :type and value = :value");
         getTestTypeQuery = session.createQuery("from TestType as testType where testType.description = :description");
-        getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name");
+        getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name and attribute.attributeGroup.groupName = :groupName");
         getPatientQuery = session.createQuery(
                         "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
                         "from PatientImpl as patient " +
@@ -147,8 +147,9 @@ public class Transaction {
         return q.list();
     }
 
-    public Attribute getAttribute(String name) {
+    public Attribute getAttribute(String name, String groupName) {
         getAttributeQuery.setParameter("name", name);
+        getAttributeQuery.setParameter("groupName", groupName);
         
         return (Attribute) getAttributeQuery.uniqueResult();
     }

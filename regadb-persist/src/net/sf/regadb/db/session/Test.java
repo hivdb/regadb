@@ -72,7 +72,7 @@ public class Test {
         result.setTestDate(new Date());
         result.setValue("<1234");
         
-        Attribute genderAttribute = t.getAttribute("Gender");
+        Attribute genderAttribute = t.getAttribute("Gender", "RegaDB");
         PatientAttributeValue genderValue = p.createPatientAttributeValue(genderAttribute);
         AttributeNominalValue firstValue = genderAttribute.getAttributeNominalValues().iterator().next();
         genderValue.setAttributeNominalValue(firstValue);

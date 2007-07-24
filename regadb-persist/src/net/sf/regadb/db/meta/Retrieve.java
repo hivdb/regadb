@@ -35,7 +35,7 @@ public class Retrieve {
     }
 
     public static Attribute retrieve(Transaction t, Attribute attribute) {
-        return t.getAttribute(attribute.getName());
+        return t.getAttribute(attribute.getName(), attribute.getAttributeGroup().getGroupName());
     }
 
     public static AttributeNominalValue retrieve(Transaction t, AttributeNominalValue attributeNominalValue) {
