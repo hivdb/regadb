@@ -387,16 +387,6 @@ public class Transaction {
         "and access.id.settingsUser.uid = :uid ";
     }
     
-    public int getPatientCount()
-    {
-        Query q = session.createQuery(
-                "select count(patient) " +
-                getPatientsQuery());
-        q.setParameter("uid", login.getUid());
-        
-        return ((Integer)q.uniqueResult()).intValue();
-    }
-    
     public long getPatientCount(HibernateFilterConstraint filterConstraints) 
     {
         String queryString =    "select count(patient) " +
