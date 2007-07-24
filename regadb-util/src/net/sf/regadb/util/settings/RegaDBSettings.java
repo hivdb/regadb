@@ -54,13 +54,17 @@ public class RegaDBSettings {
             instance_ = new RegaDBSettings();
             
             // determine configuration directory
-            String configFile;
-            String osName = System.getProperty("os.name");
-            osName = osName.toLowerCase();
-            if(osName.startsWith("windows"))
-                configFile = "C:\\Program files\\rega_institute\\regadb\\global-conf.xml";
-            else
-                configFile = "/etc/rega_institute/regadb/global-conf.xml";
+            String configFile = System.getenv("REGADB_CONF_DIR");
+            if(configFile==null) {
+                String osName = System.getProperty("os.name");
+                osName = osName.toLowerCase();
+                if(osName.startsWith("windows"))
+                    configFile = "C:\\Program files\\rega_institute\\regadb\\global-conf.xml";
+                else
+                    configFile = "/etc/rega_institute/regadb/global-conf.xml";
+            } else {
+                configFile += File.separatorChar + "global-conf.xml";
+            }
             
             instance_.parseConfFile(new File(configFile));
         }
