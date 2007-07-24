@@ -15,8 +15,11 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.encrypt.Encrypt;
+import net.sf.regadb.util.pair.Pair;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class InitRegaDB 
 {
@@ -27,7 +30,16 @@ public class InitRegaDB
     }
     
     public void run() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        run(null);
+    }
+    
+    public void run(ArrayList<Pair<String, String>> configurations) {
+        Session session = null;
+        if(configurations==null)
+            session = HibernateUtil.getSessionFactory().openSession();
+        else 
+            session = createSession(configurations);
+        
         session.beginTransaction();
         
         addAdminUser(session);
@@ -59,7 +71,22 @@ public class InitRegaDB
         session.close();
     }
     
-	private void initTherapyChangeMotivations(Session session) {
+	private Session createSession(ArrayList<Pair<String, String>> configurations) {
+        try {
+            Configuration conf = new Configuration().configure();
+            for(Pair<String, String> p : configurations) {
+                conf.setProperty(p.getKey(), p.getValue());
+            }
+            SessionFactory sessionFactory = conf.buildSessionFactory();
+            return sessionFactory.openSession();
+        } catch (Throwable ex) {
+            // Make sure you log the exception, as it might be swallowed
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    private void initTherapyChangeMotivations(Session session) {
         session.save(new TherapyMotivation("Unknown"));
         session.save(new TherapyMotivation("Toxicity"));
         session.save(new TherapyMotivation("Treatment failure, resistance"));
