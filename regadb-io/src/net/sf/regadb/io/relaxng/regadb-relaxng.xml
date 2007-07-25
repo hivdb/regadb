@@ -217,6 +217,13 @@
         </data>
       </element>
     </optional>
+    <optional>
+      <element name="dataoutputfile">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
     <element name="analysisDatas">
       <zeroOrMore>
         <element name="analysisDatas-el">
@@ -581,6 +588,11 @@
   </define>
   <define name="net.sf.regadb.db.Therapy">
     <optional>
+      <element name="therapyMotivation">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
       <element name="startDate">
         <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
@@ -595,11 +607,6 @@
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">50</param>
         </data>
-      </element>
-    </optional>
-    <optional>
-      <element name="motivation">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
     <element name="therapyCommercials">

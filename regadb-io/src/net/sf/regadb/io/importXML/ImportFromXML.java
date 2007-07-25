@@ -122,10 +122,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     private short fieldAaInsertion_insertionOrder;
     private String fieldAaInsertion_aaInsertion;
     private String fieldAaInsertion_ntInsertionCodon;
+    private TherapyMotivation fieldTherapy_therapyMotivation;
     private Date fieldTherapy_startDate;
     private Date fieldTherapy_stopDate;
     private String fieldTherapy_comment;
-    private TherapyMotivation fieldTherapy_motivation;
     private Set<TherapyCommercial> fieldTherapy_therapyCommercials;
     private Set<TherapyGeneric> fieldTherapy_therapyGenerics;
     private Test fieldTestResult_test;
@@ -149,6 +149,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAnalysis_baseinputfile;
     private String fieldAnalysis_baseoutputfile;
     private String fieldAnalysis_serviceName;
+    private String fieldAnalysis_dataoutputfile;
     private Set<AnalysisData> fieldAnalysis_analysisDatas;
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -275,10 +276,10 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("Therapy".equals(qName)) {
         } else if ("therapys-el".equals(qName)|| "therapies-el".equals(qName)) {
             pushState(ParseState.stateTherapy);
+            fieldTherapy_therapyMotivation = null;
             fieldTherapy_startDate = nullValueDate();
             fieldTherapy_stopDate = nullValueDate();
             fieldTherapy_comment = nullValueString();
-            fieldTherapy_motivation = null;
             fieldTherapy_therapyCommercials = new HashSet<TherapyCommercial>();
             fieldTherapy_therapyGenerics = new HashSet<TherapyGeneric>();
         } else if ("TestResult".equals(qName)) {
@@ -319,6 +320,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysis_baseinputfile = nullValueString();
             fieldAnalysis_baseoutputfile = nullValueString();
             fieldAnalysis_serviceName = nullValueString();
+            fieldAnalysis_dataoutputfile = nullValueString();
             fieldAnalysis_analysisDatas = new HashSet<AnalysisData>();
         }
     }
@@ -1244,6 +1246,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
                 {
+                    elTherapy.setTherapyMotivation(fieldTherapy_therapyMotivation);
+                }
+                {
                     elTherapy.setStartDate(fieldTherapy_startDate);
                 }
                 {
@@ -1251,9 +1256,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
                 {
                     elTherapy.setComment(fieldTherapy_comment);
-                }
-                {
-                    elTherapy.setTherapyMotivation(fieldTherapy_motivation);
                 }
                 {
                     elTherapy.setTherapyCommercials(fieldTherapy_therapyCommercials);
@@ -1271,14 +1273,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                     else
                         topLevelObjects.add(elTherapy);
                 }
+            } else if ("therapyMotivation".equals(qName)) {
+                fieldTherapy_therapyMotivation = resolveTherapyMotivation(value == null ? null : value.toString());
             } else if ("startDate".equals(qName)) {
                 fieldTherapy_startDate = parseDate(value == null ? null : value.toString());
             } else if ("stopDate".equals(qName)) {
                 fieldTherapy_stopDate = parseDate(value == null ? null : value.toString());
             } else if ("comment".equals(qName)) {
                 fieldTherapy_comment = parseString(value == null ? null : value.toString());
-            } else if ("motivation".equals(qName)) {
-                fieldTherapy_motivation = resolveTherapyMotivation(value == null ? null : value.toString());
             } else if ("therapyCommercials".equals(qName)) {
             } else if ("therapyGenerics".equals(qName)) {
             } else {
@@ -1547,6 +1549,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elAnalysis.setServiceName(fieldAnalysis_serviceName);
                 }
+                if (referenceResolved && fieldAnalysis_dataoutputfile != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elAnalysis.setDataoutputfile(fieldAnalysis_dataoutputfile);
+                }
                 if (referenceResolved && !fieldAnalysis_analysisDatas.isEmpty())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -1574,6 +1581,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldAnalysis_baseoutputfile = parseString(value == null ? null : value.toString());
             } else if ("serviceName".equals(qName)) {
                 fieldAnalysis_serviceName = parseString(value == null ? null : value.toString());
+            } else if ("dataoutputfile".equals(qName)) {
+                fieldAnalysis_dataoutputfile = parseString(value == null ? null : value.toString());
             } else if ("analysisDatas".equals(qName)) {
             } else if ("reference".equals(qName)) {
                 referenceAnalysis = (value == null ? null : value.toString());
@@ -3067,6 +3076,14 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
+            if (!equals(dbo.getTherapyMotivation(), o.getTherapyMotivation())) {
+                if (!simulate)
+                    dbo.setTherapyMotivation(o.getTherapyMotivation());
+                log.append(Describe.describe(o) + ": changed therapyMotivation\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
             if (!equals(dbo.getStartDate(), o.getStartDate())) {
                 if (!simulate)
                     dbo.setStartDate(o.getStartDate());
@@ -3087,14 +3104,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setComment(o.getComment());
                 log.append(Describe.describe(o) + ": changed comment\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getTherapyMotivation(), o.getTherapyMotivation())) {
-                if (!simulate)
-                    dbo.setTherapyMotivation(o.getTherapyMotivation());
-                log.append(Describe.describe(o) + ": changed motivation\n");
                 changed = true;
             }
         }
@@ -3518,6 +3527,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setServiceName(o.getServiceName());
                 log.append(Describe.describe(o) + ": changed serviceName\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getDataoutputfile(), o.getDataoutputfile())) {
+                if (!simulate)
+                    dbo.setDataoutputfile(o.getDataoutputfile());
+                log.append(Describe.describe(o) + ": changed dataoutputfile\n");
                 changed = true;
             }
         }

@@ -18,26 +18,26 @@ import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.QueryDefinitionParameter;
-import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
@@ -83,6 +83,12 @@ public class ExportToXML
 		{
 			return;
 		}
+		if(Therapyvar.getTherapyMotivation()!=null &&Therapyvar.getTherapyMotivation().getValue()!=null)
+		{
+			Element therapyMotivationvar = new Element("therapyMotivation");
+			parentNode.addContent(therapyMotivationvar);
+			therapyMotivationvar.addContent(Therapyvar.getTherapyMotivation().getValue());
+		}
 		if(Therapyvar.getStartDate()!=null)
 		{
 			Element startDateprimitiveValEl = new Element("startDate");
@@ -100,12 +106,6 @@ public class ExportToXML
 			Element commentprimitiveValEl = new Element("comment");
 			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
 			parentNode.addContent(commentprimitiveValEl);
-		}
-		if(Therapyvar.getTherapyMotivation()!=null &&Therapyvar.getTherapyMotivation().getValue()!=null)
-		{
-			Element motivationvar = new Element("motivation");
-			parentNode.addContent(motivationvar);
-			motivationvar.addContent(Therapyvar.getTherapyMotivation().getValue());
 		}
 		Element therapyCommercialsEl = new Element("therapyCommercials");
 		parentNode.addContent(therapyCommercialsEl);
@@ -674,6 +674,12 @@ public class ExportToXML
 			Element serviceNameprimitiveValEl = new Element("serviceName");
 			serviceNameprimitiveValEl.addContent(Analysisvar.getServiceName().toString());
 			parentNode.addContent(serviceNameprimitiveValEl);
+		}
+		if(Analysisvar.getDataoutputfile()!=null)
+		{
+			Element dataoutputfileprimitiveValEl = new Element("dataoutputfile");
+			dataoutputfileprimitiveValEl.addContent(Analysisvar.getDataoutputfile().toString());
+			parentNode.addContent(dataoutputfileprimitiveValEl);
 		}
 		Element forParentanalysisDatas = new Element("analysisDatas");
 		parentNode.addContent(forParentanalysisDatas);
