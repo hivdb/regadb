@@ -21,7 +21,7 @@
     <property name="value" type="string">
       <column name="value" length="100" />
     </property>
-    <property name="data" type="string">
+    <property name="data" type="binary">
       <column name="data" />
     </property>
   </class>
