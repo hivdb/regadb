@@ -103,21 +103,32 @@ public class GenerateWindowsBundles {
     
     public static void main(String [] args) {
         GenerateWindowsBundles gen = new GenerateWindowsBundles();
+        
         String buildDir = "C:\\jvsant1\\build_dir\\";
         String bundleDir = "C:\\jvsant1\\bundle\\";
+        
         gen.unpackJavaTomcat(buildDir, bundleDir);
+        
         gen.deployRegaDB(buildDir, bundleDir);
         try {
             FileUtils.forceMkdir(new File(bundleDir + File.separatorChar + "hsqldb"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
         HsqldbDatabaseCreator hsqldb = new HsqldbDatabaseCreator(   bundleDir + File.separatorChar + "hsqldb", 
                                                                     "regadb", 
                                                                     "regadb", 
                                                                     "regadb", 
                                                                     buildDir + File.separatorChar + replaceByPS("regadb-install/src/net/sf/regadb/install/ddl/schema/hsqldbSchema.sql"));
         hsqldb.run();
+        
+        try {
+            FileUtils.forceMkdir(new File(bundleDir + replaceByPS("/conf/")));
+            FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-install")), new File(bundleDir + replaceByPS("install")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public void runBuildFile(String buildFile, String bundlePath, String target, ArrayList<Pair<String, String>> properties) throws BuildException {

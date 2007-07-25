@@ -43,6 +43,12 @@
   	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
   	  		</manifest>
   	</jar>
+  	<jar jarfile="${dist}/${proj.name}-generateWindowsBundles.jar" basedir="${build}">
+  	  		<manifest>
+  	  			<attribute name="Main-Class" value="net.sf.regadb.install.generateBundle.GenerateWindowsBundles"/>
+  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  	  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
