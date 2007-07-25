@@ -1,7 +1,8 @@
 package net.sf.regadb.analysis.functions;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class GenerateReport 
 {
@@ -22,8 +23,9 @@ public class GenerateReport
             rtfBuffer_.replace(indexOf, indexOf + find.length(), replace);
     }
     
-    public void appendHexdump(InputStream input, StringBuffer toAppend) throws IOException {        
-        for (int b = input.read(); b != -1; b = input.read()) {
+    private void appendHexdump(File inputFile, StringBuffer toAppend) throws IOException {        
+        FileInputStream fis = new FileInputStream(inputFile);
+        for (int b = fis.read(); b != -1; b = fis.read()) {
             String hex = Integer.toHexString(b);
             if (hex.length() == 1)
                 toAppend.append("0");
@@ -31,13 +33,13 @@ public class GenerateReport
         }
     }
 
-    public void writePicture(StringBuffer reportBuf, String find, InputStream input) throws IOException {
+    public void writePicture(String find, File input) throws IOException {
         StringBuffer pic = new StringBuffer();
         pic.append(" }{\\*\\shppict{\\pict\\pngblip\n");
         appendHexdump(input, pic);
         pic.append("}}");
-        int findStart = reportBuf.indexOf(find);
-        reportBuf.delete(findStart, find.length());
-        reportBuf.insert(findStart, pic);
+        int findStart = rtfBuffer_.indexOf(find);
+        if(findStart!=-1)
+            rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
 }
