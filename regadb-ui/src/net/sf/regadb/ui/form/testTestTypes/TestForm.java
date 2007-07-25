@@ -65,6 +65,8 @@ public class TestForm extends FormWidget
     private ComboBox<String> baseInputFileCB;
     private Label baseOutputFileL;
     private ComboBox<String> baseOutputFileCB;
+    private Label dataOutputFileL;
+    private ComboBox<String> dataOutputFileCB;
     
     //analysis data group
     private WGroupBox analysisDataGroup_;
@@ -177,6 +179,10 @@ public class TestForm extends FormWidget
         baseOutputFileCB.setMandatory(true);
         addLineToTable(analysisTable_,baseOutputFileL, baseOutputFileCB);
         
+        dataOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.dataOutputFile"));
+        dataOutputFileCB= new ComboBox<String>(getInteractionState(), this);
+        addLineToTable(analysisTable_, dataOutputFileL, dataOutputFileCB);
+        
         t = RegaDBMain.getApp().createTransaction();
         
         List<AnalysisType> analysisTypes = t.getAnalysisTypes();
@@ -223,9 +229,6 @@ public class TestForm extends FormWidget
             serviceTF.setText(test_.getAnalysis().getServiceName());
             accountTF.setText(test_.getAnalysis().getAccount());
             passwordTF.setText(test_.getAnalysis().getPassword());
-            
-            baseInputFileCB.selectItem(test_.getAnalysis().getBaseinputfile());
-            baseOutputFileCB.selectItem(test_.getAnalysis().getBaseoutputfile());
         }
         else
         {
@@ -234,35 +237,37 @@ public class TestForm extends FormWidget
         }
         
         setAnalysisGroup();
+        
+        fillComboBox();
 	}
     
 	private void setAnalysisGroup()
 	{
-        if (analysisCK.isChecked())
-        {
-        	analysisTypeCB.setMandatory(true);
-        	urlTF.setMandatory(true);
-        	serviceTF.setMandatory(true);
-        	accountTF.setMandatory(true);
-        	passwordTF.setMandatory(true);
-        	baseInputFileCB.setMandatory(true);
-        	baseOutputFileCB.setMandatory(true);
+		boolean checked = analysisCK.isChecked();
+        
+        analysisTypeCB.setMandatory(checked);
+    	urlTF.setMandatory(checked);
+    	serviceTF.setMandatory(checked);
+    	accountTF.setMandatory(checked);
+    	passwordTF.setMandatory(checked);
+    	baseInputFileCB.setMandatory(checked);
+    	baseOutputFileCB.setMandatory(checked);
+    	
+    	analysisGroup_.setHidden(!checked);
         	
-        	analysisGroup_.setHidden(false);
+        if (checked) {
         	refreshForm();
         }
-        else
-        {
-        	analysisTypeCB.setMandatory(false);
-        	urlTF.setMandatory(false);
-        	serviceTF.setMandatory(false);
-        	accountTF.setMandatory(false);
-        	passwordTF.setMandatory(false);
-        	baseInputFileCB.setMandatory(false);
-        	baseOutputFileCB.setMandatory(false);
-        	
-        	analysisGroup_.setHidden(true);
+        else {
             analysisDataGroup_.setHidden(true);
+        }
+	}
+	
+	private void fillComboBox() {
+		if(test_.getAnalysis() != null) {
+		baseInputFileCB.selectItem(test_.getAnalysis().getBaseinputfile());
+        baseOutputFileCB.selectItem(test_.getAnalysis().getBaseoutputfile());
+        dataOutputFileCB.selectItem(test_.getAnalysis().getDataoutputfile());
         }
 	}
 	
@@ -288,6 +293,10 @@ public class TestForm extends FormWidget
 		
 		baseInputFileCB.clearItems();
         baseOutputFileCB.clearItems();
+        dataOutputFileCB.clearItems();
+        
+		dataOutputFileL.setHidden(true);
+		dataOutputFileCB.setHidden(true);
         
         analysisDataGroup_.setHidden(true);
         
@@ -387,6 +396,16 @@ public class TestForm extends FormWidget
         {
             baseOutputFileCB.addItem(new StringComboMessage(output));
         }
+        
+        if (wtsMC.parseOutputNames(array).size() > 1) {
+        	for(String output : wtsMC.parseOutputNames(array))
+            {
+                dataOutputFileCB.addItem(new StringComboMessage(output));
+            }
+        	
+        	dataOutputFileL.setHidden(false);
+        	dataOutputFileCB.setHidden(false);
+        }
     }
     
     private void showAnalysisData(ArrayList<String> selectableItems)
@@ -457,6 +476,13 @@ public class TestForm extends FormWidget
 	            test_.getAnalysis().setPassword(passwordTF.text());
 	            test_.getAnalysis().setBaseinputfile(baseInputFileCB.currentValue());
 	            test_.getAnalysis().setBaseoutputfile(baseOutputFileCB.currentValue());
+	            
+	            if (!dataOutputFileCB.isHidden()) {
+	            	test_.getAnalysis().setDataoutputfile(dataOutputFileCB.currentValue());
+	            }
+	            else {
+	            	test_.getAnalysis().setDataoutputfile(null);
+	            }
 	            
 	            ianalysisDataET.setTransaction(t);
 	            ianalysisDataET.setAnalysis(test_.getAnalysis());
