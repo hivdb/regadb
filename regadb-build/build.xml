@@ -33,7 +33,7 @@
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
   	<jar jarfile="${dist}/${proj.name}-jarbuilder.jar" basedir="${build}">
   	  		<manifest>
-  	  			<attribute name="Main-Class" value="net.sf.regadb.build.builder.JarBuilder"/>
+  	  			<attribute name="Main-Class" value="net.sf.regadb.build.builder.Jarbuilder"/>
   	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
   	  		</manifest>
   	</jar>
