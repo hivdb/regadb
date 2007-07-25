@@ -254,4 +254,16 @@ public class ComboBox<ComboDataType> extends FormField
             getViewWidget().setHidden(hide);
         }
     }
+    
+    public boolean isHidden()
+    {
+        if(fieldEdit_!=null)
+        {
+            return fieldEdit_.isHidden();
+        }
+        else
+        {
+            return getViewWidget().isHidden();
+        }
+    }
 }
