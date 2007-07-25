@@ -33,7 +33,7 @@ public class GenerateWindowsBundles {
         properties.add(new Pair<String, String>("warfile", buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")));
         String tomcatDir = bundlePath + replaceByPS("tomcat/bin/");
 
-        runBatchScript(tomcatDir + "startup.bat", tomcatDir);
+        runBatchScript(tomcatDir + File.separatorChar + "startup.bat", tomcatDir);
         System.err.println("Tomcat started...");
         System.err.println("Waiting for 5 seconds to make sure it is started successfully");
 
@@ -70,7 +70,7 @@ public class GenerateWindowsBundles {
             e1.printStackTrace();
         }
         
-        runBatchScript(tomcatDir + "shutdown.bat", tomcatDir);
+        runBatchScript(tomcatDir + File.separatorChar + "shutdown.bat", tomcatDir);
     }
     
     private void tarxzvf(String tarGzFile, String destPath) {
