@@ -104,8 +104,13 @@ public class GenerateWindowsBundles {
     public static void main(String [] args) {
         GenerateWindowsBundles gen = new GenerateWindowsBundles();
         
-        String buildDir = "C:\\jvsant1\\build_dir\\";
-        String bundleDir = "C:\\jvsant1\\bundle\\";
+        if(args.length<2) {
+            System.err.println("Please provide the builddir and the bundledir as program arguments");
+            System.exit(1);
+        }
+        
+        String buildDir = args[0];
+        String bundleDir = args[1];
         
         gen.unpackJavaTomcat(buildDir, bundleDir);
         
