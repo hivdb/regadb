@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated 25/07/2007 13:35:23 by Hibernate Tools 3.2.0.beta8
+// Generated 25/07/2007 14:10:44 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +28,8 @@ public class Analysis implements java.io.Serializable {
 
     private String serviceName;
 
+    private String dataoutputfile;
+
     private Set<Test> tests = new HashSet<Test>(0);
 
     private Set<AnalysisData> analysisDatas = new HashSet<AnalysisData>(0);
@@ -46,7 +48,8 @@ public class Analysis implements java.io.Serializable {
     /** full constructor */
     public Analysis(AnalysisType analysisType, String url, String account,
             String password, String baseinputfile, String baseoutputfile,
-            String serviceName, Set<Test> tests, Set<AnalysisData> analysisDatas) {
+            String serviceName, String dataoutputfile, Set<Test> tests,
+            Set<AnalysisData> analysisDatas) {
         this.analysisType = analysisType;
         this.url = url;
         this.account = account;
@@ -54,6 +57,7 @@ public class Analysis implements java.io.Serializable {
         this.baseinputfile = baseinputfile;
         this.baseoutputfile = baseoutputfile;
         this.serviceName = serviceName;
+        this.dataoutputfile = dataoutputfile;
         this.tests = tests;
         this.analysisDatas = analysisDatas;
     }
@@ -121,6 +125,14 @@ public class Analysis implements java.io.Serializable {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getDataoutputfile() {
+        return this.dataoutputfile;
+    }
+
+    public void setDataoutputfile(String dataoutputfile) {
+        this.dataoutputfile = dataoutputfile;
     }
 
     public Set<Test> getTests() {
