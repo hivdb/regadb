@@ -159,9 +159,9 @@ public class TherapyForm extends FormWidget
                 
             t.commit();
             
-            if(therapy_.getMotivation()!=null)
+            if(therapy_.getTherapyMotivation()!=null)
             {
-                motivationCB.selectItem(therapy_.getMotivation().getValue());
+                motivationCB.selectItem(therapy_.getTherapyMotivation().getValue());
             }
         }
         
@@ -239,11 +239,11 @@ public class TherapyForm extends FormWidget
             
             if(therapy_.getStopDate()!=null)
             {
-                therapy_.setMotivation(motivationCB.currentValue());
+                therapy_.setTherapyMotivation(motivationCB.currentValue());
             }
             else
             {
-                therapy_.setMotivation(null);
+                therapy_.setTherapyMotivation(null);
             }
             
             therapy_.setComment(getNulled(commentTF.text()));
