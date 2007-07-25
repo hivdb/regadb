@@ -31,7 +31,7 @@ public class GenerateWindowsBundles {
         ArrayList<Pair<String, String>> properties = new ArrayList<Pair<String, String>>();
         properties.add(new Pair<String, String>("tomcat.home", bundlePath + File.separatorChar + "tomcat"));
         properties.add(new Pair<String, String>("warfile", buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")));
-        String tomcatDir = bundlePath + replaceByPS("tomcat/bin/");
+        String tomcatDir = bundlePath + replaceByPS("/tomcat/bin/");
 
         runBatchScript(tomcatDir + File.separatorChar + "startup.bat", tomcatDir);
         System.err.println("Tomcat started...");
