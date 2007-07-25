@@ -5,22 +5,24 @@ import java.io.InputStream;
 
 public class GenerateReport 
 {
-    public static void main(String [] args)
+    StringBuffer rtfBuffer_;
+    
+    public GenerateReport(byte[] rtfFileContent) 
     {
-        
+        rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
     }
     
-    public void generateReport(String rtfFileContent) {
-        StringBuffer rtfBuffer = new StringBuffer(new String(rtfFileContent));
-        
-        
+    public byte[] getReport() {        
+        return rtfBuffer_.toString().getBytes();
     }
     
-    private static void replace(StringBuffer reportBuf, String find, String replace) {
-        reportBuf.replace(reportBuf.indexOf(find), reportBuf.indexOf(find) + find.length(), replace);
+    public void replace(String find, String replace) {
+        int indexOf = rtfBuffer_.indexOf(find);
+        if(indexOf!=-1)
+            rtfBuffer_.replace(indexOf, indexOf + find.length(), replace);
     }
     
-    private static void appendHexdump(InputStream input, StringBuffer toAppend) throws IOException {        
+    public void appendHexdump(InputStream input, StringBuffer toAppend) throws IOException {        
         for (int b = input.read(); b != -1; b = input.read()) {
             String hex = Integer.toHexString(b);
             if (hex.length() == 1)
@@ -29,7 +31,7 @@ public class GenerateReport
         }
     }
 
-    private static void writePicture(StringBuffer reportBuf, String find, InputStream input) throws IOException {
+    public void writePicture(StringBuffer reportBuf, String find, InputStream input) throws IOException {
         StringBuffer pic = new StringBuffer();
         pic.append(" }{\\*\\shppict{\\pict\\pngblip\n");
         appendHexdump(input, pic);
