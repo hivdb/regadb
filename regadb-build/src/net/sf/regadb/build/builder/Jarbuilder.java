@@ -107,16 +107,24 @@ public class Jarbuilder
             	handleError(m, e);
             }
             
-            List<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
-            moduleDependencies = filterRegaDBDependencies(moduleDependencies);
-            moduleDeps.put(m, moduleDependencies);       
+            File classPathFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + ".classpath");
+            File buildXmlFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + "build.xml");
+            if(classPathFile.exists() && buildXmlFile.exists()) {
+                List<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
+                moduleDependencies = filterRegaDBDependencies(moduleDependencies);
+                moduleDeps.put(m, moduleDependencies);    
+            }
         }
         
         for(String m : modules)
         {
+            File classPathFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + ".classpath");
+            File buildXmlFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + "build.xml");
+            if(classPathFile.exists() && buildXmlFile.exists()) {
         	List<String> moduleDependencies = EclipseParseTools.getDependenciesFromClasspathFile(buildDir_ + m);
             moduleDependencies = filterRegaDBDependencies(moduleDependencies);
             moduleDependencies_.put(m, moduleDependencies);
+            }
         }
         
         buildModule(buildDir_, "jwt_src");
@@ -265,7 +273,7 @@ public class Jarbuilder
         {
             if(m.startsWith("regadb-") || m.startsWith("wts-"))
             {
-                if(!m.equals("regadb-sql") && !m.equals("wts-build") && !m.equals("wts-client-demo"))
+                if(!m.equals("wts-build"))
                 {
                     filteredModules.add(m);
                 }
