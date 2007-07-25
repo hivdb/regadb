@@ -48,7 +48,7 @@ public class GenerateReport
             rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
     
-    protected void addTables(/*LinkedHashMap DRUG_NAMES,*/ List<TestResult> testResults)
+    public void addTables(/*LinkedHashMap DRUG_NAMES,*/ List<TestResult> testResults)
     {
         LinkedHashMap<String,String> DRUG_NAMES = new LinkedHashMap<String,String>();
         // NRTI
