@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.forms.account;
 
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
@@ -10,8 +11,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.DescribeMutations;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
-import net.sf.regadb.ui.form.singlePatient.StringComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -68,7 +69,7 @@ public class AccountForm extends FormWidget
     private Label chartHeightL;
     private TextField chartHeightTF;
     private Label chartMutationL;
-    private ComboBox<String> chartMutationCB;
+    private ComboBox<Test> chartMutationCB;
     
     public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
@@ -164,7 +165,7 @@ public class AccountForm extends FormWidget
             chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
             addLineToTable(attributeGroupTable, chartHeightL, chartHeightTF);
             chartMutationL = new Label(tr("form.settings.user.label.chartMutation"));
-            chartMutationCB = new ComboBox<String>(getInteractionState(), this);
+            chartMutationCB = new ComboBox<Test>(getInteractionState(), this);
             addLineToTable(attributeGroupTable, chartMutationL, chartMutationCB);
         }
         
@@ -225,7 +226,7 @@ public class AccountForm extends FormWidget
                 {
                     if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
                     {
-                        chartMutationCB.addItem(new DataComboMessage<String>(test.getDescription(), test.getDescription()));
+                        chartMutationCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
                     }
                 }
                 String value = getAttributeValue("chart.mutation", t);
@@ -273,18 +274,19 @@ public class AccountForm extends FormWidget
         return valid;
     }
     
-    private void saveUserAttribute(String valueType, String attributeName, String attributeText, Transaction t)
+    private void saveUserAttribute(String valueType, String attributeName, String attributeText, byte[] data, Transaction t)
     {
         UserAttribute ua = t.getUserAttribute(su_, attributeName);
         
         if(ua==null)
         {
-            ua  = new UserAttribute(t.getValueType(valueType), su_, attributeName, attributeText, "");
+            ua  = new UserAttribute(t.getValueType(valueType), su_, attributeName, attributeText, data);
             t.save(ua);
         }
         else
         {
             ua.setValue("".equals(attributeText)?null:attributeText);
+            ua.setData(data);
             t.update(ua);
         }
     }
@@ -363,10 +365,16 @@ public class AccountForm extends FormWidget
             if(attributeGroup_!=null)
             {
                 t = login.createTransaction();
-                saveUserAttribute("number", "chart.height", chartHeightTF.text(), t);
-                saveUserAttribute("number", "chart.width", chartWidthTF.text(), t);
-                String chartMutation = chartMutationCB.currentValue();
-                saveUserAttribute("string", "chart.mutation", chartMutation, t);
+                saveUserAttribute("number", "chart.height", chartHeightTF.text(), null, t);
+                saveUserAttribute("number", "chart.width", chartWidthTF.text(), null, t);
+                Test chartMutation = chartMutationCB.currentValue();
+                byte [] mutationDescription = null;
+                String value = null;
+                if(chartMutation!=null) {
+                    mutationDescription = DescribeMutations.describeMutations(((AnalysisData)chartMutation.getAnalysis().getAnalysisDatas().toArray()[0]).getData());
+                    value = chartMutation.getDescription();
+                }
+                saveUserAttribute("string", "chart.mutation", value, mutationDescription, t);
                 t.commit();
             }
             
