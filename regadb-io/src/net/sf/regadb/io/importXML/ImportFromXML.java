@@ -1253,7 +1253,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elTherapy.setComment(fieldTherapy_comment);
                 }
                 {
-                    elTherapy.setMotivation(fieldTherapy_motivation);
+                    elTherapy.setTherapyMotivation(fieldTherapy_motivation);
                 }
                 {
                     elTherapy.setTherapyCommercials(fieldTherapy_therapyCommercials);
@@ -3091,9 +3091,9 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMotivation(), o.getMotivation())) {
+            if (!equals(dbo.getTherapyMotivation(), o.getTherapyMotivation())) {
                 if (!simulate)
-                    dbo.setMotivation(o.getMotivation());
+                    dbo.setTherapyMotivation(o.getTherapyMotivation());
                 log.append(Describe.describe(o) + ": changed motivation\n");
                 changed = true;
             }

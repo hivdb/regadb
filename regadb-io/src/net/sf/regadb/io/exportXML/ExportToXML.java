@@ -101,11 +101,11 @@ public class ExportToXML
 			commentprimitiveValEl.addContent(Therapyvar.getComment().toString());
 			parentNode.addContent(commentprimitiveValEl);
 		}
-		if(Therapyvar.getMotivation()!=null &&Therapyvar.getMotivation().getValue()!=null)
+		if(Therapyvar.getTherapyMotivation()!=null &&Therapyvar.getTherapyMotivation().getValue()!=null)
 		{
 			Element motivationvar = new Element("motivation");
 			parentNode.addContent(motivationvar);
-			motivationvar.addContent(Therapyvar.getMotivation().getValue());
+			motivationvar.addContent(Therapyvar.getTherapyMotivation().getValue());
 		}
 		Element therapyCommercialsEl = new Element("therapyCommercials");
 		parentNode.addContent(therapyCommercialsEl);
