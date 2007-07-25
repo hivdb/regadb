@@ -12,6 +12,9 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
+    <many-to-one name="therapyMotivation" class="net.sf.regadb.db.TherapyMotivation" fetch="select" cascade="save-update">
+      <column name="therapy_motivation_ii" />
+    </many-to-one>
     <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
@@ -24,9 +27,6 @@
     <property name="comment" type="string">
       <column name="comment" length="50" />
     </property>
-    <many-to-one name="motivation" class="net.sf.regadb.db.TherapyMotivation" fetch="select" cascade="save-update">
-      <column name="therapy_motivation_ii" not-null="false"/>
-    </many-to-one>
     <set name="therapyCommercials" inverse="true" cascade="all">
       <key>
         <column name="therapy_ii" not-null="true" />

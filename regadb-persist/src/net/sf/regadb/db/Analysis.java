@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jul 18, 2007 4:05:12 PM by Hibernate Tools 3.2.0.beta8
+// Generated 25/07/2007 13:35:23 by Hibernate Tools 3.2.0.beta8
 
 import java.util.HashSet;
 import java.util.Set;
