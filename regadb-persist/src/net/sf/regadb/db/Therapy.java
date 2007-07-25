@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jul 18, 2007 4:05:12 PM by Hibernate Tools 3.2.0.beta8
+// Generated 25/07/2007 14:18:15 by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +17,8 @@ public class Therapy implements java.io.Serializable {
 
     private int version;
 
+    private TherapyMotivation therapyMotivation;
+
     private PatientImpl patient;
 
     private Date startDate;
@@ -24,8 +26,6 @@ public class Therapy implements java.io.Serializable {
     private Date stopDate;
 
     private String comment;
-
-    private TherapyMotivation motivation;
 
     private Set<TherapyCommercial> therapyCommercials = new HashSet<TherapyCommercial>(
             0);
@@ -45,15 +45,15 @@ public class Therapy implements java.io.Serializable {
     }
 
     /** full constructor */
-    public Therapy(PatientImpl patient, Date startDate, Date stopDate,
-            String comment, TherapyMotivation motivation,
+    public Therapy(TherapyMotivation therapyMotivation, PatientImpl patient,
+            Date startDate, Date stopDate, String comment,
             Set<TherapyCommercial> therapyCommercials,
             Set<TherapyGeneric> therapyGenerics) {
+        this.therapyMotivation = therapyMotivation;
         this.patient = patient;
         this.startDate = startDate;
         this.stopDate = stopDate;
         this.comment = comment;
-        this.motivation = motivation;
         this.therapyCommercials = therapyCommercials;
         this.therapyGenerics = therapyGenerics;
     }
@@ -73,6 +73,14 @@ public class Therapy implements java.io.Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public TherapyMotivation getTherapyMotivation() {
+        return this.therapyMotivation;
+    }
+
+    public void setTherapyMotivation(TherapyMotivation therapyMotivation) {
+        this.therapyMotivation = therapyMotivation;
     }
 
     public PatientImpl getPatient() {
@@ -105,14 +113,6 @@ public class Therapy implements java.io.Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public TherapyMotivation getMotivation() {
-        return this.motivation;
-    }
-
-    public void setMotivation(TherapyMotivation motivation) {
-        this.motivation = motivation;
     }
 
     public Set<TherapyCommercial> getTherapyCommercials() {
