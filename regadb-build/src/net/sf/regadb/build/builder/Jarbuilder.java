@@ -1,4 +1,4 @@
-package builder;
+package net.sf.regadb.build.builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -265,7 +265,7 @@ public class Jarbuilder
         {
             if(m.startsWith("regadb-") || m.startsWith("wts-"))
             {
-                if(!m.equals("regadb-sql") && !m.equals("regadb-build") && !m.equals("wts-build"))
+                if(!m.equals("regadb-sql") && !m.equals("wts-build") && !m.equals("wts-client-demo"))
                 {
                     filteredModules.add(m);
                 }
