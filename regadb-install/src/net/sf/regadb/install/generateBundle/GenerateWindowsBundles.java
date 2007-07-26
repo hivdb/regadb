@@ -28,10 +28,6 @@ public class GenerateWindowsBundles {
             e2.printStackTrace();
         }
         
-        //String tomcatDir = bundlePath + replaceByPS("/tomcat/bin/");
-
-        //runBatchScript(tomcatDir + File.separatorChar + "startup.bat", tomcatDir);
-        
         String tomcatDeployDir = bundlePath + replaceByPS("/tomcat/webapps/");
         try {
             FileUtils.copyFileToDirectory(new File(buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")), new File(tomcatDeployDir));
@@ -101,66 +97,5 @@ public class GenerateWindowsBundles {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    public void runBuildFile(String buildFile, String bundlePath, String target, ArrayList<Pair<String, String>> properties) throws BuildException {
-        Project project = new Project();
-        
-        project.setName("generate-bundle");
-        project.init();
-        project.setBasedir(bundlePath + File.separatorChar + "tmp");
-        ProjectHelper.getProjectHelper().parse(project, new File(buildFile));
-        for(Pair<String, String> p : properties) {
-            project.setProperty(p.getKey(), p.getValue());
-        }
-        System.err.println("Start of target:" + target);
-        project.executeTarget(target);
-        System.err.println("End of target:" + target);
-    }
-    
-    public void runBatchScript(final String batchScriptPath, final String workingDir)
-    {
-        Thread jobRunningThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                Process p = null;
-                try 
-                {
-                    ProcessBuilder pb = new ProcessBuilder(batchScriptPath);
-                    pb.directory(new File(workingDir));
-                    p = pb.start();
-                    p.waitFor();
-                } 
-                catch (IOException e) 
-                {
-                    e.printStackTrace();
-                } 
-                catch (InterruptedException e) 
-                {
-                    e.printStackTrace();
-                }
-                finally //anticipate java bug 6462165
-                {
-                    closeStreams(p);
-                }
-            }
-            
-            void closeStreams(Process p) 
-            {
-                try 
-                {
-                    p.getInputStream().close();
-                    p.getOutputStream().close();
-                    p.getErrorStream().close();
-                } 
-                catch (IOException e) 
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        
-        jobRunningThread.start();
     }
 }
