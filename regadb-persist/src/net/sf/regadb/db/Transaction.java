@@ -208,6 +208,13 @@ public class Transaction {
         return (ResistanceInterpretationTemplate) getResistanceInterpretationTemplateQuery.uniqueResult();
     }
     
+    @SuppressWarnings("unchecked")
+    public List<ResistanceInterpretationTemplate> getResRepTemplates() {
+        Query q = session.createQuery("from ResistanceInterpretationTemplate");
+        
+        return q.list();
+    }
+    
     public Test getTest(String description) {
         getTestQuery.setParameter("description", description);
         
