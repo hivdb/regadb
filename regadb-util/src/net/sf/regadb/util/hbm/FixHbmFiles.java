@@ -113,6 +113,10 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("datasetAccesses")&& a.getKey().equals("net.sf.regadb.db.Dataset")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                     if(e.getName().equals("id") )
                     {

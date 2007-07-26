@@ -27,7 +27,7 @@
     <property name="revision" type="java.lang.Integer">
       <column name="revision" />
     </property>
-    <set name="datasetAccesses" inverse="false" cascade="all">
+    <set name="datasetAccesses" inverse="true" cascade="all">
       <key>
         <column name="dataset_ii" not-null="true" />
       </key>
