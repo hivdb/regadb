@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.datasetSettings;
 
 import java.util.Date;
+import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -129,24 +130,38 @@ public class DatasetForm extends FormWidget
 	@Override
 	public WMessage deleteObject() 
 	{
-	    Transaction t = RegaDBMain.getApp().createTransaction();
-	    
-	    try
-	    {
-	    	t.delete(dataset_);
-	        
-	        t.commit();
-	        
-	        return null;
-	    }
-        catch(Exception e)
-        {
-        	t.clear();
-        	t.rollback();
-        	
-        	return tr("form.delete.restriction");
-        }
-        
+    	Set<DatasetAccess> datasetAccess = dataset_.getDatasetAccesses();
+    	
+    	if (datasetAccess.size() <= 1) {
+    		Transaction t = RegaDBMain.getApp().createTransaction();
+    		
+    	    try
+    	    {
+    	    	for (DatasetAccess da : datasetAccess) {
+    	    		da.getId().getSettingsUser().getDatasetAccesses().remove(da);
+    	    		da.getId().getDataset().getDatasetAccesses().remove(da);
+    	    		
+    	    		t.delete(da);
+    	    	}
+    	    	
+    	    	t.delete(dataset_);
+    	        
+    	        t.commit();
+    	        
+    	        return null;
+    	    }
+            catch(Exception e)
+            {
+            	e.printStackTrace();
+            	t.clear();
+            	t.rollback();
+            	
+            	return tr("form.delete.restriction");
+            }
+    	}
+    	else {
+    		return tr("form.delete.restriction");
+    	}
 	}
 
 	@Override
