@@ -88,7 +88,7 @@ public class GenerateWindowsBundles {
         
         try {
             FileUtils.forceMkdir(new File(bundleDir + replaceByPS("/conf/")));
-            FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-install")), new File(bundleDir + replaceByPS("install")));
+            FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-install")), new File(bundleDir + replaceByPS("/regadb-install")));
         } catch (IOException e) {
             e.printStackTrace();
         }
