@@ -57,6 +57,7 @@ public class CvsTools
     {
         try 
         {
+            System.out.println("Copying module " + localProjectName);
             File destDir = new File(destPath+File.separatorChar+destinationProjectName);
             FileUtils.forceMkdir(destDir);
             FileUtils.copyDirectory(new File(srcPath + File.separatorChar + localProjectName), destDir);

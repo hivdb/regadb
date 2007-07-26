@@ -68,6 +68,7 @@ public class SvnTools
     {
         try 
         {
+            System.out.println("Copying module " + projectName);
             File destDir = new File(destPath+File.separatorChar+projectName);
             FileUtils.forceMkdir(destDir);
             FileUtils.copyDirectory(new File(srcPath + File.separatorChar + projectName), destDir);
