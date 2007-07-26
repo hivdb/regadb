@@ -32,6 +32,7 @@ public class ViralIsolateForm extends FormWidget
 	private ViralIsolateMainForm _mainForm;
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
+    private ViralIsolateReportForm reportForm_;
 
 	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
 	{
@@ -78,6 +79,10 @@ public class ViralIsolateForm extends FormWidget
             resistanceForm_ = new ViralIsolateResistanceForm(this);
             tabForm_.addItem(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
             resistanceForm_.setStyleClass("viralisolateform");
+            
+            reportForm_ = new ViralIsolateReportForm(this);
+            tabForm_.addItem(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+            reportForm_.setStyleClass("viralisolateform");
         }
 		tabForm_.setStyleClass("tabmenu");
 		_mainForm.setStyleClass("viralisolateform");

@@ -3,26 +3,192 @@ package net.sf.regadb.analysis.functions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.util.date.DateUtils;
 
 public class GenerateReport 
 {
-    StringBuffer rtfBuffer_;
+    private StringBuffer rtfBuffer_;
     
-    public GenerateReport(byte[] rtfFileContent) 
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile)
     {
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
+        
+        init(vi, patient, algorithm, t, chartFile);
+    }
+    
+    public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile)
+    {
+        replace("$ASI_ALGORITHM", algorithm.getDescription());
+        replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date(System.currentTimeMillis())));
+        replace("$PATIENT_NAME", patient.getFirstName());
+        replace("$PATIENT_LASTNAME", patient.getLastName());
+        replace("$PATIENT_ID", patient.getPatientId());
+        //report_.replace("$PATIENT_CLINICAL_FILE_NR", );
+        replace("$SAMPLE_ID", vi.getSampleId());
+        replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
+        
+        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericViralLoadTest());
+        if(viralLoad!=null)
+            replace("$VIRAL_LOAD RNA", viralLoad.getValue());
+        else
+            replace("$VIRAL_LOAD RNA", "- ");
+        
+        TestResult cd4Count = getTestResult(vi, patient, StandardObjects.getGenericCD4Test());
+        if(cd4Count!=null)
+            replace("$CD4_COUNT", cd4Count.getValue());
+        else
+            replace("$CD4_COUNT", "- ");
+        
+        replace("$TYPE", getType(vi));
+        replace("$SUBTYPE", getSubtype(vi));
+        
+        List<TestResult> results = getGssTestResults(vi, algorithm);
+        setRITable(results);
+        
+        setMutations(vi, t);
+        
+        try {
+            writePicture("$PATIENT_HISTORY_CHART", chartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private String getType(ViralIsolate vi)
+    {
+        String type = "";
+        for(NtSequence ntSeq : vi.getNtSequences())
+        {
+            for(TestResult testResult : ntSeq.getTestResults())
+            {
+                type = testResult.getValue();
+                break;
+            }
+            break;
+        }
+        
+        return type;
+    }
+    
+    private String getSubtype(ViralIsolate vi)
+    {
+        String subtype = "";
+        for(NtSequence ntSequence : vi.getNtSequences())
+        {
+            for(TestResult tr : ntSequence.getTestResults())
+            {
+                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
+                {
+                    subtype += tr.getValue() + " (";
+                    
+                    for(AaSequence aaSequence : ntSequence.getAaSequences())
+                    {
+                        subtype += aaSequence.getProtein().getAbbreviation() + " + ";
+                    }
+                    int index = subtype.lastIndexOf("+");
+                    if(index!=-1)
+                        subtype = subtype.substring(0, index-1);
+                    subtype += ") /";
+                }
+            }
+            int index = subtype.lastIndexOf("/");
+            if(index!=-1)
+                subtype = subtype.substring(0, index-1) + " ";
+        }
+        return subtype;
+    }
+    
+    private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest)
+    {
+        TestResult viralLoadS = null;
+        TestResult viralLoadD = null;
+        for(TestResult testResult : patient.getTestResults())
+        {
+            if(testResult.getTest().getDescription().equals(referenceTest.getDescription()))
+            {
+                if(vi.getSampleId().equals(testResult.getSampleId()))
+                    viralLoadS = testResult;
+                else if(vi.getSampleDate().equals(testResult.getTestDate()))
+                    viralLoadD = testResult;
+            }
+        }
+        
+        return viralLoadS==null?viralLoadD:viralLoadS;
+    }
+    
+    private List<TestResult> getGssTestResults(ViralIsolate vi, Test algorithm)
+    {
+        List<TestResult> testResults = new ArrayList<TestResult>();
+        
+        for(TestResult tr : vi.getTestResults())
+        {
+            if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId()) 
+                    && tr.getTest().getDescription().equals(algorithm.getDescription())) {
+                testResults.add(tr);
+            }
+        }
+        
+        return testResults;
+    }
+    
+    private void setMutations(ViralIsolate vi, Transaction t)
+    {
+        List<AaSequence> aaSeqs = new ArrayList<AaSequence>();
+        for(NtSequence ntSequence : vi.getNtSequences())
+        {
+            for(AaSequence aaSeq : ntSequence.getAaSequences())
+            {
+                aaSeqs.add(aaSeq);
+            }
+        }
+        
+        String result;
+        String textToReplace;
+        boolean foundMatchinqSeq;
+        for(Protein protein : t.getProteins())
+        {   
+            foundMatchinqSeq = false;
+            textToReplace = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";
+            for(AaSequence aaSeq : aaSeqs)
+            {
+                if(aaSeq.getProtein().getAbbreviation().equals(protein.getAbbreviation()))
+                {
+                    result = MutationHelper.getNonSynonymousMutations(aaSeq);
+                    if("".equals(result.trim()))
+                        result = "-";
+                    replace(textToReplace, result);
+                    foundMatchinqSeq = true;
+                }
+            }
+            if(!foundMatchinqSeq)
+                replace(textToReplace, "undetermined");
+        }
     }
     
     public byte[] getReport() {        
         return rtfBuffer_.toString().getBytes();
     }
     
-    public void replace(String find, String replace) {
+    private void replace(String find, String replace) {
+        if(replace==null) {
+            replace = "";
+        }
         int indexOf = rtfBuffer_.indexOf(find);
         if(indexOf!=-1)
             rtfBuffer_.replace(indexOf, indexOf + find.length(), replace);
@@ -38,7 +204,7 @@ public class GenerateReport
         }
     }
 
-    public void writePicture(String find, File input) throws IOException {
+    private void writePicture(String find, File input) throws IOException {
         StringBuffer pic = new StringBuffer();
         pic.append(" }{\\*\\shppict{\\pict\\pngblip\n");
         appendHexdump(input, pic);
@@ -48,8 +214,9 @@ public class GenerateReport
             rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
     
-    public void addTables(/*LinkedHashMap DRUG_NAMES,*/ List<TestResult> testResults)
+    public void setRITable(/*LinkedHashMap DRUG_NAMES,*/ List<TestResult> testResults)
     {
+        //TODO get drugs from resistance interpretation tab
         LinkedHashMap<String,String> DRUG_NAMES = new LinkedHashMap<String,String>();
         // NRTI
         DRUG_NAMES.put("zidovudine", "AZT");
