@@ -28,49 +28,16 @@ public class GenerateWindowsBundles {
             e2.printStackTrace();
         }
         
-        ArrayList<Pair<String, String>> properties = new ArrayList<Pair<String, String>>();
-        properties.add(new Pair<String, String>("tomcat.home", bundlePath + File.separatorChar + "tomcat"));
-        properties.add(new Pair<String, String>("warfile", buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")));
-        String tomcatDir = bundlePath + replaceByPS("/tomcat/bin/");
+        //String tomcatDir = bundlePath + replaceByPS("/tomcat/bin/");
 
-        runBatchScript(tomcatDir + File.separatorChar + "startup.bat", tomcatDir);
-        System.err.println("Tomcat started...");
-        System.err.println("Waiting for 5 seconds to make sure it is started successfully");
-
-        String buildFile = buildPath + replaceByPS("regadb-install/src/net/sf/regadb/install/generateBundle/");
+        //runBatchScript(tomcatDir + File.separatorChar + "startup.bat", tomcatDir);
         
-        /*try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }*/
-        
-        long start = System.currentTimeMillis();
-        while(System.currentTimeMillis()-start<(5*60*1000)) {
-            try {
-                runBuildFile(buildFile + "tomcat-deploy.xml",
-                            bundlePath, 
-                            "tomcat-deploy",
-                            properties);
-                start = -1;
-                break;
-            } catch (BuildException e) {
-            }
-        }
-        if(start!=-1){
-            System.err.println("Something went wrong when deploying the war, exiting.");
-            System.exit(1);
-        } else {
-        System.err.println("War was deployed succesfully,\nwaiting 10 seconds before shutting down tomcat");
-        }
-        
+        String tomcatDeployDir = bundlePath + replaceByPS("/tomcat/webapps/");
         try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            FileUtils.copyFileToDirectory(new File(buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")), new File(tomcatDeployDir));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        
-        runBatchScript(tomcatDir + File.separatorChar + "shutdown.bat", tomcatDir);
     }
     
     private void tarxzvf(String tarGzFile, String destPath) {
