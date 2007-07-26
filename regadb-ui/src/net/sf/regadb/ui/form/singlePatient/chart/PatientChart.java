@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,12 +21,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
@@ -102,6 +105,9 @@ public class PatientChart
 	private int width_;
 
 	private int height_;
+    
+    private HashMap<String, String> positionMap_ = null;
+    private String positionAlgorithm_ = null;
 
 	public MutationBlock getMutationBlock(AaSequence a)
 	{
@@ -109,17 +115,12 @@ public class PatientChart
 
 		for (AaMutInsertion m : AaMutInsertion.getSortedMutInsertionList(a))
 		{
-			// TODO implement algorithm stuff
-			// if (algorithm == null ||
-			// algorithm.includesPosition(a.getProteinII().intValue(),
-			// m.getPosition()))
-			// {
+			if (positionMap_ == null || positionMap_.containsKey(a.getProtein().getAbbreviation().toLowerCase()+m.getPosition())) {
 			if (m.isInsertion())
 				mb.mutations.add(m.getPosition() + "i" + m.getAaMutationString());
-			else
-				if (!m.isSilent())
-					mb.mutations.add(m.getPosition() + m.getAaMutationString());
-			// }
+			else if (!m.isSilent())
+			    mb.mutations.add(m.getPosition() + m.getAaMutationString());
+            }
 		}
 
 		return mb;
@@ -128,10 +129,6 @@ public class PatientChart
 	public PatientChart(Patient patientData, SettingsUser us)
 	{
 		this.data = patientData;
-
-		// TODO algorithm stuff
-		// if (data.getAlgorithm() != null)
-		// data.getAlgorithm().createPositionMap();
 
 		for (Therapy therapy : patientData.getTherapies())
 		{
@@ -158,6 +155,11 @@ public class PatientChart
             {
                 CHART_HEIGHT = Integer.parseInt(ua.getValue());
             }
+            else if("chart.mutation".equals(ua.getName()) && ua.getValue()!=null)
+            {
+                positionAlgorithm_ = ua.getValue();
+                positionMap_ = createPositionMap(ua.getData());
+            }
         }
 
 		maxMutations = 0;
@@ -180,6 +182,25 @@ public class PatientChart
 		bold = new BasicStroke();
 		bold = new BasicStroke(2, bold.getEndCap(), bold.getLineJoin(), bold.getMiterLimit(), bold.getDashArray(), 0);
 	}
+    
+    private HashMap<String, String> createPositionMap(byte [] data) {
+        if(data!=null) {
+            Table csv = new Table(new ByteArrayInputStream(data), false);
+            if("protein".equals(csv.valueAt(0, 0)) && "position".equals(csv.valueAt(1, 0))) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                for(int i = 1; i<csv.numRows(); i++) {
+                    map.put(csv.valueAt(0, i).toLowerCase()+csv.valueAt(1, i), null);
+                }
+                return map;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
+        }
+    }
 
     private List<TestResult> getSortedTestResults()
     {
