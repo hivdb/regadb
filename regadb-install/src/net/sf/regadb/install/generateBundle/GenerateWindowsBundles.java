@@ -2,15 +2,10 @@ package net.sf.regadb.install.generateBundle;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import net.sf.regadb.install.generateHsqldb.HsqldbDatabaseCreator;
-import net.sf.regadb.util.pair.Pair;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.taskdefs.GUnzip;
 import org.apache.tools.ant.taskdefs.Untar;
 
