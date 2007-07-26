@@ -516,9 +516,14 @@ public class Transaction {
         if(obj instanceof Patient)
             obj = ((Patient)obj).getPatient();
         
-        Query q = session.createQuery("from " + obj.getClass().getName() + " obj where obj = :obj");
+        String className = obj.getClass().getName();
+        int indexOfDollar = className.indexOf("$");
+        if(indexOfDollar!=-1)
+            className = className.substring(0, indexOfDollar);
         
-        q.setParameter("obj", obj);
+        Query q = session.createQuery("from " + className + " obj where obj = :objParam");
+        
+        q.setParameter("objParam", obj);
     
         return q.uniqueResult() !=null;
     }
