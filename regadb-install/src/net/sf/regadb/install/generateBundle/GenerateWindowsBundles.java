@@ -39,11 +39,11 @@ public class GenerateWindowsBundles {
 
         String buildFile = buildPath + replaceByPS("regadb-install/src/net/sf/regadb/install/generateBundle/");
         
-        try {
+        /*try {
             Thread.sleep(5000);
         } catch (InterruptedException e1) {
             e1.printStackTrace();
-        }
+        }*/
         
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis()-start<(5*60*1000)) {
