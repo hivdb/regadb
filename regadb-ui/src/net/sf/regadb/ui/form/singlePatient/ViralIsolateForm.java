@@ -169,6 +169,8 @@ public class ViralIsolateForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
+        	deleteObject();
+        	
             redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().viralIsolates, RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesSelect);
         }
         else

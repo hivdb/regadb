@@ -298,10 +298,11 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     private void setSequenceData(NtSequence seq)
     {
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        if(seq.getNtSequenceIi()!=null)
-        t.update(seq);
-        t.commit();
+        if(seq.getNtSequenceIi()!=null) {
+        	Transaction t = RegaDBMain.getApp().createTransaction();
+        	t.update(seq);
+        	t.commit();
+        }
         
         seqLabelTF.setText(seq.getLabel());
         seqDateTF.setDate(seq.getSequenceDate());
