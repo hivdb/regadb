@@ -389,7 +389,7 @@ public class Jarbuilder
         
         for(Object o : jarFilesFromLibPool)
         {
-            if(jars.contains((((File)o).getAbsolutePath()).substring((((File)o).getAbsolutePath()).lastIndexOf("/") + 1)))
+            if(jars.contains((((File)o).getAbsolutePath()).substring((((File)o).getAbsolutePath()).lastIndexOf(File.separatorChar) + 1)))
             {
             	try 
                 {
