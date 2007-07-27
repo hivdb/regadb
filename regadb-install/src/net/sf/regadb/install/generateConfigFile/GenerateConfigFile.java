@@ -115,7 +115,7 @@ public class GenerateConfigFile {
 		if (dialect.equals("default")) {
     		dialect = "org.hibernate.dialect.HSQLDialect";
     		driverClass = "org.hsqldb.jdbcDriver";
-    		url = "jdbc:hsqldb:file:" + installDir + "hsqldb/regadb";
+    		url = "jdbc:hsqldb:file:" + installDir + "hsqldb" + File.separatorChar + "regadb";
     		username = "regadb";
     		password = "regadb";
     	}
