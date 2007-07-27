@@ -12,6 +12,7 @@ import java.util.List;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
@@ -39,7 +40,7 @@ public class GenerateReport
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
         replace("$PATIENT_ID", patient.getPatientId());
-        //report_.replace("$PATIENT_CLINICAL_FILE_NR", );
+        replace("$PATIENT_CLINICAL_FILE_NR", getClinicalFileNumber(patient));
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
         
@@ -68,6 +69,19 @@ public class GenerateReport
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private String getClinicalFileNumber(Patient patient)
+    {
+        for(PatientAttributeValue pav : patient.getPatientAttributeValues())
+        {
+            if(StandardObjects.getClinicalFileNumber().equals(pav.getId().getAttribute().getName()))
+            {
+                return pav.getValue();
+            }
+        }
+        
+        return null;
     }
     
     private String getType(ViralIsolate vi)

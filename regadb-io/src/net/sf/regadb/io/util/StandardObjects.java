@@ -24,6 +24,7 @@ public class StandardObjects {
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
+    private static String clinicalFileNumberAttribute = "Clinical File Number";
 
     public static TestType getCd4TestType() {
         return cd4TestType;
@@ -51,6 +52,9 @@ public class StandardObjects {
     }
     public static String getGssId() {
         return gssId;
+    }
+    public static String getClinicalFileNumber() {
+        return clinicalFileNumberAttribute;
     }
     public static boolean isViralLoad(TestType tt) {
         return viralLoadTestType.getDescription().equals(tt.getDescription());
