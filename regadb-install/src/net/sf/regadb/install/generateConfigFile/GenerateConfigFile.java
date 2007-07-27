@@ -130,7 +130,7 @@ public class GenerateConfigFile {
 		queryDir = installDir + "queryResult";
 		
 		configMap.put("hibernate.connection.driver_class", driverClass);
-    	configMap.put("hibernate.connection.dialect", dialect);
+    	configMap.put("hibernate.dialect", dialect);
     	configMap.put("hibernate.connection.url", url);
     	configMap.put("hibernate.connection.username", username);
     	configMap.put("hibernate.connection.password", password);
