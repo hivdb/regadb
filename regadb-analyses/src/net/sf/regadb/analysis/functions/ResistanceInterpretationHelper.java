@@ -1,7 +1,7 @@
 package net.sf.regadb.analysis.functions;
 
 public class ResistanceInterpretationHelper {
-    public String getSIRRepresentation(Double gss) {
+    public static String getSIRRepresentation(Double gss) {
         if(gss==null) {
             return "NA";
         }
