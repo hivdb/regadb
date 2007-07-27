@@ -94,6 +94,30 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
                     resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
                     resistanceInterpretation.setTest(test_final);
                     
+                    StringBuffer data = new StringBuffer();
+                    data.append("<interpretation><score><drug>");
+                    data.append(drug);
+                    data.append("</drug><level>");
+                    data.append(level);
+                    data.append("</level><description>");
+                    data.append(description);
+                    data.append("</description><sir>");
+                    data.append(sir);
+                    data.append("</sir><gss>");
+                    data.append(gss);
+                    data.append("</gss><mutations>");
+                    int size = mutations.size();
+                    for(int i = 0; i<size; i++)
+                    {
+                        data.append(mutations.get(i));
+                        if(i!=size-1)
+                            data.append(' ');
+                    }
+                    data.append("</mutations><remarks>");
+                    data.append(remarks);
+                    data.append("</remarks></score></interpretation>");
+                    resistanceInterpretation.setData(data.toString().getBytes());
+                    
                     isolate.getTestResults().add(resistanceInterpretation);
                 }
             };

@@ -1,5 +1,6 @@
 package net.sf.regadb.analysis.functions;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +9,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
@@ -18,6 +22,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.date.DateUtils;
@@ -286,7 +291,7 @@ public class GenerateReport
             String drug = (String) i.next();
             String drugCode = (String) DRUG_NAMES.get(drug);
 
-            String mutations = null;
+            final StringBuffer mutationsLocal = new StringBuffer();
             String interpretation = null;
             Double gss = null;
             /*if (drugCode.equals("T20")) {
@@ -302,31 +307,57 @@ public class GenerateReport
                // ResistanceResultGeneric resistanceResult = drugForm.getResistanceResult(testII,drugCode);
 
                 if (tr != null) {
-                    //TODO mutations
-                    //TODO interprete gss
-                    mutations = "lala";//resistanceResult.getComment();
+                    if(mutationsLocal.length()!=0)
+                    mutationsLocal.delete(0, mutationsLocal.length());//resistanceResult.getComment();
                     interpretation = tr.getValue(); //resistanceResult.getInterpretation(lang);
+                    ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
+                    {
+                        @Override
+                        public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
+                        {
+                            int size = mutations.size();
+                            for(int i = 0; i<size; i++) {
+                                mutationsLocal.append(mutations.get(i));
+                                if(i!=size-1)
+                                    mutationsLocal.append(',');
+                            }
+                        }
+                    };
+                    try 
+                    {
+                        inp.parse(new InputSource(new ByteArrayInputStream(tr.getData())));
+                    } 
+                    catch (SAXException e) 
+                    {
+                        e.printStackTrace();
+                    } 
+                    catch (IOException e) 
+                    {
+                        e.printStackTrace();
+                    }
+                    
+                    if (mutationsLocal != null) {
+                        if (ii >= 3)
+                            replace(line, line + line);
+
+                        String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
+                        String reportInterpretation = "$INTERPRETATION" + (Math.min(ii, 3));
+
+                        replace("$DRUG" + (Math.min(ii, 3)), drug);
+                        replace(reportMutations, mutationsLocal.toString());
+
+                        try {
+                            gss = Double.parseDouble(interpretation);
+                        } catch(NumberFormatException e) {
+                            gss = null;                   
+                        }
+                        replace(reportInterpretation, ResistanceInterpretationHelper.getSIRRepresentation(gss)+ " ("+interpretation+")");
+                        ++ii;
+                    }
                 }
             //}
 
-            if (mutations != null) {
-                if (ii >= 3)
-                    replace(line, line + line);
 
-                String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
-                String reportInterpretation = "$INTERPRETATION" + (Math.min(ii, 3));
-
-                replace("$DRUG" + (Math.min(ii, 3)), drug);
-                replace(reportMutations, mutations);
-
-                try {
-                    gss = Double.parseDouble(interpretation);
-                } catch(NumberFormatException e) {
-                    gss = null;                   
-                }
-                replace(reportInterpretation, ResistanceInterpretationHelper.getSIRRepresentation(gss)+ " ("+interpretation+")");
-                ++ii;
-            }
         }
         
         replace(line, "");       
