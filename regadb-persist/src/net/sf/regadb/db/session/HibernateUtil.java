@@ -35,6 +35,7 @@ public class HibernateUtil {
     {
         String value = RegaDBSettings.getInstance().getPropertyValue(name);
         
+        System.err.println("Settings:"+ " name"+ name +" val"+value);
         if(value!=null)
         conf.setProperty(name, value);
     }
