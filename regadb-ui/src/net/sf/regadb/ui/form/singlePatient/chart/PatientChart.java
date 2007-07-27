@@ -31,10 +31,12 @@ import javax.imageio.ImageIO;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
@@ -45,6 +47,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.compare.DrugGenericComparator;
 import net.sf.regadb.db.compare.TestResultComparator;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.DescribeMutations;
 
 public class PatientChart
 {
@@ -182,6 +185,15 @@ public class PatientChart
 		bold = new BasicStroke();
 		bold = new BasicStroke(2, bold.getEndCap(), bold.getLineJoin(), bold.getMiterLimit(), bold.getDashArray(), 0);
 	}
+    
+    public void setSettings(int width, int height, Test algorithm) {
+        IMAGE_WIDTH = width;
+        CHART_HEIGHT = height;
+        if(!algorithm.getDescription().equals(positionAlgorithm_) || positionMap_==null) {
+            positionAlgorithm_ = algorithm.getDescription();
+            positionMap_ = createPositionMap(DescribeMutations.describeMutations(((AnalysisData)algorithm.getAnalysis().getAnalysisDatas().toArray()[0]).getData()));
+        }
+    }
     
     private HashMap<String, String> createPositionMap(byte [] data) {
         if(data!=null) {
