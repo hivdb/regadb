@@ -288,7 +288,7 @@ public class GenerateReport
 
             String mutations = null;
             String interpretation = null;
-
+            Double gss = null;
             /*if (drugCode.equals("T20")) {
                 mutations = lang.equals("NL") ? "niet bepaald" : "not determined";
                 interpretation = "-";
@@ -318,7 +318,13 @@ public class GenerateReport
 
                 replace("$DRUG" + (Math.min(ii, 3)), drug);
                 replace(reportMutations, mutations);
-                replace(reportInterpretation, interpretation);
+
+                try {
+                    gss = Double.parseDouble(interpretation);
+                } catch(NumberFormatException e) {
+                    gss = null;                   
+                }
+                replace(reportInterpretation, ResistanceInterpretationHelper.getSIRRepresentation(gss)+ " ("+interpretation+")");
                 ++ii;
             }
         }

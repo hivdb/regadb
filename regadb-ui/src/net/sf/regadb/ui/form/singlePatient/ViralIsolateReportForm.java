@@ -110,6 +110,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     private File getChart(Transaction t, Patient patient)
     {
         PatientChart chartDrawer = new PatientChart(patient, t.getSettingsUser());
+        chartDrawer.setSettings(700, 300, algorithmCB_.currentValue());
         t.attach(patient);
         File tmpFile = RegaDBMain.getApp().createTempFile("regadb-chart", ".png");
         chartDrawer.writePngChartToFile(800, tmpFile);
