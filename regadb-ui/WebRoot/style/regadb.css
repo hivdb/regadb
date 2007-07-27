@@ -235,3 +235,8 @@
 {
 	cursor: pointer;
 }
+
+*.groupbox div
+{
+	padding-right: 300px
+}

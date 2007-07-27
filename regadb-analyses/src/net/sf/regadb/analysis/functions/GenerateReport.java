@@ -35,7 +35,7 @@ public class GenerateReport
     public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile)
     {
         replace("$ASI_ALGORITHM", algorithm.getDescription());
-        replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date(System.currentTimeMillis())));
+        replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
         replace("$PATIENT_ID", patient.getPatientId());

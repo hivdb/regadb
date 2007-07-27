@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
+import java.util.Date;
 
 import net.sf.regadb.analysis.functions.GenerateReport;
 import net.sf.regadb.db.Patient;
@@ -34,6 +35,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     private Label templateL_;
     private ComboBox<ResistanceInterpretationTemplate> resRepTemplateCB_;
     private WPushButton generateButton_;
+    private Label reportL;
     private WAnchor reportA_;
     
     public ViralIsolateReportForm(ViralIsolateForm viralIsolateForm)
@@ -49,6 +51,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     public void init()
     {
         reportGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.report"), this);
+        reportGroup_.setStyleClass("groupbox");
         reportTable_ = new WTable(reportGroup_);
         algorithmL_ = new Label(tr("form.viralIsolate.editView.report.algorithm"));
         algorithmCB_ = new ComboBox<Test>(InteractionState.Editing, viralIsolateForm_);
@@ -58,9 +61,11 @@ public class ViralIsolateReportForm extends WContainerWidget
         viralIsolateForm_.addLineToTable(reportTable_, templateL_, resRepTemplateCB_);
         generateButton_ = new WPushButton(tr("form.viralIsolate.editView.report.generateButton"));
         int row = reportTable_.numRows();
-        reportTable_.putElementAt(row, 2, generateButton_);
-        reportA_ = new WAnchor("dummy", lt(""), reportTable_.elementAt(row+1, 1));
+        reportL = new Label(tr("form.viralIsolate.editView.report.report"));
+        reportTable_.putElementAt(row, 0, reportL);
+        reportA_ = new WAnchor("dummy", lt(""), reportTable_.elementAt(row, 1));
         reportA_.setStyleClass("link");
+        reportTable_.putElementAt(row, 2, generateButton_);
         
         generateButton_.clicked.addListener(new SignalListener<WMouseEvent>()
         {
@@ -76,7 +81,7 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                            t,
                                                            chartFile
                                                            );
-                reportA_.label().setText(lt("Test"));
+                reportA_.label().setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
                 reportA_.setRef(new WMemoryResource("application/rtf", report.getReport()).generateUrl());
                 chartFile.delete();
                 t.commit();
