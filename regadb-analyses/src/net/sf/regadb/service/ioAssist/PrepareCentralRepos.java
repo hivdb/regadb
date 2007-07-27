@@ -44,6 +44,7 @@ public class PrepareCentralRepos
 {
     private static ValueType nominalValue = new ValueType("nominal value");
     private static ValueType number = new ValueType("number");
+    private static ValueType string  = new ValueType("string");
     private static AttributeGroup regadb = new AttributeGroup("RegaDB");
     private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), StandardObjects.getGssId());
     
@@ -66,6 +67,8 @@ public class PrepareCentralRepos
         export.writeTopAttribute(geographicEthnicity, attributes);
         Attribute transmissionGroup = createTransmissionGroup();
         export.writeTopAttribute(transmissionGroup, attributes);
+        Attribute clinicalFileNumber = createClinicalFileNumber();
+        export.writeTopAttribute(clinicalFileNumber, attributes);
         
         //Tests
         Test vl = createGenericViralLoad();
@@ -84,9 +87,9 @@ public class PrepareCentralRepos
         export.writeTopTest(rega_71, tests);
         
         //write files
-        File attributesFile = new File(args[0]+File.separatorChar+"attributes.xml");
+        File attributesFile = new File("C:\\jvsant1\\centralRepos"+File.separatorChar+"attributes.xml");
         writeXMLFile(attributesFile, attributes);
-        File testsFile = new File(args[0]+File.separatorChar+"tests.xml");
+        File testsFile = new File("C:\\jvsant1\\centralRepos"+File.separatorChar+"tests.xml");
         writeXMLFile(testsFile, tests);
         
         //testing
@@ -296,5 +299,14 @@ public class PrepareCentralRepos
         }
         
         return country;
+    }
+    
+    private static Attribute createClinicalFileNumber()
+    {
+        Attribute clinicalFileNumber = new Attribute("Clinical File Number");
+        clinicalFileNumber.setAttributeGroup(regadb);
+        clinicalFileNumber.setValueType(string);
+        
+        return clinicalFileNumber;
     }
 }
