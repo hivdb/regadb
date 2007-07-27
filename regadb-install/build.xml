@@ -37,7 +37,7 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
-  	<jar jarfile="${dist}/${proj.name}-regadb-conf-${proj.version}.jar" basedir="${build}">
+  	<jar jarfile="${dist}/${proj.name}-regadb-conf.jar" basedir="${build}">
   	  		<manifest>
   	  			<attribute name="Main-Class" value="net.sf.regadb.install.generateConfigFile.GenerateConfigFile"/>
   	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
