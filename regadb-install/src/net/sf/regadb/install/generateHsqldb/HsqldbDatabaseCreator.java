@@ -41,10 +41,12 @@ public class HsqldbDatabaseCreator {
     
     public void run() {
         startupDatabase();
-        createDatabase();
-        initDatabase();
-        shutdownDatabase();
+        createDatabase("sa", "");
+        shutdownDatabase("sa", "");
         changeUser();
+        startupDatabase();
+        initDatabase();
+        shutdownDatabase("regadb", "regadb");
     }
 	
 	private void startupDatabase() {
@@ -54,7 +56,7 @@ public class HsqldbDatabaseCreator {
 		server.start();
 	}
 	
-	private void createDatabase() {
+	private void createDatabase(String user, String password) {
 		File hsqldbSchemaFile = new File(hsqldbSchemaLocation_);
 		
 		String query = new String();
@@ -66,7 +68,7 @@ public class HsqldbDatabaseCreator {
 			e.printStackTrace();
 		}
 		
-		executeQuery(query);
+		executeQuery(query, user, password);
 	}
 	
 	private void initDatabase() {
@@ -74,16 +76,16 @@ public class HsqldbDatabaseCreator {
         
         ArrayList<Pair<String, String>> conf = new ArrayList<Pair<String, String>>();
         conf.add(new Pair<String, String>("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver"));
-        conf.add(new Pair<String, String>("hibernate.connection.password", ""));
-        conf.add(new Pair<String, String>("hibernate.connection.username", "sa"));
+        conf.add(new Pair<String, String>("hibernate.connection.password", "regadb"));
+        conf.add(new Pair<String, String>("hibernate.connection.username", "regadb"));
         conf.add(new Pair<String, String>("hibernate.connection.url", url_));
         conf.add(new Pair<String, String>("hibernate.dialect", "org.hibernate.dialect.HSQLDialect"));
 
         init.run(conf);
 	}
 	
-	private void shutdownDatabase() {
-		executeQuery("SHUTDOWN");
+	private void shutdownDatabase(String user, String password) {
+		executeQuery("SHUTDOWN", user, password);
 	}
 	
 	private void changeUser() {
@@ -109,17 +111,17 @@ public class HsqldbDatabaseCreator {
 		}
 	}
 	
-	private jdbcDataSource setupDataSource() {
+	private jdbcDataSource setupDataSource(String user, String password) {
 		jdbcDataSource dataSource = new jdbcDataSource();
 		dataSource.setDatabase(url_);
-		dataSource.setUser("sa");
-		dataSource.setPassword("");
+		dataSource.setUser(user);
+		dataSource.setPassword(password);
 		
 		return dataSource;
 	}
 	
-	private void executeQuery(String query) {
-		jdbcDataSource dataSource = setupDataSource();
+	private void executeQuery(String query, String user, String password) {
+		jdbcDataSource dataSource = setupDataSource(user, password);
 		
 		try {
 			Connection connection = dataSource.getConnection();
