@@ -44,7 +44,6 @@ public class HsqldbDatabaseCreator {
         createDatabase("sa", "");
         shutdownDatabase("sa", "");
         changeUser();
-        startupDatabase();
         initDatabase();
         shutdownDatabase("regadb", "regadb");
     }
