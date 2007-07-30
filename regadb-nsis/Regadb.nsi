@@ -11,7 +11,7 @@
 
 ;General
 
-!define FILE_SOURCE "C:\pieter\bundle"
+!define FILE_SOURCE "$FILE_SOURCE$"
 
   ;Name and file
   Name "RegaDB"
