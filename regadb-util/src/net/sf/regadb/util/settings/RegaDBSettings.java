@@ -84,14 +84,16 @@ public class RegaDBSettings {
         String proxyHost = proxyInfo.getKey();
         String proxyPort = proxyInfo.getValue();
         
-        if(proxyHost!=null && !"default".equals(proxyHost))
+        if(!"".equals(proxyHost))
         {
-            System.setProperty("http.proxyHost", proxyHost);
-        }
-        if(proxyPort!=null && !"default".equals(proxyPort))
-        {
-            System.setProperty("http.proxyPort", proxyPort);
-            System.out.println(System.getProperty("http.proxyHost"));
+            if(proxyHost!=null)
+            {
+                System.setProperty("http.proxyHost", proxyHost);
+            }
+            if(proxyPort!=null)
+            {
+                System.setProperty("http.proxyPort", proxyPort);
+            }
         }
     }
     

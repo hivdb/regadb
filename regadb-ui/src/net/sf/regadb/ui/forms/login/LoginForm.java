@@ -81,7 +81,8 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
             loginGroupTable.putElementAt(2, 1, proxyCB);
             for(Pair<String,String> proxy : RegaDBSettings.getInstance().getProxyList())
             {
-                proxyCB.addItem(new DataComboMessage<Pair<String, String>>(proxy, proxy.getKey()));
+                String proxyKey = "".equals(proxy.getValue())?"Empty proxy":proxy.getKey();
+                proxyCB.addItem(new DataComboMessage<Pair<String, String>>(proxy, proxyKey));
             }
         }
         createAccountLink_.setStyleClass("general-clickable-text");
