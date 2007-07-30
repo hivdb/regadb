@@ -40,13 +40,7 @@ public class Jarbuilder
     public static void main (String args[])
     {
     	if (args.length >= 2) {
-    		buildDir_ = args[0] + File.separatorChar;
-    		rapportDir_ = args[1] + File.separatorChar;
     		
-    		libPool_ = buildDir_ + "libPool" + File.separatorChar;
-    		
-    		packageDir_ = buildDir_ + "packages" + File.separatorChar;
-            
             if(args.length>2)
             {
                 String localCheckoutArg = args[2];
@@ -56,16 +50,28 @@ public class Jarbuilder
                     localCheckoutDir_ = localCheckoutArg;
                 }
             }
-    		
-    		build();
-    		
-    		performTests();
+            
+            run(args[0], args[1], true);
     	}
     	else {
     		System.out.println("Wrong parameters");
     		System.out.println("First parameter for build dir");
     		System.out.println("Second parameter for report dir");
     	}
+    }
+    
+    public static void run(String buildDir, String reportDir, boolean runTests) {
+        buildDir_ = buildDir + File.separatorChar;
+        rapportDir_ = reportDir + File.separatorChar;
+        
+        libPool_ = buildDir_ + "libPool" + File.separatorChar;
+        
+        packageDir_ = buildDir_ + "packages" + File.separatorChar;
+        
+        build();
+        
+        if(runTests)
+            performTests();
     }
     
     public static void build()
