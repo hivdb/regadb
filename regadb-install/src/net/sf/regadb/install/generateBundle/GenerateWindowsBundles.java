@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.sf.regadb.install.generateHsqldb.HsqldbDatabaseCreator;
+import net.sf.regadb.util.zip.Zip;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.taskdefs.GUnzip;
@@ -23,9 +24,10 @@ public class GenerateWindowsBundles {
             e2.printStackTrace();
         }
         
-        String tomcatDeployDir = bundlePath + replaceByPS("/tomcat/webapps/");
+        File tomcatDeployDir = new File(bundlePath + replaceByPS("/tomcat/webapps/regadb"));
+        tomcatDeployDir.mkdir();
         try {
-            FileUtils.copyFileToDirectory(new File(buildPath + replaceByPS("/regadb-ui/dist/regadb-ui-0.9.war")), new File(tomcatDeployDir));
+            Zip.unzip(new File(buildPath + replaceByPS("/regadb-ui/dist/regadb-ui.war")), tomcatDeployDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,16 +61,8 @@ public class GenerateWindowsBundles {
         return result;
     }
     
-    public static void main(String [] args) {
+    public static void run(String buildDir, String bundleDir) {
         GenerateWindowsBundles gen = new GenerateWindowsBundles();
-        
-        if(args.length<2) {
-            System.err.println("Please provide the builddir and the bundledir as program arguments");
-            System.exit(1);
-        }
-        
-        String buildDir = args[0];
-        String bundleDir = args[1];
         
         gen.unpackJavaTomcat(buildDir, bundleDir);
         
@@ -93,6 +87,18 @@ public class GenerateWindowsBundles {
             FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-install")), new File(bundleDir + replaceByPS("/regadb-install")));
         } catch (IOException e) {
             e.printStackTrace();
+        }        
+    }
+    
+    public static void main(String [] args) {
+        if(args.length<2) {
+            System.err.println("Please provide the builddir and the bundledir as program arguments");
+            System.exit(1);
         }
+        
+        String buildDir = args[0];
+        String bundleDir = args[1];
+        
+        run(buildDir, bundleDir);
     }
 }
