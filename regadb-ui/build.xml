@@ -43,7 +43,7 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the war file -->
   	<jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-  	<war destfile="${dist}/${proj.name}-${proj.version}.war" webxml="WebRoot/WEB-INF/web.xml">
+  	<war destfile="${dist}/${proj.name}.war" webxml="WebRoot/WEB-INF/web.xml">
   	  <fileset dir="WebRoot"/>
   	  <lib dir="${lib}"/>
   	  <classes dir="${build}"/>
