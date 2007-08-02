@@ -27,6 +27,21 @@ public class ImportBresciaDB
     
     private Map<String, MutationSample> mutSamples = new HashMap<String, MutationSample>();
     
+    private static String trugene_ref_aa_pro = 
+        "---TLWQRPLVTIKIGGQLKEALLDTGADDTVLEEMSLPGRWKPKMIGGIGGFIKVRQYD" +
+        "QILIEICGHKAIGTVLVGPTPVNIIGRNLLTQIGCTLNF";
+     
+    private static String trugene_ref_aa_rt = 
+        "---------------------" +
+        "---------------XCTEMEKEGKISKIGPENPYNTPVFAIKKKDSTKWRKLVDFRELN" +
+        "KRTQDFWEVQLGIPHPAGLKKKKSVTVLDVGDAYFSVPLDEDFRKYTAFTIPSINNETPG" +
+        "IRYQYNVLPQGWKGSPAIFQSSMTKILEPFRKQNPDIVIYQYMDDLYVGSDLEIGQHRTK" +
+        "IEELRQHLLRWGLTTPDKKHQKEPPFLWMGYELHPDKWTVQPIVLP--------------" +
+        "------------------------------------------------------------" +
+        "------------------------------------------------------------" +
+        "------------------------------------------------------------" +
+        "------------------------------------------------------------" +
+        "-----------------------------------------------------------";
 
     public ImportBresciaDB(String sampleFileName) throws FileNotFoundException
     {
@@ -73,32 +88,53 @@ public class ImportBresciaDB
         Set<String> possibleMPCodons = AaToNt.getMixedPopulationCodonTable();
         Set<String> possibleSimpleCodons = AaToNt.getSimpleCodonTable();
         int counter = 0;
+        int noCodonMatch = 0;
         for(Map.Entry<String, MutationSample> e : mutSamples.entrySet())
         {
             for(String mut : e.getValue().mutations_)
             {
+                //checking positions
+                String protein = mut.split(",")[2];
+                int pos = Integer.parseInt(mut.split(",")[0]);
+                
+                char aa_at_pos = '*';
+                try {
+                    aa_at_pos = '*';
+                    if("PRO".equals(protein)) {
+                        aa_at_pos = trugene_ref_aa_pro.charAt(pos-1);
+                    } else if("RT".equals(protein)) {
+                        aa_at_pos = trugene_ref_aa_rt.charAt(pos-1);
+                    }
+                    if(aa_at_pos=='-')
+                        System.err.println("position not available in trugene ref seq" + mut);
+                } catch (StringIndexOutOfBoundsException sioobex) {
+                    System.err.println("ai -> " + mut);
+                }
+                //checking positions
+                
                 aa = mut.split(",")[1];
                 if(aa.length()>1)
                     codon = AaToNt.findCodon(aa, possibleMPCodons);
                 else
                     codon = AaToNt.findCodon(aa, possibleSimpleCodons);
                 counter++;
-                try {
-                    //System.err.println(aa);
-                    if(codon==null)
-                        System.err.println("problem" + aa);
-                    DNATools.createDNASequence("act", "test");
-                    //System.err.println(aa+" -> "+codon +" -> "+ new Mutation(0,0, DNATools.createDNASequence(codon, "test")).aaToString());
-                } catch (IllegalSymbolException e1) {
-                    e1.printStackTrace();
+
+                if(codon==null) {
+                    codon = AaToNt.findCodon(aa+aa_at_pos, possibleMPCodons);
+                    if(codon==null) {
+                        System.err.println("cannot translate aa to codon" + aa + " wildtype " + aa_at_pos);
+                        noCodonMatch++;
+                    }
                 }
+                
                 if(counter==1000)
                 {
-                    System.err.print("*");
+                    //System.err.print("*");
                     counter = 0;
                 }
             }
         }
+        System.err.println("noCodonMatch:"+noCodonMatch);
     }
     
     private String parseMutation(final String mutation, int pos, String patient_id, String date, String protein)
@@ -186,13 +222,13 @@ public class ImportBresciaDB
         }
         else
         {
-            System.err.println("Cannot parse protein: " + protein + " in row" + pos +" -> ignoring (" + patient_id+","+date+")");
+            System.err.println("Cannot parse protein: " + protein + " in row" + pos +" -> ignoring (" + patient_id+","+date+") ->" + protein);
             return null;
         }
         
         //System.err.println(mutation + " -> " + location+","+aminoAcids+","+prot);
         
-        return location+","+aminoAcids+","+prot;
+        return location+","+aminoAcids.toUpperCase()+","+prot;
     }
     
     private Date parseDate(String date, char dateSeparator)
