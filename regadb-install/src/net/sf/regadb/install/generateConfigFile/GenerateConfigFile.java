@@ -37,29 +37,34 @@ public class GenerateConfigFile {
 	
 	public static void main(String[] args) {
 		if (args.length == 1) {
-			File installFile = new File(args[0]);
-			
-			configMap = new HashMap<String, String>();
-			proxyConfigList = new ArrayList<Pair<String, String>>();
-			
-			installDir = "";
-			driverClass = "";
-			dialect = "";
-			url = "";
-			username = "";
-			password = "";
-			queryDir = "";
-			proxyUrlA = "";
-			proxyPortA = "";
-			proxyUrlB = "";
-			proxyPortB = "";
-			
-			readInstallFile(installFile);
-			generateConfiguration();
-			generateProxyConfiguration();
-			writeConfigFile(generateConfigFile());
+            GenerateConfigFile gcf = new GenerateConfigFile();
+            gcf.run(true, args[0]);
 		}
 	}
+    
+    public void run(boolean inConfDir, String installFileName) {
+        File installFile = new File(installFileName);
+        
+        configMap = new HashMap<String, String>();
+        proxyConfigList = new ArrayList<Pair<String, String>>();
+        
+        installDir = "";
+        driverClass = "";
+        dialect = "";
+        url = "";
+        username = "";
+        password = "";
+        queryDir = "";
+        proxyUrlA = "";
+        proxyPortA = "";
+        proxyUrlB = "";
+        proxyPortB = "";
+        
+        readInstallFile(installFile);
+        generateConfiguration(inConfDir);
+        generateProxyConfiguration();
+        writeConfigFile(generateConfigFile());
+    }
 	
 	private static void readInstallFile(File installFile) {
 		List configElements = new ArrayList();
@@ -105,12 +110,12 @@ public class GenerateConfigFile {
     	}
 	}
 	
-	private static void generateConfiguration() {
+	private static void generateConfiguration(boolean inConfDir) {
 		if (installDir.charAt(installDir.length() - 1) != File.separatorChar) {
 			installDir += File.separatorChar;
 		}
 		
-		configFile = installDir + "conf" + File.separatorChar + "global-conf.xml";
+		configFile = installDir + (inConfDir?"conf":"") + File.separatorChar + "global-conf.xml";
 		
 		if (dialect.equals("default")) {
     		dialect = "org.hibernate.dialect.HSQLDialect";
