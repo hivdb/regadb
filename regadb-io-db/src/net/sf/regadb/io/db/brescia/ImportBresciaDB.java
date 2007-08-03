@@ -14,7 +14,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 
 import net.sf.regadb.align.Mutation;
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.io.db.portugal.CreateCsvFiles;
+import net.sf.regadb.io.db.util.CreateCsvFiles;
 
 public class ImportBresciaDB 
 {
