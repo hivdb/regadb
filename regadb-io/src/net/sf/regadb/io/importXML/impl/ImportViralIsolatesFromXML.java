@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.portugal;
+package net.sf.regadb.io.importXML.impl;
 
 import java.io.File;
 import java.io.FileReader;

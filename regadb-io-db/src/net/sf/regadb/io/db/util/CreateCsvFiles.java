@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.portugal;
+package net.sf.regadb.io.db.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ public class CreateCsvFiles
 {
     public static void main(String [] args)
     {
-        generateCsvFiles("/home/plibin0/pt_regadb/v8/export");
+        generateCsvFiles(args[0]);
     }
     
     public static void generateCsvFile(File txtFile)

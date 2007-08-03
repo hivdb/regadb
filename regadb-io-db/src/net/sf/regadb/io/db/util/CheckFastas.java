@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.portugal;
+package net.sf.regadb.io.db.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ public class CheckFastas
 {
     public static void main(String [] args)
     {
-        File [] files = new File("/home/plibin0/pt_regadb/v8/sequences").listFiles();
+        File [] files = new File(args[0]).listFiles();
         ArrayList<String> invalidFiles = new ArrayList<String>();
         int invalidFilesCounter = 0;
         ArrayList<String> differentFiles = new ArrayList<String>();

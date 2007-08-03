@@ -31,18 +31,6 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-  	<jar jarfile="${dist}/${proj.name}-pt-patient-xmlimport-${proj.version}.jar" basedir="${build}">
-  		<manifest>
-  			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.ImportPatientsFromXML"/>
-  			<attribute name="Class-Path" value="${jar-dependencies}"/>
-  		</manifest>
-  	</jar>
-  	<jar jarfile="${dist}/${proj.name}-pt-viralIsolates-xmlimport-${proj.version}.jar" basedir="${build}">
-  		<manifest>
-  			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.ImportViralIsolatesFromXML"/>
-  			<attribute name="Class-Path" value="${jar-dependencies}"/>
-  		</manifest>
-  	</jar>
   </target>
   
   <!-- Clean up -->
