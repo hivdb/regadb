@@ -24,9 +24,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
-import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
 import net.sf.regadb.service.wts.util.Utils;
@@ -59,25 +59,11 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         
     public IOAssistImportHandler(FileWriter fw)
     {
-        Protein p6 = new Protein("p6", "Transframe peptide (partially)");
-        Protein pro = new Protein("PRO", "Protease");
-        Protein rt = new Protein("RT", "Reverse Transcriptase");
-        Protein in = new Protein("IN", "Integrase");
-
-        Protein sig = new Protein("sig", "Signal peptide");
-        Protein gp120 = new Protein("gp120", "Envelope surface glycoprotein gp120");
-        Protein gp41 = new Protein("gp41", "Envelope transmembrane domain");
-        
         proteinMap_ = new HashMap<String, Protein>();
         
-        proteinMap_.put(p6.getAbbreviation(), p6);
-        proteinMap_.put(pro.getAbbreviation(), pro);
-        proteinMap_.put(rt.getAbbreviation(), rt);
-        proteinMap_.put(in.getAbbreviation(), in);
-        
-        proteinMap_.put(sig.getAbbreviation(), sig);
-        proteinMap_.put(gp120.getAbbreviation(), gp120);
-        proteinMap_.put(gp41.getAbbreviation(), gp41);
+        for(Protein p : StandardObjects.getProteins()) {
+            proteinMap_.put(p.getAbbreviation(), p);
+        }
         
         aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
         

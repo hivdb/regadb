@@ -166,23 +166,9 @@ public class InitRegaDB
     
     private void initProteins(Session session)
     {
-        Protein p6 = new Protein("p6", "Transframe peptide (partially)");
-        Protein pro = new Protein("PRO", "Protease");
-        Protein rt = new Protein("RT", "Reverse Transcriptase");
-        Protein in = new Protein("IN", "Integrase");
-
-        Protein sig = new Protein("sig", "Signal peptide");
-        Protein gp120 = new Protein("gp120", "Envelope surface glycoprotein gp120");
-        Protein gp41 = new Protein("gp41", "Envelope transmembrane domain");
-        
-        session.save(p6);
-        session.save(pro);
-        session.save(rt);
-        session.save(in);
-        
-        session.save(sig);
-        session.save(gp120);
-        session.save(gp41);
+        for(Protein p : StandardObjects.getProteins()) {
+            session.save(p);
+        }
     }
     
     private AnalysisType initAnalysisTypes(Session session)
