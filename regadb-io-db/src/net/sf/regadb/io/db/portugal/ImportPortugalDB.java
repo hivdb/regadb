@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import net.sf.regadb.align.Aligner;
-import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.csv.Table;
@@ -42,14 +40,13 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
-import net.sf.regadb.util.fuzzyString.FuzzyString;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -282,7 +279,7 @@ public class ImportPortugalDB {
             String collectionYear = therapeuticsTable.valueAt(CTherapeuticsYearCollection, row);
             String collectionMonth = therapeuticsTable.valueAt(CTherapeuticsMonthCollection, row);
             
-            Date collectionDate = createDate(collectionYear, collectionMonth);
+            Date collectionDate = Utils.createDate(collectionYear, collectionMonth, null);
 
             if (collectionDate == null) {
                 System.err.println("Sample.csv: sampleId='" + sampleId + "': "
@@ -340,11 +337,11 @@ public class ImportPortugalDB {
 
             Date startDate = null;
             if (!startYear.equals("") && !startYear.equals("0") && Integer.parseInt(startYear) > 1970) {
-                startDate = createDate(startYear, startMonth);
+                startDate = Utils.createDate(startYear, startMonth, null);
             }
             Date endDate = null;
             if (!endYear.equals("") && !endYear.equals("0") && Integer.parseInt(endYear) > 1970) {
-                endDate = createDate(endYear, endMonth);
+                endDate = Utils.createDate(endYear, endMonth, null);
             }
             
             if (previousEndDate == null) {
@@ -451,7 +448,7 @@ public class ImportPortugalDB {
           if (!viralLoad.equals("") && !viralLoad.equals("0")) {
               TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
               t.setValue("=" + viralLoad);
-              t.setTestDate(createDate(collectionYear, collectionMonth));
+              t.setTestDate(Utils.createDate(collectionYear, collectionMonth, null));
               t.setSampleId(sampleId);
               ++vl;
           }
@@ -459,7 +456,7 @@ public class ImportPortugalDB {
           if (!cd4Count.equals("") && !cd4Count.equals("0")) {
               TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
               t.setValue(cd4Count);
-              t.setTestDate(createDate(collectionYear, collectionMonth));
+              t.setTestDate(Utils.createDate(collectionYear, collectionMonth, null));
               t.setSampleId(sampleId);
               ++cd4;
           }
@@ -492,7 +489,7 @@ public class ImportPortugalDB {
 
                     patient = new Patient();
                     patient.setPatientId(patientId);
-                    patient.setBirthDate(createDate(yearBirth, ""));
+                    patient.setBirthDate(Utils.createDate(yearBirth, "", null));
                     
                     patientMap.put(patientId, patient);
                 }
@@ -560,8 +557,8 @@ public class ImportPortugalDB {
 
                 String patientId = sampleTable.valueAt(CSamplePatientID, row);
 
-                Date sampleDate = createDate(sampleTable.valueAt(CSampleYearCollection, row),
-                        sampleTable.valueAt(CSampleMonthCollection, row));
+                Date sampleDate = Utils.createDate(sampleTable.valueAt(CSampleYearCollection, row),
+                        sampleTable.valueAt(CSampleMonthCollection, row) , null);
 
                 Patient p = patientMap.get(patientId);
                 if (p == null)
@@ -771,29 +768,6 @@ public class ImportPortugalDB {
         
         return result;
     }
-
-    private static Date createDate(String yearStr, String monthStr) {
-		Calendar cal = Calendar.getInstance();
-
-		if (!yearStr.equals("")) {
-			int year, month;
-
-			year = Integer.parseInt(yearStr);
-			if (year < 1900)
-				return null;
-
-			if (!monthStr.equals("")) {
-				month = Integer.parseInt(monthStr);
-			} else
-				month = 0;
-				
-			cal.set(year, month, 1);
-			return new Date(cal.getTimeInMillis());
-		} else {
-			return null;
-		}
-	}
-
 
     private void exportXML(String fileName) {
         ExportToXML l = new ExportToXML();

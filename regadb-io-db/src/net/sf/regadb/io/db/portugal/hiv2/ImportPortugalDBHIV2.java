@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
@@ -394,7 +394,7 @@ public class ImportPortugalDBHIV2
                 
                 //Birth date
                 birth_date = patientTable.valueAt(5, i);
-                p.setBirthDate(parseDate(birth_date));
+                p.setBirthDate(Utils.parseAccessDate(birth_date));
                 if(p.getBirthDate()==null)
                 {
                     System.err.println("No birthdate avialable for patientId:" + patientId);
@@ -470,7 +470,7 @@ public class ImportPortugalDBHIV2
                 
                 if(!sampleId.equals(""))
                 {
-                    sampleDateD = parseDate(sampleDate);
+                    sampleDateD = Utils.parseAccessDate(sampleDate);
                     if(sampleDateD==null)
                     {
                         System.err.println("No sampledate available for patientId+sampleId:" + patientId + "+" + sampleId);
@@ -536,7 +536,7 @@ public class ImportPortugalDBHIV2
             sampleIdT = therapyTable.valueAt(1, i);
             if(sampleIdT.equals(sampleId))
             {
-                if(parseDate(therapyTable.valueAt(2, i)).equals(sampleDate))
+                if(Utils.parseAccessDate(therapyTable.valueAt(2, i)).equals(sampleDate))
                 {
                     toReturn = therapyTable.valueAt(3, i);
                     toReturn = toReturn.toLowerCase().replace('\ufffd', 'a');
@@ -603,17 +603,6 @@ public class ImportPortugalDBHIV2
         p.getTestResults().add(t);
     }
     
-    private Date parseDate(String date)
-    {
-        if("".equals(date))
-            return null;
-        
-        String dateNoTime = date.split(" ")[0];
-        String [] dateTokens = dateNoTime.split("-");
-       
-        return createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
-    }
-    
     private void loadCsvFiles()
     {
         patientTable = readTable(workingDir + File.separatorChar + "Ficha_de_doente.csv");
@@ -628,31 +617,6 @@ public class ImportPortugalDBHIV2
         try {
             return new Table(new BufferedInputStream(new FileInputStream(filename)), false);
         } catch (FileNotFoundException e) {
-            return null;
-        }
-    }
-    
-    private static Date createDate(String yearStr, String monthStr, String dayString) {
-        Calendar cal = Calendar.getInstance();
-
-        if (!yearStr.equals("")) {
-            int year, month;
-
-            year = Integer.parseInt(yearStr);
-            if (year < 1900)
-                return null;
-
-            if (!monthStr.equals("")) {
-                month = Integer.parseInt(monthStr);
-            } else
-                month = 0;
-
-            int day = 1;
-            if(dayString!=null)
-                day = Integer.parseInt(dayString);
-            cal.set(year, month, day);
-            return new Date(cal.getTimeInMillis());
-        } else {
             return null;
         }
     }
