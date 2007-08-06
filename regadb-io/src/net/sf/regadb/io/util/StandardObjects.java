@@ -6,6 +6,9 @@
  */
 package net.sf.regadb.io.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Protein;
@@ -83,5 +86,16 @@ public class StandardObjects {
         proteins[6] = gp41;
         
         return proteins;
+    }
+    
+    public static Map<String, Protein> getProteinMap() {
+        Protein[] proteins = getProteins();
+        Map<String, Protein> result = new HashMap<String, Protein>();
+        
+        for (Protein p:proteins)
+            result.put(p.getAbbreviation(), p);
+        
+
+        return result;
     }
 }
