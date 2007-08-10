@@ -51,7 +51,7 @@ public class Jarbuilder
                 }
             }
             
-            run(args[0], args[1], true);
+            run(args[0], args[1], localCheckoutDir_, true);
     	}
     	else {
     		System.out.println("Wrong parameters");
@@ -60,13 +60,15 @@ public class Jarbuilder
     	}
     }
     
-    public static void run(String buildDir, String reportDir, boolean runTests) {
+    public static void run(String buildDir, String reportDir, String localWorkspace, boolean runTests) {
         buildDir_ = buildDir + File.separatorChar;
         rapportDir_ = reportDir + File.separatorChar;
         
         libPool_ = buildDir_ + "libPool" + File.separatorChar;
         
         packageDir_ = buildDir_ + "packages" + File.separatorChar;
+        
+        localCheckoutDir_ = localWorkspace;
         
         build();
         
