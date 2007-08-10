@@ -22,7 +22,7 @@ public class GenerateWindowsInstaller {
             e.printStackTrace();
         }
         Jarbuilder builder = new Jarbuilder();
-        builder.run(buildDir.getAbsolutePath(), reportDir.getAbsolutePath(), false);
+        builder.run(buildDir.getAbsolutePath(), reportDir.getAbsolutePath(), "/home/plibin0/myWorkspace", false);
         GenerateWindowsBundles.run(buildDir.getAbsolutePath(), bundleDir.getAbsolutePath());
         
         try {
