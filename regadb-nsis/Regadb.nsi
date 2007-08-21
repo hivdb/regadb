@@ -51,6 +51,9 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_INSTFILES
   
   !insertmacro MUI_LANGUAGE "English"
+  
+  ; Brand text 
+  BrandingText "RegaDB Installer"
 
 ;Variables
 Var db_dialect
