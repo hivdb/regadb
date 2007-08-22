@@ -103,7 +103,7 @@ public class SinglePatientForm extends FormWidget
         deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
         deathDateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
-        WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
+        /*WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
         export.clicked.addListener(new SignalListener<WMouseEvent>()
         {
             public void notify(WMouseEvent a) 
@@ -114,7 +114,7 @@ public class SinglePatientForm extends FormWidget
                 final WTable parent = generalGroupTable_;
                 WAnchor anchor = new WAnchor(new WFileResource("xml", tmpFile.getAbsolutePath()), WWidget.lt("patient xml file"), parent.elementAt(parent.numRows()-1, 1));
             }
-        });
+        });*/
         generalGroupTable_.numColumns();
         
         fillData(patient_);
