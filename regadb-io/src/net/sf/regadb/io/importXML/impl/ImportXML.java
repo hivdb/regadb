@@ -101,11 +101,11 @@ public class ImportXML {
         }        
     }
     
-    void importPatients(InputSource s) throws SAXException, IOException {
+    void importPatients(InputSource s, String datasetName) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
-        Dataset dataset = loadOrCreateDataset(t, "PT");
+        Dataset dataset = loadOrCreateDataset(t, datasetName);
 
         PatientImportHandler importHandler = new PatientImportHandler(t, dataset);
         instance.readPatients(s, importHandler);
@@ -156,11 +156,11 @@ public class ImportXML {
         }        
     }
     
-    void importViralIsolates(InputSource s) throws SAXException, IOException {
+    void importViralIsolates(InputSource s, String datasetName) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
-        Dataset dataset = loadOrCreateDataset(t, "PT");
+        Dataset dataset = loadOrCreateDataset(t, datasetName);
 
         ViralIsolateImportHandler importHandler = new ViralIsolateImportHandler(t, dataset);
         instance.readViralIsolates(s, importHandler);
