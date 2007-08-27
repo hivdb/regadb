@@ -1,15 +1,23 @@
 package net.sf.regadb.workflow.jgraph;
 
+import static net.sf.regadb.workflow.i18n.I18n.tr;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import net.sf.regadb.workflow.analysis.unix.ReplaceAnalysis;
 import net.sf.regadb.workflow.tooltip.ToolTip;
 
 import org.jgraph.JGraph;
@@ -55,7 +63,30 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
 
     // Display PopupMenu or Remember Start Location and First Port
     public void mousePressed(final MouseEvent e) {
-        if (port != null && graph.isPortsVisible()) {
+        if(SwingUtilities.isRightMouseButton(e)) {
+            WFAnalysisBox box = null;
+            CellView[] cellViews = graph.getGraphLayoutCache().getAllViews();
+            for(CellView cv : cellViews) {
+                if(cv.getBounds().contains(e.getX(), e.getY()))
+                {
+                    CellView[] cva = {cv};
+                    Object [] cells = graph.getGraphLayoutCache().getCells(cva);
+                    for(Object o : cells) {
+                        if(o instanceof WFAnalysisBox) {
+                            box = (WFAnalysisBox)o;
+                            break;
+                        }
+                    }
+                    if(box!=null)
+                        break;
+                }
+            }
+            if(box==null)
+                createInsertPopupMenu(e).show(graph, e.getX(), e.getY());
+            else
+                createEditCellPopupMenu(e).show(graph, e.getX(), e.getY());
+        }
+        else if (port != null && graph.isPortsVisible()) {
             // Remember Start Location
             start = graph.toScreen(port.getLocation());
             // Remember First Port
@@ -64,6 +95,30 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
             // Call Superclass
             super.mousePressed(e);
         }
+    }
+    
+    public JPopupMenu createEditCellPopupMenu(final MouseEvent me) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem edit = new JMenuItem(tr("workflow.menu.editCell"));
+        menu.add(edit);
+        return menu;
+    }
+    
+    public JPopupMenu createInsertPopupMenu(final MouseEvent me) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenu insert = new JMenu(tr("workflow.menu.insert"));
+        menu.add(insert);
+        JMenu text = new JMenu("Text");
+        JMenuItem textReplace = new JMenuItem("Replace all");
+        textReplace.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                WFAnalysisBox box = new WFAnalysisBox(new ReplaceAnalysis(), me.getX(), me.getY());
+                graph.getGraphLayoutCache().insert(box);
+            }
+        });
+        insert.add(text);
+        text.add(textReplace);
+        return menu;
     }
 
     // Find Port under Mouse and Repaint Connector

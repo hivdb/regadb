@@ -15,12 +15,12 @@ public class WorkFlow extends JGraph
 {
     private WFAnalysisBox ab1_;
     private WFAnalysisBox ab2_;
-    private String[] input1 = {"Joris", "Pieter", "Bart"};
-    private String[] input2 = {"Joris", "Jose", "Ishmael", "Fatima"};
-    private String[] output1 = {"Joris", "Joris"};
-    private String[] output2 = {"XXX"};
-    private String[] label = {"Pieter", "Pieteraaaaaaaaaaaa", "Test"};
-    private String[] label2 = {"Pieter", "oo", "Test"};
+    private String[] input1 = {"Raw nucleotide sequences", "Reference sequence"};
+    private String[] input2 = {"Aligned nucleotide sequences"};
+    private String[] output1 = {"Aligned nucleotide sequences"};
+    private String[] output2 = {"No duplicate sequences"};
+    private String[] label = {"RegaDB", "AlignService"};
+    private String[] label2 = {"RegaDB", "RemoveDups"};
     
     public WorkFlow(DefaultGraphModel model)
     {
@@ -39,10 +39,11 @@ public class WorkFlow extends JGraph
             }
         });
         
+        
 
-        ab1_ = new WFAnalysisBox(200,200,label,input1,output1);
-        ab2_ = new WFAnalysisBox(400,200,label2,input2,output2);
-        Object[] cells = {ab1_, ab2_};
-        getGraphLayoutCache().insert(cells);
+        //ab1_ = new WFAnalysisBox(200,200,label,input1,output1);
+        //ab2_ = new WFAnalysisBox(400,200,label2,input2,output2);
+        //Object[] cells = {ab1_, ab2_};
+        //getGraphLayoutCache().insert(cells);
     }
 }
