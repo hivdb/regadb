@@ -11,9 +11,10 @@ public class Main
 {    
     public static void main(String[] args)
     {
-        WorkFlow wf = new WorkFlow(new DefaultGraphModel());
-        
         JFrame fr = new JFrame("WorkFlow");
+        
+        WorkFlow wf = new WorkFlow(fr, new DefaultGraphModel());
+        
         fr.addWindowListener(new WindowListener()
         {
 

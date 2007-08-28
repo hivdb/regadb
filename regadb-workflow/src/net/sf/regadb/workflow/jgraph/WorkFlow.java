@@ -1,9 +1,8 @@
 package net.sf.regadb.workflow.jgraph;
 
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 
-import javax.swing.ToolTipManager;
+import javax.swing.JFrame;
 
 import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultCellViewFactory;
@@ -22,13 +21,16 @@ public class WorkFlow extends JGraph
     private String[] label = {"RegaDB", "AlignService"};
     private String[] label2 = {"RegaDB", "RemoveDups"};
     
-    public WorkFlow(DefaultGraphModel model)
+    private JFrame mainFrame;
+    
+    public WorkFlow(JFrame mainFrame, DefaultGraphModel model)
     {
         super(model);
         setBackground(Color.white);
         setPortsVisible(true);
+        this.mainFrame = mainFrame;
         this.setJumpToDefaultPort(true);
-        this.setMarqueeHandler(new WFMarqueeHandler(this));
+        this.setMarqueeHandler(new WFMarqueeHandler(mainFrame, this));
         
         this.getGraphLayoutCache().setFactory(new DefaultCellViewFactory() {
             /**

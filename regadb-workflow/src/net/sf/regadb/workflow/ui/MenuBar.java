@@ -35,7 +35,7 @@ public class MenuBar extends JMenuBar
         JMenuItem newItem = fileMenu.add(new JMenuItem(tr("menuBar.fileMenu.newItem")));
         newItem.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                mainFrame_.createNewWorkflow();
+                mainFrame_.createNewWorkflow(mainFrame_);
             }
         });
         JMenuItem openItem = fileMenu.add(new JMenuItem(tr("menuBar.fileMenu.openItem")));

@@ -35,7 +35,7 @@ public class MainFrame extends JFrame
         this.setSize(new Dimension(600, 800));
     }
     
-    public void createNewWorkflow() {
+    public void createNewWorkflow(JFrame frame) {
         int index = getMaxWorkflowIndex()+1;
         JInternalFrame internal = new JInternalFrame("Untitled - " + index);
         internal.setSize(400, 600);
@@ -44,7 +44,7 @@ public class MainFrame extends JFrame
         desktop_.add(internal);
         untitledWorkflowIndexes_.add(index);
         
-        WorkFlow wf = new WorkFlow(new DefaultGraphModel());
+        WorkFlow wf = new WorkFlow(frame, new DefaultGraphModel());
         internal.add(wf);
     }
     

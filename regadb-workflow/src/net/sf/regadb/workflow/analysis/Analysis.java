@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JPanel;
+import net.sf.regadb.workflow.analysis.ui.IAnalysisUI;
 
 public abstract class Analysis {
     private String name;
@@ -69,7 +69,7 @@ public abstract class Analysis {
         attributes.put("general.description", new Attribute("general.description", description));
     }
     
-    public abstract JPanel getUI();
+    public abstract IAnalysisUI getUI();
     
     public abstract boolean execute();
     

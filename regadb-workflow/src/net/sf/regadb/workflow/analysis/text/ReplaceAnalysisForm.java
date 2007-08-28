@@ -1,4 +1,4 @@
-package net.sf.regadb.workflow.analysis.unix;
+package net.sf.regadb.workflow.analysis.text;
 
 import static net.sf.regadb.workflow.i18n.I18n.tr;
 
@@ -11,6 +11,7 @@ import javax.swing.border.TitledBorder;
 
 import net.sf.regadb.swing.layout.RiverLayout;
 import net.sf.regadb.workflow.analysis.Analysis;
+import net.sf.regadb.workflow.analysis.ui.BaseAnalysisForm;
 
 public class ReplaceAnalysisForm extends BaseAnalysisForm{
     private static final String toReplace = "text.toReplace";
@@ -28,7 +29,7 @@ public class ReplaceAnalysisForm extends BaseAnalysisForm{
     @Override
     public boolean saveSpecificUI(Analysis analysis) {
         if("".equals(toReplaceTF.getText())) {
-            JOptionPane.showMessageDialog(this, tr("workflow.general.warningMessage"), tr("analysis.form.text.replaceAll.noReplaceText"), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, tr("analysis.form.text.replaceAll.noReplaceText"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
             return false;
         }
         analysis.putAttributeValue(toReplace, toReplaceTF.getText());

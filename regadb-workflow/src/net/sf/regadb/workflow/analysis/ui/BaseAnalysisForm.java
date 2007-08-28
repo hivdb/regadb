@@ -1,4 +1,4 @@
-package net.sf.regadb.workflow.analysis.unix;
+package net.sf.regadb.workflow.analysis.ui;
 
 import static net.sf.regadb.workflow.i18n.I18n.tr;
 
@@ -15,7 +15,7 @@ import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.AnalysisInput;
 import net.sf.regadb.workflow.analysis.AnalysisOutput;
 
-public abstract class BaseAnalysisForm extends JPanel {
+public abstract class BaseAnalysisForm extends JPanel implements IAnalysisUI {
     private Analysis analysis;
     
     private JPanel inputFilesPanel = new JPanel();
@@ -77,7 +77,7 @@ public abstract class BaseAnalysisForm extends JPanel {
     
     public boolean saveData() {
         if("".equals(nameTF.getText())) {
-            JOptionPane.showMessageDialog(this, "workflow.general.warningMessage", "analysis.form.base.noNameWarning", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, tr("analysis.form.base.noNameWarning"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
             return false;
         }
         analysis.setName(nameTF.getText());
@@ -87,6 +87,12 @@ public abstract class BaseAnalysisForm extends JPanel {
     public abstract JPanel specificUI(Analysis analysis);
 
     public abstract boolean saveSpecificUI(Analysis analysis);
-    
 
+    public Analysis getAnalysis() {
+        return analysis;
+    }
+    
+    public JPanel getPanel() {
+        return this;
+    }
 }

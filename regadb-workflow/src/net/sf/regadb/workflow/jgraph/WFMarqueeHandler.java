@@ -12,12 +12,14 @@ import java.awt.geom.Point2D;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import net.sf.regadb.workflow.analysis.unix.ReplaceAnalysis;
+import net.sf.regadb.workflow.analysis.text.ReplaceAnalysis;
+import net.sf.regadb.workflow.analysis.ui.AnalysisDialog;
 import net.sf.regadb.workflow.tooltip.ToolTip;
 
 import org.jgraph.JGraph;
@@ -38,9 +40,11 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
     protected PortView port, firstPort;
     
     private JGraph graph;
+    private JFrame mainFrame;
     
-    public WFMarqueeHandler(JGraph graph)
+    public WFMarqueeHandler(JFrame mainFrame, JGraph graph)
     {
+        this.mainFrame = mainFrame;
         this.graph = graph;
     }
 
@@ -84,7 +88,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
             if(box==null)
                 createInsertPopupMenu(e).show(graph, e.getX(), e.getY());
             else
-                createEditCellPopupMenu(e).show(graph, e.getX(), e.getY());
+                createEditCellPopupMenu(e, box).show(graph, e.getX(), e.getY());
         }
         else if (port != null && graph.isPortsVisible()) {
             // Remember Start Location
@@ -97,9 +101,16 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
         }
     }
     
-    public JPopupMenu createEditCellPopupMenu(final MouseEvent me) {
+    public JPopupMenu createEditCellPopupMenu(final MouseEvent me, final WFAnalysisBox box) {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem edit = new JMenuItem(tr("workflow.menu.editCell"));
+        edit.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                AnalysisDialog dialog = new AnalysisDialog(mainFrame, box.getAnalysis().getUI());
+                dialog.pack();
+                dialog.setVisible(true);
+            }
+        });
         menu.add(edit);
         return menu;
     }
