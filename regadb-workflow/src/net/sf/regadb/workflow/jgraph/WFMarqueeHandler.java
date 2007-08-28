@@ -212,7 +212,9 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
         if (e != null && port != null && firstPort != null
                 && firstPort != port) {
             // Then Establish Connection
-            connect((Port) firstPort.getCell(), (Port) port.getCell());
+            if(!connect((Port) firstPort.getCell(), (Port) port.getCell())){
+                graph.repaint();
+            }
             e.consume();
             // Else Repaint the Graph
         } else
@@ -275,7 +277,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
     }
     
 //  Insert a new Edge between source and target
-    public void connect(Port output, Port input)
+    public boolean connect(Port output, Port input)
     {
         // Construct Edge with no label
         Object sourceUO = ((DefaultPort)input).getUserObject();
@@ -284,7 +286,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
             ai = ((WFInputPortUserObject)sourceUO).input;
         } else {
             JOptionPane.showMessageDialog(null, tr("worklflow.graph.connection.connectIToO"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
-            return;
+            return false;
         }
         
         Object targetUO = ((DefaultPort)output).getUserObject();
@@ -293,7 +295,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
             ao = ((WFOutputPortUserObject)targetUO).output;
         } else {
             JOptionPane.showMessageDialog(null, tr("worklflow.graph.connection.connectIToO"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
-            return;
+            return false;
         }
         
         AnalysisConnection edge = new AnalysisConnection();
@@ -307,6 +309,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
             // Insert the Edge and its Attributes
             graph.getGraphLayoutCache().insertEdge(edge, output, input);
         }
+        return true;
     }
     
     public Map createEdgeAttributes()
