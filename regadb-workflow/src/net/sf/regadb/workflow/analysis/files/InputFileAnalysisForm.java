@@ -17,7 +17,7 @@ import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.ui.BaseAnalysisForm;
 
 public class InputFileAnalysisForm extends BaseAnalysisForm {
-    private final static String inputFile = "file.inputFile";
+    public final static String inputFile = "file.inputFile";
     
     private JLabel fileL;
     private JLabel fileContentL;

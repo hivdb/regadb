@@ -5,6 +5,7 @@ import static net.sf.regadb.workflow.i18n.I18n.tr;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -13,6 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.execution.Execute;
@@ -83,7 +85,27 @@ public class MenuBar extends JMenuBar
                             JOptionPane.showMessageDialog(null, tr("workflow.general.notAllPortsAreConnected"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
                             return;
                         }
-                        exec.exec((WorkFlow)c);
+                        JFileChooser fc = new JFileChooser();
+                        fc.setDialogTitle(tr("fileChooser.chooseAnEmptyDir"));
+                        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        fc.setFileFilter(new FileFilter() {
+                            public boolean accept(File pathname) {
+                                if(pathname.isDirectory() && pathname.list().length==0)
+                                    return true;
+                                else
+                                    return false;
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "Empty directories";
+                            }
+                        });
+                        int returnVal = fc.showDialog(mainFrame_, tr("fileChooser.chooseEmptyDir"));
+                        if(returnVal==JFileChooser.APPROVE_OPTION) {
+                            exec.exec((WorkFlow)c, fc.getSelectedFile());
+                        }
+                        
                     }
                 }
                 

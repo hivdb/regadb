@@ -13,8 +13,8 @@ import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.ui.BaseAnalysisForm;
 
 public class ReplaceAnalysisForm extends BaseAnalysisForm {
-    private static final String toReplace = "text.toReplace";
-    private static final String replaceValue = "text.replaceValue";
+    public static final String toReplace = "text.toReplace";
+    public static final String replaceValue = "text.replaceValue";
     
     private JLabel toReplaceL;
     private JTextField toReplaceTF;

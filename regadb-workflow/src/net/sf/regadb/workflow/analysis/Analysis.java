@@ -1,5 +1,6 @@
 package net.sf.regadb.workflow.analysis;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,13 @@ public abstract class Analysis {
     
     public abstract IAnalysisUI getUI();
     
-    public abstract boolean execute();
+    public abstract boolean execute(File workingDir, ArrayList<String> log);
+    
+    public File getAnalysisPath(File workingDir) {
+        String path = workingDir.getAbsolutePath();
+        path += File.separatorChar + getType() + File.separatorChar + getSpecType() + File.separatorChar + getName();
+        return new File(path);
+    }
     
     public String getAttributeValue(String key) {
         if(attributes.get(key)!=null) {

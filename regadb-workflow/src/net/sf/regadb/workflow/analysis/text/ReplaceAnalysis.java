@@ -1,18 +1,10 @@
 package net.sf.regadb.workflow.analysis.text;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.CharBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
+import net.sf.regadb.util.replace.ReplaceUtils;
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.AnalysisInput;
 import net.sf.regadb.workflow.analysis.AnalysisOutput;
@@ -29,8 +21,16 @@ public class ReplaceAnalysis extends Analysis {
     }
     
     @Override
-    public boolean execute() {
-        return false;
+    public boolean execute(File workingDir, ArrayList<String> log) {
+        File i = new File(getAnalysisPath(workingDir).getAbsolutePath() + File.separatorChar + "Original file");
+        File o = new File(getAnalysisPath(workingDir).getAbsolutePath() + File.separatorChar + "Replacement file");
+        try {
+            ReplaceUtils.replaceAllInFile(i, o, this.getAttributeValue(ReplaceAnalysisForm.toReplace), this.getAttributeValue(ReplaceAnalysisForm.replaceValue));
+        } catch (IOException e) {
+            log.add(e.getMessage());
+            return false;        
+        }
+        return true;
     }
 
     @Override
