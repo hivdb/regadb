@@ -15,9 +15,15 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import net.sf.regadb.workflow.analysis.AnalysisConnection;
+import net.sf.regadb.workflow.analysis.AnalysisInput;
+import net.sf.regadb.workflow.analysis.AnalysisOutput;
+import net.sf.regadb.workflow.analysis.files.InputFileAnalysis;
+import net.sf.regadb.workflow.analysis.files.OutputFileAnalysis;
 import net.sf.regadb.workflow.analysis.text.ReplaceAnalysis;
 import net.sf.regadb.workflow.analysis.ui.AnalysisDialog;
 import net.sf.regadb.workflow.tooltip.ToolTip;
@@ -25,7 +31,6 @@ import net.sf.regadb.workflow.tooltip.ToolTip;
 import org.jgraph.JGraph;
 import org.jgraph.graph.BasicMarqueeHandler;
 import org.jgraph.graph.CellView;
-import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultPort;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.Port;
@@ -120,15 +125,33 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
         JMenu insert = new JMenu(tr("workflow.menu.insert"));
         menu.add(insert);
         JMenu text = new JMenu("Text");
+        insert.add(text);
         JMenuItem textReplace = new JMenuItem("Replace all");
+        text.add(textReplace);
         textReplace.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 WFAnalysisBox box = new WFAnalysisBox(new ReplaceAnalysis(), me.getX(), me.getY());
                 graph.getGraphLayoutCache().insert(box);
             }
         });
-        insert.add(text);
-        text.add(textReplace);
+        JMenu file = new JMenu("File");
+        insert.add(file);
+        JMenuItem inputFile = new JMenuItem("InputFile");
+        file.add(inputFile);
+        inputFile.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                WFAnalysisBox box = new WFAnalysisBox(new InputFileAnalysis(), me.getX(), me.getY());
+                graph.getGraphLayoutCache().insert(box);
+            }
+        });
+        JMenuItem outputFile = new JMenuItem("OutputFile");
+        file.add(outputFile);
+        outputFile.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                WFAnalysisBox box = new WFAnalysisBox(new OutputFileAnalysis(), me.getX(), me.getY());
+                graph.getGraphLayoutCache().insert(box);
+            }
+        });
         return menu;
     }
 
@@ -252,16 +275,37 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
     }
     
 //  Insert a new Edge between source and target
-    public void connect(Port source, Port target)
+    public void connect(Port output, Port input)
     {
         // Construct Edge with no label
-        DefaultEdge edge = new DefaultEdge();
-        if (graph.getModel().acceptsSource(edge, source)
-                && graph.getModel().acceptsTarget(edge, target)) {
+        Object sourceUO = ((DefaultPort)input).getUserObject();
+        AnalysisInput ai;
+        if(sourceUO instanceof WFInputPortUserObject) {
+            ai = ((WFInputPortUserObject)sourceUO).input;
+        } else {
+            JOptionPane.showMessageDialog(null, tr("worklflow.graph.connection.connectIToO"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Object targetUO = ((DefaultPort)output).getUserObject();
+        AnalysisOutput ao;
+        if(targetUO instanceof WFOutputPortUserObject) {
+            ao = ((WFOutputPortUserObject)targetUO).output;
+        } else {
+            JOptionPane.showMessageDialog(null, tr("worklflow.graph.connection.connectIToO"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        AnalysisConnection edge = new AnalysisConnection();
+        edge.setInput(ai);
+        edge.setOutput(ao);
+        
+        if (graph.getModel().acceptsSource(edge, output)
+                && graph.getModel().acceptsTarget(edge, input)) {
             // Create a Map thath holds the attributes for the edge
             edge.getAttributes().applyMap(createEdgeAttributes());
             // Insert the Edge and its Attributes
-            graph.getGraphLayoutCache().insertEdge(edge, source, target);
+            graph.getGraphLayoutCache().insertEdge(edge, output, input);
         }
     }
     

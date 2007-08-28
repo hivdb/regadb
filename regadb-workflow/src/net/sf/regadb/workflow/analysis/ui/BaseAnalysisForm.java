@@ -18,6 +18,7 @@ import net.sf.regadb.workflow.analysis.AnalysisOutput;
 public abstract class BaseAnalysisForm extends JPanel implements IAnalysisUI {
     private Analysis analysis;
     
+    private JPanel filesPanel = new JPanel();
     private JPanel inputFilesPanel = new JPanel();
     private JPanel outputFilesPanel = new JPanel();
     
@@ -43,7 +44,6 @@ public abstract class BaseAnalysisForm extends JPanel implements IAnalysisUI {
         generalPanel.add("br", descriptionL);
         generalPanel.add("tab", descriptionTA);
         
-        JPanel filesPanel = new JPanel();
         filesPanel.setLayout(new RiverLayout());
         add("br hfill",filesPanel);
         filesPanel.setBorder(new TitledBorder(tr("analysis.form.text.fileBorder")));

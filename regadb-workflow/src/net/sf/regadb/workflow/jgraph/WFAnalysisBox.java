@@ -79,6 +79,7 @@ public class WFAnalysisBox extends DefaultGraphCell
         {
             WFInputPortUserObject uo = new WFInputPortUserObject();
             uo.portName_ = i.getName();
+            uo.input = i;
             addPort(new Point(startX, startY), uo);
             startY-=30;
         }
@@ -91,6 +92,7 @@ public class WFAnalysisBox extends DefaultGraphCell
         {
             WFOutputPortUserObject uo = new WFOutputPortUserObject();
             uo.portName_ = o.getName();
+            uo.output = o;
             addPort(new Point(startX, startY), uo);
             startY-=30;
         }
