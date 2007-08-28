@@ -12,8 +12,10 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import net.sf.regadb.workflow.analysis.Analysis;
+import net.sf.regadb.workflow.analysis.execution.Execute;
 import net.sf.regadb.workflow.analysis.io.ExportWorkflow;
 import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
 import net.sf.regadb.workflow.jgraph.WorkFlow;
@@ -67,5 +69,25 @@ public class MenuBar extends JMenuBar
         });
         
         fileMenu.addSeparator();
+        
+        JMenu runMenu = this.add(new JMenu(tr("menuBar.fileMenu.run")));
+        JMenuItem execItem = runMenu.add(new JMenuItem(tr("menuBar.fileMenu.run.execute")));
+        execItem.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                JInternalFrame internalFrame = mainFrame_.getDesktop().getSelectedFrame();
+                if(internalFrame!=null) {
+                    Component c = internalFrame.getContentPane().getComponent(0);
+                    if(c instanceof WorkFlow) {
+                        Execute exec = new Execute();
+                        if(!exec.edgeControl((WorkFlow)c)) {
+                            JOptionPane.showMessageDialog(null, tr("workflow.general.notAllPortsAreConnected"), tr("workflow.general.warningMessage"), JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        exec.exec((WorkFlow)c);
+                    }
+                }
+                
+            }
+        });
     }
 }

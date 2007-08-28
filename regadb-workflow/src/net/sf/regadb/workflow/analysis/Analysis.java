@@ -12,6 +12,7 @@ public abstract class Analysis {
     private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
     private List<AnalysisInput> inputs = new ArrayList<AnalysisInput>();
     private List<AnalysisOutput> outputs = new ArrayList<AnalysisOutput>();
+    private boolean ready = false;
     
     public Map<String, Attribute> getAttributes() {
         return attributes;
@@ -84,5 +85,13 @@ public abstract class Analysis {
     
     public void putAttributeValue(String key, String value) {
         attributes.put(key, new Attribute(key, value));
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 }
