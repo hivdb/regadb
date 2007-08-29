@@ -16,7 +16,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.execution.Execute;
 import net.sf.regadb.workflow.analysis.io.ExportWorkflow;
 import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
@@ -43,6 +42,16 @@ public class MenuBar extends JMenuBar
             }
         });
         JMenuItem openItem = fileMenu.add(new JMenuItem(tr("menuBar.fileMenu.openItem")));
+        openItem.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fc = new JFileChooser();
+                int returnVal = fc.showDialog(mainFrame_, tr("fileChooser.openButton"));
+                if(returnVal==JFileChooser.APPROVE_OPTION) {
+                    
+                }
+            }
+        });
+        
         JMenuItem saveItem = fileMenu.add(new JMenuItem(tr("menuBar.fileMenu.saveItem")));
         saveItem.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -56,10 +65,10 @@ public class MenuBar extends JMenuBar
                             System.err.println(fc.getSelectedFile().getAbsolutePath());
                             CellView[] cv = ((WorkFlow)c).getGraphLayoutCache().getAllViews();
                             Object [] cells = ((WorkFlow)c).getGraphLayoutCache().getCells(cv);
-                            ArrayList<Analysis> analyses = new ArrayList<Analysis>();
+                            ArrayList<WFAnalysisBox> analyses = new ArrayList<WFAnalysisBox>();
                             for(Object o : cells) {
                                 if(o instanceof WFAnalysisBox) {
-                                    analyses.add(((WFAnalysisBox)o).getAnalysis());
+                                    analyses.add(((WFAnalysisBox)o));
                                 }
                             }
                             ExportWorkflow export = new ExportWorkflow();

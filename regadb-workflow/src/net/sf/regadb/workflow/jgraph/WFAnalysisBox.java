@@ -2,6 +2,8 @@ package net.sf.regadb.workflow.jgraph;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +23,14 @@ public class WFAnalysisBox extends DefaultGraphCell
     
     public WFAnalysisBox(Analysis analysis, int posX, int posY)
     {
-        setSettings(analysis, posX,posY,new Color(171, 171, 171));
+        setSettings(analysis, posX,posY,new Color(171, 171, 171), true);
     }
     
-    public void setSettings(Analysis analysis, int x, int y, Color c)
+    public void setSettings(Analysis analysis, int x, int y, boolean setPorts) {
+        setSettings(analysis, x, y, new Color(171, 171, 171), setPorts);
+    }
+    
+    public void setSettings(Analysis analysis, int x, int y, Color c, boolean setPorts)
     {
         this.analysis = analysis;
 
@@ -61,12 +67,16 @@ public class WFAnalysisBox extends DefaultGraphCell
         GraphConstants.setOpaque(map, true);
         GraphConstants.setVerticalAlignment(map, 1);
         
-        
-        setPorts(analysis.getInputs(), analysis.getOutputs(), maxWidth, maxHeigth);
+        if(setPorts)
+            setPorts(analysis.getInputs(), analysis.getOutputs(), maxWidth, maxHeigth);
         
         this.setUserObject(label);
         
         attributes.applyMap(map);
+    }
+    
+    public Point getLocation() {
+        return new Point((int)GraphConstants.getBounds(attributes).getX(), (int)GraphConstants.getBounds(attributes).getY());
     }
     
     private void setPorts(List<AnalysisInput> inputs, List<AnalysisOutput> outputs, int maxWidth, int maxSize)

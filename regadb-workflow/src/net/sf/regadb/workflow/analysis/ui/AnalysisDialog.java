@@ -11,9 +11,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.sf.regadb.swing.layout.RiverLayout;
+import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
+
+import org.jgraph.JGraph;
 
 public class AnalysisDialog extends JDialog {
-    public AnalysisDialog(JFrame mainFrame, final IAnalysisUI analysisUI) {
+    public AnalysisDialog(JFrame mainFrame, final IAnalysisUI analysisUI, final WFAnalysisBox box, final JGraph graph) {
         super(mainFrame, analysisUI.getAnalysis().getType() + "Analysis Dialog", true);
         JPanel main = new JPanel();
         main.setLayout(new RiverLayout());
@@ -27,6 +30,8 @@ public class AnalysisDialog extends JDialog {
                 boolean saveData = analysisUI.saveData();
                 if(saveData) {
                 saveData = analysisUI.saveSpecificUI(analysisUI.getAnalysis());
+                box.setSettings(analysisUI.getAnalysis(), box.getLocation().x, box.getLocation().y, false);
+                graph.repaint();
                 }
                 if(saveData) {
                     dispose();

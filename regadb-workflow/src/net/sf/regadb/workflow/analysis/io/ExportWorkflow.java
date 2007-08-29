@@ -1,14 +1,17 @@
 package net.sf.regadb.workflow.analysis.io;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.AnalysisInput;
 import net.sf.regadb.workflow.analysis.AnalysisOutput;
 import net.sf.regadb.workflow.analysis.Attribute;
+import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -17,7 +20,18 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class ExportWorkflow {
-    public void exportAnalysis(Analysis analysis, Element analysisEls) {
+    public void exportAnalysis(WFAnalysisBox analysisBox, Element analysisEls) {
+        Analysis analysis = analysisBox.getAnalysis();
+        
+        Element locationEl = new Element("location");
+        analysisEls.addContent(locationEl);
+        Element xEl = new Element("x");
+        xEl.addContent(new Text(analysisBox.getLocation().x+""));
+        locationEl.addContent(xEl);
+        Element yEl = new Element("y");
+        locationEl.addContent(yEl);
+        yEl.addContent(new Text(analysisBox.getLocation().y+""));
+        
         Element analysisEl = new Element("analysis");
         analysisEls.addContent(analysisEl);
         
@@ -59,15 +73,15 @@ public class ExportWorkflow {
         analysisEl.addContent(outputs);
     }
     
-    public void exportAnalyses(ArrayList<Analysis> analyses, Element workflow) {
+    public void exportAnalyses(List<WFAnalysisBox> analyses, Element workflow) {
         Element analysesEls = new Element("analyses");
-        for(Analysis a : analyses) {
-            exportAnalysis(a, analysesEls);
+        for(WFAnalysisBox box : analyses) {
+            exportAnalysis(box, analysesEls);
         }
         workflow.addContent(analysesEls);
     }
     
-    public void writeXMLFile(ArrayList<Analysis> analyses, File xmlFile) {
+    public void writeXMLFile(ArrayList<WFAnalysisBox> analyses, File xmlFile) {
         Element root = new Element("regadb-workflow");
         exportAnalyses(analyses, root);
         Document n = new Document(root);

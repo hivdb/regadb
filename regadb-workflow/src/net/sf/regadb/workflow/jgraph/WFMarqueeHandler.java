@@ -111,7 +111,7 @@ public class WFMarqueeHandler extends BasicMarqueeHandler {
         JMenuItem edit = new JMenuItem(tr("workflow.menu.editCell"));
         edit.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                AnalysisDialog dialog = new AnalysisDialog(mainFrame, box.getAnalysis().getUI());
+                AnalysisDialog dialog = new AnalysisDialog(mainFrame, box.getAnalysis().getUI(), box, graph);
                 dialog.pack();
                 dialog.setVisible(true);
             }
