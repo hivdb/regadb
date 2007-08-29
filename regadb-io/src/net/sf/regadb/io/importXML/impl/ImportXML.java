@@ -96,7 +96,7 @@ public class ImportXML {
                 t.clearCache();
                 t = login.createTransaction();
                 instance.loadDatabaseObjects(t);
-                dataset = loadOrCreateDataset(t, "PT");
+                dataset = loadOrCreateDataset(t, dataset.getDescription());
             }
         }        
     }
@@ -151,7 +151,7 @@ public class ImportXML {
                 t.clearCache();
                 t = login.createTransaction();
                 instance.loadDatabaseObjects(t);
-                dataset = loadOrCreateDataset(t, "PT");
+                dataset = loadOrCreateDataset(t, dataset.getDescription());
             }
         }        
     }
