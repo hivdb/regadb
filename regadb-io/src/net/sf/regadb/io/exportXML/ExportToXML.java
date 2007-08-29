@@ -126,7 +126,7 @@ public class ExportToXML
 	}
 	public void writeTopAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Element rootNode)
 	{
-		Element elNode = new Element("attributenominalvalues-el");
+		Element elNode = new Element("attributeNominalValues-el");
 		rootNode.addContent(elNode);
 		writeAttributeNominalValue(AttributeNominalValuevar, elNode);
 	}
@@ -303,7 +303,7 @@ public class ExportToXML
 	}
 	public void writeTopAaMutation(AaMutation AaMutationvar, Element rootNode)
 	{
-		Element elNode = new Element("aamutations-el");
+		Element elNode = new Element("aaMutations-el");
 		rootNode.addContent(elNode);
 		writeAaMutation(AaMutationvar, elNode);
 	}
@@ -440,13 +440,13 @@ public class ExportToXML
 	}
 	public void writeTopPatient(Patient Patientvar, Element rootNode)
 	{
-		Element elNode = new Element("patientimpls-el");
+		Element elNode = new Element("patientImpls-el");
 		rootNode.addContent(elNode);
 		writePatient(Patientvar, elNode);
 	}
 	public void writeTopAaSequence(AaSequence AaSequencevar, Element rootNode)
 	{
-		Element elNode = new Element("aasequences-el");
+		Element elNode = new Element("aaSequences-el");
 		rootNode.addContent(elNode);
 		writeAaSequence(AaSequencevar, elNode);
 	}
@@ -527,7 +527,7 @@ public class ExportToXML
 	}
 	public void writeTopAaInsertion(AaInsertion AaInsertionvar, Element rootNode)
 	{
-		Element elNode = new Element("aainsertions-el");
+		Element elNode = new Element("aaInsertions-el");
 		rootNode.addContent(elNode);
 		writeAaInsertion(AaInsertionvar, elNode);
 	}
@@ -615,13 +615,13 @@ public class ExportToXML
 	}
 	public void writeTopNtSequence(NtSequence NtSequencevar, Element rootNode)
 	{
-		Element elNode = new Element("ntsequences-el");
+		Element elNode = new Element("ntSequences-el");
 		rootNode.addContent(elNode);
 		writeNtSequence(NtSequencevar, elNode);
 	}
 	public void writeTopValueType(ValueType ValueTypevar, Element rootNode)
 	{
-		Element elNode = new Element("valuetypes-el");
+		Element elNode = new Element("valueTypes-el");
 		rootNode.addContent(elNode);
 		writeValueType(ValueTypevar, elNode);
 	}
@@ -715,13 +715,13 @@ public class ExportToXML
 	}
 	public void writeTopTestObject(TestObject TestObjectvar, Element rootNode)
 	{
-		Element elNode = new Element("testobjects-el");
+		Element elNode = new Element("testObjects-el");
 		rootNode.addContent(elNode);
 		writeTestObject(TestObjectvar, elNode);
 	}
 	public void writeTopViralIsolate(ViralIsolate ViralIsolatevar, Element rootNode)
 	{
-		Element elNode = new Element("viralisolates-el");
+		Element elNode = new Element("viralIsolates-el");
 		rootNode.addContent(elNode);
 		writeViralIsolate(ViralIsolatevar, elNode);
 	}
@@ -764,7 +764,7 @@ public class ExportToXML
 	}
 	public void writeTopTherapyGeneric(TherapyGeneric TherapyGenericvar, Element rootNode)
 	{
-		Element elNode = new Element("therapygenerics-el");
+		Element elNode = new Element("therapyGenerics-el");
 		rootNode.addContent(elNode);
 		writeTherapyGeneric(TherapyGenericvar, elNode);
 	}
@@ -900,7 +900,7 @@ public class ExportToXML
 	}
 	public void writeTopAttributeGroup(AttributeGroup AttributeGroupvar, Element rootNode)
 	{
-		Element elNode = new Element("attributegroups-el");
+		Element elNode = new Element("attributeGroups-el");
 		rootNode.addContent(elNode);
 		writeAttributeGroup(AttributeGroupvar, elNode);
 	}
@@ -1084,7 +1084,7 @@ public class ExportToXML
 	}
 	public void writeTopAnalysisData(AnalysisData AnalysisDatavar, Element rootNode)
 	{
-		Element elNode = new Element("analysisdatas-el");
+		Element elNode = new Element("analysisDatas-el");
 		rootNode.addContent(elNode);
 		writeAnalysisData(AnalysisDatavar, elNode);
 	}
@@ -1111,19 +1111,19 @@ public class ExportToXML
 	}
 	public void writeTopTestNominalValue(TestNominalValue TestNominalValuevar, Element rootNode)
 	{
-		Element elNode = new Element("testnominalvalues-el");
+		Element elNode = new Element("testNominalValues-el");
 		rootNode.addContent(elNode);
 		writeTestNominalValue(TestNominalValuevar, elNode);
 	}
 	public void writeTopTestType(TestType TestTypevar, Element rootNode)
 	{
-		Element elNode = new Element("testtypes-el");
+		Element elNode = new Element("testTypes-el");
 		rootNode.addContent(elNode);
 		writeTestType(TestTypevar, elNode);
 	}
 	public void writeTopTestResult(TestResult TestResultvar, Element rootNode)
 	{
-		Element elNode = new Element("testresults-el");
+		Element elNode = new Element("testResults-el");
 		rootNode.addContent(elNode);
 		writeTestResult(TestResultvar, elNode);
 	}
@@ -1165,13 +1165,13 @@ public class ExportToXML
 	}
 	public void writeTopPatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Element rootNode)
 	{
-		Element elNode = new Element("patientattributevalues-el");
+		Element elNode = new Element("patientAttributeValues-el");
 		rootNode.addContent(elNode);
 		writePatientAttributeValue(PatientAttributeValuevar, elNode);
 	}
 	public void writeTopTherapyCommercial(TherapyCommercial TherapyCommercialvar, Element rootNode)
 	{
-		Element elNode = new Element("therapycommercials-el");
+		Element elNode = new Element("therapyCommercials-el");
 		rootNode.addContent(elNode);
 		writeTherapyCommercial(TherapyCommercialvar, elNode);
 	}

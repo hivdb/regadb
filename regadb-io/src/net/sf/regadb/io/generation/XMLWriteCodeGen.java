@@ -45,7 +45,9 @@ public class XMLWriteCodeGen
         
         writeClassCode += "public void writeTop"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+ " " + toWrite.getSimpleName()+"var, Element rootNode)";
         writeClassCode += "{";
-        writeClassCode += "Element elNode = new Element(\""+toWrite.getSimpleName().toLowerCase()+"s-el"+"\");";
+        StringBuffer className = new StringBuffer(toWrite.getSimpleName());
+        className.replace(0, 1, new String(className.charAt(0)+"").toLowerCase());
+        writeClassCode += "Element elNode = new Element(\""+className.toString()+"s-el"+"\");";
         writeClassCode += "rootNode.addContent(elNode);";
         writeClassCode += "write"+toWrite.getSimpleName()+"("+toWrite.getSimpleName()+"var, elNode);";
         writeClassCode += "}";
