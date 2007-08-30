@@ -16,7 +16,6 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.PatientImpl;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
@@ -134,7 +133,7 @@ public class XMLReadCodeGen {
         
         ObjectInfo(String id, Class javaClass) {
             this.id = id;
-            this.javaClass = (javaClass == PatientImpl.class ? Patient.class : javaClass);
+            this.javaClass = (javaClass.getSimpleName().equals("PatientImpl") ? Patient.class : javaClass);
             this.fields = new ArrayList<ObjectField>();
             this.hasCompositeId = false;
             this.referenced = false;
