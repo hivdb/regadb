@@ -13,8 +13,9 @@ import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 
 /**
@@ -102,5 +103,13 @@ public class Login {
         session.save(user);
         session.getTransaction().commit();
         session.close();
+    }
+
+    public void closeSession() {
+        if("org.hibernate.dialect.HSQLDialect".equals(RegaDBSettings.getInstance().getPropertyValue("hibernate.dialect"))) {
+            SQLQuery shutdown = session_.createSQLQuery("SHUTDOWN");
+            shutdown.executeUpdate();
+        }
+        session_.close();
     }
 }
