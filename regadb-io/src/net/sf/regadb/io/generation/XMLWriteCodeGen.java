@@ -91,7 +91,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    private static String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName)
+    public static String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName)
     {
         String toReturn = "";
         
