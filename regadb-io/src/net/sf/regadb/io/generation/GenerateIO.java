@@ -169,6 +169,7 @@ public class GenerateIO
         String id = XMLWriteCodeGen.createString();
         String id2 = XMLWriteCodeGen.createString();
         
+        CsvWriteCodeGen.methodSig(id, c);
         XMLWriteCodeGen.writeTopMethod(c, id2);
         XMLWriteCodeGen.writeMethodSig(c, id);
         
@@ -211,6 +212,7 @@ public class GenerateIO
                 }
         }
         
+        CsvWriteCodeGen.methodEnd(id, c);
         XMLWriteCodeGen.writeMethodSigEnd(id);
 	}
     
@@ -290,6 +292,7 @@ public class GenerateIO
             toAdd.addContent(handleStringField(data, null));
             XMLWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, false, "parentNode");
             XMLReadCodeGen.addRepresentedValue(id, field.getName(), bareClass, false);
+            CsvWriteCodeGen.stringRepresentedValue(id, field.getName(), bareClass, false, c);
         }
         else if(isPointer(bareClass))
         {
@@ -351,6 +354,8 @@ public class GenerateIO
                     }
                 }
             }
+            
+            //exporttocsv
         }
         else //primitive field
         {
@@ -377,6 +382,7 @@ public class GenerateIO
             {
                 toAdd.addContent(primitive);
             }
+            //exporttocsv
         }
     }
     
@@ -645,6 +651,8 @@ public class GenerateIO
             fw.flush();
             fw.close();
             //import java code
+            
+            CsvWriteCodeGen.writeClassToFile();
 		}
 		catch (Exception e)
 		{
@@ -652,7 +660,7 @@ public class GenerateIO
 		}
 	}
     
-    private String getSrcPath(String pckName)
+    public static String getSrcPath(String pckName)
     {
         URL packageURL = Thread.currentThread().getContextClassLoader().getResource(pckName.replace('.', '/'));
         File directory = new File(URLDecoder.decode(packageURL.getFile()));
