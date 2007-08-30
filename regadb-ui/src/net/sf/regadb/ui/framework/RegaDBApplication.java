@@ -63,7 +63,8 @@ public class RegaDBApplication extends WApplication
     
     public void logout()
     {
-        //!! close session (hibernate/wt/servlet)
+        //close the wt and servlet session
+        login_.closeSession();
         login_=null;
     }
     
