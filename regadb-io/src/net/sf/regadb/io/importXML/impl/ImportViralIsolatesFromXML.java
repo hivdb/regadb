@@ -23,6 +23,7 @@ public class ImportViralIsolatesFromXML
         {
             ImportXML instance = new ImportXML(args[1], args[2]);
             instance.importViralIsolates(new InputSource(new FileReader(new File(args[0]))), args[3]);
+            instance.login.closeSession();
         }
     }
 }
