@@ -30,7 +30,7 @@ public class QueryRunnable implements Runnable
 		copiedLogin_ = copiedLogin;
 		qdr_ = qdr;
 	}
-	
+    
 	public void run() 
         {
 			OutputStream os = null;
@@ -61,11 +61,29 @@ public class QueryRunnable implements Runnable
         		
                 ExportToCsv csvExport = new ExportToCsv();
                 
+                if(result.size()>0) {
+                    if(q.getReturnTypes().length == 1)
+                    {
+                        os.write((getCsvHeaderSwitchNoComma(result.get(0), csvExport)+"\n").getBytes());
+                    }
+                    else
+                    {
+                        Object[] array = (Object[])result.get(0);
+                        
+                        for(int i = 0; i < array.length - 1; i++)
+                        {
+                            os.write((getCsvHeaderSwitchNoComma(array[i], csvExport)+",").getBytes());
+                        }
+
+                        os.write((getCsvHeaderSwitchNoComma(array[array.length - 1], csvExport)+"\n").getBytes());
+                    }
+                }
+                
         		for(Object o : result)
         		{
         			if(q.getReturnTypes().length == 1)
         			{
-        				os.write((csvExport.getCsvLineSwitch(o)+"\n").getBytes());
+        				os.write((getCsvLineSwitchNoComma(o, csvExport)+"\n").getBytes());
         			}
         			else
         			{
@@ -73,10 +91,10 @@ public class QueryRunnable implements Runnable
         				
         				for(int i = 0; i < array.length - 1; i++)
         				{
-        					os.write((csvExport.getCsvLineSwitch(array[i])+",").getBytes());
+        					os.write((getCsvLineSwitchNoComma(array[i], csvExport)+",").getBytes());
         				}
 
-                        os.write((csvExport.getCsvLineSwitch(array[array.length - 1])+"\n").getBytes());
+                        os.write((getCsvLineSwitchNoComma(array[array.length - 1], csvExport)+"\n").getBytes());
         			}
         		}
         		
@@ -106,4 +124,20 @@ public class QueryRunnable implements Runnable
         	
         	t.commit();
         }
+    
+    public String getCsvLineSwitchNoComma(Object o, ExportToCsv csvExport) {
+        String temp = csvExport.getCsvLineSwitch(o);
+        if(temp==null)
+            return temp;
+        temp = temp.substring(0, temp.length()-1);
+        return temp;
+    }
+    
+    public String getCsvHeaderSwitchNoComma(Object o, ExportToCsv csvExport) {
+        String temp = csvExport.getCsvHeaderSwitch(o);
+        if(temp==null)
+            return temp;
+        temp = temp.substring(0, temp.length()-1);
+        return temp;
+    }
 }
