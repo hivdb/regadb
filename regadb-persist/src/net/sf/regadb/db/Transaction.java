@@ -536,10 +536,10 @@ public class Transaction {
     }
      
     //Get a limited, filtered and sorted list
-    private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) {
+    private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
         if(!filterConstraints.clause_.equals(" "))
         {
-            queryString += " and" + filterConstraints.clause_;
+            queryString += (and ? " and" : " where" ) + filterConstraints.clause_;
         }
         queryString += " order by " + sortField + (ascending?" asc":" desc");
     
@@ -566,7 +566,7 @@ public class Transaction {
         String queryString = "from TestResult as testResult " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null";
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
@@ -599,7 +599,7 @@ public class Transaction {
     {
         String queryString = "from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -611,7 +611,7 @@ public class Transaction {
     {
         String queryString = "from ViralIsolate as viralIsolate " +
                             "where viralIsolate.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -673,7 +673,7 @@ public class Transaction {
     {
         String queryString = "from Attribute as attribute ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -718,7 +718,7 @@ public class Transaction {
     {
         String queryString = "from AttributeGroup as attributeGroup ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -757,7 +757,7 @@ public class Transaction {
 	{
 		String queryString = "from TestType as testType ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
@@ -803,7 +803,7 @@ public class Transaction {
 	{
 		String queryString = "from Test as test ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
     
     public long getResRepTemplatesCount(HibernateFilterConstraint filterConstraints) 
@@ -830,7 +830,7 @@ public class Transaction {
     {
         String queryString = "from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public UserAttribute getUserAttribute(SettingsUser uid, String name)
@@ -994,7 +994,7 @@ public class Transaction {
     {
         String queryString = "from QueryDefinition as queryDefinition ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 
@@ -1028,7 +1028,7 @@ public class Transaction {
 	{
 		String queryString = "from Dataset as dataset ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getDatasetCount(HibernateFilterConstraint filterConstraints) 
