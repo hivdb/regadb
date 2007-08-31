@@ -107,10 +107,13 @@ public class LimitedNumberField extends FormField
 	        {
 	            case '<':
 	                limiterField_.setCurrentIndex(0);
+                    break;
 	            case '=':
 	                limiterField_.setCurrentIndex(1);
+                    break;
 	            case '>':
 	                limiterField_.setCurrentIndex(2);
+                    break;
 	            default :
 	            	limiterField_.setCurrentIndex(0);
 	        }
