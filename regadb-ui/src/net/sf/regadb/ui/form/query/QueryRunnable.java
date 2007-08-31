@@ -13,6 +13,7 @@ import net.sf.regadb.db.QueryDefinitionRunParameter;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.exportCsv.ExportToCsv;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -58,11 +59,13 @@ public class QueryRunnable implements Runnable
         		
         		List result = q.list();
         		
+                ExportToCsv csvExport = new ExportToCsv();
+                
         		for(Object o : result)
         		{
         			if(q.getReturnTypes().length == 1)
         			{
-        				os.write((o.toString()).getBytes());
+        				os.write((csvExport.getCsvLineSwitch(o)+"\n").getBytes());
         			}
         			else
         			{
@@ -70,15 +73,11 @@ public class QueryRunnable implements Runnable
         				
         				for(int i = 0; i < array.length - 1; i++)
         				{
-        					os.write((array[i].toString()).getBytes());
-        					
-        					os.write((",").getBytes());
+        					os.write((csvExport.getCsvLineSwitch(array[i])+",").getBytes());
         				}
-        				
-        				os.write((array[array.length - 1].toString()).getBytes());
+
+                        os.write((csvExport.getCsvLineSwitch(array[array.length - 1])+"\n").getBytes());
         			}
-        			
-        			os.write(("\n").getBytes());
         		}
         		
         		qdr_.setStatus((QueryDefinitionRunStatus.Finished).getValue());
