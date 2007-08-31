@@ -392,7 +392,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
+			if (StandardObjects.isViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				boolean clipped = isClipped(r);
@@ -407,6 +407,25 @@ public class PatientChart
 				}
 			}
 		}
+        
+        lastDate = null;
+        for (TestResult r : getSortedTestResults())
+        {
+            if (StandardObjects.isCD4(r.getTest().getTestType()))
+            {
+                double v = getNumberValue(r);
+                boolean clipped = isClipped(r);
+                Date d = r.getTestDate();
+
+                if (v != 0)
+                {
+                    drawValue(vg, r.getTest().getTestType(), lastValue, lastDate, v, d, clipped);
+
+                    lastValue = v;
+                    lastDate = d;
+                }
+            }
+        }
 
 		vg.setStroke(new BasicStroke());
 	}
@@ -444,10 +463,10 @@ public class PatientChart
 
 		SymbolDrawer.drawSymbol(x1 + 1, y1 + 1, SYMBOL_SIZE, clipped ? VectorGraphicsConstants.SYMBOL_CIRCLE
 				: symbol, vg);
-
+        
 		if (lastDate != null)
 		{
-			vg.drawLine(x1, y1, x2, y2);
+		    vg.drawLine(x1, y1, x2, y2);
 		}
 	}
 
