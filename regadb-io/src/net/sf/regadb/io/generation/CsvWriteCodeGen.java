@@ -3,6 +3,7 @@ package net.sf.regadb.io.generation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import net.sf.regadb.util.hbm.InterpreteHbm;
 public class CsvWriteCodeGen {
     private static Map<String, String> contentMethod = new HashMap<String, String>();
     private static Map<String, String> headerMethod = new HashMap<String, String>();
+    private static String contentCallMethod = "";
     
     public static void methodSig(String id, Class classToWrite) {
         String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var) {\n";
@@ -20,6 +22,8 @@ public class CsvWriteCodeGen {
         sig = "public String getCsvHeaderLine(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var) {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         headerMethod.put(id, sig);
+        contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
+        contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
     }
 
     public static void methodEnd(String id, Class classToWrite) {
@@ -43,19 +47,56 @@ public class CsvWriteCodeGen {
         String var2 = var + ".get" + stringRepField+"()";
         
         String temp = contentMethod.get(id);
-        temp += parentClass.getSimpleName() + "Line += " + var2 + ";\n";
+        temp += parentClass.getSimpleName() + "Line += " + var2 + "+\",\";\n";
         
         contentMethod.put(id, temp);
     }
+ 
+    public static void writePrimitiveVar(String grandFatherFieldName, Field field, String id, Class parentClass) {
+    String writeClassCode="";
     
-    /*public static void stringRepresentedValue(String id, Class parentClass, String fieldName, Class toWrite) {
-        String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
-        stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
-        String toAdd = parentClass.getSimpleName() + "Line += " + parentClass.getSimpleName()+"arg.get"+toWrite.getSimpleName()+"().get"+stringRepField+"() + \",\";";
+    String var = XMLWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName());
+    
+        String fieldType = field.getType().toString();
+        String startChar = "";
+        if(fieldType.indexOf("class")>-1)
+        {
+            writeClassCode += "if("+var+"!=null) ";
+            writeClassCode += "{\n";
+            startChar = "";
+        }
+        
         String temp = contentMethod.get(id);
-        temp += toAdd;
+        temp += writeClassCode;
+        temp += parentClass.getSimpleName() + "Line += ";
+        if(fieldType.indexOf("class")>-1)
+        {
+            if(fieldType.indexOf("Date")>-1)
+            {
+                temp += "XMLTools.dateToRelaxNgString("+ var + ")";
+            }
+            else if(fieldType.indexOf("[B")>-1)
+            {
+                temp += "XMLTools.base64Encoding("+ var + ")";
+            }
+            else
+            {
+                temp += var + ".toString()";
+            }
+        }
+        else
+        {
+            temp += "String.valueOf("+ var+")";
+        }
+        
+        temp += "+\",\";\n";
+        if(fieldType.indexOf("class")>-1)
+        {
+            temp += "}\n";
+        }
+        
         contentMethod.put(id, temp);
-    }*/
+    }
     
     public static void writeClassToFile() {
         String total = "";
@@ -71,6 +112,7 @@ public class CsvWriteCodeGen {
         {
             imports += "import "+className +";\n";
         }
+        imports += "import net.sf.regadb.util.xml.XMLTools;";
         
         total+=imports+"\n";
         
@@ -84,6 +126,8 @@ public class CsvWriteCodeGen {
             total += e.getValue() + "\n";
         }
         
+        contentCallMethod = contentCallMethod.replaceFirst("else ", "");
+        total += "public String getCsvLineSwitch(Object object) {\n" + contentCallMethod + "\n return null;\n}\n";
         total += "\n}";
         
         total = total.replace("PatientImpl", "Patient");

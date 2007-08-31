@@ -325,6 +325,7 @@ public class GenerateIO
                     el.addContent(handleStringField(data, null));
                     XMLWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, "parentNode");
                     XMLReadCodeGen.addRepresentedValue(id, compositeField.getName(), compositeField.getType(), true);
+                    CsvWriteCodeGen.stringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, c);
                 }
                 else if(isPointer(compositeField.getType()))
                 {
@@ -351,11 +352,10 @@ public class GenerateIO
                         el.addContent(data);
                         XMLWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
                         XMLReadCodeGen.addPrimitive(id, compositeField.getName(), compositeField.getType(), true);
+                        CsvWriteCodeGen.writePrimitiveVar("id", compositeField, id, c);
                     }
                 }
             }
-            
-            //exporttocsv
         }
         else //primitive field
         {
@@ -365,11 +365,12 @@ public class GenerateIO
             }
             XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
             XMLReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
+            CsvWriteCodeGen.writePrimitiveVar(null, field, id, c);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
             {
-                try 
+                try
                 {
                     throw new Exception("Ran into an unsupported primitive type!!!!" + field.getName());
                 } 
@@ -382,7 +383,6 @@ public class GenerateIO
             {
                 toAdd.addContent(primitive);
             }
-            //exporttocsv
         }
     }
     
