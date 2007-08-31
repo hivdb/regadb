@@ -14,27 +14,33 @@ public class CsvWriteCodeGen {
     private static Map<String, String> contentMethod = new HashMap<String, String>();
     private static Map<String, String> headerMethod = new HashMap<String, String>();
     private static String contentCallMethod = "";
+    private static String headerCallMethod = "";
     
     public static void methodSig(String id, Class classToWrite) {
         String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var) {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         contentMethod.put(id, sig);
-        sig = "public String getCsvHeaderLine(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var) {\n";
+        
+        sig = "public String getCsvHeaderLine" + classToWrite.getSimpleName() + "() {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         headerMethod.put(id, sig);
+        
         contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
         contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
+        
+        headerCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
+        headerCallMethod += "return getCsvHeaderLine"+classToWrite.getSimpleName()+"();\n}\n";
     }
 
     public static void methodEnd(String id, Class classToWrite) {
         String temp = contentMethod.get(id);
         temp += "return " + classToWrite.getSimpleName() + "Line;";
-        temp += "\n}";
+        temp += "\n}\n";
         contentMethod.put(id, temp);
         
         temp = headerMethod.get(id);
         temp += "return " + classToWrite.getSimpleName() + "Line;";
-        temp += "\n}";
+        temp += "\n}\n";
         headerMethod.put(id, temp);
     }
     
@@ -48,11 +54,19 @@ public class CsvWriteCodeGen {
         
         String temp = contentMethod.get(id);
         temp += parentClass.getSimpleName() + "Line += " + var2 + "+\",\";\n";
-        
         contentMethod.put(id, temp);
+        
+        temp = headerMethod.get(id);
+        if(composite) {
+            temp += parentClass.getSimpleName() + "Line += \"" + parentClass.getSimpleName() + ".id." + fieldName + ",\";\n";
+        }
+        else {
+            temp += parentClass.getSimpleName() + "Line += \"" + parentClass.getSimpleName() + "." + fieldName + ",\";\n";
+        }
+        headerMethod.put(id, temp);
     }
  
-    public static void writePrimitiveVar(String grandFatherFieldName, Field field, String id, Class parentClass) {
+    public static void writePrimitiveVar(String grandFatherFieldName, Field field, String id, Class parentClass, boolean composite) {
     String writeClassCode="";
     
     String var = XMLWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName());
@@ -89,13 +103,26 @@ public class CsvWriteCodeGen {
             temp += "String.valueOf("+ var+")";
         }
         
-        temp += "+\",\";\n";
+        temp += ";\n";
+        
         if(fieldType.indexOf("class")>-1)
         {
             temp += "}\n";
         }
         
+        temp += parentClass.getSimpleName() + "Line += ";
+        temp += "\",\";\n";
+
         contentMethod.put(id, temp);
+        
+        temp = headerMethod.get(id);
+        if(composite) {
+            temp += parentClass.getSimpleName() + "Line += \"" + parentClass.getSimpleName() + ".id." + field.getName() + ",\";\n";
+        }
+        else {
+            temp += parentClass.getSimpleName() + "Line += \"" + parentClass.getSimpleName() + "." + field.getName() + ",\";\n";
+        }
+        headerMethod.put(id, temp);
     }
     
     public static void writeClassToFile() {
@@ -128,6 +155,10 @@ public class CsvWriteCodeGen {
         
         contentCallMethod = contentCallMethod.replaceFirst("else ", "");
         total += "public String getCsvLineSwitch(Object object) {\n" + contentCallMethod + "\n return null;\n}\n";
+        
+        headerCallMethod = headerCallMethod.replaceFirst("else ", "");
+        total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";
+        
         total += "\n}";
         
         total = total.replace("PatientImpl", "Patient");

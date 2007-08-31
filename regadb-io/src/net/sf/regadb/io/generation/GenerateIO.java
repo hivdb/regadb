@@ -352,7 +352,7 @@ public class GenerateIO
                         el.addContent(data);
                         XMLWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
                         XMLReadCodeGen.addPrimitive(id, compositeField.getName(), compositeField.getType(), true);
-                        CsvWriteCodeGen.writePrimitiveVar("id", compositeField, id, c);
+                        CsvWriteCodeGen.writePrimitiveVar("id", compositeField, id, c, true);
                     }
                 }
             }
@@ -365,7 +365,7 @@ public class GenerateIO
             }
             XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
             XMLReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
-            CsvWriteCodeGen.writePrimitiveVar(null, field, id, c);
+            CsvWriteCodeGen.writePrimitiveVar(null, field, id, c, false);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
