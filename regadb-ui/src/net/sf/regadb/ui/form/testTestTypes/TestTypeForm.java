@@ -153,8 +153,11 @@ public class TestTypeForm extends FormWidget
 
 	@Override
 	public void saveData() 
-	{        
-        WMessage duplicates = nominalValuesList_.removeDuplicates(0);
+	{   
+        WMessage duplicates = null;
+        if(nominalValuesList_!=null) {
+        duplicates = nominalValuesList_.removeDuplicates(0);
+        }
         if(duplicates!=null)
         {
             MessageBox.showWarningMessage(duplicates);
