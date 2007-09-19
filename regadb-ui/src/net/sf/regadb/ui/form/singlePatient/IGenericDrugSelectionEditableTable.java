@@ -83,6 +83,8 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         {
             combo.addItem(new DataComboMessage<DrugGeneric>(dg, dg.getGenericName()));
         }
+        combo.sort();
+        
         t.commit();
         
         WWidget[] widgets = new WWidget[2];
@@ -114,6 +116,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         {
             combo.addItem(new DataComboMessage<DrugGeneric>(dg, dg.getGenericName()));
         }
+        combo.sort();
         t.commit();
         
         WWidget[] widgets = new WWidget[2];

@@ -86,6 +86,8 @@ public class MeasurementForm extends FormWidget
 	        	testTypeCB.addItem(new DataComboMessage<TestType>(testType, testType.getDescription()));
         	}
         }
+        testTypeCB.sort();
+        
         testTypeCB.selectIndex(0);
 
         t.commit();
@@ -149,6 +151,7 @@ public class MeasurementForm extends FormWidget
         {
         	testNameCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
         }
+        testNameCB.sort();
         
         testNameCB.selectIndex(0);
 	}
@@ -163,6 +166,7 @@ public class MeasurementForm extends FormWidget
             {
                 ((ComboBox)testResultField_).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
             }
+            ((ComboBox)testResultField_).sort();
         }
         else
         {

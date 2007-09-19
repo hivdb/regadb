@@ -84,6 +84,7 @@ public class AttributeForm extends FormWidget
         {
             valueTypeCB.addItem(new DataComboMessage<ValueType>(vt, vt.getDescription()));
         }
+        valueTypeCB.sort();
         valueTypeCB.selectIndex(0);
         
         List<AttributeGroup> attributeGroups = t.getAttributeGroups();
@@ -91,6 +92,7 @@ public class AttributeForm extends FormWidget
         {
             groupCB.addItem(new DataComboMessage<AttributeGroup>(ag, ag.getGroupName()));
         }
+        groupCB.sort();
         groupCB.selectIndex(0);
 
         t.commit();

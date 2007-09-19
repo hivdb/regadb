@@ -156,6 +156,7 @@ public class TherapyForm extends FormWidget
             {
                 motivationCB.addItem(new DataComboMessage<TherapyMotivation>(therapyMotivation, therapyMotivation.getValue()));
             }
+            motivationCB.sort();
                 
             t.commit();
             

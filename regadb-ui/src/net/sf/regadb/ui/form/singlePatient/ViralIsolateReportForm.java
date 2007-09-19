@@ -98,11 +98,13 @@ public class ViralIsolateReportForm extends WContainerWidget
         {
             algorithmCB_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
         }
+        algorithmCB_.sort();
         
         for(ResistanceInterpretationTemplate rit : t.getResRepTemplates())
         {
             resRepTemplateCB_.addItem(new DataComboMessage<ResistanceInterpretationTemplate>(rit, rit.getName()));
         }
+        resRepTemplateCB_.sort();
         
         t.commit();
     }

@@ -125,6 +125,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<DrugGeneric>(dg, dg.getGenericName()));
 			        }
+                    ((ComboBox)w).sort();
 			        
 			        t.commit();
 			        
@@ -144,7 +145,8 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
 			        }
-			        
+                    ((ComboBox)w).sort();
+                    
 			        t.commit();
 			        
 			        if(interactionState != InteractionState.Adding)
@@ -163,6 +165,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<Test>(test, test.getDescription()));
 			        }
+                    ((ComboBox)w).sort();
 			        
 			        t.commit();
 			        
@@ -182,7 +185,8 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<TestType>(tt, tt.getDescription()));
 			        }
-			        
+                    ((ComboBox)w).sort();
+                    
 			        t.commit();
 			        
 			        if(interactionState != InteractionState.Adding)
@@ -201,6 +205,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<Protein>(p, p.getFullName()));
 			        }
+                    ((ComboBox)w).sort();
 			        
 			        t.commit();
 			        
@@ -220,6 +225,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<Attribute>(a, a.getName()));
 			        }
+                    ((ComboBox)w).sort();
 			        
 			        t.commit();
 			        
@@ -239,6 +245,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 			        {
 			            ((ComboBox)w).addItem(new DataComboMessage<AttributeGroup>(ag, ag.getGroupName()));
 			        }
+                    ((ComboBox)w).sort();
 			        
 			        t.commit();
 			        

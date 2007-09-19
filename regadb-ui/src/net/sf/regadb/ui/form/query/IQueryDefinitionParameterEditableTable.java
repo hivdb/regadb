@@ -76,6 +76,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
         {
             combo.addItem(new DataComboMessage<QueryDefinitionParameterType>(qdpt, qdpt.getName()));
         }
+        combo.sort();
         
         t.commit();
         
@@ -107,6 +108,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
         {
             combo.addItem(new DataComboMessage<QueryDefinitionParameterType>(qdpt, qdpt.getName()));
         }
+        combo.sort();
         
         t.commit();
         

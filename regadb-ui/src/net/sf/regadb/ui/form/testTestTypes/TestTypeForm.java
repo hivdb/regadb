@@ -75,6 +75,7 @@ public class TestTypeForm extends FormWidget
         {
             valueTypeCB.addItem(new DataComboMessage<ValueType>(vt, vt.getDescription()));
         }
+        valueTypeCB.sort();
         valueTypeCB.selectIndex(0);
 	    
         List<TestObject> testObjects=t.getTestObjects();
@@ -82,6 +83,7 @@ public class TestTypeForm extends FormWidget
         {
             testObjectCB.addItem(new DataComboMessage<TestObject>(to, to.getDescription()));
         }
+        valueTypeCB.sort();
         testObjectCB.selectIndex(0);
         
         nominalValuesGroup_ = new WGroupBox(tr("form.testSettings.testType.editView.nominalValues"), this);

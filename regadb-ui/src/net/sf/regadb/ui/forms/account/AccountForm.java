@@ -199,6 +199,7 @@ public class AccountForm extends FormWidget
                     {
                         datasetCB.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
                     }
+                    datasetCB.sort();
                 }
             }
             
@@ -220,8 +221,6 @@ public class AccountForm extends FormWidget
                 chartWidthTF.setText(getAttributeValue("chart.width", t));
                 chartHeightTF.setText(getAttributeValue("chart.height", t));
                 
-                chartMutationCB.addNoSelectionItem();
-                
                 for(Test test : t.getTests())
                 {
                     if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
@@ -229,6 +228,11 @@ public class AccountForm extends FormWidget
                         chartMutationCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
                     }
                 }
+                chartMutationCB.sort();
+                
+                //do this after the sort
+                chartMutationCB.addNoSelectionItem();
+                
                 String value = getAttributeValue("chart.mutation", t);
                 chartMutationCB.selectIndex(0);
                 chartMutationCB.selectItem(value);

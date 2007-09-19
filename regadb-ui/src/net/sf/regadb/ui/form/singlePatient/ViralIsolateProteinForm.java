@@ -156,6 +156,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
 			}
 		}
+        ntSequenceCombo_.sort();
 		
 		setAaSequenceCombo();
 		setAaData();
@@ -211,6 +212,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		{
 			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
 		}
+        aaSequenceCombo_.sort();
         
         t.commit();
 	}

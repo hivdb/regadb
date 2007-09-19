@@ -59,6 +59,12 @@ public class ComboBox<ComboDataType> extends FormField
         }
     }
     
+    public void sort() {
+        if(fieldEdit_!=null) {
+            fieldEdit_.sort();
+        }
+    }
+    
     public void removeCurrentItem()
     {
         if(fieldEdit_!=null)
@@ -188,7 +194,14 @@ public class ComboBox<ComboDataType> extends FormField
 
     public void addNoSelectionItem() 
     {
-        addItem(new DataComboMessage<ComboDataType>((ComboDataType)null, tr(noSelectionItem).value()));
+        if(fieldEdit_!=null)
+        {
+            fieldEdit_.insertItem(0, new DataComboMessage<ComboDataType>((ComboDataType)null, tr(noSelectionItem).value()));
+        }
+        else
+        {
+            list_.add(0,new DataComboMessage<ComboDataType>((ComboDataType)null, tr(noSelectionItem).value()));
+        }
     }
     
     public void setMandatory(boolean mandatory)

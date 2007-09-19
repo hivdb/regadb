@@ -82,6 +82,8 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         {
             combo.addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
         }
+        combo.sort();
+        
         t.commit();
         
         WWidget[] widgets = new WWidget[2];
@@ -116,6 +118,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         {
             combo.addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
         }
+        combo.sort();
         t.commit();
         
         WWidget[] widgets = new WWidget[2];

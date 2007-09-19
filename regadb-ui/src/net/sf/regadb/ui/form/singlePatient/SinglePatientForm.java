@@ -161,6 +161,7 @@ public class SinglePatientForm extends FormWidget
                 sourceDatasetCB.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
             }
         }
+        sourceDatasetCB.sort();
         for(Dataset ds : patient.getDatasets())
         {
             if(ds.getClosedDate()==null)
@@ -236,11 +237,16 @@ public class SinglePatientForm extends FormWidget
                     {
                         attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
                         attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldCB);
-                        attributeFieldCB.addNoSelectionItem();
+                        
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
                             attributeFieldCB.addItem(new DataComboMessage<AttributeNominalValue>(nominalVal,nominalVal.getValue()));
                         }
+                        attributeFieldCB.sort();
+                        
+                        //do this after the sort, should be on top
+                        attributeFieldCB.addNoSelectionItem();
+                        
                         if(attrEl.getValue()!=null)
                         {
                             selectedNominalVal = attrEl.getValue().getAttributeNominalValue();

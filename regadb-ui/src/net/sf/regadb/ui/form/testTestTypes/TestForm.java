@@ -120,6 +120,7 @@ public class TestForm extends FormWidget
         {
             testTypeCB.addItem(new DataComboMessage<TestType>(tt, tt.getDescription()));
         }
+        testTypeCB.sort();
         
         t.commit();
         //main -end-
@@ -191,6 +192,7 @@ public class TestForm extends FormWidget
         {
             analysisTypeCB.addItem(new DataComboMessage<AnalysisType>(at, at.getType()));
         }
+        analysisTypeCB.sort();
         
         t.commit();
         
@@ -391,17 +393,20 @@ public class TestForm extends FormWidget
         {
             baseInputFileCB.addItem(new StringComboMessage(input));
         }
+        baseInputFileCB.sort();
         
         for(String output : wtsMC.parseOutputNames(array))
         {
             baseOutputFileCB.addItem(new StringComboMessage(output));
         }
+        baseOutputFileCB.sort();
         
         if (wtsMC.parseOutputNames(array).size() > 1) {
         	for(String output : wtsMC.parseOutputNames(array))
             {
                 dataOutputFileCB.addItem(new StringComboMessage(output));
             }
+            dataOutputFileCB.sort();
         	
         	dataOutputFileL.setHidden(false);
         	dataOutputFileCB.setHidden(false);

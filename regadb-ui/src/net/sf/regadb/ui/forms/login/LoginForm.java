@@ -84,6 +84,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
                 String proxyKey = "".equals(proxy.getValue())?"Empty proxy":proxy.getKey();
                 proxyCB.addItem(new DataComboMessage<Pair<String, String>>(proxy, proxyKey));
             }
+            proxyCB.sort();
         }
         createAccountLink_.setStyleClass("general-clickable-text");
         createAccountLink_.clicked.addListener(new SignalListener<WMouseEvent>()
