@@ -7,7 +7,6 @@ import java.util.List;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Transaction;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -15,7 +14,7 @@ import org.jdom.input.SAXBuilder;
 
 public class ImportDrugs 
 {
-    public static ArrayList<String> importDrugClasses(Transaction t, File drugClassesXMLFile, boolean simulate)
+    public static ArrayList<String> importDrugClasses(IDrugTransaction t, File drugClassesXMLFile, boolean simulate)
     {
         ArrayList<String> report = new ArrayList<String>();
         try 
@@ -70,7 +69,7 @@ public class ImportDrugs
         return report;
     }
     
-    public static ArrayList<String> importGenericDrugs(Transaction t, File genericDrugXMLFile, boolean simulate)
+    public static ArrayList<String> importGenericDrugs(IDrugTransaction t, File genericDrugXMLFile, boolean simulate)
     {
         ArrayList<String> report = new ArrayList<String>();
         try 
@@ -132,7 +131,7 @@ public class ImportDrugs
         return report;
     }
     
-    public static ArrayList<String> importCommercialDrugs(Transaction t, File commercialDrugXMLFile, boolean simulate)
+    public static ArrayList<String> importCommercialDrugs(IDrugTransaction t, File commercialDrugXMLFile, boolean simulate)
     {
         ArrayList<String> report = new ArrayList<String>();
         try 

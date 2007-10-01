@@ -217,7 +217,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importDrugClasses(t, drugClasses, simulate);
+        report = ImportDrugs.importDrugClasses(new DrugTransaction(t), drugClasses, simulate);
         handleFields(drugClassTitle_, drugClassText_, report);
         drugClasses.delete();
         t.commit();
@@ -232,7 +232,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importGenericDrugs(t, drugGenerics, simulate);
+        report = ImportDrugs.importGenericDrugs(new DrugTransaction(t), drugGenerics, simulate);
         handleFields(drugGenericsTitle_, drugGenericsText_, report);
         drugGenerics.delete();
         t.commit();
@@ -247,7 +247,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importCommercialDrugs(t, drugCommercials, simulate);
+        report = ImportDrugs.importCommercialDrugs(new DrugTransaction(t), drugCommercials, simulate);
         handleFields(drugCommercialsTitle_, drugCommercialsText_, report);
         drugCommercials.delete();
         t.commit();
