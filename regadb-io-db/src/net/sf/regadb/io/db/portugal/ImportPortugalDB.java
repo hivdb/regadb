@@ -149,16 +149,22 @@ public class ImportPortugalDB {
         {
             score = Integer.MIN_VALUE;
             country = countryName.get(i);
-            for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
-            {
-                float oneScore = nmw.getSimilarity(country, anv.getValue());
-                if(oneScore>score)
+            if(!country.trim().equals("")) {
+                for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
                 {
-                    bestCountryMatchForNow = anv.getValue();
-                    score = oneScore;
+                    float oneScore = nmw.getSimilarity(country, anv.getValue());
+                    if(oneScore>score)
+                    {
+                        bestCountryMatchForNow = anv.getValue();
+                        score = oneScore;
+                    }
+                }
+                if(!country.trim().equals(bestCountryMatchForNow.trim())) {
+                System.err.println("country:"+country+" -> "+bestCountryMatchForNow+" :: "+score);
+                countryTable.setValue(1, i, bestCountryMatchForNow);
                 }
             }
-            System.err.println("country:"+country+" "+bestCountryMatchForNow+" "+score);
+            
         }
         System.err.println("Done fixing the country of origin list");
         
