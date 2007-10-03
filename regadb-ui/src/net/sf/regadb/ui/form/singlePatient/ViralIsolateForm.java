@@ -203,7 +203,8 @@ public class ViralIsolateForm extends FormWidget
     
     @Override
     public WMessage leaveForm() {
-        //proteinForm_.refreshAlignmentsTimer_.stop();
+        if(proteinForm_.refreshAlignmentsTimer_!=null)
+            proteinForm_.refreshAlignmentsTimer_.stop();
         return super.leaveForm();
     }
 }
