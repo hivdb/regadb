@@ -20,6 +20,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.witty.wt.WGroupBox;
@@ -95,17 +96,17 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     		switch (type) 
         	{
 		        case STRING:
-		        	w = new TextField(interactionState, queryDefinitionRunForm);
+		        	w = new TextField(interactionState, queryDefinitionRunForm, FieldType.ALFANUMERIC);
 		        	
 					((TextField)w).setText(qdrp.getValue());
 		        break;
 		        case INTEGER:
-		        	w = new TextField(interactionState, queryDefinitionRunForm);
+		        	w = new TextField(interactionState, queryDefinitionRunForm, FieldType.INTEGER);
 		        	
 		        	((TextField)w).setText(qdrp.getValue());
 		        break;
 		        case DOUBLE:
-		        	w = new TextField(interactionState, queryDefinitionRunForm);
+		        	w = new TextField(interactionState, queryDefinitionRunForm, FieldType.DOUBLE);
 		        	
 					((TextField)w).setText(qdrp.getValue());
 		        break;
