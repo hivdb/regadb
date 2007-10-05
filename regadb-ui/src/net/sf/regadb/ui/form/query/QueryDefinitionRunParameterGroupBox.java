@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Attribute;
@@ -265,9 +266,9 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     }
     
     
-    public boolean saveData()
+    public boolean saveData(Map<String, Object> params)
     {
-    	boolean saved = true;
+        boolean saved = true;
     	
     	int i = 1;
     	
@@ -278,37 +279,37 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     		switch (type) 
         	{
 		        case STRING:
-		        	saved = saveDataFormField(qdrp, i);
+		        	saved = saveDataFormField(qdrp, i, params);
 		        break;
 		        case INTEGER:
-		        	saved = saveDataFormField(qdrp, i);
+		        	saved = saveDataFormField(qdrp, i, params);
 		        break;
 		        case DOUBLE:
-		        	saved = saveDataFormField(qdrp, i);
+		        	saved = saveDataFormField(qdrp, i, params);
 		        break;
 		        case DATE:
-		        	saved = saveDataFormField(qdrp, i);
+		        	saved = saveDataFormField(qdrp, i, params);
 		        break;
 		        case GENERICDRUG:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case COMMERCIALDRUG:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case TEST:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case TESTTYPE:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case PROTEIN:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case ATTRIBUTE:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
 		        case ATTRIBUTEGROUP:
-		        	saved = saveDataComboBox(qdrp, i);
+		        	saved = saveDataComboBox(qdrp, i, params);
 		        break;
         	}
     		
@@ -323,11 +324,12 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     	return qdrps;
     }
     
-    private boolean saveDataFormField(QueryDefinitionRunParameter qdrp, int i)
+    private boolean saveDataFormField(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
     	if(!((((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
     	{
     		qdrp.setValue(((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
     		return true;
     	}
     	else
@@ -336,12 +338,12 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     	}
     }
     
-    private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i)
+    private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
     	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentItem() != null)
     	{
     		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-    		
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentValue());
     		return true;
     	}
     	else

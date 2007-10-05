@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunParameter;
@@ -23,12 +24,14 @@ public class QueryRunnable implements Runnable
 	private String fileName_;
 	private Login copiedLogin_;
 	private QueryDefinitionRun qdr_;
+    private Map<String, Object> paramObjects_;
 	
-	public QueryRunnable(final Login copiedLogin, final QueryDefinitionRun qdr, String fileName)
+	public QueryRunnable(final Login copiedLogin, final QueryDefinitionRun qdr, String fileName, Map<String, Object> paramObjects)
 	{
 		fileName_ = fileName;
 		copiedLogin_ = copiedLogin;
 		qdr_ = qdr;
+        paramObjects_ = paramObjects;
 	}
     
 	public void run() 
@@ -54,7 +57,7 @@ public class QueryRunnable implements Runnable
         		
         		for(QueryDefinitionRunParameter qdrp : qdr_.getQueryDefinitionRunParameters())
             	{
-            		q.setParameter(qdrp.getQueryDefinitionParameter().getName(), qdrp.getValue());
+            		q.setParameter(qdrp.getQueryDefinitionParameter().getName(), paramObjects_.get(qdrp.getQueryDefinitionParameter().getName()));
             	}
         		
         		List result = q.list();

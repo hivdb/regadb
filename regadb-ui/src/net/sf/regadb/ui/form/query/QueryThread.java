@@ -15,10 +15,10 @@ public class QueryThread
 	private Thread thread_;
 	private String fileName_;
 	
-	public QueryThread(final Login copiedLogin, final QueryDefinitionRun qdr)
+	public QueryThread(final Login copiedLogin, final QueryDefinitionRun qdr, Map<String, Object> paramObjects)
 	{
 		fileName_ = init(copiedLogin, qdr);
-		thread_ = new Thread(new QueryRunnable(copiedLogin, qdr, fileName_));
+		thread_ = new Thread(new QueryRunnable(copiedLogin, qdr, fileName_, paramObjects));
 	}
 		
     private String init(final Login copiedLogin, final QueryDefinitionRun qdr)

@@ -3,6 +3,8 @@ package net.sf.regadb.ui.form.query;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
@@ -148,7 +150,9 @@ public class QueryDefinitionRunForm extends FormWidget
     @Override
 	public void saveData()
 	{
-    	if(queryDefinitionRunParameterGroup.saveData())
+        Map<String, Object> paramObjects = new HashMap<String, Object>();
+        
+    	if(queryDefinitionRunParameterGroup.saveData(paramObjects))
     	{
     		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         	
@@ -163,7 +167,7 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	t.commit();
         	
-        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun);
+        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun, paramObjects);
         	
         	qt.startQueryThread();
         	
