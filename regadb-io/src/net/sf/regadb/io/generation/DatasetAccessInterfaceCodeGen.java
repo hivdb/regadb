@@ -12,7 +12,7 @@ public class DatasetAccessInterfaceCodeGen {
     
     public static void methodSig(String id, Class classToWrite) {
         String sig = "public boolean canAccess" + classToWrite.getSimpleName() +
-            "(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var, Set<DatasetAccess> datasets);\n";
+            "(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var, Set<Dataset> datasets);\n";
         content.append(sig);
     }
     

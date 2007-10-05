@@ -37,7 +37,7 @@ import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.util.xml.XMLTools;
+import java.util.Set;import net.sf.regadb.util.xml.XMLTools;import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 public class ExportToCsv {
 public String getCsvContentLine(TestObject TestObjectvar) {
 String TestObjectLine = "";
@@ -546,72 +546,182 @@ NtSequenceLine += "NtSequence.nucleotides,";
 return NtSequenceLine;
 }
 
-public String getCsvLineSwitch(Object object) {
+public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {
 if(object instanceof Patient) {
+if(DatasetAccessSolver.getInstance().canAccessPatient((Patient)object, datasets)){
 return getCsvContentLine((Patient)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof Dataset) {
+if(DatasetAccessSolver.getInstance().canAccessDataset((Dataset)object, datasets)){
 return getCsvContentLine((Dataset)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TestResult) {
+if(DatasetAccessSolver.getInstance().canAccessTestResult((TestResult)object, datasets)){
 return getCsvContentLine((TestResult)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof Test) {
+if(DatasetAccessSolver.getInstance().canAccessTest((Test)object, datasets)){
 return getCsvContentLine((Test)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof Analysis) {
+if(DatasetAccessSolver.getInstance().canAccessAnalysis((Analysis)object, datasets)){
 return getCsvContentLine((Analysis)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AnalysisData) {
+if(DatasetAccessSolver.getInstance().canAccessAnalysisData((AnalysisData)object, datasets)){
 return getCsvContentLine((AnalysisData)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TestType) {
+if(DatasetAccessSolver.getInstance().canAccessTestType((TestType)object, datasets)){
 return getCsvContentLine((TestType)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof ValueType) {
+if(DatasetAccessSolver.getInstance().canAccessValueType((ValueType)object, datasets)){
 return getCsvContentLine((ValueType)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TestObject) {
+if(DatasetAccessSolver.getInstance().canAccessTestObject((TestObject)object, datasets)){
 return getCsvContentLine((TestObject)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TestNominalValue) {
+if(DatasetAccessSolver.getInstance().canAccessTestNominalValue((TestNominalValue)object, datasets)){
 return getCsvContentLine((TestNominalValue)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof PatientAttributeValue) {
+if(DatasetAccessSolver.getInstance().canAccessPatientAttributeValue((PatientAttributeValue)object, datasets)){
 return getCsvContentLine((PatientAttributeValue)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof Attribute) {
+if(DatasetAccessSolver.getInstance().canAccessAttribute((Attribute)object, datasets)){
 return getCsvContentLine((Attribute)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AttributeGroup) {
+if(DatasetAccessSolver.getInstance().canAccessAttributeGroup((AttributeGroup)object, datasets)){
 return getCsvContentLine((AttributeGroup)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AttributeNominalValue) {
+if(DatasetAccessSolver.getInstance().canAccessAttributeNominalValue((AttributeNominalValue)object, datasets)){
 return getCsvContentLine((AttributeNominalValue)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof ViralIsolate) {
+if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)object, datasets)){
 return getCsvContentLine((ViralIsolate)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof NtSequence) {
+if(DatasetAccessSolver.getInstance().canAccessNtSequence((NtSequence)object, datasets)){
 return getCsvContentLine((NtSequence)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AaSequence) {
+if(DatasetAccessSolver.getInstance().canAccessAaSequence((AaSequence)object, datasets)){
 return getCsvContentLine((AaSequence)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AaMutation) {
+if(DatasetAccessSolver.getInstance().canAccessAaMutation((AaMutation)object, datasets)){
 return getCsvContentLine((AaMutation)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof AaInsertion) {
+if(DatasetAccessSolver.getInstance().canAccessAaInsertion((AaInsertion)object, datasets)){
 return getCsvContentLine((AaInsertion)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof Therapy) {
+if(DatasetAccessSolver.getInstance().canAccessTherapy((Therapy)object, datasets)){
 return getCsvContentLine((Therapy)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TherapyCommercial) {
+if(DatasetAccessSolver.getInstance().canAccessTherapyCommercial((TherapyCommercial)object, datasets)){
 return getCsvContentLine((TherapyCommercial)object);
 }
+else {
+ return null;
+}
+}
 else if(object instanceof TherapyGeneric) {
+if(DatasetAccessSolver.getInstance().canAccessTherapyGeneric((TherapyGeneric)object, datasets)){
 return getCsvContentLine((TherapyGeneric)object);
+}
+else {
+ return null;
+}
 }
 
  return null;

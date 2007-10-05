@@ -26,7 +26,10 @@ public class CsvWriteCodeGen {
         headerMethod.put(id, sig);
         
         contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
+        contentCallMethod += "if(DatasetAccessSolver.getInstance().canAccess"+classToWrite.getSimpleName()+"(("+classToWrite.getSimpleName()+")object, datasets"+")){\n";
         contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
+        contentCallMethod += "else {\n return null;\n}\n}\n";
+        
         
         headerCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
         headerCallMethod += "return getCsvHeaderLine"+classToWrite.getSimpleName()+"();\n}\n";
@@ -139,7 +142,9 @@ public class CsvWriteCodeGen {
         {
             imports += "import "+className +";\n";
         }
+        imports += "import java.util.Set;";
         imports += "import net.sf.regadb.util.xml.XMLTools;";
+        imports += "import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;";
         
         total+=imports+"\n";
         
@@ -154,7 +159,7 @@ public class CsvWriteCodeGen {
         }
         
         contentCallMethod = contentCallMethod.replaceFirst("else ", "");
-        total += "public String getCsvLineSwitch(Object object) {\n" + contentCallMethod + "\n return null;\n}\n";
+        total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {\n" + contentCallMethod + "\n return null;\n}\n";
         
         headerCallMethod = headerCallMethod.replaceFirst("else ", "");
         total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";

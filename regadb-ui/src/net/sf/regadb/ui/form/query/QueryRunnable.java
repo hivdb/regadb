@@ -6,9 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunParameter;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
@@ -54,6 +58,10 @@ public class QueryRunnable implements Runnable
         	try
         	{
         		Query q = t.createQuery(qdr_.getQueryDefinition().getQuery());
+                Set<Dataset> userDatasets = new HashSet<Dataset>();
+                for(DatasetAccess da : t.getSettingsUser().getDatasetAccesses()) {
+                    userDatasets.add(da.getId().getDataset());
+                }
         		
         		for(QueryDefinitionRunParameter qdrp : qdr_.getQueryDefinitionRunParameters())
             	{
@@ -86,7 +94,7 @@ public class QueryRunnable implements Runnable
         		{
         			if(q.getReturnTypes().length == 1)
         			{
-        				os.write((getCsvLineSwitchNoComma(o, csvExport)+"\n").getBytes());
+        				os.write((getCsvLineSwitchNoComma(o, csvExport, userDatasets)+"\n").getBytes());
         			}
         			else
         			{
@@ -94,10 +102,10 @@ public class QueryRunnable implements Runnable
         				
         				for(int i = 0; i < array.length - 1; i++)
         				{
-        					os.write((getCsvLineSwitchNoComma(array[i], csvExport)+",").getBytes());
+        					os.write((getCsvLineSwitchNoComma(array[i], csvExport, userDatasets)+",").getBytes());
         				}
 
-                        os.write((getCsvLineSwitchNoComma(array[array.length - 1], csvExport)+"\n").getBytes());
+                        os.write((getCsvLineSwitchNoComma(array[array.length - 1], csvExport, userDatasets)+"\n").getBytes());
         			}
         		}
         		
@@ -128,8 +136,8 @@ public class QueryRunnable implements Runnable
         	t.commit();
         }
     
-    public String getCsvLineSwitchNoComma(Object o, ExportToCsv csvExport) {
-        String temp = csvExport.getCsvLineSwitch(o);
+    public String getCsvLineSwitchNoComma(Object o, ExportToCsv csvExport, Set<Dataset> datasets) {
+        String temp = csvExport.getCsvLineSwitch(o, datasets);
         if(temp==null)
             return temp;
         temp = temp.substring(0, temp.length()-1);
