@@ -37,7 +37,11 @@ import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.DrugCommercial;
-import java.util.Set;import net.sf.regadb.util.xml.XMLTools;import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
+import net.sf.regadb.db.PatientImplHelper;
+import java.util.Set;
+import net.sf.regadb.util.xml.XMLTools;
+import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
+
 public class ExportToCsv {
 public String getCsvContentLine(TestObject TestObjectvar) {
 String TestObjectLine = "";
@@ -155,29 +159,29 @@ AaSequenceLine += ",";
 return AaSequenceLine;
 }
 
-public String getCsvContentLine(Patient Patientvar) {
-String PatientLine = "";
-if(Patientvar.getPatientId()!=null) {
-PatientLine += Patientvar.getPatientId().toString();
+public String getCsvContentLine(Patient PatientImplvar) {
+String PatientImplLine = "";
+if(PatientImplvar.getPatientId()!=null) {
+PatientImplLine += PatientImplvar.getPatientId().toString();
 }
-PatientLine += ",";
-if(Patientvar.getLastName()!=null) {
-PatientLine += Patientvar.getLastName().toString();
+PatientImplLine += ",";
+if(PatientImplvar.getLastName()!=null) {
+PatientImplLine += PatientImplvar.getLastName().toString();
 }
-PatientLine += ",";
-if(Patientvar.getFirstName()!=null) {
-PatientLine += Patientvar.getFirstName().toString();
+PatientImplLine += ",";
+if(PatientImplvar.getFirstName()!=null) {
+PatientImplLine += PatientImplvar.getFirstName().toString();
 }
-PatientLine += ",";
-if(Patientvar.getBirthDate()!=null) {
-PatientLine += XMLTools.dateToRelaxNgString(Patientvar.getBirthDate());
+PatientImplLine += ",";
+if(PatientImplvar.getBirthDate()!=null) {
+PatientImplLine += XMLTools.dateToRelaxNgString(PatientImplvar.getBirthDate());
 }
-PatientLine += ",";
-if(Patientvar.getDeathDate()!=null) {
-PatientLine += XMLTools.dateToRelaxNgString(Patientvar.getDeathDate());
+PatientImplLine += ",";
+if(PatientImplvar.getDeathDate()!=null) {
+PatientImplLine += XMLTools.dateToRelaxNgString(PatientImplvar.getDeathDate());
 }
-PatientLine += ",";
-return PatientLine;
+PatientImplLine += ",";
+return PatientImplLine;
 }
 
 public String getCsvContentLine(TestType TestTypevar) {
@@ -434,13 +438,13 @@ return AaSequenceLine;
 }
 
 public String getCsvHeaderLinePatient() {
-String PatientLine = "";
-PatientLine += "Patient.patientId,";
-PatientLine += "Patient.lastName,";
-PatientLine += "Patient.firstName,";
-PatientLine += "Patient.birthDate,";
-PatientLine += "Patient.deathDate,";
-return PatientLine;
+String PatientImplLine = "";
+PatientImplLine += "PatientImpl.patientId,";
+PatientImplLine += "PatientImpl.lastName,";
+PatientImplLine += "PatientImpl.firstName,";
+PatientImplLine += "PatientImpl.birthDate,";
+PatientImplLine += "PatientImpl.deathDate,";
+return PatientImplLine;
 }
 
 public String getCsvHeaderLineTestType() {
@@ -547,15 +551,7 @@ return NtSequenceLine;
 }
 
 public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {
-if(object instanceof Patient) {
-if(DatasetAccessSolver.getInstance().canAccessPatient((Patient)object, datasets)){
-return getCsvContentLine((Patient)object);
-}
-else {
- return null;
-}
-}
-else if(object instanceof Dataset) {
+if(PatientImplHelper.isInstanceOfPatientImpl(object)) {if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));}{return null;}}else if(object instanceof Dataset) {
 if(DatasetAccessSolver.getInstance().canAccessDataset((Dataset)object, datasets)){
 return getCsvContentLine((Dataset)object);
 }
@@ -727,10 +723,9 @@ else {
  return null;
 }
 public String getCsvHeaderSwitch(Object object) {
-if(object instanceof Patient) {
-return getCsvHeaderLinePatient();
+if(PatientImplHelper.isInstanceOfPatientImpl(object)) {return getCsvHeaderLinePatient();
 }
-else if(object instanceof Dataset) {
+if(object instanceof Dataset) {
 return getCsvHeaderLineDataset();
 }
 else if(object instanceof TestResult) {

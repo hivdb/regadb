@@ -37,7 +37,10 @@ public class PatientImplHelper {
         return (o instanceof PatientImpl);
     }
     
-    public static Patient castPatientImplToPatient(Object o) {
-        return new Patient((PatientImpl)o, -1);
+    public static Patient castPatientImplToPatient(Object o, Set<Dataset> datasets) {
+        //get privillege for this patient by doing a query
+        //only call this method once in the getCsvLineSwitch method!!
+        
+        return new Patient((PatientImpl)o, 1);
     }
 }

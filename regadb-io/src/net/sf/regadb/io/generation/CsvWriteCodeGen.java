@@ -7,6 +7,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientImplHelper;
+import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 
@@ -17,14 +20,15 @@ public class CsvWriteCodeGen {
     private static String headerCallMethod = "";
     
     public static void methodSig(String id, Class classToWrite) {
-        String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var) {\n";
+        String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + " " + classToWrite.getSimpleName()+"var) {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         contentMethod.put(id, sig);
         
-        sig = "public String getCsvHeaderLine" + classToWrite.getSimpleName() + "() {\n";
+        sig = "public String getCsvHeaderLine" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + "() {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         headerMethod.put(id, sig);
         
+        if(!classToWrite.getSimpleName().equals("PatientImpl")) {
         contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
         contentCallMethod += "if(DatasetAccessSolver.getInstance().canAccess"+classToWrite.getSimpleName()+"(("+classToWrite.getSimpleName()+")object, datasets"+")){\n";
         contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
@@ -33,6 +37,23 @@ public class CsvWriteCodeGen {
         
         headerCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
         headerCallMethod += "return getCsvHeaderLine"+classToWrite.getSimpleName()+"();\n}\n";
+        } else {
+            patientHeaderContent();
+        }
+    }
+    
+    public static void patientHeaderContent() {
+        contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {" +
+            "if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){" +
+            "return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));" +
+            "}" +
+            "else {" +
+             "return null;" +
+            "}" +
+        "}";
+        
+        headerCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {";
+        headerCallMethod += "return getCsvHeaderLine"+"Patient"+"();\n}\n";
     }
 
     public static void methodEnd(String id, Class classToWrite) {
@@ -140,11 +161,12 @@ public class CsvWriteCodeGen {
         String imports = "";
         for(String className : interpreter.getClassNames())
         {
-            imports += "import "+className +";\n";
+            imports += "import "+className.replace("PatientImpl", "Patient") +";\n";
         }
-        imports += "import java.util.Set;";
-        imports += "import net.sf.regadb.util.xml.XMLTools;";
-        imports += "import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;";
+        imports += "import net.sf.regadb.db.PatientImplHelper;\n";
+        imports += "import java.util.Set;\n";
+        imports += "import net.sf.regadb.util.xml.XMLTools;\n";
+        imports += "import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;\n";
         
         total+=imports+"\n";
         
@@ -165,8 +187,6 @@ public class CsvWriteCodeGen {
         total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";
         
         total += "\n}";
-        
-        total = total.replace("PatientImpl", "Patient");
         
         String srcDir = GenerateIO.getSrcPath("net.sf.regadb.io.exportCsv");
         File exportJavaCodeFile = new File(srcDir+File.separatorChar+"ExportToCsv.java");
