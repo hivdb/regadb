@@ -170,6 +170,7 @@ public class GenerateIO
         String id2 = XMLWriteCodeGen.createString();
         
         CsvWriteCodeGen.methodSig(id, c);
+        DatasetAccessInterfaceCodeGen.methodSig(id, c);
         XMLWriteCodeGen.writeTopMethod(c, id2);
         XMLWriteCodeGen.writeMethodSig(c, id);
         
@@ -653,6 +654,7 @@ public class GenerateIO
             //import java code
             
             CsvWriteCodeGen.writeClassToFile();
+            DatasetAccessInterfaceCodeGen.writeInterfaceToFile();
 		}
 		catch (Exception e)
 		{
