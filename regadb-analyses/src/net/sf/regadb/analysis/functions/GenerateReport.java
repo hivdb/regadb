@@ -6,14 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -26,6 +23,9 @@ import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.date.DateUtils;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class GenerateReport 
 {
@@ -65,7 +65,7 @@ public class GenerateReport
         replace("$SUBTYPE", getSubtype(vi));
         
         List<TestResult> results = getGssTestResults(vi, algorithm);
-        setRITable(results);
+        setRITable(results, t);
         
         setMutations(vi, t);
         
@@ -233,42 +233,24 @@ public class GenerateReport
             rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
     
-    public void setRITable(/*LinkedHashMap DRUG_NAMES,*/ List<TestResult> testResults)
+    public void setRITable(List<TestResult> testResults, Transaction t)
     {
-        //TODO get drugs from resistance interpretation tab
-        LinkedHashMap<String,String> DRUG_NAMES = new LinkedHashMap<String,String>();
-        // NRTI
-        DRUG_NAMES.put("zidovudine", "AZT");
-        DRUG_NAMES.put("zalcitabine", "DDC");
-        DRUG_NAMES.put("didanosine", "DDI");
-        DRUG_NAMES.put("lamivudine", "3TC");
-        DRUG_NAMES.put("stavudine", "D4T");
-        DRUG_NAMES.put("abacavir", "ABC");
-        DRUG_NAMES.put("emtricitabine", "FTC");
-        DRUG_NAMES.put("tenofovir", "TDF");
-        // NNRTI
-        DRUG_NAMES.put("nevirapine", "NVP");
-        DRUG_NAMES.put("delavirdine", "DLV");
-        DRUG_NAMES.put("efavirenz", "EFV");
-        DRUG_NAMES.put("etravirine", "ETV");
-        // PI
-        DRUG_NAMES.put("saquinavir", "SQV");
-        DRUG_NAMES.put("saquinavir/r", "SQV/r");
-        DRUG_NAMES.put("ritonavir", "RTV");
-        DRUG_NAMES.put("indinavir", "IDV");
-        DRUG_NAMES.put("indinavir/r", "IDV/r");
-        DRUG_NAMES.put("nelfinavir", "NFV");
-        DRUG_NAMES.put("amprenavir", "APV");
-        DRUG_NAMES.put("amprenavir/r", "APV/r");
-        DRUG_NAMES.put("fosamprenavir", "FPV");
-        DRUG_NAMES.put("fosamprenavir/r", "FPV/r");
-        DRUG_NAMES.put("lopinavir/r", "LPV/r"); 
-        DRUG_NAMES.put("atazanavir", "ATV");
-        DRUG_NAMES.put("atazanavir/r", "ATV/r");
-        DRUG_NAMES.put("tipranavir/r", "TPV/r");
-        DRUG_NAMES.put("darunavir/r", "DRV/r");
-        // ENV
-        DRUG_NAMES.put("enfuvirtide", "T20");
+        List<DrugGeneric> drugs = new ArrayList<DrugGeneric>();
+        List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
+        
+        List<DrugGeneric> genericDrugs;
+        boolean addedAmprenavir = false;
+        for(DrugClass dc : sortedDrugClasses_) {
+            genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
+            for(DrugGeneric dg : genericDrugs) {
+                if(!addedAmprenavir && dg.getGenericId().startsWith("FPV")) {
+                    drugs.add(new DrugGeneric(dg.getDrugClass(), "APV", "amprenavir"));
+                    drugs.add(new DrugGeneric(dg.getDrugClass(), "APV/r", "amprenavir/r"));
+                    addedAmprenavir = true;
+                }
+                drugs.add(dg);
+            }
+        }
         
         int interpretation1Pos = rtfBuffer_.indexOf("$INTERPRETATION1");
         int mutation1Pos = rtfBuffer_.indexOf("$MUTATIONS1");
@@ -287,9 +269,9 @@ public class GenerateReport
         
         int ii = 1;
         TestResult tr;
-        for (Iterator i = DRUG_NAMES.keySet().iterator(); i.hasNext();) {
-            String drug = (String) i.next();
-            String drugCode = (String) DRUG_NAMES.get(drug);
+        for (DrugGeneric dg : drugs) {
+            String drug = dg.getGenericName();
+            String drugCode = dg.getGenericId();
 
             final StringBuffer mutationsLocal = new StringBuffer();
             String interpretation = null;
@@ -339,7 +321,7 @@ public class GenerateReport
                         String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
                         String reportInterpretation = "$INTERPRETATION" + (Math.min(ii, 3));
 
-                        replace("$DRUG" + (Math.min(ii, 3)), drugCode);
+                        replace("$DRUG" + (Math.min(ii, 3)), drug);
                         replace(reportMutations, mutationsLocal.toString());
 
                         try {
