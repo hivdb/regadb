@@ -38,9 +38,16 @@ public class PatientImplHelper {
     }
     
     public static Patient castPatientImplToPatient(Object o, Set<Dataset> datasets) {
-        //get privillege for this patient by doing a query
-        //only call this method once in the getCsvLineSwitch method!!
-        
-        return new Patient((PatientImpl)o, 1);
+        int privillege = -1;
+        for(Dataset ds : datasets) {
+            for(DatasetAccess dsa : ds.getDatasetAccesses()) {
+                if(dsa.getProvider().equals(ds.getSettingsUser().getUid())) {
+                    if(dsa.getPermissions()>privillege) {
+                        privillege = dsa.getPermissions();
+                    }
+                }
+            }
+        }
+        return new Patient((PatientImpl)o, privillege);
     }
 }
