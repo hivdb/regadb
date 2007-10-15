@@ -122,7 +122,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         {
             for(int j = 2; j< resistanceTable_.numColumns(); j++)
             {
-                putResistanceTableResult(null, resistanceTable_.elementAt(i, j));
+                putResistanceTableResult(null, resistanceTable_.elementAt(i, j), false);
             }
         }
         
@@ -131,10 +131,13 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         for(TestResult tr : viralIsolateForm_.getViralIsolate().getTestResults())
         {
             colN = algoColumn.get(tr.getTest().getDescription());
-            rowN = drugColumn.get(tr.getDrugGeneric().getGenericId());
-            if(colN!=null && rowN!=null)
-            {
-                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN));
+            rowN = drugColumn.get(getFixedGenericId(tr));
+            if(colN!=null && rowN!=null) {
+                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN), false);
+            }
+            rowN = drugColumn.get(getFixedGenericId(tr)+"/r");
+            if(colN!=null && rowN!=null) {
+                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN), true);
             }
         }
         
@@ -142,9 +145,23 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         resistanceTable_.setCellPadding(4);
     }
     
-    private void putResistanceTableResult(Double gss, WTableCell cell)
+    private String getFixedGenericId(TestResult tr) {
+        String genericId = tr.getDrugGeneric().getGenericId();
+        if(genericId.startsWith("APV"))
+            return genericId.replace("APV", "FPV");
+        else
+            return genericId;
+    }
+    
+    private void putResistanceTableResult(Double gss, WTableCell cell, boolean onlyIfCurrentValueIsNA)
     {
         WText toReturn;
+        
+        //make sure we do not override a sensible value
+        if(onlyIfCurrentValueIsNA) {
+            if(!((WText)cell.children().get(0)).text().value().equals("NA"))
+                return;
+        }
         
         cell.clear();
         
