@@ -43,14 +43,14 @@ public class CsvWriteCodeGen {
     }
     
     public static void patientHeaderContent() {
-        contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {" +
-            "if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){" +
-            "return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));" +
-            "}" +
-            "else {" +
-             "return null;" +
-            "}" +
-        "}";
+        contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {\n" +
+            "if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){\n" +
+            "return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));\n" +
+            "}\n" +
+            "else {\n" +
+             "return null;\n" +
+            "}\n" +
+        "}\n";
         
         headerCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {";
         headerCallMethod += "return getCsvHeaderLine"+"Patient"+"();\n}\n";
