@@ -99,4 +99,12 @@ public class CheckBox extends WContainerWidget implements IFormField
     {
         checkBox_.setChecked(checked);
     }
+
+    public void setConfirmAction(SignalListener<WEmptyEvent> se) {
+        if(getFormWidget()!=null) {
+        getFormWidget().enterPressed.removeAllListeners();
+        if(se != null)
+            getFormWidget().enterPressed.addListener(se);
+        }
+    }
 }

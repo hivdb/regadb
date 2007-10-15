@@ -7,12 +7,14 @@ import java.util.Set;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
+import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
@@ -115,6 +117,20 @@ public class EditableTable<DataType> extends WContainerWidget
         int colIndex;
         int rowNum;
         
+        for(WWidget w : widgets) {
+            if(w instanceof IFormField) {
+                SignalListener<WEmptyEvent> se = null;
+                if(lineToAdd) {
+                    se = new SignalListener<WEmptyEvent>() {
+                        public void notify(WEmptyEvent a) {
+                            addAction();
+                        }
+                    };
+                }
+                ((IFormField)w).setConfirmAction(se);
+            }
+        }
+        
         rowNum = itemTable_.numRows();
         if((editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) && !lineToAdd)
         {
@@ -136,22 +152,26 @@ public class EditableTable<DataType> extends WContainerWidget
                     {
                         public void notify(WMouseEvent a) 
                         {
-                            WWidget[] widgets = getWidgets(itemTable_.numRows()-1);
-                            widgets = editableList_.fixAddRow(widgets);
-                            if(widgets!=null)
-                            {
-                                itemTable_.deleteRow(itemTable_.numRows()-1);
-                                addLine(widgets, false);
-                                
-                                addLine(editableList_.addRow(), true);
-                                itemList_.add(null);
-                            }
-                            else
-                            {
-                                MessageBox.showWarningMessage(tr("editableTable.add.warning.couldNotAdd"));
-                            }
+                            addAction();
                         }
                     });
+        }
+    }
+    
+    private void addAction() {
+        WWidget[] widgets = getWidgets(itemTable_.numRows()-1);
+        widgets = editableList_.fixAddRow(widgets);
+        if(widgets!=null)
+        {
+            itemTable_.deleteRow(itemTable_.numRows()-1);
+            addLine(widgets, false);
+            
+            addLine(editableList_.addRow(), true);
+            itemList_.add(null);
+        }
+        else
+        {
+            MessageBox.showWarningMessage(tr("editableTable.add.warning.couldNotAdd"));
         }
     }
     

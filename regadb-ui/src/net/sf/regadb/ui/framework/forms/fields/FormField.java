@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WInteractWidget;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.WWidget;
@@ -101,5 +103,13 @@ public abstract class FormField extends WContainerWidget implements IFormField
     public WWidget getWidget()
     {
         return this;
+    }
+    
+    public void setConfirmAction(SignalListener<WEmptyEvent> se) {
+        if(getFormWidget()!=null) {
+        getFormWidget().enterPressed.removeAllListeners();
+        if(se!=null)
+            getFormWidget().enterPressed.addListener(se);
+        }
     }
 }
