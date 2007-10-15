@@ -62,19 +62,19 @@ public class HibernateFilterConstraintMapping
 		
 		if(operator.equals(StringFilter.beginsWith_))
 		{
-			constraint.clause_ = varName + " like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, sf.getStringValue() + "%"));
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, sf.getStringValue().toLowerCase() + "%"));
 			//return varName + " like '" + tf_.text() + "%'"; 
 		}
 		else if(operator.equals(StringFilter.endsWith_))
 		{
-			constraint.clause_ = varName + " like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+sf.getStringValue()));
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+sf.getStringValue().toLowerCase()));
 		}
 		else if(operator.equals(StringFilter.contains_))
 		{
-			constraint.clause_ = varName + " like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+sf.getStringValue()+"%"));
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+sf.getStringValue().toLowerCase()+"%"));
 		}
 		else if(operator.equals(StringFilter.sqlRegExp_))
 		{
