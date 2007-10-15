@@ -180,10 +180,8 @@ public class CsvWriteCodeGen {
             total += e.getValue() + "\n";
         }
         
-        contentCallMethod = contentCallMethod.replaceFirst("else ", "");
         total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {\n" + contentCallMethod + "\n return null;\n}\n";
         
-        headerCallMethod = headerCallMethod.replaceFirst("else ", "");
         total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";
         
         total += "\n}";
