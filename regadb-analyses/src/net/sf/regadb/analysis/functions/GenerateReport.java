@@ -294,22 +294,18 @@ public class GenerateReport
             final StringBuffer mutationsLocal = new StringBuffer();
             String interpretation = null;
             Double gss = null;
-            /*if (drugCode.equals("T20")) {
-                mutations = lang.equals("NL") ? "niet bepaald" : "not determined";
-                interpretation = "-";
-            } else {*/
+
             tr = null;
             for(TestResult ttr : testResults) {
                 if(drugCode.equals(ttr.getDrugGeneric().getGenericId())) {
                     tr = ttr;
                 }
             }
-               // ResistanceResultGeneric resistanceResult = drugForm.getResistanceResult(testII,drugCode);
 
                 if (tr != null) {
                     if(mutationsLocal.length()!=0)
-                    mutationsLocal.delete(0, mutationsLocal.length());//resistanceResult.getComment();
-                    interpretation = tr.getValue(); //resistanceResult.getInterpretation(lang);
+                    mutationsLocal.delete(0, mutationsLocal.length());
+                    interpretation = tr.getValue();
                     ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
                     {
                         @Override
@@ -343,7 +339,7 @@ public class GenerateReport
                         String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
                         String reportInterpretation = "$INTERPRETATION" + (Math.min(ii, 3));
 
-                        replace("$DRUG" + (Math.min(ii, 3)), drug);
+                        replace("$DRUG" + (Math.min(ii, 3)), drugCode);
                         replace(reportMutations, mutationsLocal.toString());
 
                         try {
@@ -355,9 +351,6 @@ public class GenerateReport
                         ++ii;
                     }
                 }
-            //}
-
-
         }
         
         replace(line, "");       
