@@ -552,8 +552,9 @@ return NtSequenceLine;
 
 public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {
 if(PatientImplHelper.isInstanceOfPatientImpl(object)) {
-if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){
-return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));
+Patient p_casted = PatientImplHelper.castPatientImplToPatient(object, datasets);
+if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets)){
+return getCsvContentLine(p_casted);
 }
 else {
 return null;

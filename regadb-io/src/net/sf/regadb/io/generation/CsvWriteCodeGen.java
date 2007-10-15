@@ -44,8 +44,9 @@ public class CsvWriteCodeGen {
     
     public static void patientHeaderContent() {
         contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {\n" +
-            "if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){\n" +
-            "return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));\n" +
+            "Patient p_casted = PatientImplHelper.castPatientImplToPatient(object, datasets);\n" +
+            "if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets)){\n" +
+            "return getCsvContentLine(p_casted);\n" +
             "}\n" +
             "else {\n" +
              "return null;\n" +
