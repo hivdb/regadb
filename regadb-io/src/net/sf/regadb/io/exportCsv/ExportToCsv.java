@@ -551,7 +551,15 @@ return NtSequenceLine;
 }
 
 public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {
-if(PatientImplHelper.isInstanceOfPatientImpl(object)) {if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));}{return null;}}else if(object instanceof Dataset) {
+if(PatientImplHelper.isInstanceOfPatientImpl(object)) {
+if(DatasetAccessSolver.getInstance().canAccessPatient(PatientImplHelper.castPatientImplToPatient(object, datasets), datasets)){
+return getCsvContentLine(PatientImplHelper.castPatientImplToPatient(object, datasets));
+}
+else {
+return null;
+}
+}
+else if(object instanceof Dataset) {
 if(DatasetAccessSolver.getInstance().canAccessDataset((Dataset)object, datasets)){
 return getCsvContentLine((Dataset)object);
 }
@@ -725,7 +733,7 @@ else {
 public String getCsvHeaderSwitch(Object object) {
 if(PatientImplHelper.isInstanceOfPatientImpl(object)) {return getCsvHeaderLinePatient();
 }
-if(object instanceof Dataset) {
+else if(object instanceof Dataset) {
 return getCsvHeaderLineDataset();
 }
 else if(object instanceof TestResult) {
