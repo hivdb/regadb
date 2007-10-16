@@ -2,6 +2,8 @@ package net.sf.regadb.ui.form.query;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,6 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -44,13 +45,15 @@ public class QueryDefinitionRunForm extends FormWidget
     private Label queryL;
     private TextArea queryTA;
     private Label startDateL;
-    private DateField startDateDF;
+    private TextField startDateDF;
     private Label endDateL;
-    private DateField endDateDF;
+    private TextField endDateDF;
     private Label statusL;
     private TextField statusTF;
     private Label resultL;
     private WAnchor resultLink;
+    
+    private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     
     public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
@@ -95,12 +98,12 @@ public class QueryDefinitionRunForm extends FormWidget
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateL = new Label(tr("form.query.definition.run.label.startdate"));
-            startDateDF = new DateField(getInteractionState(), this);
+        	startDateL = new Label(tr("form.query.definition.run.label.startTime"));
+            startDateDF = new TextField(getInteractionState(), this);
             addLineToTable(queryDefinitionRunGroupTable, startDateL, startDateDF);
             
-            endDateL = new Label(tr("form.query.definition.run.label.enddate"));
-            endDateDF = new DateField(getInteractionState(), this);
+            endDateL = new Label(tr("form.query.definition.run.label.endTime"));
+            endDateDF = new TextField(getInteractionState(), this);
             addLineToTable(queryDefinitionRunGroupTable, endDateL, endDateDF);
             
             statusL = new Label(tr("form.query.definition.run.label.status"));
@@ -122,11 +125,11 @@ public class QueryDefinitionRunForm extends FormWidget
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateDF.setDate(queryDefinitionRun.getStartdate());
+        	startDateDF.setText(formatter.format(queryDefinitionRun.getStartdate()));
         	
         	if(queryDefinitionRun.getEnddate() != null)
         	{
-        		endDateDF.setDate(queryDefinitionRun.getEnddate());
+        		endDateDF.setText(formatter.format(queryDefinitionRun.getEnddate()));
         	}
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
