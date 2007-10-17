@@ -87,7 +87,40 @@ public class GenerateWindowsBundles {
             FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-install")), new File(bundleDir + replaceByPS("/regadb-install")));
         } catch (IOException e) {
             e.printStackTrace();
-        }        
+        }
+        
+        generateRegaDBBrowserBundle(buildDir, bundleDir);
+    }
+    
+    private static void generateRegaDBBrowserBundle(String buildDir, String bundleDir) {
+        File regadbBrowserBundleDir = new File(bundleDir + replaceByPS("/regadb-browser"));
+        try {
+            FileUtils.copyDirectory(new File(buildDir + replaceByPS("/packages/regadb-browser")), regadbBrowserBundleDir);
+            File stub = new File(regadbBrowserBundleDir.getAbsolutePath() + File.separatorChar + "jdic_stub.jar");
+            stub.delete();
+            File windowsDir = new File(regadbBrowserBundleDir.getAbsolutePath()+File.separatorChar+"windows");
+            FileUtils.copyDirectory(new File(buildDir + replaceByPS("/regadb-browser/lib/windows")), 
+                                    windowsDir);
+            removeRecursivelySvnDirs(windowsDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void removeRecursivelySvnDirs(File startDir) {
+        if(!startDir.isDirectory())
+            return;
+        for(File dir : startDir.listFiles()) {
+            if(dir.getAbsolutePath().endsWith(".svn")) {
+                try {
+                    FileUtils.deleteDirectory(dir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                removeRecursivelySvnDirs(dir);
+            }
+        }
     }
     
     public static void main(String [] args) {
