@@ -26,6 +26,11 @@
     <javac srcdir="${src}" destdir="${build}">
   		<classpath refid="project.classpath"/>
     </javac>
+	<copy todir="${build}">
+  		<fileset dir="${src}"
+           includes="**/*.xml"
+  		/>
+	</copy>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >
@@ -33,7 +38,7 @@
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
   	<jar jarfile="${dist}/${proj.name}-run.jar" basedir="${build}">
   		<manifest>
-  			<attribute name="Main-Class" value="net.sf.regadb.browser.ui.Browser"/>
+  			<attribute name="Main-Class" value="net.sf.regadb.browser.ui.StartRegaDB"/>
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
