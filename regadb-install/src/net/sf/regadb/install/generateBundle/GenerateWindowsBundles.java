@@ -102,6 +102,8 @@ public class GenerateWindowsBundles {
             FileUtils.copyDirectory(new File(buildDir + replaceByPS("/regadb-browser/lib/windows")), 
                                     windowsDir);
             removeRecursivelySvnDirs(windowsDir);
+            FileUtils.copyFile( new File(buildDir + replaceByPS("/regadb-browser/pics/regadb-browser.ico")), 
+                                new File(regadbBrowserBundleDir.getAbsolutePath()+ replaceByPS("/regadb-browser/regadb-browser.ico")));
         } catch (IOException e) {
             e.printStackTrace();
         }
