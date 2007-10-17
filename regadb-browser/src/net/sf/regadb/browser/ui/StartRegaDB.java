@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -22,17 +23,27 @@ public class StartRegaDB {
 		
 		final Browser b = showBrowser(tomcatDir);
 		
-		final String logFile = regadbConfDir + File.separatorChar + "logs" + File.separatorChar + "regadb-start-log.txt"; 
+		final String logFileName = regadbConfDir + File.separatorChar + "logs" + File.separatorChar + "regadb-start-log.txt";
+        
+        File logFile = new File(logFileName);
+        //make sure the old log file is deleted
+        //make sure a new empty file is created so the filelistener will never crash
+        logFile.delete();
+        try {
+            logFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	
 		Thread t = new Thread() {
 		@Override
 		public void run() {
-			TomcatControl.getInstance().runTomcatAntFile(tomcatDir, "tomcat-start", logFile);
+			TomcatControl.getInstance().runTomcatAntFile(tomcatDir, "tomcat-start", logFileName);
 			}
 	      };
 	      t.start();
 	      
-	      FileListener listener = new FileListener(new File(logFile), 500){
+	      FileListener listener = new FileListener(logFile, 500){
 			@Override
 			public void newLineNotification(String line) {
 				if(line.contains("Server startup in")) {
