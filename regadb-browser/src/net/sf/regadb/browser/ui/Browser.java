@@ -22,21 +22,16 @@ package net.sf.regadb.browser.ui;
  */ 
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 
 import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.browser.WebBrowserEvent;
@@ -51,12 +46,14 @@ import org.jdesktop.jdic.browser.WebBrowserListener;
  */
 
 public class Browser extends JPanel {
-    BorderLayout borderLayout1 = new BorderLayout();
+    private BorderLayout borderLayout1 = new BorderLayout();
 
-    MyStatusBar statusBar = new MyStatusBar();
-    JPanel jBrowserPanel = new JPanel();
+    private MyStatusBar statusBar = new MyStatusBar();
+    private JPanel jBrowserPanel = new JPanel();
 
-    WebBrowser webBrowser;
+    private WebBrowser webBrowser;
+    
+    private JLabel pleaseWait = new JLabel();
 
     public Browser() {
         try {
@@ -64,28 +61,6 @@ public class Browser extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {}
-
-        JFrame frame = new JFrame("JDIC API Demo - Browser");
-
-        Container contentPane = frame.getContentPane();
-
-        contentPane.setLayout(new GridLayout(1, 1));
-        contentPane.add(new Browser());
-
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-
-        frame.pack();
-        frame.setVisible(true);
     }
 
     private void jbInit() throws Exception {
@@ -99,12 +74,23 @@ public class Browser extends JPanel {
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
         statusBar.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
-        statusBar.lblDesc.setText("JDIC API Demo - Browser");
+        statusBar.lblDesc.setText("RegaDB HIV Data and Analysis Management Software");
 
+
+        jBrowserPanel.setLayout(new BorderLayout());
+        jBrowserPanel.add(pleaseWait, BorderLayout.CENTER);
+        pleaseWait.setHorizontalTextPosition(JLabel.CENTER);
+        pleaseWait.setVerticalTextPosition(JLabel.CENTER);
+        pleaseWait.setText("<html>Loading RegaDB <br> Please Wait...</html>");
+        pleaseWait.setFont(new Font(pleaseWait.getFont().getFontName(), Font.BOLD, 50));
+        
+        this.add(statusBar, BorderLayout.SOUTH);
+        this.add(jBrowserPanel, BorderLayout.CENTER);
+    }
+
+    public void initWebBrowser() {
         try {
-            webBrowser = new WebBrowser(new URL("http://java.net"));
-            // Print out debug messages in the command line.
-            //webBrowser.setDebug(true);
+            webBrowser = new WebBrowser(new URL("http://localhost:8080/regadb/RegaDB"));
         } catch (MalformedURLException e) {
             System.out.println(e.getMessage());
             return;
@@ -140,54 +126,12 @@ public class Browser extends JPanel {
                 // updateStatusInfo("Status text changed.");
             }  
         });
-
-        jBrowserPanel.setLayout(new BorderLayout());
+        
+        jBrowserPanel.remove(pleaseWait);
         jBrowserPanel.add(webBrowser, BorderLayout.CENTER);
-
-        this.add(statusBar, BorderLayout.SOUTH);
-        this.add(jBrowserPanel, BorderLayout.CENTER);
     }
-
+    
     void updateStatusInfo(String statusMessage) {
         statusBar.lblStatus.setText(statusMessage);
-    }
-
-    /**
-     * Check the current input URL string in the address text field, load it,
-     * and update the status info and toolbar info.
-     */
-    void loadURL() {
-       
-        try {
-                            
-                webBrowser.setURL(new URL("http://www.google.be"));
-
-            } catch (MalformedURLException mue) {
-                mue.printStackTrace();
-            }                
-    }
-
-    void jGoButton_actionPerformed(ActionEvent e) {
-        loadURL();
-    }
-
-    void jAddressTextField_actionPerformed(ActionEvent e) {
-        loadURL();
-    }
-
-    void jBackButton_actionPerformed(ActionEvent e) {
-        webBrowser.back();
-    }
-
-    void jForwardButton_actionPerformed(ActionEvent e) {
-        webBrowser.forward();
-    }
-
-    void jRefreshButton_actionPerformed(ActionEvent e) {
-        webBrowser.refresh();
-    }
-
-    void jStopButton_actionPerformed(ActionEvent e) {
-        webBrowser.stop();
     }
 }

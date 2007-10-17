@@ -46,12 +46,6 @@ class MyStatusBar extends Box {
         lblStatus.setBorder(BorderFactory.createLoweredBevelBorder());
         this.add(lblStatus, null);
 
-        // Add the JLabel displaying the selected object size.
-        // lblSize = new JLabel("Size:", SwingConstants.LEADING);
-        // lblSize.setPreferredSize(new Dimension((int)(0.2*screenSize.width), 22));
-        // lblSize.setBorder(BorderFactory.createLoweredBevelBorder());
-        // this.add(lblSize, null);
-
         // Add the JLabel displaying the description.
         lblDesc = new JLabel("Description:", SwingConstants.LEADING);
         lblDesc.setPreferredSize(new Dimension((int) (0.3 * screenSize.width),
