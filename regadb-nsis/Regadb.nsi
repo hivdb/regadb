@@ -119,9 +119,15 @@ Section "RegaDB/Java/Tomcat" JavaTomcat
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 SectionEnd
 
+Section "RegaDB Browser" RegaDBBrowser
+  SetOutPath "$INSTDIR\regadb-browser"
+  File /r "${FILE_SOURCE}\regadb-browser\*"
+SectionEnd
+
   ;Language strings
   LangString DESC_JavaTomcat ${LANG_ENGLISH} "Installs a bundle containing the Java Runtime, Tomcat and RegaDB."
   LangString DESC_RegaDBCore ${LANG_ENGLISH} "RegaDB Core software."
+  LangString DESC_RegaDBBrowser ${LANG_ENGLISH} "RegaDB Browser, allows you to start RegaDB with a click on the Desktop."
   LangString TEXT_DB_PAGE_TITLE ${LANG_ENGLISH} "Database configuration page"
   LangString TEXT_DB_PAGE_SUB_TITLE ${LANG_ENGLISH} "If you're unsure, pick the default."
   LangString TEXT_DB_DETAILS_PAGE_TITLE ${LANG_ENGLISH} "Database specific configuration page"
