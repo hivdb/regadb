@@ -12,6 +12,8 @@
 ;General
 
 !define FILE_SOURCE "$FILE_SOURCE$"
+!define MUI_ICON "regadb-browser.ico"
+!define MUI_UNICON "regadb-browser.ico"
 
   ;Name and file
   Name "RegaDB"
@@ -147,6 +149,7 @@ SectionEnd
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${JavaTomcat} $(DESC_JavaTomcat)
     !insertmacro MUI_DESCRIPTION_TEXT ${RegaDBCore} $(DESC_RegaDBCore)
+    !insertmacro MUI_DESCRIPTION_TEXT ${RegaDBBrowser} $(DESC_RegaDBBrowser)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section "Uninstall"
