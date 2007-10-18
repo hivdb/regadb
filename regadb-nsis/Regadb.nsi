@@ -124,12 +124,12 @@ Section "RegaDB Browser" RegaDBBrowser
   File /r "${FILE_SOURCE}\regadb-browser\*"
   
   ;create desktop shortcut
-  CreateShortCut "$DESKTOP\RegaDB.lnk" "$INSTDIR\jre\bin\javaw.exe" "-jar $\"$INSTDIR\regadb-browser\regadb-browser-run.jar$\"" "$INSTDIR\regadb-browser\regadb-browser.ico" 0
+  CreateShortCut "$DESKTOP\RegaDB.lnk" "$INSTDIR\jre\bin\javaw.exe" "-jar $\"$INSTDIR\regadb-browser\regadb-browser-run.jar$\"" "$INSTDIR\regadb-browser\regadb-browser.ico"
  
   ;create start-menu items
   CreateDirectory "$SMPROGRAMS\Rega Institute\"
   CreateDirectory "$SMPROGRAMS\Rega Institute\RegaDB\"
-  CreateShortCut "$SMPROGRAMS\Rega Institute\RegaDB\RegaDB.lnk" "$INSTDIR\jre\bin\javaw.exe" "-jar $\"$INSTDIR\regadb-browser\regadb-browser-run.jar$\"" "$INSTDIR\regadb-browser\regadb-browser.ico" 0
+  CreateShortCut "$SMPROGRAMS\Rega Institute\RegaDB\RegaDB.lnk" "$INSTDIR\jre\bin\javaw.exe" "-jar $\"$INSTDIR\regadb-browser\regadb-browser-run.jar$\"" "$INSTDIR\regadb-browser\regadb-browser.ico"
 SectionEnd
 
   ;Language strings
