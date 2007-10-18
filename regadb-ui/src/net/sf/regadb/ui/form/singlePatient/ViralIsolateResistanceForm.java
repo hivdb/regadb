@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
@@ -20,8 +17,11 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WBorder;
+import net.sf.witty.wt.WBreak;
+import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WColor;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -35,6 +35,9 @@ import net.sf.witty.wt.core.utils.WLength;
 import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.core.utils.WSide;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 public class ViralIsolateResistanceForm extends WContainerWidget
 {
     private ViralIsolateForm viralIsolateForm_;
@@ -42,6 +45,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     private WGroupBox resistanceGroup_;
     private WTable resistanceTable_;
     private WPushButton refreshButton_;
+    private WCheckBox showMutations_;
     
     public ViralIsolateResistanceForm(ViralIsolateForm viralIsolateForm)
     {
@@ -65,14 +69,28 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                 {
                     public void notify(WMouseEvent a) 
                     {
-                        Transaction t = RegaDBMain.getApp().createTransaction();
-                        t.refresh(viralIsolateForm_.getViralIsolate());
-                        t.commit();
-                        
-                        loadTable();
+                        refreshTable();
                     }
                 });
-
+        
+        wrapper.elementAt(0, 1).addWidget(new WBreak());
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.elementAt(0, 1));
+        showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
+                {
+                    public void notify(WMouseEvent a)
+                    {
+                        refreshTable();
+                    }
+                });
+        
+        loadTable();
+    }
+    
+    private void refreshTable() {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.refresh(viralIsolateForm_.getViralIsolate());
+        t.commit();
+        
         loadTable();
     }
     
@@ -224,6 +242,15 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         toReturn.decorationStyle().setForegroundColor(WColor.black);
                         toReturn.setToolTipMessage(lt(remarks));
                         cell.setToolTipMessage(lt(remarks));
+                    }
+                    if(showMutations_.isChecked() && mutations.size()>0) {
+                        StringBuffer currentValue = new StringBuffer(toReturn.text().value());
+                        currentValue.append(" (");
+                        for(String mut : mutations) {
+                            currentValue.append(mut + ", ");
+                        }
+                        currentValue.replace(currentValue.length()-2, currentValue.length()-1, ")");
+                        toReturn.setText(lt(currentValue.toString()));
                     }
                 }
             };
