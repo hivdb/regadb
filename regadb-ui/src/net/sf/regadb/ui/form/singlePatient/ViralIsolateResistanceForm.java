@@ -1,13 +1,20 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -129,15 +136,15 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         Integer colN;
         Integer rowN;
         for(TestResult tr : viralIsolateForm_.getViralIsolate().getTestResults())
-        {
+        {            
             colN = algoColumn.get(tr.getTest().getDescription());
             rowN = drugColumn.get(getFixedGenericId(tr));
             if(colN!=null && rowN!=null) {
-                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN), false);
+                putResistanceTableResult(tr, resistanceTable_.elementAt(rowN, colN), false);
             }
             rowN = drugColumn.get(getFixedGenericId(tr)+"/r");
             if(colN!=null && rowN!=null) {
-                putResistanceTableResult(Double.parseDouble(tr.getValue()), resistanceTable_.elementAt(rowN, colN), true);
+                putResistanceTableResult(tr, resistanceTable_.elementAt(rowN, colN), true);
             }
         }
         
@@ -153,10 +160,8 @@ public class ViralIsolateResistanceForm extends WContainerWidget
             return genericId;
     }
     
-    private void putResistanceTableResult(Double gss, WTableCell cell, boolean onlyIfCurrentValueIsNA)
+    private void putResistanceTableResult(TestResult tr, final WTableCell cell, boolean onlyIfCurrentValueIsNA)
     {
-        WText toReturn;
-        
         //make sure we do not override a sensible value
         if(onlyIfCurrentValueIsNA) {
             if(!((WText)cell.children().get(0)).text().value().equals("NA"))
@@ -165,9 +170,11 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         
         cell.clear();
         
-        if(gss==null)
+        final WText toReturn = new WText();
+        
+        if(tr==null)
         {
-            toReturn = new WText(lt("NA"));
+            toReturn.setText(lt("NA"));
             cell.decorationStyle().setBackgroundColor(WColor.black);
             cell.decorationStyle().setForegroundColor(WColor.white);
             toReturn.decorationStyle().setBackgroundColor(WColor.black);
@@ -175,40 +182,60 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         }
         else
         {
-            if(gss == 0.0)
-            {
-                toReturn = new WText(lt("R"));
-                cell.decorationStyle().setBackgroundColor(WColor.red);
-                cell.decorationStyle().setForegroundColor(WColor.white);
-                toReturn.decorationStyle().setBackgroundColor(WColor.red);
-                toReturn.decorationStyle().setForegroundColor(WColor.white);
-            }
-            else if(gss == 0.5 || gss == 0.75)
-            {
-                toReturn = new WText(lt("I"));
-                cell.decorationStyle().setBackgroundColor(WColor.yellow);
-                cell.decorationStyle().setForegroundColor(WColor.black);
-                toReturn.decorationStyle().setBackgroundColor(WColor.yellow);
-                toReturn.decorationStyle().setForegroundColor(WColor.black);
-            }
-            else if(gss == 1.0 || gss == 1.5)
-            {
-                toReturn = new WText(lt("S"));
-                cell.decorationStyle().setBackgroundColor(WColor.green);
-                cell.decorationStyle().setForegroundColor(WColor.black);
-                toReturn.decorationStyle().setBackgroundColor(WColor.green);
-                toReturn.decorationStyle().setForegroundColor(WColor.black);
-            }
-            else 
-            {
-                toReturn = new WText(lt("Cannot interprete"));
-                cell.decorationStyle().setBackgroundColor(WColor.black);
-                cell.decorationStyle().setForegroundColor(WColor.white);
-                toReturn.decorationStyle().setBackgroundColor(WColor.black);
-                toReturn.decorationStyle().setForegroundColor(WColor.white);
+            ResistanceInterpretationParser inp = new ResistanceInterpretationParser() {
+                @Override
+                public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) {
+                    if(gss == 0.0)
+                    {
+                        toReturn.setText(lt("R"));
+                        cell.decorationStyle().setBackgroundColor(WColor.red);
+                        cell.decorationStyle().setForegroundColor(WColor.white);
+                        toReturn.decorationStyle().setBackgroundColor(WColor.red);
+                        toReturn.decorationStyle().setForegroundColor(WColor.white);
+                    }
+                    else if(gss == 0.5 || gss == 0.75)
+                    {
+                        toReturn.setText(lt("I"));
+                        cell.decorationStyle().setBackgroundColor(WColor.yellow);
+                        cell.decorationStyle().setForegroundColor(WColor.black);
+                        toReturn.decorationStyle().setBackgroundColor(WColor.yellow);
+                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                    }
+                    else if(gss == 1.0 || gss == 1.5)
+                    {
+                        toReturn.setText(lt("S"));
+                        cell.decorationStyle().setBackgroundColor(WColor.green);
+                        cell.decorationStyle().setForegroundColor(WColor.black);
+                        toReturn.decorationStyle().setBackgroundColor(WColor.green);
+                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                    }
+                    else 
+                    {
+                        toReturn.setText(lt("Cannot interprete"));
+                        cell.decorationStyle().setBackgroundColor(WColor.black);
+                        cell.decorationStyle().setForegroundColor(WColor.white);
+                        toReturn.decorationStyle().setBackgroundColor(WColor.black);
+                        toReturn.decorationStyle().setForegroundColor(WColor.white);
+                    }
+                    if(remarks!=null && !remarks.equals("null")) {
+                        cell.decorationStyle().setBackgroundColor(WColor.lightGray);
+                        cell.decorationStyle().setForegroundColor(WColor.black);
+                        toReturn.decorationStyle().setBackgroundColor(WColor.lightGray);
+                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                        toReturn.setToolTipMessage(lt(remarks));
+                        cell.setToolTipMessage(lt(remarks));
+                    }
+                }
+            };
+            try {
+                inp.parse(new InputSource(new ByteArrayInputStream(tr.getData())));
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        
+
         cell.decorationStyle().setBorder(new WBorder(Style.Solid, Width.Thin, WColor.black));
         cell.setContentAlignment(WHorizontalAlignment.AlignCenter);
         cell.addWidget(toReturn);
