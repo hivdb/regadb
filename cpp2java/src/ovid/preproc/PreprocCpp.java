@@ -44,11 +44,10 @@ public class PreprocCpp {
     public void performChangesOnFile(File f) {
         System.err.println("Preprocess file: " + f.getAbsolutePath());
         
-        StringBuffer sb = readFileAsString(f.getAbsolutePath());
-        
         System.err.println("\t remove comments");
-        //remove all comments
-        sb = new StringBuffer(sb.toString().replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)",""));
+        removeComments(f);
+        
+        StringBuffer sb = readFileAsString(f.getAbsolutePath());
         
         System.err.println("\t handle includes");
         sb = handleIncludes(sb);
@@ -60,8 +59,10 @@ public class PreprocCpp {
         sb = handleIterators(sb);
         
         System.err.println("\t handle string literals");
-        String [] operators = {"return", "=", "<<"};
+        String [] operators = {"return", "=", "<<", "?", ":"};
         sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
+        
+        sb = locateStringLiterals(sb, new StringLiteralContinuingOnNewLine());
         
         ArrayList<Integer> stringStartIndices = new ArrayList<Integer>();
         ArrayList<Integer> stringEndIndices = new ArrayList<Integer>();
@@ -71,6 +72,28 @@ public class PreprocCpp {
         sb = handleEnumsAndStructs(sb);
         
         writeFile(f, sb);
+    }
+    
+    public void stringLiteralContinuingOnNewLine() {
+        
+    }
+    
+    public void removeComments(File f) {
+        //Run external program
+        //#!/bin/sh
+        //#http://www.bdc.cx/software/stripcmt/
+        //stripcmt $1 > $2
+        String[] cmd = { "/usr/bin/stripcomment.sh", f.getAbsolutePath() , f.getAbsolutePath() + ".commentLess"};
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+            File commentLess = new File(f.getAbsolutePath() + ".commentLess");
+            commentLess.renameTo(new File(f.getAbsolutePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     
     public StringBuffer handleEnumsAndStructs(StringBuffer sb) {
