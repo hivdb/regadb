@@ -18,7 +18,6 @@ public class PreprocCpp {
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.C"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.h"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WtException.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WtRandom.h"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebSession.h"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/TimeUtil.h"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRenderer.h"));
@@ -39,6 +38,15 @@ public class PreprocCpp {
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStringUtil"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WJavaScript"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WJavaScript.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WString"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WColor"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WColor.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WEvent"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WEvent.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStatelessSlot"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStatelessSlot.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget.C"));
     }
     
     public void performChangesOnFile(File f) {
@@ -58,6 +66,9 @@ public class PreprocCpp {
         System.err.println("\t handle iterators");
         sb = handleIterators(sb);
         
+        System.err.println("\t handle wstring and wchar");
+        sb = handleWStringWChar(sb);
+        
         System.err.println("\t handle string literals");
         String [] operators = {"return", "=", "<<", "?", ":"};
         sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
@@ -74,6 +85,13 @@ public class PreprocCpp {
         writeFile(f, sb);
     }
     
+    private StringBuffer handleWStringWChar(StringBuffer sb) {
+        String tmp = sb.toString().replaceAll("std::wstring", "std::string");
+        tmp = tmp.replaceAll("wchar_t", "char");
+        
+        return new StringBuffer(tmp);
+    }
+
     public void stringLiteralContinuingOnNewLine() {
         
     }
@@ -121,7 +139,7 @@ public class PreprocCpp {
         }
         sb = new StringBuffer(temp);
         
-        int pos = sb.indexOf("class", 0);
+        /*int pos = sb.indexOf("class", 0);
         int lastIndexOf=-1;
         int endpos;
         
@@ -135,7 +153,16 @@ public class PreprocCpp {
             pos = sb.indexOf("class", endpos);
         }
         if(lastIndexOf!=-1)
-            sb.insert(lastIndexOf+1, structsAndEnums);
+            sb.insert(lastIndexOf+1, structsAndEnums);*/
+        
+        int nsPos = sb.indexOf("namespace Wt");
+        if(nsPos==-1)
+            System.err.println("\t could not find \"namespace Wt\"");
+        int insertPos = sb.indexOf("{", nsPos);
+        if(insertPos==-1)
+            System.err.println("\t could not find \"namespace Wt\"");
+        else 
+            sb.insert(insertPos+1, "\n" + structsAndEnums);
         
         return sb;
     }
