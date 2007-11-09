@@ -15,6 +15,15 @@ public class PreprocCpp {
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/EscapeOStream.h"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/DomElement.C"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/DomElement.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WtException.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WtRandom.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebSession.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/TimeUtil.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRenderer.h"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WResource"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WResource.C"));
     }
     
     public void performChangesOnFile(File f) {
@@ -22,14 +31,20 @@ public class PreprocCpp {
         
         StringBuffer sb = readFileAsString(f.getAbsolutePath());
         
+        System.err.println("\t remove comments");
         //remove all comments
         sb = new StringBuffer(sb.toString().replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)",""));
         
+        System.err.println("\t handle includes");
         sb = handleIncludes(sb);
+        System.err.println("\t handle usings");
         sb = handleUsings(sb);
+        System.err.println("\t handle boost");
         sb = handleBoost(sb);
+        System.err.println("\t handle iterators");
         sb = handleIterators(sb);
         
+        System.err.println("\t handle string literals");
         String [] operators = {"return", "=", "<<"};
         sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
         
@@ -37,6 +52,13 @@ public class PreprocCpp {
         ArrayList<Integer> stringEndIndices = new ArrayList<Integer>();
         sb = locateStringLiterals(sb, new StringLiteralPositionRecorder(stringStartIndices, stringEndIndices));
         
+        System.err.println("\t handle enums and structs");
+        sb = handleEnumsAndStructs(sb);
+        
+        writeFile(f, sb);
+    }
+    
+    public StringBuffer handleEnumsAndStructs(StringBuffer sb) {
         ArrayList<Integer> enumStartIndices = new ArrayList<Integer>();
         ArrayList<Integer> enumEndIndices = new ArrayList<Integer>();
         sb = locateStructure("enum", sb, enumStartIndices, enumEndIndices);
@@ -77,7 +99,7 @@ public class PreprocCpp {
         if(lastIndexOf!=-1)
             sb.insert(lastIndexOf+1, structsAndEnums);
         
-        writeFile(f, sb);
+        return sb;
     }
 
     public void writeFile(File f, StringBuffer sb) {
@@ -139,17 +161,24 @@ public class PreprocCpp {
         //System.err.println(content.toString());
         while(index!=-1) {
             endIndex = findMatchingBracket(content, index);
+            if(endIndex==-1) {
+                index = content.indexOf(name, content.indexOf(";", index));
+            } else {
             endIndex = content.indexOf(";", endIndex);
             enumSI.add(index);
             enumEI.add(endIndex);
             index = content.indexOf(name, endIndex);
+            }
         }
         
         return content;
     }
     
     public int findMatchingBracket(StringBuffer content, int index) {
+        int dotComma = content.indexOf(";", index);
         int openingBracket = content.indexOf("{", index);
+        if(openingBracket>dotComma)
+            return -1;
         int endBracket = -1;
         int amountOfBrackets = 1;
         for(int i = openingBracket+1; i<content.length(); i++) {
