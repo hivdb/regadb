@@ -56,9 +56,13 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private List<Test> resistanceTests_;
     
     private List<AaSequence> aaSeqs_;
+    
+    private IOAssistMode mode;
         
-    public IOAssistImportHandler(FileWriter fw)
+    public IOAssistImportHandler(FileWriter fw, IOAssistMode mode)
     {
+        this.mode = mode;
+        
         proteinMap_ = new HashMap<String, Protein>();
         
         for(Protein p : StandardObjects.getProteins()) {
@@ -78,51 +82,62 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         //find resistance tests --end
     }
     
-    public void importObject(ViralIsolate object)
-    {
-        long start = System.currentTimeMillis();
-        for(final NtSequence ntseq : object.getNtSequences())
-        {
-            Thread alignThread = new Thread(new Runnable()
-            {
-                public void run() 
-                {
-                    try 
-                    {
-                        aaSeqs_ = aligner_.alignHiv(ntseq);
-                    } 
-                    catch (IllegalSymbolException e) 
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            alignThread.start();
-                
-            TestResult type = ntSeqAnalysis(ntseq, type_);
-            ntseq.getTestResults().add(type);
-            TestResult subType = ntSeqAnalysis(ntseq, subType_);
-            ntseq.getTestResults().add(subType);
-            
-            try 
-            {
-                alignThread.join();
-            } 
-            catch (InterruptedException e) 
-            {
-                e.printStackTrace();
-            }
-            
-            if(aaSeqs_!=null)
-            {
-                for(AaSequence aaseq : aaSeqs_)
-                {
-                    aaseq.setNtSequence(ntseq);
-                    ntseq.getAaSequences().add(aaseq);
-                }
+    public void importObject(ViralIsolate object) {
+        for(final NtSequence ntseq : object.getNtSequences()) {
+            if(mode == IOAssistMode.Alignment) {
+                align(ntseq);
+            } else if(mode == IOAssistMode.SubType) {
+                TestResult subType = ntSeqAnalysis(ntseq, subType_);
+                ntseq.getTestResults().add(subType);
+            } else if(mode == IOAssistMode.Type) {
+                TestResult type = ntSeqAnalysis(ntseq, type_);
+                ntseq.getTestResults().add(type);
             }
         }
         
+        if(mode == IOAssistMode.Resistance) {
+            calculateRI(object);
+        }
+        
+        Element parent = new Element("viralIsolates-el");
+        export_.writeViralIsolate(object, parent);
+        try {
+            fileWriter_.write(outputter.outputString(parent)+'\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        countViralIsolates++;
+        System.err.println("Processed viral isolate nr "+countViralIsolates);
+    }
+    
+    private void align(final NtSequence ntseq) {
+        Thread alignThread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    aaSeqs_ = aligner_.alignHiv(ntseq);
+                } catch (IllegalSymbolException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        alignThread.start();
+            
+        try {
+            alignThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        if(aaSeqs_!=null) {
+            for(AaSequence aaseq : aaSeqs_) {
+                aaseq.setNtSequence(ntseq);
+                ntseq.getAaSequences().add(aaseq);
+            }
+        }
+    }
+    
+    private void calculateRI(ViralIsolate object) {
         for(final Test resistanceTest : resistanceTests_)
         {
             byte[] result = ViralIsolateAnalysisHelper.run(object, resistanceTest, 500);
@@ -172,32 +187,13 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
             } 
             catch (SAXException e) 
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } 
             catch (IOException e) 
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-        
-        Element parent = new Element("viralIsolates-el");
-        export_.writeViralIsolate(object, parent);
-        try 
-        {
-            fileWriter_.write(outputter.outputString(parent)+'\n');
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        countViralIsolates++;
-        System.err.println("Processed viral isolate nr "+countViralIsolates);
-        
-        long stop = System.currentTimeMillis();
-        System.err.println("runtime:" + (stop-start)/1000.0);
     }
     
     private TestResult ntSeqAnalysis(NtSequence ntseq, Test test)
@@ -205,13 +201,29 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         WtsClient client_ = new WtsClient(test.getAnalysis().getUrl());
         
         String input = '>' + ntseq.getLabel() + '\n' + ntseq.getNucleotides();
+        byte[] resultArray = null;
         
         String challenge;
         String ticket = null;
-        try 
-        {
+        try {
             challenge = client_.getChallenge(test.getAnalysis().getAccount());
             ticket = client_.login(test.getAnalysis().getAccount(), challenge, test.getAnalysis().getPassword(), test.getAnalysis().getServiceName());
+            client_.upload(ticket, test.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
+            client_.start(ticket, test.getAnalysis().getServiceName());
+            boolean finished = false;
+            while(!finished) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+                
+                if(client_.monitorStatus(ticket, test.getAnalysis().getServiceName()).startsWith("ENDED")) {
+                    finished = true;
+                }
+            }
+            resultArray = client_.download(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseoutputfile());
+            client_.closeSession(ticket, test.getAnalysis().getServiceName());
         } 
         catch (RemoteException e1) 
         {
@@ -221,89 +233,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         {
             e.printStackTrace();
         }
-        
-        try 
-        {
-            client_.upload(ticket, test.getAnalysis().getServiceName(), "nt_sequence", input.getBytes());
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (MalformedURLException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        try 
-        {
-            client_.start(ticket, test.getAnalysis().getServiceName());
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (MalformedURLException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        boolean finished = false;
-        while(!finished)
-        {
-            try 
-            {
-                Thread.sleep(500);
-            } 
-            catch (InterruptedException ie) 
-            {
-                ie.printStackTrace();
-            }
-            
-            try 
-            {
-                if(client_.monitorStatus(ticket, test.getAnalysis().getServiceName()).startsWith("ENDED"))
-                {
-                    finished = true;
-                }
-            } 
-            catch (RemoteException e) 
-            {
-                e.printStackTrace();
-            } 
-            catch (MalformedURLException e) 
-            {
-                e.printStackTrace();
-            }
-        }
-        
-        byte[] resultArray = null;
-        try 
-        {
-            resultArray = client_.download(ticket, test.getAnalysis().getServiceName(), test.getAnalysis().getBaseoutputfile());
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (MalformedURLException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        try 
-        {
-            client_.closeSession(ticket, test.getAnalysis().getServiceName());
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (MalformedURLException e) 
-        {
-            e.printStackTrace();
-        }
-        
+
         TestResult tr = new TestResult();
         tr.setNtSequence(ntseq);
         tr.setValue(new String(resultArray));
