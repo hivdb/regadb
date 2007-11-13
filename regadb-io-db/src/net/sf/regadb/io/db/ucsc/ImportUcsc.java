@@ -142,6 +142,13 @@ public class ImportUcsc
 		Attribute lastVisitAttr = new Attribute("Date of last HIV-negative test");
 		Attribute synDateAttr = new Attribute("Date of acute syndrome");
 		Attribute bPlaceAttr = new Attribute("Place of Birth");*/
+        
+        NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
+                new String[] { "male", "female" } );
+        gender.attribute.setAttributeGroup(regadb);
+        NominalAttribute cdcA = new NominalAttribute("CDC", Ccdc, new String[] { "A", "B", "C" },
+                new String[] { "A", "B", "C" } );
+        cdcA.attribute.setAttributeGroup(virolab);
 	
     	for(int i = 1; i < this.patientTable.numRows(); i++)
     	{
@@ -168,10 +175,6 @@ public class ImportUcsc
             	
             	if(!"".equals(sex))
             	{
-                    NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
-                            new String[] { "male", "female" } );
-                    gender.attribute.setAttributeGroup(regadb);
-                    
                     AttributeNominalValue vv = gender.nominalValueMap.get(sex.toUpperCase().trim());
                     if (vv != null) {
                         PatientAttributeValue v = p.createPatientAttributeValue(gender.attribute);
@@ -320,10 +323,6 @@ public class ImportUcsc
             	*/
             	if(!"".equals(cdc))
             	{
-                    NominalAttribute cdcA = new NominalAttribute("CDC", Ccdc, new String[] { "A", "B", "C" },
-                            new String[] { "A", "B", "C" } );
-                    cdcA.attribute.setAttributeGroup(virolab);
-                    
                     AttributeNominalValue vv = cdcA.nominalValueMap.get(cdc.toUpperCase().trim());
                     if (vv != null) {
                         PatientAttributeValue v = p.createPatientAttributeValue(cdcA.attribute);
