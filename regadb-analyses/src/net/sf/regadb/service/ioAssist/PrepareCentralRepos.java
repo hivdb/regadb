@@ -17,6 +17,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
@@ -70,11 +71,19 @@ public class PrepareCentralRepos
         Attribute clinicalFileNumber = createClinicalFileNumber();
         export.writeTopAttribute(clinicalFileNumber, attributes);
         
+        File attributesFile = new File("/home/plibin0/centralRepos"+File.separatorChar+"attributes.xml");
+        writeXMLFile(attributesFile, attributes);
+        
+        export = new ExportToXML();
         //Tests
         Test vl = createGenericViralLoad();
         export.writeTopTest(vl, tests);
         Test cd4 = createGenericCD4();
         export.writeTopTest(cd4, tests);
+        Test pregnancy = createPregnancyTest();
+        export.writeTopTest(pregnancy, tests);
+        Test seroconvertion = createSeroconvertionTest();
+        export.writeTopTest(seroconvertion, tests);
         
         //Resistance tests
         Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
@@ -86,14 +95,11 @@ public class PrepareCentralRepos
         Test rega_71 = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
         export.writeTopTest(rega_71, tests);
         
-        //write files
-        File attributesFile = new File("C:\\jvsant1\\centralRepos"+File.separatorChar+"attributes.xml");
-        writeXMLFile(attributesFile, attributes);
-        File testsFile = new File("C:\\jvsant1\\centralRepos"+File.separatorChar+"tests.xml");
+        File testsFile = new File("/home/plibin0/centralRepos"+File.separatorChar+"tests.xml");
         writeXMLFile(testsFile, tests);
         
         //testing
-        Login login=null;
+        /*Login login=null;
         try {
             login = Login.authenticate("test", "test");
         } catch (WrongUidException e1) {
@@ -145,7 +151,7 @@ public class PrepareCentralRepos
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
     }
     
     private static void writeXMLFile(File f, Element root)
@@ -212,6 +218,30 @@ public class PrepareCentralRepos
         Test cd4Test = new Test(cd4Type, "CD4 Count (generic)");
         
         return cd4Test;
+    }
+    
+    private static Test createSeroconvertionTest()
+    {
+        TestType seroconvertionType = new TestType(new TestObject("Patient test", 0), "Seroconvertion");
+        seroconvertionType.setValueType(nominalValue);
+        seroconvertionType.getTestNominalValues().add(new TestNominalValue(seroconvertionType, "Positive"));
+        seroconvertionType.getTestNominalValues().add(new TestNominalValue(seroconvertionType, "Negative"));
+        
+        Test seroconvertion = new Test(seroconvertionType, "Seroconvertion");
+        
+        return seroconvertion;
+    }
+    
+    private static Test createPregnancyTest()
+    {
+        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
+        pregnancyType.setValueType(nominalValue);
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
+        
+        Test pregnancy = new Test(pregnancyType, "Pregnancy");
+        
+        return pregnancy;
     }
 
     private static Attribute createGender()
