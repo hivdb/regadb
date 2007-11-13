@@ -16,7 +16,7 @@ public class ImportDrugsFromCentralRepos {
         
         FileProvider fp = new FileProvider();
         
-        File drugClasses = File.createTempFile("DrugClasses", "xml");
+        File drugClasses = File.createTempFile("DrugClasses", ".xml");
         try 
         {
             fp.getFile("regadb-drugs", "DrugClasses.xml", drugClasses);
@@ -28,7 +28,7 @@ public class ImportDrugsFromCentralRepos {
         ImportDrugs.importDrugClasses(idt, drugClasses, false);
         drugClasses.delete();
         
-        File drugGenerics = File.createTempFile("DrugGenerics", "xml");
+        File drugGenerics = File.createTempFile("DrugGenerics", ".xml");
         try 
         {
             fp.getFile("regadb-drugs", "DrugGenerics.xml", drugGenerics);
@@ -40,7 +40,7 @@ public class ImportDrugsFromCentralRepos {
         ImportDrugs.importGenericDrugs(idt, drugGenerics, false);
         drugGenerics.delete();
         
-        File drugCommercials = File.createTempFile("DrugCommercials", "xml");
+        File drugCommercials = File.createTempFile("DrugCommercials", ".xml");
         try 
         {
             fp.getFile("regadb-drugs", "DrugCommercials.xml", drugCommercials);
@@ -74,9 +74,6 @@ public class ImportDrugsFromCentralRepos {
     }
     
     public static void main(String [] args) {
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
-        
         ImportDrugsFromCentralRepos idfcr = new ImportDrugsFromCentralRepos();
         
         List<DrugGeneric> dgs = idfcr.getGenericDrugs();
