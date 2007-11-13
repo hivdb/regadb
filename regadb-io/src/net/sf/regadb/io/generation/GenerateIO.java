@@ -55,6 +55,7 @@ public class GenerateIO
         classToBeIgnored_.add(dbPackage + "DatasetAccess");
         
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
+        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
         

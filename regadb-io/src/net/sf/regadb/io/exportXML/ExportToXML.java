@@ -870,27 +870,6 @@ public class ExportToXML
 		{
 			return;
 		}
-		if(TestNominalValuevar.getTestType()!=null)
-		{
-			Integer indextestType = TestTypePMap.get(TestNominalValuevar.getTestType());
-			Element wrappertestType = new Element("testType");
-			parentNode.addContent(wrappertestType);
-			if(indextestType!=null)
-			{
-				Element refElementtestType= new Element("reference");
-				wrappertestType.addContent(refElementtestType);
-				refElementtestType.addContent(indextestType.toString());
-			}
-			else
-			{
-				indextestType = new Integer(TestTypePMap.size());
-				Element refElementtestType= new Element("reference");
-				wrappertestType.addContent(refElementtestType);
-				refElementtestType.addContent(indextestType.toString());
-				TestTypePMap.put(TestNominalValuevar.getTestType(),indextestType);
-				writeTestType(TestNominalValuevar.getTestType(),wrappertestType);
-			}
-		}
 		if(TestNominalValuevar.getValue()!=null)
 		{
 			Element valueprimitiveValEl = new Element("value");

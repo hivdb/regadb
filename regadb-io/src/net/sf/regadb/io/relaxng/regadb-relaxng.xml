@@ -339,16 +339,6 @@
   </define>
   <define name="net.sf.regadb.db.TestNominalValue">
     <optional>
-      <element name="testType">
-        <element name="reference">
-          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-        </element>
-        <optional>
-          <ref name="net.sf.regadb.db.TestType" />
-        </optional>
-      </element>
-    </optional>
-    <optional>
       <element name="value">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <param name="maxLength">100</param>

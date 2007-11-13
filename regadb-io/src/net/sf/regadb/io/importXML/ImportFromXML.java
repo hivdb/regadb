@@ -84,7 +84,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Boolean fieldValueType_multiple;
     private String fieldTestObject_description;
     private Integer fieldTestObject_testObjectId;
-    private TestType fieldTestNominalValue_testType;
     private String fieldTestNominalValue_value;
     private String fieldDataset_description;
     private Date fieldDataset_creationDate;
@@ -177,7 +176,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldAnalysisData_data = nullValuebyteArray();
             fieldAnalysisData_mimetype = nullValueString();
         } else if ("TestType".equals(qName)) {
-        } else if ("testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+        } else if ("testTypes-el".equals(qName)|| "testType".equals(qName)) {
             pushState(ParseState.stateTestType);
             referenceTestType = null;
             fieldTestType_valueType = null;
@@ -202,7 +201,6 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("testNominalValues-el".equals(qName)|| "testNominalValues-el".equals(qName)|| "testNominalValue".equals(qName)) {
             pushState(ParseState.stateTestNominalValue);
             referenceTestNominalValue = null;
-            fieldTestNominalValue_testType = null;
             fieldTestNominalValue_value = nullValueString();
         } else if ("Dataset".equals(qName)) {
         } else if ("datasets-el".equals(qName)|| "patientDatasets-el".equals(qName)) {
@@ -453,7 +451,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         } else if ("TestType".equals(qName)) {
         } else if (currentState() == ParseState.stateTestType) {
-            if ("testTypes-el".equals(qName)|| "testType".equals(qName)|| "testType".equals(qName)) {
+            if ("testTypes-el".equals(qName)|| "testType".equals(qName)) {
                 popState();
                 TestType elTestType = null;
                 boolean referenceResolved = false;
@@ -463,17 +461,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
-                } else if (currentState() == ParseState.stateTestNominalValue) {
-                    if (referenceTestType != null) { 
-                        elTestType = refTestTypeMap.get(referenceTestType);
-                        referenceResolved = elTestType != null;
-                    }
-                    if (!referenceResolved) {
-                        elTestType = new TestType();
-                        if (referenceTestType!= null)
-                            refTestTypeMap.put(referenceTestType, elTestType);
-                    }
-                    fieldTestNominalValue_testType = elTestType;
                 } else if (currentState() == ParseState.stateTest) {
                     if (referenceTestType != null) { 
                         elTestType = refTestTypeMap.get(referenceTestType);
@@ -693,11 +680,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
-                if (referenceResolved && fieldTestNominalValue_testType != null)
-                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
-                if (!referenceResolved) {
-                    elTestNominalValue.setTestType(fieldTestNominalValue_testType);
-                }
                 if (referenceResolved && fieldTestNominalValue_value != nullValueString())
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -709,7 +691,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     else
                         topLevelObjects.add(elTestNominalValue);
                 }
-            } else if ("testType".equals(qName)) {
             } else if ("value".equals(qName)) {
                 fieldTestNominalValue_value = parseString(value == null ? null : value.toString());
             } else if ("reference".equals(qName)) {
@@ -2282,46 +2263,6 @@ public class ImportFromXML extends ImportFromXMLBase {
         boolean changed = false;
         if (o == null)
             return changed;
-        {
-            TestType dbf = null;
-            if (dbo == null) {
-                if (o.getTestType() != null)
-                    dbf = Retrieve.retrieve(t, o.getTestType());
-            } else {
-                if (Equals.isSameTestType(o.getTestType(), dbo.getTestType()))
-                    dbf = dbo.getTestType();
-                else
-                    dbf = Retrieve.retrieve(t, o.getTestType());
-            }
-            if (o.getTestType() != null) {
-                if (dbf == null) {
-                    log.append("New " + Describe.describe(o.getTestType()) + "\n");
-                    syncPair(t, o.getTestType(), (TestType)null, syncMode, simulate);
-                    changed = true;
-                    dbf = o.getTestType();
-                } else {
-                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (syncPair(t, o.getTestType(), dbf, syncMode, true)) {
-                            throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
-                        }
-                    } else
-                    if (syncPair(t, o.getTestType(), dbf, syncMode, simulate)) changed = true;
-                }
-            }
-            if (dbo == null) {
-                if (dbf != null) {
-                    if (!simulate)
-                        o.setTestType(dbf);
-                }
-            } else {
-                if (dbf != dbo.getTestType()) {
-                    if (!simulate)
-                        dbo.setTestType(dbf);
-                    log.append(Describe.describe(o) + ": changed testType\n");
-                    changed = true;
-                }
-            }
-        }
         if (dbo != null) {
             if (!equals(dbo.getValue(), o.getValue())) {
                 if (!simulate)
