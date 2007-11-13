@@ -40,6 +40,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
@@ -113,7 +114,6 @@ public class ImportPortugalDB {
     private Map<String, Patient> patientMap;
 
     private ValueType stringValueType;
-    private ValueType nominalValueType;
     
     private Map<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
  
@@ -217,7 +217,6 @@ public class ImportPortugalDB {
                 new boolean[] { false, true, true, false });
         System.err.println(" done");
         
-        this.nominalValueType = new ValueType("nominal value");
         this.stringValueType = new ValueType("string");
     }
 
@@ -610,32 +609,6 @@ public class ImportPortugalDB {
         
         System.err.println("Sequences: " + seq_found);
     }
-
-    class NominalAttribute {
-        int column;
-        Attribute attribute;
-        Map<String, AttributeNominalValue> nominalValueMap; // key = id in code table
-
-        NominalAttribute(String name, int column, Table t) {
-            this.column = column;
-            this.attribute = new Attribute(name);
-            this.attribute.setValueType(nominalValueType);
-            this.nominalValueMap = createNominalValues(attribute, t);
-        }
-
-        NominalAttribute(String name, int column, String[] ids, String[] values) {
-            this.column = column;
-            this.attribute = new Attribute(name);
-            this.attribute.setValueType(nominalValueType);
-            
-            this.nominalValueMap = new HashMap<String, AttributeNominalValue>();
-            for (int i = 0; i < ids.length; ++i) {
-                AttributeNominalValue value = new AttributeNominalValue(attribute, values[i]);
-                attribute.getAttributeNominalValues().add(value);
-                nominalValueMap.put(ids[i], value);
-            }
-       }
-    }
     
     private Attribute selectAttribute(String attributeName, List<Attribute> list)
     {
@@ -700,7 +673,7 @@ public class ImportPortugalDB {
         clinicalFileAttribute.setAttributeGroup(portugal);
         clinicalFileAttribute.setValueType(stringValueType);
 
-		ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();		
+		ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
 		nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
 		nominals.add(new NominalAttribute("Transmission group", CSampleIdTransmissionGroup, transmissionGroupTable));
@@ -747,34 +720,6 @@ public class ImportPortugalDB {
         }
     }
     
-    private Map<String, AttributeNominalValue> createNominalValues(Attribute attribute,
-            Table codeTable) {
-        Map<String, AttributeNominalValue> result = new HashMap<String, AttributeNominalValue>();
-
-        Map<String, AttributeNominalValue> unique = new HashMap<String, AttributeNominalValue>();
-        
-        for (int i = 1; i < codeTable.numRows(); ++i) {
-            String id = codeTable.valueAt(0, i);
-            String value = codeTable.valueAt(1, i);
-
-            if (value.trim().length() != 0) {
-                if (unique.get(value) != null) {
-                    System.err.println("Duplicate nominal value: " + value);
-                    result.put(id, unique.get(value));
-                } else {                
-                    AttributeNominalValue nv = new AttributeNominalValue(attribute, value);
-                    attribute.getAttributeNominalValues().add(nv);
-
-                    //System.err.println(id + " -> " + nv.getValue());
-                    result.put(id, nv);
-                    unique.put(value, nv);
-                }
-            }
-        }
-        
-        return result;
-    }
-
     private void exportXML(String fileName) {
         ExportToXML l = new ExportToXML();
         Element root = new Element("patients");

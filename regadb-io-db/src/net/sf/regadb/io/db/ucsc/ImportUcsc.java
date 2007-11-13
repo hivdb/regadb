@@ -19,6 +19,7 @@ import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
@@ -34,6 +35,7 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
@@ -41,8 +43,8 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.date.DateUtils;
-import net.spy.translate.remote.rpcstyle.TranslateServiceLocator;
-import net.spy.translate.remote.types.TranslateRequestBean;
+//import net.spy.translate.remote.rpcstyle.TranslateServiceLocator;
+//import net.spy.translate.remote.types.TranslateRequestBean;
 
 import org.apache.commons.io.FileUtils;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -66,6 +68,9 @@ public class ImportUcsc
 	private HashMap<String, String> stopTherapyTranslation;
 	
 	private List<DrugCommercial> dcs;
+    
+    private AttributeGroup regadb = new AttributeGroup("RegaDB");
+    private AttributeGroup virolab = new AttributeGroup("ViroLab");
 	
     public static void main(String [] args) {
         ImportUcsc imp = new  ImportUcsc();
@@ -118,7 +123,7 @@ public class ImportUcsc
     	int Csex = findColumn(this.patientTable, "sesso");
     	int CbirthDate = findColumn(this.patientTable, "data di nascita");
     	int CbirthPlace = findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = findColumn(this.patientTable, "nazionalità");
+    	int Cnationality = findColumn(this.patientTable, "nazionalitï¿½");
     	int CriskGroup = findColumn(this.patientTable, "fattore di rischio");
     	int CseroConverter = findColumn(this.patientTable, "seroconverter");
     	int CfirstTest = findColumn(this.patientTable, "data primo test HIV positivo");
@@ -130,14 +135,13 @@ public class ImportUcsc
     	int CsyndromeDate = findColumn(this.patientTable, "data sindrome acuta");
     	int Ccdc = findColumn(this.patientTable, "CDC");
     	
-    	Attribute cdcAttri = new Attribute("CDC");
-		Attribute seroAttr = new Attribute("Sero Converter");
+    	/*Attribute seroAttr = new Attribute("Sero Converter");
 		Attribute deathAttr = new Attribute("Death");
 		Attribute synAttr = new Attribute("Acute Syndrome");
 		Attribute firstVisitAttr = new Attribute("Date of first HIV-positive test");
 		Attribute lastVisitAttr = new Attribute("Date of last HIV-negative test");
 		Attribute synDateAttr = new Attribute("Date of acute syndrome");
-		Attribute bPlaceAttr = new Attribute("Place of Birth");
+		Attribute bPlaceAttr = new Attribute("Place of Birth");*/
 	
     	for(int i = 1; i < this.patientTable.numRows(); i++)
     	{
@@ -164,14 +168,15 @@ public class ImportUcsc
             	
             	if(!"".equals(sex))
             	{
-            		Attribute gender = selectAttribute("Gender", regadbAttributesList);
-            		
-            		PatientAttributeValue genderValue = p.createPatientAttributeValue(gender);
-            		
-            		if("F".equals(sex.toUpperCase()))
-            			genderValue.setAttributeNominalValue(new AttributeNominalValue(gender, "female"));
-            		else if("M".equals(sex.toUpperCase()))
-            			genderValue.setAttributeNominalValue(new AttributeNominalValue(gender, "male"));
+                    NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
+                            new String[] { "male", "female" } );
+                    gender.attribute.setAttributeGroup(regadb);
+                    
+                    AttributeNominalValue vv = gender.nominalValueMap.get(sex.toUpperCase().trim());
+                    if (vv != null) {
+                        PatientAttributeValue v = p.createPatientAttributeValue(gender.attribute);
+                        v.setAttributeNominalValue(vv);
+                    }
             	}
             	
             	if(!"".equals(birthDate))
@@ -225,7 +230,7 @@ public class ImportUcsc
             		}
             	}*/
             	
-            	if(!"".equals(riskGroup))
+            	/*if(!"".equals(riskGroup))
             	{
             		Attribute tGroup = selectAttribute("Transmission group", regadbAttributesList);
             		
@@ -235,9 +240,9 @@ public class ImportUcsc
             			tGroupValue.setAttributeNominalValue(new AttributeNominalValue(tGroup, riskGroupTranslation.get(riskGroup)));
             		else
             			System.err.println("Unsupported attribute value (Transmission group): "+riskGroup);
-            	}
+            	}*/
             	
-            	if(!"".equals(seroConverter))
+            	/*if(!"".equals(seroConverter))
             	{
             		PatientAttributeValue seroValue = p.createPatientAttributeValue(seroAttr);
             		
@@ -251,9 +256,9 @@ public class ImportUcsc
             		}
             		else
             			System.err.println("Unsupported attribute value (Seroconverter): "+seroConverter);
-            	}
+            	}*/
             	
-            	if(!"".equals(firstTest))
+            	/*if(!"".equals(firstTest))
             	{
             		PatientAttributeValue firstTestValue = p.createPatientAttributeValue(firstVisitAttr);
             		firstTestValue.setValue(DateUtils.getEuropeanFormat(convertDate(firstTest)));
@@ -263,9 +268,9 @@ public class ImportUcsc
             	{
             		PatientAttributeValue lastTestValue = p.createPatientAttributeValue(lastVisitAttr);
             		lastTestValue.setValue(DateUtils.getEuropeanFormat(convertDate(lastTest)));
-            	}
+            	}*/
             	
-            	if(!"".equals(death))
+            	/*if(!"".equals(death))
             	{
             		PatientAttributeValue deathValue = p.createPatientAttributeValue(deathAttr);
             		
@@ -279,7 +284,7 @@ public class ImportUcsc
             		}
             		else
             			System.err.println("Unsupported attribute value (Death): "+death);
-            	}
+            	}*/
             	
             	if(!"".equals(deathDate))
             	{
@@ -291,7 +296,7 @@ public class ImportUcsc
             		//Ask if necessary, to be translated first (Wait for Mattia)
             	}
             	
-            	if(!"".equals(syndrome))
+            	/*if(!"".equals(syndrome))
             	{
             		PatientAttributeValue synValue = p.createPatientAttributeValue(synAttr);
             		
@@ -312,19 +317,20 @@ public class ImportUcsc
             		PatientAttributeValue synDateValue = p.createPatientAttributeValue(synDateAttr);
             		synDateValue.setValue(DateUtils.getEuropeanFormat(convertDate(syndromeDate)));
             	}
-            	
+            	*/
             	if(!"".equals(cdc))
             	{
-            		PatientAttributeValue cdcValue = p.createPatientAttributeValue(cdcAttri);
-            		
-            		if("A".equals(cdc.toUpperCase()))
-            			cdcValue.setAttributeNominalValue(new AttributeNominalValue(cdcAttri, "A"));
-            		else if("B".equals(cdc.toUpperCase()))
-            			cdcValue.setAttributeNominalValue(new AttributeNominalValue(cdcAttri, "B"));
-            		else if("C".equals(cdc.toUpperCase()))
-            			cdcValue.setAttributeNominalValue(new AttributeNominalValue(cdcAttri, "C"));
-            		else
-            			System.err.println("Unsupported attribute value (CDC): "+cdc);
+                    NominalAttribute cdcA = new NominalAttribute("CDC", Ccdc, new String[] { "A", "B", "C" },
+                            new String[] { "A", "B", "C" } );
+                    cdcA.attribute.setAttributeGroup(virolab);
+                    
+                    AttributeNominalValue vv = cdcA.nominalValueMap.get(cdc.toUpperCase().trim());
+                    if (vv != null) {
+                        PatientAttributeValue v = p.createPatientAttributeValue(cdcA.attribute);
+                        v.setAttributeNominalValue(vv);
+                    } else {
+                        System.err.println("Unsupported attribute value (CDC): "+cdc);
+                    }
             	}
             	
             	patientMap.put(patientId, p);
@@ -334,6 +340,8 @@ public class ImportUcsc
     
     private void handleCD4Data()
     {
+        HashMap<String, Test> uniqueVLTests = new HashMap<String, Test>();
+        
     	int Ccd4PatientID = findColumn(this.cd4Table, "cartella UCSC");
     	int Ccd4AnalysisDate = findColumn(this.cd4Table, "data analisi HIV RNA CD4/CD8");
     	int CVLTest = findColumn(this.cd4Table, "metodo");
@@ -405,7 +413,11 @@ public class ImportUcsc
 	    		 }
 	    		 else
 	    		 {
-	    			 Test vlT = new Test(StandardObjects.getViralLoadTestType(), vlTest);
+                     Test vlT = uniqueVLTests.get(vlTest);
+                     if(vlT==null) {
+                         vlT = new Test(StandardObjects.getViralLoadTestType(), vlTest);
+                         uniqueVLTests.put(vlTest, vlT);
+                     }
 	    			 
 	    			 testResult = p.createTestResult(vlT);
 	    		 }
@@ -818,7 +830,7 @@ public class ImportUcsc
             	
             	System.out.println("Patient: "+patientID+" Seq: "+seq);
             	
-                Aligner aligner = new Aligner(new LocalAlignmentService(), StandardObjects.getProteinMap());
+                /*Aligner aligner = new Aligner(new LocalAlignmentService(), StandardObjects.getProteinMap());
                 int size = 0;
                 try 
                 {
@@ -837,6 +849,8 @@ public class ImportUcsc
                 	addViralIsolateToPatients(patientID, date, seq);
                 else
                 	System.err.println("Cannot align sequence "+seq);
+                 */
+                //addViralIsolateToPatients(patientID, date, seq);
                 
                 linePositionCounter = 0;
             }
@@ -1000,7 +1014,7 @@ public class ImportUcsc
     }
      
     //TODO: Find a more sophisticated solution for translating text on the fly...
-    private String translate(String word)
+    /*private String translate(String word)
     {
     	try
     	{
@@ -1021,7 +1035,7 @@ public class ImportUcsc
     	}
     	 
     	return null;
-    }
+    }*/
     
     //TODO: Directly parse from test file...
     private HashMap<String, String> getRiskGroupTranslation()
@@ -1159,9 +1173,9 @@ public class ImportUcsc
             	 {
             		 values.put("semplificazione", "simplification");
             	 }
-            	 else if(value.equals("tossicità/allergia"))
+            	 else if(value.equals("tossicitï¿½/allergia"))
             	 {
-            		 values.put("tossicità/allergia", "toxicity");
+            		 values.put("tossicitï¿½/allergia", "toxicity");
             	 }
              }
      	 }
