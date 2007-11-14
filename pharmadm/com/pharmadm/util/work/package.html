@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+WorkManager is a tool for running some long-running Work asynchronously, while providing GUI feedback to the user.
+WorkManager and Work are improved versions of the ThreadManager and Work classes in the com.pharmadm.util.thread package.
+
+The package does not contain Mutex and Semaphore, since equivalent functionality is now in the standard Java library as java.util.concurrent.Semaphore.
+
+Further ideas for enhancements:
+<ul> <li>Ability to put constraints on the order of execution of different Works.
+</li><li>Ability to exclude parallelism (or use of a resource) with specific other Works.  The Work could synchronize in its execute, but it will stall it's GUI and hinder execution of the rest of the the queue, so it is better to do this in the scheduler.
+</li><li>Events/listeners to update GUI components other than those owned by WorkManager.  The Work itself could issue invokeLaters, but there might be a more elegant solution to avoid to much entanglement of UI and business logic.
+</li><li>Introduce the concept of subworks.  A Work might issue several smaller subtasks.  The dependency tree (or part thereof) could be visualised in some way.  Work abort/pause could impact its subworks.
+</li><li>Ability to 'inline' subworks.
+</li><li>A construct to concatenate several Works.
+</li><li>Ability to provide a Logger service, that can be examined by the user ('view details' or somesuch).
+</li><li>Ability to block the GUI until completion. One can (softly) register RootPaneContainers. The GlassPane of these will be modified to lock the underlying rootpane, while still showing progress.  The lock can be visualized by graying out or something more fancier (e.g. http://www.jroller.com/page/gfx/?anchor=with_style_followup).
+</li><li>Show time left and/or Estimated Time of Arrival (ETA).  If it's going to take very long, at least.
+</li><li>Show percentage done.  This might not be a good fit for all Works though, since it clutters the interface.
+</li><li>The visual difference between the toggled and untoggled state of the pause button is too small.  If a Work is paused 'by accident', the user might not be aware that it will take forever if he doesn't unpause the Work.  Preprend a string "Paused: " to the description?
+</li><li>A detailed, maximized view of a Work in progress.  Ability to provide an iIcon, activity log, etc.  A zoom button to uncover the details.
+</li></ul>
+  </body>
+</html>

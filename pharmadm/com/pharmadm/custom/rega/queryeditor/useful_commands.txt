@@ -1,0 +1,67 @@
+ONE
+
+/home/oracle/admin/bin/dblogon virodb
+sqlplus
+SELECT tname FROM tab WHERE tabtype='TABLE' AND tname NOT LIKE 'IMP_%' AND tname NOT LIKE 'TMP_%';
+
+cat tablenames.txt |sed  -e "s/^/\ \ \ \ \ \ \ \ \ \ \ \ <table\ name=\""/ |sed -e "s/$/\"\/>/" >tabletags.txt
+
+set singular/plural :-)
+
+----------------------------------------------
+MANY
+
+delete $PDMROOT/java/com/pharmadm/custom/rega/persistent 
+delete ~/.middlegen/*
+
+run $PDMROOT/java/com/pharmadm/custom/rega/queryeditor/Middlegen.xml
+
+. /usr/java/hibernate-extensions-2.0/tools/bin/hbm2java $PDMROOT/java/com/pharmadm/custom/rega/persistent/*.hbm.xml --output=$PDMROOT/java/
+
+ignore errors
+
+javac -classpath /usr/java/hibernate-2.0.3/lib/commons-lang.jar com/pharmadm/custom/rega/persistent/*.java
+------------------------------------------------
+ZERO
+
+set pagesize 0
+set long 90000
+SELECT DBMS_METADATA.GET_DDL('TABLE','AA_SEQUENCE') FROM DUAL;
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../.." default="launch" name="changeme">
+
+    <property name="queryeditor_package"  location="com/pharmadm/custom/rega/queryeditor"/>
+    <property name="hibernate" location="/usr/java/hibernate-2.0.3"/>
+    
+    <target name="build_classes">
+        <javac>
+            <classpath id="hibernate">
+                <pathelement location="${hibernate}/hibernate2.jar"/>
+                <fileset dir="${hibernate}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            <src path="${basedir}"/>
+            <include name="com/pharmadm/custom/rega/queryeditor/**"/>
+            <include name="com/pharmadm/util/*"/>
+        </javac>
+    </target>
+    
+    <target name="launch" depends="build_classes">
+        <java 
+            classname="com.pharmadm.custom.rega.queryeditor.gui.QueryEditorFrame" 
+            fork="true"
+            maxmemory="400m">
+            <classpath>
+                <pathelement location="${basedir}"/>
+                <pathelement location="${hibernate}/hibernate2.jar"/>
+                <fileset dir="${hibernate}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            </java>
+    </target>
+    
+</project>

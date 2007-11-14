@@ -1,0 +1,67 @@
+/*
+ * JInputVariableConfigurer.java
+ *
+ * Created on September 1, 2003, 2:29 PM
+ */
+
+/*
+ * (C) Copyright 2000-2007 PharmaDM n.v. All rights reserved.
+ * 
+ * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
+ * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+ */
+package com.pharmadm.custom.rega.reporteditor.gui;
+
+import com.pharmadm.custom.rega.reporteditor.*;
+import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.gui.*;
+
+/**
+ *
+ * @author  kristof
+ */
+public class JDataInputVariableConfigurer extends javax.swing.JComboBox implements WordConfigurer {
+    
+    private DataInputVariable var;
+    private DataInputVariableController controller;
+    
+    /** 
+     * <p>
+     * Creates a new instance of JDataInputVariableConfigurer to show and configure
+     * a particular DataInputVariable through a given DataInputVariableController
+     * controller
+     * </p>
+     * <p>
+     * @param var The DataInputVariable that the JComponent will configure
+     * @param controller The controller in charge of configuration
+     * </p>
+     */
+    public JDataInputVariableConfigurer(DataInputVariable input, DataInputVariableController controller, final QueryOutputReportSeeder seedController) {
+        super(controller.getCompatibleOutputVariables(input).toArray(new DataOutputVariable[0]));
+        this.var = input;
+        this.controller = controller;
+        if (seedController != null) {
+            this.setRenderer(new javax.swing.DefaultListCellRenderer() {
+                public java.awt.Component getListCellRendererComponent(javax.swing.JList jList, Object value, int index, boolean sel, boolean hasFocus) {
+                    super.getListCellRendererComponent(jList, value, index, sel, hasFocus);
+                    if (value != null) {
+                        setText(((DataOutputVariable)value).getHumanStringValue(seedController));
+                    }
+                    return this;
+                }
+            });
+        }
+    }
+    
+    public ConfigurableWord getWord() {
+        return var;
+    }    
+    
+    public void configureWord() {
+        controller.assignOutputVariable(var, (DataOutputVariable)getSelectedItem());
+    }    
+     
+    public void freeResources() {
+        // this class uses no database resources
+    }
+}
