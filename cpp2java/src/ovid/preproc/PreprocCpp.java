@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PreprocCpp {
     public static void main(String [] args) {
@@ -47,6 +49,10 @@ public class PreprocCpp {
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStatelessSlot.C"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget"));
         preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssDecorationStyle"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssDecorationStyle.C"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssStyleSheet"));
+        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssStyleSheet.C"));
     }
     
     public void performChangesOnFile(File f) {
@@ -67,10 +73,25 @@ public class PreprocCpp {
         sb = handleIterators(sb);
         
         System.err.println("\t handle wstring and wchar");
-        sb = handleWStringWChar(sb);
+        handleWStringWChar(sb);
+
+        System.err.println("\t handle sizeInBytes, this should be done BEFORE the slots");
+        //handleSizeInBytes(sb);
+        
+        
+        System.err.println("\t handle public/privates slots");
+        handleSlots(sb);
+        
+        System.err.println("\t handle JSignal");
+        sb = handleJSignal(sb);
+
+        if(sb.toString().contains("bitset")) {
+            System.err.println("\t handle bitset declaration");
+            sb  = handleBitsetDeclaration(sb);
+        }
         
         System.err.println("\t handle string literals");
-        String [] operators = {"return", "=", "<<", "?", ":"};
+        String [] operators = {"return", "=", "<<", "?", ":", "("};
         sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
         
         sb = locateStringLiterals(sb, new StringLiteralContinuingOnNewLine());
@@ -80,20 +101,45 @@ public class PreprocCpp {
         sb = locateStringLiterals(sb, new StringLiteralPositionRecorder(stringStartIndices, stringEndIndices));
         
         System.err.println("\t handle enums and structs");
-        sb = handleEnumsAndStructs(sb);
+        sb = handleEnumsAndStructs(sb, f);
         
         writeFile(f, sb);
     }
     
-    private StringBuffer handleWStringWChar(StringBuffer sb) {
-        String tmp = sb.toString().replaceAll("std::wstring", "std::string");
-        tmp = tmp.replaceAll("wchar_t", "char");
-        
-        return new StringBuffer(tmp);
+    private void handleSizeInBytes(StringBuffer sb) {
+        String [] toReplace = {"public:", "public :"};
+        String [] toReplaceWith = {"public: \n int sizeInBytes;\n", "public: \n int sizeInBytes;\n"};
+    
+        replaceStrings(toReplace, toReplaceWith, sb);    
     }
 
-    public void stringLiteralContinuingOnNewLine() {
+    private void handleSlots(StringBuffer sb) {
+        String [] toReplace = {"public slots:", "private slots:"};
+        String [] toReplaceWith = {"public:", "private:"};
+    
+        replaceStrings(toReplace, toReplaceWith, sb);
+    }
+    
+    private StringBuffer handleJSignal(StringBuffer sb) {
+        String temp = sb.toString();
+        temp = Pattern.compile("JSignal<([^>]|[\r\n])*>").matcher(temp).replaceAll(Matcher.quoteReplacement("JSignal"));
+        temp = Pattern.compile("template <([^>]|[\r\n])*> class JSignal;").matcher(temp).replaceAll(Matcher.quoteReplacement(""));
         
+        return new StringBuffer(temp);
+    }
+    
+    private StringBuffer handleBitsetDeclaration(StringBuffer sb) {
+        String temp = sb.toString();
+        temp = Pattern.compile("bitset<([^>]|[\r\n])*>").matcher(temp).replaceAll(Matcher.quoteReplacement("bitset"));
+        
+        return new StringBuffer(temp);
+    }
+
+    private void handleWStringWChar(StringBuffer sb) {
+        String [] toReplace = {"std::wstring", "wchar_t"};
+        String [] toReplaceWith = {"std::string", "char"};
+    
+        replaceStrings(toReplace, toReplaceWith, sb);
     }
     
     public void removeComments(File f) {
@@ -114,7 +160,7 @@ public class PreprocCpp {
         }
     }
     
-    public StringBuffer handleEnumsAndStructs(StringBuffer sb) {
+    public StringBuffer handleEnumsAndStructs(StringBuffer sb, File f) {
         ArrayList<Integer> enumStartIndices = new ArrayList<Integer>();
         ArrayList<Integer> enumEndIndices = new ArrayList<Integer>();
         sb = locateStructure("enum", sb, enumStartIndices, enumEndIndices);
@@ -124,6 +170,7 @@ public class PreprocCpp {
         sb = locateStructure("struct", sb, structStartIndices, structEndIndices);
         
         String structsAndEnums = "";
+        ArrayList<String> structs = new ArrayList<String>(); 
         ArrayList<String> toDelete = new ArrayList<String>(); 
         for(int i = 0; i<enumStartIndices.size(); i++) {
             toDelete.add(sb.substring(enumStartIndices.get(i), enumEndIndices.get(i)+1));
@@ -132,28 +179,13 @@ public class PreprocCpp {
         for(int i = 0; i<structStartIndices.size(); i++) {
             toDelete.add(sb.substring(structStartIndices.get(i), structEndIndices.get(i)+1));
             structsAndEnums += toDelete.get(toDelete.size()-1) + '\n';
+            structs.add(sb.substring(structStartIndices.get(i), structEndIndices.get(i)+1));
         }
         String temp = sb.toString();
         for(String toDel : toDelete) {
             temp = temp.replace(toDel, "");
         }
         sb = new StringBuffer(temp);
-        
-        /*int pos = sb.indexOf("class", 0);
-        int lastIndexOf=-1;
-        int endpos;
-        
-        while(pos != -1) {
-            endpos = sb.indexOf("\n", pos);
-            if(sb.substring(pos, endpos+1).contains(";")) {
-                lastIndexOf = endpos;
-            } else {
-                break;
-            }
-            pos = sb.indexOf("class", endpos);
-        }
-        if(lastIndexOf!=-1)
-            sb.insert(lastIndexOf+1, structsAndEnums);*/
         
         int nsPos = sb.indexOf("namespace Wt");
         if(nsPos==-1)
@@ -163,6 +195,28 @@ public class PreprocCpp {
             System.err.println("\t could not find \"namespace Wt\"");
         else 
             sb.insert(insertPos+1, "\n" + structsAndEnums);
+        
+        if(!f.getAbsolutePath().endsWith(".C")) {
+        ArrayList<String> structNames = new ArrayList<String>();
+        for(String struct : structs) {
+            int indexOfBracket = struct.indexOf('{');
+            String [] structWords = struct.substring(0, indexOfBracket).split(" ");
+            structNames.add(structWords[structWords.length-1]);
+        }
+        
+        File cFile;
+        if(f.getAbsolutePath().endsWith(".h")) {
+            cFile = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().lastIndexOf('.'))+".C");
+        } else {
+            cFile = new File(f.getAbsolutePath() + ".C");
+        }
+        String className = cFile.getAbsolutePath().substring(cFile.getAbsolutePath().lastIndexOf(File.separatorChar)+1, cFile.getAbsolutePath().lastIndexOf("."));
+        StringBuffer sbCFile = readFileAsString(cFile.getAbsolutePath());
+        for(String structName : structNames) {
+            sbCFile = new StringBuffer(sbCFile.toString().replaceAll(className.trim() + "::" + structName.trim(), structName.trim()));
+        }
+        writeFile(cFile, sbCFile);
+        }
         
         return sb;
     }
@@ -203,6 +257,14 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <myvector.h>";
             } else if(textToReplace.contains("string")) {
                 textToReplaceWith = "#include <mystring.h>";
+            } else if(textToReplace.contains("iosfwd")) {
+                textToReplaceWith = "#include <myiostream.h>";
+            } else if(textToReplace.contains("sstream")) {
+                textToReplaceWith = "#include <myostream.h>";
+            } else if(textToReplace.contains("bitset")) {
+                textToReplaceWith = "#include <mybitset.h>";
+            } else if(textToReplace.contains("set")) {
+                textToReplaceWith = "#include <myset.h>";
             } else if(textToReplace.contains("WDllDefs")) {
                 textToReplaceWith = "";
             } else if(textToReplace.contains("boost")) {
