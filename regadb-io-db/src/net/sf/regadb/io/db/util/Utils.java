@@ -22,7 +22,7 @@ public class Utils {
             int day = 1;
             if(dayString!=null)
                 day = Integer.parseInt(dayString);
-            cal.set(year, month, day);
+            cal.set(year, month, day, 0, 0, 0);
             return new Date(cal.getTimeInMillis());
         } else {
             return null;
