@@ -1,7 +1,6 @@
 package net.sf.regadb.io.db.ucsc;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,17 +27,12 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.FileProvider;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
-import org.xml.sax.InputSource;
 
 public class ImportUcsc 
 {
@@ -54,7 +48,7 @@ public class ImportUcsc
 	private HashMap<String, String> countryTranslation;
 	private HashMap<String, String> birthplaceTranslation;
 	private HashMap<String, String> riskGroupTranslation;
-	private HashMap<String, String> stopTherapyTranslation;
+	//private HashMap<String, String> stopTherapyTranslation;
 	
 	private List<DrugCommercial> dcs;
     
@@ -102,14 +96,14 @@ public class ImportUcsc
     		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco motivo stop terapia anti HIV.csv");
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving Rega attributes and drugs...");
-    		List<Attribute> regadbAttributesList = prepareRegaDBAttributes(workingDirectory);
-    		prepareRegaDBDrugs();
+    		List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
+    		dcs = Utils.prepareRegaDBDrugs();
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
     		countryTranslation = getCountryTranslation();
     		birthplaceTranslation = getBirthPlaceTranslation();
     		riskGroupTranslation = getRiskGroupTranslation();
-    		stopTherapyTranslation = getStopTherapyTranslation();
+    		//stopTherapyTranslation = getStopTherapyTranslation();
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData(regadbAttributesList);
@@ -441,9 +435,9 @@ public class ImportUcsc
     	int ChivPatientID = Utils.findColumn(this.hivTherapyTable, "cartella UCSC");
     	int ChivStartTherapy = Utils.findColumn(this.hivTherapyTable, "data start terapia anti HIV");
     	int ChivStopTherapy = Utils.findColumn(this.hivTherapyTable, "data stop terapia anti HIV");
-    	int ChivLineTherapy = Utils.findColumn(this.hivTherapyTable, "linea terapia anti HIV");
-    	int ChivSuccessTherapy = Utils.findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
-    	int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
+    	//int ChivLineTherapy = Utils.findColumn(this.hivTherapyTable, "linea terapia anti HIV");
+    	//int ChivSuccessTherapy = Utils.findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
+    	//int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
     	int ChivCommercialDrug = Utils.findColumn(this.hivTherapyTable, "terapia ARV");
     	int ChivAZTDrug = Utils.findColumn(this.hivTherapyTable, "AZT");
     	int ChivDDIDrug = Utils.findColumn(this.hivTherapyTable, "DDI");
@@ -834,103 +828,16 @@ public class ImportUcsc
             }
             else if(linePositionCounter==2) 
             {
-            	String seq = clearNucleotides(token);
+            	String seq = Utils.clearNucleotides(token);
             	
             	ConsoleLogger.getInstance().logInfo("Patient: "+patientID+" Seq: "+seq);
             	
-                /*Aligner aligner = new Aligner(new LocalAlignmentService(), StandardObjects.getProteinMap());
-                int size = 0;
-                try 
-                {
-                    NtSequence ntseq = new NtSequence();
-                    ntseq.setNucleotides(seq);
-                    size = aligner.alignHiv(ntseq).size();
-                } 
-                catch (IllegalSymbolException e) 
-                {
-                    e.printStackTrace();
-                }
-                
-                ConsoleLogger.getInstance().logInfo("This.size: "+size);
-                
-                if(size != 0)
-                	addViralIsolateToPatients(patientID, date, seq);
-                else
-                	System.err.println("Cannot align sequence "+seq);
-                 */
-                //addViralIsolateToPatients(patientID, date, seq);
+                addViralIsolateToPatients(patientID, date, seq);
                 
                 linePositionCounter = 0;
             }
         }
     }
-    
-    public String clearNucleotides(String nucleotides) 
-    {
-        StringBuffer toReturn = new StringBuffer();
-        for(char c : nucleotides.toCharArray()) {
-            if(Character.isLetter(c)) {
-                toReturn.append(c);
-            }
-        }
-        return toReturn.toString();
-    }
-     
-     private List<Attribute> prepareRegaDBAttributes(File workingDirectory)
-     {
-         RegaDBSettings.getInstance().initProxySettings();
-         
-         FileProvider fp = new FileProvider();
-         List<Attribute> list = null;
-         File attributesFile = null;
-         try 
-         {
-             attributesFile = File.createTempFile("attributes", ".xml");
-        
-             fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-        
-             final ImportFromXML imp = new ImportFromXML();
-             
-             imp.loadDatabaseObjects(null);
-             
-             list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
-         }
-         catch(Exception e)
-         {
-        	 ConsoleLogger.getInstance().logError("Cannot retrieve Rega attributes.");
-         }
-         
-         return list;
-     } 
-     
-     private void prepareRegaDBDrugs()
-     {
-    	 try 
-         {
-	    	 ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
-	    	 
-	    	 dcs = imDrug.getCommercialDrugs();
-         }
-	     catch(Exception e)
-	     {
-	    	 ConsoleLogger.getInstance().logError("Cannot retrieve drug list.");
-	     }
-     } 
-     
-     private Attribute selectAttribute(String attributeName, List<Attribute> list)
-     {
-         Attribute toReturn = null;
-         
-         for(Attribute a : list)
-         {
-             if(a.getName().equals(attributeName))
-             {
-                 toReturn = a;
-             }
-         }
-         
-         return toReturn;
-     }
      
      private HashMap<String, String> getCountryTranslation()
      {
@@ -1030,37 +937,5 @@ public class ImportUcsc
      	 }
     	 
     	 return values;
-     }
-     
-     //TODO: Use more sophisticated algorithms to find a string match...
-     private double findCountryMatch(String value, String compareWithValue)
-     {
-    	 double match = 0.000d;
-    	 
-    	 double inc = 0.000d;
-    		 
-    	 inc = (100d / compareWithValue.length()) / 100d;
-    	 
-    	 value = value.toLowerCase();
-    	 compareWithValue = compareWithValue.toLowerCase();
-    	 
-    	 for(int i = 0; i < value.length(); i++)
-    	 {
-    		 if(match >= 0.70)
-    		 {
-    			 return match;
-    		 }
-    		 
-    		 if(value.charAt(i) == compareWithValue.charAt(i))
-    		 {
-    			 match += inc;
-    		 }
-    		 else
-    		 {
-    			 return match;
-    		 }
-    	 }
-    	 
-    	 return -1;
      }
 }
