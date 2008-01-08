@@ -313,7 +313,7 @@ public class Utils {
 	     return null;
      } 
      
-     public static List<DrugGeneric> prepareRegaDrugCoGenerics()
+     public static List<DrugGeneric> prepareRegaDrugGenerics()
      {
     	 try 
          {
