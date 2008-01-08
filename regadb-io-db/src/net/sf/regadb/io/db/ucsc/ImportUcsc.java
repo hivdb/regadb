@@ -96,19 +96,21 @@ public class ImportUcsc
     		patientTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T_pazienti.csv");
     		cd4Table = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T analisi HIV RNA CD4_CD8.csv");
     		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T terapie anti HIV.csv");
+    		countryTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "nationality.csv");
+    		birthPlaceTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "birthplace.csv");
     		riskGroupTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco fattori di rischio.csv");
     		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco motivo stop terapia anti HIV.csv");
+    		
+    		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
+    		countryTranslation = getCountryTranslation();
+    		//birthplaceTranslation = getBirthPlaceTranslation();
+    		//riskGroupTranslation = getRiskGroupTranslation();
+    		//stopTherapyTranslation = getStopTherapyTranslation();
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving Rega attributes and drugs...");
     		List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
     		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
-    		
-    		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
-    		countryTranslation = getCountryTranslation();
-    		birthplaceTranslation = getBirthPlaceTranslation();
-    		riskGroupTranslation = getRiskGroupTranslation();
-    		stopTherapyTranslation = getStopTherapyTranslation();
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData(regadbAttributesList);
@@ -117,7 +119,7 @@ public class ImportUcsc
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
-    		handleSequences(workingDirectory);
+    		//handleSequences(workingDirectory);
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
     		Utils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml");
@@ -134,7 +136,7 @@ public class ImportUcsc
     	int Csex = Utils.findColumn(this.patientTable, "sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "data di nascita");
     	int CbirthPlace = Utils.findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalitï¿½");
+    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalita");
     	int CriskGroup = Utils.findColumn(this.patientTable, "fattore di rischio");
     	int CseroConverter = Utils.findColumn(this.patientTable, "seroconverter");
     	int CfirstTest = Utils.findColumn(this.patientTable, "data primo test HIV positivo");
@@ -738,7 +740,7 @@ public class ImportUcsc
      
      private HashMap<String, String> getCountryTranslation()
      {
-    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalitï¿½");
+    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalità");
     	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
     	 
     	 HashMap<String, String> values = new HashMap<String, String>();
