@@ -27,6 +27,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -50,9 +51,10 @@ public class ImportUcsc
 	private HashMap<String, String> countryTranslation;
 	private HashMap<String, String> birthplaceTranslation;
 	private HashMap<String, String> riskGroupTranslation;
-	//private HashMap<String, String> stopTherapyTranslation;
+	private HashMap<String, String> stopTherapyTranslation;
 	
-	private List<DrugCommercial> dcs;
+	private List<DrugCommercial> regaDrugCommercials;
+	private List<DrugGeneric> regaDrugGenerics;
     
     private AttributeGroup regadb = new AttributeGroup("RegaDB");
     private AttributeGroup virolab = new AttributeGroup("ViroLab");
@@ -99,13 +101,14 @@ public class ImportUcsc
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving Rega attributes and drugs...");
     		List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
-    		dcs = Utils.prepareRegaDBDrugs();
+    		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
+    		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
     		countryTranslation = getCountryTranslation();
     		birthplaceTranslation = getBirthPlaceTranslation();
     		riskGroupTranslation = getRiskGroupTranslation();
-    		//stopTherapyTranslation = getStopTherapyTranslation();
+    		stopTherapyTranslation = getStopTherapyTranslation();
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData(regadbAttributesList);
@@ -440,14 +443,32 @@ public class ImportUcsc
     	int ChivStopTherapy = Utils.findColumn(this.hivTherapyTable, "data stop terapia anti HIV");
     	//int ChivLineTherapy = Utils.findColumn(this.hivTherapyTable, "linea terapia anti HIV");
     	//int ChivSuccessTherapy = Utils.findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
-    	//int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
+    	int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
     	int ChivCommercialDrug = Utils.findColumn(this.hivTherapyTable, "terapia ARV");
     	
         HashMap<Integer, String> drugPositions = new HashMap<Integer, String>();
-        for(int i = ChivCommercialDrug+1; i<this.hivTherapyTable.numColumns(); i++) {
+        
+        for(int i = ChivCommercialDrug+1; i < this.hivTherapyTable.numColumns(); i++) 
+        {
             String drug = this.hivTherapyTable.valueAt(i, 0);
-            //TODO
-            //check drug in regadb repos
+            
+            for(int j = 0; j < regaDrugGenerics.size(); j++)
+        	{
+            	DrugGeneric genDrug = regaDrugGenerics.get(j);
+            	
+            	if(genDrug != null)
+            	{
+            		if(genDrug.getGenericId().endsWith(drug.toUpperCase()))
+            		{
+            			//TODO:Check with drug mapping file
+            		}
+            		else
+            		{
+            			ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
+            		}
+            	}
+        	}
+            
             drugPositions.put(i, drug);
         }
     	    	
@@ -458,11 +479,9 @@ public class ImportUcsc
     		String hivStopTherapy = this.hivTherapyTable.valueAt(ChivStopTherapy, i);
     		//String hivLineTherapy = this.hivTherapyTable.valueAt(ChivLineTherapy, i);
     		//String hivSuccessTherapy = this.hivTherapyTable.valueAt(ChivSuccessTherapy, i);
-    		//String hivStopReasonTherapy = this.hivTherapyTable.valueAt(ChivStopReasonTherapy, i);
+    		String hivStopReasonTherapy = this.hivTherapyTable.valueAt(ChivStopReasonTherapy, i);
     		String hivCommercialDrug = this.hivTherapyTable.valueAt(ChivCommercialDrug, i);
             
-            
-        	
         	if(!"".equals(hivPatientID))
             {
         		ArrayList<String> drugs = new ArrayList<String>();
@@ -474,8 +493,10 @@ public class ImportUcsc
         			startDate = Utils.convertDate(hivStartTherapy);
         		}
         		
-                for(Map.Entry<Integer, String> entry : drugPositions.entrySet()) {
+                for(Map.Entry<Integer, String> entry : drugPositions.entrySet()) 
+                {
                     String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
+                    
             		if(Utils.checkColumnValue(drugValue, i, hivPatientID) && Utils.checkDrugValue(drugValue, i, hivPatientID))
             		{
             			drugs.add(entry.getValue());
@@ -489,9 +510,21 @@ public class ImportUcsc
         			stopDate = Utils.convertDate(hivStopTherapy);
         		}
         		
+        		if(Utils.checkColumnValue(hivStopReasonTherapy, i, hivPatientID))
+        		{
+        			if(!stopTherapyTranslation.containsKey(hivStopReasonTherapy))
+        			{
+        				hivStopReasonTherapy = null;
+        			
+        				ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
+        			}
+        			else
+        				hivStopReasonTherapy = stopTherapyTranslation.get(hivStopReasonTherapy);
+        		}
+        		
         		if(hivPatientID != null)
         		{
-        			storeTherapy(hivPatientID, startDate, stopDate, comDrugs, null);
+        			storeTherapy(hivPatientID, startDate, stopDate, comDrugs, hivStopReasonTherapy);
         		}
             }
         	else
@@ -518,9 +551,9 @@ public class ImportUcsc
     		split[0] = hivCommercialDrug.toLowerCase();
     	}
     	
-    	for(int i = 0; i < dcs.size(); i++)
+    	for(int i = 0; i < regaDrugCommercials.size(); i++)
     	{
-    		DrugCommercial drug = dcs.get(i);
+    		DrugCommercial drug = regaDrugCommercials.get(i);
     		
     		if(drug != null)
     		{
@@ -569,7 +602,7 @@ public class ImportUcsc
     	return comDrugs;
     }
     
-	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String comment) 
+	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String motivation) 
     {
     	Patient p = patientMap.get(patientId);
 
@@ -617,8 +650,14 @@ public class ImportUcsc
 
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
-    	t.setComment(comment);
-
+    	
+    	if(motivation != null)
+    	{
+    		TherapyMotivation therapyMotivation = new TherapyMotivation(motivation);
+    	
+    		t.setTherapyMotivation(therapyMotivation);
+    	}
+    	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
     		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)));
