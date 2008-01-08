@@ -19,6 +19,7 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
@@ -169,7 +170,7 @@ public class Utils {
  		return null;
      }
      
-     public static void exportXML(HashMap<String, Patient> patientMap, String fileName) 
+     public static void exportPatientsXML(HashMap<String, Patient> patientMap, String fileName) 
      {
      	try
      	{
@@ -182,6 +183,38 @@ public class Utils {
  	
  	            Patient p = patientMap.get(patientId);
  	            l.writePatient(p, patient);            
+ 	        }
+ 	        
+ 	        Document n = new Document(root);
+ 	        XMLOutputter outputter = new XMLOutputter();
+ 	        outputter.setFormat(Format.getPrettyFormat());
+ 	
+ 	        java.io.FileWriter writer;
+ 	        writer = new java.io.FileWriter(fileName);
+ 	        outputter.output(n, writer);
+ 	        writer.flush();
+ 	        writer.close();
+     	}
+         catch (IOException e) 
+         {
+             ConsoleLogger.getInstance().logError("XML generation failed.");
+         }
+     }
+     
+     public static void exportNTXML(HashMap<String, ViralIsolate> ntMap, String fileName) 
+     {
+     	try
+     	{
+ 	        ExportToXML l = new ExportToXML();
+ 	        Element root = new Element("viralIsolates");
+ 	        
+ 	        for (String seqFinalSampleId:ntMap.keySet()) 
+ 	        {
+ 	            Element viralIsolateE = new Element("viralIsolates-el");
+ 	            root.addContent(viralIsolateE);
+ 	
+ 	            ViralIsolate vi = ntMap.get(seqFinalSampleId);
+ 	            l.writeViralIsolate(vi, viralIsolateE);            
  	        }
  	        
  	        Document n = new Document(root);
