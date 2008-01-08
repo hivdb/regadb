@@ -1,12 +1,8 @@
 package net.sf.regadb.io.db.ucsc;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,8 +11,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import net.sf.regadb.align.Aligner;
-import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -35,35 +29,30 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.date.DateUtils;
-//import net.spy.translate.remote.rpcstyle.TranslateServiceLocator;
-//import net.spy.translate.remote.types.TranslateRequestBean;
 
 import org.apache.commons.io.FileUtils;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class ImportUcsc 
 {
 	private Table patientTable;
 	private Table cd4Table;
 	private Table hivTherapyTable;
+	private Table countryTable;
+	private Table birthPlaceTable;
 	private Table riskGroupTable;
 	private Table stopTherapieDescTable;
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
 	
+	private HashMap<String, String> countryTranslation;
+	private HashMap<String, String> birthplaceTranslation;
 	private HashMap<String, String> riskGroupTranslation;
 	private HashMap<String, String> stopTherapyTranslation;
 	
@@ -72,17 +61,32 @@ public class ImportUcsc
     private AttributeGroup regadb = new AttributeGroup("RegaDB");
     private AttributeGroup virolab = new AttributeGroup("ViroLab");
 	
-    public static void main(String [] args) {
-        ImportUcsc imp = new  ImportUcsc();
+    public static void main(String [] args) 
+    {
+    	try
+    	{
+    		//Just for testing purposes...otherwise remove
+    		ConsoleLogger.getInstance().setInfoEnabled(true);
+    		
+    		ImportUcsc imp = new  ImportUcsc();
         
-        imp.getData(new File(args[0]));
+    		imp.getData(new File(args[0]));
+    	}
+    	catch(Exception e)
+    	{
+    		ConsoleLogger.getInstance().logError("Unknown error: "+e.getMessage());
+    	}
     }
     
-    public void run(File workingDirectory) {
-        try {
-            getSequences(workingDirectory);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void run(File workingDirectory) 
+    {
+        try 
+        {
+            handleSequences(workingDirectory);
+        } 
+        catch(IOException e) 
+        {
+        	ConsoleLogger.getInstance().logError("Cannot find/access directory "+workingDirectory);
         }
     }
     
@@ -90,65 +94,86 @@ public class ImportUcsc
     {
     	try
     	{
+    		ConsoleLogger.getInstance().logInfo("Reading input files...");
+    		patientTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T_pazienti.csv");
+    		cd4Table = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T analisi HIV RNA CD4_CD8.csv");
+    		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T terapie anti HIV.csv");
+    		riskGroupTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco fattori di rischio.csv");
+    		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco motivo stop terapia anti HIV.csv");
+    		
+    		ConsoleLogger.getInstance().logInfo("Retrieving Rega attributes and drugs...");
     		List<Attribute> regadbAttributesList = prepareRegaDBAttributes(workingDirectory);
     		prepareRegaDBDrugs();
     		
-    		patientTable = readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T_pazienti.csv");
-    		cd4Table = readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T analisi HIV RNA CD4_CD8.csv");
-    		hivTherapyTable = readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T terapie anti HIV.csv");
-    		riskGroupTable = readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco fattori di rischio.csv");
-    		stopTherapieDescTable = readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco motivo stop terapia anti HIV.csv");
-    		
-    		//Get the translations
+    		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
+    		countryTranslation = getCountryTranslation();
+    		birthplaceTranslation = getBirthPlaceTranslation();
     		riskGroupTranslation = getRiskGroupTranslation();
     		stopTherapyTranslation = getStopTherapyTranslation();
     		
+    		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData(regadbAttributesList);
-    		handleCD4Data();
+    		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
+    		handleCDData();
+    		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
-    		
-    		getSequences(workingDirectory);
-    		
-    		exportXML(workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
+    		ConsoleLogger.getInstance().logInfo("Processing sequences...");
+    		handleSequences(workingDirectory);
+    		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
+    		Utils.exportXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
     	}
     	catch(Exception e)
     	{
-    		e.printStackTrace();
+    		ConsoleLogger.getInstance().logError("Unknown error: "+e.getMessage());
     	}
     }
     
     private void handlePatientData(List<Attribute> regadbAttributesList)
     {
-    	int CpatientID = findColumn(this.patientTable, "cartella UCSC");
-    	int Csex = findColumn(this.patientTable, "sesso");
-    	int CbirthDate = findColumn(this.patientTable, "data di nascita");
-    	int CbirthPlace = findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = findColumn(this.patientTable, "nazionalitï¿½");
-    	int CriskGroup = findColumn(this.patientTable, "fattore di rischio");
-    	int CseroConverter = findColumn(this.patientTable, "seroconverter");
-    	int CfirstTest = findColumn(this.patientTable, "data primo test HIV positivo");
-    	int ClastTest = findColumn(this.patientTable, "data ultimo test HIV negativo");
-    	int Cdeath = findColumn(this.patientTable, "decesso");
-    	int CdeathDate = findColumn(this.patientTable, "data decesso");
-    	int CdeathReason = findColumn(this.patientTable, "descrizione decesso");
-    	int Csyndrome = findColumn(this.patientTable, "sindrome acuta"); 
-    	int CsyndromeDate = findColumn(this.patientTable, "data sindrome acuta");
-    	int Ccdc = findColumn(this.patientTable, "CDC");
-    	
-    	/*Attribute seroAttr = new Attribute("Sero Converter");
-		Attribute deathAttr = new Attribute("Death");
-		Attribute synAttr = new Attribute("Acute Syndrome");
-		Attribute firstVisitAttr = new Attribute("Date of first HIV-positive test");
-		Attribute lastVisitAttr = new Attribute("Date of last HIV-negative test");
-		Attribute synDateAttr = new Attribute("Date of acute syndrome");
-		Attribute bPlaceAttr = new Attribute("Place of Birth");*/
+    	int CpatientID = Utils.findColumn(this.patientTable, "cartella UCSC");
+    	int Csex = Utils.findColumn(this.patientTable, "sesso");
+    	int CbirthDate = Utils.findColumn(this.patientTable, "data di nascita");
+    	int CbirthPlace = Utils.findColumn(this.patientTable, "luogo di nascita");
+    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalità");
+    	int CriskGroup = Utils.findColumn(this.patientTable, "fattore di rischio");
+    	int CseroConverter = Utils.findColumn(this.patientTable, "seroconverter");
+    	int CfirstTest = Utils.findColumn(this.patientTable, "data primo test HIV positivo");
+    	int ClastTest = Utils.findColumn(this.patientTable, "data ultimo test HIV negativo");
+    	int CdeathDate = Utils.findColumn(this.patientTable, "data decesso");
+    	int CdeathReason = Utils.findColumn(this.patientTable, "descrizione decesso");
+    	int Csyndrome = Utils.findColumn(this.patientTable, "sindrome acuta"); 
+    	int CsyndromeDate = Utils.findColumn(this.patientTable, "data sindrome acuta");
+    	int Ccdc = Utils.findColumn(this.patientTable, "CDC");
         
         NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
                 new String[] { "male", "female" } );
         gender.attribute.setAttributeGroup(regadb);
+        
         NominalAttribute cdcA = new NominalAttribute("CDC", Ccdc, new String[] { "A", "B", "C" },
                 new String[] { "A", "B", "C" } );
         cdcA.attribute.setAttributeGroup(virolab);
+        
+        NominalAttribute scA = new NominalAttribute("Sero Converter", CseroConverter, new String[] { "-1", "0" },
+                new String[] { "-1", "0" } );
+        scA.attribute.setAttributeGroup(virolab);
+        
+        NominalAttribute rgA = new NominalAttribute("Transmission group", CriskGroup, (String[])riskGroupTranslation.keySet().toArray(),
+        		(String[])riskGroupTranslation.values().toArray());
+        rgA.attribute.setAttributeGroup(regadb);
+        
+        NominalAttribute couA = new NominalAttribute("Country of origin", Cnationality, (String[])countryTranslation.keySet().toArray(),
+        		(String[])countryTranslation.values().toArray());
+        couA.attribute.setAttributeGroup(regadb);
+        
+        NominalAttribute bpA = new NominalAttribute("Birthplace", CbirthPlace, (String[])birthplaceTranslation.keySet().toArray(),
+        		(String[])birthplaceTranslation.values().toArray());
+        bpA.attribute.setAttributeGroup(virolab);
+        
+        TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
+    	Test acuteSyndromTest = new Test(acuteSyndromTestType, "Acute Syndrome");
+    	
+    	TestType hivTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "HIV Test", new TreeSet<TestNominalValue>());
+    	Test hivTest = new Test(hivTestType, "HIV Test");
 	
     	for(int i = 1; i < this.patientTable.numRows(); i++)
     	{
@@ -161,7 +186,6 @@ public class ImportUcsc
             String seroConverter = this.patientTable.valueAt(CseroConverter, i);
             String firstTest = this.patientTable.valueAt(CfirstTest, i);
             String lastTest = this.patientTable.valueAt(ClastTest, i);
-            String death = this.patientTable.valueAt(Cdeath, i);
             String deathDate = this.patientTable.valueAt(CdeathDate, i);
             String deathReason = this.patientTable.valueAt(CdeathReason, i);
             String syndrome = this.patientTable.valueAt(Csyndrome, i);
@@ -173,183 +197,154 @@ public class ImportUcsc
             	Patient p = new Patient();
             	p.setPatientId(patientId);
             	
-            	if(!"".equals(sex))
+            	if(Utils.checkColumnValue(sex, i, patientId))
             	{
                     AttributeNominalValue vv = gender.nominalValueMap.get(sex.toUpperCase().trim());
-                    if (vv != null) {
+                    
+                    if (vv != null) 
+                    {
                         PatientAttributeValue v = p.createPatientAttributeValue(gender.attribute);
                         v.setAttributeNominalValue(vv);
                     }
+                    else 
+                    {
+                        ConsoleLogger.getInstance().logWarning("Unsupported attribute value (CDC): "+cdc);
+                    }
             	}
             	
-            	if(!"".equals(birthDate))
+            	if(Utils.checkColumnValue(birthDate, i, patientId))
             	{
-            		p.setBirthDate(convertDate(birthDate));
+            		p.setBirthDate(Utils.convertDate(birthDate));
             	}
             	
-            	//TODO: Comment the two statements out to include the place of birth and the nationality as well...
-            	/*if(!"".equals(birthPlace))
+            	if(Utils.checkColumnValue(birthPlace, i, patientId))
             	{
-            		//The WS is not very stable - this may cause problems during processing
-            		String translatedValue = translate(birthPlace);
-            		
-            		if(!"".equals(translatedValue))
-            		{
-            			PatientAttributeValue bPlaceValue = p.createPatientAttributeValue(bPlaceAttr);
-            			bPlaceValue.setValue(translatedValue);
-            		}
-            	}*/
-            	
-            	/*if(!"".equals(nationality))
-            	{
-            		Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
-            		
-            		PatientAttributeValue nationValue = p.createPatientAttributeValue(countryOfOrigin);
-            		
-            		//The WS is not very stable - this may cause problems during processing
-            		String translatedValue = translate(nationality);
-            		
-            		if(!"".equals(translatedValue))
-            		{
-            			String bestCountryMatchForNow="";
-            	        
-            			double score = Double.MIN_VALUE;
-            	        
-            	        for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
-            	        {
-            	           score = findCountryMatch(translatedValue, anv.getValue());
-            	        	
-            	           if(score >= 0.70)
-            	           {
-            	        	   bestCountryMatchForNow = anv.getValue();
-            	        	   
-            	        	   break;
-            	           }
-            	        }
-            	       
-            	        System.out.println("Found match between "+translatedValue+" and "+bestCountryMatchForNow+"");
-            	        
-            			nationValue.setAttributeNominalValue(new AttributeNominalValue(countryOfOrigin, bestCountryMatchForNow));
-            		}
-            	}*/
-            	
-            	/*if(!"".equals(riskGroup))
-            	{
-            		Attribute tGroup = selectAttribute("Transmission group", regadbAttributesList);
-            		
-            		PatientAttributeValue tGroupValue = p.createPatientAttributeValue(tGroup);
-            		
-            		if(riskGroupTranslation.containsKey(riskGroup))
-            			tGroupValue.setAttributeNominalValue(new AttributeNominalValue(tGroup, riskGroupTranslation.get(riskGroup)));
-            		else
-            			System.err.println("Unsupported attribute value (Transmission group): "+riskGroup);
-            	}*/
-            	
-            	/*if(!"".equals(seroConverter))
-            	{
-            		PatientAttributeValue seroValue = p.createPatientAttributeValue(seroAttr);
-            		
-            		if("1".equals(seroConverter))
-            		{
-            			seroValue.setAttributeNominalValue(new AttributeNominalValue(seroAttr, "1"));
-            		}
-            		else if("0".equals(seroConverter))
-            		{
-            			seroValue.setAttributeNominalValue(new AttributeNominalValue(seroAttr, "0"));
-            		}
-            		else
-            			System.err.println("Unsupported attribute value (Seroconverter): "+seroConverter);
-            	}*/
-            	
-            	/*if(!"".equals(firstTest))
-            	{
-            		PatientAttributeValue firstTestValue = p.createPatientAttributeValue(firstVisitAttr);
-            		firstTestValue.setValue(DateUtils.getEuropeanFormat(convertDate(firstTest)));
+            		AttributeNominalValue vv = bpA.nominalValueMap.get(birthPlace.trim());
+                    
+                    if (vv != null) 
+                    {
+                        PatientAttributeValue v = p.createPatientAttributeValue(bpA.attribute);
+                        v.setAttributeNominalValue(vv);
+                    }
+                    else 
+                    {
+                        ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Birthplace): "+birthPlace);
+                    }
             	}
             	
-            	if(!"".equals(lastTest))
+            	if(Utils.checkColumnValue(nationality, i, patientId))
             	{
-            		PatientAttributeValue lastTestValue = p.createPatientAttributeValue(lastVisitAttr);
-            		lastTestValue.setValue(DateUtils.getEuropeanFormat(convertDate(lastTest)));
-            	}*/
-            	
-            	/*if(!"".equals(death))
-            	{
-            		PatientAttributeValue deathValue = p.createPatientAttributeValue(deathAttr);
-            		
-            		if("1".equals(death))
-            		{
-            			deathValue.setAttributeNominalValue(new AttributeNominalValue(deathAttr, "1"));
-            		}
-            		else if("0".equals(death))
-            		{
-            			deathValue.setAttributeNominalValue(new AttributeNominalValue(deathAttr, "0"));
-            		}
-            		else
-            			System.err.println("Unsupported attribute value (Death): "+death);
-            	}*/
-            	
-            	if(!"".equals(deathDate))
-            	{
-            		p.setDeathDate(convertDate(deathDate));
+            		AttributeNominalValue vv = couA.nominalValueMap.get(nationality.trim());
+                    
+                    if (vv != null) 
+                    {
+                        PatientAttributeValue v = p.createPatientAttributeValue(couA.attribute);
+                        v.setAttributeNominalValue(vv);
+                    }
+                    else 
+                    {
+                   	 	ConsoleLogger.getInstance().logError("Unsupported attribute value (Country of Origin): "+nationality);
+                    }	
             	}
             	
-            	if(!"".equals(deathReason))
+            	if(Utils.checkColumnValue(riskGroup, i, patientId))
+            	{
+            		AttributeNominalValue vv = rgA.nominalValueMap.get(riskGroup.toLowerCase().trim());
+                     
+                     if (vv != null) 
+                     {
+                         PatientAttributeValue v = p.createPatientAttributeValue(rgA.attribute);
+                         v.setAttributeNominalValue(vv);
+                     }
+                     else 
+                     {
+                    	 ConsoleLogger.getInstance().logError("Unsupported attribute value (Transmission group): "+riskGroup);
+                     }	
+            	}
+            	
+            	if(Utils.checkColumnValue(seroConverter, i, patientId))
+            	{
+            		 AttributeNominalValue vv = scA.nominalValueMap.get(seroConverter.trim());
+                     
+                     if (vv != null) 
+                     {
+                         PatientAttributeValue v = p.createPatientAttributeValue(scA.attribute);
+                         v.setAttributeNominalValue(vv);
+                     }
+                     else 
+                     {
+                    	 ConsoleLogger.getInstance().logError("Unsupported attribute value (Seroconverter): "+seroConverter);
+                     }
+            	}
+            	
+            	if(Utils.checkColumnValue(firstTest, i, patientId))
+            	{
+            		TestResult t = p.createTestResult(hivTest);
+                    t.setValue("First positive HIV test");
+                    t.setTestDate(Utils.convertDate(firstTest));
+            	}
+            	
+            	if(Utils.checkColumnValue(lastTest, i, patientId))
+            	{
+            		TestResult t = p.createTestResult(hivTest);
+                    t.setValue("Last negative HIV test");
+                    t.setTestDate(Utils.convertDate(lastTest));
+            	}
+            	
+            	if(Utils.checkColumnValue(deathDate, i, patientId))
+            	{
+            		p.setDeathDate(Utils.convertDate(deathDate));
+            	}
+            	
+            	if(Utils.checkColumnValue(deathReason, i, patientId))
             	{
             		//Ask if necessary, to be translated first (Wait for Mattia)
             	}
             	
-            	/*if(!"".equals(syndrome))
+            	if(Utils.checkColumnValue(syndrome, i, patientId) && Utils.checkColumnValue(syndromeDate, i, patientId))
             	{
-            		PatientAttributeValue synValue = p.createPatientAttributeValue(synAttr);
-            		
-            		if("1".equals(syndrome))
-            		{
-            			synValue.setAttributeNominalValue(new AttributeNominalValue(synAttr, "1"));
-            		}
-            		else if("0".equals(syndrome))
-            		{
-            			synValue.setAttributeNominalValue(new AttributeNominalValue(synAttr, "0"));
-            		}
-            		else
-            			System.err.println("Unsupported attribute value (Syndrome): "+syndrome);
+            		TestResult t = p.createTestResult(acuteSyndromTest);
+                    t.setValue(syndrome);
+                    t.setTestDate(Utils.convertDate(syndromeDate));
             	}
             	
-            	if(!"".equals(syndromeDate))
-            	{
-            		PatientAttributeValue synDateValue = p.createPatientAttributeValue(synDateAttr);
-            		synDateValue.setValue(DateUtils.getEuropeanFormat(convertDate(syndromeDate)));
-            	}
-            	*/
-            	if(!"".equals(cdc))
+            	if(Utils.checkColumnValue(cdc, i, patientId))
             	{
                     AttributeNominalValue vv = cdcA.nominalValueMap.get(cdc.toUpperCase().trim());
-                    if (vv != null) {
+                    
+                    if(vv != null) 
+                    {
                         PatientAttributeValue v = p.createPatientAttributeValue(cdcA.attribute);
                         v.setAttributeNominalValue(vv);
-                    } else {
-                        System.err.println("Unsupported attribute value (CDC): "+cdc);
+                    } 
+                    else 
+                    {
+                    	ConsoleLogger.getInstance().logWarning("Unsupported attribute value (CDC): "+cdc);
                     }
             	}
             	
             	patientMap.put(patientId, p);
             }
+            else
+            {
+           	 	ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set");
+            }
     	}
     }
     
-    private void handleCD4Data()
+    private void handleCDData()
     {
         HashMap<String, Test> uniqueVLTests = new HashMap<String, Test>();
         
-    	int Ccd4PatientID = findColumn(this.cd4Table, "cartella UCSC");
-    	int Ccd4AnalysisDate = findColumn(this.cd4Table, "data analisi HIV RNA CD4/CD8");
-    	int CVLTest = findColumn(this.cd4Table, "metodo");
-    	int CHIV = findColumn(this.cd4Table, "copie HIV RNA");
-    	int CVLCutOff = findColumn(this.cd4Table, "cutoff");
-    	int Ccd4Count = findColumn(this.cd4Table, "CD4 assoluti");
-    	int Ccd4Percentage = findColumn(this.cd4Table, "CD4 %");
-    	int Ccd8Count = findColumn(this.cd4Table, "CD8 assoluti");
-    	int Ccd8Percentage = findColumn(this.cd4Table, "CD8 %");
+    	int Ccd4PatientID = Utils.findColumn(this.cd4Table, "cartella UCSC");
+    	int Ccd4AnalysisDate = Utils.findColumn(this.cd4Table, "data analisi HIV RNA CD4/CD8");
+    	int CVLTest = Utils.findColumn(this.cd4Table, "metodo");
+    	int CHIV = Utils.findColumn(this.cd4Table, "copie HIV RNA");
+    	int CVLCutOff = Utils.findColumn(this.cd4Table, "cutoff");
+    	int Ccd4Count = Utils.findColumn(this.cd4Table, "CD4 assoluti");
+    	int Ccd4Percentage = Utils.findColumn(this.cd4Table, "CD4 %");
+    	int Ccd8Count = Utils.findColumn(this.cd4Table, "CD8 assoluti");
+    	int Ccd8Percentage = Utils.findColumn(this.cd4Table, "CD8 %");
     	
     	TestType cd4PercTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD4 Percentage", new TreeSet<TestNominalValue>());
     	Test cd4PercTest = new Test(cd4PercTestType, "CD4 Percentage (generic)");
@@ -374,35 +369,38 @@ public class ImportUcsc
     		
     		Patient p = patientMap.get(cd4PatientID);
     		
+    		if(p == null)
+    			ConsoleLogger.getInstance().logWarning("No patient with id "+cd4PatientID+" found.");
+    			
     		//CD4
-    		if (!cd4Count.equals("") && !cd4Count.equals("0")) 
+    		if (Utils.checkColumnValue(cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
                 t.setValue(cd4Count);
-                t.setTestDate(convertDate(analysisDate));
+                t.setTestDate(Utils.convertDate(analysisDate));
     		}
-    		if (!cd4Percentage.equals("") && !cd4Percentage.equals("0")) 
+    		if (Utils.checkColumnValue(cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd4PercTest);
                 t.setValue(cd4Percentage);
-                t.setTestDate(convertDate(analysisDate));
+                t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		 
     		//CD8
-    		if (!cd8Count.equals("") && !cd8Count.equals("0")) 
+    		if (Utils.checkColumnValue(cd8Count, i, cd4PatientID) && Utils.checkCDValue(cd8Count, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd8Test);
                 t.setValue(cd8Count);
-                t.setTestDate(convertDate(analysisDate));
+                t.setTestDate(Utils.convertDate(analysisDate));
     		}
-    		if (!cd8Percentage.equals("") && !cd8Percentage.equals("0")) 
+    		if (Utils.checkColumnValue(cd8Percentage, i, cd4PatientID) && Utils.checkCDValue(cd8Percentage, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd8PercTest);
                 t.setValue(cd8Percentage);
-                t.setTestDate(convertDate(analysisDate));
+                t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		 
-    		 if(!"".equals(vlHIV))
+    		 if(Utils.checkColumnValue(vlHIV, i, cd4PatientID))
     		 {
 	    		 TestResult testResult = null;
 	    		 
@@ -413,7 +411,9 @@ public class ImportUcsc
 	    		 else
 	    		 {
                      Test vlT = uniqueVLTests.get(vlTest);
-                     if(vlT==null) {
+                     
+                     if(vlT==null) 
+                     {
                          vlT = new Test(StandardObjects.getViralLoadTestType(), vlTest);
                          uniqueVLTests.put(vlTest, vlT);
                      }
@@ -431,44 +431,44 @@ public class ImportUcsc
 	    		 value += vlHIV;
 	    		 
 	    		 testResult.setValue(value);
-	    		 testResult.setTestDate(convertDate(analysisDate));
+	    		 testResult.setTestDate(Utils.convertDate(analysisDate));
     		 }
     	}
     }
     
     private void handleTherapies()
     {
-    	int ChivPatientID = findColumn(this.hivTherapyTable, "cartella UCSC");
-    	int ChivStartTherapy = findColumn(this.hivTherapyTable, "data start terapia anti HIV");
-    	int ChivStopTherapy = findColumn(this.hivTherapyTable, "data stop terapia anti HIV");
-    	int ChivLineTherapy = findColumn(this.hivTherapyTable, "linea terapia anti HIV");
-    	int ChivSuccessTherapy = findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
-    	int ChivStopReasonTherapy = findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
-    	int ChivCommercialDrug = findColumn(this.hivTherapyTable, "terapia ARV");
-    	int ChivAZTDrug = findColumn(this.hivTherapyTable, "AZT");
-    	int ChivDDIDrug = findColumn(this.hivTherapyTable, "DDI");
-    	int ChivDDCDrug = findColumn(this.hivTherapyTable, "DDC");
-    	int ChivHUDrug = findColumn(this.hivTherapyTable, "HU");
-    	int Chiv3TCDrug = findColumn(this.hivTherapyTable, "3TC");
-    	int ChivD4TDrug = findColumn(this.hivTherapyTable, "D4T");
-    	int ChivABCDrug = findColumn(this.hivTherapyTable, "ABC");
-    	int ChivFTCDrug = findColumn(this.hivTherapyTable, "FTC");
-    	int ChivTDFDrug = findColumn(this.hivTherapyTable, "TDF");
-    	int ChivNVPDrug = findColumn(this.hivTherapyTable, "NVP");
-    	int ChivEFVDrug = findColumn(this.hivTherapyTable, "EFV");
-    	int ChivDLVDrug = findColumn(this.hivTherapyTable, "DLV");
-    	int ChivCPVDrug = findColumn(this.hivTherapyTable, "CPV");
-    	int ChivIDVDrug = findColumn(this.hivTherapyTable, "IDV");
-    	int ChivRTVDrug = findColumn(this.hivTherapyTable, "RTV");
-    	int ChivRTVBoostDrug = findColumn(this.hivTherapyTable, "RTV_booster");
-    	int ChivSQVDrug = findColumn(this.hivTherapyTable, "SQV");
-    	int ChivNFVDrug = findColumn(this.hivTherapyTable, "NFV");
-    	int ChivAPVDrug = findColumn(this.hivTherapyTable, "APV");
-    	int ChivFPVDrug = findColumn(this.hivTherapyTable, "FPV");
-    	int ChivLPVDrug = findColumn(this.hivTherapyTable, "LPV");
-    	int ChivATVDrug = findColumn(this.hivTherapyTable, "ATV");
-    	int ChivTPVDrug = findColumn(this.hivTherapyTable, "TPV");
-    	int ChivT20Drug = findColumn(this.hivTherapyTable, "T20");
+    	int ChivPatientID = Utils.findColumn(this.hivTherapyTable, "cartella UCSC");
+    	int ChivStartTherapy = Utils.findColumn(this.hivTherapyTable, "data start terapia anti HIV");
+    	int ChivStopTherapy = Utils.findColumn(this.hivTherapyTable, "data stop terapia anti HIV");
+    	int ChivLineTherapy = Utils.findColumn(this.hivTherapyTable, "linea terapia anti HIV");
+    	int ChivSuccessTherapy = Utils.findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
+    	int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
+    	int ChivCommercialDrug = Utils.findColumn(this.hivTherapyTable, "terapia ARV");
+    	int ChivAZTDrug = Utils.findColumn(this.hivTherapyTable, "AZT");
+    	int ChivDDIDrug = Utils.findColumn(this.hivTherapyTable, "DDI");
+    	int ChivDDCDrug = Utils.findColumn(this.hivTherapyTable, "DDC");
+    	int ChivHUDrug = Utils.findColumn(this.hivTherapyTable, "HU");
+    	int Chiv3TCDrug = Utils.findColumn(this.hivTherapyTable, "3TC");
+    	int ChivD4TDrug = Utils.findColumn(this.hivTherapyTable, "D4T");
+    	int ChivABCDrug = Utils.findColumn(this.hivTherapyTable, "ABC");
+    	int ChivFTCDrug = Utils.findColumn(this.hivTherapyTable, "FTC");
+    	int ChivTDFDrug = Utils.findColumn(this.hivTherapyTable, "TDF");
+    	int ChivNVPDrug = Utils.findColumn(this.hivTherapyTable, "NVP");
+    	int ChivEFVDrug = Utils.findColumn(this.hivTherapyTable, "EFV");
+    	int ChivDLVDrug = Utils.findColumn(this.hivTherapyTable, "DLV");
+    	int ChivCPVDrug = Utils.findColumn(this.hivTherapyTable, "CPV");
+    	int ChivIDVDrug = Utils.findColumn(this.hivTherapyTable, "IDV");
+    	int ChivRTVDrug = Utils.findColumn(this.hivTherapyTable, "RTV");
+    	int ChivRTVBoostDrug = Utils.findColumn(this.hivTherapyTable, "RTV_booster");
+    	int ChivSQVDrug = Utils.findColumn(this.hivTherapyTable, "SQV");
+    	int ChivNFVDrug = Utils.findColumn(this.hivTherapyTable, "NFV");
+    	int ChivAPVDrug = Utils.findColumn(this.hivTherapyTable, "APV");
+    	int ChivFPVDrug = Utils.findColumn(this.hivTherapyTable, "FPV");
+    	int ChivLPVDrug = Utils.findColumn(this.hivTherapyTable, "LPV");
+    	int ChivATVDrug = Utils.findColumn(this.hivTherapyTable, "ATV");
+    	int ChivTPVDrug = Utils.findColumn(this.hivTherapyTable, "TPV");
+    	int ChivT20Drug = Utils.findColumn(this.hivTherapyTable, "T20");
     	
     	    	
     	for(int i = 1; i < this.hivTherapyTable.numRows(); i++)
@@ -511,136 +511,136 @@ public class ImportUcsc
         		Date startDate = null;
         		Date stopDate = null;
         		
-        		if(!"".equals(hivStartTherapy))
+        		if(Utils.checkColumnValue(hivStartTherapy, i, hivPatientID))
         		{
-        			startDate = convertDate(hivStartTherapy);
+        			startDate = Utils.convertDate(hivStartTherapy);
         		}
         		
-        		if(!"".equals(hivAZTDrug) && hivAZTDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivAZTDrug, i, hivPatientID) && Utils.checkDrugValue(hivAZTDrug, i, hivPatientID))
         		{
         			drugs.add("AZT");
         		}
         		
-        		if(!"".equals(hivDDIDrug) && hivDDIDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivDDIDrug, i, hivPatientID) && Utils.checkDrugValue(hivDDIDrug, i, hivPatientID))
         		{
         			drugs.add("DDI");
         		}
         		
-        		if(!"".equals(hivDDCDrug) && hivDDCDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivDDCDrug, i, hivPatientID) && Utils.checkDrugValue(hivDDCDrug, i, hivPatientID))
         		{
         			drugs.add("DDC");
         		}
         		
-        		if(!"".equals(hivHUDrug) && hivHUDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivHUDrug, i, hivPatientID) && Utils.checkDrugValue(hivHUDrug, i, hivPatientID))
         		{
         			drugs.add("HU");
         		}
         		
-        		if(!"".equals(hiv3TCDrug) && hiv3TCDrug.equals("1"))
+        		if(Utils.checkColumnValue(hiv3TCDrug, i, hivPatientID) && Utils.checkDrugValue(hiv3TCDrug, i, hivPatientID))
         		{
         			drugs.add("3TC");
         		}
         		
-        		if(!"".equals(hivD4TDrug) && hivD4TDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivD4TDrug, i, hivPatientID)&& Utils.checkDrugValue(hivD4TDrug, i, hivPatientID))
         		{
         			drugs.add("D4T");
         		}
         		
-        		if(!"".equals(hivABCDrug) && hivABCDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivABCDrug, i, hivPatientID) && Utils.checkDrugValue(hivABCDrug, i, hivPatientID))
         		{
         			drugs.add("ABC");
         		}
         		
-        		if(!"".equals(hivFTCDrug) && hivFTCDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivFTCDrug, i, hivPatientID) && Utils.checkDrugValue(hivFTCDrug, i, hivPatientID))
         		{
         			drugs.add("FTC");
         		}
         		
-        		if(!"".equals(hivTDFDrug) && hivTDFDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivTDFDrug, i, hivPatientID) && Utils.checkDrugValue(hivTDFDrug, i, hivPatientID))
         		{
         			drugs.add("TDF");
         		}
         		
-        		if(!"".equals(hivNVPDrug) && hivNVPDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivNVPDrug, i, hivPatientID) && Utils.checkDrugValue(hivNVPDrug, i, hivPatientID))
         		{
         			drugs.add("NVP");
         		}
         		
-        		if(!"".equals(hivEFVDrug) && hivEFVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivEFVDrug, i, hivPatientID) && Utils.checkDrugValue(hivEFVDrug, i, hivPatientID))
         		{
         			drugs.add("EFV");
         		}
         		
-        		if(!"".equals(hivDLVDrug) && hivDLVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivDLVDrug, i, hivPatientID) && Utils.checkDrugValue(hivDLVDrug, i, hivPatientID))
         		{
         			drugs.add("DLV");
         		}
         		
-        		if(!"".equals(hivCPVDrug) && hivCPVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivCPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivCPVDrug, i, hivPatientID))
         		{
         			drugs.add("CPV");
         		}
         		
-        		if(!"".equals(hivIDVDrug) && hivIDVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivIDVDrug, i, hivPatientID) && Utils.checkDrugValue(hivIDVDrug, i, hivPatientID))
         		{
         			drugs.add("IDV");
         		}
         		
-        		if(!"".equals(hivRTVDrug) && hivRTVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivRTVDrug, i, hivPatientID) && Utils.checkDrugValue(hivRTVDrug, i, hivPatientID))
         		{
         			drugs.add("RTV");
         		}
         		
-        		if(!"".equals(hivRTVBoostDrug) && hivRTVBoostDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivRTVBoostDrug, i, hivPatientID) && Utils.checkDrugValue(hivRTVBoostDrug, i, hivPatientID))
         		{
         			drugs.add("RTV");
         		}
         		
-        		if(!"".equals(hivSQVDrug) && hivSQVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivSQVDrug, i, hivPatientID) && Utils.checkDrugValue(hivSQVDrug, i, hivPatientID))
         		{
         			drugs.add("SQV");
         		}
         		
-        		if(!"".equals(hivNFVDrug) && hivNFVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivNFVDrug, i, hivPatientID) && Utils.checkDrugValue(hivNFVDrug, i, hivPatientID))
         		{
         			drugs.add("NFV");
         		}
         		
-        		if(!"".equals(hivAPVDrug) && hivAPVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivAPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivAPVDrug, i, hivPatientID))
         		{
         			drugs.add("APV");
         		}
         		
-        		if(!"".equals(hivFPVDrug) && hivFPVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivFPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivFPVDrug, i, hivPatientID))
         		{
         			drugs.add("FPV");
         		}
         		
-        		if(!"".equals(hivLPVDrug) && hivLPVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivLPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivLPVDrug, i, hivPatientID))
         		{
         			drugs.add("LPV");
         		}
         		
-        		if(!"".equals(hivATVDrug) && hivATVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivATVDrug, i, hivPatientID) && Utils.checkDrugValue(hivATVDrug, i, hivPatientID))
         		{
         			drugs.add("ATV");
         		}
         		
-        		if(!"".equals(hivTPVDrug) && hivTPVDrug.equals("1"))
+        		if(Utils.checkColumnValue(hivTPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivTPVDrug, i, hivPatientID))
         		{
         			drugs.add("TPV");
         		}
         		
-        		if(!"".equals(hivT20Drug) && hivT20Drug.equals("1"))
+        		if(Utils.checkColumnValue(hivT20Drug, i, hivPatientID) && Utils.checkDrugValue(hivT20Drug, i, hivPatientID))
         		{
         			drugs.add("T20");
         		}
         		
         		ArrayList<DrugCommercial> comDrugs = evaluateDrugs(hivCommercialDrug.toLowerCase(), drugs);
         		
-        		if(!"".equals(hivStopTherapy))
+        		if(Utils.checkColumnValue(hivStopTherapy, i, hivPatientID))
         		{
-        			stopDate = convertDate(hivStopTherapy);
+        			stopDate = Utils.convertDate(hivStopTherapy);
         		}
         		
         		if(hivPatientID != null)
@@ -648,6 +648,10 @@ public class ImportUcsc
         			storeTherapy(hivPatientID, startDate, stopDate, comDrugs, null);
         		}
             }
+        	else
+        	{
+        		ConsoleLogger.getInstance().logWarning("No patient with id "+hivPatientID+" found.");
+        	}
     	}
     }
     
@@ -719,16 +723,20 @@ public class ImportUcsc
     	return comDrugs;
     }
     
-    private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String comment) 
+	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String comment) 
     {
     	Patient p = patientMap.get(patientId);
 
     	if (p == null)
+    	{
+    		ConsoleLogger.getInstance().logWarning("No patient with id "+patientId+" found.");
+    		
     		return;
+    	}
     	
     	if(medicinsList == null)
     	{
-    		System.err.println("Something wrong with therapy mapping for patient '" + patientId + "'");
+    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "'");
 			
     		return;
     	}
@@ -737,27 +745,26 @@ public class ImportUcsc
     	{
 	    	if(startDate.equals(endDate) || startDate.after(endDate))
 	    	{
-	    		System.err.println("Something wrong with treatment dates for patient '" + patientId + "': " + startDate.toLocaleString() + " - " + endDate.toLocaleString() + ": End date is in the past...ignoring");
+	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': " + startDate.toLocaleString() + " - " + endDate.toLocaleString() + ": End date is in the past...ignoring");
 	    			
 	    		return;
 	    	}
     	}
+    	else if(startDate == null)
+    	{
+    		ConsoleLogger.getInstance().logError(patientId, "No corresponding start date available.");
+    	}
+    	
     	//TODO: Additional error handling...
     	/*else if(startDate != null && endDate == null)
     	{
-    		System.err.println("Something wrong with treatment dates for patient '" + patientId + "': No suitable end date available...ignoring");
+    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable end date available...ignoring");
 			
     		return;
     	}
-    	else if(startDate == null && endDate != null)
+    	/*else
     	{
-    		System.err.println("Something wrong with treatment dates for patient '" + patientId + "': No suitable start date available...ignoring");
-			
-    		return;
-    	}
-    	else
-    	{
-    		System.err.println("Something wrong with treatment dates for patient '" + patientId + "': No suitable start and end dates available...ignoring");
+    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable start and end dates available...ignoring");
 			
     		return;
     	}*/
@@ -779,7 +786,8 @@ public class ImportUcsc
     	
     	if(p == null)
     	{
-    		System.err.println("Cannot find patient with ID "+patientID);
+    		ConsoleLogger.getInstance().logWarning("No patient with id "+patientID+" found.");
+    		
     		return;
     	}
     	
@@ -799,7 +807,8 @@ public class ImportUcsc
     //SELECT T_genotipo_HIV.[cartella UCSC], T_genotipo_HIV.[data genotipo], T_genotipo_HIV.[sequenza basi azotate (fasta)], ""
     //FROM T_genotipo_HIV;
     //export with (; and no text separation sign)
-    public void getSequences(File workingDirectory) throws IOException {
+    public void handleSequences(File workingDirectory) throws IOException 
+    {
         File onlySequences = new File(workingDirectory.getAbsolutePath()+File.separatorChar+"nt_sequences.txt");
         String fileContent = new String(FileUtils.readFileToByteArray(onlySequences));
         StringTokenizer st = new StringTokenizer(fileContent, ";");
@@ -820,14 +829,14 @@ public class ImportUcsc
             }
             else if(linePositionCounter == 1)
             {
-            	date = convertDate(token.trim());
+            	date = Utils.convertDate(token.trim());
             	linePositionCounter++;
             }
             else if(linePositionCounter==2) 
             {
             	String seq = clearNucleotides(token);
             	
-            	System.out.println("Patient: "+patientID+" Seq: "+seq);
+            	ConsoleLogger.getInstance().logInfo("Patient: "+patientID+" Seq: "+seq);
             	
                 /*Aligner aligner = new Aligner(new LocalAlignmentService(), StandardObjects.getProteinMap());
                 int size = 0;
@@ -842,7 +851,7 @@ public class ImportUcsc
                     e.printStackTrace();
                 }
                 
-                System.out.println("This.size: "+size);
+                ConsoleLogger.getInstance().logInfo("This.size: "+size);
                 
                 if(size != 0)
                 	addViralIsolateToPatients(patientID, date, seq);
@@ -856,7 +865,8 @@ public class ImportUcsc
         }
     }
     
-    public String clearNucleotides(String nucleotides) {
+    public String clearNucleotides(String nucleotides) 
+    {
         StringBuffer toReturn = new StringBuffer();
         for(char c : nucleotides.toCharArray()) {
             if(Character.isLetter(c)) {
@@ -864,20 +874,6 @@ public class ImportUcsc
             }
         }
         return toReturn.toString();
-    }
-    
-    int findColumn(Table t, String name) {
-		int column = t.findInRow(0, name);
-		
-		if (column == -1)
-			throw new RuntimeException("Could not find column " + name);
-
-		return column;
-	}
-    
-     private Table readTable(String filename) throws FileNotFoundException {
-        System.err.println(filename);
-        return new Table(new BufferedInputStream(new FileInputStream(filename)), false);
     }
      
      private List<Attribute> prepareRegaDBAttributes(File workingDirectory)
@@ -887,32 +883,21 @@ public class ImportUcsc
          FileProvider fp = new FileProvider();
          List<Attribute> list = null;
          File attributesFile = null;
-         try {
+         try 
+         {
              attributesFile = File.createTempFile("attributes", ".xml");
-         } catch (IOException e1) {
-             e1.printStackTrace();
-         }
-         try 
-         {
+        
              fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-         }
-         catch (RemoteException e) 
-         {
-             e.printStackTrace();
-         }
-         final ImportFromXML imp = new ImportFromXML();
-         try 
-         {
+        
+             final ImportFromXML imp = new ImportFromXML();
+             
              imp.loadDatabaseObjects(null);
+             
              list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
          }
-         catch(SAXException saxe)
+         catch(Exception e)
          {
-             saxe.printStackTrace();
-         }
-         catch(IOException ioex)
-         {
-             ioex.printStackTrace();
+        	 ConsoleLogger.getInstance().logError("Cannot retrieve Rega attributes.");
          }
          
          return list;
@@ -920,9 +905,16 @@ public class ImportUcsc
      
      private void prepareRegaDBDrugs()
      {
-    	 ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
-    	 
-    	 dcs = imDrug.getCommercialDrugs();
+    	 try 
+         {
+	    	 ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
+	    	 
+	    	 dcs = imDrug.getCommercialDrugs();
+         }
+	     catch(Exception e)
+	     {
+	    	 ConsoleLogger.getInstance().logError("Cannot retrieve drug list.");
+	     }
      } 
      
      private Attribute selectAttribute(String attributeName, List<Attribute> list)
@@ -940,242 +932,100 @@ public class ImportUcsc
          return toReturn;
      }
      
-    private Date convertDate(String germanDate)
-    {
-    	try
-    	{
-	    	String[] split = germanDate.split(" ");
-			
-			String date = null;
-			
-			if(split != null &&
-			   split.length == 2)
-			{
-				date = split[0];
-			
-				if(date != null)
-				{
-					String[] parts = date.split("\\.");
-					
-					if(parts != null &&
-					   parts.length == 3)
-					{
-						String day = parts[0];
-						String month = parts[1];
-						String year = parts[2];
-						
-						return Utils.createDate(year, month, day);
-					}
-				}
-			}
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-		
-		return null;
-    }
-    
-    private void exportXML(String fileName) {
-        ExportToXML l = new ExportToXML();
-        Element root = new Element("patients");
-        
-        for (String patientId:patientMap.keySet()) {
-            Element patient = new Element("patients-el");
-            root.addContent(patient);
-
-            Patient p = patientMap.get(patientId);
-            l.writePatient(p, patient);            
-        }
-        
-        Document n = new Document(root);
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.setFormat(Format.getPrettyFormat());
-        
-        /*
-        try {
-            outputter.output(n, System.out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
-        java.io.FileWriter writer;
-        try {
-            writer = new java.io.FileWriter(fileName);
-            outputter.output(n, writer);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-     
-    //TODO: Find a more sophisticated solution for translating text on the fly...
-    /*private String translate(String word)
-    {
-    	try
-    	{
-    		Thread.sleep(500);
-    		 
-    		TranslateServiceLocator loc = new TranslateServiceLocator();
-    		loc.setEndpointAddress("TranslatorInterfacePort", "http://incantations.net:8080/GoogleTranslateRemoteJAXRPC/Translate");
-    		 
-    		String result = loc.getTranslatorInterfacePort().translate(new TranslateRequestBean("it|en", word));
-    		 
-    		System.out.println("Translated value "+word+" into " +result);
-    		 
-    		return result.toLowerCase();
-    	} 
-    	catch (Exception e) 
-    	{
-    		System.err.println(e.toString());
-    	}
-    	 
-    	return null;
-    }*/
-    
-    //TODO: Directly parse from test file...
-    private HashMap<String, String> getRiskGroupTranslation()
-    {
-    	 int cIndex = findColumn(this.riskGroupTable, "fattore di rischio");
+     private HashMap<String, String> getCountryTranslation()
+     {
+    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalità");
+    	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
     	 
     	 HashMap<String, String> values = new HashMap<String, String>();
     	 
-    	 for(int i = 1; i < this.riskGroupTable.numRows(); i++)
+    	 for(int i = 1; i < this.countryTable.numRows(); i++)
      	 {
-             String value = this.riskGroupTable.valueAt(cIndex, i);
+             String italianvalue = this.countryTable.valueAt(italianIndex, i);
+             String englishvalue = this.countryTable.valueAt(englishIndex, i);
              
-             if(!"".equals(value))
+             if(!"".equals(italianvalue) && !"".equals(englishvalue))
              {
-            	 if(value.equals("altro"))
-            	 {
-            		 values.put("altro", "other");
-            	 }
-            	 else if(value.equals("etero"))
-            	 {
-            		 values.put("etero", "heterosexual");
-            	 }
-            	 else if(value.equals("trasfusioni"))
-            	 {
-            		 values.put("trasfusioni", "transfusion");
-            	 }
-            	 else if(value.equals("FD"))
-            	 {
-            		 values.put("FD", "IVDU");
-            	 }
-            	 else if(value.equals("omo/bi"))
-            	 {
-            		 values.put("omo/bi", "homosexual");
-            	 }
-            	 else if(value.equals("ignoto"))
-            	 {
-            		 //ignore...
-            	 }
+            	 values.put(italianvalue, englishvalue);
+             }
+             else
+             {
+            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
              }
      	 }
     	 
     	 return values;
      }
-     
-     //TODO: Directly parse from test file...
+    
+     private HashMap<String, String> getBirthPlaceTranslation()
+     {
+    	 int italianIndex = Utils.findColumn(this.birthPlaceTable, "luogo di nascita");
+    	 int englishIndex = Utils.findColumn(this.birthPlaceTable, "Birthplace");
+    	 
+    	 HashMap<String, String> values = new HashMap<String, String>();
+    	 
+    	 for(int i = 1; i < this.birthPlaceTable.numRows(); i++)
+     	 {
+             String italianvalue = this.birthPlaceTable.valueAt(italianIndex, i);
+             String englishvalue = this.birthPlaceTable.valueAt(englishIndex, i);
+             
+             if(!"".equals(italianvalue) && !"".equals(englishvalue))
+             {
+            	 values.put(italianvalue, englishvalue);
+             }
+             else
+             {
+            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
+             }
+     	 }
+    	 
+    	 return values;
+     }
+    
+    private HashMap<String, String> getRiskGroupTranslation()
+    {
+    	 int italianIndex = Utils.findColumn(this.riskGroupTable, "fattore di rischio");
+    	 int englishIndex = Utils.findColumn(this.riskGroupTable, "Transmission Group");
+    	 
+    	 HashMap<String, String> values = new HashMap<String, String>();
+    	 
+    	 for(int i = 1; i < this.riskGroupTable.numRows(); i++)
+     	 {
+             String italianvalue = this.riskGroupTable.valueAt(italianIndex, i);
+             String englishvalue = this.riskGroupTable.valueAt(englishIndex, i);
+             
+             if(!"".equals(italianvalue) && !"".equals(englishvalue))
+             {
+            	 values.put(italianvalue, englishvalue);
+             }
+             else
+             {
+            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
+             }
+     	 }
+    	 
+    	 return values;
+     }
+    
      private HashMap<String, String> getStopTherapyTranslation()
      {
-    	 int cIndex = findColumn(this.stopTherapieDescTable, "motivo stop terapia anti HIV");
+    	 int italianIndex = Utils.findColumn(this.stopTherapieDescTable, "motivo stop terapia anti HIV");
+    	 int englishIndex = Utils.findColumn(this.stopTherapieDescTable, "Reason for stopping HIV Therapy");
     	 
     	 HashMap<String, String> values = new HashMap<String, String>();
     	 
     	 for(int i = 1; i < this.stopTherapieDescTable.numRows(); i++)
      	 {
-             String value = this.stopTherapieDescTable.valueAt(cIndex, i);
+             String italianvalue = this.stopTherapieDescTable.valueAt(italianIndex, i);
+             String englishvalue = this.stopTherapieDescTable.valueAt(englishIndex, i);
              
-             if(!"".equals(value))
+             if(!"".equals(italianvalue) && !"".equals(englishvalue))
              {
-            	 if(value.equals("cambiamento genotipo-guidato"))
-            	 {
-            		 values.put("cambiamento genotipo-guidato", "genotype guided change");
-            	 }
-            	 else if(value.equals("coinfezione HIV-HBV"))
-            	 {
-            		 values.put("coinfezione HIV-HBV", "HBV coinfection");
-            	 }
-            	 else if(value.equals("epatite viral"))
-            	 {
-            		 values.put("epatite viral", "hepatitis");
-            	 }
-            	 else if(value.equals("fallimento"))
-            	 {
-            		 values.put("fallimento", "failure");
-            	 }
-            	 else if(value.equals("fine gravidanza"))
-            	 {
-            		 values.put("fine gravidanza", "end of pregnancy");
-            	 }
-            	 else if(value.equals("fine protocollo studio"))
-            	 {
-            		 values.put("fine protocollo studio", "end of perspective study");
-            	 }
-            	 else if(value.equals("gravidanza"))
-            	 {
-            		 values.put("gravidanza", "pregnancy");
-            	 }
-            	 else if(value.equals("interazione farmaci per TBC"))
-            	 {
-            		 values.put("interazione farmaci per TBC", "interaction with tuberculosis drugs");
-            	 }
-            	 else if(value.equals("interazione psicofarmac"))
-            	 {
-            		 values.put("interazione psicofarmac", "interactions with antipsychotic drugs");
-            	 }
-            	 else if(value.equals("interazione terapia anti HCV"))
-            	 {
-            		 values.put("interazione terapia anti HCV", "interactions with anti HCV therapy");
-            	 }
-            	 else if(value.equals("Interferenza farmaci antiblastic"))
-            	 {
-            		 values.put("Interferenza farmaci antiblastic", "interactions with anti-tumoral drugs");
-            	 }
-            	 else if(value.equals("interruzione strutturat"))
-            	 {
-            		 values.put("interruzione strutturat", "structured interruption");
-            	 }
-            	 else if(value.equals("Miglioramento dati viro-immunologici"))
-            	 {
-            		 values.put("Miglioramento dati viro-immunologici", "improvement of virologic and immune markers");
-            	 }
-            	 else if(value.equals("non desumibile"))
-            	 {
-            		 values.put("non desumibile", "unknown");
-            	 }
-            	 else if(value.equals("nuovo studio"))
-            	 {
-            		 values.put("nuovo studio", "new perspective study");
-            	 }
-            	 else if(value.equals("potenziamento"))
-            	 {
-            		 values.put("potenziamento", "more powerful therapy chosen");
-            	 }
-            	 else if(value.equals("Ricovero"))
-            	 {
-            		 values.put("Ricovero", "patient was in hospital");
-            	 }
-            	 else if(value.equals("Scarsa compliance"))
-            	 {
-            		 values.put("Scarsa compliance", "non adherence");
-            	 }
-            	 else if(value.equals("Scelta del paziente"))
-            	 {
-            		 values.put("Scelta del paziente", "patient's choice");
-            	 }
-            	 else if(value.equals("semplificazione"))
-            	 {
-            		 values.put("semplificazione", "simplification");
-            	 }
-            	 else if(value.equals("tossicitï¿½/allergia"))
-            	 {
-            		 values.put("tossicitï¿½/allergia", "toxicity");
-            	 }
+            	 values.put(italianvalue, englishvalue);
+             }
+             else
+             {
+            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
              }
      	 }
     	 
