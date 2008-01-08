@@ -34,7 +34,6 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom.Element;
 
 public class ImportUcsc 
 {
@@ -132,7 +131,7 @@ public class ImportUcsc
     	int Csex = Utils.findColumn(this.patientTable, "sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "data di nascita");
     	int CbirthPlace = Utils.findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalità");
+    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalitï¿½");
     	int CriskGroup = Utils.findColumn(this.patientTable, "fattore di rischio");
     	int CseroConverter = Utils.findColumn(this.patientTable, "seroconverter");
     	int CfirstTest = Utils.findColumn(this.patientTable, "data primo test HIV positivo");
@@ -443,31 +442,14 @@ public class ImportUcsc
     	//int ChivSuccessTherapy = Utils.findColumn(this.hivTherapyTable, "terapia anti HIV conclusa");
     	//int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
     	int ChivCommercialDrug = Utils.findColumn(this.hivTherapyTable, "terapia ARV");
-    	int ChivAZTDrug = Utils.findColumn(this.hivTherapyTable, "AZT");
-    	int ChivDDIDrug = Utils.findColumn(this.hivTherapyTable, "DDI");
-    	int ChivDDCDrug = Utils.findColumn(this.hivTherapyTable, "DDC");
-    	int ChivHUDrug = Utils.findColumn(this.hivTherapyTable, "HU");
-    	int Chiv3TCDrug = Utils.findColumn(this.hivTherapyTable, "3TC");
-    	int ChivD4TDrug = Utils.findColumn(this.hivTherapyTable, "D4T");
-    	int ChivABCDrug = Utils.findColumn(this.hivTherapyTable, "ABC");
-    	int ChivFTCDrug = Utils.findColumn(this.hivTherapyTable, "FTC");
-    	int ChivTDFDrug = Utils.findColumn(this.hivTherapyTable, "TDF");
-    	int ChivNVPDrug = Utils.findColumn(this.hivTherapyTable, "NVP");
-    	int ChivEFVDrug = Utils.findColumn(this.hivTherapyTable, "EFV");
-    	int ChivDLVDrug = Utils.findColumn(this.hivTherapyTable, "DLV");
-    	int ChivCPVDrug = Utils.findColumn(this.hivTherapyTable, "CPV");
-    	int ChivIDVDrug = Utils.findColumn(this.hivTherapyTable, "IDV");
-    	int ChivRTVDrug = Utils.findColumn(this.hivTherapyTable, "RTV");
-    	int ChivRTVBoostDrug = Utils.findColumn(this.hivTherapyTable, "RTV_booster");
-    	int ChivSQVDrug = Utils.findColumn(this.hivTherapyTable, "SQV");
-    	int ChivNFVDrug = Utils.findColumn(this.hivTherapyTable, "NFV");
-    	int ChivAPVDrug = Utils.findColumn(this.hivTherapyTable, "APV");
-    	int ChivFPVDrug = Utils.findColumn(this.hivTherapyTable, "FPV");
-    	int ChivLPVDrug = Utils.findColumn(this.hivTherapyTable, "LPV");
-    	int ChivATVDrug = Utils.findColumn(this.hivTherapyTable, "ATV");
-    	int ChivTPVDrug = Utils.findColumn(this.hivTherapyTable, "TPV");
-    	int ChivT20Drug = Utils.findColumn(this.hivTherapyTable, "T20");
     	
+        HashMap<Integer, String> drugPositions = new HashMap<Integer, String>();
+        for(int i = ChivCommercialDrug+1; i<this.hivTherapyTable.numColumns(); i++) {
+            String drug = this.hivTherapyTable.valueAt(i, 0);
+            //TODO
+            //check drug in regadb repos
+            drugPositions.put(i, drug);
+        }
     	    	
     	for(int i = 1; i < this.hivTherapyTable.numRows(); i++)
     	{
@@ -478,30 +460,8 @@ public class ImportUcsc
     		//String hivSuccessTherapy = this.hivTherapyTable.valueAt(ChivSuccessTherapy, i);
     		//String hivStopReasonTherapy = this.hivTherapyTable.valueAt(ChivStopReasonTherapy, i);
     		String hivCommercialDrug = this.hivTherapyTable.valueAt(ChivCommercialDrug, i);
-    		String hivAZTDrug = this.hivTherapyTable.valueAt(ChivAZTDrug, i);
-    		String hivDDIDrug = this.hivTherapyTable.valueAt(ChivDDIDrug, i);
-    		String hivDDCDrug = this.hivTherapyTable.valueAt(ChivDDCDrug, i);
-    		String hivHUDrug = this.hivTherapyTable.valueAt(ChivHUDrug, i);
-    		String hiv3TCDrug = this.hivTherapyTable.valueAt(Chiv3TCDrug, i);
-    		String hivD4TDrug = this.hivTherapyTable.valueAt(ChivD4TDrug, i);
-    		String hivABCDrug = this.hivTherapyTable.valueAt(ChivABCDrug, i);
-    		String hivFTCDrug = this.hivTherapyTable.valueAt(ChivFTCDrug, i);
-    		String hivTDFDrug = this.hivTherapyTable.valueAt(ChivTDFDrug, i);
-    		String hivNVPDrug = this.hivTherapyTable.valueAt(ChivNVPDrug, i);
-    		String hivEFVDrug = this.hivTherapyTable.valueAt(ChivEFVDrug, i);
-    		String hivDLVDrug = this.hivTherapyTable.valueAt(ChivDLVDrug, i);;
-        	String hivCPVDrug = this.hivTherapyTable.valueAt(ChivCPVDrug, i);
-        	String hivIDVDrug = this.hivTherapyTable.valueAt(ChivIDVDrug, i);
-        	String hivRTVDrug = this.hivTherapyTable.valueAt(ChivRTVDrug, i);
-        	String hivRTVBoostDrug = this.hivTherapyTable.valueAt(ChivRTVBoostDrug, i);
-        	String hivSQVDrug = this.hivTherapyTable.valueAt(ChivSQVDrug, i);
-        	String hivNFVDrug = this.hivTherapyTable.valueAt(ChivNFVDrug, i);
-        	String hivAPVDrug = this.hivTherapyTable.valueAt(ChivAPVDrug, i);
-        	String hivFPVDrug = this.hivTherapyTable.valueAt(ChivFPVDrug, i);
-        	String hivLPVDrug = this.hivTherapyTable.valueAt(ChivLPVDrug, i);
-        	String hivATVDrug = this.hivTherapyTable.valueAt(ChivATVDrug, i);
-        	String hivTPVDrug = this.hivTherapyTable.valueAt(ChivTPVDrug, i);
-        	String hivT20Drug = this.hivTherapyTable.valueAt(ChivT20Drug, i);
+            
+            
         	
         	if(!"".equals(hivPatientID))
             {
@@ -514,125 +474,13 @@ public class ImportUcsc
         			startDate = Utils.convertDate(hivStartTherapy);
         		}
         		
-        		if(Utils.checkColumnValue(hivAZTDrug, i, hivPatientID) && Utils.checkDrugValue(hivAZTDrug, i, hivPatientID))
-        		{
-        			drugs.add("AZT");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivDDIDrug, i, hivPatientID) && Utils.checkDrugValue(hivDDIDrug, i, hivPatientID))
-        		{
-        			drugs.add("DDI");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivDDCDrug, i, hivPatientID) && Utils.checkDrugValue(hivDDCDrug, i, hivPatientID))
-        		{
-        			drugs.add("DDC");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivHUDrug, i, hivPatientID) && Utils.checkDrugValue(hivHUDrug, i, hivPatientID))
-        		{
-        			drugs.add("HU");
-        		}
-        		
-        		if(Utils.checkColumnValue(hiv3TCDrug, i, hivPatientID) && Utils.checkDrugValue(hiv3TCDrug, i, hivPatientID))
-        		{
-        			drugs.add("3TC");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivD4TDrug, i, hivPatientID)&& Utils.checkDrugValue(hivD4TDrug, i, hivPatientID))
-        		{
-        			drugs.add("D4T");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivABCDrug, i, hivPatientID) && Utils.checkDrugValue(hivABCDrug, i, hivPatientID))
-        		{
-        			drugs.add("ABC");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivFTCDrug, i, hivPatientID) && Utils.checkDrugValue(hivFTCDrug, i, hivPatientID))
-        		{
-        			drugs.add("FTC");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivTDFDrug, i, hivPatientID) && Utils.checkDrugValue(hivTDFDrug, i, hivPatientID))
-        		{
-        			drugs.add("TDF");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivNVPDrug, i, hivPatientID) && Utils.checkDrugValue(hivNVPDrug, i, hivPatientID))
-        		{
-        			drugs.add("NVP");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivEFVDrug, i, hivPatientID) && Utils.checkDrugValue(hivEFVDrug, i, hivPatientID))
-        		{
-        			drugs.add("EFV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivDLVDrug, i, hivPatientID) && Utils.checkDrugValue(hivDLVDrug, i, hivPatientID))
-        		{
-        			drugs.add("DLV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivCPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivCPVDrug, i, hivPatientID))
-        		{
-        			drugs.add("CPV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivIDVDrug, i, hivPatientID) && Utils.checkDrugValue(hivIDVDrug, i, hivPatientID))
-        		{
-        			drugs.add("IDV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivRTVDrug, i, hivPatientID) && Utils.checkDrugValue(hivRTVDrug, i, hivPatientID))
-        		{
-        			drugs.add("RTV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivRTVBoostDrug, i, hivPatientID) && Utils.checkDrugValue(hivRTVBoostDrug, i, hivPatientID))
-        		{
-        			drugs.add("RTV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivSQVDrug, i, hivPatientID) && Utils.checkDrugValue(hivSQVDrug, i, hivPatientID))
-        		{
-        			drugs.add("SQV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivNFVDrug, i, hivPatientID) && Utils.checkDrugValue(hivNFVDrug, i, hivPatientID))
-        		{
-        			drugs.add("NFV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivAPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivAPVDrug, i, hivPatientID))
-        		{
-        			drugs.add("APV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivFPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivFPVDrug, i, hivPatientID))
-        		{
-        			drugs.add("FPV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivLPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivLPVDrug, i, hivPatientID))
-        		{
-        			drugs.add("LPV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivATVDrug, i, hivPatientID) && Utils.checkDrugValue(hivATVDrug, i, hivPatientID))
-        		{
-        			drugs.add("ATV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivTPVDrug, i, hivPatientID) && Utils.checkDrugValue(hivTPVDrug, i, hivPatientID))
-        		{
-        			drugs.add("TPV");
-        		}
-        		
-        		if(Utils.checkColumnValue(hivT20Drug, i, hivPatientID) && Utils.checkDrugValue(hivT20Drug, i, hivPatientID))
-        		{
-        			drugs.add("T20");
-        		}
+                for(Map.Entry<Integer, String> entry : drugPositions.entrySet()) {
+                    String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
+            		if(Utils.checkColumnValue(drugValue, i, hivPatientID) && Utils.checkDrugValue(drugValue, i, hivPatientID))
+            		{
+            			drugs.add(entry.getValue());
+            		} 
+                }
         		
         		ArrayList<DrugCommercial> comDrugs = evaluateDrugs(hivCommercialDrug.toLowerCase(), drugs);
         		
@@ -847,7 +695,7 @@ public class ImportUcsc
      
      private HashMap<String, String> getCountryTranslation()
      {
-    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalità");
+    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalitï¿½");
     	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
     	 
     	 HashMap<String, String> values = new HashMap<String, String>();
