@@ -152,7 +152,7 @@ public class Utils {
  		return null;
      }
      
-     public void exportXML(HashMap<String, Patient> patientMap, String fileName) 
+     public static void exportXML(HashMap<String, Patient> patientMap, String fileName) 
      {
      	try
      	{
