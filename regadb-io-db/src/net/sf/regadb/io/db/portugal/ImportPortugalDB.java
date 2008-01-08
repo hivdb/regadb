@@ -137,8 +137,8 @@ public class ImportPortugalDB {
         System.err.println("done.");
         
         System.err.println("Fixing the country of origin list");
-        List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
-        Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
+        List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
+        Attribute countryOfOrigin = Utils.selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
         ArrayList<String> countryName = this.countryTable.getColumn(1);
         String country;
@@ -578,7 +578,7 @@ public class ImportPortugalDB {
                 NtSequence nts = new NtSequence(vi);
                 vi.getNtSequences().add(nts);
                 nts.setNucleotides(fr.xna_);
-                nts.setLabel("PT");
+                nts.setLabel("Sequence1");
                 
                 Element viralIsolateE = new Element("viralIsolates-el");
                 root.addContent(viralIsolateE);
@@ -608,59 +608,6 @@ public class ImportPortugalDB {
         }
         
         System.err.println("Sequences: " + seq_found);
-    }
-    
-    private Attribute selectAttribute(String attributeName, List<Attribute> list)
-    {
-        Attribute toReturn = null;
-        
-        for(Attribute a : list)
-        {
-            if(a.getName().equals(attributeName))
-            {
-                toReturn = a;
-            }
-        }
-        
-        return toReturn;
-    }
-    
-    private List<Attribute> prepareRegaDBAttributes()
-    {
-        RegaDBSettings.getInstance().initProxySettings();
-        
-        FileProvider fp = new FileProvider();
-        List<Attribute> list = null;
-        File attributesFile = null;
-        try {
-            attributesFile = File.createTempFile("attributes", "xml");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        try 
-        {
-            fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        final ImportFromXML imp = new ImportFromXML();
-        try 
-        {
-            imp.loadDatabaseObjects(null);
-            list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
-        }
-        catch(SAXException saxe)
-        {
-            saxe.printStackTrace();
-        }
-        catch(IOException ioex)
-        {
-            ioex.printStackTrace();
-        }
-        
-        return list;
     }
     
     public void importPatientAttributes() {

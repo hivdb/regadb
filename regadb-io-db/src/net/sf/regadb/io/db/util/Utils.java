@@ -1,23 +1,38 @@
 package net.sf.regadb.io.db.util;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
+import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
-import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.io.exportXML.ExportToXML;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Utils {
+    private static DateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
     public static Date createDate(String yearStr, String monthStr, String dayString) {
         Calendar cal = Calendar.getInstance();
 
@@ -181,5 +196,68 @@ public class Utils {
          {
              ConsoleLogger.getInstance().logError("XML generation failed.");
          }
+     }
+     
+     public static Date parseMysqlDate(String date) {
+         Date d = null;
+         try {
+            d = mysqlDateFormat.parse(date.split(" ")[0]);
+        } catch (ParseException e) {
+            d = null;
+        }
+        return d;
+     }
+     
+     public static Attribute selectAttribute(String attributeName, List<Attribute> list)
+     {
+         Attribute toReturn = null;
+         
+         for(Attribute a : list)
+         {
+             if(a.getName().equals(attributeName))
+             {
+                 toReturn = a;
+             }
+         }
+         
+         return toReturn;
+     }
+     
+     public static List<Attribute> prepareRegaDBAttributes()
+     {
+         RegaDBSettings.getInstance().initProxySettings();
+         
+         FileProvider fp = new FileProvider();
+         List<Attribute> list = null;
+         File attributesFile = null;
+         try {
+             attributesFile = File.createTempFile("attributes", "xml");
+         } catch (IOException e1) {
+             e1.printStackTrace();
+         }
+         try 
+         {
+             fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
+         }
+         catch (RemoteException e) 
+         {
+             e.printStackTrace();
+         }
+         final ImportFromXML imp = new ImportFromXML();
+         try 
+         {
+             imp.loadDatabaseObjects(null);
+             list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
+         }
+         catch(SAXException saxe)
+         {
+             saxe.printStackTrace();
+         }
+         catch(IOException ioex)
+         {
+             ioex.printStackTrace();
+         }
+         
+         return list;
      }
 }
