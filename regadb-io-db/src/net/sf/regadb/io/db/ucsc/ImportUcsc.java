@@ -452,22 +452,26 @@ public class ImportUcsc
         {
             String drug = this.hivTherapyTable.valueAt(i, 0);
             
+            boolean foundDrug = false;
+            
             for(int j = 0; j < regaDrugGenerics.size(); j++)
         	{
             	DrugGeneric genDrug = regaDrugGenerics.get(j);
             	
-            	if(genDrug != null)
+            	if(genDrug.getGenericId().equals(drug.toUpperCase()))
             	{
-            		if(genDrug.getGenericId().endsWith(drug.toUpperCase()))
-            		{
-            			//TODO:Check with drug mapping file
-            		}
-            		else
-            		{
-            			ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
-            		}
+            		//TODO:Check with drug mapping file
+            			
+            		foundDrug = true;
+            		
+            		break;
             	}
         	}
+            
+            if(!foundDrug)
+            {
+            	ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
+            }
             
             drugPositions.put(i, drug);
         }
