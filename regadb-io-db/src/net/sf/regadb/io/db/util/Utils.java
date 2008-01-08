@@ -18,6 +18,7 @@ import java.util.List;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
@@ -296,13 +297,29 @@ public class Utils {
          return list;
      }
      
-     public static List<DrugCommercial> prepareRegaDBDrugs()
+     public static List<DrugCommercial> prepareRegaDrugCommercials()
      {
     	 try 
          {
 	    	 ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
 	    	 
 	    	 return imDrug.getCommercialDrugs();
+         }
+	     catch(Exception e)
+	     {
+	    	 ConsoleLogger.getInstance().logError("Cannot retrieve drug list.");
+	     }
+	     
+	     return null;
+     } 
+     
+     public static List<DrugGeneric> prepareRegaDrugCoGenerics()
+     {
+    	 try 
+         {
+	    	 ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
+	    	 
+	    	 return imDrug.getGenericDrugs();
          }
 	     catch(Exception e)
 	     {
