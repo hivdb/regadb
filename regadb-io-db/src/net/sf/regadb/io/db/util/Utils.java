@@ -290,4 +290,36 @@ public class Utils {
          }
          return toReturn.toString();
      }
+     
+     //TODO: Use more sophisticated algorithms to find a string match...
+     public static double findCountryMatch(String value, String compareWithValue)
+     {
+    	 double match = 0.000d;
+    	 
+    	 double inc = 0.000d;
+    		 
+    	 inc = (100d / compareWithValue.length()) / 100d;
+    	 
+    	 value = value.toLowerCase();
+    	 compareWithValue = compareWithValue.toLowerCase();
+    	 
+    	 for(int i = 0; i < value.length(); i++)
+    	 {
+    		 if(match >= 0.70)
+    		 {
+    			 return match;
+    		 }
+    		 
+    		 if(value.charAt(i) == compareWithValue.charAt(i))
+    		 {
+    			 match += inc;
+    		 }
+    		 else
+    		 {
+    			 return match;
+    		 }
+    	 }
+    	 
+    	 return -1;
+     }
 }
