@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -33,6 +34,7 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 import org.apache.commons.io.FileUtils;
+import org.jdom.Element;
 
 public class ImportUcsc 
 {
@@ -44,6 +46,7 @@ public class ImportUcsc
 	private Table riskGroupTable;
 	private Table stopTherapieDescTable;
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
+	private HashMap<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
 	
 	private HashMap<String, String> countryTranslation;
 	private HashMap<String, String> birthplaceTranslation;
@@ -114,7 +117,8 @@ public class ImportUcsc
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
     		handleSequences(workingDirectory);
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
-    		Utils.exportXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
+    		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
+    		Utils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml");
     	}
     	catch(Exception e)
     	{
@@ -795,6 +799,8 @@ public class ImportUcsc
     	ntseq.setNucleotides(seq);
     	
     	vi.getNtSequences().add(ntseq);
+    	
+    	viralIsolateHM.put(vi.getSampleId(), vi);
     }
     
     //to obtain this, run the following query in microsoft access
