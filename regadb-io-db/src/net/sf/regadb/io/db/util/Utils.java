@@ -278,4 +278,16 @@ public class Utils {
 	     
 	     return null;
      } 
+     
+     public static String clearNucleotides(String nucleotides) 
+     {
+         StringBuffer toReturn = new StringBuffer();
+         for(char c : nucleotides.toCharArray()) 
+         {
+             if(Character.isLetter(c)) {
+                 toReturn.append(c);
+             }
+         }
+         return toReturn.toString();
+     }
 }
