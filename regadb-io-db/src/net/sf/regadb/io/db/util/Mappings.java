@@ -27,7 +27,7 @@ public class Mappings {
         HashMap<String, String> mappings = mappings_.get(fileName);
         if(mappings == null) {
             mappings = new HashMap<String, String>();
-            File mappingFile = new File(mappingBasePath_ + File.separatorChar + fileName);
+            File mappingFile = new File(mappingBasePath_ + File.separatorChar + fileName + ".csv");
             Table mappingCsvTable = null;
             try {
                 mappingCsvTable = new Table(new BufferedInputStream(new FileInputStream(mappingFile)), false);
