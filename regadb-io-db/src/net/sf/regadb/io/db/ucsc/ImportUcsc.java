@@ -38,9 +38,12 @@ import org.apache.commons.io.FileUtils;
 
 public class ImportUcsc 
 {
+	//DB tables
 	private Table patientTable;
 	private Table cd4Table;
 	private Table hivTherapyTable;
+	
+	//Translation mapping tables
 	private Table countryTable;
 	private Table birthPlaceTable;
 	private Table riskGroupTable;
@@ -86,13 +89,17 @@ public class ImportUcsc
     	try
     	{
     		ConsoleLogger.getInstance().logInfo("Reading input files...");
+    		
+    		//Filling DB tables
     		patientTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T_pazienti.csv");
     		cd4Table = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T analisi HIV RNA CD4_CD8.csv");
     		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T terapie anti HIV.csv");
-    		countryTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "nationality.csv");
-    		birthPlaceTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "birthplace.csv");
-    		riskGroupTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco fattori di rischio.csv");
-    		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "dbo_T elenco motivo stop terapia anti HIV.csv");
+    		
+    		//Filling translation mapping tables
+    		countryTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "nationality.mapping");
+    		birthPlaceTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "birthplace.mapping");
+    		riskGroupTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "riskgroup.mapping");
+    		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "stop_therapy_reason.mapping");
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
     		countryTranslation = getCountryTranslation();
@@ -212,7 +219,7 @@ public class ImportUcsc
                     }
                     else 
                     {
-                        ConsoleLogger.getInstance().logWarning("Unsupported attribute value (CDC): "+cdc);
+                        ConsoleLogger.getInstance().logWarning("Unsupported attribute value (gender): "+sex);
                     }
             	}
             	
@@ -262,7 +269,7 @@ public class ImportUcsc
                      }
                      else 
                      {
-                    	 ConsoleLogger.getInstance().logError("Unsupported attribute value (Transmission group): "+riskGroup);
+                    	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Transmission group): "+riskGroup);
                      }	
             	}
             	
@@ -277,7 +284,7 @@ public class ImportUcsc
                      }
                      else 
                      {
-                    	 ConsoleLogger.getInstance().logError("Unsupported attribute value (Seroconverter): "+seroConverter);
+                    	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Seroconverter): "+seroConverter);
                      }
             	}
             	
