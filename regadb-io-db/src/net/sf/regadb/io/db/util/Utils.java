@@ -410,4 +410,30 @@ public class Utils {
     	 
     	 return -1;
      }
+     
+     public static void checkDrugsWithRepos(String drug, List<DrugGeneric> regaDrugGenerics)
+     {
+    	 boolean foundDrug = false;
+         
+         for(int j = 0; j < regaDrugGenerics.size(); j++)
+     	{
+         	DrugGeneric genDrug = regaDrugGenerics.get(j);
+         	
+         	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+         	{
+         		//TODO:Check with drug mapping file
+         		
+         		ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
+         		
+         		foundDrug = true;
+         		
+         		break;
+         	}
+     	}
+         
+         if(!foundDrug)
+         {
+         	ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
+         }
+     }  
 }
