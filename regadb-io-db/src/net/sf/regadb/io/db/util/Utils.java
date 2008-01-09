@@ -101,37 +101,37 @@ public class Utils {
     	return null;
     }
      
-     public static boolean checkColumnValue(String value, int column, String patientID)
+     public static boolean checkColumnValue(String value, int row, String patientID)
      {
     	 if(!"".equals(value))
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid value found at column "+column+".");
+    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid string value found at row "+row+".");
     		 
     		 return false;
     	 }
      }
      
-     public static boolean checkDrugValue(String value, int column, String patientID)
+     public static boolean checkDrugValue(String value, int row, String patientID)
      {
     	 if(value.equals("1"))
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid value found at column "+column+".");
+    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid drug value found at row "+row+".");
     		 
     		 return false;
     	 }
      }
      
-     public static boolean checkCDValue(String value, int column, String patientID)
+     public static boolean checkCDValue(String value, int row, String patientID)
      {
     	 if(!value.equals("0"))
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid value found at column "+column+".");
+    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid cd value found at row "+row+".");
     		 
     		 return false;
     	 }
