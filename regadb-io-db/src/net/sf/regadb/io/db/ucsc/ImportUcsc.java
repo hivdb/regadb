@@ -61,6 +61,10 @@ public class ImportUcsc
 	
     public static void main(String [] args) 
     {
+    	//For internal network usage
+        System.setProperty("http.proxyHost", "www-proxy");
+        System.setProperty("http.proxyPort", "3128");
+        
     	try
     	{
     		//Just for testing purposes...otherwise remove
@@ -95,16 +99,16 @@ public class ImportUcsc
     		riskGroupTranslation = getRiskGroupTranslation();
     		stopTherapyTranslation = getStopTherapyTranslation();
     		
-    		/*ConsoleLogger.getInstance().logInfo("Retrieving drugs...");
+    		ConsoleLogger.getInstance().logInfo("Retrieving drugs...");
     		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
-    		regaDrugGenerics = Utils.prepareRegaDrugGenerics();*/
+    		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData();
     		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
     		handleCDData();
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
-    		//handleTherapies();
+    		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
     		handleSequences(workingDirectory);
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
@@ -451,26 +455,7 @@ public class ImportUcsc
         {
             String drug = this.hivTherapyTable.valueAt(i, 0);
             
-            boolean foundDrug = false;
-            
-            for(int j = 0; j < regaDrugGenerics.size(); j++)
-        	{
-            	DrugGeneric genDrug = regaDrugGenerics.get(j);
-            	
-            	if(genDrug.getGenericId().equals(drug.toUpperCase()))
-            	{
-            		//TODO:Check with drug mapping file
-            			
-            		foundDrug = true;
-            		
-            		break;
-            	}
-        	}
-            
-            if(!foundDrug)
-            {
-            	ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
-            }
+            Utils.checkDrugsWithRepos(drug, regaDrugGenerics);
             
             drugPositions.put(i, drug);
         }
@@ -582,6 +567,7 @@ public class ImportUcsc
 		    						{
 		    							if(!tempDrug.equals(currentDrug))
 		    							{
+		    								ConsoleLogger.getInstance().logInfo("Drug "+currentDrug+" found.");
 		    								comDrugs.add(drug);
 		    							}
 		    							
