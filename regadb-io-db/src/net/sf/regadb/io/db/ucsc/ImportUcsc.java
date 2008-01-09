@@ -136,7 +136,7 @@ public class ImportUcsc
     	int Csex = Utils.findColumn(this.patientTable, "sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "data di nascita");
     	int CbirthPlace = Utils.findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalità");
+    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalita");
     	int CriskGroup = Utils.findColumn(this.patientTable, "fattore di rischio");
     	int CseroConverter = Utils.findColumn(this.patientTable, "seroconverter");
     	int CfirstTest = Utils.findColumn(this.patientTable, "data primo test HIV positivo");
@@ -744,7 +744,7 @@ public class ImportUcsc
      
     private HashMap<String, String> getCountryTranslation()
     {
-    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalità");
+    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalita");
     	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
     	 
     	 HashMap<String, String> values = new HashMap<String, String>();
