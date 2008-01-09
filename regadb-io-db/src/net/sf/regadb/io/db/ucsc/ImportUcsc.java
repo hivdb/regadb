@@ -29,6 +29,7 @@ import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -108,7 +109,7 @@ public class ImportUcsc
     		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
     		handleCDData();
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
-    		handleTherapies();
+    		handleTherapies(workingDirectory.getAbsolutePath());
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
     		handleSequences(workingDirectory);
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
@@ -439,7 +440,7 @@ public class ImportUcsc
     	}
     }
     
-    private void handleTherapies()
+    private void handleTherapies(String workingDirectory)
     {
     	int ChivPatientID = Utils.findColumn(this.hivTherapyTable, "cartella UCSC");
     	int ChivStartTherapy = Utils.findColumn(this.hivTherapyTable, "data start terapia anti HIV");
@@ -451,11 +452,13 @@ public class ImportUcsc
     	
         HashMap<Integer, String> drugPositions = new HashMap<Integer, String>();
         
+        Mappings mappings = Mappings.getInstance(workingDirectory);
+        
         for(int i = ChivCommercialDrug+1; i < this.hivTherapyTable.numColumns(); i++) 
         {
             String drug = this.hivTherapyTable.valueAt(i, 0);
             
-            Utils.checkDrugsWithRepos(drug, regaDrugGenerics);
+            Utils.checkDrugsWithRepos(drug, regaDrugGenerics, mappings);
             
             drugPositions.put(i, drug);
         }
