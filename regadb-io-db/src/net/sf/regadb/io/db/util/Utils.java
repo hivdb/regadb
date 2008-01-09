@@ -11,9 +11,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
@@ -331,6 +334,38 @@ public class Utils {
 	     
 	     return null;
      } 
+     
+     public static String[] convertKeysToStringArray(Set<String> keys)
+     {
+    	 String[] array = new String[keys.size()];
+    	
+    	 int count = 0;
+    	 
+    	 for(Iterator it = keys.iterator(); it.hasNext();) 
+    	 {
+    		 array[count] = ((String)it.next()).toLowerCase();
+    		 
+    		 count++;
+    	 }
+    	 
+    	 return array;
+     }
+     
+     public static String[] convertValuesToStringArray(Collection<String> values)
+     {
+    	 String[] array = new String[values.size()];
+    	
+    	 int count = 0;
+    	 
+    	 for(Iterator it = values.iterator(); it.hasNext();) 
+    	 {
+    		 array[count] = (String)it.next();
+    		 
+    		 count++;
+    	 }
+    	 
+    	 return array;
+     }
      
      public static String clearNucleotides(String nucleotides) 
      {
