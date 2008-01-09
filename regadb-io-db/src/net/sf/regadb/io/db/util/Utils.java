@@ -237,7 +237,10 @@ public class Utils {
      public static Date parseMysqlDate(String date) {
          Date d = null;
          try {
-            d = mysqlDateFormat.parse(date.split(" ")[0]);
+             String [] split = date.split(" ");
+             if(split.length<2)
+                 return null;
+             d = mysqlDateFormat.parse(split[0]);
         } catch (ParseException e) {
             d = null;
         }
