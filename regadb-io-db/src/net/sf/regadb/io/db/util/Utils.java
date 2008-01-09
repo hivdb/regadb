@@ -432,7 +432,7 @@ public class Utils {
          if(!foundDrug) {
              String mapping = mappings.getMapping("generic_drugs.mapping", drug);
              if(mapping==null) {
-                 ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository.");
+                 ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was avaialable.");
              }
              return mapping;
          }
