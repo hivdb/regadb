@@ -12,7 +12,6 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
@@ -45,6 +44,7 @@ public class ImportUcsc
 	private Table birthPlaceTable;
 	private Table riskGroupTable;
 	private Table stopTherapieDescTable;
+	
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
 	private HashMap<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
 	
@@ -76,18 +76,6 @@ public class ImportUcsc
     	}
     }
     
-    public void run(File workingDirectory) 
-    {
-        try 
-        {
-            handleSequences(workingDirectory);
-        } 
-        catch(IOException e) 
-        {
-        	ConsoleLogger.getInstance().logError("Cannot find/access directory "+workingDirectory);
-        }
-    }
-    
     private void getData(File workingDirectory)
     {
     	try
@@ -103,26 +91,26 @@ public class ImportUcsc
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
     		countryTranslation = getCountryTranslation();
-    		//birthplaceTranslation = getBirthPlaceTranslation();
-    		//riskGroupTranslation = getRiskGroupTranslation();
-    		//stopTherapyTranslation = getStopTherapyTranslation();
+    		birthplaceTranslation = getBirthPlaceTranslation();
+    		riskGroupTranslation = getRiskGroupTranslation();
+    		stopTherapyTranslation = getStopTherapyTranslation();
     		
-    		ConsoleLogger.getInstance().logInfo("Retrieving Rega attributes and drugs...");
-    		List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
+    		/*ConsoleLogger.getInstance().logInfo("Retrieving drugs...");
     		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
-    		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
+    		regaDrugGenerics = Utils.prepareRegaDrugGenerics();*/
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
-    		handlePatientData(regadbAttributesList);
+    		handlePatientData();
     		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
     		handleCDData();
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
-    		handleTherapies();
+    		//handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
-    		//handleSequences(workingDirectory);
+    		handleSequences(workingDirectory);
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
     		Utils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml");
+    		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)
     	{
@@ -130,13 +118,13 @@ public class ImportUcsc
     	}
     }
     
-    private void handlePatientData(List<Attribute> regadbAttributesList)
+    private void handlePatientData()
     {
     	int CpatientID = Utils.findColumn(this.patientTable, "cartella UCSC");
     	int Csex = Utils.findColumn(this.patientTable, "sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "data di nascita");
     	int CbirthPlace = Utils.findColumn(this.patientTable, "luogo di nascita");
-    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalita");
+    	int Cnationality = Utils.findColumn(this.patientTable, "nazionalità");
     	int CriskGroup = Utils.findColumn(this.patientTable, "fattore di rischio");
     	int CseroConverter = Utils.findColumn(this.patientTable, "seroconverter");
     	int CfirstTest = Utils.findColumn(this.patientTable, "data primo test HIV positivo");
@@ -155,20 +143,29 @@ public class ImportUcsc
                 new String[] { "A", "B", "C" } );
         cdcA.attribute.setAttributeGroup(virolab);
         
-        NominalAttribute scA = new NominalAttribute("Sero Converter", CseroConverter, new String[] { "-1", "0" },
-                new String[] { "-1", "0" } );
+        NominalAttribute scA = new NominalAttribute("Sero Converter", CseroConverter, new String[] { "1", "0" },
+                new String[] { "1", "0" } );
         scA.attribute.setAttributeGroup(virolab);
         
-        NominalAttribute rgA = new NominalAttribute("Transmission group", CriskGroup, (String[])riskGroupTranslation.keySet().toArray(),
-        		(String[])riskGroupTranslation.values().toArray());
+        String[] tgKeys = Utils.convertKeysToStringArray(riskGroupTranslation.keySet());
+        String[] tgValues = Utils.convertValuesToStringArray(riskGroupTranslation.values());
+        
+        NominalAttribute rgA = new NominalAttribute("Transmission group", CriskGroup, tgKeys,
+        		tgValues);
         rgA.attribute.setAttributeGroup(regadb);
         
-        NominalAttribute couA = new NominalAttribute("Country of origin", Cnationality, (String[])countryTranslation.keySet().toArray(),
-        		(String[])countryTranslation.values().toArray());
+        String[] cKeys = Utils.convertKeysToStringArray(countryTranslation.keySet());
+        String[] cValues = Utils.convertValuesToStringArray(countryTranslation.values());
+        
+        NominalAttribute couA = new NominalAttribute("Country of origin", Cnationality, cKeys,
+        		cValues);
         couA.attribute.setAttributeGroup(regadb);
         
-        NominalAttribute bpA = new NominalAttribute("Birthplace", CbirthPlace, (String[])birthplaceTranslation.keySet().toArray(),
-        		(String[])birthplaceTranslation.values().toArray());
+        String[] bpKeys = Utils.convertKeysToStringArray(birthplaceTranslation.keySet());
+        String[] bpValues = Utils.convertValuesToStringArray(birthplaceTranslation.values());
+        
+        NominalAttribute bpA = new NominalAttribute("Birthplace", CbirthPlace, bpKeys,
+        		bpValues);
         bpA.attribute.setAttributeGroup(virolab);
         
         TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
@@ -221,7 +218,7 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValue(birthPlace, i, patientId))
             	{
-            		AttributeNominalValue vv = bpA.nominalValueMap.get(birthPlace.trim());
+            		AttributeNominalValue vv = bpA.nominalValueMap.get(birthPlace.toLowerCase().trim());
                     
                     if (vv != null) 
                     {
@@ -236,7 +233,7 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValue(nationality, i, patientId))
             	{
-            		AttributeNominalValue vv = couA.nominalValueMap.get(nationality.trim());
+            		AttributeNominalValue vv = couA.nominalValueMap.get(nationality.toLowerCase().trim());
                     
                     if (vv != null) 
                     {
@@ -245,7 +242,7 @@ public class ImportUcsc
                     }
                     else 
                     {
-                   	 	ConsoleLogger.getInstance().logError("Unsupported attribute value (Country of Origin): "+nationality);
+                   	 	ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Country of Origin): "+nationality);
                     }	
             	}
             	
@@ -696,50 +693,61 @@ public class ImportUcsc
     	viralIsolateHM.put(vi.getSampleId(), vi);
     }
     
-    //to obtain this, run the following query in microsoft access
-    //SELECT T_genotipo_HIV.[cartella UCSC], T_genotipo_HIV.[data genotipo], T_genotipo_HIV.[sequenza basi azotate (fasta)], ""
-    //FROM T_genotipo_HIV;
-    //export with (; and no text separation sign)
-    public void handleSequences(File workingDirectory) throws IOException 
+    /*to obtain this, run the following query in microsoft access
+     * SELECT [dbo_T genotipo HIV].[cartella UCSC], [dbo_T genotipo HIV].[data genotipo], [dbo_T genotipo HIV].[sequenza basi azotate (fasta)], "" As Linelimiter
+     * FROM [dbo_T genotipo HIV] WHERE ([dbo_T genotipo HIV].[sequenza basi azotate (fasta)]) Is Not Null;
+     */
+    public void handleSequences(File workingDirectory) throws IOException
     {
-        File onlySequences = new File(workingDirectory.getAbsolutePath()+File.separatorChar+"nt_sequences.txt");
-        String fileContent = new String(FileUtils.readFileToByteArray(onlySequences));
+    	File onlySequences = new File(workingDirectory.getAbsolutePath()+File.separatorChar+"nt_sequences.txt");
+    	String fileContent = new String(FileUtils.readFileToByteArray(onlySequences));
         StringTokenizer st = new StringTokenizer(fileContent, ";");
-        String token;
-        int linePositionCounter = 0;
         
-   	 	String patientID = null;
+    	String token = null;
+    	String patientID = null;
    	 	Date date = null;
-     
-        for(int i = 0; i<st.countTokens(); i++) 
+   	 	
+   	 	int counter = 0;
+   	 	
+        while(st.hasMoreTokens()) 
         {
             token = st.nextToken();
-             
-            if(linePositionCounter == 0)
+            
+            //Need to do this!!!
+            token = token.trim();
+            
+            if(token != null && !token.equals(""))
             {
-            	patientID = token.trim();
-            	linePositionCounter++;
-            }
-            else if(linePositionCounter == 1)
-            {
-            	date = Utils.convertDate(token.trim());
-            	linePositionCounter++;
-            }
-            else if(linePositionCounter==2) 
-            {
-            	String seq = Utils.clearNucleotides(token);
+            	if(counter % 3 == 0)
+                {
+            		patientID = token.trim();
+            		
+            		ConsoleLogger.getInstance().logInfo("patientID: "+patientID);
+                }
+            	else if(counter % 3 == 1)
+            	{
+            		date = Utils.convertDate(token.trim());
+            		
+            		ConsoleLogger.getInstance().logInfo("date: "+date);
+            	}
+            	else if(counter % 3 == 2)
+            	{
+            		String seq = Utils.clearNucleotides(token.trim());
+            		
+            		ConsoleLogger.getInstance().logInfo("seq: "+seq);
             	
-            	ConsoleLogger.getInstance().logInfo("Patient: "+patientID+" Seq: "+seq);
+            		addViralIsolateToPatients(patientID, date, seq);
+            	}
             	
-                addViralIsolateToPatients(patientID, date, seq);
-                
-                linePositionCounter = 0;
+            	counter++;
             }
-        }
+            else
+            	ConsoleLogger.getInstance().logWarning("Incompatible value found.");
+    	}
     }
      
-     private HashMap<String, String> getCountryTranslation()
-     {
+    private HashMap<String, String> getCountryTranslation()
+    {
     	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalità");
     	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
     	 
