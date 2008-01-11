@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
@@ -60,8 +61,10 @@ public class ImportUcsc
 	private List<DrugCommercial> regaDrugCommercials;
 	private List<DrugGeneric> regaDrugGenerics;
     
+	private List<Attribute> regadbAttributes;
+	
     private AttributeGroup regadb = new AttributeGroup("RegaDB");
-    private AttributeGroup virolab = new AttributeGroup("ViroLab");
+    private AttributeGroup virolab = new AttributeGroup("RegaDB");
 	
     public static void main(String [] args) 
     {
@@ -107,7 +110,8 @@ public class ImportUcsc
     		riskGroupTranslation = getRiskGroupTranslation();
     		stopTherapyTranslation = getStopTherapyTranslation();
     		
-    		ConsoleLogger.getInstance().logInfo("Retrieving drugs...");
+    		ConsoleLogger.getInstance().logInfo("Retrieving attributes and drugs...");
+    		regadbAttributes = Utils.prepareRegaDBAttributes();
     		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		
@@ -158,20 +162,6 @@ public class ImportUcsc
         NominalAttribute scA = new NominalAttribute("Sero Converter", CseroConverter, new String[] { "1", "0" },
                 new String[] { "1", "0" } );
         scA.attribute.setAttributeGroup(virolab);
-        
-        String[] tgKeys = Utils.convertKeysToStringArray(riskGroupTranslation.keySet());
-        String[] tgValues = Utils.convertValuesToStringArray(riskGroupTranslation.values());
-        
-        NominalAttribute rgA = new NominalAttribute("Transmission group", CriskGroup, tgKeys,
-        		tgValues);
-        rgA.attribute.setAttributeGroup(regadb);
-        
-        String[] cKeys = Utils.convertKeysToStringArray(countryTranslation.keySet());
-        String[] cValues = Utils.convertValuesToStringArray(countryTranslation.values());
-        
-        NominalAttribute couA = new NominalAttribute("Country of origin", Cnationality, cKeys,
-        		cValues);
-        couA.attribute.setAttributeGroup(regadb);
         
         String[] bpKeys = Utils.convertKeysToStringArray(birthplaceTranslation.keySet());
         String[] bpValues = Utils.convertValuesToStringArray(birthplaceTranslation.values());
@@ -228,7 +218,7 @@ public class ImportUcsc
             		p.setBirthDate(Utils.convertDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValue(birthPlace, i, patientId))
+            	/*if(Utils.checkColumnValue(birthPlace, i, patientId))
             	{
             		AttributeNominalValue vv = bpA.nominalValueMap.get(birthPlace.toLowerCase().trim());
                     
@@ -245,35 +235,46 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValue(nationality, i, patientId))
             	{
-            		AttributeNominalValue vv = couA.nominalValueMap.get(nationality.toLowerCase().trim());
+            		Attribute countryOfOrigin = Utils.selectAttribute("Country of origin", regadbAttributes);
                     
-                    if (vv != null) 
+            		String mapping = countryTranslation.get(nationality.toLowerCase().trim());
+            		
+            		Map<String, AttributeNominalValue> tmp = new HashMap<String, AttributeNominalValue>(); 
+                    if (mapping != null) 
                     {
-                        PatientAttributeValue v = p.createPatientAttributeValue(couA.attribute);
-                        v.setAttributeNominalValue(vv);
+                    	AttributeNominalValue cornv = tmp.get(mapping);
+                    	if(cornv==null) {
+                    		cornv = new AttributeNominalValue(countryOfOrigin, mapping);
+                    		tmp.put(mapping, cornv);
+                    	}
+                        PatientAttributeValue v = p.createPatientAttributeValue(countryOfOrigin);
+                        v.setAttributeNominalValue(cornv);
                     }
                     else 
                     {
                    	 	ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Country of Origin): "+nationality);
                     }	
-            	}
+            	}*/
             	
-            	if(Utils.checkColumnValue(riskGroup, i, patientId))
+            	/*if(Utils.checkColumnValue(riskGroup, i, patientId))
             	{
-            		AttributeNominalValue vv = rgA.nominalValueMap.get(riskGroup.toLowerCase().trim());
+            		Attribute transmissionGroup = Utils.selectAttribute("Transmission group", regadbAttributes);
+            		
+            		String mapping = riskGroupTranslation.get(riskGroup.trim());
                      
-                     if (vv != null) 
+                     if (mapping != null) 
                      {
-                         PatientAttributeValue v = p.createPatientAttributeValue(rgA.attribute);
-                         v.setAttributeNominalValue(vv);
+                    	 AttributeNominalValue cornv = new AttributeNominalValue(transmissionGroup, mapping);
+                         PatientAttributeValue v = p.createPatientAttributeValue(transmissionGroup);
+                         v.setAttributeNominalValue(cornv);
                      }
                      else 
                      {
                     	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Transmission group): "+riskGroup);
                      }	
-            	}
+            	}*/
             	
-            	if(Utils.checkColumnValue(seroConverter, i, patientId))
+            	/*if(Utils.checkColumnValue(seroConverter, i, patientId))
             	{
             		 AttributeNominalValue vv = scA.nominalValueMap.get(seroConverter.trim());
                      
@@ -286,7 +287,7 @@ public class ImportUcsc
                      {
                     	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Seroconverter): "+seroConverter);
                      }
-            	}
+            	}*/
             	
             	if(Utils.checkColumnValue(firstTest, i, patientId))
             	{
@@ -650,17 +651,17 @@ public class ImportUcsc
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
     	
-    	if(motivation != null)
-    	{
-    		TherapyMotivation therapyMotivation = new TherapyMotivation(motivation);
-    	
-    		t.setTherapyMotivation(therapyMotivation);
-    	}
-    	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
     		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)));
     		t.getTherapyCommercials().add(tc);
+    	}
+    	
+    	if(motivation != null && !motivation.equals(""))
+    	{
+    		TherapyMotivation therapyMotivation = new TherapyMotivation("Toxicity");
+    	
+    		t.setTherapyMotivation(therapyMotivation);
     	}
     }
     
