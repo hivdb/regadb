@@ -50,13 +50,10 @@ public class ImportUcsc
 	private Table riskGroupTable;
 	private Table stopTherapieDescTable;
 	
+	private HashMap<String, String> stopTherapyTranslation;
+	
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
 	private HashMap<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
-	
-	private HashMap<String, String> countryTranslation;
-	private HashMap<String, String> birthplaceTranslation;
-	private HashMap<String, String> riskGroupTranslation;
-	private HashMap<String, String> stopTherapyTranslation;
 	
 	private List<DrugCommercial> regaDrugCommercials;
 	private List<DrugGeneric> regaDrugGenerics;
@@ -64,7 +61,7 @@ public class ImportUcsc
 	private List<Attribute> regadbAttributes;
 	
     private AttributeGroup regadb = new AttributeGroup("RegaDB");
-    private AttributeGroup virolab = new AttributeGroup("RegaDB");
+    private AttributeGroup virolab = new AttributeGroup("Virolab");
 	
     public static void main(String [] args) 
     {
@@ -105,10 +102,7 @@ public class ImportUcsc
     		stopTherapieDescTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "stop_therapy_reason.mapping");
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
-    		countryTranslation = getCountryTranslation();
-    		birthplaceTranslation = getBirthPlaceTranslation();
-    		riskGroupTranslation = getRiskGroupTranslation();
-    		stopTherapyTranslation = getStopTherapyTranslation();
+    		stopTherapyTranslation = Utils.translationFileToHashMap(stopTherapieDescTable);
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving attributes and drugs...");
     		regadbAttributes = Utils.prepareRegaDBAttributes();
@@ -163,19 +157,16 @@ public class ImportUcsc
                 new String[] { "1", "0" } );
         scA.attribute.setAttributeGroup(virolab);
         
-        String[] bpKeys = Utils.convertKeysToStringArray(birthplaceTranslation.keySet());
-        String[] bpValues = Utils.convertValuesToStringArray(birthplaceTranslation.values());
-        
-        NominalAttribute bpA = new NominalAttribute("Birthplace", CbirthPlace, bpKeys,
-        		bpValues);
-        bpA.attribute.setAttributeGroup(virolab);
-        
         TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
     	Test acuteSyndromTest = new Test(acuteSyndromTestType, "Acute Syndrome");
     	
     	TestType hivTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "HIV Test", new TreeSet<TestNominalValue>());
     	Test hivTest = new Test(hivTestType, "HIV Test");
 	
+    	NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryTable, regadb, Utils.selectAttribute("Country of origin", regadbAttributes));
+    	NominalAttribute birthplaceA = new NominalAttribute("Birthplace", birthPlaceTable, virolab, null);
+    	NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", riskGroupTable, regadb, Utils.selectAttribute("Transmission group", regadbAttributes));    	
+    	
     	for(int i = 1; i < this.patientTable.numRows(); i++)
     	{
             String patientId = this.patientTable.valueAt(CpatientID, i);
@@ -218,76 +209,25 @@ public class ImportUcsc
             		p.setBirthDate(Utils.convertDate(birthDate));
             	}
             	
-            	/*if(Utils.checkColumnValue(birthPlace, i, patientId))
+            	if(Utils.checkColumnValue(birthPlace, i, patientId))
             	{
-            		AttributeNominalValue vv = bpA.nominalValueMap.get(birthPlace.toLowerCase().trim());
-                    
-                    if (vv != null) 
-                    {
-                        PatientAttributeValue v = p.createPatientAttributeValue(bpA.attribute);
-                        v.setAttributeNominalValue(vv);
-                    }
-                    else 
-                    {
-                        ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Birthplace): "+birthPlace);
-                    }
+                    handlePatientAttributeValue(birthplaceA, birthPlace, p);
             	}
             	
             	if(Utils.checkColumnValue(nationality, i, patientId))
             	{
-            		Attribute countryOfOrigin = Utils.selectAttribute("Country of origin", regadbAttributes);
-                    
-            		String mapping = countryTranslation.get(nationality.toLowerCase().trim());
-            		
-            		Map<String, AttributeNominalValue> tmp = new HashMap<String, AttributeNominalValue>(); 
-                    if (mapping != null) 
-                    {
-                    	AttributeNominalValue cornv = tmp.get(mapping);
-                    	if(cornv==null) {
-                    		cornv = new AttributeNominalValue(countryOfOrigin, mapping);
-                    		tmp.put(mapping, cornv);
-                    	}
-                        PatientAttributeValue v = p.createPatientAttributeValue(countryOfOrigin);
-                        v.setAttributeNominalValue(cornv);
-                    }
-                    else 
-                    {
-                   	 	ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Country of Origin): "+nationality);
-                    }	
-            	}*/
+            		handlePatientAttributeValue(countryOfOriginA, nationality, p);
+            	}
             	
-            	/*if(Utils.checkColumnValue(riskGroup, i, patientId))
+            	if(Utils.checkColumnValue(riskGroup, i, patientId))
             	{
-            		Attribute transmissionGroup = Utils.selectAttribute("Transmission group", regadbAttributes);
-            		
-            		String mapping = riskGroupTranslation.get(riskGroup.trim());
-                     
-                     if (mapping != null) 
-                     {
-                    	 AttributeNominalValue cornv = new AttributeNominalValue(transmissionGroup, mapping);
-                         PatientAttributeValue v = p.createPatientAttributeValue(transmissionGroup);
-                         v.setAttributeNominalValue(cornv);
-                     }
-                     else 
-                     {
-                    	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Transmission group): "+riskGroup);
-                     }	
-            	}*/
+            		handlePatientAttributeValue(transmissionGroupA, riskGroup, p);
+            	}
             	
-            	/*if(Utils.checkColumnValue(seroConverter, i, patientId))
+            	if(Utils.checkColumnValue(seroConverter, i, patientId))
             	{
-            		 AttributeNominalValue vv = scA.nominalValueMap.get(seroConverter.trim());
-                     
-                     if (vv != null) 
-                     {
-                         PatientAttributeValue v = p.createPatientAttributeValue(scA.attribute);
-                         v.setAttributeNominalValue(vv);
-                     }
-                     else 
-                     {
-                    	 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (Seroconverter): "+seroConverter);
-                     }
-            	}*/
+            		handlePatientAttributeValue(scA, seroConverter, p);
+            	}
             	
             	if(Utils.checkColumnValue(firstTest, i, patientId))
             	{
@@ -342,6 +282,20 @@ public class ImportUcsc
            	 	ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set");
             }
     	}
+    }
+    
+    private void handlePatientAttributeValue(NominalAttribute na, String value, Patient p) {
+		AttributeNominalValue anv = na.nominalValueMap.get(value);
+		
+        if (anv != null)
+        {
+            PatientAttributeValue v = p.createPatientAttributeValue(na.attribute);
+            v.setAttributeNominalValue(anv);
+        }
+        else 
+        {
+            ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
+        }
     }
     
     private void handleCDData()
@@ -742,104 +696,4 @@ public class ImportUcsc
             	ConsoleLogger.getInstance().logWarning("Incompatible value found.");
     	}
     }
-     
-    private HashMap<String, String> getCountryTranslation()
-    {
-    	 int italianIndex = Utils.findColumn(this.countryTable, "nazionalita");
-    	 int englishIndex = Utils.findColumn(this.countryTable, "Nationality");
-    	 
-    	 HashMap<String, String> values = new HashMap<String, String>();
-    	 
-    	 for(int i = 1; i < this.countryTable.numRows(); i++)
-     	 {
-             String italianvalue = this.countryTable.valueAt(italianIndex, i);
-             String englishvalue = this.countryTable.valueAt(englishIndex, i);
-             
-             if(!"".equals(italianvalue) && !"".equals(englishvalue))
-             {
-            	 values.put(italianvalue, englishvalue);
-             }
-             else
-             {
-            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
-             }
-     	 }
-    	 
-    	 return values;
-     }
-    
-     private HashMap<String, String> getBirthPlaceTranslation()
-     {
-    	 int italianIndex = Utils.findColumn(this.birthPlaceTable, "luogo di nascita");
-    	 int englishIndex = Utils.findColumn(this.birthPlaceTable, "Birthplace");
-    	 
-    	 HashMap<String, String> values = new HashMap<String, String>();
-    	 
-    	 for(int i = 1; i < this.birthPlaceTable.numRows(); i++)
-     	 {
-             String italianvalue = this.birthPlaceTable.valueAt(italianIndex, i);
-             String englishvalue = this.birthPlaceTable.valueAt(englishIndex, i);
-             
-             if(!"".equals(italianvalue) && !"".equals(englishvalue))
-             {
-            	 values.put(italianvalue, englishvalue);
-             }
-             else
-             {
-            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
-             }
-     	 }
-    	 
-    	 return values;
-     }
-    
-    private HashMap<String, String> getRiskGroupTranslation()
-    {
-    	 int italianIndex = Utils.findColumn(this.riskGroupTable, "fattore di rischio");
-    	 int englishIndex = Utils.findColumn(this.riskGroupTable, "Transmission Group");
-    	 
-    	 HashMap<String, String> values = new HashMap<String, String>();
-    	 
-    	 for(int i = 1; i < this.riskGroupTable.numRows(); i++)
-     	 {
-             String italianvalue = this.riskGroupTable.valueAt(italianIndex, i);
-             String englishvalue = this.riskGroupTable.valueAt(englishIndex, i);
-             
-             if(!"".equals(italianvalue) && !"".equals(englishvalue))
-             {
-            	 values.put(italianvalue, englishvalue);
-             }
-             else
-             {
-            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
-             }
-     	 }
-    	 
-    	 return values;
-     }
-    
-     private HashMap<String, String> getStopTherapyTranslation()
-     {
-    	 int italianIndex = Utils.findColumn(this.stopTherapieDescTable, "motivo stop terapia anti HIV");
-    	 int englishIndex = Utils.findColumn(this.stopTherapieDescTable, "Reason for stopping HIV Therapy");
-    	 
-    	 HashMap<String, String> values = new HashMap<String, String>();
-    	 
-    	 for(int i = 1; i < this.stopTherapieDescTable.numRows(); i++)
-     	 {
-             String italianvalue = this.stopTherapieDescTable.valueAt(italianIndex, i);
-             String englishvalue = this.stopTherapieDescTable.valueAt(englishIndex, i);
-             
-             if(!"".equals(italianvalue) && !"".equals(englishvalue))
-             {
-            	 values.put(italianvalue, englishvalue);
-             }
-             else
-             {
-            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
-             }
-     	 }
-    	 
-    	 return values;
-     }
 }
