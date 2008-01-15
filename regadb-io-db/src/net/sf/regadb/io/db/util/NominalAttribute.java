@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.ValueType;
 
@@ -60,5 +61,61 @@ public class NominalAttribute {
                 attribute.getAttributeNominalValues().add(value);
                 nominalValueMap.put(ids[i], value);
             }
+       }
+        
+       public NominalAttribute(String name, Table conversionTable, AttributeGroup group, Attribute standard) {
+            this.attribute = new Attribute(name);
+            this.attribute.setValueType(nominalValueType);
+            
+            attribute.setAttributeGroup(group);
+            
+            this.nominalValueMap = new HashMap<String, AttributeNominalValue>();
+            for (int i = 1; i < (conversionTable.numRows()-1); ++i) {
+            	String valueS = conversionTable.valueAt(1, i);
+                if( "".equals(conversionTable.valueAt(0, i)) || "".equals(valueS)) {
+                	ConsoleLogger.getInstance().logError("Values in row "+i+" not present in translation file for \"" + name + "\"");
+                } else {
+                	AttributeNominalValue value = null;
+                	for(Map.Entry<String, AttributeNominalValue> v : nominalValueMap.entrySet()) {
+                		if(v.getValue().getValue().equals(valueS)) {
+                			value = v.getValue();
+                			break;
+                		}
+                	}
+                	if(value==null)
+                		value = new AttributeNominalValue(attribute, valueS);
+	                attribute.getAttributeNominalValues().add(value);
+	                nominalValueMap.put(conversionTable.valueAt(1, i), value);
+	                if(!checkStandardNominalValue(value.getValue(),standard)) {
+	                	ConsoleLogger.getInstance().logError("Usage of unstandard value " + value.getValue());
+	                }
+                }
+            }
+            
+            if(standard!=null) {
+            	for(AttributeNominalValue sanv : standard.getAttributeNominalValues()) {
+            		boolean found = false;
+            		for(AttributeNominalValue aanv : attribute.getAttributeNominalValues()) {
+            			if(aanv.getValue().equals(sanv.getValue())) {
+            				found = true;
+            			}
+            		}
+            		if(!found)
+            			attribute.getAttributeNominalValues().add(new AttributeNominalValue(attribute, sanv.getValue()));
+            	}
+            }
+       }
+       
+       private boolean checkStandardNominalValue(String value, Attribute standard) {
+    	   if(standard==null)
+    		   return true;
+    	   boolean found = false;
+    	   for(AttributeNominalValue anv : standard.getAttributeNominalValues()) {
+    		   if(anv.getValue().equals(value)) {
+    			   found = true;
+    			   break;
+    		   }
+    	   }
+    	   return found;
        }
 }

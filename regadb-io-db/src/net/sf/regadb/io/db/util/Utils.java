@@ -440,4 +440,25 @@ public class Utils {
              return drug;
          }
      }
+     
+     public static HashMap<String, String> translationFileToHashMap(Table t) {
+    	 HashMap<String, String> values = new HashMap<String, String>();
+    	 
+    	 for(int i = 1; i < t.numRows(); i++)
+     	 {
+             String val1 = t.valueAt(0, i);
+             String val2 = t.valueAt(1, i);
+             
+             if(!"".equals(val1) && !"".equals(val2))
+             {
+            	 values.put(val1, val2);
+             }
+             else
+             {
+            	 ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present.");
+             }
+     	 }
+    	 
+    	 return values;
+     }
 }
