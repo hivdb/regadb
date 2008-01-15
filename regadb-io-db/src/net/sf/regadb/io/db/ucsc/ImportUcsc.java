@@ -211,22 +211,22 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValue(birthPlace, i, patientId))
             	{
-                    handlePatientAttributeValue(birthplaceA, birthPlace, p);
+                    Utils.handlePatientAttributeValue(birthplaceA, birthPlace, p);
             	}
             	
             	if(Utils.checkColumnValue(nationality, i, patientId))
             	{
-            		handlePatientAttributeValue(countryOfOriginA, nationality, p);
+                    Utils.handlePatientAttributeValue(countryOfOriginA, nationality, p);
             	}
             	
             	if(Utils.checkColumnValue(riskGroup, i, patientId))
             	{
-            		handlePatientAttributeValue(transmissionGroupA, riskGroup, p);
+                    Utils.handlePatientAttributeValue(transmissionGroupA, riskGroup, p);
             	}
             	
             	if(Utils.checkColumnValue(seroConverter, i, patientId))
             	{
-            		handlePatientAttributeValue(scA, seroConverter, p);
+                    Utils.handlePatientAttributeValue(scA, seroConverter, p);
             	}
             	
             	if(Utils.checkColumnValue(firstTest, i, patientId))
@@ -282,20 +282,6 @@ public class ImportUcsc
            	 	ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set");
             }
     	}
-    }
-    
-    private void handlePatientAttributeValue(NominalAttribute na, String value, Patient p) {
-		AttributeNominalValue anv = na.nominalValueMap.get(value);
-		
-        if (anv != null)
-        {
-            PatientAttributeValue v = p.createPatientAttributeValue(na.attribute);
-            v.setAttributeNominalValue(anv);
-        }
-        else 
-        {
-            ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
-        }
     }
     
     private void handleCDData()

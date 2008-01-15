@@ -20,9 +20,11 @@ import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
@@ -460,5 +462,19 @@ public class Utils {
      	 }
     	 
     	 return values;
+     }
+     
+     public static void handlePatientAttributeValue(NominalAttribute na, String value, Patient p) {
+        AttributeNominalValue anv = na.nominalValueMap.get(value);
+        
+         if (anv != null)
+         {
+             PatientAttributeValue v = p.createPatientAttributeValue(na.attribute);
+             v.setAttributeNominalValue(anv);
+         }
+         else 
+         {
+             ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
+         }
      }
 }
