@@ -7,7 +7,7 @@
 package net.sf.regadb.io.util;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -25,11 +25,22 @@ public class StandardObjects {
     private static ValueType nominalValueType = new ValueType("nominal value");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
+    private static TestType hivSeroStatusTestType;
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
+    private static Test genericHivSeroStatusTest;
+    
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
     private static String clinicalFileNumberAttribute = "Clinical File Number";
 
+    static {
+        hivSeroStatusTestType = new TestType(patientObject, "HIV Sero Status");
+        hivSeroStatusTestType.setValueType(nominalValueType);
+        hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Positive"));
+        hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Negative"));
+        genericHivSeroStatusTest = new Test(hivSeroStatusTestType, "HIV Sero Status (generic)");
+    }
+    
     public static TestType getCd4TestType() {
         return cd4TestType;
     }
@@ -66,7 +77,12 @@ public class StandardObjects {
     public static boolean isCD4(TestType tt) {
         return cd4TestType.getDescription().equals(tt.getDescription());
     }
-    
+    public static Test getGenericHivSeroStatusTest() {
+        return genericHivSeroStatusTest;
+    }
+    public static TestType getHivSeroStatusTestType() {
+        return hivSeroStatusTestType;
+    }
     public static Protein[] getProteins() {
         Protein[] proteins = new Protein[7];
         Protein p6 = new Protein("p6", "Transframe peptide (partially)");
