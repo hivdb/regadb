@@ -70,4 +70,9 @@ public class Event extends Entry
 		return false;
 	}
 
+    @Override
+    public boolean canHaveAsEntry() {
+        return true;
+    }
+
 }

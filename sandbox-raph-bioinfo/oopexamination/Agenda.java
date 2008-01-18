@@ -32,7 +32,7 @@ import oopexamination.exceptions.FullSlotException;
 public class Agenda
 {
 	//List all entries at each slot
-	private final HashMap<Integer, Entry> entrySlots=new HashMap<Integer, Entry>();
+	private final Set<Entry> agendaEntries=new HashSet<Entry>();
 	private final Person holder;
 
 	/**
@@ -56,23 +56,8 @@ public class Agenda
 			throw new AgendaOwnerEntryOwnerMismatchException(entry.getPerson(),holder);
 		if(canHaveAsEntry(entry))
 		{
-			if (Appointment.class.isAssignableFrom(entry.getClass()))
-			{
-				Appointment app= (Appointment) entry;
-				Slot slots=app.getSlot();
-				Iterator iter= slots.iterator();
-				while(iter.hasNext())
-				{
-					entrySlots.put((Integer) iter.next(),entry);
-				}
-			}
-			else
-			{
-				// slot is null for events
-				entrySlots.put(null,entry);
-			}
+            agendaEntries.add(entry);
 		}
-
 	}
 
 
@@ -80,16 +65,10 @@ public class Agenda
 	 * Add known set of entries to agenda
 	 * @param entries
 	 */
-	public void addEntry(Set<Entry> entries) 
+	public void addEntry(Set<Entry> entries) throws AgendaOwnerEntryOwnerMismatchException
 	{
 		for(Entry entry:entries)
-			try {
 				addEntry(entry);
-			} catch (AgendaOwnerEntryOwnerMismatchException e)
-			{
-				e.printStackTrace();
-			}
-
 	}
 
 
@@ -103,33 +82,7 @@ public class Agenda
 	 */
 	public boolean canHaveAsEntry(Entry entry)
 	{
-		boolean result = false;
-		if(entry==null)
-			return false;
-		if(entrySlots.isEmpty())
-			return true; //The first entry can freely added
-		if (Appointment.class.isAssignableFrom(entry.getClass()))
-		{
-			Appointment appointment= (Appointment) entry;
-			long day=appointment.getDay();
-			if(Meeting.class.isAssignableFrom(appointment.getClass()))
-			{
-				//ok
-				result=isFreeAt(appointment.getFirstSlot(),appointment.getLastSlot(),day);	
-			}
-			else //if PersonalEntry its slots do not have a range
-				if(PersonalEntry.class.isAssignableFrom(appointment.getClass()))
-				{
-					result=isFreeAt(appointment.getSlot(),day);
-				}
-
-		}
-		else //for entry no need to check slots availability
-		{
-			result=true; 
-		}
-		return result;
-
+	    return entry.canHaveAsEntry();
 	}
 
 	/**
@@ -137,60 +90,8 @@ public class Agenda
 	 * @return the entries which are unique
 	 */
 	public Set<Entry> getEntries() 
-	{
-		Collection <Entry>entries;
-		Set<Entry> result=new HashSet<Entry>();
-		entries =entrySlots.values(); //these include duplicate entries
-
-		for(Entry entry:entries)
-		{
-			if(!(result.contains(entry)))
-			{
-				try 
-				{
-					result.add(entry); //Convert collection to Set 
-				} catch (RuntimeException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		return result;
-	}
-
-
-	/**
-	 * Entry occupying the slot at a given day
-	 * @param slot
-	 * @return enry
-	 */
-	//	mind that slots are not applicable for entries of type entry but only appointments
-	public Entry getEntryAt(int slot, long day)
-	{
-		Entry result=null;
-		List daysInAgenda=getAgendaDays();
-		if(daysInAgenda.contains(day))
-		{
-			HashMap<Integer, Entry> entriesSlotsOnDay =new HashMap<Integer,Entry>();
-			entriesSlotsOnDay=getEntriesSlotsOnDay(day);
-			if(entriesSlotsOnDay.containsKey(slot))
-				result=entriesSlotsOnDay.get(slot);
-		}
-		else
-		{
-			//The day is not in agenda
-		}
-
-		return result;
-	}
-
-	/**
-	 * Return key values for slot entry pair
-	 * @return The entrySlots
-	 */
-	public HashMap getEntrySlots() 
-	{
-		return entrySlots;
+	{ 
+		return agendaEntries;
 	}
 
 	/**
@@ -215,41 +116,6 @@ public class Agenda
 	}
 
 	/**
-	 * Check if slots in given range are free in a day
-	 * //	require start<end 
-	 * //	that start and end are valid time slots
-	 * // mind that slots are not applicable for entries of type entry
-	 * //  parameter day was not originally provided
-	 * @param start
-	 * @param end
-	 * @param day
-	 * @return true if the slot range is free in agenda for a given day
-	 * 
-	 *
-	 */
-	public boolean isFreeAt(int start, int end, long day)
-	{
-		//add up all entries slots into a sliceslots -no duplicates of course -- a TreeSet
-		Slot slotSlice=new Slot();
-
-		slotSlice.addInRange(start, end);
-		Slot slotInAgenda=getAgendaSlotsOnDay(day);
-		return (!(slotInAgenda.containsAll(slotSlice)));
-
-	}
-	/**
-	 * Check if the given slotslice is occupied for a given day 
-	 * @param slotSlice slot to check
-	 * @param day day to check
-	 * @return
-	 */
-	public boolean isFreeAt(Slot slotSlice, long day)
-	{
-		Slot slot=getAgendaSlotsOnDay(day);
-		return(! (slot.containsAll(slotSlice)));	//return false if not free;
-	}
-
-	/**
 	 * Check wheather all slots in an agenda day are full
 	 * @param day
 	 * @return totalSlotsCountOnDay>=Slot.MAXIMUM_SLOT_NUMBER 
@@ -263,8 +129,9 @@ public class Agenda
 	/**
 	 * Add entries in agenda with additional collection
 	 * @param entries the entries to set
+	 * @throws AgendaOwnerEntryOwnerMismatchException 
 	 */
-	public void setEntries(Set<Entry> entries) 
+	public void setEntries(Set<Entry> entries) throws AgendaOwnerEntryOwnerMismatchException 
 	{
 		addEntry(entries);
 	}
@@ -284,37 +151,12 @@ public class Agenda
 		return result;
 	}
 
-	/**
-	 * Get Slots on specified agenda day
-	 * @param day
-	 * @return slot in appointment
-	 */
-	private Slot getAgendaSlotsOnDay(long day) 
-	{
-
-		Slot result=new Slot();
-		Set<Entry> entriesOnDay =new HashSet<Entry>();
-		entriesOnDay=getEntriesOnDay(day);
-		// DEBUG System.out.println(entriesOnDay.size());//0?
-
-		Iterator<Entry> iter=entriesOnDay.iterator();
-		while(iter.hasNext())
-		{
-			Entry currentEntry=iter.next();
-			if (Appointment.class.isAssignableFrom(currentEntry.getClass()))
-			{
-				Appointment app= (Appointment) currentEntry;
-				result.addAll(app.getSlot());
-			}
-		}
-		return result;
-	}
 	/** 
 	 * Entries occuring on a given day
 	 * @param day
 	 * @return all entries in agenda which are on the given day
 	 */
-	private Set<Entry> getEntriesOnDay(long day) 
+	public Set<Entry> getEntriesOnDay(long day) 
 	{
 		Set <Entry>result =new HashSet<Entry>();
 
@@ -343,25 +185,7 @@ public class Agenda
 		}
 		return count;
 	}
-	/** 
-	 * Return subset of entry slots for a given day in agenda
-	 * @param day entries and slots pair in agenda for a specified day 
-	 * @return result.put((Integer)currentKey, currentEntry);
-	 */
-	private HashMap<Integer, Entry> getEntriesSlotsOnDay(long day) 
-	{
-		HashMap<Integer, Entry> result=new HashMap<Integer, Entry> ();
-		Iterator iter=entrySlots.keySet().iterator();
-		while(iter.hasNext())
-		{
-			Object currentKey=iter.next();
-			Entry currentEntry=entrySlots.get(currentKey);
-			if(currentEntry.getDay()==day)
-				result.put((Integer)currentKey, currentEntry);
-		}
-
-		return result;
-	}
+	
 
 	/**
 	 * Get entry at given index counts 1 to getNbEntries+1

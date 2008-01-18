@@ -2,6 +2,10 @@
 package oopexamination.entries;
 
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import oopexamination.Agenda;
 import oopexamination.Day;
 import oopexamination.Person;
@@ -14,11 +18,12 @@ import oopexamination.exceptions.FullSlotException;
  * @author rsanged0
  *
  */
-public class Appointment extends Entry
+public abstract class Appointment extends Entry
 {
 
 	protected Slot slot;
 
+    public abstract boolean isFreeAt();
 
 
 	/**
@@ -36,7 +41,7 @@ public class Appointment extends Entry
 		super(agenda, description, entryDay, person);
 		this.slot = slot;
 	}
-
+   
 
 	/**
 	 * Add slot to collection
@@ -137,4 +142,36 @@ public class Appointment extends Entry
 		return false;
 
 	}
+
+
+    @Override
+    public boolean canHaveAsEntry() {
+        return isFreeAt();
+    }
+    
+    /**
+     * Get Slots on specified agenda day
+     * @param day
+     * @return slot in appointment
+     */
+    public Slot getAgendaSlotsOnDay(long day) 
+    {
+
+        Slot result=new Slot();
+        Set<Entry> entriesOnDay =new HashSet<Entry>();
+        entriesOnDay=this.agenda.getEntriesOnDay(day);
+        // DEBUG System.out.println(entriesOnDay.size());//0?
+
+        Iterator<Entry> iter=entriesOnDay.iterator();
+        while(iter.hasNext())
+        {
+            Entry currentEntry=iter.next();
+            if (Appointment.class.isAssignableFrom(currentEntry.getClass()))
+            {
+                Appointment app= (Appointment) currentEntry;
+                result.addAll(app.getSlot());
+            }
+        }
+        return result;
+    }
 }

@@ -3,6 +3,7 @@ package oopexamination.entries;
 import oopexamination.Agenda;
 import oopexamination.Day;
 import oopexamination.Person;
+import oopexamination.Slot;
 
 /**
  * Abstract entry for an agenda
@@ -32,6 +33,7 @@ public abstract class Entry
 		this.person = person;
 	}
 	
+    public abstract boolean canHaveAsEntry();
 	/**
 	 * Get agenda for this entry
 	 * @return the agenda

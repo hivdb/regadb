@@ -167,4 +167,14 @@ public class Meeting  extends Appointment
 	{
 		this.otherPerson = otherperson;
 	}
+
+    @Override
+    public boolean isFreeAt() {
+        Slot slotSlice=new Slot();
+
+        slotSlice.addInRange(getFirstSlot(), getLastSlot());
+        
+        Slot slotInAgenda=getAgendaSlotsOnDay(getDay());
+        return (!(slotInAgenda.containsAll(slotSlice)));
+    }
 }

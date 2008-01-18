@@ -26,7 +26,12 @@ public class PersonalEntry  extends Appointment
 	{
 		super(agenda, description, entryDay, person, slot);
 	}
-	
 
-	
+    @Override
+    public boolean isFreeAt() {
+        Slot slotSlice=this.getSlot();
+        
+        Slot slotInAgenda=getAgendaSlotsOnDay(getDay());
+        return (!(slotInAgenda.containsAll(slotSlice)));
+    }
 }
