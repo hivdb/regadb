@@ -1,0 +1,17 @@
+<project>
+	<property name="src" location="src" />
+	<property name="bin" location="bin" />
+	
+	<path id="classpath.base">
+		<pathelement location="${src}">
+			
+		</pathelement>
+	</path>
+		
+	<path id="classpath.test">
+	</path>
+	
+	<junit>
+	
+	</junit>
+</project>

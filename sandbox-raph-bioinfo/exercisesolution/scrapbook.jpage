@@ -1,0 +1,7 @@
+String regex = ;
+String subject = "This is a subject Some more text";
+
+if( subject.matches( regex ) )
+	System.out.println( "yes" );
+else
+	System.out.println( "no" );
