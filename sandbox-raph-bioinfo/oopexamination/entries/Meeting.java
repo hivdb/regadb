@@ -52,12 +52,7 @@ public class Meeting  extends Appointment
 		super(agenda, description, entryDay, person, slot);
 		this.notes = notes;
 		this.otherPerson = otherPerson; 
-		try {
-			registerOtherPersonMeeting(otherPerson,otherPersonAgenda);
-		} catch (AgendaOwnerEntryOwnerMismatchException e)
-		{
-			e.printStackTrace();
-		}
+		registerOtherPersonMeeting(otherPerson,otherPersonAgenda);
 	}
 
 	/**
@@ -79,7 +74,7 @@ public class Meeting  extends Appointment
 	}
 
 	//require that the other person has an agenda
-	private void registerOtherPersonMeeting(Person otherPerson,Agenda otherPersonAgenda)  throws AgendaOwnerEntryOwnerMismatchException
+	private void registerOtherPersonMeeting(Person otherPerson,Agenda otherPersonAgenda)  
 	{
 		Meeting tempMeeting=new Meeting(this); //copy the meeting
 		tempMeeting.setPerson(otherPerson); //set unique parameters
@@ -96,6 +91,8 @@ public class Meeting  extends Appointment
 	/**
 	 * Extend Meeting notes with specified string
 	 * @param notes the notes to set
+	 * @pre the note string is provided and that the note is initialed
+	 * @effect the note is concatenated to the original note
 	 */
 	public void addNotes(String notes) 
 	{
@@ -114,6 +111,7 @@ public class Meeting  extends Appointment
 	/**
 	 * Return Meeting notes
 	 * @return the notes
+	 * @post the note is returned to the user
 	 */
 	public String getNotes()
 	{
@@ -167,14 +165,4 @@ public class Meeting  extends Appointment
 	{
 		this.otherPerson = otherperson;
 	}
-
-    @Override
-    public boolean isFreeAt() {
-        Slot slotSlice=new Slot();
-
-        slotSlice.addInRange(getFirstSlot(), getLastSlot());
-        
-        Slot slotInAgenda=getAgendaSlotsOnDay(getDay());
-        return (!(slotInAgenda.containsAll(slotSlice)));
-    }
 }

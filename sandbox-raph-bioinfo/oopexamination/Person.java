@@ -5,7 +5,7 @@ import java.util.Set;
 /** 
  * Person class to deal with owners of meetings or holders of agenda
  * @author rsanged0
- *
+ *@pre The name can not be set once initialized
  */
 
 public class Person 
@@ -57,6 +57,7 @@ public class Person
 	/**
 	 * Add one more agenda to the agenda collections of this person
 	 * @param agenda
+	 * @post agenda added to list of this person
 	 */
 	public void addAgenda(Agenda agenda)
 	{

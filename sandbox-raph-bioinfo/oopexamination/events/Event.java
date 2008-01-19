@@ -6,6 +6,7 @@ package oopexamination.events;
 import oopexamination.Agenda;
 import oopexamination.Day;
 import oopexamination.Person;
+import oopexamination.Slot;
 import oopexamination.entries.Entry;
 
 /** 
@@ -71,8 +72,15 @@ public class Event extends Entry
 	}
 
     @Override
-    public boolean canHaveAsEntry() {
-        return true;
+    public boolean canHaveAsEntry() 
+    {
+        return (!(this==null));
     }
+
+	@Override
+	public Slot getSlot() 
+	{
+		return null;
+	}
 
 }

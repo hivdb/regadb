@@ -37,7 +37,8 @@ public class Slot extends TreeSet<Integer>
 	}
 	/**
 	 * Check wheather the maximum slot is reached
-	 * @return true if size()>=MAXIMUM_SLOT_NUMBER ;
+	 * @return true if size()>=MAXIMUM_SLOT_NUMBER 
+	 * @post Maximum size of slot is not reached
 	 */
 	private boolean isFull()
 	{
@@ -47,6 +48,7 @@ public class Slot extends TreeSet<Integer>
 	 * Check wheather the slot int is less than max slot and more than 0 first slot is 1
 	 * @param slot
 	 * @return true if slot<0 && slot>=MAXIMUM_SLOT_NUMBER
+	 * @effect true if slot in range 1 to maximum
 	 */
 	private boolean isValidSlot(int slot)
 	{

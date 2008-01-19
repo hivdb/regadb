@@ -33,7 +33,7 @@ public abstract class Entry
 		this.person = person;
 	}
 	
-    public abstract boolean canHaveAsEntry();
+    public abstract boolean canHaveAsEntry() ;
 	/**
 	 * Get agenda for this entry
 	 * @return the agenda
@@ -106,4 +106,7 @@ public abstract class Entry
 	public void setAgenda(Agenda agenda) {
 		this.agenda = agenda;
 	}
+
+	public abstract Slot  getSlot();
+	
 }
