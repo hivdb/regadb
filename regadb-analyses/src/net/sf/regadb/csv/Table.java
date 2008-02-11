@@ -226,7 +226,8 @@ public class Table {
 			for (int i = 0; i < numColumns(); ++i) {
 				if (i != 0)
 					sout.print(",");
-				sout.print(valueAt(i, j));
+
+				sout.print("\""+ valueAt(i, j).replace("\"", "\"\"") +"\"");
 			}
 			sout.println();
 		}
@@ -360,7 +361,14 @@ public class Table {
 			row.add(pos, list.get(i));
 		}
 	}
-
+	
+	public void addRow(ArrayList<String> row){
+		if(numColumns() != 0 && row.size() != numColumns())
+			throw new RuntimeException("column not compatible with table geometry");
+		else
+			rows.add(row);
+	}
+	
 	public void setValue(int i, int j, String s) {
 		rows.get(j).set(i, s);
 	}
