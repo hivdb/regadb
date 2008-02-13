@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -210,6 +209,8 @@ public class ImportIrsicaixa {
     public List<String> processDrugs(String drugs) {
         StringTokenizer st = new StringTokenizer(drugs, ",");
         List<String> genericDrugs = new ArrayList<String>();
+        if(drugs.equals("NULL"))
+            return genericDrugs;
         while(st.hasMoreTokens())  {
             String drug = st.nextToken().trim();
             drug = Utils.checkDrugsWithRepos(drug, regaDrugGenerics, mappings_);
