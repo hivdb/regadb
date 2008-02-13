@@ -100,15 +100,19 @@ public class Table {
 		reader = null;
 	}
 	
-	public Table(InputStream input, boolean oneline) {
+	public Table(InputStream input, boolean oneline, char delimiter) {
 		this();
 
         reader = new LineNumberReader(new InputStreamReader(input));
 		
-		readLines(oneline, null, null);
+		readLines(oneline, null, null, delimiter);
 	}
+    
+    public Table(InputStream input, boolean oneline) {
+        this(input, oneline, ',');
+    }
 	
-	private void readLines(boolean oneline, ArrayList selected, OutputStream output) {
+	private void readLines(boolean oneline, ArrayList selected, OutputStream output, char delimiter) {
 		PrintStream sout = null;
 
 		if (output != null) {
@@ -118,7 +122,7 @@ public class Table {
 
 		try {
 			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-				ArrayList values = splitHandleQuotes(s, ',', '"', '\\');
+				ArrayList values = splitHandleQuotes(s, delimiter, '"', '\\');
 				ArrayList<String> row = new ArrayList<String>(numColumns());
 
 				for (int i = 0; i < values.size(); ++i) {
@@ -641,13 +645,19 @@ public class Table {
 	}
 
 	public void readSelectedColumns(InputStream input, ArrayList selected,
-									OutputStream output) {
+									OutputStream output, char delimiter) {
 		ArrayList<ArrayList<String>> newRows = new ArrayList<ArrayList<String>>();
 		newRows.add(selectColumns(rows.get(0), selected));
 		rows = newRows;
 		
-		readLines(false, selected, output);
+		readLines(false, selected, output, delimiter);
 	}
+    
+    public void readSelectedColumns(InputStream input, ArrayList selected,
+                OutputStream output) {
+        readSelectedColumns(input, selected, output, ',');
+    }
+
 
 	private ArrayList<String> selectColumns(ArrayList<String> row, ArrayList selected) {
 		ArrayList<String> result = new ArrayList<String>();
