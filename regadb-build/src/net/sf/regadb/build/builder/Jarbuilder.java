@@ -279,7 +279,7 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-") || m.startsWith("wts-"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-"))
             {
                 if(!m.equals("wts-build"))
                 {
