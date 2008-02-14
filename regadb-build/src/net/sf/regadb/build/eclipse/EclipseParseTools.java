@@ -13,7 +13,7 @@ import org.jdom.input.SAXBuilder;
 
 public class EclipseParseTools
 {
-    public static List<String> getDependenciesFromClasspathFile(String projectDir)
+    public static List<String> getDependenciesFromClasspathFile(String projectDir, String kind)
     {
         List<String> dependencies;
         SAXBuilder builder;
@@ -32,7 +32,11 @@ public class EclipseParseTools
             while(itr.hasNext())
             {
                 Element el = (Element)itr.next();
-                dependencies.add(el.getAttributeValue("path"));
+                if(kind==null)
+                    dependencies.add(el.getAttributeValue("path"));
+                else 
+                    if(el.getAttributeValue("kind").equals(kind))
+                        dependencies.add(el.getAttributeValue("path"));
             }
         }
         catch (JDOMException e)
@@ -45,5 +49,23 @@ public class EclipseParseTools
         }
         
         return dependencies; 
+    }
+    
+    public static List<String> getDependenciesFromClasspathFile(String projectDir) {
+        return getDependenciesFromClasspathFile(projectDir, null);
+    }
+    
+    public static void main(String [] args) {
+        for(String s : getDependenciesFromClasspathFile("/home/plibin0/myWorkspace/regadb-io", "lib")) {
+            System.err.println(s);
+        }
+        System.err.println("----");
+        for(String s : getDependenciesFromClasspathFile("/home/plibin0/myWorkspace/regadb-io", "output")) {
+            System.err.println(s);
+        }
+        System.err.println("----");
+        for(String s : getDependenciesFromClasspathFile("/home/plibin0/myWorkspace/regadb-io", "src")) {
+            System.err.println(s);
+        }
     }
 }
