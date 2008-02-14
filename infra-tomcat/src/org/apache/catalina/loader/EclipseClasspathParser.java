@@ -20,7 +20,7 @@ public class EclipseClasspathParser implements ClasspathParser
     	ArrayList<File> files= new ArrayList<File>();
     	for(String s : dependencies){
     		//exclude servlet-api jars to avoid 'is not a Servlet' exception
-    		if(s.contains("servlet-api"))
+    		if(!s.contains("servlet-api"))
     			files.add(new File(s));
     	}
         return files; 
