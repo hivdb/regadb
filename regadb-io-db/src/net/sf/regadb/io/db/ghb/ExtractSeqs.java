@@ -1,9 +1,11 @@
 package net.sf.regadb.io.db.ghb;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
@@ -26,6 +28,23 @@ public class ExtractSeqs {
         }
         
         System.err.println("succes " + succes + " failed " + failed);
+        
+        try {
+            targetFasta.createNewFile();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        FileWriter out;
+        try {
+            out = new FileWriter(targetFasta);
+            for(Entry<String, String> seq : seqs.entrySet()) {
+                out.write(">" + seq.getKey() + "\n" + seq.getValue() + "\n");
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
     }
     
     private void parseSourceDir(File sourcePath) {
