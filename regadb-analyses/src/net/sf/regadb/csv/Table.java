@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,10 +15,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Table {
 
@@ -99,18 +100,33 @@ public class Table {
 		indexes = new HashMap<String, Index>();
 		reader = null;
 	}
-	
-	public Table(InputStream input, boolean oneline, char delimiter) {
-		this();
 
-        reader = new LineNumberReader(new InputStreamReader(input));
-		
-		readLines(oneline, null, null, delimiter);
-	}
-    
-    public Table(InputStream input, boolean oneline) {
+	public Table(InputStream input, boolean oneline) {
         this(input, oneline, ',');
     }
+	
+	public Table(InputStream input, boolean oneline, char delimiter) {
+		this(new InputStreamReader(input),oneline,delimiter);
+	}
+	
+	public Table(InputStream input, String charsetName, boolean oneline) throws UnsupportedEncodingException{
+		this(input, charsetName, oneline, ',');
+	}
+	
+	public Table(InputStream input, String charsetName, boolean oneline, char delimiter) throws UnsupportedEncodingException{
+		this(new InputStreamReader(input, charsetName), oneline, delimiter);
+	}
+	
+	public Table(InputStreamReader input, boolean oneline){
+		this(input,oneline,',');
+	}
+	
+	public Table(InputStreamReader input, boolean oneline, char delimiter){
+		this();
+
+		reader = new LineNumberReader(input);
+		readLines(oneline, null, null,delimiter);
+	}
 	
 	private void readLines(boolean oneline, ArrayList selected, OutputStream output, char delimiter) {
 		PrintStream sout = null;
