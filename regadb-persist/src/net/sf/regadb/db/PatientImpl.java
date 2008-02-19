@@ -1,6 +1,6 @@
 package net.sf.regadb.db;
 
-// Generated Jul 18, 2007 4:05:12 PM by Hibernate Tools 3.2.0.beta8
+// Generated Feb 19, 2008 5:32:52 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 import java.util.HashSet;
@@ -27,6 +27,9 @@ class PatientImpl implements java.io.Serializable {
 
     private Date deathDate;
 
+    private Set<PatientEventValue> patientEventValues = new HashSet<PatientEventValue>(
+            0);
+
     private Set<PatientDataset> patientDatasets = new HashSet<PatientDataset>(0);
 
     private Set<TestResult> testResults = new HashSet<TestResult>(0);
@@ -52,6 +55,7 @@ class PatientImpl implements java.io.Serializable {
     /** full constructor */
     public PatientImpl(String patientId, String lastName, String firstName,
             Date birthDate, Date deathDate,
+            Set<PatientEventValue> patientEventValues,
             Set<PatientDataset> patientDatasets, Set<TestResult> testResults,
             Set<PatientAttributeValue> patientAttributeValues,
             Set<ViralIsolate> viralIsolates, Set<Therapy> therapies) {
@@ -60,6 +64,7 @@ class PatientImpl implements java.io.Serializable {
         this.firstName = firstName;
         this.birthDate = birthDate;
         this.deathDate = deathDate;
+        this.patientEventValues = patientEventValues;
         this.patientDatasets = patientDatasets;
         this.testResults = testResults;
         this.patientAttributeValues = patientAttributeValues;
@@ -122,6 +127,14 @@ class PatientImpl implements java.io.Serializable {
 
     public void setDeathDate(Date deathDate) {
         this.deathDate = deathDate;
+    }
+
+    public Set<PatientEventValue> getPatientEventValues() {
+        return this.patientEventValues;
+    }
+
+    public void setPatientEventValues(Set<PatientEventValue> patientEventValues) {
+        this.patientEventValues = patientEventValues;
     }
 
     public Set<PatientDataset> getPatientDatasets() {

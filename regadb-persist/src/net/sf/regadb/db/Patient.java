@@ -121,6 +121,15 @@ public class Patient {
         patient.setPatientAttributeValues(patientAttributeValues);
     }
 
+    public Set<PatientEventValue> getPatientEventValues() {
+        return patient.getPatientEventValues();
+    }    
+
+    public void setPatientEventValues(
+            Set<PatientEventValue> patientEventValues) {
+        patient.setPatientEventValues(patientEventValues);
+    }
+
     public Set<ViralIsolate> getViralIsolates() {
         return patient.getViralIsolates();
     }

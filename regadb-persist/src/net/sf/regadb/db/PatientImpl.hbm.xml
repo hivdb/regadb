@@ -27,6 +27,12 @@
     <property name="deathDate" type="date">
       <column name="death_date" length="13" />
     </property>
+    <set name="patientEventValues" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.PatientEventValue" />
+    </set>
     <set name="patientDatasets" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />
