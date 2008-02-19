@@ -1,157 +1,211 @@
 package net.sf.regadb.io.db.ghb;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
+import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.NominalAttribute;
+import net.sf.regadb.io.db.util.file.ILineHandler;
+import net.sf.regadb.io.db.util.file.ProcessFile;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class MergeLISFiles {
+    private Map<String, Patient> patients = new HashMap<String, Patient>();
+    private static DateFormat LISDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    
+    private Date earliestDate = new Date(System.currentTimeMillis());
+    
+    private static Attribute emdAttribute;
+    private static AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
+    private static AttributeGroup regadbAttributeGroup = new AttributeGroup("UZ Leuven");
+    private static NominalAttribute gender;
+    
+    private TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
+    private Test cd8Test = new Test(cd8TestType, "CD8 Count (generic)");
+    
+    static {
+        emdAttribute = new Attribute();
+        emdAttribute.setAttributeGroup(ghbAttributeGroup);
+        emdAttribute.setValueType(StandardObjects.getStringValueType());
+        emdAttribute.setName("EMD Number");
+        
+        gender = new NominalAttribute("Gender", -1, new String[] { "M", "V" },
+                new String[] { "male", "female" } );
+        gender.attribute.setAttributeGroup(regadbAttributeGroup);
+    }
+    
     public static void main(String [] args) {
         MergeLISFiles mlisf = new MergeLISFiles();
+        mlisf.run();
     }
+    
+    private List<String> headers = new ArrayList<String>();
     
     public MergeLISFiles() {
+
+    }
+    
+    public void run() {
         File dir = new File("/home/plibin0/import/ghb/");
-        ArrayList<String> headers = getHeaders(dir);
-        if(headers == null) {
-            System.err.println("Error: there is something wrong with the headers!");
-            System.exit(0);
-        }
         
-        File outputFile = new File("/home/plibin0/import/ghb/merge.csv");
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(outputFile);
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        }
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        
-        try {
-            for(int j = 0; j<headers.size(); j++) {
-                bw.write("\""+headers.get(j)+"\"");
-                if(j!=(headers.size()-1)) {
-                    bw.write(","); 
-                }
-                bw.write("\n");
+        ProcessFile pf = new ProcessFile();
+        pf.process(new File(dir.getAbsolutePath()+File.separatorChar+"headers.txt"), new ILineHandler(){
+            public void handleLine(String line, int counter) {
+                headers.addAll(tokenizeTab(line));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
         
         File[] files = dir.listFiles();
-        for(File f : files) {
+        for(final File f : files) {
             if(f.getAbsolutePath().endsWith(".txt")) {
-                try {
-                    InputStream is = new FileInputStream(f);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    String line;
-                    ArrayList<String> outputLine = new ArrayList<String>(); 
-                    while((line=br.readLine())!=null) {
-                        if(!line.trim().equals("")) {
-                            StringTokenizer st = new StringTokenizer(line, "\t");
-                            int i = 0;
-                            boolean noHeader = false;
-                            while(st.hasMoreTokens()) {
-                                String token = st.nextToken();
-                                if(!token.equals(headers.get(i))) {
-                                    if(i!=0)
-                                    System.err.println(token + " " + headers.get(i));
-                                    noHeader = true;
-                                    break;
-                                }
-                                i++;
-                            }
-                            if(noHeader){
-                                st = new StringTokenizer(line, "\t");
-                                int amountOfTokens = st.countTokens();
-                                while(st.hasMoreTokens()) {
-                                    outputLine.add(st.nextToken());
-                                }
-                                for(int j = 0; j<headers.size()-amountOfTokens; j++) {
-                                    outputLine.add("");
-                                }
-                                for(int j = 0; j<outputLine.size(); j++) {
-                                    bw.write("\""+outputLine.get(j)+"\"");
-                                    if(j!=(outputLine.size()-1)) {
-                                        bw.write(","); 
-                                    }
-                                }
-                                bw.write("\n");
-                                outputLine.clear();
-                            }
+                pf.process(f, new ILineHandler() {
+                    public void handleLine(String line, int counter) {
+                        if(!line.startsWith("EADnr\tEMDnr") && line.length()!=0) {
+                         List<String> list = tokenizeTab(line);
+                             if(list.size()==headers.size()) {
+                                 String ead = list.get(headers.indexOf("EADnr"));
+                                 
+                                 handlePatient(ead, list);
+                                 handleTest(ead, list);
+                             } else {
+                                 System.err.println("Incorrect amount of columns in file " + f.getName() + " on line number" + counter); 
+                             }
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                });
             }
         }
-        
+    }
+    
+    private void handlePatient(String ead, List<String> line) {
+        String emd = line.get(headers.indexOf("EMDnr"));
+        Date birthDate = null;
         try {
-            bw.close();
-            fos.close();
-        } catch (IOException e) {
+            birthDate = LISDateFormat.parse(line.get(headers.indexOf("geboortedatum")));
+        } catch (ParseException e) {
+           e.printStackTrace();
+        }
+        char sex = line.get(headers.indexOf("geslacht")).toUpperCase().charAt(0);
+        String nation = line.get(headers.indexOf("nation")).toUpperCase();
+        
+        Patient p = patients.get(ead);
+        if(p==null) {
+            p = new Patient();
+            p.setPatientId(ead);
+            p.setBirthDate(birthDate);
+            p.createPatientAttributeValue(emdAttribute).setValue(emd);
+            handleNominalAttributeValue(gender, p, sex + "");
+            //TODO nation
+            patients.put(ead, p);
+        }
+    }
+    
+    private void handleTest(String ead, List<String> line) {
+        String correctId = getCorrectSampleId(line);
+        Date sampleDate = null;
+        try {
+            sampleDate = LISDateFormat.parse(line.get(headers.indexOf("afname")));
+            if(sampleDate.before(earliestDate)) {
+                earliestDate = sampleDate;
+            }
+            //work with a mapping files
+            if(!line.get(headers.indexOf("reeel")).equals("")) {
+                if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD4(+) T cellen")) {
+                    storeCD4(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD8(+) T cellen")) {
+                    storeCD8(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("HIV-1 viral load")) {
+                    storeViralLoad(line.get(headers.indexOf("relatie")) + Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                } else {
+                    System.err.println(line.get(headers.indexOf("aanvraagTestNaam")));
+                }
+            }
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
     
-    private ArrayList<String> getHeaders(File dir) {
-        File[] files = dir.listFiles();
-        boolean ok = true;
-        int firstAmount = -1;
-        ArrayList<String> headers = new ArrayList<String>();
-        for(File f : files) {
-            if(f.getAbsolutePath().endsWith(".txt")) {
-                try {
-                    InputStream is = new FileInputStream(f);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    String header = br.readLine();
-                    StringTokenizer st = new StringTokenizer(header, "\t");
-                    if(firstAmount==-1) {
-                        firstAmount = st.countTokens();
-                        while(st.hasMoreTokens()) {
-                            headers.add(st.nextToken());
-                        }
-                    }
-                    st = new StringTokenizer(header, "\t");
-                    if(firstAmount!=st.countTokens()) {
-                        System.err.println("Error: headers should be the same! " + firstAmount + " " + st.countTokens());
-                        ok = false;
-                    }
-                    if(firstAmount!=-1) {
-                        int i = 0;
-                        while(st.hasMoreTokens()) {
-                            String token = st.nextToken();
-                            if(!token.equals(headers.get(i))) {
-                                System.err.println("Error: headers should be the same! " + token + " " + headers.get(i));
-                                ok = false;
-                            }
-                            i++;
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    ok = false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    ok = false;
-                }
+    private void storeCD4(double value, Date date, Patient p, String sampleId) {
+        TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+        t.setValue(value+"");
+        t.setTestDate(date);
+        t.setSampleId(sampleId);
+    }
+    
+    private void storeCD8(double value, Date date, Patient p, String sampleId) {
+        TestResult t = p.createTestResult(cd8Test);
+        t.setValue(value+"");
+        t.setTestDate(date);
+        t.setSampleId(sampleId);
+    }
+    
+    private void storeViralLoad(String value, Date date, Patient p, String sampleId) {
+        TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+        t.setValue(value);
+        t.setTestDate(date);
+        t.setSampleId(sampleId);
+    }
+    
+    private String getCorrectSampleId(List<String> line) {
+        String id = line.get(headers.indexOf("otheeknr"));
+        if(id.equals("")) {
+            id = line.get(headers.indexOf("staalId"));
+        }
+        if(id.equals("")) {
+            id = line.get(headers.indexOf("metingId"));
+        }
+        if(id.equals("")) {
+           id = line.get(headers.indexOf("berekeningId"));
+        }
+
+        return id;
+    }
+    
+    private void handleNominalAttributeValue(NominalAttribute attribute, Patient p, String nominalValue) {
+        AttributeNominalValue vv = attribute.nominalValueMap.get(nominalValue);
+        
+        if (vv != null) {
+            PatientAttributeValue v = p.createPatientAttributeValue(gender.attribute);
+            v.setAttributeNominalValue(vv);
+        } else {
+            ConsoleLogger.getInstance().logWarning("Unsupported attribute value" + gender.attribute.getName() + ": "+nominalValue);
+        }
+    }
+    
+    private List<String> tokenizeTab(String line) {
+        List<String> list = new ArrayList<String>();
+        int formerTab = -1;
+        char c;
+        for(int i = 0; i<line.length(); i++) {
+            c = line.charAt(i);
+            if(c=='\t') {
+                list.add(line.substring(formerTab+1, i));
+                formerTab = i;
             }
         }
-        if(ok)
-            return headers;
-        else 
-            return null;
+        list.add(line.substring(formerTab+1, line.length()));
+        
+        return list;
+    }
+
+    public Map<String, Patient> getPatients() {
+        return patients;
     }
 }
