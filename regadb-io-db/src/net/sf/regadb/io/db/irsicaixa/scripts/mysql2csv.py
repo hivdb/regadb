@@ -1,12 +1,11 @@
 import os
 import sys
 
-host = 'localhost'
-user = 'plibin0'
-password = 'plibin0'
-database = 'virolab_spain'
-
-path = sys.argv[1]
+host	 = sys.argv[1]
+user	 = sys.argv[2]
+password = sys.argv[3]
+database = sys.argv[4]
+path	 = sys.argv[5]
 
 showTablesCmd = 'mysql -u' + user + ' -p' + user + ' ' +  database + ' -B -e \"show tables;\" '
 
