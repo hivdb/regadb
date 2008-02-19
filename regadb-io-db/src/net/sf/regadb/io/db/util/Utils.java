@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -89,19 +92,26 @@ public class Utils {
 		return column;
 	}
     
-     public static Table readTable(String filename) 
-     {
-    	try
-    	{
-    		return new Table(new BufferedInputStream(new FileInputStream(filename)), false);
-    	}
-    	catch(FileNotFoundException e)
-    	{
-    		ConsoleLogger.getInstance().logError("File '"+filename+"' not found.");
-    	}
-    	
-    	return null;
-    }
+	public static Table readTable(String filename) 
+	{
+		return Utils.readTable(filename, Charset.defaultCharset().name());
+	}
+     
+	public static Table readTable(String filename, String charsetName)
+	{
+		try{
+			try{
+				return new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename)),charsetName), false);
+			}
+			catch(FileNotFoundException e)
+			{
+				ConsoleLogger.getInstance().logError("File '"+filename+"' not found.");
+			}
+		}catch(UnsupportedEncodingException e){
+			ConsoleLogger.getInstance().logError("Charset "+ charsetName +" not supported for file '"+filename+"'.");
+		}
+		return null;
+	}
      
      public static boolean checkColumnValue(String value, int row, String patientID)
      {
