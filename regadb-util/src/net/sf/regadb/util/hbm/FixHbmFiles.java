@@ -49,6 +49,10 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("patientEventValues")&& a.getKey().equals("net.sf.regadb.db.PatientImpl")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                         if((e.getAttributeValue("name").equals("patientDatasets")&& a.getKey().equals("net.sf.regadb.db.PatientImpl")))
                         {
                             e.getAttribute("inverse").setValue("true");
