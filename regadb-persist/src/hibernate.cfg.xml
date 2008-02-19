@@ -4,18 +4,18 @@
 "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
+        <property name="hibernate.c3p0.acquire_increment">1</property>
+        <property name="hibernate.c3p0.idle_test_period">100</property>
+        <property name="hibernate.c3p0.max_size">100</property>
+        <property name="hibernate.c3p0.max_statements">0</property>
+        <property name="hibernate.c3p0.min_size">10</property>
+        <property name="hibernate.c3p0.timeout">100</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.password">4yr1s1ly</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://zolder:5432/test_regadb</property>
-        <property name="hibernate.connection.username">regadb</property>
+        <property name="hibernate.connection.password">tw1nklE</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/regadb</property>
+        <property name="hibernate.connection.username">simbre0</property>
         <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-		<property name="c3p0.acquire_increment">1</property> 
-  		<property name="c3p0.idle_test_period">100</property> <!-- seconds --> 
-  		<property name="c3p0.max_size">100</property> 
-  		<property name="c3p0.max_statements">0</property> 
-  		<property name="c3p0.min_size">10</property> 
-  		<property name="c3p0.timeout">100</property> <!-- seconds -->
         <mapping resource="net/sf/regadb/db/Analysis.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinitionRunParameter.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
@@ -29,6 +29,7 @@
         <mapping resource="net/sf/regadb/db/AaSequence.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ViralIsolate.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinition.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/Event.hbm.xml" />
         <mapping resource="net/sf/regadb/db/UserAttribute.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestObject.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientAttributeValue.hbm.xml" />
@@ -44,13 +45,15 @@
         <mapping resource="net/sf/regadb/db/Attribute.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestResult.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AnalysisType.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/TherapyMotivation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TestType.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaInsertion.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/EventNominalValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyCommercial.hbm.xml" />
-        <mapping resource="net/sf/regadb/db/TherapyMotivation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/AaMutation.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Test.hbm.xml" />
         <mapping resource="net/sf/regadb/db/PatientDataset.hbm.xml" />
+        <mapping resource="net/sf/regadb/db/PatientEventValue.hbm.xml" />
         <mapping resource="net/sf/regadb/db/Dataset.hbm.xml" />
         <mapping resource="net/sf/regadb/db/TherapyGeneric.hbm.xml" />
         <mapping resource="net/sf/regadb/db/DrugCommercial.hbm.xml" />
