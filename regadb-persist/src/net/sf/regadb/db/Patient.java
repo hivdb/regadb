@@ -178,6 +178,20 @@ public class Patient {
         return null;
     }
     
+    public PatientEventValue createPatientEventValue(Event event) {
+        PatientEventValue result
+            = new PatientEventValue(patient, event);
+
+        getPatientEventValues().add(result);
+        
+        return result;
+    }
+
+    public void addPatientEventValue(PatientEventValue eventValue) {
+        getPatientEventValues().add(eventValue);
+        eventValue.setPatient(patient);
+    }
+    
     public Therapy createTherapy(Date startDate) {
         Therapy result = new Therapy(patient, startDate);
         getTherapies().add(result);

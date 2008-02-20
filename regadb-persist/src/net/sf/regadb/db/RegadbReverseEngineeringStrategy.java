@@ -39,6 +39,7 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
     public boolean excludeForeignKeyAsCollection(String keyname, TableIdentifier fromTable, List fromColumns, TableIdentifier referencedTable, List referencedColumns) {
         if (referencedTable.getName().equals("drug_class")
             || fromTable.getName().equals("attribute_nominal_value")
+            || fromTable.getName().equals("event_nominal_value")
             || fromTable.getName().equals("test_nominal_value")
             || fromTable.getName().equals("commercial_generic")
             || fromTable.getName().equals("dataset_access")

@@ -81,6 +81,10 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("eventNominalValues")&& a.getKey().equals("net.sf.regadb.db.Event")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                         if((e.getAttributeValue("name").equals("testNominalValues")&& a.getKey().equals("net.sf.regadb.db.TestType")))
                         {
                             e.getAttribute("inverse").setValue("true");
@@ -144,6 +148,9 @@ public class FixHbmFiles
         
         changeKeyPropToKeyManyToMany("PatientAttributeValue.hbm.xml", "patientIi", "patient", "net.sf.regadb.db.PatientImpl");
         changeKeyPropToKeyManyToMany("PatientAttributeValue.hbm.xml", "attributeIi", "attribute", "net.sf.regadb.db.Attribute");
+        
+        changeKeyPropToKeyManyToMany("PatientEventValue.hbm.xml", "patientIi", "patient", "net.sf.regadb.db.PatientImpl");
+        changeKeyPropToKeyManyToMany("PatientEventValue.hbm.xml", "eventIi", "event", "net.sf.regadb.db.Event");
         
         changeKeyPropToKeyManyToMany("TherapyCommercial.hbm.xml", "therapyIi", "therapy", "net.sf.regadb.db.Therapy");
         changeKeyPropToKeyManyToMany("TherapyCommercial.hbm.xml", "commercialIi", "drugCommercial", "net.sf.regadb.db.DrugCommercial");

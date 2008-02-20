@@ -18,6 +18,12 @@
     <property name="name" type="string">
       <column name="name" length="50" not-null="true" />
     </property>
+    <set name="eventNominalValues" inverse="true" cascade="all">
+      <key>
+        <column name="event_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.EventNominalValue" />
+    </set>
   </class>
 </hibernate-mapping>
 
