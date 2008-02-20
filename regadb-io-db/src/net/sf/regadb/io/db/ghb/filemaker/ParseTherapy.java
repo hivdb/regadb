@@ -140,8 +140,9 @@ public class ParseTherapy {
                     } catch(NumberFormatException e) {
                         counterDosage++;
                     }
+                    double amountOfDosages = 0;
                     try {
-                        double amountOfDosages = Double.parseDouble(therapy.valueAt(CAmountOfDosages, i));
+                        amountOfDosages = Double.parseDouble(therapy.valueAt(CAmountOfDosages, i));
                     } catch(NumberFormatException e) {
                         counterAmountDosage++;
                     }
@@ -187,13 +188,16 @@ public class ParseTherapy {
                         }
                         if(commercial!=null) {
                             TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(tSelected, commercial));
+                            tg.setDayDosageUnits(amountOfDosages);
                             tSelected.getTherapyCommercials().add(tg);
                         } else if(generic!=null) {
                             TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, generic));
+                            tg.setDayDosageMg(dosage*amountOfDosages);
                             tSelected.getTherapyGenerics().add(tg);
                         } else if(genericsHardMapping!=null) {
                             for(DrugGeneric dg : genericsHardMapping) {
                                 TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, dg));
+                                tg.setDayDosageMg(dosage*amountOfDosages);
                                 tSelected.getTherapyGenerics().add(tg);
                             }
                         }
