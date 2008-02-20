@@ -14,8 +14,10 @@ import java.util.TreeMap;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
@@ -70,6 +72,8 @@ public class XMLReadCodeGen {
                 write(tabs, resolved.varName() + " = patient.createTherapy(fieldTherapy_startDate);\n");
             } else if (javaClass == PatientAttributeValue.class) {
                 write(tabs, resolved.varName() + " = patient.createPatientAttributeValue(fieldPatientAttributeValue_attribute);\n");
+            } else if (javaClass == PatientEventValue.class) {
+                write(tabs, resolved.varName() + " = patient.createPatientEventValue(fieldPatientEventValue_event);\n");
             } else if (javaClass == Dataset.class) {
                 write(tabs, resolved.varName() + " = null; // FIXME\n");                
             } else if (parent.javaClass == Patient.class) {
@@ -624,7 +628,7 @@ public class XMLReadCodeGen {
                 }
             }
 
-            
+            //do this check if you do not allow the object to be updated
             if (o.javaClass == Attribute.class) {
                 write(2, "if (!simulate)\n");
                 write(3, "t.save(dbo == null ? o : dbo);\n");
@@ -637,7 +641,8 @@ public class XMLReadCodeGen {
         /*
          * -- Synchronize methods: one for each unscoped object type
          */
-        Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class };
+        //in stead of applying changes to the database, give a warning
+        Class unscopedClasses[] = { Patient.class, Attribute.class, Test.class, TestType.class, Event.class };
         
         for (Class c : unscopedClasses) {
             write(1, "public " + c.getSimpleName() + " sync(Transaction t, " + c.getSimpleName() + " o, SyncMode mode, boolean simulate) throws ImportException {\n");

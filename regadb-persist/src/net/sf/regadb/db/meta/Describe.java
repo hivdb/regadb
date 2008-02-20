@@ -17,9 +17,12 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -40,6 +43,10 @@ public class Describe {
 
     public static String describe(AttributeNominalValue o) {
         return "Attribute nominal value '" + o.getValue() + "'";
+    }
+    
+    public static String describe(EventNominalValue o) {
+        return "Event nominal value '" + o.getValue() + "'";
     }
 
     public static String describe(ViralIsolate o) {
@@ -106,9 +113,17 @@ public class Describe {
     public static String describe(PatientAttributeValue o) {
         return "Value for " + describe(o.getId().getAttribute());
     }
+    
+    public static String describe(PatientEventValue o) {
+        return "Value for " + describe(o.getEvent());
+    }
 
     public static String describe(Attribute o) {
         return "Attribute '" + o.getName() + "'";
+    }
+    
+    public static String describe(Event o) {
+        return "Event '" + o.getName() + "'";
     }
 
     public static String describe(TestType o) {

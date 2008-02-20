@@ -12,6 +12,8 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -44,6 +46,14 @@ public class Retrieve {
 
     public static AttributeGroup retrieve(Transaction t, AttributeGroup attributeGroup) {
         return t.getAttributeGroup(attributeGroup.getGroupName());
+    }
+    
+    public static Event retrieve(Transaction t, Event event) {
+        return t.getEvent(event.getName());
+    }
+    
+    public static EventNominalValue retrieve(Transaction t, EventNominalValue eventNominalValue) {
+        return t.getEventNominalValue(retrieve(t, eventNominalValue.getEvent()), eventNominalValue.getValue());
     }
 
     public static TestNominalValue retrieve(Transaction t, TestNominalValue testNominalValue) {

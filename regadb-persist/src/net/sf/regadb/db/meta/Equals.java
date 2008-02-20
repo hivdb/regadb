@@ -16,8 +16,11 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -37,6 +40,11 @@ public class Equals {
     }
 
     public static boolean isSameTestNominalValue(TestNominalValue o1, TestNominalValue o2) {
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getValue().equals(o2.getValue()));
+    }
+    
+    public static boolean isSameEventNominalValue(EventNominalValue o1, EventNominalValue o2) {
         return o1 == o2
         || (o1 != null && o2 != null && o1.getValue().equals(o2.getValue()));
     }
@@ -67,6 +75,15 @@ public class Equals {
     public static boolean isSamePatientAttributeValue(PatientAttributeValue o1, PatientAttributeValue o2) {
         return o1 == o2
         || (o1 != null && o2 != null && isSameAttribute(o1.getId().getAttribute(), o2.getId().getAttribute()));
+    }
+    
+    public static boolean isSamePatientEventValue(PatientEventValue o1, PatientEventValue o2) {
+        return o1 == o2
+        || (o1 != null && o2 != null
+                && o1.getStartDate().equals(o2.getStartDate())
+                && o1.getEndDate().equals(o2.getEndDate())
+                && isSameEventNominalValue(o1.getEventNominalValue(),o2.getEventNominalValue())
+                && isSameEvent(o1.getEvent(), o2.getEvent()));
     }
 
     public static boolean isSameViralIsolate(ViralIsolate o1, ViralIsolate o2) {
@@ -111,6 +128,11 @@ public class Equals {
     }
 
     public static boolean isSameAttribute(Attribute o1, Attribute o2) {
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getName().equals(o2.getName()));
+    }
+    
+    public static boolean isSameEvent(Event o1, Event o2) {
         return o1 == o2
         || (o1 != null && o2 != null && o1.getName().equals(o2.getName()));
     }

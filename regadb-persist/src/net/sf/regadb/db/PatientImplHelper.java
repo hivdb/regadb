@@ -16,6 +16,10 @@ public class PatientImplHelper {
         return canAccesPI(patientAttributeValuevar.getId().getPatient(), datasets);
     }
     
+    public static boolean canAccessPatientEventValue(PatientEventValue patientEventValuevar, Set<Dataset> datasets) {
+        return canAccesPI(patientEventValuevar.getPatient(), datasets);
+    }
+    
     public static boolean canAccessTestResult(TestResult testResultvar, Set<Dataset> datasets) {
         return canAccesPI(testResultvar.getPatient(), datasets);
     }

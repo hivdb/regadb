@@ -11,9 +11,12 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.PatientImplHelper;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -118,6 +121,20 @@ public class DatasetAccessSolver implements IDatasetAccess {
 
     public boolean canAccessViralIsolate(ViralIsolate ViralIsolatevar, Set<Dataset> datasets) {
         return PatientImplHelper.canAccessViralIsolate(ViralIsolatevar, datasets);
+    }
+
+    public boolean canAccessEvent(Event Eventvar, Set<Dataset> datasets) {
+        return true;
+    }
+
+    public boolean canAccessEventNominalValue(
+            EventNominalValue EventNominalValuevar, Set<Dataset> datasets) {
+        return true;
+    }
+
+    public boolean canAccessPatientEventValue(
+            PatientEventValue PatientEventValuevar, Set<Dataset> datasets) {
+        return PatientImplHelper.canAccessPatientEventValue(PatientEventValuevar, datasets);
     }
     
     public static DatasetAccessSolver getInstance() {

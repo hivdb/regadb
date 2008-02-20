@@ -32,6 +32,13 @@
         <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
+    <element name="patientEventValues">
+      <zeroOrMore>
+        <element name="patientEventValues-el">
+          <ref name="net.sf.regadb.db.PatientEventValue" />
+        </element>
+      </zeroOrMore>
+    </element>
     <element name="Datasets">
       <zeroOrMore>
         <element name="Datasets-el">
@@ -67,6 +74,106 @@
         </element>
       </zeroOrMore>
     </element>
+  </define>
+  <define name="net.sf.regadb.db.PatientEventValue">
+    <optional>
+      <element name="eventNominalValue">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+      </element>
+    </optional>
+    <optional>
+      <element name="event">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Event" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="startDate">
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="endDate">
+        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+  </define>
+  <define name="net.sf.regadb.db.Event">
+    <optional>
+      <element name="valueType">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.ValueType" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="name">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <element name="eventNominalValues">
+      <zeroOrMore>
+        <element name="eventNominalValues-el">
+          <element name="reference">
+            <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+          </element>
+          <optional>
+            <ref name="net.sf.regadb.db.EventNominalValue" />
+          </optional>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="net.sf.regadb.db.ValueType">
+    <optional>
+      <element name="description">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <element name="minimum">
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="maximum">
+        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="multiple">
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+  </define>
+  <define name="net.sf.regadb.db.EventNominalValue">
+    <optional>
+      <element name="value">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">100</param>
+        </data>
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.Dataset">
     <optional>
@@ -298,30 +405,6 @@
         </element>
       </zeroOrMore>
     </element>
-  </define>
-  <define name="net.sf.regadb.db.ValueType">
-    <optional>
-      <element name="description">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">50</param>
-        </data>
-      </element>
-    </optional>
-    <optional>
-      <element name="minimum">
-        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
-      <element name="maximum">
-        <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
-      <element name="multiple">
-        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
   </define>
   <define name="net.sf.regadb.db.TestObject">
     <optional>

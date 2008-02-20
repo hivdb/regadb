@@ -46,6 +46,8 @@ public class Transaction {
     private final Query getDrugGenericQuery;
     private final Query getCommercialDrugQuery;
     private final Query getViralIsolateQuery;
+    private final Query getEventQuery;
+    private final Query getEventNominalValueQuery;
 
     public Transaction(Login login, Session session) {
         this.login = login;
@@ -79,6 +81,9 @@ public class Transaction {
                         + "join patient_dataset.id.dataset as dataset "
                         + "where dataset.closedDate = null "
                         + "and vi.sampleId = :sampleId");
+        
+        getEventQuery = session.createQuery("from Event event where event.name = :name");
+        getEventNominalValueQuery = session.createQuery("from EventNominalValue as anv where event = :event and value = :value"); 
     }
     
     private void begin() {
@@ -152,6 +157,23 @@ public class Transaction {
         getAttributeQuery.setParameter("groupName", groupName);
         
         return (Attribute) getAttributeQuery.uniqueResult();
+    }
+    
+    public Event getEvent(String name){
+        getEventQuery.setParameter("name", name);
+        return (Event) getEventQuery.uniqueResult();
+    }
+    
+    public EventNominalValue getEventNominalValue(Event event, String value) {
+        getEventNominalValueQuery.setParameter("event", event);
+        getEventNominalValueQuery.setParameter("value", value);
+        
+        try {
+            return (EventNominalValue)getEventNominalValueQuery.uniqueResult();        
+        } catch (RuntimeException e) {
+            System.err.println("Exception for event value : " + event.getName() + " " + value);
+            throw e;
+        }
     }
     
     @SuppressWarnings("unchecked")

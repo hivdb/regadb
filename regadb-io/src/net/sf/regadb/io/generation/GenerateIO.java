@@ -55,6 +55,7 @@ public class GenerateIO
         classToBeIgnored_.add(dbPackage + "DatasetAccess");
         
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
+        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"EventNominalValue", "event"));
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
         fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
@@ -81,11 +82,15 @@ public class GenerateIO
         pointerClasses_.add(dbPackage + "AttributeGroup");
         pointerClasses_.add(dbPackage + "AttributeNominalValue");
         
+        pointerClasses_.add(dbPackage + "Event");
+        pointerClasses_.add(dbPackage + "EventNominalValue");
+        
         pointerClasses_.add(dbPackage + "Analysis");
         pointerClasses_.add(dbPackage + "AnalysisData");
         
         nominalValues_.add(dbPackage + "TestNominalValue");
         nominalValues_.add(dbPackage + "AttributeNominalValue");
+        nominalValues_.add(dbPackage + "EventNominalValue");
     }
     
     public static String getStringRepValueName(String className)
