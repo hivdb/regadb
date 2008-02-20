@@ -98,6 +98,7 @@ public class ParseTherapy {
         int CDosage = Utils.findColumn(therapy, "Dosis");
         int CAmountOfDosages = Utils.findColumn(therapy, "Aantal_Dosissen");
         int CFrequence = Utils.findColumn(therapy, "Frekwentie");
+        int CBlind = Utils.findColumn(therapy, "blind");
 
         int counterDosage = 0;
         int counterAmountDosage = 0;
@@ -115,6 +116,8 @@ public class ParseTherapy {
                 } catch(NumberFormatException e) {
                     System.err.println("Invalid patientId on row " + i);
                 }
+                String blind = therapy.valueAt(CBlind, i);
+
                 String medication = mapDrug(therapy.valueAt(CMedication, i));
                 if(!drugsToIgnore.contains(medication)) /*is haart*/ {
                     if(medication.toLowerCase().startsWith("ziagen/epivir")) {
@@ -168,39 +171,44 @@ public class ParseTherapy {
                         //    System.err.println("NOT->" + dosagedDrugString);
                     }
                     
+                    
                     if(startDate!=null) {
-                        List<Therapy> ts = therapies.get(patientId+"");
-                        if(ts==null) {
-                            ts = new ArrayList<Therapy>();
-                            therapies.put(patientId+"", ts);
-                        }
-                        Therapy tSelected = null;
-                        for(Therapy t : ts) {
-                            if(t.getStartDate().equals(startDate)) {
-                                tSelected = t;
-                                break;
+                        if(!blind.equals("1")) {
+                            List<Therapy> ts = therapies.get(patientId+"");
+                            if(ts==null) {
+                                ts = new ArrayList<Therapy>();
+                                therapies.put(patientId+"", ts);
                             }
-                        }
-                        if(tSelected==null) {
-                            tSelected = new Therapy();
-                            tSelected.setStartDate(startDate);
-                            ts.add(tSelected);
-                        }
-                        if(commercial!=null) {
-                            TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(tSelected, commercial));
-                            tg.setDayDosageUnits(amountOfDosages);
-                            tSelected.getTherapyCommercials().add(tg);
-                        } else if(generic!=null) {
-                            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, generic));
-                            tg.setDayDosageMg(dosage*amountOfDosages);
-                            tSelected.getTherapyGenerics().add(tg);
-                        } else if(genericsHardMapping!=null) {
-                            for(DrugGeneric dg : genericsHardMapping) {
-                                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, dg));
+                            Therapy tSelected = null;
+                            for(Therapy t : ts) {
+                                if(t.getStartDate().equals(startDate)) {
+                                    tSelected = t;
+                                    break;
+                                }
+                            }
+                            if(tSelected==null) {
+                                tSelected = new Therapy();
+                                tSelected.setStartDate(startDate);
+                                ts.add(tSelected);
+                            }
+                            if(commercial!=null) {
+                                TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(tSelected, commercial));
+                                tg.setDayDosageUnits(amountOfDosages);
+                                tSelected.getTherapyCommercials().add(tg);
+                            } else if(generic!=null) {
+                                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, generic));
                                 tg.setDayDosageMg(dosage*amountOfDosages);
                                 tSelected.getTherapyGenerics().add(tg);
+                            } else if(genericsHardMapping!=null) {
+                                for(DrugGeneric dg : genericsHardMapping) {
+                                    TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, dg));
+                                    tg.setDayDosageMg(dosage*amountOfDosages);
+                                    tSelected.getTherapyGenerics().add(tg);
+                                }
                             }
                         }
+                    } else {
+                        System.err.println("Startdate null for " + patientId);
                     }
                 }
             }
