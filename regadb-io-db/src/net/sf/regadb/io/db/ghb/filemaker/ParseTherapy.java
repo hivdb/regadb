@@ -7,15 +7,24 @@ import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.file.ILineHandler;
@@ -29,6 +38,12 @@ public class ParseTherapy {
     private Table drugMappings;
     
     private String mappingPath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+    
+    private Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
+    
+    //!!!!!!!!!!!!!!before running this script!!!!!!!!!!!!!!
+    //replace all accented chars
+    //sort on patientId, date
     
     public ParseTherapy() {
         System.setProperty("http.proxyHost", "www-proxy");
@@ -45,6 +60,12 @@ public class ParseTherapy {
     public static void main(String [] args) {
         ParseTherapy parseTherapy = new ParseTherapy();
         parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/medicatie.csv"));
+        System.err.println("merging therapies");
+        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+            System.err.println("patient" + e.getKey());
+            parseTherapy.mergeTherapies(e.getValue());
+            parseTherapy.setStopDates(e.getValue());
+        }
     }
     
     public void parseTherapy(File therapyCsv) {
@@ -66,7 +87,7 @@ public class ParseTherapy {
         
         Table therapy = null;
         try {
-            therapy = new Table(new BufferedInputStream(new FileInputStream(therapyCsv)), false, ';');
+            therapy = new Table(new BufferedInputStream(new FileInputStream(therapyCsv)), false);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -102,12 +123,14 @@ public class ParseTherapy {
                         
                     DrugCommercial commercial = getCommercialDrug(medication);
                     DrugGeneric generic = getGenericDrug(medication);
-                    if(commercial==null && generic==null) {
+                    List<DrugGeneric> genericsHardMapping = hardMapping(medication);
+                    if(commercial==null && generic==null && genericsHardMapping==null) {
                         setDrugs.add(medication);
                     }
                     
+                    Date startDate = null;
                     try {
-                        Date startDate = filemakerDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
+                        startDate = filemakerDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
                     } catch(Exception e) {
                         //System.err.println("Invalid date on row " + i + "->" + therapy.valueAt(CDate, i));
                     }
@@ -123,6 +146,7 @@ public class ParseTherapy {
                         counterAmountDosage++;
                     }
                     
+                    //handle dosages for drugs
                     if(commercial!=null) {
                         boolean found = false;
                         dosagedDrug.delete(0, dosagedDrug.length());
@@ -143,10 +167,42 @@ public class ParseTherapy {
                         //    System.err.println("NOT->" + dosagedDrugString);
                     }
                     
+                    if(startDate!=null) {
+                        List<Therapy> ts = therapies.get(patientId+"");
+                        if(ts==null) {
+                            ts = new ArrayList<Therapy>();
+                            therapies.put(patientId+"", ts);
+                        }
+                        Therapy tSelected = null;
+                        for(Therapy t : ts) {
+                            if(t.getStartDate().equals(startDate)) {
+                                tSelected = t;
+                                break;
+                            }
+                        }
+                        if(tSelected==null) {
+                            tSelected = new Therapy();
+                            tSelected.setStartDate(startDate);
+                            ts.add(tSelected);
+                        }
+                        if(commercial!=null) {
+                            TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(tSelected, commercial));
+                            tSelected.getTherapyCommercials().add(tg);
+                        } else if(generic!=null) {
+                            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, generic));
+                            tSelected.getTherapyGenerics().add(tg);
+                        } else if(genericsHardMapping!=null) {
+                            for(DrugGeneric dg : genericsHardMapping) {
+                                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, dg));
+                                tSelected.getTherapyGenerics().add(tg);
+                            }
+                        }
+                    }
                 }
             }
         }
         
+        System.err.println("Unsupported drugs");
         for(String d : setDrugs) {
             System.err.println(d);
         }
@@ -172,10 +228,12 @@ public class ParseTherapy {
             generics.add(getGenericDrug("darunavir"));
         } else if (medication.toLowerCase().startsWith("aptivus")) {
             generics.add(getGenericDrug("tipranavir"));
-        } else if (medication.toLowerCase().startsWith("ABT-378/r")) {
+        } else if (medication.toLowerCase().startsWith("abt-378/r")) {
             generics.add(getGenericDrug("lopinavir"));
             generics.add(getGenericDrug("ritonavir"));
-        } else if (medication.toLowerCase().startsWith("BMS 232632")) {
+        } else if (medication.toLowerCase().startsWith("bms 232632")) {
+            generics.add(getGenericDrug("atazanavir"));
+        } else if (medication.toLowerCase().startsWith("bms 232 632")) {
             generics.add(getGenericDrug("atazanavir"));
         } else { 
             return null;
@@ -202,7 +260,7 @@ public class ParseTherapy {
         simpliefiedName = simpliefiedName.trim();
         
         for(DrugCommercial dc : commercialDrugsNoDosages) {
-            if(dc.getName().startsWith(simpliefiedName)) {
+            if(dc.getName().toLowerCase().startsWith(simpliefiedName.toLowerCase())) {
                 return dc;
             }
         }
@@ -254,5 +312,75 @@ public class ParseTherapy {
         } else {
             return Integer.parseInt(integer.trim().replace(',', '.'));
         }
+    }
+    
+    public void mergeTherapies(List<Therapy> therapies) {
+        System.err.println("old size" + therapies.size());
+        Therapy former = null;
+        Therapy current;
+        for(Iterator<Therapy> i = therapies.iterator(); i.hasNext();) {
+            current = i.next();
+            if(former!=null) {
+                if(compareTherapyOnDrugs(former, current)) {
+                    i.remove();
+                }
+            } 
+            former = current;
+        }
+        System.err.println("new size" + therapies.size());
+    }
+    
+    public void setStopDates(List<Therapy> therapies) {
+        for(int i = 0; i<therapies.size(); i++) {
+            Therapy a = therapies.get(i);
+            if((i+1)<therapies.size()) {
+                Therapy b = therapies.get(i+1);
+                a.setStopDate(b.getStartDate());
+            }
+        }
+    }
+    
+    public boolean compareTherapyOnDrugs(Therapy t1, Therapy t2) {
+        List<String> genericDrugs1 = new ArrayList<String>();
+        List<String> genericDrugs2 = new ArrayList<String>();
+        List<String> commercialDrugs1 = new ArrayList<String>();
+        List<String> commercialDrugs2 = new ArrayList<String>();
+        for(TherapyGeneric tg : t1.getTherapyGenerics()) {
+            genericDrugs1.add(tg.getId().getDrugGeneric().getGenericName() + tg.getDayDosageMg());
+        }
+        for(TherapyGeneric tg : t2.getTherapyGenerics()) {
+            genericDrugs2.add(tg.getId().getDrugGeneric().getGenericName() + tg.getDayDosageMg());
+        }
+        for(TherapyCommercial tc : t1.getTherapyCommercials()) {
+            commercialDrugs1.add(tc.getId().getDrugCommercial().getName()+tc.getDayDosageUnits());
+        }
+        for(TherapyCommercial tc : t2.getTherapyCommercials()) {
+            commercialDrugs2.add(tc.getId().getDrugCommercial().getName()+tc.getDayDosageUnits());
+        }
+        
+        Collections.sort(genericDrugs1);
+        Collections.sort(genericDrugs2);
+        Collections.sort(commercialDrugs1);
+        Collections.sort(commercialDrugs2);
+        
+        if(genericDrugs1.size()==genericDrugs2.size()) {
+            for(int i = 0; i<genericDrugs1.size(); i++) {
+                if(!genericDrugs1.get(i).equals(genericDrugs2.get(i))) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        if(commercialDrugs1.size()==commercialDrugs2.size()) {
+            for(int i = 0; i<commercialDrugs1.size(); i++) {
+                if(!commercialDrugs1.get(i).equals(commercialDrugs2.get(i))) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 }
