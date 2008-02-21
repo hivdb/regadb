@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -26,12 +27,16 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -264,17 +269,27 @@ public class Utils {
      
      public static Attribute selectAttribute(String attributeName, List<Attribute> list)
      {
-         Attribute toReturn = null;
-         
          for(Attribute a : list)
          {
              if(a.getName().equals(attributeName))
              {
-                 toReturn = a;
+                 return a;
              }
          }
          
-         return toReturn;
+         return null;
+     }
+     
+     public static Event selectEvent(String eventName, List<Event> list)
+     {
+         for(Event e : list)
+         {
+             if(e.getName().equals(eventName))
+             {
+                 return e;
+             }
+         }
+         return null;
      }
      
      public static List<Attribute> prepareRegaDBAttributes()
@@ -312,6 +327,26 @@ public class Utils {
              ioex.printStackTrace();
          }
          
+         return list;
+     }
+     
+     public static List<Event> prepareRegaDBEvents()
+     {
+         //TODO retrieve event list with FileProvider
+         List<Event> list = new ArrayList<Event>();
+         
+         Event e = new Event();
+         e.setValueType(StandardObjects.getNominalValueType());
+         e.setName("Aids defining illness");
+         
+         Table t = Utils.readTable("/home/simbre0/virolab/aids_defining_illnesses.txt");
+         for(int i=0; i<t.numRows(); ++i){
+             e.getEventNominalValues().add(new EventNominalValue(e,t.valueAt(0, i)));
+             ConsoleLogger.getInstance().logWarning("prepareRegaDBEvents: "+ t.valueAt(0, i));
+         }
+         
+         list.add(e);
+    
          return list;
      }
      
@@ -487,4 +522,20 @@ public class Utils {
              ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
          }
      }
+     
+     public static void handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate, Patient p) {
+         EventNominalValue env = ne.nominalValueMap.get(value);
+         
+          if (env != null)
+          {
+              PatientEventValue v = p.createPatientEventValue(ne.event);
+              v.setEventNominalValue(env);
+              v.setStartDate(startDate);
+              v.setEndDate(endDate);
+          }
+          else 
+          {
+              ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
+          }
+      }
 }
