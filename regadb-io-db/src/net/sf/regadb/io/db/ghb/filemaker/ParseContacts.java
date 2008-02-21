@@ -91,10 +91,9 @@ public class ParseContacts {
                 
                 String sero = contacts.valueAt(CHIVPos, i);
                 if(!sero.equals("")) {
-                    if(!sero.toLowerCase().contains("hiv") && !sero.toLowerCase().contains("positief")) {
-                        
+                    if(sero.toLowerCase().contains("hiv") && sero.toLowerCase().contains("positief")) {
+                        storePosSero(date, null, patientId);
                     }
-                        
                 }
             } else {
                 System.err.println("Cannot parse contact");
@@ -122,6 +121,14 @@ public class ParseContacts {
             t.setSampleId(sampleId);
             fileMakerTests.get(patientId).add(t);
         }
+    }
+    
+    private void storePosSero(Date date, String sampleId, String patientId) {
+        TestResult t = new TestResult();
+        t.setTest(StandardObjects.getGenericHivSeroStatusTest());
+        t.setTestNominalValue(posSeroStatus_);
+        t.setTestDate(date);
+        fileMakerTests.get(patientId).add(t);
     }
     
     private String removeCharsFromString(String src, char toRemove) {
