@@ -15,6 +15,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -31,6 +32,7 @@ import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
+import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.pair.Pair;
@@ -44,6 +46,7 @@ public class ImportIrsicaixa {
     private Table cd4Table_;
     private Table therapyTable_;
     
+    private Table eventTable_;
     private Table vlTable_;
     private Table vhbTable_;
     private Table vhcTable_;
@@ -51,6 +54,7 @@ public class ImportIrsicaixa {
     
     private Table countryTable_;
     private Table transmissionGroupTable_;
+    private Table aidsDefiningIllnessTable_;
     
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
     
@@ -60,6 +64,7 @@ public class ImportIrsicaixa {
     private ArrayList<TestType> testTypes_ = new ArrayList<TestType>();
     
     private List<Attribute> regadbAttributes_;
+    private List<Event> regadbEvents_;
     
     private List<DrugGeneric> regaDrugGenerics;
     
@@ -75,6 +80,7 @@ public class ImportIrsicaixa {
 
         countryTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "country_of_origin.mapping");
         transmissionGroupTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "transmission_group.mapping");
+        aidsDefiningIllnessTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "aids_defining_illness.mapping");
         
         posSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
     }
@@ -84,6 +90,7 @@ public class ImportIrsicaixa {
         cd4Table_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadescd.csv");
         therapyTable_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadestractaments.csv","ISO-8859-15");
         
+        eventTable_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadesmalaltia.csv","ISO-8859-15");
         vlTable_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadescv.csv");
         vhbTable_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadesvhb.csv");
         vhcTable_ = Utils.readTable(basePath_ + File.separatorChar + "dbo_dadesvhc.csv");
@@ -95,6 +102,9 @@ public class ImportIrsicaixa {
         logger_.logInfo("Retrieving standard RegaDB attributes");
         regadbAttributes_ = Utils.prepareRegaDBAttributes();
         
+        logger_.logInfo("Retrieving standard RegaDB events");
+        regadbEvents_ = Utils.prepareRegaDBEvents();
+        
         logger_.logInfo("Retrieving standard RegaDB generic drugs");
         regaDrugGenerics = Utils.prepareRegaDrugGenerics();
         
@@ -104,6 +114,9 @@ public class ImportIrsicaixa {
         handleCD4(patients);
         logger_.logInfo("Handling therapy data");
         handleTherapy(patients);
+        
+        logger_.logInfo("Handling event data");
+        handleEvent(patients);
         
         logger_.logInfo("Handling viral load data");
         handleViralLoad(patients);
@@ -195,6 +208,40 @@ public class ImportIrsicaixa {
         }
         
         return patients;
+    }
+    
+    public void handleEvent(HashMap<String, Patient> patients){
+        int CPatientId = Utils.findColumn(eventTable_, "PATIENTID");
+        int CStartDate = Utils.findColumn(eventTable_, "DATE_OF_DIAGNOSIS");
+        int CEndDate = Utils.findColumn(eventTable_, "END_DATE");
+        int CName = Utils.findColumn(eventTable_, "DIAGNOSIS");
+        
+        NominalEvent aidsDefiningIllnessA = new NominalEvent("Aids defining illness", aidsDefiningIllnessTable_, Utils.selectEvent("Aids defining illness", regadbEvents_));
+        
+        for(int i = 1; i<eventTable_.numRows(); i++) {
+            String patientId = eventTable_.valueAt(CPatientId, i);
+            Patient p = patients.get(patientId);
+            if(p!=null) {
+                Date startDate = Utils.parseMysqlDate(eventTable_.valueAt(CStartDate, i));
+                Date endDate = Utils.parseMysqlDate(eventTable_.valueAt(CEndDate, i));
+                
+                if(startDate != null){
+                    String name = eventTable_.valueAt(CName, i);
+                    
+                    if(Utils.checkColumnValue(name, i, patientId))
+                    {
+                        Utils.handlePatientEventValue(aidsDefiningIllnessA, name, startDate, endDate, p);
+                    }
+                }
+                else{
+                    logger_.logWarning("Invalid start date specified in the malaltia file ("+ i +").");
+                }
+            }
+            else{
+                logger_.logWarning("Could not find a patient with id " + patientId + " in the malaltia file ("+ i +").");
+            }
+        }
+
     }
     
     public TestNominalValue getNominalValue(TestType tt, String str){
