@@ -6,6 +6,8 @@
  */
 package net.sf.regadb.db.meta;
 
+import java.util.Date;
+
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
@@ -78,10 +80,13 @@ public class Equals {
     }
     
     public static boolean isSamePatientEventValue(PatientEventValue o1, PatientEventValue o2) {
+        Date end1 = o1.getEndDate();
+        Date end2 = o2.getEndDate();
+
         return o1 == o2
         || (o1 != null && o2 != null
                 && o1.getStartDate().equals(o2.getStartDate())
-                && o1.getEndDate().equals(o2.getEndDate())
+                && (end1 == end2 || (end1 != null && end2 != null && end1.equals(end2)))
                 && isSameEventNominalValue(o1.getEventNominalValue(),o2.getEventNominalValue())
                 && isSameEvent(o1.getEvent(), o2.getEvent()));
     }
