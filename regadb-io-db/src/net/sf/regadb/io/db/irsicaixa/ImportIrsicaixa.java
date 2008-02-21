@@ -82,7 +82,7 @@ public class ImportIrsicaixa {
         transmissionGroupTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "transmission_group.mapping");
         aidsDefiningIllnessTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "aids_defining_illness.mapping");
         
-        posSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
+        posSeroStatus_ = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
     }
     
     public void run() {
@@ -242,15 +242,6 @@ public class ImportIrsicaixa {
             }
         }
 
-    }
-    
-    public TestNominalValue getNominalValue(TestType tt, String str){
-    	for(TestNominalValue tnv : tt.getTestNominalValues()){
-    		if(tnv.getTestType().equals(tt) && tnv.getValue().equals(str)){
-    			return tnv;
-    		}
-    	}
-    	return null;
     }
     
     public void handleCD4(HashMap<String, Patient> patients) {

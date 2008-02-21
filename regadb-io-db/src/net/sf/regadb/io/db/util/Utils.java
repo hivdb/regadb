@@ -32,6 +32,8 @@ import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
@@ -538,4 +540,13 @@ public class Utils {
               ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
           }
       }
+     
+     public static TestNominalValue getNominalValue(TestType tt, String str){
+         for(TestNominalValue tnv : tt.getTestNominalValues()){
+             if(tnv.getTestType().equals(tt) && tnv.getValue().equals(str)){
+                 return tnv;
+             }
+         }
+         return null;
+     }
 }
