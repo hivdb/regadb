@@ -85,7 +85,7 @@ public class NominalAttribute {
                 	if(value==null)
                 		value = new AttributeNominalValue(attribute, valueS);
 	                attribute.getAttributeNominalValues().add(value);
-	                nominalValueMap.put(conversionTable.valueAt(1, i), value);
+	                nominalValueMap.put(conversionTable.valueAt(0, i), value);
 	                if(!checkStandardNominalValue(value.getValue(),standard)) {
 	                	ConsoleLogger.getInstance().logError("Usage of unstandard value " + value.getValue());
 	                }
