@@ -56,13 +56,9 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private List<Test> resistanceTests_;
     
     private List<AaSequence> aaSeqs_;
-    
-    private IOAssistMode mode;
         
-    public IOAssistImportHandler(FileWriter fw, IOAssistMode mode)
-    {
-        this.mode = mode;
-        
+    public IOAssistImportHandler(FileWriter fw)
+    {        
         proteinMap_ = new HashMap<String, Protein>();
         
         for(Protein p : StandardObjects.getProteins()) {
@@ -84,20 +80,16 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public void importObject(ViralIsolate object) {
         for(final NtSequence ntseq : object.getNtSequences()) {
-            if(mode == IOAssistMode.Alignment) {
                 align(ntseq);
-            } else if(mode == IOAssistMode.SubType) {
+
                 TestResult subType = ntSeqAnalysis(ntseq, subType_);
                 ntseq.getTestResults().add(subType);
-            } else if(mode == IOAssistMode.Type) {
+            
                 TestResult type = ntSeqAnalysis(ntseq, type_);
                 ntseq.getTestResults().add(type);
-            }
         }
         
-        if(mode == IOAssistMode.Resistance) {
-            calculateRI(object);
-        }
+        calculateRI(object);
         
         Element parent = new Element("viralIsolates-el");
         export_.writeViralIsolate(object, parent);
@@ -112,23 +104,12 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     }
     
     private void align(final NtSequence ntseq) {
-        Thread alignThread = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    aaSeqs_ = aligner_.alignHiv(ntseq);
-                } catch (IllegalSymbolException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        alignThread.start();
-            
         try {
-            alignThread.join();
-        } catch (InterruptedException e) {
+            aaSeqs_ = aligner_.alignHiv(ntseq);
+        } catch (IllegalSymbolException e) {
             e.printStackTrace();
         }
-        
+
         if(aaSeqs_!=null) {
             for(AaSequence aaseq : aaSeqs_) {
                 aaseq.setNtSequence(ntseq);
