@@ -101,14 +101,22 @@ public class Utils {
     
 	public static Table readTable(String filename) 
 	{
-		return Utils.readTable(filename, Charset.defaultCharset().name());
+		return Utils.readTable(filename, Charset.defaultCharset().name(), ',');
+	}
+	
+	public static Table readTable(String filename, char delimiter){
+	    return Utils.readTable(filename, Charset.defaultCharset().name(), delimiter);
+	}
+	
+	public static Table readTable(String filename, String charsetName){
+	    return Utils.readTable(filename,charsetName,',');
 	}
      
-	public static Table readTable(String filename, String charsetName)
+	public static Table readTable(String filename, String charsetName, char delimiter)
 	{
 		try{
 			try{
-				return new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename)),charsetName), false);
+				return new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename)),charsetName), false,delimiter);
 			}
 			catch(FileNotFoundException e)
 			{
@@ -540,6 +548,26 @@ public class Utils {
               ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
           }
       }
+     
+     public static PatientEventValue handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate) {
+         EventNominalValue env = ne.nominalValueMap.get(value);
+         PatientEventValue v = null;
+         
+         if (env != null)
+         {
+             v = new PatientEventValue();
+             v.setEvent(ne.event);
+             v.setEventNominalValue(env);
+             v.setStartDate(startDate);
+             v.setEndDate(endDate);
+         }
+         else 
+         {
+             ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
+         }
+         
+         return v;
+     }
      
      public static TestNominalValue getNominalValue(TestType tt, String str){
          for(TestNominalValue tnv : tt.getTestNominalValues()){
