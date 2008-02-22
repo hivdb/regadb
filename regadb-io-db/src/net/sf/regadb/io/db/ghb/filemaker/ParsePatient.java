@@ -12,6 +12,7 @@ import java.util.Map;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -28,8 +29,21 @@ public class ParsePatient {
 
     }
     
-    public Map<String,Patient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
-        Map<String,Patient> patients = new HashMap<String, Patient>();
+    public class DummyPatient{
+        public String patientId=null;
+        public String firstName=null;
+        public String lastName=null;
+        public Date birthDate=null;
+        public Date deathDate=null;
+        
+        public String patCode=null;
+        public AttributeNominalValue geographicOrigin=null;
+        public AttributeNominalValue transmissionGroup=null;
+    }
+    
+    public Map<String,DummyPatient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
+        
+        Map<String,DummyPatient> dummies = new HashMap<String,DummyPatient>();
         
         if(!patientFile.exists() && !patientFile.isFile()){
             System.err.println("File does not exist: "+ patientFile.getAbsolutePath());
@@ -86,41 +100,31 @@ public class ParsePatient {
                 String SGeographicOrigin  = patientTable.valueAt(CGeographicOrigin,i);
                 String SPatCode           = patientTable.valueAt(CPatCode,i); 
                 
-                Patient p = new Patient();
-                p.setPatientId(SPatientId);
+                DummyPatient p = new DummyPatient();
+                p.patientId = SPatientId;
                 
                 if(birthDate != null){
-                    p.setBirthDate(birthDate);
+                    p.birthDate = birthDate;
                 }
                 if(deathDate != null){
-                    p.setDeathDate(deathDate);
+                    p.deathDate = deathDate;
                 }
                 
-                PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
-                pav.setValue(SPatCode);
+                p.patCode = SPatCode;
+                p.firstName = SFirstName;
+                p.lastName = SLastName;
                 
-                p.setFirstName(SFirstName);
-                p.setLastName(SLastName);
+                p.geographicOrigin = geographicOriginA.nominalValueMap.get(SGeographicOrigin);
+                p.transmissionGroup = transmissionGroupA.nominalValueMap.get(STransmissionGroup);
                 
-                if(Utils.checkColumnValue(SGeographicOrigin, i, SPatientId))
-                {
-                    Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
-                }
-                if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
-                {
-                    Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
-                }
-                
-                patients.put(SPatientId, p);
+                dummies.put(SPatientId, p);
                 
             }
             else{
                 System.err.println("No valid patient id on line: "+ i);
             }
         }
-        
-        return patients;
-
+        return dummies;
     }
     
     private boolean isEmpty(String s){
