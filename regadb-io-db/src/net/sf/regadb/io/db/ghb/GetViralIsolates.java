@@ -18,34 +18,34 @@ import java.util.Map.Entry;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.pair.Pair;
 
 public class GetViralIsolates {
     private int counterS;
     private Map<String, List<TestResult>> excellList;
-    private Map<String, Patient> patients;
     private Table spreadSampleIds;
     private Table samplesToBeIgnored;
-    private List<ViralIsolate> vis = new ArrayList<ViralIsolate>();
+    private Map<String, ViralIsolate> vis = new HashMap<String, ViralIsolate>();
+    private Map<String, List<TestResult>> lisResults_;
     
     public static void main(String [] args) {
         GetViralIsolates gvi = new GetViralIsolates();
-        gvi.run();
+        //run mergelis and provide the testresults obtained to the run method
+        gvi.run(null);
     }
     
     public GetViralIsolates() {
         
     }
     
-    public void run() {
+    public void run(Map<String, List<TestResult>> lisResults) {
         counterS = 0;
         excellList = this.parseExcelFile(new File("/home/plibin0/import/ghb/seqs/Stalen Leuven.csv"));
-        MergeLISFiles mlisfiles = new MergeLISFiles();
-        mlisfiles.run();
-        patients = mlisfiles.getPatients();
+
+        lisResults_ = lisResults;
         
         spreadSampleIds = Utils.readTable("/home/plibin0/import/ghb/seqs/SPREAD_stalen.csv");
         samplesToBeIgnored = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
@@ -82,9 +82,9 @@ public class GetViralIsolates {
 
     public void handleIsolate(String id, String seq) {
         if(seq!=null) {
-            ViralIsolate vi = getViralIsolate(id, seq);
+            Pair<String, ViralIsolate> vi = getViralIsolate(id, seq);
             if(vi!=null) {
-                vis.add(vi);
+                vis.put(vi.getKey(), vi.getValue());
                 //System.err.println("Can find reference to: " + id);     
                 //counterS++;
             } else {
@@ -115,7 +115,7 @@ public class GetViralIsolates {
         return false;
     }
     
-    public ViralIsolate getViralIsolate(String id, String seq) {
+    public Pair<String, ViralIsolate> getViralIsolate(String id, String seq) {
         for(Entry<String, List<TestResult>> es : excellList.entrySet()) {
             for(TestResult res : es.getValue()) {
                 if(res.getSampleId().equals(id)) {
@@ -126,12 +126,12 @@ public class GetViralIsolates {
                     ntseq.setLabel("Sequence 1");
                     ntseq.setSequenceDate(res.getTestDate());
                     ntseq.setNucleotides(seq);
-                    return vi;
+                    return new Pair<String, ViralIsolate>(es.getKey(), vi);
                 }
             }
         }
-        for(Entry<String, Patient> p : patients.entrySet()) {
-            for(TestResult res : p.getValue().getTestResults()) {
+        for(Entry<String, List<TestResult>> es : lisResults_.entrySet()) {
+            for(TestResult res : es.getValue()) {
                 if(res.getSampleId().equals(id)) {
                     ViralIsolate vi = new ViralIsolate();
                     vi.setSampleDate(res.getTestDate());
@@ -140,7 +140,7 @@ public class GetViralIsolates {
                     ntseq.setLabel("Sequence 1");
                     ntseq.setSequenceDate(res.getTestDate());
                     ntseq.setNucleotides(seq);
-                    return vi;
+                    return new Pair<String, ViralIsolate>(es.getKey(), vi);
                 }
             }
         }

@@ -7,49 +7,50 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.file.ILineHandler;
 import net.sf.regadb.io.db.util.file.ProcessFile;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class MergeLISFiles {
-    private Map<String, Patient> patients = new HashMap<String, Patient>();
-    private static DateFormat LISDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    public Map<String, Patient> patients = new HashMap<String, Patient>();
+    private DateFormat LISDateFormat = new SimpleDateFormat("MM/dd/yyyy");
     
     private Date earliestDate = new Date(System.currentTimeMillis());
     
-    private static Attribute emdAttribute;
-    private static AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
-    private static AttributeGroup regadbAttributeGroup = new AttributeGroup("UZ Leuven");
-    private static NominalAttribute gender;
+    private Attribute emdAttribute;
+    private AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
+    private AttributeGroup regadbAttributeGroup = new AttributeGroup("UZ Leuven");
+    private NominalAttribute gender;
     
-    private TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
-    private Test cd8Test = new Test(cd8TestType, "CD8 Count (generic)");
+    public Date firstCd4 = new Date();
+    public Date firstCd8 = new Date();
+    public Date firstViralLoad = new Date();
+    public Date firstSeroStatus = new Date();
     
-    static {
-        emdAttribute = new Attribute();
-        emdAttribute.setAttributeGroup(ghbAttributeGroup);
-        emdAttribute.setValueType(StandardObjects.getStringValueType());
-        emdAttribute.setName("EMD Number");
-        
-        gender = new NominalAttribute("Gender", -1, new String[] { "M", "V" },
-                new String[] { "male", "female" } );
-        gender.attribute.setAttributeGroup(regadbAttributeGroup);
-    }
+    private Table nationMapping;
+    
+    private TestNominalValue posSeroStatus_;
+    private TestNominalValue negSeroStatus_;
+
+    //for checking nation codes
+    Set<String> temp;
     
     public static void main(String [] args) {
         MergeLISFiles mlisf = new MergeLISFiles();
@@ -59,7 +60,30 @@ public class MergeLISFiles {
     private List<String> headers = new ArrayList<String>();
     
     public MergeLISFiles() {
-
+        emdAttribute = new Attribute();
+        emdAttribute.setAttributeGroup(ghbAttributeGroup);
+        emdAttribute.setValueType(StandardObjects.getStringValueType());
+        emdAttribute.setName("EMD Number");
+        
+        gender = new NominalAttribute("Gender", -1, new String[] { "M", "V" },
+                new String[] { "male", "female" } );
+        gender.attribute.setAttributeGroup(regadbAttributeGroup);
+        
+        nationMapping = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping");
+        
+        temp = new HashSet<String>();
+        
+        posSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
+        negSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Negative");
+    }
+    
+    public TestNominalValue getNominalValue(TestType tt, String str){
+        for(TestNominalValue tnv : tt.getTestNominalValues()){
+            if(tnv.getTestType().equals(tt) && tnv.getValue().equals(str)){
+                return tnv;
+            }
+        }
+        return null;
     }
     
     public void run() {
@@ -92,6 +116,10 @@ public class MergeLISFiles {
                 });
             }
         }
+        
+        for(String s: temp) {
+            System.err.println(s);
+        }
     }
     
     private void handlePatient(String ead, List<String> line) {
@@ -106,15 +134,29 @@ public class MergeLISFiles {
         String nation = line.get(headers.indexOf("nation")).toUpperCase();
         
         Patient p = patients.get(ead);
-        if(p==null) {
+        /*if(p==null) {
             p = new Patient();
             p.setPatientId(ead);
+
+            patients.put(ead, p);
+        }*/
+        if(p!=null) {
             p.setBirthDate(birthDate);
             p.createPatientAttributeValue(emdAttribute).setValue(emd);
             handleNominalAttributeValue(gender, p, sex + "");
-            //TODO nation
-            patients.put(ead, p);
+            if(mapCountry(nation)==null) {
+                temp.add(nation);
+            }
         }
+    }
+    
+    public String mapCountry(String code) {
+        for(int i = 1; i<nationMapping.numRows(); i++) {
+            if(nationMapping.valueAt(0, i).equals(code)) {
+                return nationMapping.valueAt(1, i);
+            }
+        }
+        return null;
     }
     
     private void handleTest(String ead, List<String> line) {
@@ -127,14 +169,17 @@ public class MergeLISFiles {
             }
             //work with a mapping files
             if(!line.get(headers.indexOf("reeel")).equals("")) {
-                if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD4(+) T cellen")) {
-                    storeCD4(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
-                } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD8(+) T cellen")) {
-                    storeCD8(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
-                } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("HIV-1 viral load")) {
-                    storeViralLoad(line.get(headers.indexOf("relatie")) + Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
-                } else {
-                    System.err.println(line.get(headers.indexOf("aanvraagTestNaam")));
+                //TODO change this to handle all tests from the moment the LIS query returns only HIV infected patients
+                if(patients.get(ead)!=null) {
+                    if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD4(+) T cellen")) {
+                        storeCD4(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                    } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("CD8(+) T cellen")) {
+                        storeCD8(Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                    } else if(line.get(headers.indexOf("aanvraagTestNaam")).contains("HIV-1 viral load")) {
+                        storeViralLoad(line.get(headers.indexOf("relatie")) + Double.parseDouble(line.get(headers.indexOf("reeel"))), sampleDate, patients.get(ead), correctId);
+                    } else {
+                        //System.err.println(line.get(headers.indexOf("aanvraagTestNaam")));
+                    } 
                 }
             }
         } catch (ParseException e) {
@@ -147,13 +192,19 @@ public class MergeLISFiles {
         t.setValue(value+"");
         t.setTestDate(date);
         t.setSampleId(sampleId);
+        if(date.before(firstCd4)) {
+            firstCd4 = date;
+        }
     }
     
     private void storeCD8(double value, Date date, Patient p, String sampleId) {
-        TestResult t = p.createTestResult(cd8Test);
+        TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
         t.setValue(value+"");
         t.setTestDate(date);
         t.setSampleId(sampleId);
+        if(date.before(firstCd8)) {
+            firstCd8 = date;
+        }
     }
     
     private void storeViralLoad(String value, Date date, Patient p, String sampleId) {
@@ -161,6 +212,9 @@ public class MergeLISFiles {
         t.setValue(value);
         t.setTestDate(date);
         t.setSampleId(sampleId);
+        if(date.before(firstViralLoad)) {
+            firstViralLoad = date;
+        }
     }
     
     private String getCorrectSampleId(List<String> line) {

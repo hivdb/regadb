@@ -5,10 +5,10 @@ import java.util.Map;
 
 import net.sf.regadb.db.Patient;
 
-public class ParseAll {
-    
+public class ParseAll {    
     public static void main(String [] args) {
-        Map<String,Patient> patients;
+        ParseEadEmd eadEmd = new ParseEadEmd();
+        eadEmd.run();
         
         ParsePatient parsePatient = new ParsePatient();
         patients = parsePatient.parse( new File("/home/simbre0/import/ghb/filemaker/patienten.csv"),
