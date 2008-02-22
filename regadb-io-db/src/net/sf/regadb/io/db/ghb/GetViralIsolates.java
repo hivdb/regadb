@@ -28,6 +28,7 @@ public class GetViralIsolates {
     private Map<String, List<TestResult>> excellList;
     private Map<String, Patient> patients;
     private Table spreadSampleIds;
+    private Table samplesToBeIgnored;
     private List<ViralIsolate> vis = new ArrayList<ViralIsolate>();
     
     public static void main(String [] args) {
@@ -47,6 +48,7 @@ public class GetViralIsolates {
         patients = mlisfiles.getPatients();
         
         spreadSampleIds = Utils.readTable("/home/plibin0/import/ghb/seqs/SPREAD_stalen.csv");
+        samplesToBeIgnored = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
                 
         String seq,id;
 
@@ -86,7 +88,7 @@ public class GetViralIsolates {
                 //System.err.println("Can find reference to: " + id);     
                 //counterS++;
             } else {
-                if(!isSpreadSample(id)) {
+                if(!isSpreadSample(id) && !canBeIgnored(id)) {
                     System.err.println("Cannot find reference to: " + id);     
                     counterS++;
                 }
@@ -94,6 +96,17 @@ public class GetViralIsolates {
         }
     }
     
+    private boolean canBeIgnored(String id) {
+        for(int i = 1; i<samplesToBeIgnored.numRows(); i++) {
+            String ignoreId = samplesToBeIgnored.valueAt(0, i);
+            ignoreId = ignoreId.substring(ignoreId.indexOf(':')+2, ignoreId.length());
+            if(ignoreId.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isSpreadSample(String id) {
         for(int i = 1; i<spreadSampleIds.numRows(); i++) {
             if(id.equals(spreadSampleIds.valueAt(0, i).trim()))
