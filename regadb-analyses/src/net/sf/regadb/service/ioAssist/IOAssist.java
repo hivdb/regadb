@@ -20,9 +20,9 @@ public class IOAssist
             System.exit(0);
         }
         System.err.println("IOAssist started");
-        if(args.length==4 && args[3].contains(":")) {
-            String proxyHost = args[3].split(":")[0];
-            String proxyPort = args[3].split(":")[1];
+        if(args.length==3 && args[2].contains(":")) {
+            String proxyHost = args[2].split(":")[0];
+            String proxyPort = args[2].split(":")[1];
             System.setProperty("http.proxyHost", proxyHost);
             System.setProperty("http.proxyPort", proxyPort);
         }
