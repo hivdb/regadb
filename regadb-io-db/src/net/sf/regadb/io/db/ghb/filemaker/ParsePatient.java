@@ -3,7 +3,6 @@ package net.sf.regadb.io.db.ghb.filemaker;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,9 +12,8 @@ import java.util.Map;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
-import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -30,19 +28,8 @@ public class ParsePatient {
 
     }
     
-    public class DummyPatient{
-        public String patientId=null;
-        public String firstName=null;
-        public String lastName=null;
-        public Date birthDate=null;
-        public Date deathDate=null;
-        
-        public List<PatientAttributeValue> patientAttributeValues = new ArrayList<PatientAttributeValue>();
-    }
-    
-    public Map<String,DummyPatient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
-        
-        Map<String,DummyPatient> dummies = new HashMap<String,DummyPatient>();
+    public Map<String,Patient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
+        Map<String,Patient> patients = new HashMap<String, Patient>();
         
         if(!patientFile.exists() && !patientFile.isFile()){
             System.err.println("File does not exist: "+ patientFile.getAbsolutePath());
@@ -82,19 +69,13 @@ public class ParsePatient {
         
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
         Table transmissionGroupTable = Utils.readTable(transmissionGroupMapFile.getAbsolutePath());
-        
-        Attribute geographicOriginAttribute = Utils.selectAttribute("Geographic origin", regadbAttributes);
-        Attribute transmissionGroupAttribute = Utils.selectAttribute("Transmission group", regadbAttributes);
-        
-        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, geographicOriginAttribute);
-        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, transmissionGroupAttribute);
+        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, Utils.selectAttribute("Geographic origin", regadbAttributes));
+        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, Utils.selectAttribute("Transmission group", regadbAttributes));
         
         for(int i=1; i<patientTable.numRows(); ++i){
             String SPatientId   = patientTable.valueAt(CPatientId,i);
 
             if(!isEmpty(SPatientId)){
-                AttributeNominalValue anv;
-                
                 Date birthDate = parseDate(patientTable.valueAt(CBirthDate,i));
                 Date deathDate = parseDate(patientTable.valueAt(CDeathDate,i));
                 
@@ -105,41 +86,41 @@ public class ParsePatient {
                 String SGeographicOrigin  = patientTable.valueAt(CGeographicOrigin,i);
                 String SPatCode           = patientTable.valueAt(CPatCode,i); 
                 
-                DummyPatient p = new DummyPatient();
-                p.patientId = SPatientId;
-                
-                p.firstName = SFirstName;
-                p.lastName = SLastName;
+                Patient p = new Patient();
+                p.setPatientId(SPatientId);
                 
                 if(birthDate != null){
-                    p.birthDate = birthDate;
+                    p.setBirthDate(birthDate);
                 }
                 if(deathDate != null){
-                    p.deathDate = deathDate;
+                    p.setDeathDate(deathDate);
                 }
                 
-                if(!isEmpty(SPatCode)){
-                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(patCodeAttribute,SPatCode));
+                PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
+                pav.setValue(SPatCode);
+                
+                p.setFirstName(SFirstName);
+                p.setLastName(SLastName);
+                
+                if(Utils.checkColumnValue(SGeographicOrigin, i, SPatientId))
+                {
+                    Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
+                }
+                if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
+                {
+                    Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
                 }
                 
-                anv = geographicOriginA.nominalValueMap.get(SGeographicOrigin);
-                if(anv != null){
-                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(geographicOriginAttribute,anv));
-                }
-                
-                anv = transmissionGroupA.nominalValueMap.get(STransmissionGroup);
-                if(anv != null){
-                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(transmissionGroupAttribute,anv));
-                }
-                
-                dummies.put(SPatientId, p);
+                patients.put(SPatientId, p);
                 
             }
             else{
                 System.err.println("No valid patient id on line: "+ i);
             }
         }
-        return dummies;
+        
+        return patients;
+
     }
     
     private boolean isEmpty(String s){

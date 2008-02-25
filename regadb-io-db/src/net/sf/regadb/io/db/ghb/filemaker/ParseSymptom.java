@@ -3,7 +3,6 @@ package net.sf.regadb.io.db.ghb.filemaker;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.io.db.util.NominalEvent;
@@ -23,16 +23,13 @@ public class ParseSymptom {
     private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public static void main(String [] args) {
-        Map<String,List<PatientEventValue>> eventValues = new HashMap<String,List<PatientEventValue>>();
-        Map<String,PatientAttributeValue> cdcClassValue = new HashMap<String,PatientAttributeValue>();
-        
         ParseSymptom parseSymptom = new ParseSymptom();
         parseSymptom.parse( new File("/home/simbre0/import/ghb/filemaker/symptomen.csv"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/aids_defining_illness.mapping"), eventValues,cdcClassValue);
+                            new File("/home/simbre0/import/ghb/filemaker/mappings/aids_defining_illness.mapping"),null);
 
     }
     
-    public void parse(File f, File mapping, Map<String,List<PatientEventValue>> eventValues, Map<String,PatientAttributeValue> cdcClassValue){
+    public void parse(File f, File mapping, Map<String,Patient> patients){
         if(!f.exists() && !f.isFile()){
             System.err.println("File does not exist: "+ f.getAbsolutePath());
             return;
@@ -42,8 +39,8 @@ public class ParseSymptom {
             return;
         }
         
-        //Map<String,List<PatientEventValue>> eventValues = new HashMap<String,List<PatientEventValue>>();
-        //Map<String,AttributeNominalValue> cdcClassValue = new HashMap<String,AttributeNominalValue>();
+        Map<String,List<PatientEventValue>> eventValues = new HashMap<String,List<PatientEventValue>>();
+        Map<String,AttributeNominalValue> classValue = new HashMap<String,AttributeNominalValue>();
         
         List<Event> regadbEvents = Utils.prepareRegaDBEvents();
         
@@ -75,7 +72,8 @@ public class ParseSymptom {
             String SName        = symptomTable.valueAt(CName,i);
             String SSKlasse     = symptomTable.valueAt(CSKlasse,i);
             
-            if(!isEmpty(SPatientId)){
+            Patient p;
+            if(!isEmpty(SPatientId) && (p = patients.get(SPatientId)) != null){
                 
                 Date startDate = null;
                 try {
@@ -86,29 +84,19 @@ public class ParseSymptom {
                 
                 if(startDate != null){
                     
-                    PatientEventValue pev = Utils.handlePatientEventValue(aidsDefiningIllness, SName, startDate,null);
-                    
-                    List<PatientEventValue> pevs = eventValues.get(SPatientId);
-                    if(pevs == null){
-                        pevs = new ArrayList<PatientEventValue>();
-                        eventValues.put(SPatientId, pevs);
-                    }
-                    pevs.add(pev);
+                    Utils.handlePatientEventValue(aidsDefiningIllness, SName, startDate, null, p);
+                    //pevs.add(pev);
                    
                     if(!isEmpty(SSKlasse)){
                         AttributeNominalValue newAnv = null;
-                        AttributeNominalValue oldAnv = null;
-                        PatientAttributeValue pav = cdcClassValue.get(SPatientId);
-                        if(pav != null){
-                            oldAnv = pav.getAttributeNominalValue();
-                        }
+                        AttributeNominalValue oldAnv = classValue.get(SPatientId);
                         
                         if(SSKlasse.equals("A")) newAnv = scA;
                         else if(SSKlasse.equals("B")) newAnv = scB;
                         else if(SSKlasse.equals("C")) newAnv = scC;
                             
                         if(newAnv != null && (oldAnv == null || (newAnv.getValue().compareTo(oldAnv.getValue()) > 0))){
-                            cdcClassValue.put(SPatientId,Utils.createPatientAttributeValue(symptomClassAttribute,newAnv));
+                            classValue.put(SPatientId,newAnv);
                         }
                     }
                     else{
@@ -123,6 +111,13 @@ public class ParseSymptom {
                 System.err.println("no valid patient id specified on line: "+ i);
             }
         }
+        
+        for(Map.Entry<String,AttributeNominalValue> ppav : classValue.entrySet()){
+            Patient p = patients.get(ppav.getKey());
+            PatientAttributeValue pav = p.createPatientAttributeValue(symptomClassAttribute);
+            pav.setAttributeNominalValue(ppav.getValue());
+        }
+        
     }
     
     public void printDistinctSymptoms(Table symptomTable){
