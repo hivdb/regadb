@@ -66,8 +66,8 @@ public class ImportUcsc
     public static void main(String [] args) 
     {
     	//For internal network usage
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
+        //System.setProperty("http.proxyHost", "www-proxy");
+        //System.setProperty("http.proxyPort", "3128");
         
     	try
     	{
