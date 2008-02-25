@@ -31,6 +31,7 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
@@ -576,5 +577,44 @@ public class Utils {
              }
          }
          return null;
+     }
+     
+     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, String value){
+         PatientAttributeValue pav = createPatientAttributeValue(attribute);
+         pav.setValue(value);
+         return pav;
+     }
+
+     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, AttributeNominalValue anv){
+         PatientAttributeValue pav = createPatientAttributeValue(attribute);
+         pav.setAttributeNominalValue(anv);
+         return pav;
+     }
+
+     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute){
+         PatientAttributeValue pav = new PatientAttributeValue();
+         PatientAttributeValueId pavId = new PatientAttributeValueId();
+         pavId.setAttribute(attribute);
+         
+         return pav;
+     }
+     
+     public static PatientEventValue createPatientEventValue(Event event, String value){
+         PatientEventValue pev = createPatientEventValue(event);
+         pev.setValue(value);
+         return pev;
+     }
+
+     public static PatientEventValue createPatientEventValue(Event event, EventNominalValue env){
+         PatientEventValue pev = createPatientEventValue(event);
+         pev.setEventNominalValue(env);
+         return pev;
+     }
+
+     public static PatientEventValue createPatientEventValue(Event event){
+         PatientEventValue pev = new PatientEventValue();
+         pev.setEvent(event);
+         
+         return pev;
      }
 }
