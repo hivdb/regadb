@@ -3,6 +3,7 @@ package net.sf.regadb.io.db.ghb.filemaker;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +14,8 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -36,9 +37,7 @@ public class ParsePatient {
         public Date birthDate=null;
         public Date deathDate=null;
         
-        public String patCode=null;
-        public AttributeNominalValue geographicOrigin=null;
-        public AttributeNominalValue transmissionGroup=null;
+        public List<PatientAttributeValue> patientAttributeValues = new ArrayList<PatientAttributeValue>();
     }
     
     public Map<String,DummyPatient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
@@ -83,13 +82,19 @@ public class ParsePatient {
         
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
         Table transmissionGroupTable = Utils.readTable(transmissionGroupMapFile.getAbsolutePath());
-        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, Utils.selectAttribute("Geographic origin", regadbAttributes));
-        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, Utils.selectAttribute("Transmission group", regadbAttributes));
+        
+        Attribute geographicOriginAttribute = Utils.selectAttribute("Geographic origin", regadbAttributes);
+        Attribute transmissionGroupAttribute = Utils.selectAttribute("Transmission group", regadbAttributes);
+        
+        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, geographicOriginAttribute);
+        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, transmissionGroupAttribute);
         
         for(int i=1; i<patientTable.numRows(); ++i){
             String SPatientId   = patientTable.valueAt(CPatientId,i);
 
             if(!isEmpty(SPatientId)){
+                AttributeNominalValue anv;
+                
                 Date birthDate = parseDate(patientTable.valueAt(CBirthDate,i));
                 Date deathDate = parseDate(patientTable.valueAt(CDeathDate,i));
                 
@@ -103,6 +108,9 @@ public class ParsePatient {
                 DummyPatient p = new DummyPatient();
                 p.patientId = SPatientId;
                 
+                p.firstName = SFirstName;
+                p.lastName = SLastName;
+                
                 if(birthDate != null){
                     p.birthDate = birthDate;
                 }
@@ -110,12 +118,19 @@ public class ParsePatient {
                     p.deathDate = deathDate;
                 }
                 
-                p.patCode = SPatCode;
-                p.firstName = SFirstName;
-                p.lastName = SLastName;
+                if(!isEmpty(SPatCode)){
+                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(patCodeAttribute,SPatCode));
+                }
                 
-                p.geographicOrigin = geographicOriginA.nominalValueMap.get(SGeographicOrigin);
-                p.transmissionGroup = transmissionGroupA.nominalValueMap.get(STransmissionGroup);
+                anv = geographicOriginA.nominalValueMap.get(SGeographicOrigin);
+                if(anv != null){
+                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(geographicOriginAttribute,anv));
+                }
+                
+                anv = transmissionGroupA.nominalValueMap.get(STransmissionGroup);
+                if(anv != null){
+                    p.patientAttributeValues.add(Utils.createPatientAttributeValue(transmissionGroupAttribute,anv));
+                }
                 
                 dummies.put(SPatientId, p);
                 

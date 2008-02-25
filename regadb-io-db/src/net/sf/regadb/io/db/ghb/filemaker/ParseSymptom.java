@@ -14,6 +14,7 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
@@ -23,7 +24,7 @@ public class ParseSymptom {
 
     public static void main(String [] args) {
         Map<String,List<PatientEventValue>> eventValues = new HashMap<String,List<PatientEventValue>>();
-        Map<String,AttributeNominalValue> cdcClassValue = new HashMap<String,AttributeNominalValue>();
+        Map<String,PatientAttributeValue> cdcClassValue = new HashMap<String,PatientAttributeValue>();
         
         ParseSymptom parseSymptom = new ParseSymptom();
         parseSymptom.parse( new File("/home/simbre0/import/ghb/filemaker/symptomen.csv"),
@@ -31,7 +32,7 @@ public class ParseSymptom {
 
     }
     
-    public void parse(File f, File mapping, Map<String,List<PatientEventValue>> eventValues, Map<String,AttributeNominalValue> cdcClassValue){
+    public void parse(File f, File mapping, Map<String,List<PatientEventValue>> eventValues, Map<String,PatientAttributeValue> cdcClassValue){
         if(!f.exists() && !f.isFile()){
             System.err.println("File does not exist: "+ f.getAbsolutePath());
             return;
@@ -96,14 +97,18 @@ public class ParseSymptom {
                    
                     if(!isEmpty(SSKlasse)){
                         AttributeNominalValue newAnv = null;
-                        AttributeNominalValue oldAnv = cdcClassValue.get(SPatientId);
+                        AttributeNominalValue oldAnv = null;
+                        PatientAttributeValue pav = cdcClassValue.get(SPatientId);
+                        if(pav != null){
+                            oldAnv = pav.getAttributeNominalValue();
+                        }
                         
                         if(SSKlasse.equals("A")) newAnv = scA;
                         else if(SSKlasse.equals("B")) newAnv = scB;
                         else if(SSKlasse.equals("C")) newAnv = scC;
                             
                         if(newAnv != null && (oldAnv == null || (newAnv.getValue().compareTo(oldAnv.getValue()) > 0))){
-                            cdcClassValue.put(SPatientId,newAnv);
+                            cdcClassValue.put(SPatientId,Utils.createPatientAttributeValue(symptomClassAttribute,newAnv));
                         }
                     }
                     else{
