@@ -314,10 +314,9 @@ public class ImportIrsicaixa {
                     
                     String smotiv = therapyTable_.valueAt(CMotivation, i);
                     String mapping = mappings_.getMapping("motivation.mapping",smotiv);
-                    if(mapping != null){
+                    if(mapping != null && !mapping.equals("")){
                     	TherapyMotivation tmotiv = new TherapyMotivation(mapping);
-                    	//t.setTherapyMotivation(tmotiv);
-                    	//t.setTherapyMotivation(StandardObjects.); //new TherapyMotivation("Other"));
+                    	t.setTherapyMotivation(tmotiv);
                     }
                     else{
                     	logger_.logWarning("Could not find mapping for motivation "+ smotiv);
