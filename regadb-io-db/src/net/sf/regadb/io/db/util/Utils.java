@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.csv.Table;
@@ -202,7 +203,7 @@ public class Utils {
  		return null;
      }
      
-     public static void exportPatientsXML(HashMap<String, Patient> patientMap, String fileName) 
+     public static void exportPatientsXML(Map<String, Patient> patientMap, String fileName) 
      {
      	try
      	{
@@ -229,11 +230,12 @@ public class Utils {
      	}
          catch (IOException e) 
          {
+             e.printStackTrace();
              ConsoleLogger.getInstance().logError("XML generation failed.");
          }
      }
      
-     public static void exportNTXML(HashMap<String, ViralIsolate> ntMap, String fileName) 
+     public static void exportNTXML(Map<String, ViralIsolate> ntMap, String fileName) 
      {
      	try
      	{
@@ -259,6 +261,40 @@ public class Utils {
  	        writer.flush();
  	        writer.close();
      	}
+         catch (IOException e) 
+         {
+             ConsoleLogger.getInstance().logError("XML generation failed.");
+         }
+     }
+     
+     public static void exportNTXMLFromPatients(Map<String, Patient> patientMap, String fileName) 
+     {
+        try
+        {
+            ExportToXML l = new ExportToXML();
+            Element root = new Element("viralIsolates");
+            
+            for (String patientSampleId:patientMap.keySet()) 
+            {
+                Element viralIsolateE = new Element("viralIsolates-el");
+                root.addContent(viralIsolateE);
+    
+                Patient p = patientMap.get(patientSampleId);
+                for(ViralIsolate vi : p.getViralIsolates()) {
+                    l.writeViralIsolate(vi, viralIsolateE);
+                }
+            }
+            
+            Document n = new Document(root);
+            XMLOutputter outputter = new XMLOutputter();
+            outputter.setFormat(Format.getPrettyFormat());
+    
+            java.io.FileWriter writer;
+            writer = new java.io.FileWriter(fileName);
+            outputter.output(n, writer);
+            writer.flush();
+            writer.close();
+        }
          catch (IOException e) 
          {
              ConsoleLogger.getInstance().logError("XML generation failed.");
@@ -616,5 +652,15 @@ public class Utils {
          pev.setEvent(event);
          
          return pev;
+     }
+     
+     public static PatientAttributeValue getAttributeValue(Attribute attribute, Patient p){
+         Set<PatientAttributeValue> pavs = p.getPatientAttributeValues();
+         
+         for(PatientAttributeValue i: pavs){
+             if(i.getId().getAttribute().getName().equals(attribute.getName()))
+                 return i;
+         }
+         return null;
      }
 }

@@ -1,24 +1,74 @@
 package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.ghb.GetViralIsolates;
+import net.sf.regadb.io.db.ghb.MergeLISFiles;
+import net.sf.regadb.io.db.util.Utils;
 
 public class ParseAll {    
     public static void main(String [] args) {
+        String importGhbPath = "/home/plibin0/import/ghb/";
+        String eclipeMappingDir = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/";
+        String eclipeFileMakerMappingDir = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+        
         ParseEadEmd eadEmd = new ParseEadEmd();
         eadEmd.run();
         
-        ParsePatient parsePatient = new ParsePatient();
-        patients = parsePatient.parse( new File("/home/simbre0/import/ghb/filemaker/patienten.csv"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/geographic_origin.mapping"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/transmission_group.mapping"));
-        
-        if(patients != null){
-            ParseSymptom parseSymptom = new ParseSymptom();
-            parseSymptom.parse( new File("/home/simbre0/import/ghb/filemaker/symptomen.csv"),
-                    new File("/home/simbre0/import/ghb/filemaker/mappings/aids_defining_illness.mapping"),patients);
+        Map<String, Patient> eadPatients = new HashMap<String, Patient>();
+        Map<String, Patient> patientIdPatients = new HashMap<String, Patient>();
+        for(Entry<String, String> e : eadEmd.eadPatientId.entrySet()) {
+            Patient p = new Patient();
+            p.setPatientId(e.getKey());
+            eadPatients.put(e.getKey(), p);
+            patientIdPatients.put(e.getValue(), p);
         }
+        
+        MergeLISFiles mergeLIS = new MergeLISFiles();
+        mergeLIS.patients = eadPatients;
+        mergeLIS.run();
+        
+        GetViralIsolates gvi = new GetViralIsolates();
+        gvi.eadPatients = eadPatients;
+        gvi.run();
+        
+        ParsePatient parsePatient = new ParsePatient();
+        parsePatient.parse( new File(importGhbPath + "filemaker/patienten.csv"),
+                            new File(eclipeFileMakerMappingDir + "geographic_origin.mapping"),
+                            new File(eclipeFileMakerMappingDir + "transmission_group.mapping"), patientIdPatients);
+        
+        ParseSymptom parseSymptom = new ParseSymptom();
+        parseSymptom.parse( new File(importGhbPath + "filemaker/symptomen.csv"),
+                            new File(eclipeMappingDir + "aids_defining_illness.mapping"),
+                            patientIdPatients);
+        
+        ParseContacts parseContacts = new ParseContacts(mergeLIS.firstCd4, mergeLIS.firstCd8, mergeLIS.firstViralLoad);
+        parseContacts.run(patientIdPatients);
+        
+        ParseTherapy parseTherapy = new ParseTherapy();
+        parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/medicatie.csv"));
+        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+            parseTherapy.mergeTherapies(e.getValue());
+            parseTherapy.setStopDates(e.getValue());
+        }
+        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+            Patient p = patientIdPatients.get(e.getKey());
+            if(p!=null) {
+                for(Therapy t : e.getValue())
+                    p.getTherapies().add(t);
+            } else {
+                System.err.println("invalid patient id: " + e.getKey());
+            }
+        }
+        
+        Utils.exportPatientsXML(eadPatients, "/home/plibin0/import/ghb/xmlOutput/" + File.separatorChar + "patients.xml");
+        Utils.exportNTXMLFromPatients(eadPatients, "/home/plibin0/import/ghb/xmlOutput/" + File.separatorChar + "viralisolates.xml");
     }
 }

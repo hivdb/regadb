@@ -18,35 +18,33 @@ import java.util.Map.Entry;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.util.pair.Pair;
 
 public class GetViralIsolates {
     private int counterS;
     private Map<String, List<TestResult>> excellList;
     private Table spreadSampleIds;
     private Table samplesToBeIgnored;
-    private Map<String, ViralIsolate> vis = new HashMap<String, ViralIsolate>();
-    private Map<String, List<TestResult>> lisResults_;
+    
+    public Map<String, Patient> eadPatients;
     
     public static void main(String [] args) {
         GetViralIsolates gvi = new GetViralIsolates();
         //run mergelis and provide the testresults obtained to the run method
-        gvi.run(null);
+        gvi.run();
     }
     
     public GetViralIsolates() {
         
     }
     
-    public void run(Map<String, List<TestResult>> lisResults) {
+    public void run() {
         counterS = 0;
         excellList = this.parseExcelFile(new File("/home/plibin0/import/ghb/seqs/Stalen Leuven.csv"));
 
-        lisResults_ = lisResults;
-        
         spreadSampleIds = Utils.readTable("/home/plibin0/import/ghb/seqs/SPREAD_stalen.csv");
         samplesToBeIgnored = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
                 
@@ -82,16 +80,13 @@ public class GetViralIsolates {
 
     public void handleIsolate(String id, String seq) {
         if(seq!=null) {
-            Pair<String, ViralIsolate> vi = getViralIsolate(id, seq);
-            if(vi!=null) {
-                vis.put(vi.getKey(), vi.getValue());
-                //System.err.println("Can find reference to: " + id);     
-                //counterS++;
-            } else {
+            boolean vi = getViralIsolate(id, seq);
+            if(!vi) {
                 if(!isSpreadSample(id) && !canBeIgnored(id)) {
-                    System.err.println("Cannot find reference to: " + id);     
-                    counterS++;
+                    System.err.println("Cannot find reference to: " + id);
                 }
+            } else {
+                counterS++;
             }
         }
     }
@@ -115,36 +110,42 @@ public class GetViralIsolates {
         return false;
     }
     
-    public Pair<String, ViralIsolate> getViralIsolate(String id, String seq) {
+    public boolean getViralIsolate(String id, String seq) {
         for(Entry<String, List<TestResult>> es : excellList.entrySet()) {
             for(TestResult res : es.getValue()) {
                 if(res.getSampleId().equals(id)) {
-                    ViralIsolate vi = new ViralIsolate();
-                    vi.setSampleDate(res.getTestDate());
-                    vi.setSampleId(res.getSampleId());
-                    NtSequence ntseq = new NtSequence();
-                    ntseq.setLabel("Sequence 1");
-                    ntseq.setSequenceDate(res.getTestDate());
-                    ntseq.setNucleotides(seq);
-                    return new Pair<String, ViralIsolate>(es.getKey(), vi);
+                    Patient p = eadPatients.get(es.getKey());
+                    if(p!=null) {
+                        ViralIsolate vi = eadPatients.get(es.getKey()).createViralIsolate();
+                        vi.setSampleDate(res.getTestDate());
+                        vi.setSampleId(res.getSampleId());
+                        NtSequence ntseq = new NtSequence();
+                        ntseq.setLabel("Sequence 1");
+                        ntseq.setSequenceDate(res.getTestDate());
+                        ntseq.setNucleotides(seq);
+                        return true; 
+                    } else {
+                        System.err.println("No patient with ead " + es.getKey() + " for id " + id);
+                        return false;
+                    }
                 }
             }
         }
-        for(Entry<String, List<TestResult>> es : lisResults_.entrySet()) {
-            for(TestResult res : es.getValue()) {
+        for(Entry<String, Patient> es : eadPatients.entrySet()) {
+            for(TestResult res : es.getValue().getTestResults()) {
                 if(res.getSampleId().equals(id)) {
-                    ViralIsolate vi = new ViralIsolate();
-                    vi.setSampleDate(res.getTestDate());
-                    vi.setSampleId(res.getSampleId());
-                    NtSequence ntseq = new NtSequence();
-                    ntseq.setLabel("Sequence 1");
-                    ntseq.setSequenceDate(res.getTestDate());
-                    ntseq.setNucleotides(seq);
-                    return new Pair<String, ViralIsolate>(es.getKey(), vi);
+                        ViralIsolate vi = eadPatients.get(es.getKey()).createViralIsolate();
+                        vi.setSampleDate(res.getTestDate());
+                        vi.setSampleId(res.getSampleId());
+                        NtSequence ntseq = new NtSequence();
+                        ntseq.setLabel("Sequence 1");
+                        ntseq.setSequenceDate(res.getTestDate());
+                        ntseq.setNucleotides(seq);
+                        return true;
                 }
             }
         }
-        return null;
+        return false;
     }
     
     public Map<String, List<TestResult>> parseExcelFile(File excelFile) {

@@ -27,7 +27,7 @@ public class ParseEadEmd {
         }
         System.err.println("Non-unique emd's -------------------------");
         
-        Table patientFilemakerTable = Utils.readTable("/home/plibin0/import/ghb/filemaker/patienten.csv");
+        Table patientFilemakerTable = Utils.readTable("/home/plibin0/import/ghb/filemaker/patienten.csv", ';');
         int CDossierNr = Utils.findColumn(patientFilemakerTable, "DossierNr");
         int CNaam = Utils.findColumn(patientFilemakerTable, "Naam");
         int CVoornaam = Utils.findColumn(patientFilemakerTable, "Voornaam");

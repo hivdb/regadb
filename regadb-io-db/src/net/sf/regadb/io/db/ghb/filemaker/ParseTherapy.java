@@ -39,7 +39,7 @@ public class ParseTherapy {
     
     private String mappingPath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
     
-    private Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
+    Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
     
     //!!!!!!!!!!!!!!before running this script!!!!!!!!!!!!!!
     //replace all accented chars
@@ -327,7 +327,7 @@ public class ParseTherapy {
     }
     
     public void mergeTherapies(List<Therapy> therapies) {
-        System.err.println("old size" + therapies.size());
+        //System.err.println("old size" + therapies.size());
         Therapy former = null;
         Therapy current;
         for(Iterator<Therapy> i = therapies.iterator(); i.hasNext();) {
@@ -339,7 +339,7 @@ public class ParseTherapy {
             } 
             former = current;
         }
-        System.err.println("new size" + therapies.size());
+        //System.err.println("new size" + therapies.size());
     }
     
     public void setStopDates(List<Therapy> therapies) {

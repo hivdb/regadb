@@ -7,38 +7,33 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.io.db.ghb.MergeLISFiles;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ParseContacts {
-    public Map<String, List<TestResult>> fileMakerTests = new HashMap<String, List<TestResult>>();
+    //public Map<String, List<TestResult>> fileMakerTests = new HashMap<String, List<TestResult>>();
     private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     
     private TestNominalValue posSeroStatus_ = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
     
-    MergeLISFiles mlisf = new MergeLISFiles();
-    public ParseContacts() {
-
+    Date firstCd4_;
+    Date firstCd8_;
+    Date firstViralLoad_;
+    
+    public ParseContacts(Date firstCd4, Date firstCd8, Date firstViralLoad) {
+        firstCd4_ = firstCd4;
+        firstCd8_ = firstCd8;
+        firstViralLoad_ = firstViralLoad;
     }
-    
-
-    
-    public void run() {
-        mlisf.run();
-        System.err.println(mlisf.firstCd4);
-        System.err.println(mlisf.firstCd8);
-        System.err.println(mlisf.firstViralLoad);
         
+    public void run(Map<String,Patient> patients) {
         Table contacts = null;
         try {
              contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream("/home/plibin0/import/ghb/filemaker/contacten.csv"))), false, ';');
@@ -62,73 +57,67 @@ public class ParseContacts {
                 
             }
             if(!"".equals(patientId) && date!=null) {
-                List<TestResult> list = fileMakerTests.get(patientId);
-                if(list==null) {
-                    list = new ArrayList<TestResult>();
-                    fileMakerTests.put(patientId, list);
-                }
-                
-                if(!contacts.valueAt(CCD4, i).equals("")) {
-                    try{
-                    double cd4 = Double.parseDouble(contacts.valueAt(CCD4, i).replace(',', '.'));
-                    storeCD4(date, cd4, null, patientId);
-                    } catch(NumberFormatException nfe) {
-                        System.err.println("Cannot parse cd4 value " + contacts.valueAt(CCD4, i));
-                    }
-                }
-                
-                if(!contacts.valueAt(CCD8, i).equals("")) {
-                    try{
-                        double cd8 = Double.parseDouble(contacts.valueAt(CCD8, i).replace(',', '.'));
-                        storeCD8(date, cd8, null, patientId);
+                Patient p = patients.get(patientId);
+                if(p!=null) {
+                    if(!contacts.valueAt(CCD4, i).equals("")) {
+                        try{
+                        double cd4 = Double.parseDouble(contacts.valueAt(CCD4, i).replace(',', '.'));
+                        storeCD4(date, cd4, null, p);
                         } catch(NumberFormatException nfe) {
-                            System.err.println("Cannot parse cd8 value " + contacts.valueAt(CCD8, i));
+                            System.err.println("Cannot parse cd4 value " + contacts.valueAt(CCD4, i));
                         }
-                }
-                
-                if(!contacts.valueAt(CViralLoad, i).equals(""))
-                    storeViralLoad(date, contacts.valueAt(CViralLoad, i), null, patientId);
-                
-                String sero = contacts.valueAt(CHIVPos, i);
-                if(!sero.equals("")) {
-                    if(sero.toLowerCase().contains("hiv") && sero.toLowerCase().contains("positief")) {
-                        storePosSero(date, null, patientId);
                     }
+                    
+                    if(!contacts.valueAt(CCD8, i).equals("")) {
+                        try{
+                            double cd8 = Double.parseDouble(contacts.valueAt(CCD8, i).replace(',', '.'));
+                            storeCD8(date, cd8, null, p);
+                            } catch(NumberFormatException nfe) {
+                                System.err.println("Cannot parse cd8 value " + contacts.valueAt(CCD8, i));
+                            }
+                    }
+                    
+                    if(!contacts.valueAt(CViralLoad, i).equals(""))
+                        storeViralLoad(date, contacts.valueAt(CViralLoad, i), null, p);
+                    
+                    String sero = contacts.valueAt(CHIVPos, i);
+                    if(!sero.equals("")) {
+                        if(sero.toLowerCase().contains("hiv") && sero.toLowerCase().contains("positief")) {
+                            storePosSero(date, null, p);
+                        }
+                    }
+                } else {
+                    System.err.println("invalid patientId: " + patientId);
                 }
             } else {
-                System.err.println("Cannot parse contact");
+                System.err.println("Cannot parse contact, no date or wrong patientId");
             }
         }
     }
     
-    private void storeCD4(Date date, double value, String sampleId, String patientId) {
-        if(date.before(mlisf.firstCd4)) {
-            TestResult t = new TestResult();
-            t.setTest(StandardObjects.getGenericCD4Test());
+    private void storeCD4(Date date, double value, String sampleId, Patient p) {
+        if(date.before(firstCd4_)) {
+            TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
             t.setValue(value+"");
             t.setTestDate(date);
             t.setSampleId(sampleId);
-            fileMakerTests.get(patientId).add(t);
         }
     }
     
-    private void storeCD8(Date date, double value, String sampleId, String patientId) {
-        if(date.before(mlisf.firstCd8)) {
-            TestResult t = new TestResult();
-            t.setTest(StandardObjects.getGenericCD8Test());
+    private void storeCD8(Date date, double value, String sampleId, Patient p) {
+        if(date.before(firstCd8_)) {
+            TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
             t.setValue(value+"");
             t.setTestDate(date);
             t.setSampleId(sampleId);
-            fileMakerTests.get(patientId).add(t);
         }
     }
     
-    private void storePosSero(Date date, String sampleId, String patientId) {
-        TestResult t = new TestResult();
-        t.setTest(StandardObjects.getGenericHivSeroStatusTest());
+    private void storePosSero(Date date, String sampleId, Patient p) {
+        TestResult t = p.createTestResult(StandardObjects.getGenericHivSeroStatusTest());
         t.setTestNominalValue(posSeroStatus_);
         t.setTestDate(date);
-        fileMakerTests.get(patientId).add(t);
+        t.setSampleId(sampleId);
     }
     
     private String removeCharsFromString(String src, char toRemove) {
@@ -140,7 +129,7 @@ public class ParseContacts {
         return toReturn;
     }
     
-    private void storeViralLoad(Date date, String value, String sampleId, String patientId) {
+    private void storeViralLoad(Date date, String value, String sampleId, Patient p) {
         String parsedValue = null;
         char sensChar = ' ';
         if(!Character.isDigit(value.charAt(0))) {
@@ -163,14 +152,12 @@ public class ParseContacts {
 
         }
         
-        if(date.before(mlisf.firstViralLoad)) {
+        if(date.before(firstViralLoad_)) {
             if(parsedValue!=null) {
-                TestResult t = new TestResult();
-                t.setTest(StandardObjects.getGenericViralLoadTest());
+                TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
                 t.setValue(parsedValue+"");
                 t.setTestDate(date);
                 t.setSampleId(sampleId);
-                fileMakerTests.get(patientId).add(t);
             } else {
                 System.err.println("Cannot parse viral load value: " + value);
             }    
@@ -178,7 +165,7 @@ public class ParseContacts {
     }
     
     public static void main(String [] args) {
-        ParseContacts pc = new ParseContacts();
-        pc.run();
+        //ParseContacts pc = new ParseContacts();
+        //pc.run();
     }
 }

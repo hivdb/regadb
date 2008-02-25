@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,24 +23,20 @@ public class ParsePatient {
         ParsePatient parsePatient = new ParsePatient();
         parsePatient.parse( new File("/home/simbre0/import/ghb/filemaker/patienten.csv"),
                             new File("/home/simbre0/import/ghb/filemaker/mappings/geographic_origin.mapping"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/transmission_group.mapping"));
+                            new File("/home/simbre0/import/ghb/filemaker/mappings/transmission_group.mapping"), null);
 
     }
     
-    public Map<String,Patient> parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile){
-        Map<String,Patient> patients = new HashMap<String, Patient>();
+    public void parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile, Map<String,Patient> patientIdPatients){
         
         if(!patientFile.exists() && !patientFile.isFile()){
             System.err.println("File does not exist: "+ patientFile.getAbsolutePath());
-            return null;
         }
         if(!geographicOriginMapFile.exists() && !geographicOriginMapFile.isFile()){
             System.err.println("Mapping file does not exist: "+ geographicOriginMapFile.getAbsolutePath());
-            return null;
         }
         if(!transmissionGroupMapFile.exists() && !transmissionGroupMapFile.isFile()){
             System.err.println("Mapping file does not exist: "+ transmissionGroupMapFile.getAbsolutePath());
-            return null;
         }
         
         Table patientTable = Utils.readTable(patientFile.getAbsolutePath(),"ISO-8859-15",';');
@@ -84,43 +79,37 @@ public class ParsePatient {
                 
                 String STransmissionGroup = patientTable.valueAt(CTransmissionGroup,i);
                 String SGeographicOrigin  = patientTable.valueAt(CGeographicOrigin,i);
-                String SPatCode           = patientTable.valueAt(CPatCode,i); 
+                String SPatCode           = patientTable.valueAt(CPatCode,i);
                 
-                Patient p = new Patient();
-                p.setPatientId(SPatientId);
-                
-                if(birthDate != null){
-                    p.setBirthDate(birthDate);
+                Patient p = patientIdPatients.get(SPatientId);
+
+                if(p!=null) {
+                    if(deathDate != null){
+                        p.setDeathDate(deathDate);
+                    }
+                    
+                    PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
+                    pav.setValue(SPatCode);
+                    
+                    //p.setFirstName(SFirstName);
+                    //p.setLastName(SLastName);
+                    
+                    if(Utils.checkColumnValue(SGeographicOrigin, i, SPatientId))
+                    {
+                        Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
+                    }
+                    if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
+                    {
+                        Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
+                    }
+                } else {
+                    System.err.println("No valid id: "+ SPatientId);
                 }
-                if(deathDate != null){
-                    p.setDeathDate(deathDate);
-                }
-                
-                PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
-                pav.setValue(SPatCode);
-                
-                p.setFirstName(SFirstName);
-                p.setLastName(SLastName);
-                
-                if(Utils.checkColumnValue(SGeographicOrigin, i, SPatientId))
-                {
-                    Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
-                }
-                if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
-                {
-                    Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
-                }
-                
-                patients.put(SPatientId, p);
-                
             }
             else{
                 System.err.println("No valid patient id on line: "+ i);
             }
         }
-        
-        return patients;
-
     }
     
     private boolean isEmpty(String s){
@@ -132,10 +121,12 @@ public class ParsePatient {
     private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static Date parseDate(String sdate){
         Date d = null;
-        try {
-            d = filemakerDateFormat.parse(sdate.replace('/', '-'));
-        } catch(Exception e) {
-            System.err.println("Invalid date: "+ sdate);
+        if(!sdate.equals("")) {
+            try {
+                d = filemakerDateFormat.parse(sdate.replace('/', '-'));
+            } catch(Exception e) {
+                System.err.println("Invalid date: "+ sdate);
+            } 
         }
         return d;
     }
