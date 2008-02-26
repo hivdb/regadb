@@ -1,12 +1,12 @@
 package net.sf.regadb.io.db.brescia;
 
-import java.lang.Double;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,7 +14,6 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.NtSequence;
@@ -25,8 +24,8 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -59,9 +58,10 @@ public class ImportUNIBS
 	private Table deathReasonMappingTable;
 	private Table adeMappingTable;
 
+	private HashMap<String, String> stopTherapyTranslation;
+	
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
 	
-	private List<DrugCommercial> regaDrugCommercials;
 	private List<DrugGeneric> regaDrugGenerics;
 	
 	private List<Attribute> regadbAttributes;
@@ -130,9 +130,11 @@ public class ImportUNIBS
     		deathReasonMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "death_reason.mapping");  
     		adeMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "aids_defining_illness.mapping"); 
     		
+    		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
+    		stopTherapyTranslation = Utils.translationFileToHashMap(stopTherapyReasonMappingTable);
+    		
     		ConsoleLogger.getInstance().logInfo("Retrieving attributes, drugs, and events...");
     		regadbAttributes = Utils.prepareRegaDBAttributes();
-    		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		//TODO: Wait for file
     		//regadbEvents = Utils.prepareRegaDBEvents();
@@ -493,7 +495,7 @@ public class ImportUNIBS
         int CMethod = Utils.findColumn(bMarkersTable, "Test");
         int CResult = Utils.findColumn(bMarkersTable, "Esito");
         int CValue = Utils.findColumn(bMarkersTable, "Valore");
-        int CCutOff = Utils.findColumn(bMarkersTable, "CutOff");
+        //int CCutOff = Utils.findColumn(bMarkersTable, "CutOff");
         
         for(int i = 1; i < bMarkersTable.numRows(); i++) 
         {
@@ -503,7 +505,7 @@ public class ImportUNIBS
             String result = bMarkersTable.valueAt(CResult, i);
             String value = bMarkersTable.valueAt(CValue, i);
             //TODO: Clarify with Guiseppe
-            String cutoff = bMarkersTable.valueAt(CCutOff, i);
+            //String cutoff = bMarkersTable.valueAt(CCutOff, i);
             
             Patient p = patientMap.get(patientId);
     		
@@ -629,10 +631,87 @@ public class ImportUNIBS
     
     private void handleTherapies()
     {
+    	int CPatientId = Utils.findColumn(this.hivTherapyTable, "ID_Coorte");
+    	int CStartTherapy = Utils.findColumn(this.hivTherapyTable, "Start");
+    	int CStopTherapy = Utils.findColumn(this.hivTherapyTable, "End");
+    	int CGDrug = Utils.findColumn(this.hivTherapyTable, "Regime");
+    	int CStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "MotivoSospensione");
+  	
+    	int CStatus = Utils.findColumn(this.hivTherapyTable, "Status");
     	
+        HashMap<Integer, String> drugPositions = new HashMap<Integer, String>();
+        
+        for(int i = CStatus+1; i < this.hivTherapyTable.numColumns()-1; i++) 
+        {
+            String drug = this.hivTherapyTable.valueAt(i, 0);
+            
+            Utils.checkDrugsWithRepos(drug, regaDrugGenerics, mappings);
+            
+            drugPositions.put(i, drug);
+        }
+    	    	
+    	for(int i = 1; i < this.hivTherapyTable.numRows(); i++)
+    	{
+	    	String patientID = this.hivTherapyTable.valueAt(CPatientId, i);
+			String startTherapy = this.hivTherapyTable.valueAt(CStartTherapy, i);
+			String stopTherapy = this.hivTherapyTable.valueAt(CStopTherapy, i);
+			String gDrugString = this.hivTherapyTable.valueAt(CGDrug, i);
+			String stopReasonTherapy = this.hivTherapyTable.valueAt(CStopReasonTherapy, i);
+			
+			if(!"".equals(patientID))
+            {
+        		ArrayList<String> drugs = new ArrayList<String>();
+        		Date startDate = null;
+        		Date stopDate = null;
+        		
+        		if(Utils.checkColumnValue(startTherapy, i, patientID))
+        		{
+        			startDate = Utils.parseEnglishAccessDate(startTherapy);
+        		}
+        		
+        		for(Map.Entry<Integer, String> entry : drugPositions.entrySet()) 
+                {
+                    String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
+                    
+            		if(Utils.checkColumnValue(drugValue, i, patientID) && Utils.checkDrugValue(drugValue, i, patientID))
+            		{
+            			drugs.add(entry.getValue());
+            		} 
+                }
+        		
+        		ArrayList<DrugGeneric> comDrugs = evaluateDrugs(gDrugString.toLowerCase(), drugs);
+        		
+        		if(Utils.checkColumnValue(stopTherapy, i, patientID))
+        		{
+        			stopDate = Utils.parseEnglishAccessDate(stopTherapy);
+        		}
+        		
+        		if(Utils.checkColumnValue(stopReasonTherapy, i, patientID))
+        		{
+        			if(!stopTherapyTranslation.containsKey(stopReasonTherapy))
+        			{
+        				stopReasonTherapy = null;
+        			
+        				ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
+        			}
+        			else
+        				stopReasonTherapy = stopTherapyTranslation.get(stopReasonTherapy);
+        		}
+        		
+        		if(patientID != null)
+        		{
+        			storeTherapy(patientID, startDate, stopDate, comDrugs, stopReasonTherapy);
+        		}
+            }
+        	else
+        	{
+        		ConsoleLogger.getInstance().logWarning("No patient with id "+patientID+" found.");
+        	}
+    	}
     }
     
-    private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String motivation) 
+    @SuppressWarnings("deprecation")
+	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugGeneric> medicinsList, String motivation) 
     {
     	Patient p = patientMap.get(patientId);
 
@@ -683,8 +762,8 @@ public class ImportUNIBS
     	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
-    		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)));
-    		t.getTherapyCommercials().add(tc);
+    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)));
+    		t.getTherapyGenerics().add(tg);
     	}
     	
     	if(motivation != null && !motivation.equals(""))
@@ -694,5 +773,56 @@ public class ImportUNIBS
     	
     		t.setTherapyMotivation(therapyMotivation);
     	}
+    }
+    
+    private ArrayList<DrugGeneric> evaluateDrugs(String gDrugString, ArrayList<String> drugs)
+    {
+    	ArrayList<DrugGeneric> gDrugs = new ArrayList<DrugGeneric>();
+
+    	if("".equals(gDrugString))
+    		return null;
+    	
+    	gDrugString = gDrugString.replace("-", "");
+    	
+    	ConsoleLogger.getInstance().logInfo("DrugString: "+gDrugString);
+    	
+    	for(int i = 0; i < drugs.size(); i++)
+    	{
+    		String drug = drugs.get(i);
+    		
+    		if(!"".equals(drug))
+    		{
+    			if(gDrugString.contains(drug.toLowerCase()));
+    			{
+    				ConsoleLogger.getInstance().logInfo("Found drug: "+drug);
+    				
+    				DrugGeneric genDrug = getDrugMapping(drug);
+    				
+    				if(genDrug != null)
+    					gDrugs.add(genDrug);
+    			}
+    		}
+    	}
+    	
+    	ConsoleLogger.getInstance().logInfo("Found "+gDrugs.size()+" generic drugs");
+    	
+    	return gDrugs;
+    }
+    
+    private DrugGeneric getDrugMapping(String drug)
+    {
+        for(int j = 0; j < regaDrugGenerics.size(); j++)
+    	{
+        	DrugGeneric genDrug = regaDrugGenerics.get(j);
+        	
+        	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+        	{
+        		ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
+        		
+        		return genDrug;
+        	}
+    	}
+
+    	return null;
     }
 }
