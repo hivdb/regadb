@@ -107,6 +107,15 @@ public class Utils {
         return Utils.createDate(dateTokens[0], dateTokens[1], dateTokens[2]);
     }
     
+    public static Date parseBresciaSeqDate(String date) {
+        if("".equals(date))
+            return null;
+        
+        String [] dateTokens = date.split("/");
+        
+        return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
+    }
+    
     public static int findColumn(Table t, String name) 
     {
 		int column = t.findInRow(0, name);
@@ -164,6 +173,12 @@ public class Utils {
      {
     	 if(value.equals("1"))
     		 return true;
+    	 else if(value.equals("0,5"))
+    		 return true;
+    	 else if(value.equals("1,5"))
+    		 return true;
+    	 else if(value.equals("0"))
+    		 return false;
     	 else
     	 {
     		 ConsoleLogger.getInstance().logWarning(patientID, "No valid drug value found at row "+row+".");
@@ -544,7 +559,7 @@ public class Utils {
          if(!foundDrug) {
              String mapping = mappings.getMapping("generic_drugs.mapping", drug);
              if(mapping==null) {
-                 ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was avaialable.");
+                 ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was available.");
              }
              return mapping;
          }
