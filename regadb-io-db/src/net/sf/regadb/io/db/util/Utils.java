@@ -54,6 +54,11 @@ import org.xml.sax.SAXException;
 public class Utils {
     private static DateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
+    public static final String getMappingsilePath()
+	{
+		return "/mappings/";
+	}
+    
     public static Date createDate(String yearStr, String monthStr, String dayString) {
         Calendar cal = Calendar.getInstance();
 
@@ -72,7 +77,10 @@ public class Utils {
             int day = 1;
             if(dayString!=null)
                 day = Integer.parseInt(dayString);
-            cal.set(year, month, day);
+            
+            //Be careful, the calendar starts with january = 0
+            cal.set(year, month-1, day);
+            
             return new Date(cal.getTimeInMillis());
         } else {
             return null;
@@ -85,11 +93,21 @@ public class Utils {
         
         String dateNoTime = date.split(" ")[0];
         String [] dateTokens = dateNoTime.split("-");
-       
+        
         return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
     }
     
-    public static int  findColumn(Table t, String name) 
+    public static Date parseEnglishAccessDate(String date) {
+        if("".equals(date))
+            return null;
+        
+        String dateNoTime = date.split(" ")[0];
+        String [] dateTokens = dateNoTime.split("-");
+       
+        return Utils.createDate(dateTokens[0], dateTokens[1], dateTokens[2]);
+    }
+    
+    public static int findColumn(Table t, String name) 
     {
 		int column = t.findInRow(0, name);
 		
@@ -578,7 +596,8 @@ public class Utils {
               PatientEventValue v = p.createPatientEventValue(ne.event);
               v.setEventNominalValue(env);
               v.setStartDate(startDate);
-              v.setEndDate(endDate);
+              if(endDate != null)
+            	  v.setEndDate(endDate);
           }
           else 
           {
