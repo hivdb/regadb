@@ -542,6 +542,7 @@ public class ImportUcsc
     	return comDrugs;
     }
     
+	@SuppressWarnings("deprecation")
 	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String motivation) 
     {
     	Patient p = patientMap.get(patientId);
@@ -599,6 +600,7 @@ public class ImportUcsc
     	
     	if(motivation != null && !motivation.equals(""))
     	{
+    		//needs improvement
     		TherapyMotivation therapyMotivation = new TherapyMotivation("Toxicity");
     	
     		t.setTherapyMotivation(therapyMotivation);
@@ -671,9 +673,9 @@ public class ImportUcsc
             	{
             		String seq = Utils.clearNucleotides(token.trim());
             		
-            		ConsoleLogger.getInstance().logInfo("seq: "+seq);
+            		ConsoleLogger.getInstance().logInfo("seq: "+seq.toLowerCase());
             	
-            		addViralIsolateToPatients(patientID, date, seq);
+            		addViralIsolateToPatients(patientID, date, seq.toLowerCase());
             	}
             	
             	counter++;
