@@ -7,7 +7,6 @@
 package net.sf.regadb.io.util;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -23,11 +22,14 @@ public class StandardObjects {
     private static ValueType numberValueType = new ValueType("number");
     private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
     private static ValueType nominalValueType = new ValueType("nominal value");
+    private static ValueType stringValueType = new ValueType("string");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
+    private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
     private static TestType hivSeroStatusTestType;
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
+    private static Test genericcd8Test = new Test(cd8TestType, "CD8 Count (generic)");
     private static Test genericHivSeroStatusTest;
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
@@ -113,5 +115,14 @@ public class StandardObjects {
         
 
         return result;
+    }
+    public static ValueType getStringValueType() {
+        return stringValueType;
+    }
+    public static TestType getCd8TestType() {
+        return cd8TestType;
+    }
+    public static Test getGenericCD8Test() {
+        return genericcd8Test;
     }
 }
