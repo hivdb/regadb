@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -35,6 +37,8 @@ public class ParseTherapy {
     private static List<DrugGeneric> genericDrugs;
     private Table drugMappings;
     
+    public static DateFormat filemakerTherapyDateFormat = new SimpleDateFormat("dd-MM-yy");
+    
     private String mappingPath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
     
     Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
@@ -57,10 +61,10 @@ public class ParseTherapy {
     
     public static void main(String [] args) {
         ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/medicatie.csv"));
+        parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/med_final.csv"));
         System.err.println("merging therapies");
         for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
-            System.err.println("patient" + e.getKey());
+            //System.err.println("patient" + e.getKey());
             parseTherapy.mergeTherapies(e.getValue());
             parseTherapy.setStopDates(e.getValue());
         }
@@ -131,7 +135,7 @@ public class ParseTherapy {
                     
                     Date startDate = null;
                     try {
-                        startDate = GhbUtils.filemakerDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
+                        startDate = filemakerTherapyDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
                     } catch(Exception e) {
                         //System.err.println("Invalid date on row " + i + "->" + therapy.valueAt(CDate, i));
                     }
