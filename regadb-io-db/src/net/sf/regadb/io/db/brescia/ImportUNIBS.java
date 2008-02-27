@@ -447,10 +447,13 @@ public class ImportUNIBS
     
     private void handleAMarkerData()
     {
-    	createNewTypeAndTest("HCV serology", "HCVAb");
-    	createNewTypeAndTest("HBV serology", "HBaAg");
-    	createNewTypeAndTest("HBV serology", "HBcAb");
-    	createNewTypeAndTest("HBV serology", "HBsAb");
+        Map<String, Test> coinfection = new HashMap<String, Test>();
+        
+        coinfection.put("HCVAb",createCoinfectionTest("HCVAb", "HCVAb (generic)"));
+        coinfection.put("HBaAg",createCoinfectionTest("HBaAg", "HBaAg (generic)"));
+        coinfection.put("HBcAb",createCoinfectionTest("HBcAb", "HBcAb (generic)"));
+        coinfection.put("HBsAb",createCoinfectionTest("HBsAb", "HBsAb (generic)"));
+        coinfection.put("HBsAg",createCoinfectionTest("HBsAg", "HBsAg (generic)"));
     	
     	int CPatientId = Utils.findColumn(aMarkersTable, "ID_Coorte");
         int Cdate = Utils.findColumn(aMarkersTable, "Data_Esame");
@@ -476,7 +479,7 @@ public class ImportUNIBS
     			{
     				if(Utils.checkColumnValue(result, i, patientId))
     				{
-	    				TestResult tr = p.createTestResult(tests.get(method));
+	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
 		    			tr.setValue(result);
     				}
@@ -487,8 +490,10 @@ public class ImportUNIBS
     
     private void handleBMarkerData()
     {
-    	createNewTypeAndTest("HCVRNA", "HCV-RNA");
-    	createNewTypeAndTest("HBVDNA", "HBVDNA");
+        Map<String, Test> coinfection = new HashMap<String, Test>();
+        
+        coinfection.put("HCV-RNA",createCoinfectionTest("HCVRNA", "HCVRNA (generic)"));
+        coinfection.put("HBVDNA",createCoinfectionTest("HBVDNA", "HBVDNA (generic)"));
     	
     	int CPatientId = Utils.findColumn(bMarkersTable, "ID_Coorte");
         int Cdate = Utils.findColumn(bMarkersTable, "Data_Esame");
@@ -519,7 +524,7 @@ public class ImportUNIBS
     			{
     				if(Utils.checkColumnValue(result, i, patientId))
     				{
-	    				TestResult tr = p.createTestResult(tests.get(method));
+	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
 		    			
 		    			if(Utils.checkColumnValue(value, i, patientId))
@@ -538,6 +543,12 @@ public class ImportUNIBS
 		
 		Test tst = new Test(tt,testDescr);
 		tests.put(testDescr,tst);
+    }
+    
+    private Test createCoinfectionTest(String testTypeDescription, String testDescription) {
+        TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), testTypeDescription, new TreeSet<TestNominalValue>());
+        Test tst = new Test(tt,testDescription);
+        return tst;
     }
     
     private HashMap<String,ViralIsolate> handleSequences()
