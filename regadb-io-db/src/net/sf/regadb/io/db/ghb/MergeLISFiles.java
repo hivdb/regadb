@@ -1,9 +1,7 @@
 package net.sf.regadb.io.db.ghb;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +28,6 @@ import net.sf.regadb.io.util.StandardObjects;
 
 public class MergeLISFiles {
     public Map<String, Patient> patients = new HashMap<String, Patient>();
-    private DateFormat LISDateFormat = new SimpleDateFormat("MM/dd/yyyy");
     
     private Date earliestDate = new Date(System.currentTimeMillis());
     
@@ -126,7 +123,7 @@ public class MergeLISFiles {
         String emd = line.get(headers.indexOf("EMDnr"));
         Date birthDate = null;
         try {
-            birthDate = LISDateFormat.parse(line.get(headers.indexOf("geboortedatum")));
+            birthDate = GhbUtils.LISDateFormat.parse(line.get(headers.indexOf("geboortedatum")));
         } catch (ParseException e) {
            e.printStackTrace();
         }
@@ -142,12 +139,23 @@ public class MergeLISFiles {
         }*/
         if(p!=null) {
             p.setBirthDate(birthDate);
-            p.createPatientAttributeValue(emdAttribute).setValue(emd);
-            handleNominalAttributeValue(gender, p, sex + "");
+            if(!containsAttribute(emdAttribute, p))
+                p.createPatientAttributeValue(emdAttribute).setValue(emd);
+            if(!containsAttribute(gender.attribute, p))
+                handleNominalAttributeValue(gender, p, sex + "");
             if(mapCountry(nation)==null) {
                 temp.add(nation);
             }
         }
+    }
+    
+    public boolean containsAttribute(Attribute a, Patient p) {
+        for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
+            if(pav.getId().getAttribute().getName().equals(a.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public String mapCountry(String code) {
@@ -163,7 +171,7 @@ public class MergeLISFiles {
         String correctId = getCorrectSampleId(line);
         Date sampleDate = null;
         try {
-            sampleDate = LISDateFormat.parse(line.get(headers.indexOf("afname")));
+            sampleDate = GhbUtils.LISDateFormat.parse(line.get(headers.indexOf("afname")));
             if(sampleDate.before(earliestDate)) {
                 earliestDate = sampleDate;
             }

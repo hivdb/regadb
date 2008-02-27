@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
 import net.sf.regadb.io.db.ghb.MergeLISFiles;
 import net.sf.regadb.io.db.util.Utils;

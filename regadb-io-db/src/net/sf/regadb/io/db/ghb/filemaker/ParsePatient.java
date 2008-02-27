@@ -1,8 +1,6 @@
 package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +11,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -118,12 +117,11 @@ public class ParsePatient {
         return false;
     }
     
-    private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static Date parseDate(String sdate){
         Date d = null;
         if(!sdate.equals("")) {
             try {
-                d = filemakerDateFormat.parse(sdate.replace('/', '-'));
+                d = GhbUtils.filemakerDateFormat.parse(sdate.replace('/', '-'));
             } catch(Exception e) {
                 System.err.println("Invalid date: "+ sdate);
             } 

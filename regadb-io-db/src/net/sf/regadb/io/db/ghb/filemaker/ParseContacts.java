@@ -4,9 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,12 +12,12 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ParseContacts {
     //public Map<String, List<TestResult>> fileMakerTests = new HashMap<String, List<TestResult>>();
-    private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     
     private TestNominalValue posSeroStatus_ = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
     
@@ -52,7 +50,7 @@ public class ParseContacts {
             String patientId = contacts.valueAt(CPatientId, i);
             Date date = null;
             try {
-                date = filemakerDateFormat.parse(contacts.valueAt(CDate, i).replace('/', '-'));
+                date = GhbUtils.filemakerDateFormat.parse(contacts.valueAt(CDate, i).replace('/', '-'));
             } catch (ParseException e) {
                 
             }

@@ -1,8 +1,6 @@
 package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,12 +12,11 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseSymptom {
-    private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
     public static void main(String [] args) {
         ParseSymptom parseSymptom = new ParseSymptom();
         parseSymptom.parse( new File("/home/simbre0/import/ghb/filemaker/symptomen.csv"),
@@ -71,7 +68,7 @@ public class ParseSymptom {
                 
                 Date startDate = null;
                 try {
-                    startDate = filemakerDateFormat.parse(symptomTable.valueAt(CStartDate, i).replace('/', '-'));
+                    startDate = GhbUtils.filemakerDateFormat.parse(symptomTable.valueAt(CStartDate, i).replace('/', '-'));
                 } catch(Exception e) {
                     //System.err.println("Invalid date on row " + i + "->" + therapy.valueAt(CDate, i));
                 }

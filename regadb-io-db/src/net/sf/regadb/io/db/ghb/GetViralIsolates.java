@@ -120,6 +120,8 @@ public class GetViralIsolates {
                         vi.setSampleDate(res.getTestDate());
                         vi.setSampleId(res.getSampleId());
                         NtSequence ntseq = new NtSequence();
+                        ntseq.setViralIsolate(vi);
+                        vi.getNtSequences().add(ntseq);
                         ntseq.setLabel("Sequence 1");
                         ntseq.setSequenceDate(res.getTestDate());
                         ntseq.setNucleotides(seq);
@@ -138,6 +140,8 @@ public class GetViralIsolates {
                         vi.setSampleDate(res.getTestDate());
                         vi.setSampleId(res.getSampleId());
                         NtSequence ntseq = new NtSequence();
+                        ntseq.setViralIsolate(vi);
+                        vi.getNtSequences().add(ntseq);
                         ntseq.setLabel("Sequence 1");
                         ntseq.setSequenceDate(res.getTestDate());
                         ntseq.setNucleotides(seq);

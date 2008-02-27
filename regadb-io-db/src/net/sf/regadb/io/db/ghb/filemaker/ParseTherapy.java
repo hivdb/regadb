@@ -4,8 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,12 +24,12 @@ import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.file.ILineHandler;
 import net.sf.regadb.io.db.util.file.ProcessFile;
 
 public class ParseTherapy {
-    private static DateFormat filemakerDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static List<DrugCommercial> commercialDrugs;
     private static List<DrugCommercial> commercialDrugsNoDosages = new ArrayList<DrugCommercial>();
     private static List<DrugGeneric> genericDrugs;
@@ -133,7 +131,7 @@ public class ParseTherapy {
                     
                     Date startDate = null;
                     try {
-                        startDate = filemakerDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
+                        startDate = GhbUtils.filemakerDateFormat.parse(therapy.valueAt(CDate, i).replace('/', '-'));
                     } catch(Exception e) {
                         //System.err.println("Invalid date on row " + i + "->" + therapy.valueAt(CDate, i));
                     }
@@ -192,18 +190,12 @@ public class ParseTherapy {
                                 ts.add(tSelected);
                             }
                             if(commercial!=null) {
-                                TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(tSelected, commercial));
-                                tg.setDayDosageUnits(amountOfDosages);
-                                tSelected.getTherapyCommercials().add(tg);
+                                storeCommercialTherapy(tSelected, commercial, amountOfDosages);
                             } else if(generic!=null) {
-                                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, generic));
-                                tg.setDayDosageMg(dosage*amountOfDosages);
-                                tSelected.getTherapyGenerics().add(tg);
+                                storeGenericTherapy(tSelected, generic, dosage*amountOfDosages);
                             } else if(genericsHardMapping!=null) {
                                 for(DrugGeneric dg : genericsHardMapping) {
-                                    TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(tSelected, dg));
-                                    tg.setDayDosageMg(dosage*amountOfDosages);
-                                    tSelected.getTherapyGenerics().add(tg);
+                                    storeGenericTherapy(tSelected, dg, dosage*amountOfDosages);
                                 }
                             }
                         }
@@ -221,6 +213,30 @@ public class ParseTherapy {
         
 
         System.err.println("counterDosage " + counterDosage + " " + "counterAmountDosage" + counterAmountDosage);
+    }
+    
+    private void storeCommercialTherapy(Therapy t, DrugCommercial dc, double dosage) {
+        for(TherapyCommercial tc : t.getTherapyCommercials()) {
+            if(tc.getId().getDrugCommercial().getName().equals(dc.getName())) {
+                tc.setDayDosageUnits(tc.getDayDosageUnits() + dosage);
+                return;
+            }
+        }
+        TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(t, dc));
+        tg.setDayDosageUnits(dosage);
+        t.getTherapyCommercials().add(tg);
+    }
+    
+    private void storeGenericTherapy(Therapy t, DrugGeneric dg, double dosage) {
+        for(TherapyGeneric tg : t.getTherapyGenerics()) {
+            if(tg.getId().getDrugGeneric().getGenericId().equals(dg.getGenericId())) {
+                tg.setDayDosageMg(tg.getDayDosageMg()+dosage);
+                return;
+            }
+        }
+        TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, dg));
+        tg.setDayDosageMg(dosage);
+        t.getTherapyGenerics().add(tg);
     }
     
     private String mapDrug(String name) {
