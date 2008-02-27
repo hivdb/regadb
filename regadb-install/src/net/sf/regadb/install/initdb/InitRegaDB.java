@@ -93,6 +93,7 @@ public class InitRegaDB
         session.save(new TherapyMotivation("Treatment failure, resistance"));
         session.save(new TherapyMotivation("Treatment failure, other"));
         session.save(new TherapyMotivation("Other"));
+        session.save(new TherapyMotivation("Patient's choice"));
     }
 
     private void addAdminUser(Session session)
