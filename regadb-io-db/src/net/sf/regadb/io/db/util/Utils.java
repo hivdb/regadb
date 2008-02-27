@@ -419,11 +419,42 @@ public class Utils {
          e.setValueType(StandardObjects.getNominalValueType());
          e.setName("Aids defining illness");
          
-         Table t = Utils.readTable("/home/simbre0/virolab/aids_defining_illnesses.txt");
-         for(int i=0; i<t.numRows(); ++i){
-             e.getEventNominalValues().add(new EventNominalValue(e,t.valueAt(0, i)));
-             ConsoleLogger.getInstance().logWarning("prepareRegaDBEvents: "+ t.valueAt(0, i));
-         }
+         e.getEventNominalValues().add(new EventNominalValue(e,"Bacillary angiomatosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis of bronchi, trachea, or lungs"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, esophageal"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, oropharyngeal (thrush)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, vulvovaginal; persistent, frequent, or poorly responsive to therapy"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical cancer, invasive"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical dysplasia (moderate or severe)/cervical carcinoma in situ"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Coccidioidomycosis, disseminated or extrapulmonary"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Constitutional symptoms, such as fever (38.5 C) or diarrhea lasting greater than 1 month"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptococcosis, extrapulmonary"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptosporidiosis, chronic intestinal (greater than 1 month's duration)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cytomegalovirus disease (other than liver, spleen, or nodes)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cytomegalovirus retinitis (with loss of vision)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Encephalopathy, HIV-related"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Hairy leukoplakia, oral"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Herpes simplex: chronic ulcer(s) (greater than 1 month's duration); or bronchitis, pneumonitis, or esophagitis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Herpes zoster (shingles), involving at least two distinct episodes or more than one dermatome"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Histoplasmosis, disseminated or extrapulmonary"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Idiopathic thrombocytopenic purpura"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Isosporiasis, chronic intestinal (greater than 1 month's duration)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi's sarcoma"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Listeriosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, Burkitt's (or equivalent term)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, immunoblastic (or equivalent term)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, primary, of brain"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium avium complex or M. kansasii, disseminated or extrapulmonary"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium tuberculosis, any site (pulmonary or extrapulmonary)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium, other species or unidentified species, disseminated or extrapulmonary"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Pelvic inflammatory disease, particularly if complicated by tubo-ovarian abscess"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Peripheral neuropathy"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumocystis carinii pneumonia"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumonia, recurrent"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Progressive multifocal leukoencephalopathy"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Salmonella septicemia, recurrent"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Toxoplasmosis of brain"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Wasting syndrome due to HIV"));
          
          list.add(e);
     
