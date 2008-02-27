@@ -307,14 +307,15 @@ public class Utils {
             ExportToXML l = new ExportToXML();
             Element root = new Element("viralIsolates");
             
-            for (String patientSampleId:patientMap.keySet()) 
-            {
-                Element viralIsolateE = new Element("viralIsolates-el");
-                root.addContent(viralIsolateE);
-    
+            for (String patientSampleId:patientMap.keySet()) {
                 Patient p = patientMap.get(patientSampleId);
-                for(ViralIsolate vi : p.getViralIsolates()) {
-                    l.writeViralIsolate(vi, viralIsolateE);
+                if(p.getViralIsolates().size()>0) {
+                    Element viralIsolateE = new Element("viralIsolates-el");
+                    root.addContent(viralIsolateE);
+        
+                    for(ViralIsolate vi : p.getViralIsolates()) {
+                        l.writeViralIsolate(vi, viralIsolateE);
+                    }
                 }
             }
             
