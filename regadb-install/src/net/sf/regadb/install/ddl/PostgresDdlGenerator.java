@@ -13,96 +13,96 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 public class PostgresDdlGenerator 
 {
-	public static void main(String [] args) 
-	{
-		String fileName = PackageUtils.getDirectoryPath("net.sf.regadb.install.ddl.schema", "regadb-install");
-		PostgresDdlGenerator gen = new PostgresDdlGenerator();
-		gen.createDdl(fileName+File.separatorChar+"postgresSchema.sql");
-	}
-	
-	public void createDdl(String fileName)
-	{
-		Configuration config = new Configuration().configure();
-		config.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-		config.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-		SchemaExport export = new SchemaExport(config);
-		export.setOutputFile(fileName);
-		export.create(true, false); 
-		
-		byte[] array = null;
-		
-		try 
-		{
-			array = FileUtils.readFileToByteArray(new File(fileName));
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		StringBuffer buffer = new StringBuffer(new String(array));
-		
-	    int indexOfCreate = buffer.indexOf("create");
-	    int indexOfCreateSequence = buffer.indexOf("create sequence");
-	    
-	    String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll(" int4", " integer ");
+    public static void main(String [] args) 
+    {
+        String fileName = PackageUtils.getDirectoryPath("net.sf.regadb.install.ddl.schema", "regadb-install");
+        PostgresDdlGenerator gen = new PostgresDdlGenerator();
+        gen.createDdl(fileName+File.separatorChar+"postgresSchema.sql");
+    }
+    
+    public void createDdl(String fileName)
+    {
+        Configuration config = new Configuration().configure();
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
+        SchemaExport export = new SchemaExport(config);
+        export.setOutputFile(fileName);
+        export.create(true, false); 
         
-	    try 
+        byte[] array = null;
+        
+        try 
         {
-			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
-		}
-	    catch (IOException e) 
+            array = FileUtils.readFileToByteArray(new File(fileName));
+        }
+        catch (IOException e) 
         {
-			e.printStackTrace();
-		}
-	    
-		try 
+            e.printStackTrace();
+        }
+        
+        StringBuffer buffer = new StringBuffer(new String(array));
+        
+        int indexOfCreate = buffer.indexOf("create");
+        int indexOfCreateSequence = buffer.indexOf("create sequence");
+        
+        String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll(" int4", " integer ");
+        
+        try 
         {
-			array = FileUtils.readFileToByteArray(new File(fileName));
-		}
-		catch (IOException e) 
+            FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
+        }
+        catch (IOException e) 
         {
-			e.printStackTrace();
-		}
-		
-		try 
+            e.printStackTrace();
+        }
+        
+        try 
         {
-		        BufferedReader in = new BufferedReader(new FileReader(fileName));
-		        
-		        String str;
-		        
-		        buffer = new StringBuffer();
-		        
-		        while ((str = in.readLine()) != null) 
+            array = FileUtils.readFileToByteArray(new File(fileName));
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        try 
+        {
+                BufferedReader in = new BufferedReader(new FileReader(fileName));
+                
+                String str;
+                
+                buffer = new StringBuffer();
+                
+                while ((str = in.readLine()) != null) 
                 {
                     str = processString(str);
-		        	buffer.append(str+";\n");
-		        }
-		        
-		        in.close();
-		}
-		catch (IOException e) 
+                    buffer.append(str+";\n");
+                }
+                
+                in.close();
+        }
+        catch (IOException e) 
         {
-		    e.printStackTrace();
-		}
-		    
-		try 
+            e.printStackTrace();
+        }
+            
+        try 
         {
             toWrite = buffer.toString();
             toWrite = toWrite.replaceAll("varchar\\(255\\)", "text");
-			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
-		}
-		catch (IOException e) 
+            FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
+        }
+        catch (IOException e) 
         {
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	private String processString(String str) 
-	{
-	    if(str.startsWith("create table"))
+    private String processString(String str) 
+    {
+        if(str.startsWith("create table"))
         {
-	        return processCreateTable(str);
+            return processCreateTable(str);
         }
         else if(str.startsWith("alter table"))
         {
@@ -134,14 +134,6 @@ public class PostgresDdlGenerator
                 
                 lineBuffer.delete(endOfPrimKeyName, endOfPrimKeyArgs);
                 lineBuffer.insert(endOfPrimKeyName, " integer default nextval('" + tableName + "_" + tableName + "_ii_seq')");
-                
-                if(tableName.equals("event_nominal_value")){
-                    String valueField = "value varchar(100)";
-                    int indexOfValueField = lineBuffer.indexOf(valueField);
-                    if(indexOfValueField != -1){
-                        lineBuffer.replace(indexOfValueField, indexOfValueField + valueField.length(), "value varchar(500)");
-                    }
-                }
             }
         }
         
@@ -169,17 +161,17 @@ public class PostgresDdlGenerator
             
             if(strBackup.indexOf("add constraint ")!=-1)
             {
-	            tableName = strBackup.substring(strBackup.indexOf(alterTable)+alterTable.length(),strBackup.indexOf(" ", strBackup.indexOf(alterTable)+alterTable.length()));
-	            int referenceIndex = strBackup.indexOf("references")+"references".length();
-	            String referencingTable = strBackup.substring(referenceIndex, strBackup.indexOf('(', referenceIndex));
-	            referencingTable = referencingTable.trim();
-	            referencingTable = referencingTable.replaceAll("public.", "");
-	            String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
-	            StringBuffer strBuffer = new StringBuffer(strBackup);
-	            int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
-	            strBuffer.delete(indexOfAddConstraint, strBackup.indexOf(" ", indexOfAddConstraint));
-	            strBuffer.insert(indexOfAddConstraint, fk_name);
-	            strBackup = strBuffer.toString();
+                tableName = strBackup.substring(strBackup.indexOf(alterTable)+alterTable.length(),strBackup.indexOf(" ", strBackup.indexOf(alterTable)+alterTable.length()));
+                int referenceIndex = strBackup.indexOf("references")+"references".length();
+                String referencingTable = strBackup.substring(referenceIndex, strBackup.indexOf('(', referenceIndex));
+                referencingTable = referencingTable.trim();
+                referencingTable = referencingTable.replaceAll("public.", "");
+                String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
+                StringBuffer strBuffer = new StringBuffer(strBackup);
+                int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
+                strBuffer.delete(indexOfAddConstraint, strBackup.indexOf(" ", indexOfAddConstraint));
+                strBuffer.insert(indexOfAddConstraint, fk_name);
+                strBackup = strBuffer.toString();
             }
         }
         
