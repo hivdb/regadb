@@ -134,6 +134,14 @@ public class PostgresDdlGenerator
                 
                 lineBuffer.delete(endOfPrimKeyName, endOfPrimKeyArgs);
                 lineBuffer.insert(endOfPrimKeyName, " integer default nextval('" + tableName + "_" + tableName + "_ii_seq')");
+                
+                if(tableName.equals("event_nominal_value")){
+                    String valueField = "value varchar(100)";
+                    int indexOfValueField = lineBuffer.indexOf(valueField);
+                    if(indexOfValueField != -1){
+                        lineBuffer.replace(indexOfValueField, indexOfValueField + valueField.length(), "value varchar(500)");
+                    }
+                }
             }
         }
         
