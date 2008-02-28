@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.regadb.analysis.functions.NtSequenceHelper;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -80,7 +81,8 @@ public class GetViralIsolates {
 
     public void handleIsolate(String id, String seq) {
         if(seq!=null) {
-            boolean vi = getViralIsolate(id, seq);
+            String processedSeq = correctSeq(seq);
+            boolean vi = getViralIsolate(id, processedSeq);
             if(!vi) {
                 if(!isSpreadSample(id) && !canBeIgnored(id)) {
                     System.err.println("Cannot find reference to: " + id);
@@ -89,6 +91,18 @@ public class GetViralIsolates {
                 counterS++;
             }
         }
+    }
+    
+    public String correctSeq(String seq) {
+        StringBuffer validChars = new StringBuffer();
+        
+        for(int i = 0; i<seq.length(); i++) {
+            if(NtSequenceHelper.isValidNtCharacter(seq.charAt(i))) {
+                validChars.append(seq.charAt(i));
+            }
+        }
+        
+        return validChars.toString();
     }
     
     private boolean canBeIgnored(String id) {
