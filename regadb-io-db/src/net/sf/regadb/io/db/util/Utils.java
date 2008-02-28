@@ -456,7 +456,32 @@ public class Utils {
          e.getEventNominalValues().add(new EventNominalValue(e,"Salmonella septicemia, recurrent"));
          e.getEventNominalValues().add(new EventNominalValue(e,"Toxoplasmosis of brain"));
          e.getEventNominalValues().add(new EventNominalValue(e,"Wasting syndrome due to HIV"));
-         
+         e.getEventNominalValues().add(new EventNominalValue(e,"AIDS dementia complex"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical carcinoma"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Deep candidosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated CMV infection"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Retinic CMV infection"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptococcal infection"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptosporidiosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Chronic HSV infection"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Isosporiasis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Visceral leishmaniosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Progressive Multifocal leukoencephalopathy"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (B cells)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (cerebral)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (immunoblastic)"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Non-tubercular mycobacteriosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Cerebral toxoplasmosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Recurrent bacterial pneumonias"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumocystis carinii pneumonia"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi sarcoma"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated salmonellosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated strongyloidiasis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Extra-pulmunar tuberculosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Pulmunar tuberculosis"));
+         e.getEventNominalValues().add(new EventNominalValue(e,"Wasting sindrome"));
+
          list.add(e);
     
          return list;
