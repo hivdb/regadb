@@ -104,7 +104,7 @@ public class MergeLISFiles {
                                  String ead = list.get(headers.indexOf("EADnr"));
                                  
                                  handlePatient(ead, list);
-                                 handleTest(ead, list);
+                                 //handleTest(ead, list);
                              } else {
                                  System.err.println("Incorrect amount of columns in file " + f.getName() + " on line number" + counter); 
                              }
