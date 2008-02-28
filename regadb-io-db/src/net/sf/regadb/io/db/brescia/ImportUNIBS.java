@@ -74,9 +74,6 @@ public class ImportUNIBS
     
     private TestNominalValue posSeroStatus;
     
-    private HashMap<String, Test> tests = new HashMap<String, Test>();
-    private ArrayList<TestType> testTypes = new ArrayList<TestType>();
-    
     public static void main(String [] args) 
     {
     	//For internal network usage at Leuven
@@ -136,8 +133,7 @@ public class ImportUNIBS
     		ConsoleLogger.getInstance().logInfo("Retrieving attributes, drugs, and events...");
     		regadbAttributes = Utils.prepareRegaDBAttributes();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
-    		//TODO: Wait for file
-    		//regadbEvents = Utils.prepareRegaDBEvents();
+    		regadbEvents = Utils.prepareRegaDBEvents();
     		
     		posSeroStatus = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
     		
@@ -149,8 +145,8 @@ public class ImportUNIBS
     		handleAMarkerData();
     		ConsoleLogger.getInstance().logInfo("Migrating 4b marker data...");
     		handleBMarkerData();
-    		/*ConsoleLogger.getInstance().logInfo("Migrating ADE data...");
-    		handleEvent();*/
+    		ConsoleLogger.getInstance().logInfo("Migrating ADE data...");
+    		handleEvent();
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
@@ -535,14 +531,6 @@ public class ImportUNIBS
     			}
     		}
         }
-    }
-    
-    private void createNewTypeAndTest(String testtypeDescr, String testDescr){
-		TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), testtypeDescr, new TreeSet<TestNominalValue>());
-		testTypes.add(tt);
-		
-		Test tst = new Test(tt,testDescr);
-		tests.put(testDescr,tst);
     }
     
     private Test createCoinfectionTest(String testTypeDescription, String testDescription) {
