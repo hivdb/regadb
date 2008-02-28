@@ -746,12 +746,16 @@ public class Utils {
      }
      
      public static PatientAttributeValue getAttributeValue(Attribute attribute, Patient p){
+         return getAttributeValue(attribute.getName(),p);
+     }
+     
+     public static PatientAttributeValue getAttributeValue(String attributeName, Patient p){
          Set<PatientAttributeValue> pavs = p.getPatientAttributeValues();
          
          for(PatientAttributeValue i: pavs){
-             if(i.getId().getAttribute().getName().equals(attribute.getName()))
+             if(i.getId().getAttribute().getName().equals(attributeName))
                  return i;
          }
          return null;
-     }
+     } 
 }
