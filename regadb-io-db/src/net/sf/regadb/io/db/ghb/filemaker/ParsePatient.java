@@ -50,8 +50,8 @@ public class ParsePatient {
         int CGeographicOrigin = Utils.findColumn(patientTable, "herkomst");
         int CPatCode = Utils.findColumn(patientTable, "patcode");
 
-        //int CFirstHIVPosTest = Utils.findColumn(patientTable, "Datum_1e_positieve_test");
-        //int CGender = Utils.findColumn(patientTable, "Geslacht");
+        int CGender = Utils.findColumn(patientTable, "Geslacht");
+//        int CCountryOfOrigin = Utils.findColumn(patientTable, "Land");
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
         AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
@@ -60,11 +60,16 @@ public class ParsePatient {
         patCodeAttribute.setAttributeGroup(regadbAttributeGroup);
         patCodeAttribute.setValueType(StandardObjects.getNumberValueType());
         
-        
+//        Table countryOfOriginTable = Utils.readTable(countryOfOriginMapFile.getAbsolutePath());
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
         Table transmissionGroupTable = Utils.readTable(transmissionGroupMapFile.getAbsolutePath());
+        
+//        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryOfOriginTable, regadbAttributeGroup, Utils.selectAttribute("Country of origin", regadbAttributes));
         NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, Utils.selectAttribute("Geographic origin", regadbAttributes));
         NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, Utils.selectAttribute("Transmission group", regadbAttributes));
+        NominalAttribute genderA = new NominalAttribute("Gender", CGender, new String[] { "M", "V" },
+                new String[] { "male", "female" } );
+        genderA.attribute.setAttributeGroup(regadbAttributeGroup);
         
         for(int i=1; i<patientTable.numRows(); ++i){
             String SPatientId   = patientTable.valueAt(CPatientId,i);
@@ -80,9 +85,15 @@ public class ParsePatient {
                 String SGeographicOrigin  = patientTable.valueAt(CGeographicOrigin,i);
                 String SPatCode           = patientTable.valueAt(CPatCode,i);
                 
+                String SGender = patientTable.valueAt(CGender,i);
+//                String SCountryOfOrigin = patientTable.valueAt(CCountryOfOrigin,i);
+                
                 Patient p = patientIdPatients.get(SPatientId);
 
                 if(p!=null) {
+                    if(p.getBirthDate() == null && birthDate != null){
+                        p.setBirthDate(birthDate);
+                    }
                     if(deathDate != null){
                         p.setDeathDate(deathDate);
                     }
@@ -100,6 +111,18 @@ public class ParsePatient {
                     if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
                     {
                         Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
+                    }
+//                    if(Utils.checkColumnValue(SCountryOfOrigin, i, SPatientId))
+//                    {
+//                        if(Utils.getAttributeValue("Country of origin", p) == null){
+//                            SCountryOfOrigin = trimCountryOfOrigin(SCountryOfOrigin);
+//                            Utils.handlePatientAttributeValue(countryOfOriginA, SCountryOfOrigin, p);
+//                        }
+//                    }
+                    if(Utils.checkColumnValue(SGender, i, SPatientId))
+                    {
+                        if(Utils.getAttributeValue("Gender", p) == null)
+                            Utils.handlePatientAttributeValue(genderA, SGender, p);
                     }
                 } else {
                     System.err.println("No valid id: "+ SPatientId);
@@ -129,11 +152,20 @@ public class ParsePatient {
         return d;
     }
     
+    public static String trimCountryOfOrigin(String country){
+        int trim = country.indexOf("  ");
+        if(trim != -1)
+            return country.substring(0, trim);
+        else
+            return country;
+    }
+    
     public void printDistinctRow(Table t, int row){
         HashSet<String> values = new HashSet<String>();
         
         for(int i=1; i<t.numRows();++i){
-            values.add(t.valueAt(row, i));
+            String s = t.valueAt(row, i);
+            values.add(s);
         }
         
         for(String s : values){
