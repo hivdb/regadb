@@ -1,9 +1,16 @@
 package net.sf.regadb.io.db.util.msaccess;
 
-import java.sql.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import net.sf.regadb.io.db.util.export.CsvExporter;
+import net.sf.regadb.io.db.util.export.SqlQueryExporter;
 
 public class AccessToCsv {
 	private String dbDriver_ = "sun.jdbc.odbc.JdbcOdbcDriver";
@@ -12,7 +19,7 @@ public class AccessToCsv {
 	private String dbUsername_ = "";
 	private String dbPassword_ = "";
 	
-	private IExporter exporter_;
+	private SqlQueryExporter sqlQueryExporter_;
 	
 	private Connection conn_ = null;
 
@@ -37,7 +44,8 @@ public class AccessToCsv {
 	}
 			 
 	public AccessToCsv(){
-		exporter_ = new CsvExporter();
+		sqlQueryExporter_ = new SqlQueryExporter();
+		sqlQueryExporter_.setExporter(new CsvExporter());
 	}
 	
 	public Connection getConnection(File dbFile){
@@ -69,6 +77,8 @@ public class AccessToCsv {
 		
 		try{
 			Connection con = getConnection(in);
+			sqlQueryExporter_.setConnection(con);
+			
 			ResultSet rs;
 			DatabaseMetaData md;
 			String table;
@@ -78,7 +88,7 @@ public class AccessToCsv {
 		    rs = md.getTables(null, null, "%", new String [] {"TABLE"});
 		    while (rs.next()) {
 		    	table = rs.getString(3);
-		    	os = new FileOutputStream(new File(out.getAbsolutePath() + File.separator + pfx +"_"+ table +".sql"));
+		    	os = new FileOutputStream(new File(out.getAbsolutePath() + File.separator + pfx +"_"+ table +".csv"));
 		    	exportTable(con, table, os);
 		    	os.close();		    	
 		    }
@@ -102,13 +112,9 @@ public class AccessToCsv {
 		System.out.println("Exporting: "+ table);
 		
 		try{
-			Statement s = con.createStatement();
-			s.execute("SELECT * FROM "+table);
-			ResultSet rs = s.getResultSet();
-			
-			exporter_.export(rs, os);
+			sqlQueryExporter_.exportQuery("SELECT * FROM `"+table+"`",os);
 		}
-		catch(SQLException e){
+		catch(Exception e){
 			System.out.println("Error exporting("+table+"):"+ e);
 		}
 	}
