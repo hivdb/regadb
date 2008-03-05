@@ -50,7 +50,7 @@ public class CsvExporter implements IExporter {
 	
 	public String format(int type, String column, Object obj) throws Exception{
 		if(obj != null){
-			String str = obj.toString().replaceAll("\n","");
+			String str = obj.toString().replaceAll("/n","");
 			//if(str.indexOf('\n') != -1) throw new Exception();
 			return str;
 		}
