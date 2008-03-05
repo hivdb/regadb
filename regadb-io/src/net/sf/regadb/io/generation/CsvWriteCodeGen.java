@@ -78,7 +78,10 @@ public class CsvWriteCodeGen {
         String var2 = var + ".get" + stringRepField+"()";
         
         String temp = contentMethod.get(id);
-        temp += parentClass.getSimpleName() + "Line += " + var2 + "+\",\";\n";
+        temp += "if(" + var +"!=null) {\n";
+        temp += parentClass.getSimpleName() + "Line += " + var2 + ";\n";
+        temp += "}\n";
+        temp += parentClass.getSimpleName() + "Line += " + "\",\";\n";
         contentMethod.put(id, temp);
         
         temp = headerMethod.get(id);
