@@ -93,6 +93,7 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
                     resistanceInterpretation.setValue(gss+"");
                     resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
                     resistanceInterpretation.setTest(test_final);
+                    resistanceInterpretation.setPatient(isolate.getPatient());
                     
                     StringBuffer data = new StringBuffer();
                     data.append("<interpretation><score><drug>");
