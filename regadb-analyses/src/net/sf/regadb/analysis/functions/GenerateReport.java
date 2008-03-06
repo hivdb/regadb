@@ -61,8 +61,8 @@ public class GenerateReport
         else
             replace("$CD4_COUNT", "- ");
         
-        replace("$TYPE", getType(vi));
-        replace("$SUBTYPE", getSubtype(vi));
+        replace("$TYPE", getType(vi, RegaDBWtsServer.getTypeTest()));
+        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubTypeTest()));
         
         List<TestResult> results = getGssTestResults(vi, algorithm);
         setRITable(results, t);
@@ -89,48 +89,18 @@ public class GenerateReport
         return null;
     }
     
-    private String getType(ViralIsolate vi)
+    private String getType(ViralIsolate vi, String typeTest)
     {
-        String type = "";
         for(NtSequence ntSeq : vi.getNtSequences())
         {
             for(TestResult testResult : ntSeq.getTestResults())
             {
-                type = testResult.getValue();
-                break;
+                if(testResult.getTest().getDescription().equals(typeTest))
+                    return testResult.getValue();
             }
-            break;
         }
         
-        return type;
-    }
-    
-    private String getSubtype(ViralIsolate vi)
-    {
-        String subtype = "";
-        for(NtSequence ntSequence : vi.getNtSequences())
-        {
-            for(TestResult tr : ntSequence.getTestResults())
-            {
-                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
-                {
-                    subtype += tr.getValue() + " (";
-                    
-                    for(AaSequence aaSequence : ntSequence.getAaSequences())
-                    {
-                        subtype += aaSequence.getProtein().getAbbreviation() + " + ";
-                    }
-                    int index = subtype.lastIndexOf("+");
-                    if(index!=-1)
-                        subtype = subtype.substring(0, index-1);
-                    subtype += ") /";
-                }
-            }
-            int index = subtype.lastIndexOf("/");
-            if(index!=-1)
-                subtype = subtype.substring(0, index-1) + " ";
-        }
-        return subtype;
+        return "";
     }
     
     private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest)
