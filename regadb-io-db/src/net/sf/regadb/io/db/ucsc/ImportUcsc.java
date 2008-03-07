@@ -328,13 +328,13 @@ public class ImportUcsc
     		if (Utils.checkColumnValue(cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
-                t.setValue(cd4Count);
+                t.setValue(cd4Count.replace(',', '.'));
                 t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		if (Utils.checkColumnValue(cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd4PercTest);
-                t.setValue(cd4Percentage);
+                t.setValue(cd4Percentage.replace(',', '.'));
                 t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		 
@@ -342,48 +342,53 @@ public class ImportUcsc
     		if (Utils.checkColumnValue(cd8Count, i, cd4PatientID) && Utils.checkCDValue(cd8Count, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd8Test);
-                t.setValue(cd8Count);
+                t.setValue(cd8Count.replace(',', '.'));
                 t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		if (Utils.checkColumnValue(cd8Percentage, i, cd4PatientID) && Utils.checkCDValue(cd8Percentage, i, cd4PatientID)) 
     		{
                 TestResult t = p.createTestResult(cd8PercTest);
-                t.setValue(cd8Percentage);
+                t.setValue(cd8Percentage.replace(',', '.'));
                 t.setTestDate(Utils.convertDate(analysisDate));
     		}
     		 
     		 if(Utils.checkColumnValue(vlHIV, i, cd4PatientID))
     		 {
-	    		 TestResult testResult = null;
-	    		 
-	    		 if("".equals(vlTest))
-	    		 {
-	    			 testResult = p.createTestResult(StandardObjects.getGenericViralLoadTest());
-	    		 }
-	    		 else
-	    		 {
-                     Test vlT = uniqueVLTests.get(vlTest);
-                     
-                     if(vlT==null) 
-                     {
-                         vlT = new Test(StandardObjects.getViralLoadTestType(), vlTest);
-                         uniqueVLTests.put(vlTest, vlT);
-                     }
-	    			 
-	    			 testResult = p.createTestResult(vlT);
-	    		 }
-	    		 
-	    		 String value = null;
-	    		 
-	    		 if(Integer.parseInt(vlco) == -1)
-	    			 value = "<";
-	    		 else
-	    			 value = "=";
-	    		 
-	    		 value += vlHIV;
-	    		 
-	    		 testResult.setValue(value);
-	    		 testResult.setTestDate(Utils.convertDate(analysisDate));
+    			 try{
+		    		 TestResult testResult = null;
+		    		 
+		    		 if("".equals(vlTest))
+		    		 {
+		    			 testResult = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+		    		 }
+		    		 else
+		    		 {
+	                     Test vlT = uniqueVLTests.get(vlTest);
+	                     
+	                     if(vlT==null) 
+	                     {
+	                         vlT = new Test(StandardObjects.getViralLoadTestType(), vlTest);
+	                         uniqueVLTests.put(vlTest, vlT);
+	                     }
+		    			 
+		    			 testResult = p.createTestResult(vlT);
+		    		 }
+		    		 
+		    		 String value = null;
+		    		 
+		    		 if(Integer.parseInt(vlco) == 1)
+		    			 value = "<";
+		    		 else
+		    			 value = "=";
+		    		 
+		    		 value += vlHIV;
+		    		 
+		    		 testResult.setValue(value.replace(',', '.'));
+		    		 testResult.setTestDate(Utils.convertDate(analysisDate));
+    			 }
+    			 catch(Exception e){
+    				 
+    			 }
     		 }
     	}
     }
