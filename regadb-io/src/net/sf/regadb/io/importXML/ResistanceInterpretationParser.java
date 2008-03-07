@@ -77,9 +77,21 @@ public abstract class ResistanceInterpretationParser extends DefaultHandler
                 if(value_!=null)
                 {
                     StringTokenizer tok = new StringTokenizer(value_, " ");
-                    while(tok.hasMoreTokens())
-                    {
-                        mutations_.add(tok.nextToken());
+                    String token;
+                    int formerPosition = -1;
+                    int currentPosition;
+                    while(tok.hasMoreTokens()) {
+                        token = tok.nextToken();
+                        currentPosition = Integer.parseInt(token.substring(0, token.length()-1));
+                        if(currentPosition==formerPosition) {
+                            String mut = mutations_.get(mutations_.size()-1);
+                            mut += token.charAt(token.length()-1);
+                            mutations_.remove(mutations_.size()-1);
+                            mutations_.add(mut);
+                        } else {
+                            mutations_.add(token);
+                        }
+                        formerPosition = currentPosition;
                     }
                 }
             }
