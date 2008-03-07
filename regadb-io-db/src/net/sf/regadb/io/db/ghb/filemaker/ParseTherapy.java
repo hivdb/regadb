@@ -39,7 +39,7 @@ public class ParseTherapy {
     
     public static DateFormat filemakerTherapyDateFormat = new SimpleDateFormat("dd-MM-yy");
     
-    private String mappingPath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+    private String mappingPath = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
     
     Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
     
@@ -61,7 +61,7 @@ public class ParseTherapy {
     
     public static void main(String [] args) {
         ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/med_final.csv"));
+        parseTherapy.parseTherapy(new File("/home/simbre1/tmp/import/ghb/filemaker/med_final.csv"));
         System.err.println("merging therapies");
         for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
             //System.err.println("patient" + e.getKey());

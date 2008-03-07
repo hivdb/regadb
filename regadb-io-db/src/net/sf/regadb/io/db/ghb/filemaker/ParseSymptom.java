@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Patient;
@@ -15,6 +16,7 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ParseSymptom {
     public static void main(String [] args) {
@@ -41,8 +43,13 @@ public class ParseSymptom {
         
         NominalEvent aidsDefiningIllness    = new NominalEvent("Aids defining illness", adiMapTable, Utils.selectEvent("Aids defining illness", regadbEvents));
         
+        AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
+        
         Attribute symptomClassAttribute = new Attribute();
         symptomClassAttribute.setName("CDC Class");
+        symptomClassAttribute.setValueType(StandardObjects.getNominalValueType());
+        symptomClassAttribute.setAttributeGroup(regadbAttributeGroup);
+        
         
         AttributeNominalValue scA = new AttributeNominalValue(symptomClassAttribute,"A");
         AttributeNominalValue scB = new AttributeNominalValue(symptomClassAttribute,"B");

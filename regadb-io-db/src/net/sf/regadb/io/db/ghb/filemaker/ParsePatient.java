@@ -55,10 +55,11 @@ public class ParsePatient {
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
         AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
+        AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
         
         Attribute patCodeAttribute = new Attribute("PatCode");
-        patCodeAttribute.setAttributeGroup(regadbAttributeGroup);
-        patCodeAttribute.setValueType(StandardObjects.getNumberValueType());
+        patCodeAttribute.setAttributeGroup(ghbAttributeGroup);
+        patCodeAttribute.setValueType(StandardObjects.getStringValueType());
         
 //        Table countryOfOriginTable = Utils.readTable(countryOfOriginMapFile.getAbsolutePath());
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
@@ -98,8 +99,10 @@ public class ParsePatient {
                         p.setDeathDate(deathDate);
                     }
                     
-                    PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
-                    pav.setValue(SPatCode);
+                    if(!isEmpty(SPatCode)){
+                    	PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
+                    	pav.setValue(SPatCode);
+                    }
                     
                     //p.setFirstName(SFirstName);
                     //p.setLastName(SLastName);

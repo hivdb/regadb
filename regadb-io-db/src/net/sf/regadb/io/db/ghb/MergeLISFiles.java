@@ -33,7 +33,7 @@ public class MergeLISFiles {
     
     private Attribute emdAttribute;
     private AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
-    private AttributeGroup regadbAttributeGroup = new AttributeGroup("UZ Leuven");
+    private AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
     private NominalAttribute gender;
     
     public Date firstCd4 = new Date();
@@ -66,7 +66,7 @@ public class MergeLISFiles {
                 new String[] { "male", "female" } );
         gender.attribute.setAttributeGroup(regadbAttributeGroup);
         
-        nationMapping = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping");
+        nationMapping = Utils.readTable("/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping");
         
         temp = new HashSet<String>();
         
@@ -84,7 +84,7 @@ public class MergeLISFiles {
     }
     
     public void run() {
-        File dir = new File("/home/plibin0/import/ghb/");
+        File dir = new File("/home/simbre1/tmp/import/ghb/");
         
         ProcessFile pf = new ProcessFile();
         pf.process(new File(dir.getAbsolutePath()+File.separatorChar+"headers.txt"), new ILineHandler(){

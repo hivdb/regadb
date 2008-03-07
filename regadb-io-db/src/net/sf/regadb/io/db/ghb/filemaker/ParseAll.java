@@ -14,9 +14,9 @@ import net.sf.regadb.io.db.util.Utils;
 
 public class ParseAll {    
     public static void main(String [] args) {
-        String importGhbPath = "/home/plibin0/import/ghb/";
-        String eclipeMappingDir = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/";
-        String eclipeFileMakerMappingDir = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+        String importGhbPath = "/home/simbre1/tmp/import/ghb/";
+        String eclipeMappingDir = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/";
+        String eclipeFileMakerMappingDir = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
         
         ParseEadEmd eadEmd = new ParseEadEmd();
         eadEmd.run();
@@ -45,14 +45,14 @@ public class ParseAll {
         
         ParseSymptom parseSymptom = new ParseSymptom();
         parseSymptom.parse( new File(importGhbPath + "filemaker/symptomen.csv"),
-                            new File(eclipeMappingDir + "aids_defining_illness.mapping"),
+                            new File(eclipeFileMakerMappingDir + "aids_defining_illness.mapping"),
                             patientIdPatients);
         
         ParseContacts parseContacts = new ParseContacts(mergeLIS.firstCd4, mergeLIS.firstCd8, mergeLIS.firstViralLoad);
         parseContacts.run(patientIdPatients);
         
         ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(new File("/home/plibin0/import/ghb/filemaker/medicatie.csv"));
+        parseTherapy.parseTherapy(new File("/home/simbre1/tmp/import/ghb/filemaker/medicatie.csv"));
         for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
             parseTherapy.mergeTherapies(e.getValue());
             parseTherapy.setStopDates(e.getValue());
@@ -67,7 +67,7 @@ public class ParseAll {
             }
         }
         
-        Utils.exportPatientsXML(eadPatients, "/home/plibin0/import/ghb/xmlOutput/" + File.separatorChar + "patients.xml");
-        Utils.exportNTXMLFromPatients(eadPatients, "/home/plibin0/import/ghb/xmlOutput/" + File.separatorChar + "viralisolates.xml");
+        Utils.exportPatientsXML(eadPatients, "/home/simbre1/tmp/import/ghb/xmlOutput/" + File.separatorChar + "patients.xml");
+        Utils.exportNTXMLFromPatients(eadPatients, "/home/simbre1/tmp/import/ghb/xmlOutput/" + File.separatorChar + "viralisolates.xml");
     }
 }

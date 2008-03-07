@@ -44,15 +44,15 @@ public class GetViralIsolates {
     
     public void run() {
         counterS = 0;
-        excellList = this.parseExcelFile(new File("/home/plibin0/import/ghb/seqs/Stalen Leuven.csv"));
+        excellList = this.parseExcelFile(new File("/home/simbre1/tmp/import/ghb/seqs/Stalen Leuven.csv"));
 
-        spreadSampleIds = Utils.readTable("/home/plibin0/import/ghb/seqs/SPREAD_stalen.csv");
-        samplesToBeIgnored = Utils.readTable("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
+        spreadSampleIds = Utils.readTable("/home/simbre1/tmp/import/ghb/seqs/SPREAD_stalen.csv");
+        samplesToBeIgnored = Utils.readTable("/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
                 
         String seq,id;
 
         try {
-            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/plibin0/import/ghb/seqs/MAC_final.fasta"))));
+            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/simbre1/tmp/import/ghb/seqs/MAC_final.fasta"))));
             while((id = br.readLine())!=null) {
                 seq = br.readLine();
                 handleIsolate(id.substring(1, id.length()), seq);
@@ -64,7 +64,7 @@ public class GetViralIsolates {
         }
 
         try {
-            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/plibin0/import/ghb/seqs/PC_final.fasta"))));
+            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/simbre1/tmp/import/ghb/seqs/PC_final.fasta"))));
             while((id = br.readLine())!=null) {
                 seq = br.readLine();
                 handleIsolate(id.substring(1, id.length()), seq);

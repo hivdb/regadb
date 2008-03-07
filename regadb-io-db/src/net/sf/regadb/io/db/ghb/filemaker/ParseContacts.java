@@ -34,7 +34,7 @@ public class ParseContacts {
     public void run(Map<String,Patient> patients) {
         Table contacts = null;
         try {
-             contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream("/home/plibin0/import/ghb/filemaker/contacten.csv"))), false, ';');
+             contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream("/home/simbre1/tmp/import/ghb/filemaker/contacten.csv"))), false, ';');
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

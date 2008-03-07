@@ -18,7 +18,7 @@ public class ParseEadEmd {
     
     public void run() {
         Set<String> emd  = new HashSet<String>();
-        Table eadEmd = Utils.readTable("/home/plibin0/import/ghb/filemaker/ead_emd_name.csv");
+        Table eadEmd = Utils.readTable("/home/simbre1/tmp/import/ghb/filemaker/ead_emd_name.csv");
         
         System.err.println("Non-unique emd's -------------------------");
         for(int i = 1; i<eadEmd.numRows(); i++) {
@@ -27,7 +27,7 @@ public class ParseEadEmd {
         }
         System.err.println("Non-unique emd's -------------------------");
         
-        Table patientFilemakerTable = Utils.readTable("/home/plibin0/import/ghb/filemaker/patienten.csv", ';');
+        Table patientFilemakerTable = Utils.readTable("/home/simbre1/tmp/import/ghb/filemaker/patienten.csv", ';');
         int CDossierNr = Utils.findColumn(patientFilemakerTable, "DossierNr");
         int CNaam = Utils.findColumn(patientFilemakerTable, "Naam");
         int CVoornaam = Utils.findColumn(patientFilemakerTable, "Voornaam");
