@@ -267,7 +267,7 @@ public class GenerateReport
                             for(int i = 0; i<size; i++) {
                                 mutationsLocal.append(mutations.get(i));
                                 if(i!=size-1)
-                                    mutationsLocal.append(',');
+                                    mutationsLocal.append(' ');
                             }
                         }
                     };

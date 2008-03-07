@@ -247,7 +247,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         StringBuffer currentValue = new StringBuffer(toReturn.text().value());
                         currentValue.append(" (");
                         for(String mut : mutations) {
-                            currentValue.append(mut + ", ");
+                            currentValue.append(mut + " ");
                         }
                         currentValue.replace(currentValue.length()-2, currentValue.length()-1, ")");
                         toReturn.setText(lt(currentValue.toString()));
