@@ -92,7 +92,7 @@ public class OrderedAWCWordList extends OrderedConfigurableWordList {
         Iterator iterWords = getWords().iterator();
         while (iterWords.hasNext()) {
             AWCWord word = (AWCWord)iterWords.next();
-            sb.append(word.getWhereClauseStringValue());
+			sb.append(word.getWhereClauseStringValue());
         }
         return sb.toString();
     }

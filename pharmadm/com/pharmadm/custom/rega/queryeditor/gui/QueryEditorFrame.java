@@ -81,7 +81,7 @@ public class QueryEditorFrame extends javax.swing.JFrame {
         }
     });
     
-    private static final Image LOGO_IMG  = com.pharmadm.util.resource.DMaxMedia.getInstance().getImage("logo24.gif");
+//    private static final Image LOGO_IMG  = com.pharmadm.util.resource.DMaxMedia.getInstance().getImage("logo24.gif");
     
     /** Creates new form QueryEditorFrame */
     public QueryEditorFrame(QueryEditor editorModel) {
@@ -97,7 +97,7 @@ public class QueryEditorFrame extends javax.swing.JFrame {
         fc2.addChoosableFileFilter(new FileExtensionFilter(new String[] {"qpart"}, "Query Component Files"));
         // load the bounds from the settings
         setBounds(RegaSettings.getInstance().getQueryEditorFrameBounds());
-        setIconImage(LOGO_IMG);
+//       setIconImage(LOGO_IMG);
         editorModel.addDirtinessListener(new DirtinessListener() {
             public void dirtinessChanged(DirtinessEvent de) {
                 saveMenuItem.setEnabled(de.getSavable().isDirty());
@@ -1239,9 +1239,9 @@ public class QueryEditorFrame extends javax.swing.JFrame {
         final String aboutTitle = "About " + getTitle();
         
         java.net.URL url = getClass().getResource("/resources/img/" + QueryEditorApp.getInstance().getSplashImageName());
-        Icon fullLogo = new javax.swing.ImageIcon(url);
+//        Icon fullLogo = new javax.swing.ImageIcon(url);
         
-        JOptionPane.showMessageDialog(this, aboutMsg, aboutTitle, JOptionPane.INFORMATION_MESSAGE, fullLogo);
+        JOptionPane.showMessageDialog(this, aboutMsg, aboutTitle, JOptionPane.INFORMATION_MESSAGE, null);
     }
     
     private void contentsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contentsMenuItemActionPerformed

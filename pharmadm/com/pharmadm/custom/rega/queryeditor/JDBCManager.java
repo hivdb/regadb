@@ -55,7 +55,7 @@ public class JDBCManager {
     private JDBCManager(String url, String user, String pwd) throws SQLException, ClassNotFoundException {
         String driver = System.getProperty("queryeditor.driver");
         if (driver == null) {
-            driver = "oracle.jdbc.driver.OracleDriver";
+            driver = "org.postgresql.Driver";
         }
         Class.forName(driver);
         if (url == null) {
@@ -72,7 +72,8 @@ public class JDBCManager {
         info.put("password", pwd);
         // For Oracle to report remarks for tables and columns.
         //info.put("remarksReporting", "true");
-        con = DriverManager.getConnection(url, info);
+        
+        con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/regadb", info);
         prepareCommentStatements();
     }
     
@@ -231,7 +232,6 @@ public class JDBCManager {
     }
     
     public List getColumnNames(String tableName) {
-        tableName = tableName.toUpperCase();
         List result = new ArrayList();
         try {
             DatabaseMetaData dmd = con.getMetaData();
@@ -247,7 +247,6 @@ public class JDBCManager {
     }
     
     public String getColumnType(String tableName, String columnName) {
-        tableName = tableName.toUpperCase();
         try {
             DatabaseMetaData dmd = con.getMetaData();
             ResultSet rs = dmd.getColumns(null, null, tableName, null);
@@ -264,7 +263,6 @@ public class JDBCManager {
     }
     
     public List getPrimaryKeys(String tableName) {
-        tableName = tableName.toUpperCase();
         List result = new ArrayList();
         try {
             DatabaseMetaData dmd = con.getMetaData();
@@ -293,7 +291,7 @@ public class JDBCManager {
                     rs.close();
                 }
             } catch (SQLException sqle) {
-                System.err.println("Could not retrieve comment for table " + tableName + ": " + sqle.getMessage());
+//                System.err.println("Could not retrieve comment for table " + tableName + ": " + sqle.getMessage());
             }
         }
         return comment;
@@ -314,7 +312,7 @@ public class JDBCManager {
                     rs.close();
                 }
             } catch (SQLException sqle) {
-                System.err.println("Could not retrieve comment for column " + fieldName + " in table " + tableName + ": " + sqle.getMessage());
+//                System.err.println("Could not retrieve comment for column " + fieldName + " in table " + tableName + ": " + sqle.getMessage());
             }
         }
         return comment;

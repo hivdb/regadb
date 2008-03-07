@@ -41,24 +41,16 @@ public class DatabaseTableCatalog {
     }
     
     private void initNameMap() {
-        singularNameMap.put("MOLECULES", "molecule");
-        singularNameMap.put("CALC_RESULT", "calculated result");
-        singularNameMap.put("VIRUS_APPEARANCE", "virus");
-        singularNameMap.put("VIRUS_APP_SELECTED", "selected virus");
-        singularNameMap.put("VIRUS_APP_CHIMERIC", "chimeric virus");
-        singularNameMap.put("RESISTANCE", "resistance experiment");
-        singularNameMap.put("PATIENT_MEDICATION", "medicatie");
-        singularNameMap.put("COD_MEDICATION", "drug");
-        singularNameMap.put("COD_ALGORITHM", "resistance algorithm");
-        singularNameMap.put("AA_SEQUENCE", "amino acid sequence");
-        singularNameMap.put("NT_SEQUENCE", "nucleotide sequence");
-        singularNameMap.put("SEQUENCE_NT_MUTATION", "nucleotide mutation");
-        singularNameMap.put("SEQUENCE_NT_INSERTION", "nucleotide insertion");
-        singularNameMap.put("SEQUENCE_NT_DELETION", "nucleotide deletion");
-        singularNameMap.put("SEQUENCE_AA_MUTATION", "amino acid mutation");
-        singularNameMap.put("SEQUENCE_AA_INSERTION", "amino acid insertion");
-        singularNameMap.put("SEQUENCE_AA_DELETION", "amino acid deletion");
-        singularNameMap.put("ALGO_RESULT", "resistance algorithm result");
+    	singularNameMap.put("patient", "patient");
+    	singularNameMap.put("therapy", "therapy");
+    	singularNameMap.put("viral_isolate", "viral isolate");
+        singularNameMap.put("nt_sequence", "nucleotide sequence");
+        singularNameMap.put("aa_sequence", "amino acid sequence");
+        singularNameMap.put("aa_mutation", "amino acid mutation");
+        singularNameMap.put("aa_insertion", "amino acid insertion");
+        singularNameMap.put("patient_attribute_value", "attribute");
+        singularNameMap.put("drug_generic", "generic drug");
+        singularNameMap.put("drug_commercial", "commercial drug");
     }
         
     
@@ -88,7 +80,7 @@ public class DatabaseTableCatalog {
         Table table = getTable(name);
         if (table == null) {
             table = new Table(name);
-            String singularName = (String)singularNameMap.get(name.toUpperCase());
+            String singularName = (String)singularNameMap.get(name);
             if (singularName != null) {
                 table.setSingularName(singularName);
             }

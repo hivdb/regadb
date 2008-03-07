@@ -146,7 +146,7 @@ public class HibernateViroDB {
             cfg.setProperties(props);
             sessionFactory = cfg.buildSessionFactory();
         } catch (HibernateException he) {
-            he.printStackTrace();
+        	he.printStackTrace();
         }
         
     }

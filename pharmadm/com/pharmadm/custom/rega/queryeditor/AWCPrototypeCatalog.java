@@ -14,6 +14,8 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.util.*;
 //import com.pharmadm.custom.rega.chem.search.MoleculeClause;
 
+import sun.management.jmxremote.ConnectorBootstrap.PropertyNames;
+
 /**
  * <p>
  * A catalog containing AtomicWhereClause prototypes ('Prototype' pattern).
@@ -41,34 +43,35 @@ public class AWCPrototypeCatalog {
         }
         return mainCatalog;
     }
-    
+
     private static void initMainCatalog() {
         AWCPrototypeCatalog catalog = new AWCPrototypeCatalog();
+        catalog.addGoodVariableName("patient", "Patient");
+        catalog.addGoodVariableName("therapy", "Therapy");
+        catalog.addGoodVariableName("viral_isolate", "ViralIsolate");
+        catalog.addGoodVariableName("nt_sequence", "ntSequence");
+        catalog.addGoodVariableName("aa_sequence", "aaSequence");
+        catalog.addGoodVariableName("aa_mutation", "aaMutation");
+        catalog.addGoodVariableName("aa_insertion", "aaInsertion");
+        catalog.addGoodVariableName("patient_attribute_value", "Attribute");
+        catalog.addGoodVariableName("drug_generic", "GenericDrug");
+        catalog.addGoodVariableName("drug_commercial", "CommercialDrug");
         
-        catalog.addGoodVariableName("Experiment", "Exp");
-        catalog.addGoodVariableName("Resistance", "Rt");
-        catalog.addGoodVariableName("Result", "Res");
-        catalog.addGoodVariableName("Molecules", "Mol");
-        catalog.addGoodVariableName("Measurement", "Mt");
-        catalog.addGoodVariableName("COD_MEDICATION", "MedCode");
-        catalog.addGoodVariableName("BIRTH_DATE", "GebDat");
-        catalog.addGoodVariableName("RESULT_DATE", "RD");
-        catalog.addGoodVariableName("REAL_VALUE", "RVal");
-        catalog.addGoodVariableName("ALFA_VALUE", "AVal");
-        catalog.addGoodVariableName("CODE_VALUE", "CVal");
+        catalog.addGoodVariableName("PATIENT_ID", "Id");
+        catalog.addGoodVariableName("BIRTH_DATE", "birthDate");
+        catalog.addGoodVariableName("DEATH_DATE", "DeathDate");
+        catalog.addGoodVariableName("LAST_NAME", "LastName");
+        catalog.addGoodVariableName("FIRST_NAME", "FirstName");
         catalog.addGoodVariableName("NAME", "Name");
-        catalog.addGoodVariableName("VIRUS_APP_TYPE_II", "VType");
-        catalog.addGoodVariableName("PATIENT_MEDICATION", "Med");
-        catalog.addGoodVariableName("CALC_RESULT", "CR");
-        catalog.addGoodVariableName("clinical_isolate", "C_Isol");
-        catalog.addGoodVariableName("viral_clin_isolate", "V_Isol");
-        catalog.addGoodVariableName("SEQUENCE_AA_MUTATION", "Mut");
-        catalog.addGoodVariableName("SEQUENCE_AA_INSERTION", "Ins");
-        catalog.addGoodVariableName("SEQUENCE_AA_DELETION", "Del");
-        catalog.addGoodVariableName("SEQUENCE_NT_MUTATION", "Mut");
-        catalog.addGoodVariableName("SEQUENCE_NT_INSERTION", "Ins");
-        catalog.addGoodVariableName("SEQUENCE_NT_DELETION", "Del");
-        catalog.addGoodVariableName("ALGO_RESULT", "ARes");
+        catalog.addGoodVariableName("SAMPLE_DATE", "SampleDate");
+        catalog.addGoodVariableName("START_DATE", "StartDate");
+        catalog.addGoodVariableName("STOP_DATE", "StopDate");
+        catalog.addGoodVariableName("SEQUENCE_DATE", "SequenceDate");
+        catalog.addGoodVariableName("VALUE", "Value");
+        catalog.addGoodVariableName("GENERIC_ID", "Id");
+        catalog.addGoodVariableName("GENERIC_NAME", "Name");
+        catalog.addGoodVariableName("ATC_CODE", "AtcCode");
+        catalog.addGoodVariableName("COMMENT", "Comment");
         
         catalog.addRealValueConstraintClause(true);
         catalog.addRealValueConstraintClause(false);
@@ -79,26 +82,125 @@ public class AWCPrototypeCatalog {
         catalog.addTimeCalculationClause(true);
         catalog.addTimeCalculationClause(false);
         catalog.addTimeConstantToVariableClause();
+
+        ///////////////////////////////////////
+        // patients
+        catalog.addBaseClause("patient");
+   		catalog.addPropertyCheckClause("patient", "PATIENT_ID", "has id", false, false);
+   		catalog.addStringClauses(catalog, "patient", "LAST_NAME", "has last name", false);
+   		catalog.addStringClauses(catalog, "patient", "FIRST_NAME", "has first name", false);
+        catalog.addDateClauses(catalog, "patient", "BIRTH_DATE", "is born on");
+        catalog.addDateClauses(catalog, "patient", "DEATH_DATE", "has died on");
+
         
-        catalog.addBaseClause("Patient");
+        ///////////////////////////////////////
+        // therapies
+        catalog.addBaseClause("therapy");
+        catalog.addDateClauses(catalog, "therapy", "START_DATE", "was started on");
+        catalog.addDateClauses(catalog, "therapy", "STOP_DATE", "was stopped on");
+        catalog.addStringClauses(catalog, "therapy", "COMMENT", "has a comment", false);
+
+        // link patient - therapy
+        catalog.addGetAssociationClause("patient", "PATIENT_II", "therapy", "THERAPY_II", "has received therapy");
+
         
-        catalog.addPropertyClauseMandatoryValues("Patient", "EADNR", false);
-        catalog.addPropertyClauseMandatoryValues("Patient", "EMDNR", false);
-        catalog.addPropertyClauseMandatoryValues("Patient", "LAST_NAME", "has last name", false);
-        catalog.addPropertyLikeClause("Patient", "LAST_NAME", "has last name", false, false);
-        catalog.addPropertyClauseMandatoryValues("Patient", "GENDER_ID", "has gender", false);
-        catalog.addCodedPropertyClauseMandatoryValues("Patient", "NATIONALITY_II", "COD_COUNTRY", "COUNTRY_II", "NAME", "has nationality", true);
-        catalog.addPropertyClauseMandatoryValues("Patient", "BIRTH_DATE", "is born on", true);
-        catalog.addPropertyTimeIntervalClause("Patient", "BIRTH_DATE");
+        ///////////////////////////////////////
+        // viral isolates
+        catalog.addBaseClause("viral_isolate");
+        catalog.addDateClauses(catalog, "viral_isolate", "SAMPLE_DATE", "was taken on");
         
-        catalog.addGetAssociationClause("Patient", "PATIENT_II", "PATIENT_MEDICATION", "PATIENT_II", "has received medication");
-        catalog.addGetAssociationClause("PATIENT_MEDICATION", "MEDICATION_II", "COD_MEDICATION", "MEDICATION_II", "consists of the drug coded as");
-        catalog.addCodedPropertyClauseMandatoryValues("PATIENT_MEDICATION", "MEDICATION_II", "COD_MEDICATION", "MEDICATION_II", "NAME", "consists of the drug named", true);
-        catalog.addGetPropertyClause("PATIENT_MEDICATION", "BEGIN_DATE", "was started on date");
-        catalog.addPropertyTimeIntervalClause("PATIENT_MEDICATION", "BEGIN_DATE");
-        catalog.addPropertyEqualsClause("PATIENT_MEDICATION", "MEDICATION_II", "PATIENT_MEDICATION", "MEDICATION_II");
-        catalog.addCombinationTherapyCheckClause();
+        // link patient - viral isolate
+        catalog.addGetAssociationClause("patient", "PATIENT_II", "viral_isolate", "VIRAL_ISOLATE_II", "has a viral isolate");
+ 
         
+        ///////////////////////////////////////
+        // nucleotide sequence
+        catalog.addBaseClause("nt_sequence");
+        catalog.addDateClauses(catalog, "nt_sequence", "SEQUENCE_DATE", "was sequenced on");
+        
+        // link viral isolate-nt sequence
+        catalog.addGetAssociationClause("viral_isolate", "VIRAL_ISOLATE_II", "nt_sequence", "NT_SEQUENCE_II", "has a nucleotide sequence");
+
+
+        ///////////////////////////////////////
+        // amino acid sequence
+        catalog.addBaseClause("aa_sequence");
+        
+        // link nt squence - aa sequence
+        catalog.addGetAssociationClause("nt_sequence", "NT_SEQUENCE_II","aa_sequence" ,"AA_SEQUENCE_II" , "has an amino acid sequence");
+       
+        
+        ///////////////////////////////////////
+        // amino acid mutation
+        catalog.addBaseClause("aa_mutation");
+
+        // link aa sequence - aa mutation
+        catalog.addGetAssociationClause("aa_sequence", "AA_SEQUENCE_II", "aa_mutation", "AA_SEQUENCE_II");
+        
+        
+
+        ///////////////////////////////////////
+        // amino acid insertion
+        catalog.addBaseClause("aa_insertion");
+        
+        // link aa sequence - aa insertion
+        catalog.addGetAssociationClause("aa_sequence", "AA_SEQUENCE_II", "aa_insertion", "AA_SEQUENCE_II");
+        
+        
+        ///////////////////////////////////////
+        // custom attributes
+
+        // link patient - custom attribute
+        String[][] assocListPatienttoAttribute = {{"patient", null, "PATIENT_II"}, {"patient_attribute_value", "PATIENT_II",null}};
+        catalog.addGetRemoteAssociationClause(assocListPatienttoAttribute, "has the attribute");
+
+        // link custom attribute - attribute name
+        catalog.addMandatoryValuesToClause(
+        		catalog.addCodedPropertyCheckClause("patient_attribute_value", "ATTRIBUTE_II", "attribute", "ATTRIBUTE_II", "NAME", "has the name", true),
+        		new String[] {"attribute"},
+        		new String[] {"NAME"});
+        		
+        // link custom attribute - nominal value
+        catalog.addMandatoryValuesToClause(
+        		catalog.addCodedPropertyCheckClause("patient_attribute_value", "NOMINAL_VALUE_II", "attribute_nominal_value", "NOMINAL_VALUE_II", "VALUE", "has the nominal value", true),
+        		new String[] {"attribute_nominal_value"},
+        		new String[] {"VALUE"});
+        
+        
+        ///////////////////////////////////////
+        // generic drugs
+        catalog.addBaseClause("drug_generic");
+   		catalog.addPropertyCheckClause("drug_generic", "GENERIC_ID", "has id", false, false);
+   		catalog.addStringClauses(catalog, "drug_generic", "GENERIC_NAME", "has name", false);
+   		catalog.addStringClauses(catalog, "drug_generic", "ATC_CODE", "has atc code", false);
+
+        // link therapy - generic drug
+        String[][] assocListGenericDrugToTherapy = {{"therapy", null, "THERAPY_II"}, {"therapy_generic", "THERAPY_II","GENERIC_II"},
+                {"drug_generic", "GENERIC_II", null}};
+        catalog.addGetRemoteAssociationClause(assocListGenericDrugToTherapy, "was treated with the generic drug");
+        
+
+        ///////////////////////////////////////
+        // commercial drug
+        catalog.addBaseClause("drug_commercial");
+   		catalog.addStringClauses(catalog, "drug_commercial", "NAME", "has name", false);
+   		catalog.addStringClauses(catalog, "drug_commercial", "ATC_CODE", "has atc code", false);
+        
+        // link therapy - commercial drug
+        String[][] assocListCommercialDrugToTherapy = {{"therapy", null, "THERAPY_II"}, {"therapy_commercial", "THERAPY_II","COMMERCIAL_II"},
+                {"drug_commercial", "COMMERCIAL_II", null}};
+        catalog.addGetRemoteAssociationClause(assocListCommercialDrugToTherapy, "was treated with the commercial drug");
+        
+        
+        
+ //       catalog.addSequenceMutationClause("aa_sequence", "AA_SEQUENCE_II", "aa_mutation", "AA_SEQUENCE_II","MUTATION_POSITION", "has a mutation", "in", false);
+ //       catalog.addSequenceMutationClause("aa_sequence", "AA_SEQUENCE_II", "aa_mutation", "AA_SEQUENCE_II", "MUTATION_POSITION", "has a real mutation", "in", true);
+ //       catalog.addSequenceMutationClause("aa_sequence", "AA_SEQUENCE_II", "aa_insertion", "AA_SEQUENCE_II", "INSERTION_POSITION", "has an insertion", "starting at", false);
+ 
+ //       catalog.addCodedPropertyClauseMandatoryValues("PROTEIN", "PROTEIN_II", "aa_sequence", "PROTEIN_II", "full_name", "codes for protein", true);
+        
+        
+        /*      
         String[][] assocListPatientToResult = {{"Patient", null, "PATIENT_II"}, {"PATIENT_SAMPLE", "PATIENT_II", "PATIENT_SAMPLE_ID"},
         {"Clinical_Isolate", "CLINICAL_ISOLATE_ID", "CLINICAL_ISOLATE_II"}, {"Measurement", "CLINICAL_ISOLATE_II", "MEASUREMENT_II"},
         {"Result", "MEASUREMENT_II", null}};
@@ -140,52 +242,8 @@ public class AWCPrototypeCatalog {
         catalog.addClosestAssociationToDateClause(assocListPatientToVLCalcResult, calcResultDateSpec, "measuring viral load", false);
         catalog.addClosestAssociationToDateClause(assocListPatientToCD4CalcResult, calcResultDateSpec, "measuring CD4", true);
         catalog.addClosestAssociationToDateClause(assocListPatientToCD4CalcResult, calcResultDateSpec, "measuring CD4", false);
-        catalog.addPatientFirstHIVMedicationClause();
-        catalog.addHIVMedicationClause();
-        catalog.addPatientPosTestClause();
-        catalog.addMedicationChangeClauseInputDates();
-        catalog.addMedicationChangeClauseConstantDates();
-        
-        catalog.addGetPropertyClause("Measurement", "RECEPTION_DATE", "was received on date");
-        catalog.addGetAssociationClauses("Measurement", "MEASUREMENT_II", "Result", "MEASUREMENT_II", "yielded result", "is a result of measurement");
-        catalog.addGetAssociationClauses("Measurement", "CLINICAL_ISOLATE_II", "Clinical_Isolate", "CLINICAL_ISOLATE_II", "is based on clinical isolate", "was used for measurement");
-        catalog.addGetAssociationClauses("Clinical_Isolate", "CLINICAL_ISOLATE_ID", "PATIENT_SAMPLE", "PATIENT_SAMPLE_ID", "corresponds to patient sample", "corresponds to clinical isolate");
-        catalog.addGetPropertyClause("Clinical_Isolate", "ESTIMATED_TAKE_DATE", "was taken on date");
-        
-        catalog.addGetAssociationClauses("Patient", "PATIENT_II", "PATIENT_SAMPLE", "PATIENT_II", "has provided stample", "is taken from patient");
-        catalog.addPropertyClauseMandatoryValues("PATIENT_SAMPLE", "SAMPLE_OTHEC_ID", false);
-        catalog.addGetAssociationClauses("Clinical_Isolate", "CLINICAL_ISOLATE_ID", "PATIENT_SAMPLE", "PATIENT_SAMPLE_ID", "is based on patient sample", "is used as the basis for clinical isolate");
-        catalog.addCodedPropertyClauseMandatoryValues("Clinical_Isolate", "CLIN_ISOL_TYPE", "COD_CLIN_ISOL_TYPE", "CLIN_ISOL_TYPE", "NAME", "is of type", false);
-        
-        String[][] assocListStaalToMeasurement = {{"PATIENT_SAMPLE", null, "PATIENT_SAMPLE_ID"}, {"Clinical_Isolate", "CLINICAL_ISOLATE_ID","CLINICAL_ISOLATE_II"},
-        {"Measurement", "CLINICAL_ISOLATE_II", null}};
-        
-        catalog.addGetRemoteAssociationClause(assocListStaalToMeasurement, "was used for the measurement");
-        
-        
-        catalog.addGetPropertyClause("Result", "RESULT_DATE", "is obtained on date");
-        catalog.addGetPropertyClause("Result", "REAL_VALUE", "has real value");
-        catalog.addGetPropertyClause("Result", "ALFA_VALUE", "has textual value");
-        catalog.addGetPropertyClause("Result", "CODE_VALUE", "has value code");
         
         catalog.addConvertMicrogramsToMillimolarityClause();
-        
-        String[][] assocListResultToCalcResult = {{"Result", null, "RESULT_II"}, {"RESULT_DEPEND", "RESULT_II", "CALC_RESULT_II"},
-        {"CALC_RESULT", "CALC_RESULT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListResultToCalcResult, "was used to calculate result");
-        
-        catalog.addGetPropertyClause("Calc_Result", "RESULT_DATE", "is obtained on date");
-        catalog.addGetPropertyClause("Calc_Result", "REAL_VALUE", "has real value");
-        catalog.addGetPropertyClause("Calc_Result", "ALFA_VALUE", "has textual value");
-        catalog.addGetPropertyClause("Calc_Result", "CODE_VALUE", "has value code");
-        catalog.addGetPropertyClause("Calc_Result", "CALC_TEST_II", "COD_CALC_TEST", "CALC_TEST_II", "NAME", "calculates");
-        
-        catalog.addCodedPropertyClauseMandatoryValues("Calc_Result", "CALC_TEST_II", "COD_CALC_TEST", "CALC_TEST_II", "NAME", "calculates", false);
-        catalog.addCodedPropertyClauseMandatoryValues("Result", "ELEM_TEST_II", "COD_ELEM_TEST", "ELEM_TEST_II", "NAME", "measures", false);
-        catalog.addGetAssociationClause("Result", "ELEM_TEST_II", "COD_ELEM_TEST", "ELEM_TEST_II", "applies the test");
-        catalog.addGetAssociationClause("COD_ELEM_TEST", "UNIT_II", "COD_UNIT", "UNIT_II", "has unit");
-        catalog.addGetAssociationClause("Calc_Result", "CALC_TEST_II", "COD_CALC_TEST", "CALC_TEST_II", "calculates the test");
-        catalog.addGetAssociationClause("COD_CALC_TEST", "UNIT_II", "COD_UNIT", "UNIT_II", "has unit");
         
         catalog.addRealValueWithRelationConstraintClause("Result", "REAL_VALUE", "RELATION", true);
         catalog.addRealValueWithRelationConstraintClause("Result", "REAL_VALUE", "RELATION", false);
@@ -199,64 +257,6 @@ public class AWCPrototypeCatalog {
         catalog.addViralLoadTestClause();
         catalog.addViralLoadCalcTestClause();
         
-        String[][] assocListPatientToVirus = {{"Patient", null, "PATIENT_II"}, {"PATIENT_SAMPLE", "PATIENT_II", "PATIENT_SAMPLE_ID"},
-        {"Viral_Clin_Isolate", "CLINICAL_ISOLATE_ID", "VIRAL_CLIN_ISOLATE_II"}, {"Virus_app_clinical", "VIRAL_CLIN_ISOLATE_II", "VIRUS_APP_II"},
-        {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListPatientToVirus);
-        catalog.addClosestAssociationToDateClause(assocListPatientToVirus, virusDateSpec, "", true);
-        catalog.addTherapyNaiveVirusClause();
-        
-        String[][] assocListPatientToViralClinIsolate = {{"Patient", null, "PATIENT_II"}, {"PATIENT_SAMPLE", "PATIENT_II", "PATIENT_SAMPLE_ID"},
-        {"Viral_Clin_Isolate", "CLINICAL_ISOLATE_ID", null}};
-        catalog.addGetRemoteAssociationClause(assocListPatientToViralClinIsolate, "has provided a viral clinical isolate");
-        catalog.addClosestAssociationToDateClause(assocListPatientToViralClinIsolate, virusDateSpec, "", true);
-        catalog.addGetPropertyClause("Viral_Clin_Isolate", "ESTIMATED_TAKE_DATE", "was (estimated to be) taken on date");
-        
-        catalog.addGetAssociationClause("PATIENT_SAMPLE", "PATIENT_SAMPLE_ID", "Viral_Clin_Isolate", "CLINICAL_ISOLATE_ID", "is the basis for viral clinical isolate");
-        catalog.addCodedPropertyClauseMandatoryValues("Viral_Clin_Isolate", "VIRAL_CLIN_ISOL_TYPE_II", "COD_VIRAL_CLIN_ISOL_TYPE", "VIRAL_CLIN_ISOL_TYPE_II", "NAME", "is of type", false);
-        
-        catalog.addBaseClause("Resistance");
-        catalog.addGetPropertyClause("Resistance", "RESISTANCE_NAME", "has name");
-        catalog.addPropertyClauseMandatoryValues("Resistance", "RESISTANCE_NR", "has number", false);
-        catalog.addGetPropertyClause("Resistance", "WILDTYPE_APP_II", "was started with wild type virus");
-        catalog.addGetPropertyClause("Resistance", "WILDTYPE_APP_II", "is based on wild type virus");
-        catalog.addPropertyClauseMandatoryValues("Resistance", "RESISTANCE_NAME", "has name", false);
-        
-        catalog.addBaseClause("Virus_Appearance");
-        catalog.addPropertyStartsLikeClause("Virus_Appearance", "NAME", "has a name", false);
-        catalog.addPropertyClauseMandatoryValues("Virus_Appearance", "NAME", "has name", false);
-        catalog.addCodedPropertyClauseMandatoryValues("Virus_Appearance", "VIRUS_APP_TYPE_II", "COD_VIRUS_APP_TYPE", "VIRUS_APP_TYPE_II", "NAME", "is of type", false);
-        
-        String[][] assocListViralClinIsolateToVirusAppearance = {{"Viral_Clin_Isolate", null, "VIRAL_CLIN_ISOLATE_II"},
-        {"Virus_app_clinical", "VIRAL_CLIN_ISOLATE_II", "VIRUS_APP_II"}, {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListViralClinIsolateToVirusAppearance, "contains the virus");
-        
-        String[][] assocListVirusAppearanceToSample = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_Stock", "VIRUS_APP_II", "VIRUS_STOCK_ID"}, {"Sample", "VIRUS_STOCK_ID", "SAMPLE_II"}};
-        catalog.addGetRemoteAssociationClause(assocListVirusAppearanceToSample, "is found in sample");
-        
-        String[][] assocListVirusAppearanceToResult = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_Stock", "VIRUS_APP_II", "VIRUS_STOCK_ID"}, {"Sample", "VIRUS_STOCK_ID", "SAMPLE_II"},
-        {"Measurement", "SAMPLE_II", "MEASUREMENT_II"}, {"Result", "MEASUREMENT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListVirusAppearanceToResult, "has a measured result");
-        
-        String[][] assocListSelectedVirusAppearanceToWildType = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_App_Selected", "VIRUS_APP_II", "RESISTANCE_NR"}, {"Resistance", "RESISTANCE_NR", "WILDTYPE_APP_II"},
-        {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListSelectedVirusAppearanceToWildType, "is a selected virus derived from wildtype");
-        
-        String[][] assocListSelectedVirusAppearanceToResistance = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_App_Selected", "VIRUS_APP_II", "RESISTANCE_NR"}, {"Resistance", "RESISTANCE_NR", null}};
-        catalog.addGetRemoteAssociationClause(assocListSelectedVirusAppearanceToResistance, "is selected in resistance experiment");
-        
-        String[][] assocListChimericVirusAppearanceToBackground = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_App_Chimeric", "VIRUS_APP_II", "BACKGROUND_APP_II"}, {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListChimericVirusAppearanceToBackground, "is chimeric based on background virus");
-        
-        String[][] assocListChimericVirusAppearanceToForeground = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_Chimeric_FG", "VIRUS_APP_II", "FOREGROUND_APP_II"}, {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListChimericVirusAppearanceToForeground, "is chimeric, containing foreground virus");
-        
         String[][] assocListChimericVirusAppearanceToWildTypeChimeric = {{"Virus_Appearance", null, "VIRUS_APP_II"},
         {"Virus_App_Chimeric", "VIRUS_APP_II", "VIRUS_APP_II", "BACKGROUND_APP_II", "?1 ="},
         {"Virus_Chimeric_FG", "VIRUS_APP_II", "FOREGROUND_APP_II", "REGION_II", "?2 ="}, {"Virus_App_Selected", "VIRUS_APP_II", "RESISTANCE_NR"},
@@ -264,16 +264,6 @@ public class AWCPrototypeCatalog {
         {"Virus_Chimeric_FG", "FOREGROUND_APP_II", "VIRUS_APP_II", "REGION_II", "!2"},
         {"Virus_App_Chimeric", "VIRUS_APP_II", "VIRUS_APP_II", "BACKGROUND_APP_II", "!1"}, {"Virus_Appearance", "VIRUS_APP_II", null}};
         catalog.addGetRemoteAssociationClauseWithForegroundTest(assocListChimericVirusAppearanceToWildTypeChimeric, "is chimeric and has a corresponding wildtype chimeric virus");
-        
-        String[][] assocListVirusAppearanceToExperiment = {{"Virus_Appearance", null, "VIRUS_APP_II"},
-        {"Virus_Stock", "VIRUS_APP_II", "VIRUS_STOCK_ID"}, {"Sample", "VIRUS_STOCK_ID", "EXPERIMENT_II"},
-        {"Experiment", "EXPERIMENT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListVirusAppearanceToExperiment, "is used in experiment");
-        
-        String[][] assocListExperimentToVirusAppearance = {{"Experiment", null, "EXPERIMENT_II"},
-        {"Sample", "EXPERIMENT_II", "VIRUS_STOCK_ID"}, {"Virus_Stock", "VIRUS_STOCK_ID", "VIRUS_APP_II"},
-        {"Virus_Appearance", "VIRUS_APP_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListExperimentToVirusAppearance, "uses the virus");
         
         String[][] assocListSelectedExperimentToWildTypeExperiment = {{"Experiment", null, "EXPERIMENT_II", "EXPERIMENT_DATE", "?1 ="},
         {"Sample", "EXPERIMENT_II", "VIRUS_STOCK_ID", "DRUG_STOCK_II", "?2 ="}, {"Virus_Stock", "VIRUS_STOCK_ID", "VIRUS_APP_II"},
@@ -311,34 +301,12 @@ public class AWCPrototypeCatalog {
         {"Measurement", "SAMPLE_II", "MEASUREMENT_II"}, {"Result", "MEASUREMENT_II", null, "ELEM_TEST_II", "!1", "RESULT_DATE", "!2"}};
         catalog.addGetRemoteAssociationClauseWithForegroundTest(assocListChimericResultToWildTypeChimericResult, "is a result on a chimeric virus and has a corresponding wildtype chimeric result");
         
-        
-        catalog.addGetAssociationClause("Virus_Appearance", "VIRUS_APP_II", "AA_Sequence", "VIRUS_APP_II");
-        catalog.addGetAssociationClause("Virus_Appearance", "VIRUS_APP_II", "NT_Sequence", "VIRUS_APP_II");
-        //catalog.addGetAssociationClause("Virus_Appearance", "VIRUS_APP_II", "Virus_App_Selected", "VIRUS_APP_II", "is a selected virus");
-        //catalog.addGetAssociationClause("Virus_Appearance", "VIRUS_APP_II", "Virus_App_Chimeric", "VIRUS_APP_II", "is a chimeric virus");
-        //catalog.addGetAssociationClauses("Virus_App_Selected", "RESISTANCE_NR", "Resistance", "RESISTANCE_NR");
-        //catalog.addGetAssociationClause("Virus_App_Chimeric", "VIRUS_APP_II", "Virus_Chimeric_FG", "VIRUS_APP_II");
-        catalog.addCodedPropertyClauseMandatoryValues("AA_Sequence", "PROTEIN_II", "PROTEIN", "PROTEIN_II", "NAME", "codes for protein", true);
-        catalog.addGetAssociationClause("AA_Sequence", "PROTEIN_II", "PROTEIN", "PROTEIN_II", "codes for protein");
-        catalog.addCodedPropertyClauseMandatoryValues("NT_Sequence", "REGION_II", "REGION", "REGION_II", "NAME", "is taken from region", true);
-        
-        catalog.addGetAssociationClause("AA_Sequence", "AA_SEQUENCE_ID", "Algo_Result", "AA_SEQUENCE_II", "has a resistance result");
         catalog.addSequenceToResistanceResultClause();
-        catalog.addGetAssociationClause("Algo_Result", "MEDICATION_II", "COD_MEDICATION", "MEDICATION_II", "is a result for the drug");
-        catalog.addGetAssociationClause("Algo_Result", "ALGORITHM_II", "COD_ALGORITHM", "ALGORITHM_II", "is obtained using algorithm");
         
         String[][] virusToRealMutationList = {{"Virus_Appearance", null, "VIRUS_APP_II"}, {"AA_Sequence", "VIRUS_APP_II", "AA_SEQUENCE_ID"}, {"SEQUENCE_AA_MUTATION", "MUTATION_SEQUENCE_ID", null, "AA_WILDTYPE", "?1 <>", "AA_MUTATION", "!1"}};
         String[][] sequenceToRealMutationList = {{"AA_Sequence", null, "AA_SEQUENCE_ID"}, {"SEQUENCE_AA_MUTATION", "MUTATION_SEQUENCE_ID", null, "AA_WILDTYPE", "?1 <>", "AA_MUTATION", "!1"}};
         catalog.addGetRemoteAssociationClause(virusToRealMutationList, "has a sequence with at least one real amino acid mutation");
         catalog.addGetRemoteAssociationClause(sequenceToRealMutationList, "has a real mutation");
-        
-        
-        catalog.addGetAssociationClause("AA_Sequence", "AA_SEQUENCE_ID", "SEQUENCE_AA_MUTATION", "MUTATION_SEQUENCE_ID");
-        catalog.addGetAssociationClause("AA_Sequence", "AA_SEQUENCE_ID", "SEQUENCE_AA_INSERTION", "MUTATION_SEQUENCE_ID");
-        catalog.addGetAssociationClause("AA_Sequence", "AA_SEQUENCE_ID", "SEQUENCE_AA_DELETION", "MUTATION_SEQUENCE_ID");
-        catalog.addGetAssociationClause("NT_Sequence", "NT_SEQUENCE_ID", "SEQUENCE_NT_MUTATION", "MUTATION_SEQUENCE_ID");
-        catalog.addGetAssociationClause("NT_Sequence", "NT_SEQUENCE_ID", "SEQUENCE_NT_INSERTION", "MUTATION_SEQUENCE_ID");
-        catalog.addGetAssociationClause("NT_Sequence", "NT_SEQUENCE_ID", "SEQUENCE_NT_DELETION", "MUTATION_SEQUENCE_ID");
         
         catalog.addSequenceMutationClause("AA_Sequence", "AA_SEQUENCE_ID", "SEQUENCE_AA_MUTATION", "MUTATION_SEQUENCE_ID", "AA_POSITION", "has a mutation", "in", false);
         catalog.addSequenceMutationClause("AA_Sequence", "AA_SEQUENCE_ID", "SEQUENCE_AA_MUTATION", "MUTATION_SEQUENCE_ID", "AA_POSITION", "has a real mutation", "in", true);
@@ -350,10 +318,6 @@ public class AWCPrototypeCatalog {
         
         catalog.addBaseClause("Molecules");
 //        catalog.addMoleculeClause();
-        catalog.addPropertyClauseMandatoryValues("Molecules", "NAME", "is called", true, false);
-        catalog.addPropertyLikeClause("Molecules", "NAME", "has a name", false, false);
-        catalog.addPropertyClauseMandatoryValues("Molecules", "MOLECULEID", true);
-        catalog.addGetPropertyClause("Molecules", "RELATIVEMASS", "has a relative mass");
         
         catalog.addDrugWorkMechanismClause();
         
@@ -362,39 +326,26 @@ public class AWCPrototypeCatalog {
         catalog.addGetAssociationClauses("Drug_Stock", "DRUG_COMPOUND_II", "Drug_Compound", "DRUG_COMPOUND_II", "is a stock of drug compound", "has a stock");
         catalog.addGetAssociationClauses("Sample", "DRUG_STOCK_II", "Drug_Stock", "DRUG_STOCK_II", "was made using drug stock", "was used for sample");
         
-        String[][] assocListMoleculeToSample = {{"Molecules", null, "MOLECULEID"}, {"Drug_Compound", "MOLECULEID", "DRUG_COMPOUND_II"},
-        {"Drug_Stock", "DRUG_COMPOUND_II", "DRUG_STOCK_II"}, {"Sample", "DRUG_STOCK_II", "SAMPLE_II"}};
-        catalog.addGetRemoteAssociationClause(assocListMoleculeToSample, "is used in sample");
-        
-        String[][] assocListMoleculeToResult = {{"Molecules", null, "MOLECULEID"}, {"Drug_Compound", "MOLECULEID", "DRUG_COMPOUND_II"},
-        {"Drug_Stock", "DRUG_COMPOUND_II", "DRUG_STOCK_II"}, {"Sample", "DRUG_STOCK_II", "SAMPLE_II"},
-        {"Measurement", "SAMPLE_II", "MEASUREMENT_II"}, {"Result", "MEASUREMENT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListMoleculeToResult, "has a measured result");
-        
         catalog.addGetDoubleRemoteAssociationClause(assocListMoleculeToSample, assocListVirusAppearanceToSample, "are brought together in sample");
         
         catalog.addGetAssociationClauses("Measurement", "SAMPLE_II", "Sample", "SAMPLE_II", "is performed on sample", "was used for measurement");
         
-        String[][] assocListSampleToResult = {{"Sample", null, "SAMPLE_II"}, {"Measurement", "SAMPLE_II", "MEASUREMENT_II"},
-        {"Result", "MEASUREMENT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListSampleToResult, "yielded the result");
-        
-        String[][] assocListSampleToCalcResult = {{"Sample", null, "SAMPLE_II"}, {"Measurement", "SAMPLE_II", "MEASUREMENT_II"},
-        {"Result", "MEASUREMENT_II", "RESULT_II"}, {"Result_Depend", "RESULT_II", "CALC_RESULT_II"}, {"Calc_Result", "CALC_RESULT_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListSampleToCalcResult, "yielded an input for the calculated result");
-        
-        String[][] assocListResultToSample = {{"Result", null, "MEASUREMENT_II"}, {"Measurement", "MEASUREMENT_II", "SAMPLE_II"},
-        {"Sample", "SAMPLE_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListResultToSample, "is obtained on sample");
-        
-        String[][] assocListCalcResultToSample = {{"Calc_Result", null, "CALC_RESULT_II"}, {"Result_Depend", "CALC_RESULT_II", "RESULT_II"},
-        {"RESULT", "RESULT_II", "MEASUREMENT_II"}, {"Measurement", "MEASUREMENT_II", "SAMPLE_II"}, {"Sample", "SAMPLE_II", null}};
-        catalog.addGetRemoteAssociationClause(assocListCalcResultToSample, "is calculated based on data from sample");
-        
-        
         catalog.addGetAssociationClauses("Sample", "EXPERIMENT_II", "Experiment", "EXPERIMENT_II", "was used for experiment", "is based on sample");
-        
+       */ 
         mainCatalog = catalog;
+    }
+    
+    public void addDateClauses (AWCPrototypeCatalog catalog, String tableName, String propertyName, String description) {
+        catalog.addGetPropertyClause(tableName, propertyName, description + " date");
+        catalog.addPropertyTimeIntervalClause(tableName, propertyName, description + " date", false);
+        catalog.addPropertyCheckClause(tableName, propertyName, description + " date", false, false);
+    }
+    
+    public void addStringClauses(AWCPrototypeCatalog catalog, String tableName, String propertyName, String description, boolean caseSensitive) {
+		catalog.addPropertyCheckClause(tableName, propertyName, description, false, caseSensitive);
+        catalog.addPropertyLikeClause(tableName, propertyName, description, false, caseSensitive);
+        catalog.addPropertyStartsLikeClause(tableName, propertyName, description, false, caseSensitive);
+        catalog.addPropertyEndsLikeClause(tableName, propertyName, description, false, caseSensitive);
     }
     
     ///////////////////////////////////////
@@ -430,6 +381,138 @@ public class AWCPrototypeCatalog {
             return varName;
         }
     }
+    
+    /**
+     * returns true if a table with the given name exists in the database
+     * @param tableName the name of a table
+     * @return
+     */
+    private boolean tableExists(String tableName) {
+        JDBCManager manager = JDBCManager.getInstance();
+        if (manager != null) {
+        	return manager.getTableNames().contains(tableName);
+        }
+        else {
+        	return false;
+        }
+    }
+    
+    /**
+     * returns the data type string from the given property of the given table. Returns null if the table
+     * or property is not found
+     * @param tableName
+     * @param propertyName
+     * @return
+     */
+    private String getDataTypeString(String tableName, String propertyName) {
+        JDBCManager manager = JDBCManager.getInstance();
+        if (manager != null) {
+        	return manager.getColumnType(tableName, propertyName);
+        }
+        else {
+            System.err.println("Unknown column " + propertyName + " for " + tableName);
+        	return null;
+        }
+    }
+    
+    private OutputVariable getOutputVariable(String typeString, String propertyName, FromVariable fromVar) {
+        OutputVariable ovar = getBasicOutputVariable(typeString, propertyName);
+        ovar.getExpression().addFromVariable(fromVar);
+        return ovar;
+    }
+    
+    private OutputVariable getOutputVariable(String typeString, String propertyName, Constant constant) {
+        OutputVariable ovar = getBasicOutputVariable(typeString, propertyName);
+        ovar.getExpression().addConstant(constant);
+        return ovar;
+    }
+    
+    private OutputVariable getOutputVariable(String typeString, String propertyName, InputVariable ivar) {
+        OutputVariable ovar = getBasicOutputVariable(typeString, propertyName);
+        ovar.getExpression().addInputVariable(ivar);
+        ovar.getExpression().addFixedString(new FixedString("." + propertyName));
+        return ovar;
+    }
+    
+    private OutputVariable getBasicOutputVariable(String typeString, String propertyName) {
+        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(propertyName));
+        ovar.setUniqueName(ovar.getFormalName());
+    	return ovar;
+    }
+    
+    private boolean isStringType(String dataTypeString) {
+    	return isStringType(Integer.parseInt(dataTypeString));
+    }
+    
+    private boolean isStringType(int dataType) {
+    	return dataType == 12;
+    }
+    
+    private boolean isDateType(String dataTypeString) {
+    	return isDateType(Integer.parseInt(dataTypeString));
+    }
+    
+    private boolean isDateType(int dataType) {
+    	return (dataType >= 91) && (dataType <= 93);
+    }
+    
+    private boolean isNumericType(String dataTypeString) {
+    	return isNumericType(Integer.parseInt(dataTypeString));
+    }
+    
+    private boolean isNumericType(int dataType) {
+    	return (((8 >= dataType) && (dataType >=1)) || dataType == 1111);
+    }
+    
+    private Properties getDataTypeDependantProperties(String tableName, String propertyName) {
+    	String dataTypeString = getDataTypeString(tableName, propertyName);
+    	if (dataTypeString != null) {
+	    	int dataType = Integer.parseInt(dataTypeString);
+	    	
+	        String variableType;
+	        Constant valueConstant = null;
+	        if (isStringType(dataType)) {
+	            valueConstant = new StringConstant();
+	            variableType = "String";
+	        }
+	        else if (isDateType(dataType)) {
+	            valueConstant = new DateConstant();
+	            variableType = "Date";
+	        }
+	        else if (isNumericType(dataType)) {
+	            valueConstant = new DoubleConstant();
+	            variableType = "Numeric";
+	        }
+	        else {
+                System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
+	            return null;
+	        }
+	        
+	    	Properties p = new Properties();
+	    	p.put("typeString", variableType);
+	    	p.put("constant", valueConstant);
+	    	p.put("dataTypeString", dataTypeString);
+	    	return p;
+    	}
+    	return null;
+    }
+    
+    private AtomicWhereClause addMandatoryValuesToClause(AtomicWhereClause clause, String[] tables, String[] properties) {
+	    if (clause != null) {
+	    	int i = 0;
+	    	Iterator it = clause.getConstants().iterator();
+	    	while (it.hasNext() && i < tables.length && i < properties.length) {
+	    		Constant constant = (Constant) it.next();
+	    		constant.setSuggestedValuesQuery("SELECT DISTINCT "+ properties[i] + " FROM " + tables[i]);
+	    		constant.setSuggestedValuesMandatory(true);
+	    		i++;
+	    	}
+	    }
+	    return clause;
+	}
+    
+    
+    
     
     ///////////////////////////////////////
     // operations
@@ -492,161 +575,105 @@ public class AWCPrototypeCatalog {
     /*
      * JDBC version
      */
+
+    /**
+     * add the table with the given name to the list of available clauses
+     * @param tableName
+     * @return
+     */
     public AtomicWhereClause addBaseClause(String tableName) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            if (manager.getTableNames().contains(tableName.toUpperCase())) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                Table table = getTable(tableName);
-                aVisList.addFixedString(new FixedString("There is a " + table.getSingularName()));
-                
-                FromVariable tableFromVariable = new FromVariable(tableName);
-                aClause.addFromVariable(tableFromVariable);
-                OutputVariable ovar = new OutputVariable(new VariableType(tableName), getGoodVariableName(tableName));
-                ovar.setUniqueName(ovar.getFormalName());
-                ovar.getExpression().addFromVariable(tableFromVariable);
-                aVisList.addOutputVariable(ovar);
-                
-                aComposer.addFixedString(new FixedString("1=1"));
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("No table " + tableName + " found.");
-                return null;
-            }
+        if (tableExists(tableName)) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+
+            aVisList.addFixedString(new FixedString("There is a " + getTable(tableName).getSingularName()));
+            
+            FromVariable tableFromVariable = new FromVariable(tableName);
+            aClause.addFromVariable(tableFromVariable);
+            aVisList.addOutputVariable(getOutputVariable(tableName, tableName, tableFromVariable));
+            
+            aComposer.addFixedString(new FixedString("1=1"));
+            addAtomicWhereClause(aClause);
+            return aClause;
         } else {
+            System.err.println("No table " + tableName + " found.");
             return null;
         }
     }
     
-    public AtomicWhereClause addCodedPropertyCheckClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description, boolean show) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(codeTableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has " + codeName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                
-                Constant valueConstant = null;
-                if (dataType == 12) {
-                    valueConstant = new StringConstant();
-                    varType = new VariableType("String");
-                } else if ((dataType >= 91) && (dataType <= 93)) {
-                    valueConstant = new DateConstant();
-                    varType = new VariableType("Date");
-                } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
-                    valueConstant = new DoubleConstant();
-                    varType = new VariableType("Numeric");
-                } else {
-                    System.err.println("Unknown data type found for " + codeTableName + "." + propertyName + ": " + dataType);
-                    return null;
-                }
-                if (show) {
-                    OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(codeName));
-                    ovar.setUniqueName(ovar.getFormalName());
-                    ovar.getExpression().addConstant(valueConstant);
-                    aVisList.addOutputVariable(ovar);
-                }
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("which decodes to"));
-                } else if (show) {
-                    aVisList.addFixedString(new FixedString("="));
-                }
-                aVisList.addConstant(valueConstant);
-                
-                aComposer.addFixedString(new FixedString("("));
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString("." + codeName + " = "));
-                FromVariable codeVar = new FromVariable(codeTableName);
-                aComposer.addFromVariable(codeVar);
-                aComposer.addFixedString(new FixedString("." + codeKeyName + ") and ("));
-                aComposer.addFromVariable(codeVar);
-                aComposer.addFixedString(new FixedString("." + propertyName + " = "));
-                aComposer.addConstant(valueConstant);
-                aComposer.addFixedString(new FixedString(")"));
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("Unknown column " + propertyName + " for " + tableName);
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-    
+    /**
+     * allow users to search for an identical property match
+     * @param tableName
+     * @param propertyName
+     * @param description
+     * @param show  
+     * @param caseSensitive
+     * @return
+     */
     public AtomicWhereClause addPropertyCheckClause(String tableName, String propertyName, String description, boolean show, boolean caseSensitive) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(tableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has " + propertyName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                Constant valueConstant = null;
-                if (dataType == 12) {
-                    valueConstant = new StringConstant();
-                    varType = new VariableType("String");
-                } else if ((dataType >= 91) && (dataType <= 93)) {
-                    valueConstant = new DateConstant();
-                    varType = new VariableType("Date");
-                } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
-                    valueConstant = new DoubleConstant();
-                    varType = new VariableType("Numeric");
-                } else {
-                    System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
-                    return null;
-                }
-                if (show) {
-                    OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(propertyName));
-                    ovar.setUniqueName(ovar.getFormalName());
-                    ovar.getExpression().addConstant(valueConstant);
-                    aVisList.addOutputVariable(ovar);
-                    aVisList.addFixedString(new FixedString("="));
-                }
-                aVisList.addConstant(valueConstant);
-                
-                if ((dataType != 12) || caseSensitive) {
-                    aComposer.addInputVariable(ivar);
-                    aComposer.addFixedString(new FixedString("." + propertyName + " = "));
-                    aComposer.addConstant(valueConstant);
-                } else {  // only for case insensitive string comparison
-                    aComposer.addFixedString(new FixedString("UPPER("));
-                    aComposer.addInputVariable(ivar);
-                    aComposer.addFixedString(new FixedString("." + propertyName + ") = UPPER("));
-                    aComposer.addConstant(valueConstant);
-                    aComposer.addFixedString(new FixedString(")"));
-                }
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("Unknown column " + propertyName + " for " + tableName);
+    	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
+    	if (p != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            Constant constant = (Constant) p.get("constant");
+            String dataTypeString = (String) p.get("dataTypeString");
+            String typeString = (String) p.get("typeString");
+            
+            description	= description == null ? "has a " + propertyName : description;
+            InputVariable qTableInstanceName = composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, null, propertyName, description, constant, (show?getOutputVariable(typeString, propertyName, constant):null), null);
+            
+            if (!isStringType(dataTypeString) || caseSensitive) {
+                aComposer.addInputVariable(qTableInstanceName);
+                aComposer.addFixedString(new FixedString("." + propertyName + " = "));
+                aComposer.addConstant(constant);
+            } 
+            else {  // only for case insensitive string comparison
+                aComposer.addFixedString(new FixedString("UPPER("));
+                aComposer.addInputVariable(qTableInstanceName);
+                aComposer.addFixedString(new FixedString("." + propertyName + ") = UPPER("));
+                aComposer.addConstant(constant);
+                aComposer.addFixedString(new FixedString(")"));
+            }
+            addAtomicWhereClause(aClause);
+            return aClause;
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
+    public AtomicWhereClause addPropertyLikeClause(String tableName, String propertyName, String description, boolean show, boolean caseSensitive, Constant likeConstant, String constantDescription) {
+    	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
+    	if (p != null) {
+            String dataTypeString = (String) p.get("dataTypeString");
+            String typeString = (String) p.get("typeString");
+            Constant constant = likeConstant;
+            
+            if (isStringType(dataTypeString)) {
+	            AtomicWhereClause aClause = new AtomicWhereClause();
+	            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+	
+	            description	= description == null ? "has a " + propertyName : description;
+	            InputVariable 	qTableInstanceName = composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, null, propertyName, description, constant, (show?getOutputVariable(typeString, propertyName, constant):null), constantDescription);
+	            
+	            if (caseSensitive) {
+	                aComposer.addInputVariable(qTableInstanceName);
+	                aComposer.addFixedString(new FixedString("." + propertyName + " LIKE "));
+	                aComposer.addConstant(constant);
+	            } 
+	            else {
+	                aComposer.addFixedString(new FixedString("UPPER("));
+	                aComposer.addInputVariable(qTableInstanceName);
+	                aComposer.addFixedString(new FixedString("." + propertyName + ") LIKE UPPER("));
+	                aComposer.addConstant(constant);
+	                aComposer.addFixedString(new FixedString(")"));
+	            }
+	            addAtomicWhereClause(aClause);
+	            return aClause;
+            }
+            else {
+                System.err.println("Incompatible datatype, string expected: " + tableName + "." + propertyName);
                 return null;
             }
         } else {
@@ -654,243 +681,133 @@ public class AWCPrototypeCatalog {
         }
     }
     
+    /**
+     * allows users to search for a property containing a specified string
+     * @param tableName
+     * @param propertyName
+     * @param description
+     * @param show
+     * @param caseSensitive
+     * @return
+     */
     public AtomicWhereClause addPropertyLikeClause(String tableName, String propertyName, String description, boolean show, boolean caseSensitive) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(tableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has a " + propertyName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                Constant valueConstant = null;
-                if (dataType == 12) {
-                    valueConstant = new SubstringConstant();
-                    varType = new VariableType("String");
-                } else {
-                    System.err.println("Incompatible datatype, string expected: " + tableName + "." + propertyName + ": " + dataType);
-                    return null;
-                }
-                
-                if (show) {
-                    OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(propertyName));
-                    ovar.setUniqueName(ovar.getFormalName());
-                    ovar.getExpression().addConstant(valueConstant);
-                    aVisList.addOutputVariable(ovar);
-                }
-                aVisList.addFixedString(new FixedString(((show) ? " " : "") + "containing"));
-                aVisList.addConstant(valueConstant);
-                if (caseSensitive) {
-                    aComposer.addInputVariable(ivar);
-                    aComposer.addFixedString(new FixedString("." + propertyName + " LIKE "));
-                    aComposer.addConstant(valueConstant);
-                } else {
-                    aComposer.addFixedString(new FixedString("UPPER("));
-                    aComposer.addInputVariable(ivar);
-                    aComposer.addFixedString(new FixedString("." + propertyName + ") LIKE UPPER("));
-                    aComposer.addConstant(valueConstant);
-                    aComposer.addFixedString(new FixedString(")"));
-                }
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("Unknown column " + propertyName + " for " + tableName);
-                return null;
-            }
-        } else {
-            return null;
-        }
+    	return addPropertyLikeClause(tableName, propertyName, description, show, caseSensitive, new SubstringConstant(), "containing");
     }
     
-    public AtomicWhereClause addPropertyStartsLikeClause(String tableName, String propertyName, boolean show) {
-        return addPropertyStartsLikeClause(tableName, propertyName, null, show);
+    /**
+     * allows users to search for a property ending on a specified string
+     * @param tableName
+     * @param propertyName
+     * @param description
+     * @param show
+     * @param caseSensitive
+     * @return
+     */
+    public AtomicWhereClause addPropertyEndsLikeClause(String tableName, String propertyName, String description, boolean show, boolean caseSensitive) {
+    	return addPropertyLikeClause(tableName, propertyName, description, show, caseSensitive, new EndstringConstant(), "that ends with");
     }
     
-    public AtomicWhereClause addPropertyStartsLikeClause(String tableName, String propertyName, String description, boolean show) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(tableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has a " + propertyName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                Constant valueConstant = null;
-                if (dataType == 12) {
-                    valueConstant = new StartstringConstant();
-                    varType = new VariableType("String");
-                } else {
-                    System.err.println("Incompatible datatype, string expected: " + tableName + "." + propertyName + ": " + dataType);
-                    return null;
-                }
-                
-                if (show) {
-                    OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(propertyName));
-                    ovar.setUniqueName(ovar.getFormalName());
-                    ovar.getExpression().addConstant(valueConstant);
-                    aVisList.addOutputVariable(ovar);
-                }
-                aVisList.addFixedString(new FixedString("starting with"));
-                aVisList.addConstant(valueConstant);
-                
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString("." + propertyName + " LIKE "));
-                aComposer.addConstant(valueConstant);
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("Unknown column " + propertyName + " for " + tableName);
-                return null;
-            }
-        } else {
-            return null;
-        }
+    /**
+     * allows users to search for a property ending with a specified string
+     * @param tableName
+     * @param propertyName
+     * @param description
+     * @param show
+     * @param caseSensitive
+     * @return
+     */
+    public AtomicWhereClause addPropertyStartsLikeClause(String tableName, String propertyName, String description, boolean show, boolean caseSensitive) {
+    	return addPropertyLikeClause(tableName, propertyName, description, show, caseSensitive, new StartstringConstant(), "that starts with");
+    }
+
+    /**
+     * compose a human readable query for the given VisualizationClauseList
+     * @param aVisList the {@link VisualizationClauseList} to fill
+     * @param tableName the name of the table to query
+     * @param ivar inputvariable derived from the table. If null a new inputvariable will be derived from the given table  
+     * @param propertyName the name of the property of the table to query
+     * @param relDdescription description of the relationship
+     * @param constant constant chosen by the user. Can be null if the resulting query should have a new variable instead.
+     * @param typeString type of the constant chosen by the user. Can be null if you do not
+     * want a name assigned to this constant
+     * @param constantDescription extra description for the constant. Can be null if no extra description is needed
+     * @return the input variable derived from the table (instance name of the table)
+     */
+    private InputVariable composeHumanReadableQuery(VisualizationClauseList aVisList, String tableName, InputVariable ivar, String propertyName, String relDescription, Constant constant, OutputVariable ovar, String constantdescription) {
+        String qTableName = getTable(tableName).getSingularName();
+
+        aVisList.addFixedString(new FixedString("The " + qTableName));
+        if (ivar == null) ivar = new InputVariable(new VariableType(tableName));
+        aVisList.addInputVariable(ivar);
+        aVisList.addFixedString(new FixedString(relDescription));
+        if (ovar != null) aVisList.addOutputVariable(ovar);
+        if (constantdescription != null) aVisList.addFixedString(new FixedString(constantdescription));
+        if (constant != null) aVisList.addConstant(constant);
+        
+        return ivar;
     }
     
-    public AtomicWhereClause addPropertyClauseMandatoryValues(String tableName, String propertyName, boolean show) {
-        return addPropertyClauseMandatoryValues(tableName, propertyName, null, show);
-    }
     
-    public AtomicWhereClause addPropertyClauseMandatoryValues(String tableName, String propertyName, String description, boolean show) {
-        return addPropertyClauseMandatoryValues(tableName, propertyName, description, show, true);
-    }
-    
-    public AtomicWhereClause addPropertyClauseMandatoryValues(String tableName, String propertyName, String description, boolean show, boolean caseSensitive) {
-        AtomicWhereClause addedClause = addPropertyCheckClause(tableName, propertyName, description, show, caseSensitive);
-        if (addedClause != null) {
-            Constant constant = (Constant)addedClause.getConstants().iterator().next();
-            constant.setSuggestedValuesQuery("SELECT DISTINCT "+propertyName+" FROM "+tableName);
-            constant.setSuggestedValuesMandatory(true);
-        }
-        return addedClause;
-    }
-    
-    public AtomicWhereClause addCodedPropertyClauseMandatoryValues(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description, boolean show) {
-        AtomicWhereClause addedClause = addCodedPropertyCheckClause(tableName, codeName, codeTableName, codeKeyName, propertyName, description, show);
-        if (addedClause != null) {
-            Constant constant = (Constant)addedClause.getConstants().iterator().next();
-            constant.setSuggestedValuesQuery("SELECT DISTINCT "+propertyName+" FROM "+codeTableName);
-            constant.setSuggestedValuesMandatory(true);
-        }
-        return addedClause;
-    }
-    
+    /**
+     * gets the property from the given table as a variable
+     * @param tableName
+     * @param propertyName
+     * @param description
+     * @return
+     */
     public AtomicWhereClause addGetPropertyClause(String tableName, String propertyName, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(tableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                if (dataType == 12) {
-                    varType = new VariableType("String");
-                } else if ((dataType >= 91) && (dataType <= 93)) {
-                    varType = new VariableType("Date");
-                } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
-                    varType = new VariableType("Numeric");
-                } else {
-                    varType = new VariableType(propertyName);
-                }
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has a " + propertyName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(propertyName));
-                ovar.setUniqueName(ovar.getFormalName());
-                ovar.getExpression().addInputVariable(ivar);
-                ovar.getExpression().addFixedString(new FixedString("." + propertyName));
-                aVisList.addOutputVariable(ovar);
-                aComposer.addFixedString(new FixedString("1=1"));
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                System.err.println("Unknown column " + propertyName + " for " + tableName);
-                return null;
-            }
-        } else {
-            return null;
-        }
+    	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
+    	if (p != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            String typeString = (String) p.get("typeString");
+
+            description			= description == null ? "has a " + propertyName : description;
+            InputVariable ivar  = new InputVariable(new VariableType(tableName));
+            OutputVariable ovar = getOutputVariable(typeString, propertyName, ivar);
+            composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, ivar, propertyName, description, null, ovar, null);
+            
+            aClause.getHibernateClauseComposer().addFixedString(new FixedString("1=1"));
+            addAtomicWhereClause(aClause);
+            return aClause;
+    	}
+    	return null;
     }
-    
-    public AtomicWhereClause addGetPropertyClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName) {
-        return addGetPropertyClause(tableName, codeName, codeTableName, codeKeyName, propertyName, null);
-    }
-    
+
+    /**
+     * select the property propertyName from the table codeTableName associated with the table tableName as a variable 
+     * @param tableName
+     * @param codeName
+     * @param codeTableName
+     * @param codeKeyName
+     * @param propertyName
+     * @param description
+     * @return
+     */
     public AtomicWhereClause addGetPropertyClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
-        if (manager != null) {
-            String dataTypeString = manager.getColumnType(codeTableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
-                VariableType varType;
-                if (dataType == 12) {
-                    varType = new VariableType("String");
-                } else if ((dataType >= 91) && (dataType <= 93)) {
-                    varType = new VariableType("Date");
-                } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
-                    varType = new VariableType("Numeric");
-                } else {
-                    varType = new VariableType(propertyName);
-                }
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                aVisList.addInputVariable(ivar);
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has a " + codeName + " which decodes to"));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(codeName));
-                ovar.setUniqueName(ovar.getFormalName());
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString("." + codeName + " = "));
-                FromVariable codeVar = new FromVariable(codeTableName);
-                aComposer.addFromVariable(codeVar);
-                aComposer.addFixedString(new FixedString("." + codeKeyName));
-                ovar.getExpression().addFromVariable(codeVar);
-                ovar.getExpression().addFixedString(new FixedString("." + propertyName));
-                aVisList.addOutputVariable(ovar);
-                addAtomicWhereClause(aClause);
-                return aClause;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
+    	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
+    	if (p != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            Constant constant = (Constant) p.get("constant");
+            String typeString = (String) p.get("typeString");
+
+            description				= description == null ? "has a " + propertyName : description;
+            InputVariable ivar  	= new InputVariable(new VariableType(tableName));
+            FromVariable codeVar	= new FromVariable(codeTableName);
+            OutputVariable ovar 	= getOutputVariable(typeString, propertyName, codeVar);
+            ovar.getExpression().addFixedString(new FixedString("." + propertyName));
+            
+            composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, null, propertyName, description, constant, ovar, null);
+            
+            aComposer.addInputVariable(ivar);
+            aComposer.addFixedString(new FixedString("." + codeName + " = "));
+            aComposer.addFromVariable(codeVar);
+            aComposer.addFixedString(new FixedString("." + codeKeyName));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+    	}
+    	return null;
     }
     
     public AtomicWhereClause addGetAssociationClauses(String tableName, String foreignKeyName, String foreignTableName, String foreignTableKey) {
@@ -1342,6 +1259,82 @@ public class AWCPrototypeCatalog {
         }
     }
     
+    
+        
+        public AtomicWhereClause addCodedPropertyCheckClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description, boolean show) {
+            JDBCManager manager = JDBCManager.getInstance();
+            if (manager != null) {
+                String dataTypeString = manager.getColumnType(codeTableName, propertyName);
+                if (dataTypeString != null) {
+                    int dataType = Integer.parseInt(dataTypeString);
+                    VariableType varType;
+                    AtomicWhereClause aClause = new AtomicWhereClause();
+                    VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+                    HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+                    String singularName = getTable(tableName).getSingularName();
+                    aVisList.addFixedString(new FixedString("The " + singularName));
+                    InputVariable ivar = new InputVariable(new VariableType(tableName));
+                    aVisList.addInputVariable(ivar);
+                    if (description == null) {
+                        aVisList.addFixedString(new FixedString("has " + codeName));
+                    } else {
+                        aVisList.addFixedString(new FixedString(description));
+                    }
+                    
+                    Constant valueConstant = null;
+                    if (dataType == 12) {
+                        valueConstant = new StringConstant();
+                        varType = new VariableType("String");
+                    } else if ((dataType >= 91) && (dataType <= 93)) {
+                        valueConstant = new DateConstant();
+                        varType = new VariableType("Date");
+                    } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
+                        valueConstant = new DoubleConstant();
+                        varType = new VariableType("Numeric");
+                    } else {
+                        System.err.println("Unknown data type found for " + codeTableName + "." + propertyName + ": " + dataType);
+                        return null;
+                    }
+                    if (show) {
+                        OutputVariable ovar = new OutputVariable(varType, getGoodVariableName(codeName));
+                        ovar.setUniqueName(ovar.getFormalName());
+                        ovar.getExpression().addConstant(valueConstant);
+                        aVisList.addOutputVariable(ovar);
+                    }
+                    if (description == null) {
+                        aVisList.addFixedString(new FixedString("which decodes to"));
+                    } else if (show) {
+                        aVisList.addFixedString(new FixedString("="));
+                    }
+                    aVisList.addConstant(valueConstant);
+                    
+                    aComposer.addFixedString(new FixedString("("));
+                    aComposer.addInputVariable(ivar);
+                    aComposer.addFixedString(new FixedString("." + codeName + " = "));
+                    FromVariable codeVar = new FromVariable(codeTableName);
+                    aComposer.addFromVariable(codeVar);
+                    aComposer.addFixedString(new FixedString("." + codeKeyName + ") and ("));
+                    aComposer.addFromVariable(codeVar);
+                    aComposer.addFixedString(new FixedString("." + propertyName + " = "));
+                    aComposer.addConstant(valueConstant);
+                    aComposer.addFixedString(new FixedString(")"));
+                    
+                    addAtomicWhereClause(aClause);
+                    System.out.println(aVisList.getHumanStringValue());
+                    System.out.println(aComposer.getHumanStringValue());
+                    return aClause;
+                } else {
+                    System.err.println("Unknown column " + propertyName + " for " + tableName);
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+        
+    
+    
+/*    
     public AtomicWhereClause addTherapyNaiveVirusClause() {
         String[][] assocs = {{"Patient", null, "PATIENT_II"}, {"PATIENT_SAMPLE", "PATIENT_II", "PATIENT_SAMPLE_ID"},
         {"Viral_Clin_Isolate", "CLINICAL_ISOLATE_ID", "VIRAL_CLIN_ISOLATE_II"}, {"Virus_app_clinical", "VIRAL_CLIN_ISOLATE_II", "VIRUS_APP_II"},
@@ -1403,6 +1396,7 @@ public class AWCPrototypeCatalog {
             return null;
         }
     }
+    */
     
     public AtomicWhereClause addPropertyEqualsClause(String tableName1, String propertyName1) {
         return addPropertyEqualsClause(tableName1, propertyName1, tableName1, propertyName1);
@@ -1439,8 +1433,8 @@ public class AWCPrototypeCatalog {
         }
     }
     
-    public AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String propertyName) {
-        JDBCManager manager = JDBCManager.getInstance();
+    public AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String propertyName, String description, boolean show) {
+    	JDBCManager manager = JDBCManager.getInstance();
         if (manager != null) {
             String dataTypeString = manager.getColumnType(tableName, propertyName);
             if (dataTypeString != null) {
@@ -1453,12 +1447,20 @@ public class AWCPrototypeCatalog {
                     aVisList.addFixedString(new FixedString("The " + singularName));
                     InputVariable ivar = new InputVariable(new VariableType(tableName));
                     aVisList.addInputVariable(ivar);
-                    aVisList.addFixedString(new FixedString("has " + propertyName));
-                    OutputVariable ovar = new OutputVariable(new VariableType("Date"), getGoodVariableName(propertyName));
-                    ovar.setUniqueName(ovar.getFormalName());
-                    ovar.getExpression().addInputVariable(ivar);
-                    ovar.getExpression().addFixedString(new FixedString("." + propertyName));
-                    aVisList.addOutputVariable(ovar);
+
+                    if (description == null) {
+                        aVisList.addFixedString(new FixedString("has " + propertyName));
+                    } else {
+                        aVisList.addFixedString(new FixedString(description));
+                    }
+                    OutputVariable ovar = null;
+                    if (show) {
+	                    ovar = new OutputVariable(new VariableType("Date"), getGoodVariableName(propertyName));
+	                    ovar.setUniqueName(ovar.getFormalName());
+	                    ovar.getExpression().addInputVariable(ivar);
+	                    ovar.getExpression().addFixedString(new FixedString("." + propertyName));
+	                    aVisList.addOutputVariable(ovar);
+                    }
                     aVisList.addFixedString(new FixedString("between"));
                     Constant valueConstant1 = new DateConstant("1900-01-01");
                     aVisList.addConstant(valueConstant1);
@@ -1466,13 +1468,26 @@ public class AWCPrototypeCatalog {
                     Constant valueConstant2 = new DateConstant();
                     aVisList.addConstant(valueConstant2);
                     
+                    
                     aComposer.addFixedString(new FixedString("("));
-                    aComposer.addOutputVariable(ovar);
+                    if (show) {
+                    	aComposer.addOutputVariable(ovar);
+                    }
+                    else {
+                        aComposer.addInputVariable(ivar);
+                        aComposer.addFixedString(new FixedString("." + propertyName));
+                    }
                     aComposer.addFixedString(new FixedString(" > "));
                     aComposer.addConstant(valueConstant1);
                     aComposer.addFixedString(new FixedString(") AND ("));
                     
-                    aComposer.addOutputVariable(ovar);
+                    if (show) {
+                    	aComposer.addOutputVariable(ovar);
+                    }
+                    else {
+                        aComposer.addInputVariable(ivar);
+                        aComposer.addFixedString(new FixedString("." + propertyName));
+                    }
                     aComposer.addFixedString(new FixedString(" < "));
                     aComposer.addConstant(valueConstant2);
                     aComposer.addFixedString(new FixedString(")"));
@@ -1490,6 +1505,10 @@ public class AWCPrototypeCatalog {
         } else {
             return null;
         }
+    }
+    
+    public AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String propertyName) {
+    	return addPropertyTimeIntervalClause(tableName, propertyName, null, true);
     }
     
     public AtomicWhereClause addTimeConstantClause(boolean before) {
@@ -1648,6 +1667,7 @@ public class AWCPrototypeCatalog {
         }
     }
     
+/*    
     public AtomicWhereClause addRealValueWithRelationConstraintClause(String tableName, String valueFieldName, String relationFieldName, boolean below) {
         JDBCManager manager = JDBCManager.getInstance();
         if (manager != null) {
@@ -2856,5 +2876,5 @@ public class AWCPrototypeCatalog {
             return null;
         }
     }
-    
+*/    
 } // end AWCPrototypeCatalog

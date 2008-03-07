@@ -41,7 +41,7 @@ public class DatabaseLoginDialog extends javax.swing.JDialog {
         Integer port = (Integer)((IntegerSetting)RegaSettings.getInstance().getLastDBLogin().getChild("Port")).getValue();
         String database = ((StringSetting)RegaSettings.getInstance().getLastDBLogin().getChild("Database")).stringValue();
         
-        rdbmsConnectPanel = new RDBMSConnectPanel(dbType, host, port, database, null, null);
+        rdbmsConnectPanel =new RDBMSConnectPanel(dbType, host, port, database, null, null);
         getContentPane().add(rdbmsConnectPanel);
         rdbmsConnectPanel.addStateChangeListener(new PDMEventListener() {
             public void processEvent(PDMEvent evt) {
