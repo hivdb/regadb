@@ -220,7 +220,12 @@ public class Patient {
         getTestResults().add(result);
         return result;
     }
-
+    
+    public PatientEventValue addPatientEvent(Event e) {
+        PatientEventValue pev = new PatientEventValue(patient, e);
+        return pev;
+    }
+    
     public void addTestResult(TestResult testResult) {
         getTestResults().add(testResult);
         testResult.setPatient(patient);

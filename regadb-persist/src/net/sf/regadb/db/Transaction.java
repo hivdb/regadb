@@ -344,6 +344,7 @@ public class Transaction {
     /**
      * Returns patients in this data set according, checking access permissions.
      */
+    
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(Dataset dataset) {
         Query q = session.createQuery(
@@ -556,7 +557,7 @@ public class Transaction {
     
         return q.uniqueResult() !=null;
     }
-     
+    
     //Get a limited, filtered and sorted list
     private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
         if(!filterConstraints.clause_.equals(" "))
@@ -610,6 +611,73 @@ public class Transaction {
         }
         
         return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    /*
+     * Returns all Events per patient
+     */
+    
+    @SuppressWarnings("unchecked")
+    public List<PatientEventValue> getPatientEvents(Patient p, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+    	String queryString = "FROM PatientEventValue AS patient_event_value " +
+							" WHERE patient_ii = " + p.getPatientIi() + " ";
+    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+    }
+    
+    public long patientEventCount(Patient p, HibernateFilterConstraint filterConstraints) {
+    	String queryString = "SELECT COUNT(patient_event_value) FROM PatientEventValue AS patient_event_value " +
+								" WHERE patient_ii = " + p.getPatientIi() + " ";
+    	
+    	if( !filterConstraints.clause_.equals(" ") )
+        {
+            queryString += " AND " + filterConstraints.clause_;
+        }
+        
+    	Query q = session.createQuery(queryString);
+    	
+    	for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+    	
+    	return ((Long)q.uniqueResult()).longValue();
+    }
+    
+    /*
+     * Returns all Events
+     */
+    
+    public List<Event> getEvents()
+    {
+    	String queryString = "FROM Event AS event ";
+    	Query q = session.createQuery(queryString);
+    	return q.list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Event> getEvents(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
+    {
+    	String queryString = "FROM Event AS event ";
+    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+    }
+    
+    public long eventCount(HibernateFilterConstraint filterConstraints) {
+    	String queryString = "SELECT COUNT(event_ii) FROM Event as event ";
+    	
+    	if( !filterConstraints.clause_.equals(" ") )
+        {
+            queryString += " WHERE " + filterConstraints.clause_;
+        }
+        
+    	Query q = session.createQuery(queryString);
+    	
+    	for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+    	
+    	return ((Long)q.uniqueResult()).longValue();
     }
     
     /**
