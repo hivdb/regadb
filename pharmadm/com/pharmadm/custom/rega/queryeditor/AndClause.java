@@ -44,25 +44,8 @@ public class AndClause extends ComposedWhereClause {
     }
     
     
-    public String getHibernateWhereClause() throws SQLException { //, MoleculeIndexingException {
-        StringBuffer sb = new StringBuffer();
-        Iterator iterChildren = iterateChildren();
-        while (iterChildren.hasNext()) {
-            WhereClause child = (WhereClause)iterChildren.next();
-            String extraWhereClause = child.getHibernateWhereClause();
-            if (extraWhereClause != null && (extraWhereClause.length() > 0)) {
-                if (sb.length() > 0) {
-                    sb.append(") and (");
-                } else {
-                    sb.append('(');
-                }
-                sb.append(extraWhereClause);
-            }
-        }
-        if (sb.length() > 0) {
-            sb.append(')');
-        }
-        return sb.toString();
+    public String acceptWhereClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+        return visitor.visitWhereClauseAndClause(this);
     }
     
     protected Collection getExportedOutputVariables() {

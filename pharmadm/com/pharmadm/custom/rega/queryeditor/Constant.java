@@ -106,8 +106,8 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         notifyValueChangeListeners();
     }
     
-    public String getWhereClauseStringValue() {
-        return value.toString();
+    public String acceptWhereClause(QueryVisitor visitor) {
+        return visitor.visitWhereClauseConstant(this);
     }
     
     public String getHumanStringValue() {

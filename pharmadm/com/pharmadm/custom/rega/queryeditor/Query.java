@@ -104,37 +104,14 @@ public class Query {
         return rootClause.getQueryPreparationWorks();
     }
     
-    /**
-     * <p>
-     * Generates a Hibernate query according to the semantics of the current
-     * Query configuration.
-     * </p>
-     * <p>
-     *
-     * @return a HibernateQuery equivalent to this Query
-     * </p>
-     * <p>
-     * @pre isValid()
-     * </p>
-     * <p>
-     * @throws InvalidWhereClauseException iff the Query's root clause is
-     * invalid.
-     * </p>
-     */
-    public HibernateQuery getHibernateQuery() throws InvalidWhereClauseException {
-        if (!isValid()) {
-            throw new InvalidWhereClauseException();
-        }
-        // FIXME
-        return null;
-    }
-    
     // for testing purposes only
     public String getQueryString() throws java.sql.SQLException { //, com.pharmadm.custom.rega.chem.search.MoleculeIndexingException {
-        return selectList.getSelectClause()
-        + "\nFROM " + getRootClause().getHibernateFromClause()
-        + "\nWHERE " + getRootClause().getHibernateWhereClause();
+    	return accept(JDBCManager.getInstance().getQueryVisitor());
     }
+    
+    public String accept(QueryVisitor visitor) throws java.sql.SQLException{
+        return visitor.visitQuery(this);
+   }    
     
     /**
      * <p>

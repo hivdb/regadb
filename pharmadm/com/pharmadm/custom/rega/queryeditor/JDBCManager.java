@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
+
 //import com.pharmadm.chem.matter.Molecule;
 //import com.pharmadm.custom.rega.domainclasses.ViroDBMolecule;
 
@@ -39,6 +40,7 @@ public class JDBCManager {
     private static JDBCManager instance;
     private PreparedStatement tableCommentStatement;
     private PreparedStatement columnCommentStatement;
+    private QueryVisitor visitor;
     
 //    private Map<BigDecimal, Molecule> molCache = Collections.synchronizedMap(new WeakHashMap<BigDecimal, Molecule>());
     
@@ -52,7 +54,7 @@ public class JDBCManager {
      * These properties can e.g. be set at program start-up time using
      * java -Dqueryeditor.driver=com.my.driver.Class -Dqueryeditor.url=jdbc:...
      */
-    private JDBCManager(String url, String user, String pwd) throws SQLException, ClassNotFoundException {
+    private JDBCManager(String url, String user, String pwd, QueryVisitor visitor) throws SQLException, ClassNotFoundException {
         String driver = System.getProperty("queryeditor.driver");
         if (driver == null) {
             driver = "org.postgresql.Driver";
@@ -73,7 +75,10 @@ public class JDBCManager {
         // For Oracle to report remarks for tables and columns.
         //info.put("remarksReporting", "true");
         
-        con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/regadb", info);
+        con = DriverManager.getConnection(url, info);
+    	
+    	
+        this.visitor = visitor;  
         prepareCommentStatements();
     }
     
@@ -96,16 +101,16 @@ public class JDBCManager {
      */
     public static void initInstance() throws SQLException, ClassNotFoundException {
         if (instance == null) {
-            instance = new JDBCManager(null, null, null);
+            instance = new JDBCManager(null, null, null, new SqlQuery());
         }
     }
     
     /**
      * Provides login info to make a connection, but with a fallback on environment variables if info is missing.
      */
-    public static void initInstance(String url, String user, String pwd) throws SQLException, ClassNotFoundException {
+    public static void initInstance(String url, String user, String pwd, QueryVisitor visitor) throws SQLException, ClassNotFoundException {
         if (instance == null) {
-            instance = new JDBCManager(url, user, pwd);
+            instance = new JDBCManager(url, user, pwd, visitor);
         }
     }
     
@@ -147,7 +152,7 @@ public class JDBCManager {
                 String dbUser = dbProps.getProperty("dbUser");;
                 if (dbURL != null && dbPassword != null && dbUser != null) {
                     try {
-                        initInstance(dbURL, dbUser, dbPassword);
+                        initInstance(dbURL, dbUser, dbPassword, new SqlQuery());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -173,7 +178,8 @@ public class JDBCManager {
     }
     
     public ResultSet executeQuery(String query) throws SQLException {
-        // Warning: when reusing statements, don't forget to update the closeQueryResultSet method too.
+    	
+    	// Warning: when reusing statements, don't forget to update the closeQueryResultSet method too.
         // KVB : or even better, don't use closeQueryResultSet for closing ResultSets, because it closes
         //       Statements instead ...
         //       to avoid confusion, closeQueryResultSet is now renamed to closeStatement ;
@@ -291,7 +297,7 @@ public class JDBCManager {
                     rs.close();
                 }
             } catch (SQLException sqle) {
-//                System.err.println("Could not retrieve comment for table " + tableName + ": " + sqle.getMessage());
+                System.err.println("Could not retrieve comment for table " + tableName + ": " + sqle.getMessage());
             }
         }
         return comment;
@@ -312,7 +318,7 @@ public class JDBCManager {
                     rs.close();
                 }
             } catch (SQLException sqle) {
-//                System.err.println("Could not retrieve comment for column " + fieldName + " in table " + tableName + ": " + sqle.getMessage());
+                System.err.println("Could not retrieve comment for column " + fieldName + " in table " + tableName + ": " + sqle.getMessage());
             }
         }
         return comment;
@@ -397,6 +403,10 @@ public class JDBCManager {
     
     public String getUserName() throws SQLException {
         return con.getMetaData().getUserName();
+    }
+    
+    public QueryVisitor getQueryVisitor() {
+    	return visitor;
     }
     
     /**

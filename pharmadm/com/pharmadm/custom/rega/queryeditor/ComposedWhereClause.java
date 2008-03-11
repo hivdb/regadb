@@ -12,7 +12,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
-import java.util.Collection;
 import java.sql.SQLException;
 
 //import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
@@ -138,20 +137,8 @@ public abstract class ComposedWhereClause extends WhereClause {
         return result;
     }
     
-    public String getHibernateFromClause() throws SQLException { //, MoleculeIndexingException {
-        StringBuffer sb = new StringBuffer();
-        Iterator iterChildren = iterateChildren();
-        while (iterChildren.hasNext()) {
-            WhereClause child = (WhereClause)iterChildren.next();
-            String extraFromClause = child.getHibernateFromClause();
-            if (extraFromClause != null && (extraFromClause.length() > 0)) {
-                if (sb.length() > 0) {
-                    sb.append(", ");
-                }
-                sb.append(extraFromClause);
-            }
-        }
-        return sb.toString();
+    public String acceptFromClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+        return visitor.visitFromClauseComposedWhereClause(this);
     }
     
     public Collection getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {

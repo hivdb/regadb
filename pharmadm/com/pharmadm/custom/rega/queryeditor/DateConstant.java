@@ -47,8 +47,8 @@ public class DateConstant extends Constant {
         super.setValue(new java.sql.Date(date.getTime()));
     }
     
-    public String getWhereClauseStringValue() {
-        return "TO_DATE(\'" + getFormat().format(getValue()) + "\', 'YYYY-MM-DD')";
+    public String acceptWhereClause(QueryVisitor visitor) {
+        return visitor.visitWhereClauseDateConstant(this);
     }
     
     public Object clone() throws CloneNotSupportedException {

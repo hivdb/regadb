@@ -47,32 +47,15 @@ public class NotClause extends ComposedWhereClause {
     
     
     // FIXEDYOU
-    public String getHibernateWhereClause() throws SQLException { //, MoleculeIndexingException {
-        Iterator iterChildren = getChildren().iterator();
-        if (iterChildren.hasNext()) {
-            WhereClause child = (WhereClause)iterChildren.next();
-            StringBuffer sb = new StringBuffer("NOT EXISTS (SELECT 1 FROM ");
-            String childFromClause = child.getHibernateFromClause();
-            if (childFromClause != null && (childFromClause.length() > 0)) {
-                sb.append(childFromClause);
-            }
-            else {
-                sb.append("DUAL");
-            }
-            sb.append(" WHERE (");
-            sb.append(child.getHibernateWhereClause());
-            sb.append("))");
-            return sb.toString();
-        } else {
-            return "1=1";  // always true
-        }
+    public String acceptWhereClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+        return visitor.visitWhereClauseNotClause(this);
     }
     
     // FIXEDYOUTOO : the NOT clause has no output variables, hence an empty 
     // select clause and therefore no need for from variables ... as long as
     // its child is handled as an independent "exists" subclause
-    public String getHibernateFromClause() {
-        return new String("");
+    public String acceptFromClause(QueryVisitor visitor) {
+        return visitor.visitFromClauseNotClause(this);
     }
     
     

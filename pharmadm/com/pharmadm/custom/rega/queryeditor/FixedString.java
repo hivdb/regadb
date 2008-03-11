@@ -72,7 +72,7 @@ public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier {
     }
     
     /* Implementing AWCWord */
-    public String getWhereClauseStringValue() {
+    public String acceptWhereClause(QueryVisitor visitor) {
         return string;
     }    
     

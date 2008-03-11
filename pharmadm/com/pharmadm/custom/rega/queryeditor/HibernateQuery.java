@@ -11,41 +11,10 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
-import java.util.Collection;
 
-/**
- * <p>
- * This class is pretty obsolete ... and has been since its creation.
- * </p>
- */
-public class HibernateQuery {
+public class HibernateQuery extends SqlQuery {
 
-  ///////////////////////////////////////
-  // attributes
-
-
-/**
- * <p>
- * Represents ...
- * </p>
- */
-    private String basicQuery; 
-
-/**
- * <p>
- * Represents ...
- * </p>
- */
-    private Collection parameterValues; 
-
-/**
- * <p>
- * Represents ...
- * </p>
- */
-    private Collection parameterTypes; 
-} // end HibernateQuery
+}
 
 
 

@@ -54,37 +54,8 @@ public class SelectionStatusList implements SelectionList {
         }
     }
     
-    /*
-     * JDBC Version of the method
-     *
-     */
-    public String getSelectClause() {
-        StringBuffer buffy = new StringBuffer("SELECT  ");
-        Iterator iter = getSelections().iterator();
-        while (iter.hasNext()) {
-            Selection selection = (Selection)iter.next();
-            if (selection.isSelected()) {
-                OutputVariable var = (OutputVariable)selection.getObject();
-                if (selection instanceof TableSelection) {
-                    // %$ KVB : for the Hibernate version, we need to apply reflection on these fields
-                    //          so that fields of class types are represented by an identifier
-                    Iterator fieldIter = ((TableSelection)selection).getSubSelections().iterator();
-                    while (fieldIter.hasNext()) {
-                        FieldSelection subSelection = (FieldSelection)fieldIter.next();
-                        if (subSelection.isSelected()) {
-                            buffy.append(var.getFullWhereClauseName((Field)(subSelection.getObject())));
-                            buffy.append(", ");
-                        }
-                    }
-                }
-                else { // selection instanceof OutputSelection
-                    buffy.append(var.getExpression().getWhereClauseStringValue());
-                    buffy.append(", ");
-                }
-            }
-        }
-        buffy.setLength(buffy.length() - 2);
-        return buffy.toString();
+    public String accept(QueryVisitor visitor) {
+    	return visitor.visitSelectionSatusList(this);
     }
     
     // %$ KVB : It is essential that this method returns column names in the same order they are appended in getSelectClause !

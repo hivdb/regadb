@@ -168,21 +168,12 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     } // end reset
     
     
-    public String getHibernateFromClause() throws SQLException { //, MoleculeIndexingException {
-        StringBuffer sb = new StringBuffer();
-        Iterator iterFromVars = getFromVariables().iterator();
-        while (iterFromVars.hasNext()) {
-            FromVariable fromVar = (FromVariable)iterFromVars.next();
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(fromVar.getFromClauseStringValue());
-        }
-        return sb.toString();
+    public String acceptFromClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+    	return visitor.visitFromClauseAtomicWhereClause(this);
     }
     
-    public String getHibernateWhereClause() throws SQLException { //, MoleculeIndexingException {
-        return getHibernateClauseComposer().composeHibernateClause();
+    public String acceptWhereClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+        return getHibernateClauseComposer().composeHibernateClause(visitor);
     }
     
     public Collection getOutputVariablesAvailableForImport() {

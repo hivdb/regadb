@@ -20,11 +20,7 @@ package com.pharmadm.custom.rega.queryeditor;
  */
 public class SubstringConstant extends StringConstant {
     
-    public String getSQLWhereClauseStringValue() {
-        return "\'%" + getValue().toString() + "%\'";
+    public String acceptWhereClause(QueryVisitor visitor) {
+    	return visitor.visitWhereClauseSubstringConstant(this);
     }
-    
-    public String getHibernateWhereClauseStringValue() {
-        return "\"%" + getValue().toString() + "%\"";
-    }    
 }

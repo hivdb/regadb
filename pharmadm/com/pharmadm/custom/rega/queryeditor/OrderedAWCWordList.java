@@ -76,25 +76,8 @@ public class OrderedAWCWordList extends OrderedConfigurableWordList {
     // operations
     
     
-    /**
-     * <p>
-     * Properly concatenates (with e.g. the appropriate whitespacing) the
-     * String representation of the Words into a clause in a particular format.
-     * </p>
-     * <p>
-     *
-     * @return a String with the proper concatenation of the String
-     * representation of the Words into a clause in a particular format.
-     * </p>
-     */
-    public String getWhereClauseStringValue() {
-        StringBuffer sb = new StringBuffer();
-        Iterator iterWords = getWords().iterator();
-        while (iterWords.hasNext()) {
-            AWCWord word = (AWCWord)iterWords.next();
-			sb.append(word.getWhereClauseStringValue());
-        }
-        return sb.toString();
+    public String acceptWhereClause(QueryVisitor visitor) {
+    	return visitor.visitWhereClauseOrderedAWCWordList(this);
     }
     
 }

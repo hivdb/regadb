@@ -42,7 +42,7 @@ public interface AWCWord extends ConfigurableWord {
  * @return a String that shows the current value of the Word
  * </p>
  */
-    public abstract String getWhereClauseStringValue();
+    public abstract String acceptWhereClause(QueryVisitor visitor);
 
 } // end AWCWord
 

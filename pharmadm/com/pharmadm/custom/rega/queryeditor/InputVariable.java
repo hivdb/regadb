@@ -82,9 +82,9 @@ public class InputVariable extends Variable implements AWCWord, Cloneable {
         return getVariableType().isCompatibleType(ov.getVariableType());
     }
     
-    public String getWhereClauseStringValue() {
+    public String acceptWhereClause(QueryVisitor visitor) {
         OutputVariable ovar = getOutputVariable();
-        return (((ovar = getOutputVariable()) == null) ? null : ovar.getWhereClauseStringValue());
+        return (((ovar = getOutputVariable()) == null) ? null : ovar.acceptWhereClause(visitor));
     }
  
     public String getHumanStringValue() {

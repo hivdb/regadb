@@ -13,8 +13,6 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 //import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
 
@@ -63,12 +61,13 @@ public abstract class WhereClause implements Cloneable {
      * <p>
      *
      * @pre all Works of getQueryPreparationWorks must have been completed.
+     * @param visitor TODO
      *
      * @return a String with the 'where' part (the constraints) of the
      * Hibernate equivalent of the clause
      * </p>
      */
-    public abstract String getHibernateWhereClause() throws SQLException; //, MoleculeIndexingException;
+    public abstract String acceptWhereClause(QueryVisitor visitor) throws SQLException; //, MoleculeIndexingException;
     
     /**
      * <p>
@@ -79,12 +78,13 @@ public abstract class WhereClause implements Cloneable {
      * <p>
      *
      * @pre all Works of getQueryPreparationWorks must have been completed.
+     * @param visitor TODO
      *
      * @return a String with the 'from' part (the tables to select from, except
      * the base Table) of the Hibernate equivalent of the clause
      * </p>
      */
-    public abstract String getHibernateFromClause() throws SQLException; //, MoleculeIndexingException;
+    public abstract String acceptFromClause(QueryVisitor visitor) throws SQLException; //, MoleculeIndexingException;
     
     /**
      * <p>

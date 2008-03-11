@@ -46,7 +46,7 @@ public class OutputExpression extends OrderedAWCWordList {
      * </p>
      */
     public String generateExpressionString() {
-        return getWhereClauseStringValue();
+        return acceptWhereClause(JDBCManager.getInstance().getQueryVisitor());
     }
 }
 

@@ -30,18 +30,9 @@ public class StringConstant extends Constant {
         return STRING_FORMAT;
     }
     
-    public String getWhereClauseStringValue() {
-        return getSQLWhereClauseStringValue();
+    public String acceptWhereClause(QueryVisitor visitor) {
+    	return visitor.visitWhereClauseStringConstant(this);
     }
-    
-    public String getSQLWhereClauseStringValue() {
-        return "\'" + getValue().toString() + "\'";
-    }
-    
-    public String getHibernateWhereClauseStringValue() {
-        return "\"" + getValue().toString() + "\"";
-    }
-    
     
     /**
      * A Format that accepts anything.  Any String gets parsed into a String.

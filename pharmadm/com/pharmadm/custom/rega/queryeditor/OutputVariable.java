@@ -132,8 +132,8 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
         this.expression = outputExpression;
     }
     
-    public String getWhereClauseStringValue() {
-        return getExpression().getWhereClauseStringValue();
+    public String acceptWhereClause(QueryVisitor visitor) {
+    	return visitor.visitWhereClauseOutputVariable(this);
     }
     
     public String getHumanStringValue() {
@@ -193,13 +193,8 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
     }
     
     /* return the full name uniquely identifying this field in a query (select / where clause) */ 
-    public String getFullWhereClauseName(Field field) {
-        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTable() == field.getTable())) {
-            return ((FromVariable)expression.getWords().get(0)).getWhereClauseStringValue() + "." + field.getName();
-        } else { 
-            System.err.println("Error : trying to get a field from a variable that does not know it");
-            return null;
-        }
+    public String acceptWhereClauseFullName(QueryVisitor visitor, Field field) {
+    	return visitor.visitWhereClauseFullNameOutputVariable(this, field);
     }
     
     public Collection getPrimaryKeyWhereClauseNames() {
@@ -209,7 +204,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
             Iterator iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
                 Field field = (Field)iter.next();
-                res.add(getFullWhereClauseName(field)); 
+                res.add(acceptWhereClauseFullName(JDBCManager.getInstance().getQueryVisitor(), field)); 
             }
             return res;
         } else { 

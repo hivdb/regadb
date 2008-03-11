@@ -2,12 +2,7 @@ package com.pharmadm.custom.rega.queryeditor;
 
 public class EndstringConstant extends StringConstant {
 
-    public String getSQLWhereClauseStringValue() {
-        return "\'%" + getValue().toString() + "\'";
+    public String acceptWhereClause(QueryVisitor visitor) {
+    	return visitor.visitWhereClauseEndstringConstant(this);
     }
-    
-    public String getHibernateWhereClauseStringValue() {
-        return "\"%" + getValue().toString() + "\"";
-    }    
-	
 }

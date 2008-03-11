@@ -71,12 +71,12 @@ public class FromVariable implements AWCWord, Cloneable {
         return getTableName()+seqId;
     }
     
-    public String getFromClauseStringValue() {
-        return getTableName() + " " + getUniqueName();
+    public String getFromClauseStringValue(QueryVisitor visitor) {
+    	return visitor.visitFromClauseFromVariable(this);
     }
     
-    public String getWhereClauseStringValue() {
-        return getUniqueName();
+    public String acceptWhereClause(QueryVisitor visitor) {
+        return visitor.visitWhereClauseFromVariable(this);
     }
     
     public String getHumanStringValue() {

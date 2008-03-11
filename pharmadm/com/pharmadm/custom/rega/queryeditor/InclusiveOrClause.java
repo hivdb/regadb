@@ -48,40 +48,13 @@ public class InclusiveOrClause extends ComposedWhereClause {
     // Optimization : the OR clause has no output variables, hence an empty 
     // select clause and therefore no need for from variables ... as long as
     // its children are handled as independent "exists" subclauses
-    public String getHibernateFromClause() {
-        return new String("");
+    public String acceptFromClause(QueryVisitor visitor) {
+        return visitor.visitFromClauseInclusiveOrClause(this);
     }
     
     // Optimization : OR clause now uses "exists" subclauses
-    public String getHibernateWhereClause() throws SQLException { //, MoleculeIndexingException {
-        StringBuffer sb = new StringBuffer();
-        Iterator iterChildren = iterateChildren();
-        while (iterChildren.hasNext()) {
-            WhereClause child = (WhereClause)iterChildren.next();
-            String extraWhereClause = child.getHibernateWhereClause();
-            if (extraWhereClause != null && (extraWhereClause.length() > 0)) {
-                if (sb.length() > 0) {
-                    sb.append(") or (");
-                } else {
-                    sb.append('(');
-                }
-                sb.append("EXISTS (SELECT 1 FROM ");
-                String extraFromClause = child.getHibernateFromClause();
-                if (extraFromClause != null && (extraFromClause.length() > 0)) {
-                    sb.append(extraFromClause);
-                }
-                else {
-                    sb.append("DUAL");
-                }
-                sb.append(" WHERE (");
-                sb.append(extraWhereClause);
-                sb.append("))");
-            }
-        }
-        if (sb.length() > 0) {
-            sb.append(')');
-        }
-        return sb.toString();
+    public String acceptWhereClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
+        return visitor.visitWhereClauseInclusiveOrClause(this);
     }
         
     public String toString() {

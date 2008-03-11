@@ -23,7 +23,7 @@ import javax.swing.event.*;
 
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.gui.*;
-import com.pharmadm.custom.rega.queryeditor.QueryEditorApp;
+import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.RegaSettings;
 import com.pharmadm.custom.rega.savable.*;
 import com.pharmadm.util.work.Work;
@@ -35,7 +35,7 @@ import com.pharmadm.util.work.WorkManager;
  */
 public class ReportBuilderFrame extends javax.swing.JFrame {
     
-    private QueryEditorFrame master; // link to the query context used for seeding object list variables
+    private QueryContext master; // link to the query context used for seeding object list variables
     private QueryOutputReportSeeder seedController;
     private String busyString;
     private boolean running = false;
@@ -52,7 +52,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     private WorkManager workManager;
     
     /** Creates new form ReportBuilderFrame */
-    public ReportBuilderFrame(ReportBuilder reportBuilder, QueryEditorFrame master) {
+    public ReportBuilderFrame(ReportBuilder reportBuilder, QueryContext master) {
         this.master = master;
         this.reportBuilder = reportBuilder;
         initComponents();
@@ -508,7 +508,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                     executeQuery.start();
                 } catch (Exception e) {
                     resultTable.setModel(new BusyTableModel("Error", "Failure while building report"));
-                    QueryEditorApp.getInstance().showException(e, "Exception");
+                    FrontEndManager.getInstance().getFrontEnd().showException(e, "Exception");
                 }
             }
         }
@@ -684,7 +684,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cutMenuItemActionPerformed
     
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        master.showAboutBox();
+//        master.showAboutBox();
     }//GEN-LAST:event_aboutMenuItemActionPerformed
     
     private void contentsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contentsMenuItemActionPerformed
@@ -960,7 +960,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                     });
                     while (prepWorksIter.hasNext() && !canceled) {
                         Work aPrepWork = (Work)prepWorksIter.next();
-                        QueryEditorApp.getInstance().getWorkManager().executeAndWait(aPrepWork);
+                        FrontEndManager.getInstance().getFrontEnd().getWorkManager().executeAndWait(aPrepWork);
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -998,7 +998,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                         public void run() {
                             numberRowsLabel.setText("Report Building failed");
                             resultTable.setModel(new BusyTableModel("Error", "Failure while building the report"));
-                            QueryEditorApp.getInstance().showException(e, "Exception");
+                            FrontEndManager.getInstance().getFrontEnd().showException(e, "Exception");
                         }
                     });
                 }
@@ -1012,7 +1012,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                 numberRowsLabel.setText("Canceled");
                 resultTable.setModel(new BusyTableModel("Canceled", "The report was canceled."));
             } catch (Exception e) {
-                QueryEditorApp.getInstance().showException(e, "Could not cancel the active report");
+            	FrontEndManager.getInstance().getFrontEnd().showException(e, "Could not cancel the active report");
             }
         }
     }

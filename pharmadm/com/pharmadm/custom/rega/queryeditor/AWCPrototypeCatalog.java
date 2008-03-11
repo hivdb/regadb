@@ -118,9 +118,13 @@ public class AWCPrototypeCatalog {
         catalog.addBaseClause("nt_sequence");
         catalog.addDateClauses(catalog, "nt_sequence", "SEQUENCE_DATE", "was sequenced on");
         
-        // link viral isolate-nt sequence
+        // link viral isolate - nt sequence
         catalog.addGetAssociationClause("viral_isolate", "VIRAL_ISOLATE_II", "nt_sequence", "NT_SEQUENCE_II", "has a nucleotide sequence");
 
+        // link patient - nt sequence
+        String[][] assocPatientToNtSequence = {{"patient", null, "PATIENT_II"}, {"viral_isolate", "PATIENT_II","VIRAL_ISOLATE_II"},
+                {"nt_sequence", "VIRAL_ISOLATE_II", null}};
+        catalog.addGetRemoteAssociationClause(assocPatientToNtSequence, "has a nucleotide sequence");
 
         ///////////////////////////////////////
         // amino acid sequence
@@ -171,8 +175,8 @@ public class AWCPrototypeCatalog {
         // generic drugs
         catalog.addBaseClause("drug_generic");
    		catalog.addPropertyCheckClause("drug_generic", "GENERIC_ID", "has id", false, false);
-   		catalog.addStringClauses(catalog, "drug_generic", "GENERIC_NAME", "has name", false);
-   		catalog.addStringClauses(catalog, "drug_generic", "ATC_CODE", "has atc code", false);
+   		catalog.addStringClauses(catalog, "drug_generic", "GENERIC_NAME", "has name", false, true);
+   		catalog.addStringClauses(catalog, "drug_generic", "ATC_CODE", "has atc code", false, true);
 
         // link therapy - generic drug
         String[][] assocListGenericDrugToTherapy = {{"therapy", null, "THERAPY_II"}, {"therapy_generic", "THERAPY_II","GENERIC_II"},
@@ -183,15 +187,18 @@ public class AWCPrototypeCatalog {
         ///////////////////////////////////////
         // commercial drug
         catalog.addBaseClause("drug_commercial");
-   		catalog.addStringClauses(catalog, "drug_commercial", "NAME", "has name", false);
-   		catalog.addStringClauses(catalog, "drug_commercial", "ATC_CODE", "has atc code", false);
+   		catalog.addStringClauses(catalog, "drug_commercial", "NAME", "has name", false, true);
+   		catalog.addStringClauses(catalog, "drug_commercial", "ATC_CODE", "has atc code", false, true);
         
         // link therapy - commercial drug
         String[][] assocListCommercialDrugToTherapy = {{"therapy", null, "THERAPY_II"}, {"therapy_commercial", "THERAPY_II","COMMERCIAL_II"},
                 {"drug_commercial", "COMMERCIAL_II", null}};
         catalog.addGetRemoteAssociationClause(assocListCommercialDrugToTherapy, "was treated with the commercial drug");
         
-        
+        // link comercial - generic
+        String[][] assocListCommercialDrugToGenericDrug = {{"drug_commercial", null, "COMMERCIAL_II"}, {"commercial_generic", "COMMERCIAL_II","GENERIC_II"},
+                {"drug_generic", "GENERIC_II", null}};
+        catalog.addGetRemoteAssociationClause(assocListCommercialDrugToGenericDrug, "has a generic equivalent");
         
  //       catalog.addSequenceMutationClause("aa_sequence", "AA_SEQUENCE_II", "aa_mutation", "AA_SEQUENCE_II","MUTATION_POSITION", "has a mutation", "in", false);
  //       catalog.addSequenceMutationClause("aa_sequence", "AA_SEQUENCE_II", "aa_mutation", "AA_SEQUENCE_II", "MUTATION_POSITION", "has a real mutation", "in", true);
@@ -340,12 +347,25 @@ public class AWCPrototypeCatalog {
         catalog.addPropertyTimeIntervalClause(tableName, propertyName, description + " date", false);
         catalog.addPropertyCheckClause(tableName, propertyName, description + " date", false, false);
     }
-    
-    public void addStringClauses(AWCPrototypeCatalog catalog, String tableName, String propertyName, String description, boolean caseSensitive) {
-		catalog.addPropertyCheckClause(tableName, propertyName, description, false, caseSensitive);
-        catalog.addPropertyLikeClause(tableName, propertyName, description, false, caseSensitive);
+
+    public void addStringClauses(AWCPrototypeCatalog catalog, String tableName, String propertyName, String description, boolean caseSensitive, boolean dropdown) {
+    	if (dropdown) {
+            catalog.addMandatoryValuesToClause(
+            		catalog.addPropertyCheckClause(tableName, propertyName, description, false, caseSensitive),
+            		new String[] {tableName},
+            		new String[] {propertyName});
+    	}
+    	else {
+    		catalog.addPropertyCheckClause(tableName, propertyName, description, false, caseSensitive);
+    	}
+		
+		catalog.addPropertyLikeClause(tableName, propertyName, description, false, caseSensitive);
         catalog.addPropertyStartsLikeClause(tableName, propertyName, description, false, caseSensitive);
         catalog.addPropertyEndsLikeClause(tableName, propertyName, description, false, caseSensitive);
+    }
+    
+    public void addStringClauses(AWCPrototypeCatalog catalog, String tableName, String propertyName, String description, boolean caseSensitive) {
+    	addStringClauses(catalog, tableName, propertyName, description, caseSensitive, false);
     }
     
     ///////////////////////////////////////
@@ -1320,8 +1340,6 @@ public class AWCPrototypeCatalog {
                     aComposer.addFixedString(new FixedString(")"));
                     
                     addAtomicWhereClause(aClause);
-                    System.out.println(aVisList.getHumanStringValue());
-                    System.out.println(aComposer.getHumanStringValue());
                     return aClause;
                 } else {
                     System.err.println("Unknown column " + propertyName + " for " + tableName);

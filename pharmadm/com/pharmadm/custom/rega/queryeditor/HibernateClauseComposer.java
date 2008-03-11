@@ -32,7 +32,7 @@ public class HibernateClauseComposer extends OrderedAWCWordList {
         super(owner);
     }
     
-    public String composeHibernateClause() {
-        return getWhereClauseStringValue();
+    public String composeHibernateClause(QueryVisitor visitor) {
+        return acceptWhereClause(visitor);
     }
 }

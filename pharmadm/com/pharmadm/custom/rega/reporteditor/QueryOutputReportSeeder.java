@@ -198,8 +198,8 @@ public class QueryOutputReportSeeder {
                 try {
                     Query query = querier.getQuery();
                     String queryString = getObjectListSelectClause(objectListVariables)
-                    + "\nFROM " + query.getRootClause().getHibernateFromClause()
-                    + "\nWHERE " + query.getRootClause().getHibernateWhereClause();
+                    + "\nFROM " + query.getRootClause().acceptFromClause(JDBCManager.getInstance().getQueryVisitor())
+                    + "\nWHERE " + query.getRootClause().acceptWhereClause(JDBCManager.getInstance().getQueryVisitor());
                     
                     System.out.println(queryString);
                     ResultSet resultSet = JDBCManager.getInstance().createScrollableReadOnlyStatement().executeQuery(queryString);
@@ -251,7 +251,7 @@ public class QueryOutputReportSeeder {
                     }
                 } catch (Exception e) {
                     // it's all over when this happens...
-                    QueryEditorApp.getInstance().showException(e, "Fatal Error trying to seed report variables !");
+                    FrontEndManager.getInstance().getFrontEnd().showException(e, "Fatal Error trying to seed report variables !");
                     e.printStackTrace();
                     seedObjectData = null;
                 }
