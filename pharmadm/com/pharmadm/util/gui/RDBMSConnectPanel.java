@@ -431,16 +431,16 @@ public class RDBMSConnectPanel extends javax.swing.JPanel {
         private Map urlConstructors = new LinkedHashMap();
         
         private Drivers() {
-            tryLoadDriver("Oracle thin driver", "oracle.jdbc.driver.OracleDriver", new URLConstructor() {
+//           tryLoadDriver("Oracle thin driver", "oracle.jdbc.driver.OracleDriver", new URLConstructor() {
+//             public String constructURL(String host, Integer port, String database) {
+//               return "jdbc:oracle:thin:@" + host + ((port!= null) ? ':'+port.toString() : "") + ':' + database;
+//         }
+//   });
+            tryLoadDriver("PostgreSQL 7.2.x", "org.postgresql.Driver", new URLConstructor() {
                 public String constructURL(String host, Integer port, String database) {
-                    return "jdbc:oracle:thin:@" + host + ((port!= null) ? ':'+port.toString() : "") + ':' + database;
+                    return "jdbc:postgresql://" + host + ((port!= null) ? ':'+port.toString() : "") + '/' + database;
                 }
             });
-            //tryLoadDriver("PostgreSQL 7.2.x", "org.postgresql.Driver", new URLConstructor() {
-            //    public String constructURL(String host, Integer port, String database) {
-            //        return "jdbc:postgresql://" + host + ((port!= null) ? ':'+port.toString() : "") + '/' + database;
-            //    }
-            //});
             
             if (urlConstructors.size() == 0) {
                 System.out.println("         Please add a driver to your classpath or load another JDBC driver");

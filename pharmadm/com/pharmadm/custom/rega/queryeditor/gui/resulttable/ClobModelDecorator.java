@@ -16,7 +16,7 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import javax.swing.table.TableModel;
 
-import com.pharmadm.custom.rega.queryeditor.QueryEditorApp;
+import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 
 /**
  * A TableModel decorator that replaces Clobs by Strings, which can
@@ -93,11 +93,11 @@ public class ClobModelDecorator implements TableModel {
                 long clobLength = clob.length();
                 if (clobLength > Integer.MAX_VALUE) {
                     Exception e = new Exception("Clob too large!\nThe sequence contains more than " + Integer.MAX_VALUE + " characters.");
-                    QueryEditorApp.getInstance().showException(e, "Clob too large");
+                    FrontEndManager.getInstance().getFrontEnd().showException(e, "Clob too large");
                 }
                 return clob.getSubString(1, (int)clobLength);
             } catch (SQLException sqle) {
-                QueryEditorApp.getInstance().showException(sqle, "Database error while fetching sequence CLOB.");
+            	FrontEndManager.getInstance().getFrontEnd().showException(sqle, "Database error while fetching sequence CLOB.");
             }
         }
         return backend.getValueAt(rowIndex, columnIndex);

@@ -26,8 +26,8 @@ import javax.swing.table.*;
 //import com.pharmadm.chem.graphics.MolecularScene;
 //import com.pharmadm.chem.graphics.graphics2d.*;
 //import com.pharmadm.chem.matter.Molecule;
+import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.JDBCManager;
-import com.pharmadm.custom.rega.queryeditor.QueryEditorApp;
 import com.pharmadm.custom.rega.queryeditor.gui.ToggleAction;
 import com.pharmadm.util.gui.PopupListener;
 import com.pharmadm.util.gui.table.TableSorter;
@@ -187,7 +187,7 @@ public class QueryResultJTable extends JTable {
             public void actionPerformed(java.awt.event.ActionEvent event) {
                 int colIndex = columnAtPoint(popupListener.getLocation());
                 TableColumn col = getColumnModel().getColumn(colIndex);
-                QueryEditorApp.getInstance().getWorkManager().execute(new ShowDistributionWork(getModel(), col, false));
+                FrontEndManager.getInstance().getFrontEnd().getWorkManager().execute(new ShowDistributionWork(getModel(), col, false));
             }
         });
         showPieChartMenuItem.setMnemonic('p');
@@ -197,7 +197,7 @@ public class QueryResultJTable extends JTable {
             public void actionPerformed(java.awt.event.ActionEvent event) {
                 int colIndex = columnAtPoint(popupListener.getLocation());
                 TableColumn col = getColumnModel().getColumn(colIndex);
-                QueryEditorApp.getInstance().getWorkManager().execute(new ShowDistributionWork(getModel(), col, true));
+                FrontEndManager.getInstance().getFrontEnd().getWorkManager().execute(new ShowDistributionWork(getModel(), col, true));
             }
         });
         showHistogramMenuItem.setMnemonic('h');
