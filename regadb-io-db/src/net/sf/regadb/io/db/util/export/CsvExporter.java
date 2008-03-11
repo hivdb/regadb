@@ -52,7 +52,7 @@ public class CsvExporter implements IExporter {
 		if(obj != null){
 			String str = obj.toString().replaceAll("/n","");
 			//if(str.indexOf('\n') != -1) throw new Exception();
-			return str;
+			return str.replaceAll("/r", "");
 		}
 		else
 			return "";
