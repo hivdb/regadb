@@ -88,7 +88,7 @@ public class AccessToCsv {
 		    rs = md.getTables(null, null, "%", new String [] {"TABLE"});
 		    while (rs.next()) {
 		    	table = rs.getString(3);
-		    	os = new FileOutputStream(new File(out.getAbsolutePath() + File.separator + pfx +"_"+ table +".csv"));
+		    	os = new FileOutputStream(new File(out.getAbsolutePath() + File.separator + table +".csv"));
 		    	exportTable(con, table, os);
 		    	os.close();		    	
 		    }
