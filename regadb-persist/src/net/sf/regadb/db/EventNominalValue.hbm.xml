@@ -16,7 +16,7 @@
       <column name="event_ii" not-null="true" />
     </many-to-one>
     <property name="value" type="string">
-      <column name="value" length="100" not-null="true" />
+      <column name="value" length="500" not-null="true" />
     </property>
   </class>
 </hibernate-mapping>
