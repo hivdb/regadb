@@ -3,6 +3,6 @@
  	* refresh the src package in regadb-persist !!!
 
 - We must mofidy the JAVA files:
-  in PatientImpl:
-    make class package scope
+ 	* run the net.sf.regadb.util.hbm.FixJavaFiles in the regadb-util project
+ 	* refresh the src package in regadb-persist !!!
 
