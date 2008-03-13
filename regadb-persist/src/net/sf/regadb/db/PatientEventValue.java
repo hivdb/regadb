@@ -1,6 +1,5 @@
 package net.sf.regadb.db;
 
-// Generated Feb 20, 2008 4:18:23 PM by Hibernate Tools 3.2.0.beta8
 
 import java.util.Date;
 
