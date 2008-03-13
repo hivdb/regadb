@@ -249,7 +249,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         for(String mut : mutations) {
                             currentValue.append(mut + " ");
                         }
-                        currentValue.replace(currentValue.length()-2, currentValue.length()-1, ")");
+                        currentValue.replace(currentValue.length()-1, currentValue.length(), ")");
                         toReturn.setText(lt(currentValue.toString()));
                     }
                 }
