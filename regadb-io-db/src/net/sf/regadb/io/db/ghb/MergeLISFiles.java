@@ -50,13 +50,21 @@ public class MergeLISFiles {
     Set<String> temp;
     
     public static void main(String [] args) {
-        MergeLISFiles mlisf = new MergeLISFiles();
-        mlisf.run();
+        MergeLISFiles mlisf;
+        if(args.length >= 1)
+            mlisf = new MergeLISFiles(args[0]);
+        else
+            mlisf = new MergeLISFiles("/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping");
+
+        if(args.length >= 2)
+            mlisf.run(args[1]);
+        else
+            mlisf.run("/home/simbre1/tmp/import/ghb/");
     }
     
     private List<String> headers = new ArrayList<String>();
     
-    public MergeLISFiles() {
+    public MergeLISFiles(String listNationMappingFile) {
         emdAttribute = new Attribute();
         emdAttribute.setAttributeGroup(ghbAttributeGroup);
         emdAttribute.setValueType(StandardObjects.getStringValueType());
@@ -66,7 +74,7 @@ public class MergeLISFiles {
                 new String[] { "male", "female" } );
         gender.attribute.setAttributeGroup(regadbAttributeGroup);
         
-        nationMapping = Utils.readTable("/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping");
+        nationMapping = Utils.readTable(listNationMappingFile);
         
         temp = new HashSet<String>();
         
@@ -83,8 +91,8 @@ public class MergeLISFiles {
         return null;
     }
     
-    public void run() {
-        File dir = new File("/home/simbre1/tmp/import/ghb/");
+    public void run(String workingDir) {
+        File dir = new File(workingDir);
         
         ProcessFile pf = new ProcessFile();
         pf.process(new File(dir.getAbsolutePath()+File.separatorChar+"headers.txt"), new ILineHandler(){

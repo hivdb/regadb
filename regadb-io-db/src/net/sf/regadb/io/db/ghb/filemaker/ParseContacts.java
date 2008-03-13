@@ -31,10 +31,10 @@ public class ParseContacts {
         firstViralLoad_ = firstViralLoad;
     }
         
-    public void run(Map<String,Patient> patients) {
+    public void run(Map<String,Patient> patients, String contactenFile) {
         Table contacts = null;
         try {
-             contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream("/home/simbre1/tmp/import/ghb/filemaker/contacten.csv"))), false, ';');
+             contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(contactenFile))), false, ';');
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

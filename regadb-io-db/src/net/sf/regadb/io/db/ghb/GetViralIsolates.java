@@ -35,24 +35,33 @@ public class GetViralIsolates {
     public static void main(String [] args) {
         GetViralIsolates gvi = new GetViralIsolates();
         //run mergelis and provide the testresults obtained to the run method
-        gvi.run();
+        if(args.length >= 5){
+            gvi.run(args[0], args[1], args[2], args[3], args[4]);
+        }
+        else{
+            gvi.run("/home/simbre1/tmp/import/ghb/seqs/Stalen Leuven.csv",
+                    "/home/simbre1/tmp/import/ghb/seqs/SPREAD_stalen.csv",
+                    "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv",
+                    "/home/simbre1/tmp/import/ghb/seqs/MAC_final.fasta",
+                    "/home/simbre1/tmp/import/ghb/seqs/PC_final.fasta");
+        }
     }
     
     public GetViralIsolates() {
         
     }
     
-    public void run() {
+    public void run(String stalenLeuvenFile, String spreadStalenFile, String seqsIgnoreFile, String macFastaFile, String pcFastaFile) {
         counterS = 0;
-        excellList = this.parseExcelFile(new File("/home/simbre1/tmp/import/ghb/seqs/Stalen Leuven.csv"));
+        excellList = this.parseExcelFile(new File(stalenLeuvenFile));
 
-        spreadSampleIds = Utils.readTable("/home/simbre1/tmp/import/ghb/seqs/SPREAD_stalen.csv");
-        samplesToBeIgnored = Utils.readTable("/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv");
+        spreadSampleIds = Utils.readTable(spreadStalenFile);
+        samplesToBeIgnored = Utils.readTable(seqsIgnoreFile);
                 
         String seq,id;
 
         try {
-            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/simbre1/tmp/import/ghb/seqs/MAC_final.fasta"))));
+            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File(macFastaFile))));
             while((id = br.readLine())!=null) {
                 seq = br.readLine();
                 handleIsolate(id.substring(1, id.length()), seq);
@@ -64,7 +73,7 @@ public class GetViralIsolates {
         }
 
         try {
-            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/simbre1/tmp/import/ghb/seqs/PC_final.fasta"))));
+            BufferedReader br= new BufferedReader(new InputStreamReader(new FileInputStream(new File(pcFastaFile))));
             while((id = br.readLine())!=null) {
                 seq = br.readLine();
                 handleIsolate(id.substring(1, id.length()), seq);
@@ -167,7 +176,7 @@ public class GetViralIsolates {
     }
     
     public Map<String, List<TestResult>> parseExcelFile(File excelFile) {
-        DateFormat excellDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        DateFormat excellDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Map<String, List<TestResult>> map = new HashMap<String, List<TestResult>>();
         Table seqMapping = null;
         try {

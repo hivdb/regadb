@@ -39,8 +39,6 @@ public class ParseTherapy {
     
     public static DateFormat filemakerTherapyDateFormat = new SimpleDateFormat("dd-MM-yy");
     
-    private String mappingPath = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-    
     Map<String, List<Therapy>> therapies = new HashMap<String, List<Therapy>>();
     
     //!!!!!!!!!!!!!!before running this script!!!!!!!!!!!!!!
@@ -61,7 +59,7 @@ public class ParseTherapy {
     
     public static void main(String [] args) {
         ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(new File("/home/simbre1/tmp/import/ghb/filemaker/med_final.csv"));
+        parseTherapy.parseTherapy("/home/simbre1/tmp/import/ghb/filemaker/med_final.csv","/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/");
         System.err.println("merging therapies");
         for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
             //System.err.println("patient" + e.getKey());
@@ -70,7 +68,8 @@ public class ParseTherapy {
         }
     }
     
-    public void parseTherapy(File therapyCsv) {
+    public void parseTherapy(String therapyFile, String mappingPath) {
+        File therapyCsv = new File(therapyFile);
         final List<String> drugsToIgnore = new ArrayList<String>();
         
         try {
@@ -226,7 +225,7 @@ public class ParseTherapy {
                 return;
             }
         }
-        TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(t, dc));
+        TherapyCommercial tg = new TherapyCommercial(new TherapyCommercialId(t, dc),false,false);
         tg.setDayDosageUnits(dosage);
         t.getTherapyCommercials().add(tg);
     }
@@ -238,7 +237,7 @@ public class ParseTherapy {
                 return;
             }
         }
-        TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, dg));
+        TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, dg),false,false);
         tg.setDayDosageMg(dosage);
         t.getTherapyGenerics().add(tg);
     }
