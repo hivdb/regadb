@@ -119,6 +119,7 @@ public class NtSequenceAnalysis implements IAnalysis
             
             TestResult testResult = new TestResult(test);
             
+            testResult.setTestDate(new Date());
             testResult.setNtSequence(ntseq);
             testResult.setPatient(ntseq.getViralIsolate().getPatient());
             testResult.setValue(new String(resultArray));
