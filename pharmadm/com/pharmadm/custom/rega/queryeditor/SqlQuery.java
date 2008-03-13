@@ -5,14 +5,12 @@ import java.util.Iterator;
 
 public class SqlQuery implements QueryVisitor {
 
-	@Override
 	public String visitQuery(Query query) throws java.sql.SQLException{
         return query.getSelectList().accept(this)
         + "\nFROM " + query.getRootClause().acceptFromClause(this)
         + "\nWHERE " + query.getRootClause().acceptWhereClause(this);
 	}
 
-	@Override
 	public String visitSelectionSatusList(SelectionStatusList selectList) {
         StringBuffer buffy = new StringBuffer("SELECT  ");
         Iterator iter = selectList.getSelections().iterator();
@@ -42,7 +40,6 @@ public class SqlQuery implements QueryVisitor {
         return buffy.toString();
 	}
 
-	@Override
 	public String visitWhereClauseOrderedAWCWordList(OrderedAWCWordList list) {
         StringBuffer sb = new StringBuffer();
         Iterator iterWords = list.getWords().iterator();
@@ -53,47 +50,38 @@ public class SqlQuery implements QueryVisitor {
         return sb.toString();
 	}
 
-	@Override
 	public String visitWhereClauseOutputVariable(OutputVariable ovar) {
         return ovar.getExpression().acceptWhereClause(this);
 	}
 
-	@Override
 	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
         return "\'%" + constant.getValue().toString() + "\'";
 	}
 
-	@Override
 	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
         return "\'" + constant.getValue().toString() + "%\'";
 	}
 
-	@Override
 	public String visitWhereClauseStringConstant(StringConstant constant) {
 		return "\'" + constant.getValue().toString() + "\'";
 	}
 
-	@Override
 	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
         return "\'%" + constant.getValue().toString() + "%\'";
 	}
 
-	@Override
 	public String visitWhereClauseConstant(Constant constant) {
 		return constant.getValue().toString();
 	}
 
-	@Override
 	public String visitWhereClauseDateConstant(DateConstant constant) {
 		return "TO_DATE(\'" + constant.getFormat().format(constant.getValue()) + "\', 'YYYY-MM-DD')";
 	}
 
-	@Override
 	public String visitWhereClauseFromVariable(FromVariable fromVar) {
 		return fromVar.getUniqueName();
 	}
 
-	@Override
 	public String visitWhereClauseFullNameOutputVariable(OutputVariable ovar, Field field) {
         if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTable() == field.getTable())) {
             return ((FromVariable)ovar.getExpression().getWords().get(0)).acceptWhereClause(this) + "." + field.getName();
@@ -104,7 +92,6 @@ public class SqlQuery implements QueryVisitor {
         }
 	}
 
-	@Override
 	public String visitWhereClauseAndClause(AndClause clause) throws SQLException{
         StringBuffer sb = new StringBuffer();
         Iterator iterChildren = clause.iterateChildren();
@@ -126,7 +113,6 @@ public class SqlQuery implements QueryVisitor {
         return sb.toString();
 	}
 
-	@Override
 	public String visitWhereClauseInclusiveOrClause(InclusiveOrClause clause) throws SQLException{
         StringBuffer sb = new StringBuffer();
         Iterator iterChildren = clause.iterateChildren();
@@ -158,7 +144,6 @@ public class SqlQuery implements QueryVisitor {
         return sb.toString();
 	}
 
-	@Override
 	public String visitWhereClauseNotClause(NotClause clause) throws SQLException {
         Iterator iterChildren = clause.getChildren().iterator();
         if (iterChildren.hasNext()) {
@@ -180,7 +165,6 @@ public class SqlQuery implements QueryVisitor {
         }
 	}
 
-	@Override
 	public String visitFromClauseAtomicWhereClause(AtomicWhereClause clause) throws SQLException {
         StringBuffer sb = new StringBuffer();
         Iterator iterFromVars = clause.getFromVariables().iterator();
@@ -194,7 +178,6 @@ public class SqlQuery implements QueryVisitor {
         return sb.toString();
 	}
 
-	@Override
 	public String visitFromClauseComposedWhereClause(ComposedWhereClause clause) throws SQLException {
         StringBuffer sb = new StringBuffer();
         Iterator iterChildren = clause.iterateChildren();
@@ -211,17 +194,14 @@ public class SqlQuery implements QueryVisitor {
         return sb.toString();
 	}
 
-	@Override
 	public String visitFromClauseInclusiveOrClause(InclusiveOrClause clause) {
 		return new String("");
 	}
 
-	@Override
 	public String visitFromClauseNotClause(NotClause clause) {
 		return new String("");
 	}
 
-	@Override
 	public String visitFromClauseFromVariable(FromVariable fromVar) {
         return fromVar.getTableName() + " " + fromVar.getUniqueName();
 	}
