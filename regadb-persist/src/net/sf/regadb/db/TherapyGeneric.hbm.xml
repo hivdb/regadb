@@ -17,6 +17,15 @@
     <property name="dayDosageMg" type="java.lang.Double">
       <column name="day_dosage_mg" precision="17" scale="17" />
     </property>
+    <property name="placebo" type="boolean">
+      <column name="placebo" not-null="true" />
+    </property>
+    <property name="blind" type="boolean">
+      <column name="blind" not-null="true" />
+    </property>
+    <property name="frequency" type="java.lang.Long">
+      <column name="frequency" />
+    </property>
   </class>
 </hibernate-mapping>
 
