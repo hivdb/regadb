@@ -599,7 +599,7 @@ public class ImportUcsc
     	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
-    		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)));
+    		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)),false,false);
     		t.getTherapyCommercials().add(tc);
     	}
     	

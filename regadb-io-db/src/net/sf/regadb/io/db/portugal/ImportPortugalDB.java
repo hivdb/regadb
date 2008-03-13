@@ -423,7 +423,7 @@ public class ImportPortugalDB {
             String drug = (String) k.next();
             //System.err.print(" " + drug);
 
-            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(drug)));
+            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(drug)),false,false);
             t.getTherapyGenerics().add(tg);
         }
         //System.err.println();

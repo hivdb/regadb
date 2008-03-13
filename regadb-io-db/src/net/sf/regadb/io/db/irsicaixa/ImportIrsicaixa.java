@@ -299,7 +299,7 @@ public class ImportIrsicaixa {
                     	Double dose = drugsList.get(sdrug);
                     	
                     	if(sdrug != null && sdrug.length() > 0){
-	                    	TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, new DrugGeneric(null, sdrug ,null)));
+	                    	TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, new DrugGeneric(null, sdrug ,null)),false,false);
 	                    	if(dose != null && dose != 0){
 	                    		tg.setDayDosageMg(dose);
 	                    		logger_.logWarning("Added drug: "+ sdrug +" ("+ dose +")");

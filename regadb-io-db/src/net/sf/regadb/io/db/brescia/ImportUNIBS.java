@@ -761,7 +761,7 @@ public class ImportUNIBS
     	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
-    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)));
+    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)),false,false);
     		t.getTherapyGenerics().add(tg);
     	}
     	
