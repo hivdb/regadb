@@ -20,9 +20,9 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author  kdg
  */
-public class JDBCTableModel extends AbstractTableModel {
+public class QueryResultTableModel extends AbstractTableModel {
     
-    private ResultSet resultSet;
+    private QueryResult resultSet;
     private int rowCount;
     private int colCount;
     private String[] colNames;
@@ -31,21 +31,20 @@ public class JDBCTableModel extends AbstractTableModel {
     /**
      * Creates a new instance of JDBCTableModel
      *
-     * @param resultSet a _scrollable_ ResultSet aquired from JDBCManager
+     * @param resultSet a _scrollable_ ResultSet aquired from DatabaseManager
      */
-    public JDBCTableModel(ResultSet resultSet, List columnSelections) throws SQLException {
+    public QueryResultTableModel(QueryResult resultSet, List columnSelections) throws SQLException {
         this.resultSet = resultSet;
-        ResultSetMetaData rsmd = resultSet.getMetaData();
-        this.colCount = rsmd.getColumnCount();
+        this.colCount = resultSet.getColumnCount();
         colNames = new String[colCount];
         colClasses = new Class[colCount];
         for (int i = 0; i < colCount; i++) {
             if (columnSelections != null) {
                 colNames[i] = (String)columnSelections.get(i); //rsmd.getColumnName(i + 1);
             } else {
-                colNames[i] = rsmd.getColumnName(i + 1);
+                colNames[i] = resultSet.getColumnName(i);
             }
-            String className = rsmd.getColumnClassName(i + 1);
+            String className = resultSet.getColumnClassName(i);
             try {
                 colClasses[i] = Class.forName(className);
             } catch (ClassNotFoundException cnfe) {
@@ -54,18 +53,12 @@ public class JDBCTableModel extends AbstractTableModel {
             }
         }
         
-        resultSet.last();
-        this.rowCount = (resultSet.last() ? resultSet.getRow() : 0);
+        this.rowCount = resultSet.size();
     }
     
     public Object getValueAt(int row, int column) {
         Object value = null;
-        try {
-            resultSet.absolute(row + 1);
-            value = resultSet.getObject(column + 1);
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
+    	value = resultSet.get(row, column);
         return value;
     }
     
@@ -95,7 +88,7 @@ public class JDBCTableModel extends AbstractTableModel {
     }
     
     public void close() {
-        JDBCManager.getInstance().closeStatement(resultSet);
+    	resultSet.close();
     }
     
 }

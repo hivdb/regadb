@@ -19,7 +19,7 @@ import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
 /**
  * <p>
  * Represents a fixed, non-user-configurable substring of a query part.
- * Typically, different versions of a Query (Hibernate, human readable) use
+ * Typically, different versions of a Query (SQL, human readable) use
  * different FixedStrings in between the other parts (AWCWords), which are
  * normally common.
  * </p>

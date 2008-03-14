@@ -22,6 +22,6 @@ public class AWCPersistenceDelegate extends java.beans.DefaultPersistenceDelegat
     
     protected Expression instantiate(Object oldInstance, Encoder out) {
         AtomicWhereClause clause = (AtomicWhereClause)oldInstance;
-        return new Expression(clause, clause.getClass(), "new", new Object[]{clause.getInputVariables(), clause.getOutputVariables(), clause.getFromVariables(), clause.getConstants(), clause.getVisualizationClauseList(), clause.getHibernateClauseComposer()});
+        return new Expression(clause, clause.getClass(), "new", new Object[]{clause.getInputVariables(), clause.getOutputVariables(), clause.getFromVariables(), clause.getConstants(), clause.getVisualizationClauseList(), clause.getWhereClauseComposer()});
     }
 }

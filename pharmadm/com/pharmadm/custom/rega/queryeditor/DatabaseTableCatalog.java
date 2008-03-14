@@ -12,8 +12,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
-import java.util.Set;
-//import com.pharmadm.custom.rega.chem.search.*;
 
 /**
  * <p>
@@ -32,7 +30,7 @@ public class DatabaseTableCatalog {
  * 
  * </p>
  */
-    private HashMap singularNameMap = new HashMap();
+    private HashMap<String, String> singularNameMap = new HashMap<String, String>();
     
     public Collection tables = new TreeSet(); // of type Table
 

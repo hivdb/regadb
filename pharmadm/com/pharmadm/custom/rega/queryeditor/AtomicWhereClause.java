@@ -33,7 +33,7 @@ import java.sql.SQLException;
  *  fromVariables (via constructor, using AWCPersistenceDelegate)
  *  constants (via constructor, using AWCPersistenceDelegate)
  *  visualizationClauseList (via constructor, using AWCPersistenceDelegate)
- *  hibernateClauseComposer (via constructor, using AWCPersistenceDelegate)
+ *  whereClauseComposer (via constructor, using AWCPersistenceDelegate)
  * </p>
  */
 public class AtomicWhereClause extends WhereClause implements WordListOwner {
@@ -42,13 +42,13 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     }
     
     /** For xml-encoding purposes */
-    public AtomicWhereClause(Collection inputVariables, Collection outputVariables, Collection fromVariables, Collection constants, VisualizationClauseList visualizationClauseList, HibernateClauseComposer hibernateClauseComposer) {
+    public AtomicWhereClause(Collection inputVariables, Collection outputVariables, Collection fromVariables, Collection constants, VisualizationClauseList visualizationClauseList, WhereClauseComposer whereClauseComposer) {
         this.inputVariables = inputVariables;
         this.outputVariables = outputVariables;
         this.fromVariables = fromVariables;
         this.constants = constants;
         this.visualizationClauseList = visualizationClauseList;
-        this.hibernateClauseComposer = hibernateClauseComposer;
+        this.whereClauseComposer = whereClauseComposer;
     }
     
     ///////////////////////////////////////
@@ -87,7 +87,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      *
      * </p>
      */
-    private HibernateClauseComposer hibernateClauseComposer = new HibernateClauseComposer(this);
+    private WhereClauseComposer whereClauseComposer = new WhereClauseComposer(this);
     
     /**
      * <p>
@@ -129,12 +129,12 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         this.fromVariables.add(fromVariable);
     }
     
-    public HibernateClauseComposer getHibernateClauseComposer() {
-        return hibernateClauseComposer;
+    public WhereClauseComposer getWhereClauseComposer() {
+        return whereClauseComposer;
     }
     
-    protected void setHibernateClauseComposer(HibernateClauseComposer hibernateClauseComposer) {
-        this.hibernateClauseComposer = hibernateClauseComposer;
+    protected void setWhereClauseComposer(WhereClauseComposer whereClauseComposer) {
+        this.whereClauseComposer = whereClauseComposer;
     }
     
     public VisualizationClauseList getVisualizationClauseList() {
@@ -173,7 +173,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     }
     
     public String acceptWhereClause(QueryVisitor visitor) throws SQLException { //, MoleculeIndexingException {
-        return getHibernateClauseComposer().composeHibernateClause(visitor);
+        return getWhereClauseComposer().composeWhereClause(visitor);
     }
     
     public Collection getOutputVariablesAvailableForImport() {
@@ -232,8 +232,8 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
             originalToCloneMap.put(outputVar, outputVarClone);
             clone.outputVariables.add(outputVarClone);
         }
-        HibernateClauseComposer hibClauseCompClone = (HibernateClauseComposer)getHibernateClauseComposer().cloneInContext(originalToCloneMap, clone);
-        clone.setHibernateClauseComposer(hibClauseCompClone);
+        WhereClauseComposer hibClauseCompClone = (WhereClauseComposer)getWhereClauseComposer().cloneInContext(originalToCloneMap, clone);
+        clone.setWhereClauseComposer(hibClauseCompClone);
         
         VisualizationClauseList visClauseListClone = (VisualizationClauseList)getVisualizationClauseList().cloneInContext(originalToCloneMap, clone);
         clone.setVisualizationClauseList(visClauseListClone);

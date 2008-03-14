@@ -204,7 +204,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
             Iterator iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
                 Field field = (Field)iter.next();
-                res.add(acceptWhereClauseFullName(JDBCManager.getInstance().getQueryVisitor(), field)); 
+                res.add(acceptWhereClauseFullName(DatabaseManager.getInstance().getQueryBuilder(), field)); 
             }
             return res;
         } else { 

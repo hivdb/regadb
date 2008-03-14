@@ -34,7 +34,7 @@ public class FieldSelection extends SimpleSelection {
         // in general, no new field or table should be created : rather, they should 
         // be looked up in the (currently active) database table catalog
         String[] spec = (String[])objectSpec;
-        Table table = JDBCManager.getInstance().getTableCatalog().doGetTable(spec[1]);
+        Table table = DatabaseManager.getInstance().getTableCatalog().doGetTable(spec[1]);
         Field field = table.getField(spec[0]);
         return field;
     }

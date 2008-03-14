@@ -12,7 +12,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor.gui;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
@@ -78,16 +77,15 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     }
     
     private class JDBCComboBoxModel implements ComboBoxModel {
-        private ResultSet rs;
+        private QueryResult rs;
         private int rowCount;
         private Object selectedItem;
         public JDBCComboBoxModel(JFormattedTextField textField) {
             selectedItem = textField.getValue();
             try {
                 System.err.println("Trying to execute query: " +constant.getSuggestedValuesQuery());
-                rs = JDBCManager.getInstance().executeQuery(constant.getSuggestedValuesQuery());
-                rs.last();
-                this.rowCount = (rs.last() ? rs.getRow() : 0);
+                rs = DatabaseManager.getInstance().executeQuery(constant.getSuggestedValuesQuery());
+                this.rowCount = rs.size();
                 System.err.println("Number of results: " + rowCount);
             } catch (SQLException sqle) {
                 System.err.println("Could not fill Combo box with values due to JDBC exception.");
@@ -102,13 +100,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         public Object getElementAt(int index) {
             Object value = null;
             if (rs != null) {
-                try {
-                    rs.absolute(index + 1);
-                    value = rs.getObject(1);
-                } catch (SQLException sqle) {
-                    System.err.println("Could not fetch Combo box value due to JDBC exception.");
-                    sqle.printStackTrace();
-                }
+                value = rs.get(index, 0);
             }
             return value;
         }
@@ -130,10 +122,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         }
         
         public void close() {
-            //System.err.println("Closing " + rs);
-            JDBCManager.getInstance().closeStatement(rs);
+            rs.close();
         }
-        
     }
-    
 }

@@ -27,7 +27,7 @@ import javax.swing.table.*;
 //import com.pharmadm.chem.graphics.graphics2d.*;
 //import com.pharmadm.chem.matter.Molecule;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
-import com.pharmadm.custom.rega.queryeditor.JDBCManager;
+import com.pharmadm.custom.rega.queryeditor.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.gui.ToggleAction;
 import com.pharmadm.util.gui.PopupListener;
 import com.pharmadm.util.gui.table.TableSorter;

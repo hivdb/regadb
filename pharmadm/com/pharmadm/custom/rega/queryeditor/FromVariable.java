@@ -46,7 +46,7 @@ public class FromVariable implements AWCWord, Cloneable {
     
     public FromVariable(String tableName) {
         this.tableName = tableName;
-        this.table = JDBCManager.getInstance().getTableCatalog().doGetTable(tableName);
+        this.table = DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
         acquireSeqId();
     }
     
@@ -68,7 +68,7 @@ public class FromVariable implements AWCWord, Cloneable {
     }
     
     public String getUniqueName() {
-        return getTableName()+seqId;
+        return getTableName().substring(getTableName().lastIndexOf('.')+1)+seqId;
     }
     
     public String getFromClauseStringValue(QueryVisitor visitor) {

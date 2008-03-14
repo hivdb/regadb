@@ -21,7 +21,7 @@ import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
  * <p>
  * Represents a user-configurable constant value in a Query. The user can
  * set the value of a Constant, and than materialize the current status of
- * the Query into some executable form, e.g. a Hibernate find string. In
+ * the Query into some executable form, e.g. a SQL find string. In
  * this 'frozen'  version, the value appears as a constant. The frozen
  * version can then be submitted to the database for execution.
  * </p>

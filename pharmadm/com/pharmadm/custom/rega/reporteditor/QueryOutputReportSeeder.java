@@ -198,19 +198,21 @@ public class QueryOutputReportSeeder {
                 try {
                     Query query = querier.getQuery();
                     String queryString = getObjectListSelectClause(objectListVariables)
-                    + "\nFROM " + query.getRootClause().acceptFromClause(JDBCManager.getInstance().getQueryVisitor())
-                    + "\nWHERE " + query.getRootClause().acceptWhereClause(JDBCManager.getInstance().getQueryVisitor());
+                    + "\nFROM " + query.getRootClause().acceptFromClause(DatabaseManager.getInstance().getQueryBuilder())
+                    + "\nWHERE " + query.getRootClause().acceptWhereClause(DatabaseManager.getInstance().getQueryBuilder());
                     
                     System.out.println(queryString);
-                    ResultSet resultSet = JDBCManager.getInstance().createScrollableReadOnlyStatement().executeQuery(queryString);
+                    QueryResult resultSet = DatabaseManager.getInstance().createScrollableReadOnlyStatement().executeQuery(queryString);
                     try {
-                        setTotalAmount(objectListVariables.size() * determineNbRows(resultSet));
+                    	int count = determineNbRows(resultSet);
+                        setTotalAmount(objectListVariables.size() * count);
                         ArrayList[] objectLists = new ArrayList[objectListVariables.size()];
                         for (int n = 0; n < objectListVariables.size(); n++) {
                             objectLists[n] = new ArrayList();
                         }
                         boolean mayContinue = getContinuationArbiter().mayContinue();
-                        while (mayContinue && resultSet.next()) {
+                        int k = 0;
+                        while (mayContinue && k < count) {
                             Iterator varIter = objectListVariables.iterator();
                             int n = 0;
                             int j = 1;
@@ -221,7 +223,7 @@ public class QueryOutputReportSeeder {
                                 Class[] paramTypes = new Class[len];
                                 Object[] params = new Object[len];
                                 for (int i = 0; i < len; i++) {
-                                    params[i] = resultSet.getObject(i + j).toString();
+                                    params[i] = resultSet.get(k, i + j).toString();
                                     paramTypes[i] = String.class; // %$ KVB : we assume only all-String-constructors for now
                                 }
                                 Class valueType = olvar.getValueType();
@@ -262,19 +264,8 @@ public class QueryOutputReportSeeder {
         
         /* resultSet MUST be scrollable
          */
-        private int determineNbRows(ResultSet resultSet) throws SQLException {
-            int currentRow = resultSet.getRow();
-            int rowCount = (resultSet.last() ? resultSet.getRow() : 0);
-            if (currentRow > 0) {
-                if (currentRow > rowCount) {
-                    resultSet.afterLast();
-                } else {
-                    resultSet.absolute(currentRow);
-                }
-            } else {
-                resultSet.beforeFirst();
-            }
-            return rowCount;
+        private int determineNbRows(QueryResult resultSet) throws SQLException {
+        	return resultSet.size();
         }
         
         /* seed the object list variables with their object lists through the controller */

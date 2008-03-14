@@ -13,7 +13,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
-import java.sql.DatabaseMetaData;
 
 /**
  *

@@ -11,14 +11,12 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
-
 /**
  * <p>
  * An AWCWord can produce an unambiguous String representation of it's current
  * configuration. The string representation can be concatenated (with
  * appropriate whitespace added) resulting in a clause. A Word may (or may
- * not) be reused in several different clauses (for now: Hibernate query
+ * not) be reused in several different clauses (for now: query
  * definitions and user intelligible sentences).
  * </p>
  * 

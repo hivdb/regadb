@@ -41,7 +41,7 @@ public class Table implements Comparable {
         if (name != null) {
             this.name = name;
             this.singularName = name.toLowerCase();
-            comment = JDBCManager.getInstance().getCommentForTable(name);
+            comment = DatabaseManager.getInstance().getCommentForTable(name);
         }
     }
     
@@ -50,12 +50,12 @@ public class Table implements Comparable {
     
     public Collection getFields() {
         if (fields == null) {
-            List fieldNames = JDBCManager.getInstance().getColumnNames(getName());
-            List keyNames = JDBCManager.getInstance().getPrimaryKeys(getName());
+            List<String> fieldNames = DatabaseManager.getInstance().getColumnNames(getName());
+            List<String> keyNames = DatabaseManager.getInstance().getPrimaryKeys(getName());
             fields = new ArrayList();
-            Iterator fieldNameIter = fieldNames.iterator();
+            Iterator<String> fieldNameIter = fieldNames.iterator();
             while (fieldNameIter.hasNext()) {
-                String fieldName = (String)fieldNameIter.next();
+                String fieldName = fieldNameIter.next();
                 Field field = new Field(fieldName, this, keyNames.contains(fieldName));
                 fields.add(field);
             }

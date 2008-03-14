@@ -11,7 +11,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
 
 /**
  * <p>
@@ -49,7 +48,7 @@ public class Field {
         this.name = name;
         this.table = table;
         this.primaryKey = primaryKey;
-        this.comment = JDBCManager.getInstance().getCommentForColumn(table.getName(), name);
+        this.comment = DatabaseManager.getInstance().getCommentForColumn(table.getName(), name);
     }
     
 

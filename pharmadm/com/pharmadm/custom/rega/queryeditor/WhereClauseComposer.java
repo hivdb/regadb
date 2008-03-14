@@ -1,5 +1,5 @@
 
-/** Java class "HibernateClauseComposer.java" generated from Poseidon for UML.
+/** Java class "WhereClauseComposer.java" generated from Poseidon for UML.
  *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
  *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
  */
@@ -15,24 +15,24 @@ import java.util.*;
 
 /**
  * <p>
- * A HibernateClauseComposer can compose valid a Hibernate query constraint
+ * A WhereClauseComposer can compose valid a sql query constraint
  * from its Words.
  * </p>
  * <p>
  * This class supports xml-encoding. No new properties are encoded.
  * </p> 
  */
-public class HibernateClauseComposer extends OrderedAWCWordList {
+public class WhereClauseComposer extends OrderedAWCWordList {
     
     /** For xml-encoding purposes only */
-    public HibernateClauseComposer() {
+    public WhereClauseComposer() {
     } 
     
-    public HibernateClauseComposer(AtomicWhereClause owner) {
+    public WhereClauseComposer(AtomicWhereClause owner) {
         super(owner);
     }
     
-    public String composeHibernateClause(QueryVisitor visitor) {
+    public String composeWhereClause(QueryVisitor visitor) {
         return acceptWhereClause(visitor);
     }
 }

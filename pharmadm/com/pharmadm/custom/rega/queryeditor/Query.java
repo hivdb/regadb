@@ -95,7 +95,7 @@ public class Query {
     /**
      * <p>
      * Returns a collection of Works that have to be performed before the query clauses
-     * (Hibernate query, query string, ...) can be retrieved.
+     * (SQL query, query string, ...) can be retrieved.
      * </p>
      *
      * @return a Collection with all Works required to prepare the query.
@@ -106,7 +106,7 @@ public class Query {
     
     // for testing purposes only
     public String getQueryString() throws java.sql.SQLException { //, com.pharmadm.custom.rega.chem.search.MoleculeIndexingException {
-    	return accept(JDBCManager.getInstance().getQueryVisitor());
+    	return accept(DatabaseManager.getInstance().getQueryBuilder());
     }
     
     public String accept(QueryVisitor visitor) throws java.sql.SQLException{
@@ -117,7 +117,7 @@ public class Query {
      * <p>
      * Calculates whether the root WhereClause of this Query is valid. Validity
      * is a necessary and sufficient contraint for this Query to be able to
-     * generate an equivalent Hibernate query that can be evaluated.
+     * generate an equivalent SQL query that can be evaluated.
      * </p>
      * <p>
      *

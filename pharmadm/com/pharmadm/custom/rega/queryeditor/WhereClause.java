@@ -22,9 +22,8 @@ import java.util.*;
  * relevant and what rows to retrieve from these tables. The relevant
  * tables definition is called the 'from-part' of the clause, and the rows
  * to retrieve is called the 'where-part'. A WhereClause can produce
- * Strings that allow the Query to construct a Hibernate equivalent, which
- * can be executed against the database. Later extention to provide similar
- * Strings for SQL or Prolog should be straightforward.
+ * Strings that allow the Query to construct a SQL equivalent, which
+ * can be executed against the database.
  * </p>
  * <p>
  * WhereClauses can be configured to adapt the set of constraints till they
@@ -56,15 +55,14 @@ public abstract class WhereClause implements Cloneable {
     /**
      * <p>
      * Calculates a String with the 'where' part (the constraints) of the
-     * Hibernate equivalent of the clause.
+     * SQL equivalent of the clause.
      * </p>
      * <p>
      *
      * @pre all Works of getQueryPreparationWorks must have been completed.
-     * @param visitor TODO
      *
      * @return a String with the 'where' part (the constraints) of the
-     * Hibernate equivalent of the clause
+     * SQL equivalent of the clause
      * </p>
      */
     public abstract String acceptWhereClause(QueryVisitor visitor) throws SQLException; //, MoleculeIndexingException;
@@ -72,16 +70,15 @@ public abstract class WhereClause implements Cloneable {
     /**
      * <p>
      * Calculates a String with the 'from' part (the tables to select from) of
-     * the Hibernate equivalent of the clause. The from part returned excludes
+     * the SQL equivalent of the clause. The from part returned excludes
      * the base Table of the Query.
      * </p>
      * <p>
      *
      * @pre all Works of getQueryPreparationWorks must have been completed.
-     * @param visitor TODO
      *
      * @return a String with the 'from' part (the tables to select from, except
-     * the base Table) of the Hibernate equivalent of the clause
+     * the base Table) of the SQL equivalent of the clause
      * </p>
      */
     public abstract String acceptFromClause(QueryVisitor visitor) throws SQLException; //, MoleculeIndexingException;
