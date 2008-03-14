@@ -14,9 +14,13 @@ package com.pharmadm.custom.rega;
 import javax.swing.*;
 import com.pharmadm.util.work.WorkManager;
 import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
+import com.pharmadm.custom.rega.queryeditor.DatabaseConnector;
 import com.pharmadm.custom.rega.queryeditor.FrontEnd;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
-import com.pharmadm.custom.rega.queryeditor.JDBCManager;
+import com.pharmadm.custom.rega.queryeditor.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.HibernateConnector;
+import com.pharmadm.custom.rega.queryeditor.HibernateQuery;
+import com.pharmadm.custom.rega.queryeditor.JDBCConnector;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.QueryVisitor;
@@ -40,9 +44,9 @@ public class QueryEditorApp implements FrontEnd{
     private final ThreadManager threadManager = new WorkManagerThreadManagerAdapter(workManager);
     
     private String databaseURL = "jdbc:postgresql://localhost:5432/regadb";
-    private String databaseUser = "freek";
-    private String databasePassword = "freek";
-    private QueryVisitor defaultQueryLanguage = new SqlQuery();
+    private String databaseUser = "admin";
+    private String databasePassword = "admin";
+    private QueryVisitor defaultQueryLanguage = new HibernateQuery();
     
     
     /** Creates a new instance of QueryEditorApp */
@@ -118,8 +122,13 @@ public class QueryEditorApp implements FrontEnd{
     
     public boolean tryDefaultDBLogin() {
         try {
-            JDBCManager.initInstance(databaseURL, databaseUser, databasePassword, defaultQueryLanguage);
+        	QueryVisitor visitor = new HibernateQuery();
+        	DatabaseConnector con = new HibernateConnector("admin", "admin");
+//        	DatabaseConnector con = new JDBCConnector(null, "jdbc:postgresql://localhost:5432/regadb", "freek", "freek");
+//        	QueryVisitor visitor = new SqlQuery();
+            DatabaseManager.initInstance(visitor, con);
         } catch (Exception e) {
+        	e.printStackTrace();
             return false;
         }
         return true;
@@ -151,6 +160,7 @@ public class QueryEditorApp implements FrontEnd{
         try {
             if (!app.tryDefaultDBLogin()) {
             	System.err.println("login failed");
+                System.exit(1);
             }
         } catch (Exception excep) {
             getInstance().showException(excep, "Could not connect to database");
@@ -158,7 +168,7 @@ public class QueryEditorApp implements FrontEnd{
         }
         
         
-        AWCPrototypeCatalog.getInstance();
+        AWCPrototypeCatalog.getInstance(true);
         QueryEditor editor = new QueryEditor(new Query());
         QueryEditorFrame queryEditorFrame = new QueryEditorFrame(editor);
         getInstance().mainFrame = queryEditorFrame;

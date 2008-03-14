@@ -13,12 +13,14 @@
 package com.pharmadm.custom.rega;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
@@ -106,7 +108,29 @@ public class AtomicClauseSelectionDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         editPanel.add(new javax.swing.JLabel(""),gridBagConstraints);
         
+        HashMap<String, CollapsableSelectPanel> panels = new HashMap<String, CollapsableSelectPanel>(); 
+        panels.put("new", getNewPanel("new"));
+        
         while (iter.hasNext()) {
+            AtomicWhereClause clause = (AtomicWhereClause)iter.next();
+            ArrayList<String> titles = getTitles(clause);
+            if (titles.isEmpty()) {
+            	panels.get("new").addPanel(getSelectorPanel(clause, queryEditor, contextClause));
+            }
+            else {
+            	Iterator<String> it = titles.iterator();
+            	while (it.hasNext()){
+            		String title = it.next();
+            		if (panels.containsKey(title)) {
+            			panels.get(title).addPanel(getSelectorPanel(clause, queryEditor, contextClause));
+            		}
+            		else {
+            	        panels.put(title, getNewPanel(title));
+            			panels.get(title).addPanel(getSelectorPanel(clause, queryEditor, contextClause));
+            		}
+            	}
+            }
+/*            
             AtomicWhereClause clause = (AtomicWhereClause)iter.next();
             AtomicWhereClauseEditor editor = new AtomicWhereClauseEditor(queryEditor);
             editor.setAtomicWhereClause(clause);
@@ -133,6 +157,7 @@ public class AtomicClauseSelectionDialog extends JDialog {
             editPanel.add(selectorPanel,gridBagConstraints);
             buttonGroup1.add(jRadioButton);
             //jScrollPane2.setViewport(jScrollPane2.getViewport());
+             */
         }
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -141,6 +166,49 @@ public class AtomicClauseSelectionDialog extends JDialog {
         gridBagConstraints.weighty = 1;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 0);
         editPanel.add(new javax.swing.JLabel(""),gridBagConstraints);
+    }
+    
+    private CollapsableSelectPanel getNewPanel(String title) {
+    	CollapsableSelectPanel panel = new CollapsableSelectPanel(title);
+    	GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        gridBagConstraints.weightx = 1;
+        gridBagConstraints.weighty = 1;
+        editPanel.add(panel ,gridBagConstraints);
+        return panel;
+    }
+    
+    private ArrayList<String> getTitles(AtomicWhereClause clause) {
+    	ArrayList<String> list = new ArrayList<String>();
+    	Iterator<InputVariable> it = clause.getInputVariables().iterator();
+    	while (it.hasNext()) {
+    		list.add(it.next().getVariableType().getName());
+    	}
+
+    	return list;
+    }
+    
+    private AtomicWhereClauseSelectorPanel getSelectorPanel(AtomicWhereClause clause, QueryEditor queryEditor, WhereClause contextClause) {
+        AtomicWhereClauseEditor editor = new AtomicWhereClauseEditor(queryEditor);
+        editor.setAtomicWhereClause(clause);
+        editor.setContextClause(contextClause);
+        editor.setVisualizationComponentFactory(new VisualizationComponentFactory(editor));
+        javax.swing.JRadioButton jRadioButton = new javax.swing.JRadioButton();
+        AtomicWhereClauseSelectorPanel selectorPanel = new AtomicWhereClauseSelectorPanel(jRadioButton, editor);
+        selectorList.add(selectorPanel);
+        MouseListener doubleClickListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    okButtonActionPerformed(null);
+                }
+            }
+        };
+        selectorPanel.addMouseListener(doubleClickListener);
+        jRadioButton.addMouseListener(doubleClickListener);
+    	
+        return selectorPanel;
     }
     
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed

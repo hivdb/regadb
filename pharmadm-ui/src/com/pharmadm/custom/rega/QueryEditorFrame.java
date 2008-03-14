@@ -6,9 +6,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -28,11 +26,13 @@ import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
-import com.pharmadm.custom.rega.queryeditor.JDBCManager;
-import com.pharmadm.custom.rega.queryeditor.JDBCTableModel;
+import com.pharmadm.custom.rega.queryeditor.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.QueryResultTableModel;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
+import com.pharmadm.custom.rega.queryeditor.QueryResult;
+import com.pharmadm.custom.rega.queryeditor.QueryStatement;
 import com.pharmadm.custom.rega.queryeditor.RegaSettings;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClauseTreeNode;
@@ -738,7 +738,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 }
                 setRunning(true);
                 try {
-                    Statement runningStatement = JDBCManager.getInstance().createScrollableReadOnlyStatement();
+                    QueryStatement runningStatement = DatabaseManager.getInstance().createScrollableReadOnlyStatement();
                     runningExecution = new ExecuteQueryRunnable(runningStatement, query);
                     Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
                     executeQuery.start();
@@ -1250,12 +1250,12 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         
         private final int id = eqrCounter++;
         
-        private final Statement statement;
+        private final QueryStatement statement;
         private final Query query;
         private volatile boolean canceled = false;
         private final Object cancelLock = new Object();
         
-        public ExecuteQueryRunnable(Statement statement, Query query) {
+        public ExecuteQueryRunnable(QueryStatement statement, Query query) {
             this.statement = statement;
             this.query = query;
         }
@@ -1286,8 +1286,8 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                     String queryString = getQueryStringAndInformUserOnError(query);
                     System.out.println(queryString);
                     statement.setFetchSize(50);
-                    ResultSet resultSet = statement.executeQuery(queryString);
-                    final JDBCTableModel model = new JDBCTableModel(resultSet, query.getSelectList().getSelectedColumnNames());
+                    QueryResult resultSet = statement.executeQuery(queryString);
+                    final QueryResultTableModel model = new QueryResultTableModel(resultSet, query.getSelectList().getSelectedColumnNames());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             if (!canceled) {
@@ -1303,15 +1303,10 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 synchronized (cancelLock) {
                     if (!canceled) {
                         canceled = true;
-                        if (statement != null) {
-                            try {
-                                System.err.println("About to close statement " + id + " after an SQL exception...");
-                                statement.close();
-                                System.err.println("Closing the statement was successful.");
-                            } catch (SQLException sqle2) {
-                                System.err.println("Closing database statement failed.");
-                                sqle2.printStackTrace();
-                            }
+                        if (statement.exists()) {
+                            System.err.println("About to close statement " + id + " after an SQL exception...");
+                            statement.close();
+                            System.err.println("Closing the statement was successful.");
                         }
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
@@ -1329,17 +1324,13 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         public void cancel() {
             synchronized (cancelLock) {
                 if (!canceled) {
-                    try {
-                        canceled = true;
-                        setRunning(false);
-                        numberRowsLabel.setText("Canceled");
-                        resultTable.setModel(new BusyTableModel("Canceled", "The query was canceled."));
-                        System.err.println("User Cancel:: about to cancel statement " + id + "...");
-                        statement.cancel();
-                        System.err.println("User Cancel:: cancel statement done.");
-                    } catch (SQLException sqle) {
-                        QueryEditorApp.getInstance().showException(sqle, "Could not cancel the running query");
-                    }
+                    canceled = true;
+                    setRunning(false);
+                    numberRowsLabel.setText("Canceled");
+                    resultTable.setModel(new BusyTableModel("Canceled", "The query was canceled."));
+                    System.err.println("User Cancel:: about to cancel statement " + id + "...");
+                    statement.cancel();
+                    System.err.println("User Cancel:: cancel statement done.");
                 }
             }
         }
@@ -1348,7 +1339,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             synchronized (cancelLock) {
                 // the Oracle 9i driver locks up on close after cancel...
                 if (!canceled) {
-                    JDBCManager.getInstance().closeStatement(statement);
+                	statement.close();
                 }
             }
         }
