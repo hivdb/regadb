@@ -20,8 +20,7 @@ public class NtSequenceHelper
         case 'H': 
         case 'D': 
         case 'B': 
-        case 'N': 
-        case '-': return true;
+        case 'N':  return true;
         
         default: return false;
         }
