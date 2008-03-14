@@ -12,9 +12,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
-//import com.pharmadm.custom.rega.chem.search.MoleculeClause;
-
-import sun.management.jmxremote.ConnectorBootstrap.PropertyNames;
 
 /**
  * <p>
@@ -43,6 +40,14 @@ public class AWCPrototypeCatalog {
         }
         return mainCatalog;
     }
+    
+    public static AWCPrototypeCatalog getInstance(boolean hibernate) {
+        if (mainCatalog == null) {
+           mainCatalog = HibernateAWCPrototypeCatalog.getInstance();
+        }
+        return mainCatalog;
+    }
+    
 
     private static void initMainCatalog() {
         AWCPrototypeCatalog catalog = new AWCPrototypeCatalog();
@@ -101,7 +106,8 @@ public class AWCPrototypeCatalog {
         catalog.addStringClauses(catalog, "therapy", "COMMENT", "has a comment", false);
 
         // link patient - therapy
-        catalog.addGetAssociationClause("patient", "PATIENT_II", "therapy", "THERAPY_II", "has received therapy");
+        String[][] assocPatientToTherapy = {{"patient", null, "PATIENT_II"}, {"therapy", "PATIENT_II",null}};
+        catalog.addGetRemoteAssociationClause(assocPatientToTherapy, "has received therapy");
 
         
         ///////////////////////////////////////
@@ -378,7 +384,7 @@ public class AWCPrototypeCatalog {
     // access methods for associations
     
     public final Table getTable(String name) {
-        return JDBCManager.getInstance().getTableCatalog().doGetTable(name);
+        return DatabaseManager.getInstance().getTableCatalog().doGetTable(name);
     }
     
     public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
@@ -389,11 +395,11 @@ public class AWCPrototypeCatalog {
         typeNameToGoodVariableName.put(typeName.toLowerCase(), varName);
     }
     
-    public String getGoodVariableName(VariableType varType) {
+    private String getGoodVariableName(VariableType varType) {
         return getGoodVariableName(varType.getName());
     }
     
-    public String getGoodVariableName(String tableName) {
+    private String getGoodVariableName(String tableName) {
         String varName = (String)typeNameToGoodVariableName.get(tableName.toLowerCase());
         if (varName == null) {
             return tableName.substring(0, 1);
@@ -408,7 +414,7 @@ public class AWCPrototypeCatalog {
      * @return
      */
     private boolean tableExists(String tableName) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
         	return manager.getTableNames().contains(tableName);
         }
@@ -425,7 +431,7 @@ public class AWCPrototypeCatalog {
      * @return
      */
     private String getDataTypeString(String tableName, String propertyName) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
         	return manager.getColumnType(tableName, propertyName);
         }
@@ -605,7 +611,7 @@ public class AWCPrototypeCatalog {
         if (tableExists(tableName)) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
 
             aVisList.addFixedString(new FixedString("There is a " + getTable(tableName).getSingularName()));
             
@@ -635,7 +641,7 @@ public class AWCPrototypeCatalog {
     	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
     	if (p != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             Constant constant = (Constant) p.get("constant");
             String dataTypeString = (String) p.get("dataTypeString");
             String typeString = (String) p.get("typeString");
@@ -672,7 +678,7 @@ public class AWCPrototypeCatalog {
             
             if (isStringType(dataTypeString)) {
 	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
 	
 	            description	= description == null ? "has a " + propertyName : description;
 	            InputVariable 	qTableInstanceName = composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, null, propertyName, description, constant, (show?getOutputVariable(typeString, propertyName, constant):null), constantDescription);
@@ -786,7 +792,7 @@ public class AWCPrototypeCatalog {
             OutputVariable ovar = getOutputVariable(typeString, propertyName, ivar);
             composeHumanReadableQuery(aClause.getVisualizationClauseList(), tableName, ivar, propertyName, description, null, ovar, null);
             
-            aClause.getHibernateClauseComposer().addFixedString(new FixedString("1=1"));
+            aClause.getWhereClauseComposer().addFixedString(new FixedString("1=1"));
             addAtomicWhereClause(aClause);
             return aClause;
     	}
@@ -807,7 +813,7 @@ public class AWCPrototypeCatalog {
     	Properties p = getDataTypeDependantProperties(tableName, propertyName);   	
     	if (p != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             Constant constant = (Constant) p.get("constant");
             String typeString = (String) p.get("typeString");
 
@@ -855,13 +861,13 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addGetAssociationClause(String tableName, String foreignKeyName, String foreignTableName, String foreignTableKey, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             String dataTypeString = manager.getColumnType(tableName, foreignKeyName);
             if (dataTypeString != null) {
                 AtomicWhereClause aClause = new AtomicWhereClause();
                 VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
                 String singularName = getTable(tableName).getSingularName();
                 aVisList.addFixedString(new FixedString("The " + singularName));
                 InputVariable ivar = new InputVariable(new VariableType(tableName));
@@ -898,11 +904,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addGetRemoteAssociationClause(String[][] args, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             HashMap tmpMap = new HashMap(); // for storing parts of expressions that come from different parts of the query
             String tableName = args[0][0];
             String keyName = args[0][1];
@@ -991,11 +997,11 @@ public class AWCPrototypeCatalog {
     
     // this is actually quite ad-hoc, but used in all the variants where we look for a "wildtype chimeric equivalent" for something
     public AtomicWhereClause addGetRemoteAssociationClauseWithForegroundTest(String[][] args, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             HashMap tmpMap = new HashMap(); // for storing parts of expressions that come from different parts of the query
             FromVariable chimFromVar1 = null;
             FromVariable chimFromVar2 = null;
@@ -1120,11 +1126,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addGetDoubleRemoteAssociationClause(String[][] assocs1, String[][] assocs2, String description) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             HashMap tmpMap = new HashMap(); // for storing parts of expressions that come from different parts of the query
             String tableName1 = assocs1[0][0];
             String keyName1 = assocs1[0][1];
@@ -1282,7 +1288,7 @@ public class AWCPrototypeCatalog {
     
         
         public AtomicWhereClause addCodedPropertyCheckClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description, boolean show) {
-            JDBCManager manager = JDBCManager.getInstance();
+            DatabaseManager manager = DatabaseManager.getInstance();
             if (manager != null) {
                 String dataTypeString = manager.getColumnType(codeTableName, propertyName);
                 if (dataTypeString != null) {
@@ -1290,7 +1296,7 @@ public class AWCPrototypeCatalog {
                     VariableType varType;
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                    HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+                    WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
                     String singularName = getTable(tableName).getSingularName();
                     aVisList.addFixedString(new FixedString("The " + singularName));
                     InputVariable ivar = new InputVariable(new VariableType(tableName));
@@ -1357,11 +1363,11 @@ public class AWCPrototypeCatalog {
         String[][] assocs = {{"Patient", null, "PATIENT_II"}, {"PATIENT_SAMPLE", "PATIENT_II", "PATIENT_SAMPLE_ID"},
         {"Viral_Clin_Isolate", "CLINICAL_ISOLATE_ID", "VIRAL_CLIN_ISOLATE_II"}, {"Virus_app_clinical", "VIRAL_CLIN_ISOLATE_II", "VIRUS_APP_II"},
         {"Virus_Appearance", "VIRUS_APP_II", null}};
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             HashMap tmpMap = new HashMap(); // for storing parts of expressions that come from different parts of the query
             FromVariable dateFromVar = null;
             String tableName = assocs[0][0];
@@ -1421,14 +1427,14 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addPropertyEqualsClause(String tableName1, String propertyName1, String tableName2, String propertyName2) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             String dataTypeString1 = manager.getColumnType(tableName1, propertyName1);
             String dataTypeString2 = manager.getColumnType(tableName2, propertyName2);
             if ((dataTypeString1 != null) && (dataTypeString1 != null)) {
                 AtomicWhereClause aClause = new AtomicWhereClause();
                 VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
                 InputVariable ivar1 = new InputVariable(new VariableType(tableName1));
                 InputVariable ivar2 = new InputVariable(new VariableType(tableName2));
                 aVisList.addInputVariable(ivar1);
@@ -1452,7 +1458,7 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String propertyName, String description, boolean show) {
-    	JDBCManager manager = JDBCManager.getInstance();
+    	DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             String dataTypeString = manager.getColumnType(tableName, propertyName);
             if (dataTypeString != null) {
@@ -1460,7 +1466,7 @@ public class AWCPrototypeCatalog {
                 if ((dataType >= 91) && (dataType <= 93)) {
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                    HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+                    WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
                     String singularName = getTable(tableName).getSingularName();
                     aVisList.addFixedString(new FixedString("The " + singularName));
                     InputVariable ivar = new InputVariable(new VariableType(tableName));
@@ -1530,11 +1536,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addTimeConstantClause(boolean before) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
             InputVariable ivar = new InputVariable(new VariableType("Date"));
             aVisList.addInputVariable(ivar);
@@ -1554,11 +1560,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addTimeIntervalClause() {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
             InputVariable ivar = new InputVariable(new VariableType("Date"));
             aVisList.addInputVariable(ivar);
@@ -1589,7 +1595,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addTimeConstantToVariableClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("Date"));
         Constant dateConstant = new DateConstant();
         OutputVariable ovar = new OutputVariable(new VariableType("Date"), getGoodVariableName("Date"));
@@ -1607,11 +1613,11 @@ public class AWCPrototypeCatalog {
     
     
     public AtomicWhereClause addTimeCompareClause() {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
             InputVariable ivar1 = new InputVariable(new VariableType("Date"));
             InputVariable ivar2 = new InputVariable(new VariableType("Date"));
@@ -1630,11 +1636,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addTimeCalculationClause(boolean plus) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date "));
             InputVariable ivar = new InputVariable(new VariableType("Date"));
             
@@ -1662,11 +1668,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addRealValueConstraintClause(boolean below) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Value"));
             InputVariable ivar = new InputVariable(new VariableType("Numeric"));
             aVisList.addInputVariable(ivar);
@@ -1687,11 +1693,11 @@ public class AWCPrototypeCatalog {
     
 /*    
     public AtomicWhereClause addRealValueWithRelationConstraintClause(String tableName, String valueFieldName, String relationFieldName, boolean below) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("The " + tableName));
             InputVariable ivar = new InputVariable(new VariableType(tableName));
             aVisList.addInputVariable(ivar);
@@ -1717,7 +1723,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addConvertMicrogramsToMillimolarityClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         
         aVisList.addFixedString(new FixedString("The ug/ml value of result"));
         InputVariable ivar = new InputVariable(new VariableType("Result"));
@@ -1788,11 +1794,11 @@ public class AWCPrototypeCatalog {
 //    }
     
     public AtomicWhereClause addSequenceMutationClause(String sequence, String seqid1, String mutatype, String seqid2, String posname, String description, String prep, boolean real) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("The sequence"));
             InputVariable ivar = new InputVariable(new VariableType(sequence));
             FromVariable mutavar = new FromVariable(mutatype);
@@ -1837,7 +1843,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addPatientPosTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The patient"));
         InputVariable ivar = new InputVariable(new VariableType("Patient"));
         aVisList.addInputVariable(ivar);
@@ -1855,7 +1861,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addHIVMedicationClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The medication"));
         InputVariable ivar = new InputVariable(new VariableType("PATIENT_MEDICATION"));
         aVisList.addInputVariable(ivar);
@@ -1869,7 +1875,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addClinicalTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_ELEM_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1883,7 +1889,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addViralLoadTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_ELEM_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1897,7 +1903,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addCD4TestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_ELEM_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1911,7 +1917,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addClinicalCalcTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_CALC_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1925,7 +1931,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addViralLoadCalcTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_CALC_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1939,7 +1945,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addCD4CalcTestClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The test"));
         InputVariable ivar = new InputVariable(new VariableType("COD_CALC_TEST"));
         aVisList.addInputVariable(ivar);
@@ -1953,7 +1959,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addCombinationTherapyCheckClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The patient"));
         InputVariable ivar = new InputVariable(new VariableType("Patient"));
         aVisList.addInputVariable(ivar);
@@ -2057,7 +2063,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addMedicationChangeClauseInputDates() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The patient"));
         InputVariable ivar = new InputVariable(new VariableType("Patient"));
         aVisList.addInputVariable(ivar);
@@ -2108,7 +2114,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addMedicationChangeClauseConstantDates() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The patient"));
         InputVariable ivar = new InputVariable(new VariableType("Patient"));
         aVisList.addInputVariable(ivar);
@@ -2157,7 +2163,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addPatientFirstHIVMedicationClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("The patient"));
         InputVariable ivar = new InputVariable(new VariableType("Patient"));
         aVisList.addInputVariable(ivar);
@@ -2201,7 +2207,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addSequenceToResistanceResultClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         
         aVisList.addFixedString(new FixedString("The amino acid sequence"));
         InputVariable ivar = new InputVariable(new VariableType("AA_Sequence"));
@@ -2254,7 +2260,7 @@ public class AWCPrototypeCatalog {
     public AtomicWhereClause addDrugWorkMechanismClause() {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-        HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         
         aVisList.addFixedString(new FixedString("The drug compound"));
         InputVariable ivar = new InputVariable(new VariableType("Drug_Compound"));
@@ -2286,11 +2292,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addClosestAssociationToDateClause(String[][] assocs, String[] dateFieldSpec, String condition, boolean before) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             FromVariable dateFromVar = null;
             String tmpDateFromVarName = null;
             String tableName = assocs[0][0];
@@ -2408,11 +2414,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addAssociationInInputPeriodClause(String[][] assocs, String[] dateFieldSpec, String condition) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             FromVariable dateFromVar = null;
             String tmpDateFromVarName = null;
             String tableName = assocs[0][0];
@@ -2479,11 +2485,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addAssociationInConstantPeriodClause(String[][] assocs, String[] dateFieldSpec, String condition) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             FromVariable dateFromVar = null;
             String tmpDateFromVarName = null;
             String tableName = assocs[0][0];
@@ -2556,11 +2562,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addChangedAssociationInInputPeriodClause(String[][] assocs1, String[][] assocs2, String[] dateFieldSpec, String[] changeSpec, String condition) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             
             // 1. get the candidate association
             
@@ -2726,11 +2732,11 @@ public class AWCPrototypeCatalog {
     }
     
     public AtomicWhereClause addChangedAssociationInConstantPeriodClause(String[][] assocs1, String[][] assocs2, String[] dateFieldSpec, String[] changeSpec, String condition) {
-        JDBCManager manager = JDBCManager.getInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            HibernateClauseComposer aComposer = aClause.getHibernateClauseComposer();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             
             // 1. get the candidate association
             
