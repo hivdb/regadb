@@ -31,43 +31,25 @@ public class ParseAll {
         String filemakerMappingPath;
         String outputPath;
         
-        if(args.length >= 16){
-            int i=0;
-            importGhbPath               = args[i++];
-            eclipseMappingDir           = args[i++];
-            eclipseFileMakerMappingDir  = args[i++];
-            eadEmdNameFile              = args[i++];
-            patientenFile               = args[i++];
-            lisNationMappingFile        = args[i++];
-            lisWorkingDir               = args[i++];
-            stalenLeuvenFile            = args[i++];
-            spreadStalenFile            = args[i++];
-            seqsToIgnoreFile            = args[i++];
-            macFastaFile                = args[i++];
-            pcFastaFile                 = args[i++];
-            contactenFile               = args[i++];
-            medFinalFile                = args[i++];
-            filemakerMappingPath        = args[i++];
-            outputPath                  = args[i];
-        }
-        else{
-            importGhbPath               = "/home/simbre1/tmp/import/ghb/";
-            eclipseMappingDir           = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/";
-            eclipseFileMakerMappingDir  = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-            eadEmdNameFile              = "/home/simbre1/tmp/import/ghb/filemaker/ead_emd_name.csv";
-            patientenFile               = "/home/simbre1/tmp/import/ghb/filemaker/patienten.csv";
-            lisNationMappingFile        = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
-            lisWorkingDir               = "/home/simbre1/tmp/import/ghb/";
-            stalenLeuvenFile            = "/home/simbre1/tmp/import/ghb/seqs/Stalen Leuven.csv";
-            spreadStalenFile            = "/home/simbre1/tmp/import/ghb/seqs/SPREAD_stalen.csv";
-            seqsToIgnoreFile            = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
-            macFastaFile                = "/home/simbre1/tmp/import/ghb/seqs/MAC_final.fasta";
-            pcFastaFile                 = "/home/simbre1/tmp/import/ghb/seqs/PC_final.fasta";
-            contactenFile               = "/home/simbre1/tmp/import/ghb/filemaker/contacten.csv";
-            medFinalFile                = "/home/simbre1/tmp/import/ghb/filemaker/med_final.csv";
-            filemakerMappingPath        = "/home/simbre1/workspace/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-            outputPath                  = "/home/simbre1/tmp/import/ghb/xmlOutput/";
-        }
+        String importDir = args[0];
+        String workspace = args[1];
+        
+            importGhbPath               = importDir + "/import/ghb/";
+            eclipseMappingDir           = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/";
+            eclipseFileMakerMappingDir  = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+            eadEmdNameFile              = importDir + "/import/ghb/filemaker/ead_emd_name.csv";
+            patientenFile               = importDir + "/import/ghb/filemaker/patienten.csv";
+            lisNationMappingFile        = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
+            lisWorkingDir               = importDir + "/import/ghb/";
+            stalenLeuvenFile            = importDir + "/import/ghb/seqs/Stalen Leuven.csv";
+            spreadStalenFile            = importDir + "/import/ghb/seqs/SPREAD_stalen.csv";
+            seqsToIgnoreFile            = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
+            macFastaFile                = importDir + "/import/ghb/seqs/MAC_final.fasta";
+            pcFastaFile                 = importDir + "/import/ghb/seqs/PC_final.fasta";
+            contactenFile               = importDir + "/import/ghb/filemaker/contacten.csv";
+            medFinalFile                = importDir + "/import/ghb/filemaker/med_final.csv";
+            filemakerMappingPath        = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+            outputPath                  = importDir + "/import/ghb/xmlOutput/";
         
         ParseEadEmd eadEmd = new ParseEadEmd();
         eadEmd.run(eadEmdNameFile,patientenFile);
