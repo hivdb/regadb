@@ -40,13 +40,13 @@ import net.sf.regadb.ui.forms.account.PasswordForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.regadb.ui.framework.tree.RootMenuNode;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.administrator.AdministratorItem;
 import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
+import net.sf.regadb.ui.tree.items.custom.ContactItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetSelectedItem;
 import net.sf.regadb.ui.tree.items.events.EventSelectedItem;
@@ -105,6 +105,9 @@ public class TreeContent
     public ViralIsolateSelectedItem viralIsolateSelected;
     public ActionItem viralIsolateView;
     public ActionItem viralIsolateEdit;
+    
+    public ActionItem custom;
+    public ContactItem contact;
     
     public MyAccountItem myAccountMain;
     public LoginItem myAccountLogin;
@@ -409,6 +412,9 @@ public class TreeContent
     								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Deleting, WWidget.tr("menu.singlePatient.event.delete"), patientEventSelected.getSelectedItem()));
     							}
     		                });
+    		                
+    		                custom = new ActionItem(RootItem.tr("menu.custom"), patientSelected);
+    		                contact = new ContactItem(custom);
     		                
        attributesSettings = new ActionItem(rootItem.tr("menu.attributeSettings.attributeSettings"), rootItem)
        {

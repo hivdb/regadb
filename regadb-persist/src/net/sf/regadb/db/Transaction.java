@@ -193,6 +193,19 @@ public class Transaction {
         return q.list();
     }
     
+    public TestResult getNewestTestResult(Test test, Patient p) {
+        Query q = session.createQuery("from TestResult tr where tr.test.description = :testDescriptionParam and tr.patient.id = :patientIdParam order by tr.testDate desc");
+
+        q.setParameter("testDescriptionParam", test.getDescription());
+        q.setParameter("patientIdParam", p.getPatientIi());
+        q.setMaxResults(1);
+        
+        if(q.list().size()>0)
+            return (TestResult)q.list().get(0);
+        else
+            return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public List<TestType> getTestTypes() 
     {
