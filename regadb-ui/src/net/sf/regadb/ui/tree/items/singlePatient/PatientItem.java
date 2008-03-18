@@ -20,7 +20,7 @@ public class PatientItem extends TreeMenuNode
 		{
 			public void performAction(TreeMenuNode node)
 			{
-
+			    getChildren().get(0).prograSelectNode();
 			}
 		};
 	}

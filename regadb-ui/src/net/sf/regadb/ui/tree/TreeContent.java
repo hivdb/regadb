@@ -206,7 +206,7 @@ public class TreeContent
     public ActionItem resRepTemplateDelete;
     public ResRepTemplateSelectedItem resRepTemplateSelected;
     
-    public TreeMenuNode event;
+    public ActionItem event;
     public ActionItem eventSelect;
     public ActionItem eventAdd;
     public EventSelectedItem eventSelected;
@@ -370,12 +370,7 @@ public class TreeContent
                         }
                     });
     		
-                    patientEvent = new ActionItem(RootItem.tr("menu.singlePatient.event"), patientSelected, new ITreeAction()
-                    {
-    					public void performAction(TreeMenuNode node) {
-    						RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientEvent());
-    					}
-                    });
+                    patientEvent = new ActionItem(RootItem.tr("menu.singlePatient.event"), patientSelected);
                     
     	                patientEventSelect = new ActionItem(RootItem.tr("menu.singlePatient.event.select"), patientEvent, new ITreeAction()
     			        {
@@ -721,7 +716,7 @@ public class TreeContent
             }
         });
         
-        event = new RootMenuNode("menu.event", rootItem);
+        event = new ActionItem(RootItem.tr("menu.event"), rootItem);
         
         eventSelect = new ActionItem(RootItem.tr("menu.event.select"), event, new ITreeAction()
         {
