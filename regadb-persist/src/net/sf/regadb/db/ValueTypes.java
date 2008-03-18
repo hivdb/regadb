@@ -9,18 +9,13 @@ public enum ValueTypes
     
     public static ValueTypes getValueType(ValueType vt)
     {
-        switch(vt.getValueTypeIi())
-        {
-        case 1:
-            return NUMBER;
-        case 2:
-            return LIMITED_NUMBER;
-        case 3:
-            return STRING;
-        case 4:
-            return NOMINAL_VALUE;
-        }
+    	ValueTypes ret = null;
+    	
+        if ( vt.getDescription().equals("number") ) ret = NUMBER;
+        else if ( vt.getDescription().equals("limited number (<,=,>)") ) ret = LIMITED_NUMBER;
+        else if ( vt.getDescription().equals("string") ) ret = STRING;
+        else if ( vt.getDescription().equals("nominal value") ) ret = NOMINAL_VALUE;
         
-        return null;
+        return ret;
     }
 }
