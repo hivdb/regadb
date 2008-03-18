@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.db.Test;
@@ -72,11 +73,27 @@ public class MultipleTestResultForm extends FormWidget {
     private void fillData() {
         if(!(getInteractionState()==InteractionState.Adding)) {
             Transaction t = RegaDBMain.getApp().createTransaction();
-            for(int i = 0; i<tests_.size(); i++) {
-                TestResult tr = t.getNewestTestResult( tests_.get(i), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
-                dateTF_.setDate(tr.getTestDate());
-                FormField f = formFields_.get(i);
+            
+            List<TestResult> newestTestResults = new ArrayList<TestResult>();
+            Date newestDate = null;
+            for(Test test : tests_) {
+                TestResult tr = t.getNewestTestResult(test, RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
+                newestTestResults.add(tr);
                 if(tr!=null) {
+                    if(newestDate==null) {
+                        newestDate = tr.getTestDate();
+                    } else if(newestDate.before(tr.getTestDate())){
+                        newestDate = tr.getTestDate();
+                    }
+                }
+            }
+            
+            dateTF_.setDate(newestDate);
+            
+            for(int i = 0; i<tests_.size(); i++) {
+                FormField f = formFields_.get(i);
+                TestResult tr = newestTestResults.get(i);
+                if(tr!=null && tr.getTestDate().equals(newestDate)) {
                     if(f instanceof ComboBox) {
                         ((ComboBox)f).selectItem(tr.getTestNominalValue().getValue());
                     } else {
@@ -104,7 +121,6 @@ public class MultipleTestResultForm extends FormWidget {
 
     @Override
     public void saveData() {
-        
         Transaction t = RegaDBMain.getApp().createTransaction();
         for(int i = 0; i<tests_.size(); i++) {
             TestResult tr = null;
@@ -124,7 +140,6 @@ public class MultipleTestResultForm extends FormWidget {
                 tr.setTestDate(dateTF_.getDate());
                 t.save(tr);
             }
-            
         }
         t.commit();
         lastItem_.prograSelectNode();
