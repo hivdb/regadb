@@ -37,16 +37,21 @@ public class ActionItem extends TreeMenuNode
 	        if(selectedItem!=null) {
 	            return new ITreeAction() {
                     public void performAction(TreeMenuNode node) {
-                        if(finalSelectedItem.getSelectedItem()==null)
-                            getChildren().get(0).prograSelectNode();
-                        else 
-                            finalSelectedItem.getChildren().get(0).prograSelectNode();
+                        if(finalSelectedItem.getSelectedItem()==null) {
+                            if(getChildren().get(0)!=null)
+                                getChildren().get(0).prograSelectNode();
+                        }
+                        else {
+                            if(finalSelectedItem.getChildren().get(0)!=null)
+                                finalSelectedItem.getChildren().get(0).prograSelectNode();
+                        }
                     }
 	            };
 	        } else {
 	            return new ITreeAction() {
 	                public void performAction(TreeMenuNode node) {
-	                    getChildren().get(0).prograSelectNode();
+	                    if(getChildren().get(0)!=null)
+	                        getChildren().get(0).prograSelectNode();
 	                }
 	            };
 	        }
