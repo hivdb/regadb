@@ -1,11 +1,12 @@
 package net.sf.regadb.ui.form.query.wiv;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class WivArcViralLoadForm extends WivIntervalQueryForm {
@@ -26,12 +27,12 @@ public class WivArcViralLoadForm extends WivIntervalQueryForm {
 
         ArrayList<String> row;
 
-        Table in = Utils.readTable(csvFile.getAbsolutePath());
+        Table in = readTable(csvFile);
         Table out = new Table();
 
-        int CValue = Utils.findColumn(in,"TestResult.value");
-        int CTestDate = Utils.findColumn(in, "TestResult.testDate");
-        int CPatCode = Utils.findColumn(in, "PatientAttributeValue.value");
+        int CValue = in.findColumn("TestResult.value");
+        int CTestDate = in.findColumn("TestResult.testDate");
+        int CPatCode = in.findColumn("PatientAttributeValue.value");
 
         for(int i=1; i<in.numRows(); ++i){
             row = new ArrayList<String>();

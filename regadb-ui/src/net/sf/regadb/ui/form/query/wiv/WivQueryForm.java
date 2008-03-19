@@ -1,8 +1,10 @@
 package net.sf.regadb.ui.form.query.wiv;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
@@ -360,5 +363,16 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     protected String getFormattedDecimal(String value){
         return value.replace('.', ',');
+    }
+    
+    protected Table readTable(File csvFile) {
+        try {
+            return Table.readTable(csvFile.getAbsolutePath());
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 }
