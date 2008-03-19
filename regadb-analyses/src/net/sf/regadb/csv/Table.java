@@ -1,5 +1,8 @@
 package net.sf.regadb.csv;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +11,7 @@ import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -21,7 +25,22 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Table {
-
+    public static Table readTable(String filename)  throws FileNotFoundException, UnsupportedEncodingException {
+        return readTable(filename, Charset.defaultCharset().name(), ',');
+    }
+    
+    public static Table readTable(String filename, char delimiter) throws FileNotFoundException, UnsupportedEncodingException{
+        return readTable(filename, Charset.defaultCharset().name(), delimiter);
+    }
+    
+    public static Table readTable(String filename, String charsetName) throws FileNotFoundException, UnsupportedEncodingException{
+        return readTable(filename,charsetName,',');
+    }
+     
+    public static Table readTable(String filename, String charsetName, char delimiter) throws FileNotFoundException, UnsupportedEncodingException{
+        return new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename)),charsetName), false,delimiter);
+    }
+    
     public class Index {
         private int columns[];
         private boolean reverse[];
@@ -703,4 +722,10 @@ public class Table {
 
 		return -1;
 	}
+	
+    public int findColumn(String name) {
+        int column = this.findInRow(0, name);
+        
+        return column;
+    }
 }

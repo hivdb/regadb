@@ -1,12 +1,9 @@
 package net.sf.regadb.io.db.util;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
@@ -53,6 +50,39 @@ import org.xml.sax.SAXException;
 
 public class Utils {
     private static DateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
+    public static Table readTable(String filename, String charset, char delim) {
+        try {
+        return Table.readTable(filename, Charset.defaultCharset().name(), delim);
+        } catch(FileNotFoundException e) {
+            ConsoleLogger.getInstance().logError("File '"+filename+"' not found.");
+        } catch (UnsupportedEncodingException e) {
+            ConsoleLogger.getInstance().logError("Unsupport charset '"+charset+"'");
+        }
+        return null;
+    }
+    
+    public static Table readTable(String filename, String charset) {
+        return readTable(filename, charset, ',');
+    }
+    
+    public static Table readTable(String filename) {
+        return readTable(filename, Charset.defaultCharset().name());
+    }
+    
+    public static Table readTable(String filename, char delim) {
+        return readTable(filename, Charset.defaultCharset().name(), delim);
+    }
+    
+    public static int findColumn(Table t, String name) {
+        int column = t.findColumn(name);
+        
+        if (column == -1) {
+            ConsoleLogger.getInstance().logError("Could not find column " + name);
+        }
+        
+        return column;
+    }
     
     public static final String getMappingsilePath()
 	{
@@ -116,47 +146,6 @@ public class Utils {
         return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
     }
     
-    public static int findColumn(Table t, String name) 
-    {
-		int column = t.findInRow(0, name);
-		
-		if (column == -1)
-		{
-			ConsoleLogger.getInstance().logError("Could not find column " + name);
-		}
-		
-		return column;
-	}
-    
-	public static Table readTable(String filename) 
-	{
-		return Utils.readTable(filename, Charset.defaultCharset().name(), ',');
-	}
-	
-	public static Table readTable(String filename, char delimiter){
-	    return Utils.readTable(filename, Charset.defaultCharset().name(), delimiter);
-	}
-	
-	public static Table readTable(String filename, String charsetName){
-	    return Utils.readTable(filename,charsetName,',');
-	}
-     
-	public static Table readTable(String filename, String charsetName, char delimiter)
-	{
-		try{
-			try{
-				return new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename)),charsetName), false,delimiter);
-			}
-			catch(FileNotFoundException e)
-			{
-				ConsoleLogger.getInstance().logError("File '"+filename+"' not found.");
-			}
-		}catch(UnsupportedEncodingException e){
-			ConsoleLogger.getInstance().logError("Charset "+ charsetName +" not supported for file '"+filename+"'.");
-		}
-		return null;
-	}
-     
      public static boolean checkColumnValue(String value, int row, String patientID)
      {
     	 if(!"".equals(value))
