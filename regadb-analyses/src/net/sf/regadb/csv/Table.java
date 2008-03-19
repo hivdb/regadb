@@ -94,6 +94,7 @@ public class Table {
     ArrayList<ArrayList<String> > rows;
 	LineNumberReader reader;
 	HashMap<String, Index> indexes;
+	char delimiter = ',';
 
 	public Table() {
 		rows = new ArrayList<ArrayList<String> >();
@@ -128,7 +129,17 @@ public class Table {
 		readLines(oneline, null, null,delimiter);
 	}
 	
+	public char getDelimiter(){
+	    return delimiter;
+	}
+	
+	public void setDelimiter(char delimiter){
+	    this.delimiter = delimiter;
+	}
+	
 	private void readLines(boolean oneline, ArrayList selected, OutputStream output, char delimiter) {
+	    setDelimiter(delimiter);
+	    
 		PrintStream sout = null;
 
 		if (output != null) {
@@ -245,7 +256,7 @@ public class Table {
 		for (int j = 0; j < numRows(); ++j) {
 			for (int i = 0; i < numColumns(); ++i) {
 				if (i != 0)
-					sout.print(",");
+					sout.print(getDelimiter());
 
 				sout.print("\""+ valueAt(i, j).replace("\"", "\"\"") +"\"");
 			}
