@@ -6,13 +6,24 @@ import java.util.Iterator;
 public class SqlQuery implements QueryVisitor {
 
 	public String visitQuery(Query query) throws java.sql.SQLException{
-        return query.getSelectList().accept(this)
-        + "\nFROM " + query.getRootClause().acceptFromClause(this)
-        + "\nWHERE " + query.getRootClause().acceptWhereClause(this);
+		String select = query.getSelectList().accept(this);
+		String from = query.getRootClause().acceptFromClause(this);
+		String where =  query.getRootClause().acceptWhereClause(this);
+		String q = "";
+		if (select.length() > 0) {
+			q += "\nSELECT\n\t" + select;
+		}
+		if (from.length() > 0) {
+			q += "\nFROM\n\t" + from;
+		}
+		if (where.length() > 0) {
+			q += "\nWHERE\n\t" + where;
+		}
+        return q;
 	}
 
 	public String visitSelectionSatusList(SelectionStatusList selectList) {
-        StringBuffer buffy = new StringBuffer("SELECT  ");
+        StringBuffer buffy = new StringBuffer();
         Iterator iter = selectList.getSelections().iterator();
         while (iter.hasNext()) {
             Selection selection = (Selection)iter.next();
@@ -26,17 +37,17 @@ public class SqlQuery implements QueryVisitor {
                         FieldSelection subSelection = (FieldSelection)fieldIter.next();
                         if (subSelection.isSelected()) {
                             buffy.append(ovar.acceptWhereClauseFullName(this, (Field)(subSelection.getObject())));
-                            buffy.append(", ");
+                            buffy.append(",\n\t");
                         }
                     }
                 }
                 else { // selection instanceof OutputSelection
                     buffy.append(ovar.getExpression().acceptWhereClause(this));
-                    buffy.append(", ");
+                    buffy.append(",\n\t");
                 }
             }
         }
-        buffy.setLength(buffy.length() - 2);
+        buffy.setLength(buffy.length() - 3);
         return buffy.toString();
 	}
 
@@ -45,7 +56,10 @@ public class SqlQuery implements QueryVisitor {
         Iterator iterWords = list.getWords().iterator();
         while (iterWords.hasNext()) {
             AWCWord word = (AWCWord)iterWords.next();
-			sb.append(word.acceptWhereClause(this));
+            String str = word.acceptWhereClause(this);
+            if (!str.equals("1=1")) {
+            	sb.append(str);
+            }
         }
         return sb.toString();
 	}
@@ -98,9 +112,9 @@ public class SqlQuery implements QueryVisitor {
         while (iterChildren.hasNext()) {
             WhereClause child = (WhereClause)iterChildren.next();
             String extraWhereClause = child.acceptWhereClause(this);
-            if (extraWhereClause != null && (extraWhereClause.length() > 0)) {
+            if (extraWhereClause != null && (extraWhereClause.length() > 0) && !extraWhereClause.equals("1=1")) {
                 if (sb.length() > 0) {
-                    sb.append(") and (");
+                    sb.append(") AND\n\t(");
                 } else {
                     sb.append('(');
                 }
@@ -108,7 +122,7 @@ public class SqlQuery implements QueryVisitor {
             }
         }
         if (sb.length() > 0) {
-            sb.append(')');
+            sb.append(")\n");
         }
         return sb.toString();
 	}
@@ -171,7 +185,7 @@ public class SqlQuery implements QueryVisitor {
         while (iterFromVars.hasNext()) {
             FromVariable fromVar = (FromVariable)iterFromVars.next();
             if (sb.length() > 0) {
-                sb.append(", ");
+                sb.append(",\n\t");
             }
             sb.append(fromVar.getFromClauseStringValue(this));
         }
@@ -186,7 +200,7 @@ public class SqlQuery implements QueryVisitor {
             String extraFromClause = child.acceptFromClause(this);
             if (extraFromClause != null && (extraFromClause.length() > 0)) {
                 if (sb.length() > 0) {
-                    sb.append(", ");
+                    sb.append(",\n\t");
                 }
                 sb.append(extraFromClause);
             }
@@ -204,5 +218,23 @@ public class SqlQuery implements QueryVisitor {
 
 	public String visitFromClauseFromVariable(FromVariable fromVar) {
         return fromVar.getTableName() + " " + fromVar.getUniqueName();
+	}
+
+	@Override
+	public String visitDistinctResultQuery(Query query) throws SQLException {
+		String select = query.getSelectList().accept(this);
+		String from = query.getRootClause().acceptFromClause(this);
+		String where =  query.getRootClause().acceptWhereClause(this);
+		String q = "";
+		if (select.length() > 0) {
+			q += "\nSELECT \n\tDISTINCT " + select;
+		}
+		if (from.length() > 0) {
+			q += "\nFROM\n\t" + from;
+		}
+		if (where.length() > 0) {
+			q += "\nWHERE\n\t" + where;
+		}
+        return q;
 	}
 }

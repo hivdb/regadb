@@ -27,8 +27,8 @@ import java.util.*;
 public class SelectionStatusList implements SelectionList {
     
     private Query query;
-    private List selections = new ArrayList(); // of type Selection
-    private List changeListeners = new ArrayList();
+    private List<Selection> selections = new ArrayList<Selection>(); // of type Selection
+    private List<SelectionChangeListener> changeListeners = new ArrayList<SelectionChangeListener>();
     
     /* for xml-encoding purposes only */
     public Query getQuery() {
@@ -61,7 +61,7 @@ public class SelectionStatusList implements SelectionList {
     // %$ KVB : It is essential that this method returns column names in the same order they are appended in getSelectClause !
     public List getSelectedColumnNames() {
         ArrayList selectedColumns = new ArrayList();
-        Iterator iter = getSelections().iterator();
+        Iterator<Selection> iter = getSelections().iterator();
         while (iter.hasNext()) {
             Selection selection = (Selection)iter.next();
             if (selection.isSelected()) {
@@ -84,14 +84,14 @@ public class SelectionStatusList implements SelectionList {
         return selectedColumns;
     }
     
-    public List getSelections() {
+    public List<Selection> getSelections() {
         return selections;
     }
     
     /**
      * For XMLdecoding only!
      */
-    public void setSelections(List selections) {
+    public void setSelections(List<Selection> selections) {
         this.selections = selections;
     }
     
@@ -122,7 +122,7 @@ public class SelectionStatusList implements SelectionList {
     }
     
     public boolean isAnythingSelected() {
-        Iterator iter = selections.iterator();
+        Iterator<Selection> iter = selections.iterator();
         while (iter.hasNext()) {
             Selection selection = (Selection)iter.next();
             if (selection.isSelected()) {
@@ -169,7 +169,7 @@ public class SelectionStatusList implements SelectionList {
     }
     
     public Selection find(OutputVariable ovar) {
-        Iterator iter = selections.iterator();
+        Iterator<Selection> iter = selections.iterator();
         while (iter.hasNext()) {
             Selection selection = (Selection)iter.next();
             if (selection.getObject() == ovar) {
@@ -181,10 +181,10 @@ public class SelectionStatusList implements SelectionList {
     
     // to be called whenever the list of OutputVariables from the master query changes
     public void update() {
-        List newSelections = new ArrayList();
-        Iterator iter = query.getRootClause().getExportedOutputVariables().iterator();
+        List<Selection> newSelections = new ArrayList<Selection>();
+        Iterator<OutputVariable> iter = query.getRootClause().getExportedOutputVariables().iterator();
         while (iter.hasNext()) {
-            OutputVariable ovar = (OutputVariable)iter.next();
+            OutputVariable ovar = iter.next();
             addOrCopyVariableTo(ovar, newSelections);
         }
         selections = newSelections;
@@ -206,9 +206,9 @@ public class SelectionStatusList implements SelectionList {
     }
     
     private void notifySelectionChangeListeners() {
-        Iterator iter = changeListeners.iterator();
+        Iterator<SelectionChangeListener> iter = changeListeners.iterator();
         while (iter.hasNext()) {
-            SelectionChangeListener listener = (SelectionChangeListener)iter.next();
+            SelectionChangeListener listener = iter.next();
             listener.selectionChanged();
         }
     }

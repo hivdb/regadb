@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.Collection;
 import java.util.List;
 
-import com.pharmadm.custom.rega.savable.*;
 import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
 
 /**
@@ -73,7 +72,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * @return a Collection all available OutputVariables
      * </p>
      */
-    public Collection getAvailableOutputVariables() {
+    public Collection<OutputVariable> getAvailableOutputVariables() {
         if (contextClause == null) {
             return getAtomicWhereClause().getOutputVariablesAvailableForImport();
         }
@@ -98,9 +97,9 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * compatible with
      * </p>
      */
-    public Collection getCompatibleOutputVariables(InputVariable input) {
-        Collection compatibles = new ArrayList();
-        Iterator iter = getAvailableOutputVariables().iterator();
+    public Collection<OutputVariable> getCompatibleOutputVariables(InputVariable input) {
+        Collection<OutputVariable> compatibles = new ArrayList<OutputVariable>();
+        Iterator<OutputVariable> iter = getAvailableOutputVariables().iterator();
         while (iter.hasNext()) {
             OutputVariable ov = (OutputVariable)iter.next();
             if (input.isCompatible(ov)) {

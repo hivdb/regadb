@@ -45,19 +45,19 @@ public abstract class ComposedWhereClause extends WhereClause {
      * </p>
      *
      */
-    private ArrayList children = new ArrayList();
+    private ArrayList<WhereClause> children = new ArrayList<WhereClause>();
     
     ///////////////////////////////////////
     // access methods for associations
     
-    public ArrayList getChildren() {
+    public ArrayList<WhereClause> getChildren() {
         return children;
     }
     
     /**
      * For XMLdecoder only.
      */
-    public void setChildren(ArrayList children) {
+    public void setChildren(ArrayList<WhereClause> children) {
         this.children = children;
     }
     
@@ -93,14 +93,14 @@ public abstract class ComposedWhereClause extends WhereClause {
         }
     }
 
-    public Iterator iterateChildren() {
+    public Iterator<WhereClause> iterateChildren() {
         return children.iterator();
     }
     
     public boolean isValid() {
-        Iterator iterCh = iterateChildren();
+        Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {
-            WhereClause aChild = (WhereClause)iterCh.next();
+            WhereClause aChild = iterCh.next();
             if (!aChild.isValid()) {
                 return false;
             }
@@ -127,7 +127,7 @@ public abstract class ComposedWhereClause extends WhereClause {
         } else {
             result = getParent().getOutputVariablesAvailableForImport(this);
         }
-        Iterator iterCh = iterateChildren();
+        Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {
             WhereClause aChild = (WhereClause)iterCh.next();
             if (aChild != excludeChild) {

@@ -114,7 +114,7 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
      * Improves scroll wheel behaviour of the fields panel.
      */
     private static class ScrollableFieldPanel extends JPanel implements Scrollable {
-        private java.awt.Dimension preferredSize = new java.awt.Dimension(200, 200);
+        private java.awt.Dimension preferredSize = new java.awt.Dimension(100, 200);
         
         public void setMaxHeight(double totalHeight) {
             this.preferredSize = new java.awt.Dimension((int)preferredSize.getWidth(), java.lang.Math.min((int)java.lang.Math.ceil(totalHeight),200));

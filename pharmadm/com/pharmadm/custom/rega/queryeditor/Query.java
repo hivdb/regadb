@@ -105,7 +105,7 @@ public class Query {
     }
     
     // for testing purposes only
-    public String getQueryString() throws java.sql.SQLException { //, com.pharmadm.custom.rega.chem.search.MoleculeIndexingException {
+    public String getQueryString() throws java.sql.SQLException { 
     	return accept(DatabaseManager.getInstance().getQueryBuilder());
     }
     

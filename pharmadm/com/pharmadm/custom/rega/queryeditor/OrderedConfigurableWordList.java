@@ -35,7 +35,7 @@ import java.util.*;
 public class OrderedConfigurableWordList implements Cloneable {
     
     private WordListOwner owner = null;
-    private List words = new ArrayList(); // of type ConfigurableWord
+    private List<ConfigurableWord> words = new ArrayList<ConfigurableWord>(); // of type ConfigurableWord
     
     /** For xml-encoding purposes only */
     public OrderedConfigurableWordList() {
@@ -51,13 +51,13 @@ public class OrderedConfigurableWordList implements Cloneable {
     /**
      * Returns an unmodifiable List of the words.
      */
-    public List getWords() {
+    public List<ConfigurableWord> getWords() {
         return words; //Collections.unmodifiableList(words);
     }
     
     /** For cloning and xml-encoding purposes only */
     // don't use for anything else, since the sets of the owner don't get updated
-    public void setWords(List newList) {
+    public void setWords(List<ConfigurableWord> newList) {
         words = newList;
     }
     
@@ -77,7 +77,7 @@ public class OrderedConfigurableWordList implements Cloneable {
     
     public String getHumanStringValue() {
         StringBuffer sb = new StringBuffer();
-        Iterator iterWords = getWords().iterator();
+        Iterator<ConfigurableWord> iterWords = getWords().iterator();
         while (iterWords.hasNext()) {
             ConfigurableWord word = (ConfigurableWord)iterWords.next();
             sb.append(word.getHumanStringValue());
@@ -96,10 +96,10 @@ public class OrderedConfigurableWordList implements Cloneable {
     public OrderedConfigurableWordList cloneInContext(Map originalToCloneMap, WordListOwner cloneOwner) throws CloneNotSupportedException {
         OrderedConfigurableWordList clone = (OrderedConfigurableWordList)super.clone();
         clone.setOwner(cloneOwner);
-        Iterator origWordIterator = getWords().iterator();
-        ArrayList cloneWords = new ArrayList();  // MUST be new list, not a reference to the original list
+        Iterator<ConfigurableWord> origWordIterator = getWords().iterator();
+        ArrayList<ConfigurableWord> cloneWords = new ArrayList<ConfigurableWord>();  // MUST be new list, not a reference to the original list
         while (origWordIterator.hasNext()) {
-            ConfigurableWord word = (ConfigurableWord)origWordIterator.next();
+            ConfigurableWord word = origWordIterator.next();
             if (word instanceof FixedString) {
                 cloneWords.add(word);  // immutable, no need to clone
             } else {

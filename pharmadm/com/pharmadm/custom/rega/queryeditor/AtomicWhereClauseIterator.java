@@ -31,9 +31,9 @@ public class AtomicWhereClauseIterator implements Iterator {
             if (rootClause instanceof AtomicWhereClause) {
                 childIterators.add(new com.pharmadm.util.SingleIterator(rootClause));
             } else {
-                Iterator childIterator = rootClause.iterateChildren();
+                Iterator<WhereClause> childIterator = rootClause.iterateChildren();
                 while (childIterator.hasNext()) {
-                    WhereClause childClause = (WhereClause)childIterator.next();
+                    WhereClause childClause = childIterator.next();
                     if (childClause instanceof AtomicWhereClause) {
                         childIterators.add(new com.pharmadm.util.SingleIterator(childClause));
                     } else {

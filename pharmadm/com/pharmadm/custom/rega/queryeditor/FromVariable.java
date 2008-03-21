@@ -41,19 +41,19 @@ public class FromVariable implements AWCWord, Cloneable {
     private Table table;
     
     private long seqId;
-    private static long nextSeqId;
-    private static Object seqIdLock = new Object();
+//    private static long nextSeqId;
+//    private static Object seqIdLock = new Object();
+    private boolean locked;
     
     public FromVariable(String tableName) {
         this.tableName = tableName;
         this.table = DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
-        acquireSeqId();
+        locked = false;
     }
     
     private void acquireSeqId() {
-        synchronized(seqIdLock) {
-            seqId = nextSeqId++;
-        }
+    	seqId = table.acquireSeqId();
+        locked = true;
     }
     
     ///////////////////////////////////////
@@ -68,7 +68,10 @@ public class FromVariable implements AWCWord, Cloneable {
     }
     
     public String getUniqueName() {
-        return getTableName().substring(getTableName().lastIndexOf('.')+1)+seqId;
+    	if (!locked) {
+    		acquireSeqId();
+    	}
+        return AWCPrototypeCatalog.getInstance().getGoodDbName(tableName) + seqId;
     }
     
     public String getFromClauseStringValue(QueryVisitor visitor) {
@@ -83,9 +86,14 @@ public class FromVariable implements AWCWord, Cloneable {
         return getUniqueName();
     }
     
+    public void unlock() {
+    	locked = false;
+    }
+    
     protected Object clone() throws CloneNotSupportedException {
         FromVariable clone = (FromVariable)super.clone();
-        clone.acquireSeqId();
+//        clone.unlock();
+//        clone.acquireSeqId();
         return clone;
     }
     

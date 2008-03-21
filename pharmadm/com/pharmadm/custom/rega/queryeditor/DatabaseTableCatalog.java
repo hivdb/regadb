@@ -30,39 +30,25 @@ public class DatabaseTableCatalog {
  * 
  * </p>
  */
-    private HashMap<String, String> singularNameMap = new HashMap<String, String>();
     
-    public Collection tables = new TreeSet(); // of type Table
+    public Collection<Table> tables = new TreeSet<Table>(); // of type Table
 
     public DatabaseTableCatalog() {
-        initNameMap();
     }
     
-    private void initNameMap() {
-    	singularNameMap.put("patient", "patient");
-    	singularNameMap.put("therapy", "therapy");
-    	singularNameMap.put("viral_isolate", "viral isolate");
-        singularNameMap.put("nt_sequence", "nucleotide sequence");
-        singularNameMap.put("aa_sequence", "amino acid sequence");
-        singularNameMap.put("aa_mutation", "amino acid mutation");
-        singularNameMap.put("aa_insertion", "amino acid insertion");
-        singularNameMap.put("patient_attribute_value", "attribute");
-        singularNameMap.put("drug_generic", "generic drug");
-        singularNameMap.put("drug_commercial", "commercial drug");
-    }
         
     
    ///////////////////////////////////////
    // access methods for associations
 
-    public Collection getTables() {
+    public Collection<Table> getTables() {
         return tables;
     }
     public Table getTable(String name) {
         if (name.startsWith("TMP_")) {
             return null;
         }
-        Iterator iter = tables.iterator();
+        Iterator<Table> iter = tables.iterator();
         while (iter.hasNext()) {
             Table table = (Table)iter.next();
             if (table.getName().equalsIgnoreCase(name)) {
@@ -78,10 +64,6 @@ public class DatabaseTableCatalog {
         Table table = getTable(name);
         if (table == null) {
             table = new Table(name);
-            String singularName = (String)singularNameMap.get(name);
-            if (singularName != null) {
-                table.setSingularName(singularName);
-            }
             tables.add(table);
         }
         return table;

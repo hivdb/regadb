@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.text.Format;
+import java.util.Date;
 
 /**
  * <p>
@@ -33,6 +34,7 @@ public class StringConstant extends Constant {
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseStringConstant(this);
     }
+    
     
     /**
      * A Format that accepts anything.  Any String gets parsed into a String.

@@ -33,26 +33,33 @@ public class Table implements Comparable {
      *
      */
     private String name;
-    private String singularName;
-    private Collection fields = null; // of type Field
+    private Collection<Field> fields = null; // of type Field
     private String comment;
+    private int seqId;
+    private static Object seqIdLock = new Object();
     
     public Table(String name) {
         if (name != null) {
             this.name = name;
-            this.singularName = name.toLowerCase();
             comment = DatabaseManager.getInstance().getCommentForTable(name);
+            seqId = 1;
+        }
+    }
+    
+    public int acquireSeqId() {
+        synchronized(seqIdLock) {
+            return seqId++;
         }
     }
     
     ///////////////////////////////////////
     // access methods for associations
     
-    public Collection getFields() {
+    public Collection<Field> getFields() {
         if (fields == null) {
             List<String> fieldNames = DatabaseManager.getInstance().getColumnNames(getName());
             List<String> keyNames = DatabaseManager.getInstance().getPrimaryKeys(getName());
-            fields = new ArrayList();
+            fields = new ArrayList<Field>();
             Iterator<String> fieldNameIter = fieldNames.iterator();
             while (fieldNameIter.hasNext()) {
                 String fieldName = fieldNameIter.next();
@@ -63,11 +70,11 @@ public class Table implements Comparable {
         return fields;
     }
     
-    public Collection getPrimaryKeyFields() {
-        Collection res = new ArrayList();
-        Iterator iter = fields.iterator();
+    public Collection<Field> getPrimaryKeyFields() {
+        Collection<Field> res = new ArrayList<Field>();
+        Iterator<Field> iter = fields.iterator();
         while (iter.hasNext()) {
-            Field field = (Field)iter.next();
+            Field field = iter.next();
             if (field.isPrimaryKey()) {
                 res.add(field);
             }
@@ -76,7 +83,7 @@ public class Table implements Comparable {
     }
         
     public Field getField(String name) {
-        Iterator iter = getFields().iterator();
+        Iterator<Field> iter = getFields().iterator();
         while (iter.hasNext()) {
             Field field = (Field)iter.next();
             if (field.getName().equals(name)) {
@@ -94,7 +101,7 @@ public class Table implements Comparable {
     }
     
     public String getSingularName() {
-        return singularName;
+    	return AWCPrototypeCatalog.getInstance().getGoodTableName(getName());
     }
     
     public String getComment() {
@@ -106,10 +113,6 @@ public class Table implements Comparable {
      */
     public void setName(String newName) {
         this.name = newName;
-    }
-    
-    protected void setSingularName(String newSingularName) {
-        this.singularName = newSingularName;
     }
     
     /**

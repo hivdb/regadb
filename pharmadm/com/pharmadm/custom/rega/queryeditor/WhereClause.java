@@ -163,7 +163,7 @@ public abstract class WhereClause implements Cloneable {
      * @return an Iterator through all immediate children of this WhereClause
      * </p>
      */
-    public abstract Iterator iterateChildren();
+    public abstract Iterator<WhereClause> iterateChildren();
     
     /**
      * <p>

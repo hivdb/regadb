@@ -12,6 +12,15 @@ public interface QueryVisitor {
 	public String visitQuery(Query query)  throws java.sql.SQLException;
 	
 	/**
+	 * query for dropdowns
+	 * @param query
+	 * @return
+	 * @throws java.sql.SQLException
+	 */
+	public String visitDistinctResultQuery(Query query)  throws java.sql.SQLException;
+	
+	
+	/**
 	 * select clause of the query
 	 * @param selectList
 	 * @return

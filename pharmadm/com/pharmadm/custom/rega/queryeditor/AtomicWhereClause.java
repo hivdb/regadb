@@ -14,7 +14,6 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.util.*;
 import java.sql.SQLException;
 
-//import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
 /**
  * <p>
  * An AtomicWhereClause does not contain child WhereClauses. It determines
@@ -42,7 +41,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     }
     
     /** For xml-encoding purposes */
-    public AtomicWhereClause(Collection inputVariables, Collection outputVariables, Collection fromVariables, Collection constants, VisualizationClauseList visualizationClauseList, WhereClauseComposer whereClauseComposer) {
+    public AtomicWhereClause(Collection<InputVariable> inputVariables, Collection<OutputVariable> outputVariables, Collection<FromVariable> fromVariables, Collection<Constant> constants, VisualizationClauseList visualizationClauseList, WhereClauseComposer whereClauseComposer) {
         this.inputVariables = inputVariables;
         this.outputVariables = outputVariables;
         this.fromVariables = fromVariables;
@@ -59,28 +58,28 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      *
      * </p>
      */
-    private Collection inputVariables = new HashSet(); // of type InputVariable
+    private Collection<InputVariable> inputVariables = new HashSet<InputVariable>(); // of type InputVariable
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection constants = new HashSet(); // of type Constant
+    private Collection<Constant> constants = new HashSet<Constant>(); // of type Constant
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection outputVariables = new HashSet(); // of type OutputVariable
+    private Collection<OutputVariable> outputVariables = new HashSet<OutputVariable>(); // of type OutputVariable
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection fromVariables = new HashSet(); // of type FromVariable
+    private Collection<FromVariable> fromVariables = new HashSet<FromVariable>(); // of type FromVariable
     
     /**
      * <p>
@@ -101,28 +100,28 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     ///////////////////////////////////////
     // access methods for associations
     
-    public Collection getInputVariables() {
+    public Collection<InputVariable> getInputVariables() {
         return inputVariables;
     }
     protected void addInputVariable(InputVariable inputVariable) {
         this.inputVariables.add(inputVariable);
     }
     
-    public Collection getConstants() {
+    public Collection<Constant> getConstants() {
         return constants;
     }
     protected void addConstant(Constant constant) {
         this.constants.add(constant);
     }
     
-    public Collection getOutputVariables() {
+    public Collection<OutputVariable> getOutputVariables() {
         return outputVariables;
     }
     protected void addOutputVariable(OutputVariable outputVariable) {
         this.outputVariables.add(outputVariable);
     }
     
-    public Collection getFromVariables() {
+    public Collection<FromVariable> getFromVariables() {
         return fromVariables;
     }
     protected void addFromVariable(FromVariable fromVariable) {
@@ -155,12 +154,12 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      *
      */
     public void reset() {
-        Iterator iterInputVars = getInputVariables().iterator();
+        Iterator<InputVariable> iterInputVars = getInputVariables().iterator();
         while (iterInputVars.hasNext()) {
             InputVariable ivar = (InputVariable)iterInputVars.next();
             ivar.setOutputVariable(null);
         }
-        Iterator iterConsts = getConstants().iterator();
+        Iterator<Constant> iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {
             Constant c = (Constant)iterConsts.next();
             c.setValue(null);
@@ -190,7 +189,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     protected Collection getOutputVariablesAvailableForImport(WhereClause excludeChild) {
         return getOutputVariablesAvailableForImport();
     }
-    protected Collection getExportedOutputVariables() {
+    protected Collection<OutputVariable> getExportedOutputVariables() {
         return getOutputVariables();
     }
     
@@ -199,7 +198,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      */
     protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
         AtomicWhereClause clone = new AtomicWhereClause();
-        Iterator iterFromVariables = getFromVariables().iterator();
+        Iterator<FromVariable> iterFromVariables = getFromVariables().iterator();
         while (iterFromVariables.hasNext()) {
             FromVariable fromVar = (FromVariable)iterFromVariables.next();
             FromVariable fromVarClone = (FromVariable)fromVar.clone();
@@ -207,7 +206,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
             clone.fromVariables.add(fromVarClone);
         }
         
-        Iterator iterConstants = getConstants().iterator();
+        Iterator<Constant> iterConstants = getConstants().iterator();
         while (iterConstants.hasNext()) {
             Constant constant = (Constant)iterConstants.next();
             Constant constantClone = (Constant)constant.clone();
@@ -217,7 +216,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         
         // leave inputVariables assigned to original outputvariables for now
         // (set them later to correct outputvars when the outputvar's clones are ready.)
-        Iterator iterInputVariables = getInputVariables().iterator();
+        Iterator<InputVariable> iterInputVariables = getInputVariables().iterator();
         while (iterInputVariables.hasNext()) {
             InputVariable inputVar = (InputVariable)iterInputVariables.next();
             InputVariable inputVarClone = (InputVariable)inputVar.clone();
@@ -225,7 +224,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
             clone.inputVariables.add(inputVarClone);
         }
         
-        Iterator iterOutputVariables = getOutputVariables().iterator();
+        Iterator<OutputVariable> iterOutputVariables = getOutputVariables().iterator();
         while (iterOutputVariables.hasNext()) {
             OutputVariable outputVar = (OutputVariable)iterOutputVariables.next();
             OutputVariable outputVarClone = (OutputVariable)outputVar.cloneInContext(originalToCloneMap);
@@ -246,7 +245,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      */
     protected void cloneLinks(Map originalToCloneMap) throws CloneNotSupportedException {
         // now let inputclones point to correct outputclones
-        Iterator iterInputVariables = getInputVariables().iterator();
+        Iterator<InputVariable> iterInputVariables = getInputVariables().iterator();
         while (iterInputVariables.hasNext()) {
             InputVariable inputVar = (InputVariable)iterInputVariables.next();
             OutputVariable outputVar = inputVar.getOutputVariable();
@@ -270,12 +269,12 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     
     public boolean isValid() {
         boolean valid = true;
-        Iterator iterInputVars = getInputVariables().iterator();
+        Iterator<InputVariable> iterInputVars = getInputVariables().iterator();
         while (iterInputVars.hasNext()) {
             InputVariable ivar = (InputVariable)iterInputVars.next();
             valid &=  ((ivar.getOutputVariable() != null) && getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable()));
         }
-        Iterator iterConsts = getConstants().iterator();
+        Iterator<Constant> iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {
             Constant c = (Constant)iterConsts.next();
             valid &= (c.getValue() != null);

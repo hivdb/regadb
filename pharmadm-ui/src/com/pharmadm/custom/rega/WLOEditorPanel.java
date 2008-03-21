@@ -14,7 +14,7 @@ import com.pharmadm.custom.rega.queryeditor.gui.WordConfigurer;
  */
 public class WLOEditorPanel extends javax.swing.JPanel {
     
-    private List configList;
+    private List<WordConfigurer> configList;
     protected ConfigurationController controller;
 
     /** Creates new form WLOEditorPanel */
@@ -26,10 +26,10 @@ public class WLOEditorPanel extends javax.swing.JPanel {
     private void initMoreComponents() {
         setLayout(new java.awt.FlowLayout());
         VisualizationComponentFactory factory = controller.getVisualizationComponentFactory();
-        configList = new ArrayList();
-        Iterator iter = controller.getVisualizationList().iterator();
+        configList = new ArrayList<WordConfigurer>();
+        Iterator<ConfigurableWord> iter = controller.getVisualizationList().iterator();
         while (iter.hasNext()) {
-            ConfigurableWord word = (ConfigurableWord)iter.next();
+            ConfigurableWord word = iter.next();
             WordConfigurer wordConfigurer = factory.createComponent(word);
             configList.add(wordConfigurer); 
             try {
@@ -42,9 +42,9 @@ public class WLOEditorPanel extends javax.swing.JPanel {
         
     /** Applies changes made to all visualisation components in the componentList to the corresponding AWCWords */
     public void applyEditings() {
-        Iterator iter = configList.iterator();
+        Iterator<WordConfigurer> iter = configList.iterator();
         while (iter.hasNext()) {
-            WordConfigurer confy = (WordConfigurer)iter.next();
+            WordConfigurer confy = iter.next();
             confy.configureWord();
         }
     }
@@ -59,7 +59,7 @@ public class WLOEditorPanel extends javax.swing.JPanel {
             // (something to ensure serializability...)
             return;
         }
-        Iterator iter = configList.iterator();
+        Iterator<WordConfigurer> iter = configList.iterator();
         while (iter.hasNext()) {
             java.awt.Component confy = (java.awt.Component)iter.next();
             confy.addFocusListener(listener);
@@ -67,7 +67,7 @@ public class WLOEditorPanel extends javax.swing.JPanel {
     }
     
     public void freeResources() {
-        Iterator iter = configList.iterator();
+        Iterator<WordConfigurer> iter = configList.iterator();
         while (iter.hasNext()) {
             WordConfigurer confy = (WordConfigurer)iter.next();
             confy.freeResources();

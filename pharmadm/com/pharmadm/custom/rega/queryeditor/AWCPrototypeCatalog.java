@@ -36,7 +36,7 @@ public class AWCPrototypeCatalog {
     
     public static AWCPrototypeCatalog getInstance() {
         if (mainCatalog == null) {
-            initMainCatalog();
+            mainCatalog = HibernateAWCPrototypeCatalog.getInstance();
         }
         return mainCatalog;
     }
@@ -399,7 +399,7 @@ public class AWCPrototypeCatalog {
         return getGoodVariableName(varType.getName());
     }
     
-    private String getGoodVariableName(String tableName) {
+    public String getGoodVariableName(String tableName) {
         String varName = (String)typeNameToGoodVariableName.get(tableName.toLowerCase());
         if (varName == null) {
             return tableName.substring(0, 1);
@@ -407,6 +407,17 @@ public class AWCPrototypeCatalog {
             return varName;
         }
     }
+    
+    public String getGoodTableName(String tableName) {
+    	return tableName.toLowerCase();
+    }
+    
+    public String getGoodDbName(String tableName) {
+    	return tableName.toLowerCase();
+    }
+    
+    
+    
     
     /**
      * returns true if a table with the given name exists in the database
@@ -897,10 +908,6 @@ public class AWCPrototypeCatalog {
         } else {
             return null;
         }
-    }
-    
-    public AtomicWhereClause addGetRemoteAssociationClause(String[][] args) {
-        return addGetRemoteAssociationClause(args, null);
     }
     
     public AtomicWhereClause addGetRemoteAssociationClause(String[][] args, String description) {

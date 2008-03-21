@@ -32,7 +32,7 @@ import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
 public class AtomicClauseSelectionDialog extends JDialog {
     
     /** Creates new form AtomicClauseSelectionDialog */
-    public AtomicClauseSelectionDialog(java.awt.Frame parent, QueryEditor queryEditor, WhereClause contextClause, Collection clauseList, boolean modal) {
+    public AtomicClauseSelectionDialog(java.awt.Frame parent, QueryEditor queryEditor, WhereClause contextClause, Collection<AtomicWhereClause> clauseList, boolean modal) {
         super(parent, modal);
         initComponents();
         initListComponents(queryEditor, contextClause, clauseList);
@@ -92,13 +92,13 @@ public class AtomicClauseSelectionDialog extends JDialog {
         freeResources();
     }//GEN-LAST:event_formWindowClosed
     
-    private void initListComponents(QueryEditor queryEditor, WhereClause contextClause, Collection clauseList) {
+    private void initListComponents(QueryEditor queryEditor, WhereClause contextClause, Collection<AtomicWhereClause> clauseList) {
         editPanel = new ScrollableEditPanel();
         editPanel.setLayout(new java.awt.GridBagLayout());
         jScrollPane2.setViewportView(editPanel);
         
-        Iterator iter = clauseList.iterator();
-        selectorList = new ArrayList();
+        Iterator<AtomicWhereClause> iter = clauseList.iterator();
+        selectorList = new ArrayList<AtomicWhereClauseSelectorPanel>();
         
         java.awt.GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -207,6 +207,8 @@ public class AtomicClauseSelectionDialog extends JDialog {
         };
         selectorPanel.addMouseListener(doubleClickListener);
         jRadioButton.addMouseListener(doubleClickListener);
+        buttonGroup1.add(jRadioButton);
+
     	
         return selectorPanel;
     }
@@ -237,9 +239,9 @@ public class AtomicClauseSelectionDialog extends JDialog {
     }
     
     private void applySelection() {
-        Iterator iter = selectorList.iterator();
+        Iterator<AtomicWhereClauseSelectorPanel> iter = selectorList.iterator();
         while(iter.hasNext()) {
-            AtomicWhereClauseSelectorPanel selector = (AtomicWhereClauseSelectorPanel)iter.next();
+            AtomicWhereClauseSelectorPanel selector = iter.next();
             if (selector.getRadioButton().isSelected()) {
                 selector.getEditorPanel().applyEditings();
                 selectedClause = selector.getEditorPanel().getClause();
@@ -250,9 +252,9 @@ public class AtomicClauseSelectionDialog extends JDialog {
     }
     
     private void freeResources() {
-        Iterator iter = selectorList.iterator();
+        Iterator<AtomicWhereClauseSelectorPanel> iter = selectorList.iterator();
         while(iter.hasNext()) {
-            AtomicWhereClauseSelectorPanel selector = (AtomicWhereClauseSelectorPanel)iter.next();
+            AtomicWhereClauseSelectorPanel selector = iter.next();
             selector.freeResources();
         }
     }
@@ -270,7 +272,7 @@ public class AtomicClauseSelectionDialog extends JDialog {
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
     private AtomicWhereClause selectedClause = null;
-    private Collection selectorList; // of type AtomicWhereClauseSelectorPanel
+    private Collection<AtomicWhereClauseSelectorPanel> selectorList;
     private javax.swing.JPanel editPanel;
     
     private static class ScrollableEditPanel extends JPanel implements Scrollable {

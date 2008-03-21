@@ -50,9 +50,9 @@ public class AndClause extends ComposedWhereClause {
     
     protected Collection getExportedOutputVariables() {
         Collection result = new ArrayList();
-        Iterator iterCh = iterateChildren();
+        Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {
-            WhereClause aChild = (WhereClause)iterCh.next();
+            WhereClause aChild = iterCh.next();
             result.addAll(aChild.getExportedOutputVariables());
         }
         return result;
@@ -64,9 +64,9 @@ public class AndClause extends ComposedWhereClause {
     
     protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
         AndClause clone = new AndClause();
-        Iterator iterChildren = iterateChildren();
+        Iterator<WhereClause> iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {
-            WhereClause child = (WhereClause)iterChildren.next();
+            WhereClause child = iterChildren.next();
             clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null);
         }
         return clone;

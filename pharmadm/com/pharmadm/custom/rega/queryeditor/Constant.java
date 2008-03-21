@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.sql.SQLException;
 import java.text.Format;
 import java.util.*;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
@@ -50,10 +51,11 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     private Object value = null;
     
     private boolean suggestedValuesMandatory = false;
-    private String suggestedValuesQuery = null;
+    private Query suggestedValuesQuery = null;
+    private String suggestedValuesQueryDefault = null;
     
     // Yes, I *know* ! Mind your own business :-)
-    private ArrayList valueChangeListeners = new ArrayList();
+    private ArrayList<ValueChangeListener> valueChangeListeners = new ArrayList<ValueChangeListener>();
     
     
     ///////////////////////////////////////
@@ -119,7 +121,8 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     }
     
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Object clone = super.clone();
+        return clone;
     }
     
     /* Implementing ValueSpecifier */
@@ -132,12 +135,24 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      * The query should return a result set consisting of a single column.
      */
     public String getSuggestedValuesQuery() {
-        return suggestedValuesQuery;
+    	String query = suggestedValuesQueryDefault;
+    	if (suggestedValuesQuery != null) {
+	    	try {
+	    		query = DatabaseManager.getInstance().getQueryBuilder().visitDistinctResultQuery(suggestedValuesQuery);
+	    	}
+	    	catch (SQLException e) {}
+    	}
+    	return query;
+    }
+    
+    public void setSuggestedValuesQuery(Query query) {
+        this.suggestedValuesQuery = query;
     }
     
     public void setSuggestedValuesQuery(String query) {
-        this.suggestedValuesQuery = query;
+        this.suggestedValuesQueryDefault = query;
     }
+    
     
     /**
      * Whether values other than those returned by the suggested values string are allowed.
@@ -170,13 +185,12 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     }
     
     private void notifyValueChangeListeners() {
-        Iterator iter = valueChangeListeners.iterator();
+        Iterator<ValueChangeListener> iter = valueChangeListeners.iterator();
         while (iter.hasNext()) {
             ValueChangeListener listener = (ValueChangeListener)iter.next();
             listener.valueChanged();
         }
     }
-    
 } // end Constant
 
 
