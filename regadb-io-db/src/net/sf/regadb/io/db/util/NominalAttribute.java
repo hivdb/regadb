@@ -42,6 +42,8 @@ public class NominalAttribute {
         public int column;
         public Attribute attribute;
         public Map<String, AttributeNominalValue> nominalValueMap; // key = id in code table
+        
+        private boolean checkUnstandard = true;
 
         public NominalAttribute(String name, int column, Table t) {
             this.column = column;
@@ -63,9 +65,14 @@ public class NominalAttribute {
             }
        }
         
-       public NominalAttribute(String name, Table conversionTable, AttributeGroup group, Attribute standard) {
+        public NominalAttribute(String name, Table conversionTable, AttributeGroup group, Attribute standard) {
+            this(name, conversionTable, group, standard, true);
+        }
+        
+       public NominalAttribute(String name, Table conversionTable, AttributeGroup group, Attribute standard, boolean checkNonStandard) {
             this.attribute = new Attribute(name);
             this.attribute.setValueType(nominalValueType);
+            this.checkUnstandard = checkNonStandard;
             
             attribute.setAttributeGroup(group);
             
@@ -86,7 +93,7 @@ public class NominalAttribute {
                 		value = new AttributeNominalValue(attribute, valueS);
 	                attribute.getAttributeNominalValues().add(value);
 	                nominalValueMap.put(conversionTable.valueAt(0, i), value);
-	                if(!checkStandardNominalValue(value.getValue(),standard)) {
+	                if(!checkStandardNominalValue(value.getValue(),standard) && checkUnstandard) {
 	                	ConsoleLogger.getInstance().logError("Usage of unstandard value " + value.getValue());
 	                }
                 }

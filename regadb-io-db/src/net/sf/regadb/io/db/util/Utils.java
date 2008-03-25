@@ -747,4 +747,31 @@ public class Utils {
          }
          return null;
      } 
+     
+     public static void createPAV(NominalAttribute na, String nominalVal, Patient p) {
+         AttributeNominalValue gnv = na.nominalValueMap.get(nominalVal);
+         if (gnv != null) {
+             PatientAttributeValue v = p.createPatientAttributeValue(na.attribute);
+             v.setAttributeNominalValue(gnv);
+         } else {
+             ConsoleLogger.getInstance().logError("No mapping for nominal value: " + na.attribute.getName() + " -> " + nominalVal);
+         }
+     }
+     
+     public static boolean addCountryOrGeographicOrigin(NominalAttribute countryNA, NominalAttribute geographicNA, String val, Patient p) {
+         AttributeNominalValue cnv = countryNA.nominalValueMap.get(val);
+         AttributeNominalValue gnv = geographicNA.nominalValueMap.get(val);
+         if(cnv!=null) {
+             PatientAttributeValue v = p.createPatientAttributeValue(countryNA.attribute);
+             v.setAttributeNominalValue(cnv);
+             return true;
+         }
+         if(gnv!=null) {
+             PatientAttributeValue v = p.createPatientAttributeValue(geographicNA.attribute);
+             v.setAttributeNominalValue(gnv);
+             return true;
+         }
+         ConsoleLogger.getInstance().logError("No mapping for nominal value: " + val);
+         return false;
+     }
 }
