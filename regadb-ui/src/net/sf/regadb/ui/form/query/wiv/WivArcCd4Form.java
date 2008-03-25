@@ -40,22 +40,18 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
             row = new ArrayList<String>();
             
             row.add(getCentreName());
-            row.add("1");
+            row.add("2");
             row.add(in.valueAt(CPatCode, i));
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
             row.add("1");
             row.add("2");   //VL=1 CD4=2
             row.add(getFormattedDecimal(in.valueAt(CValue,i)));
-            row.add("");
-            row.add("");
-            row.add("");
 
             out.addRow(row);
         }
         
         try{
-            out.setDelimiter(';');
-            out.exportAsCsv(new FileOutputStream(outFile));
+            out.exportAsCsv(new FileOutputStream(outFile),';',false);
         }
         catch(Exception e){
             e.printStackTrace();

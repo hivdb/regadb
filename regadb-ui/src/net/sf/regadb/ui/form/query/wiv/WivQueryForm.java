@@ -280,7 +280,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     // Parse utility methods
     
     protected String getCentreName(){
-        return "VUB";
+        return RegaDBSettings.getInstance().getPropertyValue("centre.name");
     }
     
     protected String getPatCode(Date birthDate, String firstName, String lastName, String gender){
@@ -361,8 +361,19 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         return -1;
     }
     
+    protected double parseValue(String value){
+        String number = value.replace("<", "");
+        number = number.replace("=", "");
+        return Double.parseDouble(number.replace(">", ""));
+    }
+    
     protected String getFormattedDecimal(String value){
         return value.replace('.', ',');
+    }
+    
+    protected String getFormattedDecimal(double value){
+        String s = value +"";
+        return getFormattedDecimal(s);
     }
     
     protected Table readTable(File csvFile) {
