@@ -62,14 +62,18 @@ public class WivObjects {
         attributes_.put(name, a);
     
         if(anvs != null){
-            for(String s : anvs){
-                AttributeNominalValue anv = new AttributeNominalValue();
-                anv.setAttribute(a);
-                anv.setValue(s);
-                
-                nominalValues_.put(getAttributeNominalValueKey(a, s), anv);
+            for(String value : anvs){
+                createAttributeNominalValue(a,value);
             }
+            createAttributeNominalValue(a,"U: Unknown");
         }
+    }
+    
+    private static void createAttributeNominalValue(Attribute a, String value){
+        AttributeNominalValue anv = new AttributeNominalValue();
+        anv.setAttribute(a);
+        anv.setValue(value);
+        nominalValues_.put(getAttributeNominalValueKey(a, value), anv);
     }
     
     private static String getAttributeNominalValueKey(Attribute a, String nominalValue){
