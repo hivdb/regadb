@@ -5,7 +5,8 @@ public enum ValueTypes
     NUMBER,
     LIMITED_NUMBER,
     STRING,
-    NOMINAL_VALUE;
+    NOMINAL_VALUE,
+    DATE;
     
     public static ValueTypes getValueType(ValueType vt)
     {
@@ -15,6 +16,7 @@ public enum ValueTypes
         else if ( vt.getDescription().equals("limited number (<,=,>)") ) ret = LIMITED_NUMBER;
         else if ( vt.getDescription().equals("string") ) ret = STRING;
         else if ( vt.getDescription().equals("nominal value") ) ret = NOMINAL_VALUE;
+        else if ( vt.getDescription().equals("date") ) ret = DATE;
         
         return ret;
     }
