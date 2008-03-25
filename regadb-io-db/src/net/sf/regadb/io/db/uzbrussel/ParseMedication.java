@@ -97,7 +97,7 @@ public class ParseMedication {
         }
         
         List<Therapy> therapies = createTherapies(p, medications);
-        //printTherapies(therapies);
+        printTherapies(therapies);
     }
     
     private static List<Therapy> createTherapies(Patient p, List<Medication> meds) {
@@ -139,11 +139,11 @@ public class ParseMedication {
         }
         
         Collections.sort(lines);
-        System.err.println("=======================");
-        for(String l : lines) {
-            System.err.println(l);
-        }
-        System.err.println("=======================");
+//        System.err.println("=======================");
+//        for(String l : lines) {
+//            System.err.println(l);
+//        }
+//        System.err.println("=======================");
     }
     
     private static Therapy getTherapy(Medication m, List<Therapy> therapies) {

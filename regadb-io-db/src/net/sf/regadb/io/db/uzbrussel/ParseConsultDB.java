@@ -210,24 +210,37 @@ public class ParseConsultDB {
             return tr;
         } else if(type.equals("H2VL") || type.equals("HIVVL")) {
             TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadTest());
-            String val="";
-            if(Character.isDigit(value.charAt(0))) {
-                value = "=" + value;
-            }
-            if(value.charAt(0)=='>' || value.charAt(0)=='<' || value.charAt(0)=='=') {
-                try {
-                    Double.parseDouble(value.substring(1));
-                    val = value;
-                } catch(NumberFormatException nfe) {
-                    ConsoleLogger.getInstance().logError("Cannot parse Viral Load value: " + value);
-                }
-            }
+            String val = parseViralLoad(value);
             tr.setValue(val);
         }
         
         setset.add(type + unit);
         
         return null;
+    }
+    
+    public static String parseViralLoad(String value_orig) {
+        String value = value_orig;
+        
+        if(value==null || "".equals(value)) {
+            return null;
+        }
+        
+        String val = null;
+        
+        if(Character.isDigit(value.charAt(0))) {
+            value = "=" + value;
+        }
+        if(value.charAt(0)=='>' || value.charAt(0)=='<' || value.charAt(0)=='=') {
+            try {
+                Double.parseDouble(value.substring(1));
+                val = value;
+            } catch(NumberFormatException nfe) {
+                ConsoleLogger.getInstance().logError("Cannot parse Viral Load value: " + value);
+            }
+        }
+        
+        return val;
     }
     
     private String text(Element el, String name) {

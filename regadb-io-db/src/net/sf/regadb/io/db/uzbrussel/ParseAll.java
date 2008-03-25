@@ -3,11 +3,16 @@ package net.sf.regadb.io.db.uzbrussel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import net.sf.regadb.db.Patient;
 
 public class ParseAll {
     public static void main(String [] args) {
+        Properties props = System.getProperties();
+        props.put("http.proxyHost", "www-proxy");
+        props.put("http.proxyPort", "3128");
+        
         String baseDir = "/home/plibin0/import/jette/import/cd/080320/";
         
         Map<Integer, List<String>> consultCodeHistory = new HashMap<Integer, List<String>>();

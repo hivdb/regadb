@@ -54,7 +54,6 @@ public class ParseSeqs {
                     }
                     if(seq.exists()) {
                         Patient p = getPatientForId(id);
-                        //p = new Patient();
                         if(p==null) {
                             ConsoleLogger.getInstance().logError("Cannot find patient for sequence: " + id);
                         } else {
@@ -70,7 +69,10 @@ public class ParseSeqs {
                             ntseq.setLabel("Sequence 1");
                             ntseq.setNucleotides(getNtSeqFromFile(seq));
                             vi.getNtSequences().add(ntseq);
+                            counter++;
                         }
+                    } else {
+                        ConsoleLogger.getInstance().logError("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
                     }
                 }
                 else {
@@ -78,6 +80,8 @@ public class ParseSeqs {
                 }
             }
         }
+        
+        System.err.println("Amount of succesfully imported sequences: "+ counter);
     }
     
     private String getNtSeqFromFile(File seqFile) {

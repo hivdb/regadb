@@ -1,6 +1,7 @@
 package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,8 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.text.DateFormatter;
+import java.util.StringTokenizer;
 
 import jxl.Cell;
 import jxl.Sheet;
@@ -18,9 +18,13 @@ import jxl.read.biff.BiffException;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.io.util.WivObjects;
 
 public class ParseConfirmation {
     private static DateFormat dateFormatter1 = new SimpleDateFormat("yyyyMMdd");
@@ -29,6 +33,7 @@ public class ParseConfirmation {
     private String basePath_;
     private ParseIds parseIds_;
     private Map<Integer, Patient> patients_;
+    private FileWriter fw;
     
     private NominalAttribute genderNominal_ = new NominalAttribute("Gender", -1, new String[] { "M", "F" },
             new String[] { "male", "female" } );
@@ -41,6 +46,14 @@ public class ParseConfirmation {
         patients_ = patients;
         
         genderNominal_.attribute.setAttributeGroup(regadbAttributeGroup_);
+        
+        //Cannot retrieve patientId for patcode
+        try {
+            fw = new FileWriter(new File("/home/plibin0/Desktop/Annelies_pat.csv"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     public void exec() {
@@ -53,8 +66,18 @@ public class ParseConfirmation {
             e.printStackTrace();
         }
         
+        System.err.println("CONFIRMATION EPIDEM=================================");
+        
           parseSheet(wb.getSheet(0), this.dateFormatter1);
           parseSheet(wb.getSheet(1), this.dateFormatter2);
+       
+        System.err.println("CONFIRMATION EPIDEM=================================");
+          
+       try {
+        fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     private void parseSheet(Sheet sheet, DateFormat df) {
@@ -76,6 +99,9 @@ public class ParseConfirmation {
                 }
             } else {
                 Integer id = parseIds_.getPatientIdForPatcode("19" + code_pat);
+                if(id==null) {
+                    parseIds_.getPatientIdForPatcode(code_pat);
+                }
                 if(id != null) {
                     p = patients_.get(id);
                     if(p==null) {
@@ -83,7 +109,13 @@ public class ParseConfirmation {
                         patients_.put(id, p);
                      }
                 } else {
-                    //ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
+                    ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
+                    try {
+                        fw.write("19"+code_pat+";\n");
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
             if(p!=null) {
@@ -122,36 +154,149 @@ public class ParseConfirmation {
                 }
             }
             String hivtype = getValue(i, "HIVTYPE", sheet, colMapping);
+            
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
+                setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), p);
+            
             String nation = getValue(i, "NATION", sheet, colMapping);
             String country = getValue(i, "COUNTRY", sheet, colMapping);
+            
             String resid_b = getValue(i, "RESID_B", sheet, colMapping);
+                handleWIVNumericAttribute("RESID_B", resid_b, p, 2);
+                
             String origin = getValue(i, "ORIGIN", sheet, colMapping);
+            
             String arrival_b = getValue(i, "ARRIVAL_B", sheet, colMapping);
+                handleWIVNumericAttribute("ARRIVAL_B", arrival_b, p, 4);
+            
             String sexcontact = getValue(i, "SEXCONTACT", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: SEXCONTACT", sexcontact, p);
+            
             String sexpartner = getValue(i, "SEXPARTNER", sheet, colMapping);
+                handleWIVMultipleNominalAttribute("WIV: SEXPARTNER", sexpartner, p);
+            
             String natpartner = getValue(i, "NATPARTNER", sheet, colMapping);
+            
             String bloodborne = getValue(i, "BLOODBORNE", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: BLOODBORNE", bloodborne, p);
+                
             String yeartransf = getValue(i, "YEARTRANSF", sheet, colMapping);
+                handleWIVNumericAttribute("YEARTRANSF", yeartransf, p, 4);
+                
             String trancountr = getValue(i, "TRANCOUNTR", sheet, colMapping);
+                
             String child = getValue(i, "CHILD", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: CHILD", child, p);
+                
             String profrisk = getValue(i, "PROFRISK", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: PROFRISK", profrisk, p);
+            
             String probyear = getValue(i, "PROBYEAR", sheet, colMapping);
+                handleWIVNumericAttribute("PROBYEAR", probyear, p, 4);
+            
             String probcountr = getValue(i, "PROBCOUNTR", sheet, colMapping);
+            
             String lympho = getValue(i, "LYMPHO", sheet, colMapping);
+                if(!"".equals(lympho)) {
+                    try{ 
+                        setTest(StandardObjects.getGenericCD4Test(), Double.parseDouble(lympho)+"", p);
+                    } catch (NumberFormatException nfe) {
+                        ConsoleLogger.getInstance().logError("Cannot parse confirmations CD4 value: " + lympho);
+                    }
+                }
+            
             String stad_clin = getValue(i, "STAD_CLIN", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: STAD_CLIN", stad_clin, p);
             String reasontest = getValue(i, "REASONTEST", sheet, colMapping);
+                handleWIVNominalAttribute("WIV: REASONTEST", reasontest, p);
+                
             String form_out = getValue(i, "FORM_OUT", sheet, colMapping);
+                storeDateAttribute("FORM_OUT", form_out, p, df);
+
             String form_in = getValue(i, "FORM_IN", sheet, colMapping);
+                storeDateAttribute("FORM_IN", form_in, p, df);
+            
             //String labo = getValue(i, "LABO", sheet, colMapping);
             //String opmerking = getValue(i, "OPMERKING", sheet, colMapping);
             }
         }
     }
     
+    public void storeDateAttribute(String attributeName, String value, Patient p, DateFormat df) {
+        if(!"".equals(value)) {
+            try {
+                Date d = df.parse(value);
+                PatientAttributeValue pav = p.createPatientAttributeValue(WivObjects.getAttribute("WIV: " + attributeName));
+                pav.setValue(d.getTime()+"");
+            } catch (ParseException e) {
+                ConsoleLogger.getInstance().logError("Cannot parse date " + attributeName + " value:" + value);
+            }
+        }
+    }
+    
+    public void setTest(Test test, String value, Patient p) {
+        if(value==null || "".equals(value)) {
+            return;
+        }
+        for(TestResult tr : p.getTestResults()) {
+            if(tr.getTest().getTestType().getDescription().equals(test.getTestType().getDescription())) {
+                return;
+            }
+        }
+        TestResult tr = p.createTestResult(test);
+        tr.setValue(value);
+    }
+    
+    public void handleWIVNumericAttribute(String attributeName, String value, Patient p, int length) {
+        if(!"".equals(value)) {
+            if(value.toUpperCase().equals("U")) {
+                
+            } else if(value.length()==length) {
+                try {
+                int i_value = Integer.parseInt(value);
+                handleWIVAttribute("WIV: " + attributeName, value, p);
+                } catch(NumberFormatException nfe) {
+                    ConsoleLogger.getInstance().logError("No valid " + attributeName + " value: " + value);
+                }
+            } else {
+                ConsoleLogger.getInstance().logError("No valid " + attributeName + " value: " + value);
+            }
+        }
+    }
+    
+    public void handleWIVMultipleNominalAttribute(String attributeName, String attributeNominalValue, Patient p) {
+        if(attributeNominalValue.contains("/")) {
+            StringTokenizer st = new StringTokenizer(attributeNominalValue, "/");
+            while(st.hasMoreElements()) {
+                handleWIVNominalAttribute(attributeName, st.nextToken(), p);
+            }
+        } else {
+            handleWIVNominalAttribute(attributeName, attributeNominalValue, p);
+        }
+    }
+    
+    public void handleWIVNominalAttribute(String attributeName, String attributeNominalValue, Patient p) {
+        if("".equals(attributeNominalValue)) {
+            return;
+        }
+        if(attributeNominalValue.length()>1) {
+            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
+            return;
+        }
+        if(WivObjects.createPatientAttributeNominalValue(attributeName, attributeNominalValue.toUpperCase().charAt(0), p)==null) {
+            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
+        }
+    }
+    
+    public void handleWIVAttribute(String attributeName, String value, Patient p) {
+        if(WivObjects.createPatientAttributeValue(attributeName, value, p)==null) {
+            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - value: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+        }
+    }
+    
     public PatientAttributeValue getPAV(String attributeName, Patient p) {
         for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
-            if(pav.getId().getAttribute().getName().equals(attributeName)) {
+            if(pav.getAttribute().getName().equals(attributeName)) {
                 return pav;
             }
         }
