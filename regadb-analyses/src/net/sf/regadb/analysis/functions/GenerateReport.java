@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import net.sf.regadb.db.AaSequence;
@@ -17,12 +18,16 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,15 +35,30 @@ import org.xml.sax.SAXException;
 public class GenerateReport 
 {
     private StringBuffer rtfBuffer_;
+    private static final long MILLISECS_PER_DAY = 1000*60*60*24;
     
-    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile)
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile){
+        rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
+        
+        int dateTolerance;
+        try{
+            dateTolerance = Integer.parseInt(RegaDBSettings.getInstance().getPropertyValue("report.dateTolerance"));
+        }
+        catch(Exception e){
+            dateTolerance = 14;
+        }
+        
+        init(vi, patient, algorithm, t, chartFile, dateTolerance); //default tolerance to two weeks
+    }
+    
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
     {
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        init(vi, patient, algorithm, t, chartFile);
+        init(vi, patient, algorithm, t, chartFile, dateTolerance);
     }
     
-    public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile)
+    public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
     {
         replace("$ASI_ALGORITHM", algorithm.getDescription());
         replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date()));
@@ -48,14 +68,15 @@ public class GenerateReport
         replace("$PATIENT_CLINICAL_FILE_NR", getClinicalFileNumber(patient));
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
+        replace("$ART_EXPERIENCE", getARTExperience(patient));
         
-        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericViralLoadTest());
+        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericViralLoadTest(), dateTolerance);
         if(viralLoad!=null)
             replace("$VIRAL_LOAD RNA", viralLoad.getValue());
         else
             replace("$VIRAL_LOAD RNA", "- ");
         
-        TestResult cd4Count = getTestResult(vi, patient, StandardObjects.getGenericCD4Test());
+        TestResult cd4Count = getTestResult(vi, patient, StandardObjects.getGenericCD4Test(), dateTolerance);
         if(cd4Count!=null)
             replace("$CD4_COUNT", cd4Count.getValue());
         else
@@ -80,7 +101,7 @@ public class GenerateReport
     {
         for(PatientAttributeValue pav : patient.getPatientAttributeValues())
         {
-            if(StandardObjects.getClinicalFileNumber().equals(pav.getId().getAttribute().getName()))
+            if(StandardObjects.getClinicalFileNumber().equals(pav.getAttribute().getName()))
             {
                 return pav.getValue();
             }
@@ -103,22 +124,50 @@ public class GenerateReport
         return "";
     }
     
-    private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest)
+    private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)
     {
         TestResult viralLoadS = null;
         TestResult viralLoadD = null;
+
+        long mindiff = (dateTolerance + 1) * MILLISECS_PER_DAY;
+        long diff;
+        
         for(TestResult testResult : patient.getTestResults())
         {
             if(testResult.getTest().getDescription().equals(referenceTest.getDescription()))
             {
-                if(vi.getSampleId().equals(testResult.getSampleId()))
+                if(vi.getSampleId().equals(testResult.getSampleId())){
                     viralLoadS = testResult;
-                else if(vi.getSampleDate().equals(testResult.getTestDate()))
-                    viralLoadD = testResult;
+                    break;
+                }
+                else{
+                    diff = java.lang.Math.abs(testResult.getTestDate().getTime() - vi.getSampleDate().getTime());
+                    if(diff <= mindiff){
+                        mindiff = diff;
+                        viralLoadD = testResult;
+                    }
+                }
             }
         }
         
         return viralLoadS==null?viralLoadD:viralLoadS;
+    }
+    
+    private String getARTExperience(Patient p){
+        HashSet<String> drugs = new HashSet<String>();
+        
+        for(Therapy t : p.getTherapies()){
+            for(TherapyGeneric tg : t.getTherapyGenerics()){
+                drugs.add(tg.getId().getDrugGeneric().getGenericId());
+            }
+            for(TherapyCommercial tc : t.getTherapyCommercials()){
+                for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+                    drugs.add(dg.getGenericId());
+                }
+            }
+        }
+        
+        return drugs.toString();
     }
     
     private List<TestResult> getGssTestResults(ViralIsolate vi, Test algorithm)
