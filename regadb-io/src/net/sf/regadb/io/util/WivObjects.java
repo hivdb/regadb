@@ -1,15 +1,18 @@
 package net.sf.regadb.io.util;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.ValueType;
 
 public class WivObjects {
-    private static HashMap<String,Attribute> attributes_;
-    private static HashMap<String,AttributeNominalValue> nominalValues_;
+    private static Map<String,Attribute> attributes_ = new HashMap<String,Attribute>();
+    private static Map<String,AttributeNominalValue> nominalValues_ = new HashMap<String,AttributeNominalValue>();
     private static AttributeGroup wivAttributeGroup_;
     
     static{
@@ -73,6 +76,15 @@ public class WivObjects {
         return a.getName() +";"+ nominalValue;
     }
     
+    private static AttributeNominalValue getANVFromAbbrev(Attribute attribute, char abbrev) {
+        for(AttributeNominalValue anv : attribute.getAttributeNominalValues()) {
+            if(anv.getValue().startsWith(abbrev+":")) {
+                return anv;
+            }
+        }
+        return null;
+    }
+    
     public static AttributeGroup getWivAttributeGroup(){
         return wivAttributeGroup_;
     }
@@ -83,5 +95,32 @@ public class WivObjects {
     
     public static AttributeNominalValue getAttributeNominalValue(Attribute a, String nominalValue){
         return nominalValues_.get(getAttributeNominalValueKey(a, nominalValue));
+    }
+    
+    public static PatientAttributeValue createPatientAttributeNominalValue(String attributeName, char nominalAbbrev, Patient p){
+        Attribute attribute = attributes_.get(attributeName);
+        if(attribute==null)
+            return null;
+        
+        AttributeNominalValue anv = getANVFromAbbrev(attribute, nominalAbbrev);
+        if(anv==null) {
+            return null;
+        }
+        
+        PatientAttributeValue pav = p.createPatientAttributeValue(attribute);
+        pav.setAttributeNominalValue(anv);
+        
+        return pav;
+    }
+    
+    public static PatientAttributeValue createPatientAttributeValue(String attributeName, String value, Patient p){
+        Attribute attribute = attributes_.get(attributeName);
+        if(attribute==null)
+            return null;
+        
+        PatientAttributeValue pav = p.createPatientAttributeValue(attribute);
+        pav.setValue(value);
+        
+        return pav;
     }
 }
