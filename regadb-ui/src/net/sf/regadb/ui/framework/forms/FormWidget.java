@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
@@ -175,6 +176,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         	return new TextField(getInteractionState(), this, FieldType.DOUBLE);
         case LIMITED_NUMBER:
         	return new LimitedNumberField(getInteractionState(), this, FieldType.DOUBLE);
+        case DATE:
+            return new DateField(getInteractionState(), this);
         }
         
         return null;
