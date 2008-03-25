@@ -73,6 +73,7 @@ public class WivObjects {
         AttributeNominalValue anv = new AttributeNominalValue();
         anv.setAttribute(a);
         anv.setValue(value);
+        a.getAttributeNominalValues().add(anv);
         nominalValues_.put(getAttributeNominalValueKey(a, value), anv);
     }
     
