@@ -170,7 +170,7 @@
     <optional>
       <element name="value">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">100</param>
+          <param name="maxLength">500</param>
         </data>
       </element>
     </optional>
@@ -430,14 +430,16 @@
     </optional>
   </define>
   <define name="net.sf.regadb.db.PatientAttributeValue">
-    <element name="attribute">
-      <element name="reference">
-        <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+    <optional>
+      <element name="attribute">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Attribute" />
+        </optional>
       </element>
-      <optional>
-        <ref name="net.sf.regadb.db.Attribute" />
-      </optional>
-    </element>
+    </optional>
     <optional>
       <element name="attributeNominalValue">
         <element name="reference">
@@ -706,6 +708,21 @@
         <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
+    <optional>
+      <element name="placebo">
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="blind">
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="frequency">
+        <data type="long" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.TherapyGeneric">
     <element name="drugGeneric">
@@ -714,6 +731,21 @@
     <optional>
       <element name="dayDosageMg">
         <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="placebo">
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="blind">
+        <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="frequency">
+        <data type="long" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>
   </define>

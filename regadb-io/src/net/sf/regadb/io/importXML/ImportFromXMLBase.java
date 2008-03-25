@@ -84,6 +84,14 @@ public class ImportFromXMLBase extends DefaultHandler{
         }
     }
     
+    protected boolean parseboolean(String value){
+        return value != null ? Boolean.parseBoolean(value) : null;
+    }
+    
+    protected Long parseLong(String value){
+        return value != null ? Long.parseLong(value) : null;
+    }
+    
     protected Integer nullValueInteger() {
         return null;
     }
@@ -110,6 +118,14 @@ public class ImportFromXMLBase extends DefaultHandler{
     
     protected byte[] nullValuebyteArray() {
         return null;
+    }
+    
+    protected Long nullValueLong(){
+        return null;
+    }
+    
+    protected boolean nullValueboolean(){
+        return false;
     }
 
     protected DrugGeneric resolveDrugGeneric(String value) throws SAXException {
@@ -233,6 +249,10 @@ public class ImportFromXMLBase extends DefaultHandler{
     
     protected boolean equals(byte[] data, byte[] data2) {
         return Arrays.equals(data, data2);
+    }
+    
+    protected boolean equals(Long a, Long b){
+        return a == b || (a != null && a.equals(b));
     }
 
     public StringBuffer getLog() 

@@ -74,7 +74,7 @@ public class CsvWriteCodeGen {
         String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
         stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
         String var;
-        var = XMLWriteCodeGen.generateGetterConstruct(id, composite?"id":null, fieldName);
+        var = XMLWriteCodeGen.generateGetterConstruct(id, composite?"id":null, fieldName,toWrite);
         String var2 = var + ".get" + stringRepField+"()";
         
         String temp = contentMethod.get(id);
@@ -97,7 +97,7 @@ public class CsvWriteCodeGen {
     public static void writePrimitiveVar(String grandFatherFieldName, Field field, String id, Class parentClass, boolean composite) {
     String writeClassCode="";
     
-    String var = XMLWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName());
+    String var = XMLWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName(),field.getType());
     
         String fieldType = field.getType().toString();
         String startChar = "";

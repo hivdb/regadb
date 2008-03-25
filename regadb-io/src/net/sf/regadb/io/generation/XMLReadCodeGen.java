@@ -28,6 +28,7 @@ public class XMLReadCodeGen {
         ObjectInfo parent;
         String name;
         Class javaClass;
+        String getPrefix;
 
         enum Type { Primitive, ObjectSet, ObjectKey, ObjectPointer, ObjectPointerSet };
         Type type;
@@ -42,6 +43,11 @@ public class XMLReadCodeGen {
             this.type = type;
             this.composite = composite;
             this.resolved = null;
+            
+            if(javaClass == boolean.class)
+                getPrefix = "is";
+            else
+                getPrefix = "get";
         }
 
         public String memberName() {
@@ -119,7 +125,7 @@ public class XMLReadCodeGen {
             if (name.equals("patientDatasets"))
                 return "getDatasets";
             else
-                return "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+                return getPrefix + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         }
 
         public boolean isPointer() {

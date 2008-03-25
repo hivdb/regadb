@@ -5,8 +5,8 @@ import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.SettingsUser;
-import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AaSequence;
@@ -18,22 +18,22 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.EventNominalValue;
-import net.sf.regadb.db.AaMutation;
+import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.PatientEventValue;
@@ -269,6 +269,14 @@ if(TherapyGenericvar.getDayDosageMg()!=null) {
 TherapyGenericLine += TherapyGenericvar.getDayDosageMg().toString();
 }
 TherapyGenericLine += ",";
+TherapyGenericLine += String.valueOf(TherapyGenericvar.isPlacebo());
+TherapyGenericLine += ",";
+TherapyGenericLine += String.valueOf(TherapyGenericvar.isBlind());
+TherapyGenericLine += ",";
+if(TherapyGenericvar.getFrequency()!=null) {
+TherapyGenericLine += TherapyGenericvar.getFrequency().toString();
+}
+TherapyGenericLine += ",";
 return TherapyGenericLine;
 }
 
@@ -298,6 +306,14 @@ TherapyCommercialLine += TherapyCommercialvar.getId().getDrugCommercial().getNam
 TherapyCommercialLine += ",";
 if(TherapyCommercialvar.getDayDosageUnits()!=null) {
 TherapyCommercialLine += TherapyCommercialvar.getDayDosageUnits().toString();
+}
+TherapyCommercialLine += ",";
+TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isPlacebo());
+TherapyCommercialLine += ",";
+TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isBlind());
+TherapyCommercialLine += ",";
+if(TherapyCommercialvar.getFrequency()!=null) {
+TherapyCommercialLine += TherapyCommercialvar.getFrequency().toString();
 }
 TherapyCommercialLine += ",";
 return TherapyCommercialLine;
@@ -541,6 +557,9 @@ public String getCsvHeaderLineTherapyGeneric() {
 String TherapyGenericLine = "";
 TherapyGenericLine += "TherapyGeneric.id.drugGeneric,";
 TherapyGenericLine += "TherapyGeneric.dayDosageMg,";
+TherapyGenericLine += "TherapyGeneric.placebo,";
+TherapyGenericLine += "TherapyGeneric.blind,";
+TherapyGenericLine += "TherapyGeneric.frequency,";
 return TherapyGenericLine;
 }
 
@@ -560,6 +579,9 @@ public String getCsvHeaderLineTherapyCommercial() {
 String TherapyCommercialLine = "";
 TherapyCommercialLine += "TherapyCommercial.id.drugCommercial,";
 TherapyCommercialLine += "TherapyCommercial.dayDosageUnits,";
+TherapyCommercialLine += "TherapyCommercial.placebo,";
+TherapyCommercialLine += "TherapyCommercial.blind,";
+TherapyCommercialLine += "TherapyCommercial.frequency,";
 return TherapyCommercialLine;
 }
 

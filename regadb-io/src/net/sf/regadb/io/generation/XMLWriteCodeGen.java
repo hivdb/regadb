@@ -80,7 +80,7 @@ public class XMLWriteCodeGen
         String loopVarName = toWrite.getSimpleName() +"loopvar";
         writeClassCode += "Element "+ fieldName+"El = new Element(\""+fieldName+"\");";
         writeClassCode += ""+xmlParentNode+".addContent("+fieldName+"El);";
-        writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName) +"){";
+        writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName,toWrite) +"){";
         writeClassCode += "Element "+ fieldName+"_elEl = new Element(\""+fieldName+"-el\");";
         writeClassCode += ""+fieldName+"El"+".addContent("+fieldName+"_elEl);";
         //temporarly saving otherwise callClassWriteMethod does not have the new content
@@ -91,9 +91,17 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName)
+    public static String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName, Class fieldClass)
     {
         String toReturn = "";
+        
+        String prefix;
+        if(fieldClass == boolean.class){
+            prefix = "is";
+        }
+        else{
+            prefix = "get";
+        }
         
         String fatherFieldName = varNameList_.get(id);
         
@@ -105,17 +113,17 @@ public class XMLWriteCodeGen
         if(grandFatherFieldName!=null)
         {
             char upperCase = Character.toUpperCase(grandFatherFieldName.charAt(0));
-            String dotGettergrandFather = "get" + upperCase + grandFatherFieldName.substring(1) +"()";
+            String dotGettergrandFather = prefix + upperCase + grandFatherFieldName.substring(1) +"()";
             
             upperCase = Character.toUpperCase(fieldName.charAt(0));
-            String dotGetterField = "get" + upperCase + fieldName.substring(1) +"()";
+            String dotGetterField = prefix + upperCase + fieldName.substring(1) +"()";
             
             toReturn += fatherFieldName + "." + dotGettergrandFather + "." + dotGetterField;
         }
         else
         {
             char upperCase = Character.toUpperCase(fieldName.charAt(0));
-            String dotGetterField = "get" + upperCase + fieldName.substring(1) +"()";
+            String dotGetterField = prefix + upperCase + fieldName.substring(1) +"()";
             
             toReturn += fatherFieldName + "." + dotGetterField;
         }
@@ -127,7 +135,7 @@ public class XMLWriteCodeGen
     {
         String writeClassCode="";
         
-        String var = generateGetterConstruct(id, grandFatherFieldName, field.getName());
+        String var = generateGetterConstruct(id, grandFatherFieldName, field.getName(), field.getType());
         
             String fieldType = field.getType().toString();
             String startChar = "";
@@ -175,7 +183,7 @@ public class XMLWriteCodeGen
         String writeClassCode = "";
         
         String var;
-        var = generateGetterConstruct(id, null, fieldName);
+        var = generateGetterConstruct(id, null, fieldName, toWrite);
 
         boolean foundVarInClass = false;
         for(Field f : parentClass.getDeclaredFields())
@@ -189,7 +197,7 @@ public class XMLWriteCodeGen
         
         if(!foundVarInClass)
         {
-            var = generateGetterConstruct(id, "id", fieldName);
+            var = generateGetterConstruct(id, "id", fieldName, toWrite);
         }
         
         if(doNotTransformFieldName)
@@ -241,7 +249,7 @@ public class XMLWriteCodeGen
     
     public static void writePointerSet(String id, Class toWrite, String fieldName, String parentNode, Class parentClass)
     {
-        String var = generateGetterConstruct(id, null, fieldName);
+        String var = generateGetterConstruct(id, null, fieldName, toWrite);
         String writeClassCode = "";
         writeClassCode += "Element forParent"+fieldName+" = new Element(\""+fieldName+"\");";
         writeClassCode += parentNode+".addContent(forParent"+fieldName+");";
@@ -263,7 +271,7 @@ public class XMLWriteCodeGen
     
     public static void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id, String noGetter)
     {
-        String var = generateGetterConstruct(id, grandFatherFieldName, fieldName);
+        String var = generateGetterConstruct(id, grandFatherFieldName, fieldName, toWrite);
         if(noGetter!=null)
         {
             var = noGetter;
@@ -290,7 +298,7 @@ public class XMLWriteCodeGen
         String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
         stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
         String var;
-        var = generateGetterConstruct(id, composite?"id":null, fieldName);
+        var = generateGetterConstruct(id, composite?"id":null, fieldName, toWrite);
         String var2 = var + ".get" + stringRepField+"()";
         String writeClassCode = "";
         writeClassCode += "if("+var+"!=null &&" +var2+"!=null)";
@@ -330,8 +338,8 @@ public class XMLWriteCodeGen
         writePrimitiveVar(null, fs[0], "parentNode", id);
         printAndClear(id);
         
-        System.out.println(generateGetterConstruct(id, "patient", "currentDate"));
-        System.out.println(generateGetterConstruct(id, null, "currentDate"));
+        System.out.println(generateGetterConstruct(id, "patient", "currentDate", java.util.Date.class));
+        System.out.println(generateGetterConstruct(id, null, "currentDate", java.util.Date.class));
         
         writePointer(id, Test.class,"testField", "parentNode", false, null);
         

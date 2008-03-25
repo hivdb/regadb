@@ -159,8 +159,14 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Set<TherapyGeneric> fieldTherapy_therapyGenerics;
     private DrugCommercial fieldTherapyCommercial_drugCommercial;
     private Double fieldTherapyCommercial_dayDosageUnits;
+    private boolean fieldTherapyCommercial_placebo;
+    private boolean fieldTherapyCommercial_blind;
+    private Long fieldTherapyCommercial_frequency;
     private DrugGeneric fieldTherapyGeneric_drugGeneric;
     private Double fieldTherapyGeneric_dayDosageMg;
+    private boolean fieldTherapyGeneric_placebo;
+    private boolean fieldTherapyGeneric_blind;
+    private Long fieldTherapyGeneric_frequency;
     private String fieldValueType_description;
     private Double fieldValueType_minimum;
     private Double fieldValueType_maximum;
@@ -339,11 +345,17 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.stateTherapyCommercial);
             fieldTherapyCommercial_drugCommercial = null;
             fieldTherapyCommercial_dayDosageUnits = nullValueDouble();
+            fieldTherapyCommercial_placebo = nullValueboolean();
+            fieldTherapyCommercial_blind = nullValueboolean();
+            fieldTherapyCommercial_frequency = nullValueLong();
         } else if ("TherapyGeneric".equals(qName)) {
         } else if ("therapyGenerics-el".equals(qName)|| "therapyGenerics-el".equals(qName)) {
             pushState(ParseState.stateTherapyGeneric);
             fieldTherapyGeneric_drugGeneric = null;
             fieldTherapyGeneric_dayDosageMg = nullValueDouble();
+            fieldTherapyGeneric_placebo = nullValueboolean();
+            fieldTherapyGeneric_blind = nullValueboolean();
+            fieldTherapyGeneric_frequency = nullValueLong();
         } else if ("ValueType".equals(qName)) {
         } else if ("valueTypes-el".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)|| "valueType".equals(qName)) {
             pushState(ParseState.stateValueType);
@@ -990,7 +1002,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (currentState() == ParseState.TopLevel) {
                     if (topLevelClass == PatientAttributeValue.class) {
                         elPatientAttributeValue = new PatientAttributeValue();
-                        elPatientAttributeValue.setId(new PatientAttributeValueId());
                     } else {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
@@ -1000,7 +1011,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
                 {
-                    elPatientAttributeValue.getId().setAttribute(fieldPatientAttributeValue_attribute);
+                    elPatientAttributeValue.setAttribute(fieldPatientAttributeValue_attribute);
                 }
                 {
                     elPatientAttributeValue.setAttributeNominalValue(fieldPatientAttributeValue_attributeNominalValue);
@@ -1589,6 +1600,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elTherapyCommercial.setDayDosageUnits(fieldTherapyCommercial_dayDosageUnits);
                 }
+                {
+                    elTherapyCommercial.setPlacebo(fieldTherapyCommercial_placebo);
+                }
+                {
+                    elTherapyCommercial.setBlind(fieldTherapyCommercial_blind);
+                }
+                {
+                    elTherapyCommercial.setFrequency(fieldTherapyCommercial_frequency);
+                }
                 if (currentState() == ParseState.TopLevel) {
                     if (importHandler != null)
                         importHandler.importObject(elTherapyCommercial);
@@ -1599,6 +1619,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldTherapyCommercial_drugCommercial = resolveDrugCommercial(value == null ? null : value.toString());
             } else if ("dayDosageUnits".equals(qName)) {
                 fieldTherapyCommercial_dayDosageUnits = parseDouble(value == null ? null : value.toString());
+            } else if ("placebo".equals(qName)) {
+                fieldTherapyCommercial_placebo = parseboolean(value == null ? null : value.toString());
+            } else if ("blind".equals(qName)) {
+                fieldTherapyCommercial_blind = parseboolean(value == null ? null : value.toString());
+            } else if ("frequency".equals(qName)) {
+                fieldTherapyCommercial_frequency = parseLong(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1628,6 +1654,15 @@ public class ImportFromXML extends ImportFromXMLBase {
                 {
                     elTherapyGeneric.setDayDosageMg(fieldTherapyGeneric_dayDosageMg);
                 }
+                {
+                    elTherapyGeneric.setPlacebo(fieldTherapyGeneric_placebo);
+                }
+                {
+                    elTherapyGeneric.setBlind(fieldTherapyGeneric_blind);
+                }
+                {
+                    elTherapyGeneric.setFrequency(fieldTherapyGeneric_frequency);
+                }
                 if (currentState() == ParseState.TopLevel) {
                     if (importHandler != null)
                         importHandler.importObject(elTherapyGeneric);
@@ -1638,6 +1673,12 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldTherapyGeneric_drugGeneric = resolveDrugGeneric(value == null ? null : value.toString());
             } else if ("dayDosageMg".equals(qName)) {
                 fieldTherapyGeneric_dayDosageMg = parseDouble(value == null ? null : value.toString());
+            } else if ("placebo".equals(qName)) {
+                fieldTherapyGeneric_placebo = parseboolean(value == null ? null : value.toString());
+            } else if ("blind".equals(qName)) {
+                fieldTherapyGeneric_blind = parseboolean(value == null ? null : value.toString());
+            } else if ("frequency".equals(qName)) {
+                fieldTherapyGeneric_frequency = parseLong(value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -3011,38 +3052,38 @@ public class ImportFromXML extends ImportFromXMLBase {
         {
             Attribute dbf = null;
             if (dbo == null) {
-                if (o.getId().getAttribute() != null)
-                    dbf = Retrieve.retrieve(t, o.getId().getAttribute());
+                if (o.getAttribute() != null)
+                    dbf = Retrieve.retrieve(t, o.getAttribute());
             } else {
-                if (Equals.isSameAttribute(o.getId().getAttribute(), dbo.getId().getAttribute()))
-                    dbf = dbo.getId().getAttribute();
+                if (Equals.isSameAttribute(o.getAttribute(), dbo.getAttribute()))
+                    dbf = dbo.getAttribute();
                 else
-                    dbf = Retrieve.retrieve(t, o.getId().getAttribute());
+                    dbf = Retrieve.retrieve(t, o.getAttribute());
             }
-            if (o.getId().getAttribute() != null) {
+            if (o.getAttribute() != null) {
                 if (dbf == null) {
-                    log.append("New " + Describe.describe(o.getId().getAttribute()) + "\n");
-                    syncPair(t, o.getId().getAttribute(), (Attribute)null, syncMode, simulate);
+                    log.append("New " + Describe.describe(o.getAttribute()) + "\n");
+                    syncPair(t, o.getAttribute(), (Attribute)null, syncMode, simulate);
                     changed = true;
-                    dbf = o.getId().getAttribute();
+                    dbf = o.getAttribute();
                 } else {
                     if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
-                        if (syncPair(t, o.getId().getAttribute(), dbf, syncMode, true)) {
+                        if (syncPair(t, o.getAttribute(), dbf, syncMode, true)) {
                             throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
                         }
                     } else
-                    if (syncPair(t, o.getId().getAttribute(), dbf, syncMode, simulate)) changed = true;
+                    if (syncPair(t, o.getAttribute(), dbf, syncMode, simulate)) changed = true;
                 }
             }
             if (dbo == null) {
                 if (dbf != null) {
                     if (!simulate)
-                        o.getId().setAttribute(dbf);
+                        o.setAttribute(dbf);
                 }
             } else {
-                if (dbf != dbo.getId().getAttribute()) {
+                if (dbf != dbo.getAttribute()) {
                     if (!simulate)
-                        dbo.getId().setAttribute(dbf);
+                        dbo.setAttribute(dbf);
                     log.append(Describe.describe(o) + ": changed attribute\n");
                     changed = true;
                 }
@@ -3947,6 +3988,30 @@ public class ImportFromXML extends ImportFromXMLBase {
                 changed = true;
             }
         }
+        if (dbo != null) {
+            if (!equals(dbo.isPlacebo(), o.isPlacebo())) {
+                if (!simulate)
+                    dbo.setPlacebo(o.isPlacebo());
+                log.append(Describe.describe(o) + ": changed placebo\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.isBlind(), o.isBlind())) {
+                if (!simulate)
+                    dbo.setBlind(o.isBlind());
+                log.append(Describe.describe(o) + ": changed blind\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getFrequency(), o.getFrequency())) {
+                if (!simulate)
+                    dbo.setFrequency(o.getFrequency());
+                log.append(Describe.describe(o) + ": changed frequency\n");
+                changed = true;
+            }
+        }
         return changed;
     }
 
@@ -3967,6 +4032,30 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setDayDosageMg(o.getDayDosageMg());
                 log.append(Describe.describe(o) + ": changed dayDosageMg\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.isPlacebo(), o.isPlacebo())) {
+                if (!simulate)
+                    dbo.setPlacebo(o.isPlacebo());
+                log.append(Describe.describe(o) + ": changed placebo\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.isBlind(), o.isBlind())) {
+                if (!simulate)
+                    dbo.setBlind(o.isBlind());
+                log.append(Describe.describe(o) + ": changed blind\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getFrequency(), o.getFrequency())) {
+                if (!simulate)
+                    dbo.setFrequency(o.getFrequency());
+                log.append(Describe.describe(o) + ": changed frequency\n");
                 changed = true;
             }
         }

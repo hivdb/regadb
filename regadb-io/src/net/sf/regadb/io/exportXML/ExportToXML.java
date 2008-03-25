@@ -2,8 +2,8 @@ package net.sf.regadb.io.exportXML;
 
 import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.QueryDefinitionRunParameter;
-import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.QueryDefinitionRun;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.DrugClass;
@@ -11,8 +11,8 @@ import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -21,26 +21,26 @@ import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.QueryDefinitionParameter;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.TestNominalValue;
-import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
@@ -401,9 +401,9 @@ public class ExportToXML
 		{
 			return;
 		}
-		if(PatientAttributeValuevar.getId().getAttribute()!=null)
+		if(PatientAttributeValuevar.getAttribute()!=null)
 		{
-			Integer indexattribute = AttributePMap.get(PatientAttributeValuevar.getId().getAttribute());
+			Integer indexattribute = AttributePMap.get(PatientAttributeValuevar.getAttribute());
 			Element wrapperattribute = new Element("attribute");
 			parentNode.addContent(wrapperattribute);
 			if(indexattribute!=null)
@@ -418,8 +418,8 @@ public class ExportToXML
 				Element refElementattribute= new Element("reference");
 				wrapperattribute.addContent(refElementattribute);
 				refElementattribute.addContent(indexattribute.toString());
-				AttributePMap.put(PatientAttributeValuevar.getId().getAttribute(),indexattribute);
-				writeAttribute(PatientAttributeValuevar.getId().getAttribute(),wrapperattribute);
+				AttributePMap.put(PatientAttributeValuevar.getAttribute(),indexattribute);
+				writeAttribute(PatientAttributeValuevar.getAttribute(),wrapperattribute);
 			}
 		}
 		if(PatientAttributeValuevar.getAttributeNominalValue()!=null)
@@ -493,6 +493,18 @@ public class ExportToXML
 			Element dayDosageUnitsprimitiveValEl = new Element("dayDosageUnits");
 			dayDosageUnitsprimitiveValEl.addContent(TherapyCommercialvar.getDayDosageUnits().toString());
 			parentNode.addContent(dayDosageUnitsprimitiveValEl);
+		}
+		Element placeboprimitiveValEl = new Element("placebo");
+		placeboprimitiveValEl.addContent(String.valueOf(TherapyCommercialvar.isPlacebo()));
+		parentNode.addContent(placeboprimitiveValEl);
+		Element blindprimitiveValEl = new Element("blind");
+		blindprimitiveValEl.addContent(String.valueOf(TherapyCommercialvar.isBlind()));
+		parentNode.addContent(blindprimitiveValEl);
+		if(TherapyCommercialvar.getFrequency()!=null)
+		{
+			Element frequencyprimitiveValEl = new Element("frequency");
+			frequencyprimitiveValEl.addContent(TherapyCommercialvar.getFrequency().toString());
+			parentNode.addContent(frequencyprimitiveValEl);
 		}
 	}
 	public void writePatient(Patient Patientvar, Element rootNode)
@@ -1136,6 +1148,18 @@ public class ExportToXML
 			Element dayDosageMgprimitiveValEl = new Element("dayDosageMg");
 			dayDosageMgprimitiveValEl.addContent(TherapyGenericvar.getDayDosageMg().toString());
 			parentNode.addContent(dayDosageMgprimitiveValEl);
+		}
+		Element placeboprimitiveValEl = new Element("placebo");
+		placeboprimitiveValEl.addContent(String.valueOf(TherapyGenericvar.isPlacebo()));
+		parentNode.addContent(placeboprimitiveValEl);
+		Element blindprimitiveValEl = new Element("blind");
+		blindprimitiveValEl.addContent(String.valueOf(TherapyGenericvar.isBlind()));
+		parentNode.addContent(blindprimitiveValEl);
+		if(TherapyGenericvar.getFrequency()!=null)
+		{
+			Element frequencyprimitiveValEl = new Element("frequency");
+			frequencyprimitiveValEl.addContent(TherapyGenericvar.getFrequency().toString());
+			parentNode.addContent(frequencyprimitiveValEl);
 		}
 	}
 	public void writeTopAttributeGroup(AttributeGroup AttributeGroupvar, Element rootNode)

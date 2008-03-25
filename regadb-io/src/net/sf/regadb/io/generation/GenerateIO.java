@@ -550,6 +550,12 @@ public class GenerateIO
             data.setAttribute(getDataTypeLib());
             return data;
         }
+        else if(fieldType.toLowerCase().indexOf("long")>-1)
+        {
+            data.setAttribute("type", "long");
+            data.setAttribute(getDataTypeLib());
+            return data;
+        }
         else if(fieldType.toLowerCase().indexOf("double")>-1)
         {
             data.setAttribute("type", "double");
