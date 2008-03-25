@@ -225,6 +225,15 @@ public class Utils {
  		return null;
      }
      
+     public static void exportPatientsXMLI(Map<Integer, Patient> patientMap, String fileName) {
+         Map<String, Patient> patientMapS = new HashMap<String, Patient>();
+         for (Integer patientId:patientMap.keySet()) {
+             patientMapS.put(patientId+"", patientMap.get(patientId));
+         }
+         
+         exportPatientsXML(patientMapS, fileName);
+     }
+     
      public static void exportPatientsXML(Map<String, Patient> patientMap, String fileName) 
      {
      	try
