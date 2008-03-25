@@ -1,14 +1,11 @@
 package net.sf.regadb.io.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.ValueType;
-
-import org.hibernate.Session;
 
 public class WivObjects {
     private static HashMap<String,Attribute> attributes_;
@@ -20,12 +17,8 @@ public class WivObjects {
     }
 
     private static void initWivAttributes(){
-        Attribute a;
-        AttributeNominalValue anv;
-        
         wivAttributeGroup_ = new AttributeGroup("WIV");
         
-        int i = 0;
         ValueType num = StandardObjects.getNumberValueType();
         ValueType lim = StandardObjects.getLimitedNumberValueType();
         ValueType str = StandardObjects.getStringValueType();
