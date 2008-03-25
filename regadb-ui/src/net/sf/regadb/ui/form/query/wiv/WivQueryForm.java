@@ -208,6 +208,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         return csvFile;
     }
     
+    public HashMap<String,IFormField> getParameters(){
+        return parameters_;
+    }
+    
     protected Query createQuery(Transaction t){
         Query q = t.createQuery(getQuery());
         IFormField f;
@@ -215,9 +219,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         for(String name : parameters_.keySet()){
             f = parameters_.get(name);
             if(f.validate() && f.getFormText() != null && f.getFormText().length() > 0){
-                if(f.getClass() == DateField.class){
-                    q.setDate(name, ((DateField)f).getDate());
-                }
+                setQueryParameter(q,name,f);
             }
             else{
                 f.flagErroneous();
@@ -226,6 +228,11 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         }
         
         return q;
+    }
+    
+    protected void setQueryParameter(Query q, String name, IFormField f){
+        if(f.getClass() == DateField.class)
+            q.setDate(name, ((DateField)f).getDate());
     }
     
     public String getCsvLineSwitchNoComma(Object o, ExportToCsv csvExport, Set<Dataset> datasets) {
@@ -344,7 +351,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     protected Date getDate(String date){
         try{
-            return sdf_.parse(date);
+            if(date.indexOf('-') != -1)
+                return sdf_.parse(date);
+            else
+                return new Date(Long.parseLong(date));
         }
         catch(Exception e){
             return null;
