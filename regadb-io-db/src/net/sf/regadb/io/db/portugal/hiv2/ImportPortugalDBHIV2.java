@@ -89,7 +89,7 @@ public class ImportPortugalDBHIV2
         for(PatientAttributeValue pav : p.getPatientAttributeValues())
         {
             String value =  pav.getValue()!=null?pav.getValue():pav.getAttributeNominalValue().getValue();
-            System.err.println("Attribute: " + pav.getId().getAttribute().getName() + " - " + value);
+            System.err.println("Attribute: " + pav.getAttribute().getName() + " - " + value);
         }
         for(TestResult tr : p.getTestResults())
         {

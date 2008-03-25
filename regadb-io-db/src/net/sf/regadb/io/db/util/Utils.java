@@ -742,11 +742,15 @@ public class Utils {
          Set<PatientAttributeValue> pavs = p.getPatientAttributeValues();
          
          for(PatientAttributeValue i: pavs){
-             if(i.getId().getAttribute().getName().equals(attributeName))
+             if(i.getAttribute().getName().equals(attributeName))
                  return i;
          }
          return null;
-     } 
+     }
+     
+     public static long getDefaultDrugFrequency(){
+         return (long)net.sf.regadb.util.frequency.Frequency.DAYS.timesToInterval(1);
+     }
      
      public static void createPAV(NominalAttribute na, String nominalVal, Patient p) {
          AttributeNominalValue gnv = na.nominalValueMap.get(nominalVal);

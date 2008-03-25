@@ -159,7 +159,7 @@ public class MergeLISFiles {
     
     public boolean containsAttribute(Attribute a, Patient p) {
         for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
-            if(pav.getId().getAttribute().getName().equals(a.getName())) {
+            if(pav.getAttribute().getName().equals(a.getName())) {
                 return true;
             }
         }
