@@ -40,6 +40,8 @@ public class RegaDBSettings {
         // http proxy settings
         settings_.add("http.proxy.url");
         settings_.add("http.proxy.port");
+        
+        settings_.add("centre.name");
     }
     
     public String getPropertyValue(String name)
