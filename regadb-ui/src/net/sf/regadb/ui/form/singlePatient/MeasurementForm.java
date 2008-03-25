@@ -16,6 +16,7 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
@@ -122,6 +123,11 @@ public class MeasurementForm extends FormWidget
             {
                 ((ComboBox)testResultField_).selectItem(testResult_.getTestNominalValue().getValue());
             }
+            else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
+            {
+                testResult_.setValue(DateUtils.parserEuropeanDate(testResultField_.text()).getTime()+"");
+                testResult_.setTestNominalValue(null);
+            }
             else
             {
                 testResultField_.setText(testResult_.getValue());
@@ -204,6 +210,11 @@ public class MeasurementForm extends FormWidget
 			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getValue());
             testResult_.setValue(null);
         }
+		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
+		{
+		    testResult_.setValue(DateUtils.parserEuropeanDate(testResultField_.text()).getTime()+"");
+		    testResult_.setTestNominalValue(null);
+		}
 		else
 		{
 			testResult_.setValue(testResultField_.text());

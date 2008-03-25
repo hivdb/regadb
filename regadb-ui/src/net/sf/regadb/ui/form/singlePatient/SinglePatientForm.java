@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,15 +27,10 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 import org.jdom.Document;
@@ -188,7 +182,7 @@ public class SinglePatientForm extends FormWidget
             attributes = new ArrayList<Attribute>();
             for(PatientAttributeValue attributeValue : patient.getPatientAttributeValues())
             {
-                attributes.add(attributeValue.getId().getAttribute());
+                attributes.add(attributeValue.getAttribute());
             }
         }
         
@@ -258,10 +252,15 @@ public class SinglePatientForm extends FormWidget
                     }
                     else
                     {
-                    	attributeFieldTF = getTextField(ValueTypes.getValueType(attrEl.getKey().getValueType()));
+                        ValueTypes vt = ValueTypes.getValueType(attrEl.getKey().getValueType());
+                    	attributeFieldTF = getTextField(vt);
                         if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
                         {
-                        attributeFieldTF.setText(attrEl.getValue().getValue());
+                            if(vt == ValueTypes.DATE){
+                                attributeFieldTF.setText(DateUtils.getEuropeanFormat(attrEl.getValue().getValue()));
+                            }
+                            else
+                                attributeFieldTF.setText(attrEl.getValue().getValue());
                         }
                         attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldTF);
                     }
@@ -309,7 +308,7 @@ public class SinglePatientForm extends FormWidget
             value = null;
             for(PatientAttributeValue attributeValue : attributeValueList)
             {
-                if(attributeValue.getId().getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
+                if(attributeValue.getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
                 {
                     value = attributeValue;
                     break;
@@ -366,6 +365,11 @@ public class SinglePatientForm extends FormWidget
                     else if(tf instanceof LimitedNumberField)
                     {
                         text = ((LimitedNumberField)tf).text();
+                        storeAttributeTF(text, attributeValue, attribute, patient_, t);
+                    }
+                    else if(tf instanceof DateField)
+                    {
+                        text = ((DateField)tf).text();
                         storeAttributeTF(text, attributeValue, attribute, patient_, t);
                     }
                     else if(tf instanceof ComboBox)
@@ -438,7 +442,11 @@ public class SinglePatientForm extends FormWidget
             {
             attributeValue = p.createPatientAttributeValue(attribute);
             }
-            attributeValue.setValue(text);
+            
+            if(ValueTypes.getValueType(attribute.getValueType()) == ValueTypes.DATE)
+                attributeValue.setValue(DateUtils.parserEuropeanDate(text).getTime()+"");
+            else
+                attributeValue.setValue(text);
         }
         else if(attributeValue!=null)
         {
