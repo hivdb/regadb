@@ -113,7 +113,6 @@ public class Table {
     ArrayList<ArrayList<String> > rows;
 	LineNumberReader reader;
 	HashMap<String, Index> indexes;
-	char delimiter = ',';
 
 	public Table() {
 		rows = new ArrayList<ArrayList<String> >();
@@ -148,16 +147,7 @@ public class Table {
 		readLines(oneline, null, null,delimiter);
 	}
 	
-	public char getDelimiter(){
-	    return delimiter;
-	}
-	
-	public void setDelimiter(char delimiter){
-	    this.delimiter = delimiter;
-	}
-	
 	private void readLines(boolean oneline, ArrayList selected, OutputStream output, char delimiter) {
-	    setDelimiter(delimiter);
 	    
 		PrintStream sout = null;
 
@@ -270,14 +260,21 @@ public class Table {
 		return rows.size();
 	}
 	
-	public void exportAsCsv(OutputStream output) {
+	public void exportAsCsv(OutputStream output){
+	    exportAsCsv(output,',',true);
+	}
+	
+	public void exportAsCsv(OutputStream output, char delimiter, boolean quotes) {
 		PrintStream sout = new PrintStream(output);
 		for (int j = 0; j < numRows(); ++j) {
 			for (int i = 0; i < numColumns(); ++i) {
 				if (i != 0)
-					sout.print(getDelimiter());
-
-				sout.print("\""+ valueAt(i, j).replace("\"", "\"\"") +"\"");
+					sout.print(delimiter);
+				
+				if(quotes)
+				    sout.print("\""+ valueAt(i, j).replace("\"", "\"\"") +"\"");
+				else
+				    sout.print(valueAt(i, j));
 			}
 			sout.println();
 		}
@@ -427,6 +424,11 @@ public class Table {
 		ArrayList row = (ArrayList) rows.get(i);
 		
 		return row.indexOf(s);
+	}
+	
+	public int findInRow(int i, int offset, String s){
+	    ArrayList row = (ArrayList) rows.get(i);
+	    return offset + row.subList(offset, row.size()).indexOf(s);
 	}
 
 	public int findInRowIgnoreCase(int i, String s) {
@@ -725,6 +727,11 @@ public class Table {
 	
     public int findColumn(String name) {
         int column = this.findInRow(0, name);
+        
+        return column;
+    }
+    public int findColumn(int offset, String name) {
+        int column = this.findInRow(0, offset, name);
         
         return column;
     }
