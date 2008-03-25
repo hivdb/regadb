@@ -91,7 +91,9 @@ public class ParseConfirmation {
                 if(id!=null) {
                     p = patients_.get(id);
                     if(p==null) {
+                        //TODO don't do this, should always work!!!!
                        p = new Patient();
+                       p.setPatientId(id+"");
                        patients_.put(id, p);
                     }
                 } else {
@@ -106,6 +108,8 @@ public class ParseConfirmation {
                     p = patients_.get(id);
                     if(p==null) {
                         p = new Patient();
+                        //TODO should we make a new patient in this case????
+                        p.setPatientId(id+"");
                         patients_.put(id, p);
                      }
                 } else {

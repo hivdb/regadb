@@ -1,11 +1,13 @@
 package net.sf.regadb.io.db.uzbrussel;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.io.db.util.Utils;
 
 public class ParseAll {
     public static void main(String [] args) {
@@ -29,5 +31,7 @@ public class ParseAll {
         
         ParseSeqs parseSeqs = new ParseSeqs(baseDir,parseIds, patients);
         parseSeqs.exec();
+        
+        Utils.exportPatientsXMLI(patients, "/home/plibin0/Desktop/" + File.separatorChar + "patients.xml");
     }
 }

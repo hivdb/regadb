@@ -111,11 +111,27 @@ public class ParseMedication {
                 therapies.add(t);
             }
             if(m.dc!=null) {
-                TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, m.dc),false,false);
-                t.getTherapyCommercials().add(tc);
+                boolean duplicate = false;
+                for(TherapyCommercial tc : t.getTherapyCommercials()) {
+                    if(tc.getId().getDrugCommercial().getName().equals(m.dc.getName())) {
+                        duplicate = true;
+                    }
+                }
+                if(!duplicate) {
+                    TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, m.dc),false,false);
+                    t.getTherapyCommercials().add(tc);
+                }
             } else if(m.dg!=null) {
+                boolean duplicate = false;
+                for(TherapyGeneric tg : t.getTherapyGenerics()) {
+                    if(tg.getId().getDrugGeneric().getGenericId().equals(m.dg.getGenericId())) {
+                        duplicate = true;
+                    }
+                }
+                if(!duplicate) {
                 TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, m.dg),false,false);
                 t.getTherapyGenerics().add(tg);
+                }
             }
         }
         
