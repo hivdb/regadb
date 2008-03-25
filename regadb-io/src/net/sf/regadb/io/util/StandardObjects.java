@@ -23,6 +23,7 @@ public class StandardObjects {
     private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
     private static ValueType nominalValueType = new ValueType("nominal value");
     private static ValueType stringValueType = new ValueType("string");
+    private static ValueType dateValueType = new ValueType("date");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
@@ -118,6 +119,9 @@ public class StandardObjects {
     }
     public static ValueType getStringValueType() {
         return stringValueType;
+    }
+    public static ValueType getDateValueType(){
+        return dateValueType;
     }
     public static TestType getCd8TestType() {
         return cd8TestType;
