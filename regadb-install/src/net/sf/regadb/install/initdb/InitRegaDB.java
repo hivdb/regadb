@@ -71,8 +71,6 @@ public class InitRegaDB
         initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
         initGssTestType(resistanceTestObject, valueTypes, session);
         
-        initWivAttributes(valueTypes,session);
-        
         session.getTransaction().commit();
         session.close();
     }
@@ -254,63 +252,5 @@ public class InitRegaDB
         gss.setValueType(numberVT);
         
         session.save(gss);
-    }
-    
-    private void initWivAttributes(ArrayList<ValueType> valueTypes, Session session){
-        Attribute a;
-        AttributeNominalValue anv;
-        
-        AttributeGroup ag = new AttributeGroup();
-        ag.setGroupName("WIV");
-        
-        session.save(ag);
-        
-        int i = 0;
-        ValueType num = valueTypes.get(i++);
-        ValueType lim = valueTypes.get(i++);
-        ValueType str = valueTypes.get(i++);
-        ValueType nom = valueTypes.get(i++);
-        ValueType dat = valueTypes.get(i);
-        
-        //createAttribute(ag,"WIV: SEX",nom,new String[]{"M","F","?"},session);
-        //createAttribute(ag,"WIV: HIVTYPE",nom,new String[]{"1","2"},session);
-        createAttribute(ag,"WIV: REF_LABO",str,null,session);
-        createAttribute(ag,"WIV: NATION",nom,null,session);
-        createAttribute(ag,"WIV: COUNTRY",nom,null,session);
-        //createAttribute(ag,"WIV: ORIGIN",nom,null,session);
-        createAttribute(ag,"WIV: RESID_B",num,null,session);
-        createAttribute(ag,"WIV: ARRIVAL_B",dat,null,session);
-        createAttribute(ag,"WIV: SEXCONTACT",nom,new String[]{"A: Other sex","B: Same sex","C: Both","D: None"},session);
-        createAttribute(ag,"WIV: SEXPARTNER",nom,new String[]{"A: HIV+", "B: IVDU", "C: Nationality", "D: Prostitution", "E: Unknown by patient"},session);
-        createAttribute(ag,"WIV: NATPARTNER",nom,null,session);
-        createAttribute(ag,"WIV: BLOODBORNE",nom,new String[]{"A: IVDU", "B: Hemophilia", "C: Transfusion", "D: None"},session);
-        createAttribute(ag,"WIV: YEARTRANSF",dat,null,session);
-        createAttribute(ag,"WIV: TRANCOUNTR",nom,null,session);
-        createAttribute(ag,"WIV: CHILD",nom,new String[]{"A: Yes","B: No"},session);
-        createAttribute(ag,"WIV: PROFRISK",nom,new String[]{"M: Medical","P: Sexual","O: Other"},session);
-        createAttribute(ag,"WIV: PROBYEAR",dat,null,session);
-        createAttribute(ag,"WIV: PROBCOUNTR",nom,null,session);
-        createAttribute(ag,"WIV: STAD_CLIN",nom,new String[]{"A: Recent infection (< 6 months)","B: Asymptomatic carrier", "C: Symptomatic carrier"},session);
-        createAttribute(ag,"WIV: REASONTEST",nom,new String[]{"A: Patient's request","B: Clinical reasons","C: Preoperative","D: Prenatal","E: Administrative reasons","F: Other"},session);
-        createAttribute(ag,"WIV: FORM_OUT",dat,null,session);
-        createAttribute(ag,"WIV: FORM_IN",dat,null,session);
-        //createAttribute(ag,"WIV: LABO",nom,new String[]{"HSP","ITG","KUL","RUG","UCL","ULB","VUB"},session);
-    }
-    
-    private void createAttribute(AttributeGroup ag, String name, ValueType vt, String[] anvs, Session session){
-        Attribute a = new Attribute();
-        a.setAttributeGroup(ag);
-        a.setName(name);
-        a.setValueType(vt);
-        session.save(a);
-
-        if(anvs != null){
-            for(String s : anvs){
-                AttributeNominalValue anv = new AttributeNominalValue();
-                anv.setAttribute(a);
-                anv.setValue(s);
-                session.save(anv);
-            }
-        }
     }
 }
