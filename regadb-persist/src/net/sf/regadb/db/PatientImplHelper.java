@@ -13,7 +13,7 @@ public class PatientImplHelper {
     }
     
     public static boolean canAccessPatientAttributeValue(PatientAttributeValue patientAttributeValuevar, Set<Dataset> datasets) {
-        return canAccesPI(patientAttributeValuevar.getId().getPatient(), datasets);
+        return canAccesPI(patientAttributeValuevar.getPatient(), datasets);
     }
     
     public static boolean canAccessPatientEventValue(PatientEventValue patientEventValuevar, Set<Dataset> datasets) {

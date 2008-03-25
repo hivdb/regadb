@@ -8,9 +8,13 @@ public class PatientAttributeValue implements java.io.Serializable {
 
     // Fields    
 
-    private PatientAttributeValueId id;
+    private Integer patientAttributeValueIi;
 
     private int version;
+
+    private Attribute attribute;
+
+    private PatientImpl patient;
 
     private AttributeNominalValue attributeNominalValue;
 
@@ -23,25 +27,27 @@ public class PatientAttributeValue implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public PatientAttributeValue(PatientAttributeValueId id) {
-        this.id = id;
+    public PatientAttributeValue(Attribute attribute, PatientImpl patient) {
+        this.attribute = attribute;
+        this.patient = patient;
     }
 
     /** full constructor */
-    public PatientAttributeValue(PatientAttributeValueId id,
+    public PatientAttributeValue(Attribute attribute, PatientImpl patient,
             AttributeNominalValue attributeNominalValue, String value) {
-        this.id = id;
+        this.attribute = attribute;
+        this.patient = patient;
         this.attributeNominalValue = attributeNominalValue;
         this.value = value;
     }
 
     // Property accessors
-    public PatientAttributeValueId getId() {
-        return this.id;
+    public Integer getPatientAttributeValueIi() {
+        return this.patientAttributeValueIi;
     }
 
-    public void setId(PatientAttributeValueId id) {
-        this.id = id;
+    public void setPatientAttributeValueIi(Integer patientAttributeValueIi) {
+        this.patientAttributeValueIi = patientAttributeValueIi;
     }
 
     public int getVersion() {
@@ -50,6 +56,22 @@ public class PatientAttributeValue implements java.io.Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public Attribute getAttribute() {
+        return this.attribute;
+    }
+
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
+    }
+
+    public PatientImpl getPatient() {
+        return this.patient;
+    }
+
+    public void setPatient(PatientImpl patient) {
+        this.patient = patient;
     }
 
     public AttributeNominalValue getAttributeNominalValue() {

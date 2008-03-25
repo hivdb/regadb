@@ -152,8 +152,7 @@ public class Patient {
 
     public PatientAttributeValue createPatientAttributeValue(Attribute attribute) {
         PatientAttributeValue result
-            = new PatientAttributeValue
-                (new PatientAttributeValueId(patient, attribute));
+            = new PatientAttributeValue(attribute, patient);
 
         getPatientAttributeValues().add(result);
         
@@ -162,14 +161,14 @@ public class Patient {
 
     public void addPatientAttributeValue(PatientAttributeValue attributeValue) {
         getPatientAttributeValues().add(attributeValue);
-        attributeValue.getId().setPatient(patient);
+        attributeValue.setPatient(patient);
     }
 
     public PatientAttributeValue getAttributeValue(Attribute attribute)
     {
         for(PatientAttributeValue pav : getPatientAttributeValues())
         {
-            if(pav.getId().getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
+            if(pav.getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
             {
                 return pav;
             }

@@ -3,17 +3,21 @@
 
 <hibernate-mapping>
   <class name="net.sf.regadb.db.PatientAttributeValue" table="patient_attribute_value" schema="public">
-    <composite-id name="id" class="net.sf.regadb.db.PatientAttributeValueId">
-      <key-many-to-one name="patient" class="net.sf.regadb.db.PatientImpl">
-        <column name="patient_ii" />
-      </key-many-to-one>
-      <key-many-to-one name="attribute" class="net.sf.regadb.db.Attribute">
-        <column name="attribute_ii" />
-      </key-many-to-one>
-    </composite-id>
+    <id name="patientAttributeValueIi" type="java.lang.Integer">
+      <column name="patient_attribute_value_ii" />
+      <generator class="sequence">
+        <param name="sequence">patient_attribute_value_patient_attribute_value_ii_seq</param>
+      </generator>
+    </id>
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
+    <many-to-one name="attribute" class="net.sf.regadb.db.Attribute" fetch="select" cascade="save-update">
+      <column name="attribute_ii" not-null="true" />
+    </many-to-one>
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
+      <column name="patient_ii" not-null="true" />
+    </many-to-one>
     <many-to-one name="attributeNominalValue" class="net.sf.regadb.db.AttributeNominalValue" fetch="select" cascade="save-update">
       <column name="nominal_value_ii" />
     </many-to-one>

@@ -75,8 +75,26 @@ public class Equals {
     }
 
     public static boolean isSamePatientAttributeValue(PatientAttributeValue o1, PatientAttributeValue o2) {
-        return o1 == o2
-        || (o1 != null && o2 != null && isSameAttribute(o1.getId().getAttribute(), o2.getId().getAttribute()));
+        if(o1 == o2) return true;
+        
+        String v1=null, v2=null;
+        Attribute a1=null, a2=null;
+        AttributeNominalValue nv1=null, nv2=null;
+
+        if(o1 != null){
+            v1 = o1.getValue();
+            a1 = o1.getAttribute();
+            nv1 = o1.getAttributeNominalValue();
+        }
+        if(o2 != null){
+            v2 = o2.getValue();
+            a2 = o2.getAttribute();
+            nv2 = o2.getAttributeNominalValue();
+        }
+
+        return (   isSameAttributeNominalValue(nv1,nv2)
+                && isSameAttribute(a1,a2)
+                && isSameString(v1,v2));
     }
     
     public static boolean isSamePatientEventValue(PatientEventValue o1, PatientEventValue o2) {
@@ -169,6 +187,11 @@ public class Equals {
     public static boolean isSameAnalysisData(AnalysisData o1, AnalysisData o2) {
         return o1 == o2
         || (o1 != null && o2 !=null && o1.getName().equals(o2.getName()));
+    }
+    
+    public static boolean isSameString(String s1, String s2){
+        return s1 == s2
+            || (s1 != null && s1.equals(s2));
     }
 
 }

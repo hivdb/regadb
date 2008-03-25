@@ -111,7 +111,7 @@ public class Describe {
     }
 
     public static String describe(PatientAttributeValue o) {
-        return "Value for " + describe(o.getId().getAttribute());
+        return "Value for " + describe(o.getAttribute());
     }
     
     public static String describe(PatientEventValue o) {

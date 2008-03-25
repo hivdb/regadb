@@ -12,6 +12,7 @@ create sequence drug_generic_drug_generic_ii_seq;
 create sequence event_event_ii_seq;
 create sequence event_nominal_value_event_nominal_value_ii_seq;
 create sequence nt_sequence_nt_sequence_ii_seq;
+create sequence patient_attribute_value_patient_attribute_value_ii_seq;
 create sequence patient_event_value_patient_event_value_ii_seq;
 create sequence patient_patient_ii_seq;
 create sequence protein_protein_ii_seq;
@@ -50,7 +51,7 @@ create table public.event (event_ii integer default nextval('event_event_ii_seq'
 create table public.event_nominal_value (nominal_value_ii integer default nextval('event_nominal_value_event_nominal_value_ii_seq'), version integer  not null, event_ii integer  not null, value varchar(500) not null, primary key (nominal_value_ii));
 create table public.nt_sequence (nt_sequence_ii integer default nextval('nt_sequence_nt_sequence_ii_seq'), version integer  not null, viral_isolate_ii integer  not null, label varchar(50), sequence_date date, nucleotides text, primary key (nt_sequence_ii));
 create table public.patient (patient_ii integer default nextval('patient_patient_ii_seq'), version integer  not null, patient_id varchar(50) not null, last_name varchar(50), first_name varchar(50), birth_date date, death_date date, primary key (patient_ii));
-create table public.patient_attribute_value (patient_ii integer  not null, attribute_ii integer  not null, version integer  not null, nominal_value_ii integer , value varchar(100), primary key (patient_ii, attribute_ii));
+create table public.patient_attribute_value (patient_attribute_value_ii integer default nextval('patient_attribute_value_patient_attribute_value_ii_seq'), version integer  not null, attribute_ii integer  not null, patient_ii integer  not null, nominal_value_ii integer , value varchar(100), primary key (patient_attribute_value_ii));
 create table public.patient_dataset (dataset_ii integer  not null, patient_ii integer  not null, primary key (dataset_ii, patient_ii));
 create table public.patient_event_value (patient_event_value_ii integer default nextval('patient_event_value_patient_event_value_ii_seq'), version integer  not null, patient_ii integer  not null, nominal_value_ii integer , event_ii integer  not null, value varchar(100), start_date date, end_date date, primary key (patient_event_value_ii));
 create table public.protein (protein_ii integer default nextval('protein_protein_ii_seq'), version integer  not null, abbreviation varchar(50) not null, full_name varchar(50), primary key (protein_ii));
