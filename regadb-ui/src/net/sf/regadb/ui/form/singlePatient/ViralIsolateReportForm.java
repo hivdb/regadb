@@ -71,20 +71,23 @@ public class ViralIsolateReportForm extends WContainerWidget
         {
             public void notify(WMouseEvent a) 
             {
-                Transaction t = RegaDBMain.getApp().createTransaction();
-                Patient patient = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
-                File chartFile = getChart(t, patient);
-                GenerateReport report = new GenerateReport(resRepTemplateCB_.currentValue().getDocument(),
-                                                           viralIsolateForm_.getViralIsolate(),
-                                                           patient,
-                                                           algorithmCB_.currentValue(),
-                                                           t,
-                                                           chartFile
-                                                           );
-                reportA_.label().setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
-                reportA_.setRef(new WMemoryResource("application/rtf", report.getReport()).generateUrl());
-                chartFile.delete();
-                t.commit();
+                
+                if( resRepTemplateCB_.currentItem() != null){
+                    Transaction t = RegaDBMain.getApp().createTransaction();
+                    Patient patient = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+                    File chartFile = getChart(t, patient);
+                    GenerateReport report = new GenerateReport(resRepTemplateCB_.currentValue().getDocument(),
+                                                               viralIsolateForm_.getViralIsolate(),
+                                                               patient,
+                                                               algorithmCB_.currentValue(),
+                                                               t,
+                                                               chartFile
+                                                               );
+                    reportA_.label().setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
+                    reportA_.setRef(new WMemoryResource("application/rtf", report.getReport()).generateUrl());
+                    chartFile.delete();
+                    t.commit();
+                }
             }
         });
     }
