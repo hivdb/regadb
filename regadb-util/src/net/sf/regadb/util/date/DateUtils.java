@@ -94,4 +94,13 @@ public class DateUtils
         
         return calendar_.getTime();
     }
+    
+    public static Date parseDate(String timestamp){
+        long l = Long.parseLong(timestamp);
+        return new Date(l);
+    }
+    
+    public static String getEuropeanFormat(String timestamp){
+        return getEuropeanFormat(parseDate(timestamp));
+    }
 }
