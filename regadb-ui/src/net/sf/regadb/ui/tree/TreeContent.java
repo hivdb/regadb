@@ -1,14 +1,17 @@
 package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.SettingsUser;
+import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
+import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
@@ -24,6 +27,8 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
+import net.sf.regadb.ui.form.log.LogForm;
+import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionRunForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcCd4Form;
@@ -102,6 +107,7 @@ public class TreeContent
     public ActionItem therapies;
     public ActionItem therapiesSelect;
     public ActionItem therapiesAdd;
+    public ActionItem therapiesCopyLast;
     public ActionItem therapiesDelete;
     public TherapySelectedItem therapiesSelected;
     public ActionItem therapiesEdit;
@@ -244,6 +250,12 @@ public class TreeContent
     public ActionItem patientEventEdit;
     public ActionItem patientEventDelete;
     
+    public ActionItem log;
+    public ActionItem logSelect;
+    public ActionItem logView;
+    public ActionItem logDelete;
+    public LogSelectedItem logSelectedItem;
+    
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
 		singlePatientMain = new PatientItem(rootItem);
@@ -331,6 +343,20 @@ public class TreeContent
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
 						}
     				});
+                    therapiesCopyLast = new ActionItem(rootItem.tr("menu.singlePatient.therapies.copyLast"), therapies, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+                            Therapy lastTherapy = null;
+                            for(Therapy therapy : p.getTherapies()){
+                                if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
+                                    lastTherapy = therapy;
+                            }
+                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy));
+                        }
+                    });
+
     				therapiesSelected = new TherapySelectedItem(therapies);
     				therapiesView = new ActionItem(rootItem.tr("menu.singlePatient.therapies.view"), therapiesSelected, new ITreeAction()
     				{
@@ -1096,7 +1122,31 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(WWidget.tr("form.update_central_server"),InteractionState.Editing));
                 }
             });
-			
+            
+            log = new ActionItem(rootItem.tr("menu.log"),administratorMain);
+            logSelect = new ActionItem(rootItem.tr("menu.log.select"), log, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectLogForm());
+                }
+            });
+            logSelectedItem = new LogSelectedItem(log);
+            logView = new ActionItem(rootItem.tr("menu.log.view"), logSelectedItem, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new LogForm(WWidget.tr("form.log.view"), InteractionState.Viewing, logSelectedItem.getSelectedItem()));
+                }
+            });
+            logDelete = new ActionItem(rootItem.tr("menu.log.delete"), logSelectedItem, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new LogForm(WWidget.tr("form.log.view"), InteractionState.Deleting, logSelectedItem.getSelectedItem()));
+                }
+            });
+            
 		if(singlePatientMain.isEnabled())
 		{
 			return singlePatientMain;
