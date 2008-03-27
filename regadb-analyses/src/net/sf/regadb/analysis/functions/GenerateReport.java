@@ -42,7 +42,7 @@ public class GenerateReport
         
         int dateTolerance;
         try{
-            dateTolerance = Integer.parseInt(RegaDBSettings.getInstance().getPropertyValue("report.dateTolerance"));
+            dateTolerance = Integer.parseInt(RegaDBSettings.getInstance().getPropertyValue("regadb.report.dateTolerance"));
         }
         catch(Exception e){
             dateTolerance = 14;
