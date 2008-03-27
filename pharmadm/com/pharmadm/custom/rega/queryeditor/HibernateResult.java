@@ -17,10 +17,8 @@ public class HibernateResult implements QueryResult {
 		this.classNames = classNames;
 	}
 	
-	@Override
 	public void close() {}
 
-	@Override
 	public Object get(int row, int column) {
 		if (list.size() > 0) {
 			if (list.get(0) instanceof Object[]) {
@@ -33,12 +31,10 @@ public class HibernateResult implements QueryResult {
 		return null;
 	}
 
-	@Override
 	public int size() {
 		return list.size();
 	}
 
-	@Override
 	public String getColumnClassName(int index) {
 		if (columnNames != null) {
 			Type t = classNames[index];
@@ -47,7 +43,6 @@ public class HibernateResult implements QueryResult {
 		return "";
 	}
 
-	@Override
 	public int getColumnCount() {
 		if (list.size() > 0) {
 			if (list.get(0) instanceof Object[]) {
@@ -60,7 +55,6 @@ public class HibernateResult implements QueryResult {
 		return 0;
 	}
 
-	@Override
 	public String getColumnName(int index) {
 		if (columnNames != null) {
 			return columnNames[index];

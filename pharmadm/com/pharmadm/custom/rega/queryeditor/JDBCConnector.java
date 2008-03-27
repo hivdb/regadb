@@ -56,7 +56,6 @@ public class JDBCConnector implements  DatabaseConnector{
     	init(conn, prepareStatements);
     }
     
-	@Override
 	public QueryResult executeQuery(String query) throws SQLException {
     	// Warning: when reusing statements, don't forget to update the closeQueryResultSet method too.
         // KVB : or even better, don't use closeQueryResultSet for closing ResultSets, because it closes
@@ -69,7 +68,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return new JDBCResult(srs);
 	}
 
-	@Override
 	public List<String> getColumnNames(String tableName) {
         List<String> result = new ArrayList<String>();
         try {
@@ -86,7 +84,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return result;
 	}
 
-	@Override
 	public String getColumnType(String tableName, String columnName) {
         try {
             DatabaseMetaData dmd = con.getMetaData();
@@ -103,7 +100,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return null;
 	}
 
-	@Override
 	public List<String> getPrimaryKeys(String tableName) {
         List<String> result = new ArrayList<String>();
         try {
@@ -120,7 +116,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return result;
 	}
 
-	@Override
 	public List<String> getTableNames() {
         List<String> names = new ArrayList<String>();
     	try {
@@ -146,7 +141,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return null;
     }
 
-	@Override
 	public String getCommentForColumn(String tableName, String columnName) {
         String comment = null;
         PreparedStatement columnCommentStatement = getColumnCommentStatement();
@@ -169,7 +163,6 @@ public class JDBCConnector implements  DatabaseConnector{
         return comment;
 	}
 
-	@Override
 	public String getCommentForTable(String tableName) {
         String comment = null;
         PreparedStatement tableCommentStatement = getTableCommentStatement();
@@ -206,7 +199,6 @@ public class JDBCConnector implements  DatabaseConnector{
 		return tableCommentStatement;
 	}
 
-	@Override
     public QueryStatement createScrollableReadOnlyStatement() throws SQLException {
         return new JDBCStatement(con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY));
     }

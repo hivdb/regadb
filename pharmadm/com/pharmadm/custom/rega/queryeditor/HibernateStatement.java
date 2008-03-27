@@ -12,17 +12,14 @@ public class HibernateStatement implements QueryStatement {
 		transaction = t;
 	}
 	
-	@Override
 	public void cancel() {
 		if (!closed && exists()) {
 			transaction.rollback();
 		}
 	}
 
-	@Override
 	public void close() {}
 
-	@Override
 	public QueryResult executeQuery(String query) {
 		Query q = transaction.createQuery(query);
 		QueryResult result = new HibernateResult(q.list(), q.getReturnAliases(), q.getReturnTypes());
@@ -31,11 +28,11 @@ public class HibernateStatement implements QueryStatement {
 		return result;
 	}
 
-	@Override
 	public boolean exists() {
 		return transaction != null;
 	}
 
-	@Override
-	public void setFetchSize(int size) {}
+	public void setFetchSize(int size) {
+	    //TODO implement this method
+	}
 }

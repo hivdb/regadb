@@ -220,7 +220,6 @@ public class SqlQuery implements QueryVisitor {
         return fromVar.getTableName() + " " + fromVar.getUniqueName();
 	}
 
-	@Override
 	public String visitDistinctResultQuery(Query query) throws SQLException {
 		String select = query.getSelectList().accept(this);
 		String from = query.getRootClause().acceptFromClause(this);

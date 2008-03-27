@@ -691,7 +691,8 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 		            variableType = "Numeric";
 		        }
 		        else if (isBooleanType(dataType)) {
-		            valueConstant = new BooleanConstant();
+		            //TODO check in booleanconstant!!!!!
+		            //valueConstant = new BooleanConstant();
 		            variableType = "Boolean";
 		        }
 		        

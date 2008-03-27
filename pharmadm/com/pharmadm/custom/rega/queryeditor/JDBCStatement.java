@@ -10,7 +10,6 @@ public class JDBCStatement implements QueryStatement {
 		this.statement = s;
 	}
 	
-	@Override
 	public void cancel() {
 		if (exists()) {
 			try {
@@ -20,7 +19,6 @@ public class JDBCStatement implements QueryStatement {
 		}
 	}
 
-	@Override
 	public void close() {
         if (exists()) {
             try {
@@ -35,7 +33,6 @@ public class JDBCStatement implements QueryStatement {
         }
 	}
 
-	@Override
 	public QueryResult executeQuery(String query) {
 		if (exists()) {
 			try {
@@ -46,7 +43,6 @@ public class JDBCStatement implements QueryStatement {
 		return null;
 	}
 
-	@Override
 	public void setFetchSize(int size) {
 		if (exists()) {
 			try {

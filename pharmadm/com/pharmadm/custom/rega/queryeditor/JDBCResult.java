@@ -25,7 +25,6 @@ public class JDBCResult implements QueryResult{
 	    }
 	}
 
-	@Override
 	public Object get(int x, int y) {
 		if (rs != null) {
 			try {
@@ -39,7 +38,6 @@ public class JDBCResult implements QueryResult{
 		return null;
 	}
 
-	@Override
 	public int size() {
 		if (rs != null) {
 			try {
@@ -53,7 +51,7 @@ public class JDBCResult implements QueryResult{
 		return 0;
 	}
 
-	@Override
+	//TODO is className appropriate? maybe better to call this method entity etc
 	public String getColumnClassName(int index) {
 		String name = "";
 		if (rs != null) {
@@ -66,7 +64,6 @@ public class JDBCResult implements QueryResult{
 		return name;
 	}
 
-	@Override
 	public String getColumnName(int index) {
 		String name = "";
 		if (rs != null) {
@@ -79,7 +76,6 @@ public class JDBCResult implements QueryResult{
 		return name;
 	}
 
-	@Override
 	public int getColumnCount() {
 		if (rs != null) {
 			try {

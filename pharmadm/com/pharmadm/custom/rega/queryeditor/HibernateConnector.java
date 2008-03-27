@@ -154,7 +154,6 @@ public class HibernateConnector implements DatabaseConnector {
 		return list;
 	}
 	
-	@Override
 	public List<String> getTableNames() {
 		List<String> list= new ArrayList<String>();
 		Set<String> set = HibernateUtil.getSessionFactory().getAllClassMetadata().keySet();
