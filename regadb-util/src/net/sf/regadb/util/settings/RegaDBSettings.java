@@ -42,6 +42,9 @@ public class RegaDBSettings {
         settings_.add("http.proxy.port");
         
         settings_.add("centre.name");
+        
+        settings_.add("regadb.report.dateTolerance");
+        settings_.add("regadb.log.dir");
     }
     
     public String getPropertyValue(String name)
