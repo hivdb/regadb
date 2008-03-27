@@ -8,7 +8,9 @@ import java.util.Set;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -103,10 +105,17 @@ public class TherapyForm extends FormWidget
         
 		if(getInteractionState()==InteractionState.Adding)
 		{
+		    Therapy loadTherapy = therapy_;
+		    
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
             therapy_ = new Therapy();
             therapy_.setStartDate(new Date(System.currentTimeMillis()));
+            
+            if(loadTherapy != null){   //copy this therapy into the new one
+                copyTherapy(loadTherapy, therapy_);
+            }
+            
         }
         else
         {
@@ -142,6 +151,27 @@ public class TherapyForm extends FormWidget
         t.commit();
         iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, therapy_);
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
+	}
+	
+	private void copyTherapy(Therapy from, Therapy to){
+	    for(TherapyCommercial tc : from.getTherapyCommercials()){
+            TherapyCommercial newtc = new TherapyCommercial(
+                    new TherapyCommercialId(to,tc.getId().getDrugCommercial()),
+                    tc.getDayDosageUnits(),
+                    tc.isPlacebo(),
+                    tc.isBlind(),
+                    tc.getFrequency());
+            to.getTherapyCommercials().add(newtc);
+        }
+        for(TherapyGeneric tg : from.getTherapyGenerics()){
+            TherapyGeneric newtg = new TherapyGeneric(
+                    new TherapyGenericId(to,tg.getId().getDrugGeneric()),
+                    tg.getDayDosageMg(),
+                    tg.isPlacebo(),
+                    tg.isBlind(),
+                    tg.getFrequency());
+            to.getTherapyGenerics().add(newtg);
+        }
 	}
     
     private void setMotivations()
