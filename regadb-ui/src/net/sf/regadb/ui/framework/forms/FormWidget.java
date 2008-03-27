@@ -23,6 +23,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -76,6 +77,15 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         table.putElementAt(numRows, 0, label);
         table.putElementAt(numRows, 1, field.getWidget());
         label.setBuddy(field);
+        return numRows;
+    }
+    
+    public int addLineToTable(WTable table, WWidget[] widgets)
+    {
+        int numRows = table.numRows();
+        
+        for(int i=0;i<widgets.length;++i)
+            table.putElementAt(numRows, i, widgets[i]);
         return numRows;
     }
 
