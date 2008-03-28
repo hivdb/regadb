@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
@@ -119,20 +119,12 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     public void notify(WMouseEvent a) 
     {
-        if(getQuery() != null){
+        File csvFile =  getOutputFile();
+        
+        if(process(csvFile)){
+            File output = postProcess(csvFile);
             
-            File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
-            if(!wivDir.exists()){
-                wivDir.mkdir();
-            }
-            File csvFile =  new File(wivDir.getAbsolutePath() + File.separatorChar + filename_ + ".csv");
-            
-            if(process(csvFile)){
-                File output = postProcess(csvFile);
-                
-                link_.label().setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
-                link_.setRef(new WFileResource("text/csv", output.getAbsolutePath()).generateUrl());
-            }
+            setDownloadLink(output);
         }
     }
     
@@ -263,6 +255,20 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         addLineToTable(parameterTable_, new Label(l), f);
         parameters_.put(name, f);
     }
+    
+    public File getOutputFile() 
+    {
+        File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
+        if(!wivDir.exists()){
+            wivDir.mkdir();
+        }
+        return new File(wivDir.getAbsolutePath() + File.separatorChar + filename_ + ".csv");
+    }    
+     
+    public void setDownloadLink(File file){
+        link_.label().setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
+        link_.setRef(new WFileResource("text/csv", file.getAbsolutePath()).generateUrl());
+    }
 
     @Override
     public void cancel() {
@@ -288,58 +294,6 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     protected String getCentreName(){
         return RegaDBSettings.getInstance().getPropertyValue("centre.name");
-    }
-    
-    protected String getPatCode(Date birthDate, String firstName, String lastName, String gender){
-        String res="";
-        
-        if(birthDate != null){
-            res = getFormattedDate(birthDate);
-        }
-        else{
-            res = "????????";
-        }
-        
-        res += getFormattedLastName(lastName);
-        
-        if(gender != null){
-            if(gender.equals("male"))
-                res += "M";
-            else if(gender.equals("female"))
-                res += "F";
-            else
-                res += "?";
-        }
-        else
-            res += "?";
-
-        return res;
-    }
-    
-    private String[] specialPrefixes = {"VAN","DE","DU","DES","LA","LE"}; 
-    
-    protected String getFormattedLastName(String name){
-        if(name != null){
-            name = name.toUpperCase();
-            
-            if(name.length() > 2){
-                boolean found=false;
-                for(String pfx : specialPrefixes){
-                    if(name.startsWith(pfx)){
-                        
-                        
-                        found=true;
-                    }
-                }
-                
-                
-                return name;
-            }
-            else
-                return name;
-        }
-        else
-            return "??";
     }
     
     protected String getFormattedDate(Date date){
@@ -382,7 +336,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected String getFormattedDecimal(double value){
-        String s = value +"";
+        DecimalFormat df = new DecimalFormat("##########.00");
+        String s = df.format(value);
         return getFormattedDecimal(s);
     }
     

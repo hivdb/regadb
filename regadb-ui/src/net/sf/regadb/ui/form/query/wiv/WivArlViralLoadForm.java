@@ -37,7 +37,7 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
             row = new ArrayList<String>();
             
             double vl = parseValue(in.valueAt(CValue,i));
-            vl = java.lang.Math.log(vl);
+            vl = java.lang.Math.log10(vl);
             
             row.add(getCentreName());
             row.add("1");
