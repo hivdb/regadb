@@ -149,6 +149,10 @@ public class Frequency{
         return null;
     }
     
+    public static double getDefaultFrequency(){
+        return DAYS.timesToInterval(1);
+    }
+    
 //  public static String toString(double seconds){
 //  double i=0;
 //  String unit="";

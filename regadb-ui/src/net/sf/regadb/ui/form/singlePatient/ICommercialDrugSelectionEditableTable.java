@@ -210,7 +210,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         TextField tf = (TextField)value;
         if(tf.text().equals(""))
         {
-            return null;
+            return (long)Frequency.getDefaultFrequency();
         }
         else
         {
@@ -222,12 +222,13 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     
     private void setFrequency(Long value, TextField tf, ComboBox<Frequency> combo_freq)
     {
-        if(value != null){
-            Frequency f = Frequency.getFrequency((double)value);
-            if(f != null){
-                tf.setText(java.lang.Math.round(f.getX()) +"");
-                combo_freq.selectItem(f.toString());
-            }
+        if(value == null || value == 0){
+            value = (long)Frequency.getDefaultFrequency();
+        }
+        Frequency f = Frequency.getFrequency((double)value);
+        if(f != null){
+            tf.setText(java.lang.Math.round(f.getX()) +"");
+            combo_freq.selectItem(f.toString());
         }
     }
 }
