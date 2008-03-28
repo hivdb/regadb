@@ -757,10 +757,6 @@ public class Utils {
          return null;
      }
      
-     public static long getDefaultDrugFrequency(){
-         return (long)net.sf.regadb.util.frequency.Frequency.DAYS.timesToInterval(1);
-     }
-     
      public static void createPAV(NominalAttribute na, String nominalVal, Patient p) {
          AttributeNominalValue gnv = na.nominalValueMap.get(nominalVal);
          if (gnv != null) {
