@@ -25,12 +25,18 @@ public class StandardObjects {
     private static ValueType stringValueType = new ValueType("string");
     private static ValueType dateValueType = new ValueType("date");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
+    private static TestType viralLoadLog10TestType = new TestType(numberValueType, patientObject, "Viral Load (log10)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
+    private static TestType cd4PercentageTestType = new TestType(numberValueType, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
+    private static TestType cd8PercentageTestType = new TestType(numberValueType, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType hivSeroStatusTestType;
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
+    private static Test genericViralLoadLog10Test = new Test(viralLoadLog10TestType, "Viral Load log10 (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
-    private static Test genericcd8Test = new Test(cd8TestType, "CD8 Count (generic)");
+    private static Test genericCD4PercentageTest = new Test(cd4PercentageTestType, "CD4 Count % (generic)");
+    private static Test genericCD8Test = new Test(cd8TestType, "CD8 Count (generic)");
+    private static Test genericCD8PercentageTest = new Test(cd8PercentageTestType, "CD8 Count % (generic)");
     private static Test genericHivSeroStatusTest;
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
@@ -50,8 +56,17 @@ public class StandardObjects {
     public static Test getGenericCD4Test() {
         return genericCD4Test;
     }
+    public static TestType getCd4PercentageTestType() {
+        return cd4PercentageTestType;
+    }
+    public static Test getGenericCD4PercentageTest() {
+        return genericCD4PercentageTest;
+    }
     public static Test getGenericViralLoadTest() {
         return genericViralLoadTest;
+    }
+    public static Test getGenericViralLoadLog10Test() {
+        return genericViralLoadLog10Test;
     }
     public static ValueType getLimitedNumberValueType() {
         return limitedNumberValueType;
@@ -64,6 +79,9 @@ public class StandardObjects {
     }
     public static TestType getViralLoadTestType() {
         return viralLoadTestType;
+    }
+    public static TestType getViralLoadLog10TestType() {
+        return viralLoadLog10TestType;
     }
     public static ValueType getNominalValueType() {
         return nominalValueType;
@@ -127,6 +145,13 @@ public class StandardObjects {
         return cd8TestType;
     }
     public static Test getGenericCD8Test() {
-        return genericcd8Test;
+        return genericCD8Test;
     }
+    public static TestType getCd8PercentageTestType() {
+        return cd8PercentageTestType;
+    }
+    public static Test getGenericCD8PercentageTest() {
+        return genericCD8PercentageTest;
+    }
+
 }

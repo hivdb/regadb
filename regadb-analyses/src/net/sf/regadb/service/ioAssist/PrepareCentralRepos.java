@@ -45,12 +45,15 @@ public class PrepareCentralRepos
 {
     private static ValueType nominalValue = new ValueType("nominal value");
     private static ValueType number = new ValueType("number");
+    private static ValueType limitedNumber = new ValueType("limited number (<,=,>)");
     private static ValueType string  = new ValueType("string");
     private static AttributeGroup regadb = new AttributeGroup("RegaDB");
     private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), StandardObjects.getGssId());
     
     public static void main(String [] args)
     {
+        String outputDir = args[0];
+        
         ExportToXML export = new ExportToXML();
         
         Element attributes = new Element("attributes");
@@ -71,15 +74,23 @@ public class PrepareCentralRepos
         Attribute clinicalFileNumber = createClinicalFileNumber();
         export.writeTopAttribute(clinicalFileNumber, attributes);
         
-        File attributesFile = new File("/home/plibin0/centralRepos"+File.separatorChar+"attributes.xml");
+        File attributesFile = new File(outputDir +File.separatorChar+"attributes.xml");
         writeXMLFile(attributesFile, attributes);
         
         export = new ExportToXML();
         //Tests
         Test vl = createGenericViralLoad();
         export.writeTopTest(vl, tests);
+        Test vlLog10 = createGenericViralLoadLog10();
+        export.writeTopTest(vlLog10, tests);
         Test cd4 = createGenericCD4();
         export.writeTopTest(cd4, tests);
+        Test cd4pc = createGenericCD4Percentage();
+        export.writeTopTest(cd4pc, tests);
+        Test cd8 = createGenericCD8();
+        export.writeTopTest(cd8, tests);
+        Test cd8pc = createGenericCD8Percentage();
+        export.writeTopTest(cd8pc, tests);
         Test pregnancy = createPregnancyTest();
         export.writeTopTest(pregnancy, tests);
         Test seroconvertion = createSeroconvertionTest();
@@ -95,7 +106,7 @@ public class PrepareCentralRepos
         Test rega_71 = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
         export.writeTopTest(rega_71, tests);
         
-        File testsFile = new File("/home/plibin0/centralRepos"+File.separatorChar+"tests.xml");
+        File testsFile = new File(outputDir +File.separatorChar+"tests.xml");
         writeXMLFile(testsFile, tests);
         
         //testing
@@ -205,8 +216,17 @@ public class PrepareCentralRepos
     private static Test createGenericViralLoad()
     {
         TestType vlType = new TestType(new TestObject("Patient test", 0), "Viral Load (copies/ml)");
-        vlType.setValueType(new ValueType("limited number (<,=,>)"));
+        vlType.setValueType(limitedNumber);
         Test vlTest = new Test(vlType, "Viral Load (generic)");
+        
+        return vlTest;
+    }
+    
+    private static Test createGenericViralLoadLog10()
+    {
+        TestType vlType = new TestType(new TestObject("Patient test", 0), "Viral Load (log10)");
+        vlType.setValueType(number);
+        Test vlTest = new Test(vlType, "Viral Load log10 (generic)");
         
         return vlTest;
     }
@@ -218,6 +238,33 @@ public class PrepareCentralRepos
         Test cd4Test = new Test(cd4Type, "CD4 Count (generic)");
         
         return cd4Test;
+    }
+    
+    private static Test createGenericCD4Percentage()
+    {
+        TestType cd4Type = new TestType(new TestObject("Patient test", 0), "CD4 Count (%)");
+        cd4Type.setValueType(number);
+        Test cd4Test = new Test(cd4Type, "CD4 Count % (generic)");
+        
+        return cd4Test;
+    }
+    
+    private static Test createGenericCD8()
+    {
+        TestType cd8Type = new TestType(new TestObject("Patient test", 0), "CD8 Count");
+        cd8Type.setValueType(number);
+        Test cd8Test = new Test(cd8Type, "CD8 Count (generic)");
+        
+        return cd8Test;
+    }
+    
+    private static Test createGenericCD8Percentage()
+    {
+        TestType cd8Type = new TestType(new TestObject("Patient test", 0), "CD8 Count (%)");
+        cd8Type.setValueType(number);
+        Test cd8Test = new Test(cd8Type, "CD8 Count % (generic)");
+        
+        return cd8Test;
     }
     
     private static Test createSeroconvertionTest()
@@ -269,6 +316,8 @@ public class PrepareCentralRepos
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "other"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "vertical"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "transfusion"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "puncture accident"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "unknown"));
         
         return transmissionGroup;
     }
