@@ -3,18 +3,24 @@ package net.sf.regadb.io.db.jerusalem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Utils;
 
-public class ParseSequences {
+public class ParseSequences extends Parser{
     public static void main(String [] args) {
         ParseSequences ps = new ParseSequences();
         ps.run("/home/plibin0/research/zehava/ResistanceDB_Sequences.csv");
     }
     
-    public ParseSequences() {
+    public ParseSequences(){
         
+    }
+    
+    public ParseSequences(Logging logger, DateFormat df) {
+        super(logger,df);
     }
     
     public void run(String csvFile) {
