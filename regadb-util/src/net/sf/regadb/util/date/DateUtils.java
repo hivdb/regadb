@@ -103,4 +103,11 @@ public class DateUtils
     public static String getEuropeanFormat(String timestamp){
         return getEuropeanFormat(parseDate(timestamp));
     }
+    
+    public static Date getDateOffset(Date base, int calendarUnit, int offset){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(base);
+        cal.add(calendarUnit, offset);
+        return cal.getTime();
+    }
 }
