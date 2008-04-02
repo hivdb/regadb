@@ -16,8 +16,10 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -26,6 +28,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WAnchor;
@@ -34,6 +37,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 import org.hibernate.Query;
@@ -42,14 +46,21 @@ import org.hibernate.Query;
 public abstract class WivQueryForm extends FormWidget implements SignalListener<WMouseEvent>{
     private WGroupBox generalGroup_;
     private WGroupBox parameterGroup_;
+    private WGroupBox resultGroup_;
     
     private WTable generalTable_;
     private WTable parameterTable_;
+    private WTable resultTable_;
     
     private Label description_;
+    
+    private Label statusL_;
     private Label status_;
     
+    private Label linkL_;
     private WAnchor link_;
+    
+    private Label runL_;
     private WPushButton run_;
     
     private String query_;
@@ -100,18 +111,29 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     public void init(){
-        generalGroup_   = new WGroupBox(tr("form.query.definition.run.general"), this);
-        parameterGroup_     = new WGroupBox(tr("form.query.definition.run.parameters"), this);
+        generalGroup_   = new WGroupBox(tr("form.query.wiv.group.general"), this);
+        parameterGroup_     = new WGroupBox(tr("form.query.wiv.group.parameters"), this);
+        resultGroup_     = new WGroupBox(tr("form.query.wiv.group.run"), this);
         
         generalTable_ = new WTable(generalGroup_);
         parameterTable_ = new WTable(parameterGroup_);
-        
-        link_ = new WAnchor("dummy", lt(""));
+        resultTable_ = new WTable(resultGroup_);
+
+        runL_ = new Label(tr("form.query.wiv.label.run"));
         run_ = new WPushButton(tr("form.query.wiv.pushbutton.run"));
 
+        linkL_ = new Label(tr("form.query.wiv.label.result"));
+        link_ = new WAnchor("dummy", lt(""));
+        
+        statusL_ = new Label(tr("form.query.wiv.label.status"));
+        status_ = new Label(tr("form.query.wiv.label.status.initial"));
+
+
         generalTable_.putElementAt(0, 0, description_);
-        generalTable_.putElementAt(1, 0, run_);
-        generalTable_.putElementAt(2, 0, link_);
+        
+        addLineToTable(resultTable_,new WWidget[]{runL_,run_});
+        addLineToTable(resultTable_,new WWidget[]{statusL_,status_});
+        addLineToTable(resultTable_,new WWidget[]{linkL_,link_});
         
         run_.clicked.addListener(this);
         
@@ -119,13 +141,23 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     public void notify(WMouseEvent a) 
     {
+        run_.disable();
+        status_.setText(tr("form.query.wiv.label.status.running"));
+        
         File csvFile =  getOutputFile();
         
         if(process(csvFile)){
             File output = postProcess(csvFile);
             
             setDownloadLink(output);
+            
+            status_.setText(tr("form.query.wiv.label.status.finished"));
         }
+        else{
+            status_.setText(tr("form.query.wiv.label.status.failed"));
+        }
+        
+        run_.enable();
     }
     
     protected boolean process(File csvFile){
@@ -243,6 +275,14 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         return temp;
     }
     
+    public String getFileName(){
+        return filename_;
+    }
+    
+    public void setFileName(String filename){
+        filename_ = filename;
+    }
+    
     public String getQuery(){
         return query_;
     }
@@ -256,13 +296,18 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         parameters_.put(name, f);
     }
     
-    public File getOutputFile() 
-    {
+    public File getResultDir(){
         File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
         if(!wivDir.exists()){
             wivDir.mkdir();
         }
-        return new File(wivDir.getAbsolutePath() + File.separatorChar + filename_ + ".csv");
+        return wivDir;
+    }
+    
+    public File getOutputFile() 
+    {
+        File wivDir = getResultDir();
+        return new File(wivDir.getAbsolutePath() + File.separatorChar + getFileName() + ".csv");
     }    
      
     public void setDownloadLink(File file){
@@ -291,6 +336,66 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     // Parse utility methods
+    
+    protected enum OriginCode{
+        ARC,ARL;
+        
+        public int getCode(){
+            if(this == ARC)
+               return 1;
+            if(this == ARL)
+                return 2;
+            return -1;
+        }
+    };
+    
+    protected enum TypeOfInformationCode{
+        LAB_RESULT,THERAPY,LAST_CONTACT_DATE,DEATH;
+        
+        public int getCode(){
+            if(this == LAB_RESULT)
+                return 1;
+            if(this == THERAPY)
+                return 2;
+            if(this == LAST_CONTACT_DATE)
+                return 3;
+            if(this == DEATH)
+                return 4;
+            return -1;
+        }
+    };
+    
+    protected enum TestCode{
+        VL,T4;
+        
+        public int getCode(){
+            if(this == VL)
+                return 1;
+            if(this == T4)
+                return 2;
+            return -1;
+        }
+    };
+    
+    protected enum CauseOfDeathCode{
+        HIV,HEPATITE,CARDIO,SUICIDE,OTHER,UNKNOWN;
+    
+        public int getCode(){
+            if(this == HIV)
+                return 1;
+            if(this == HEPATITE)
+                return 2;
+            if(this == CARDIO)
+                return 3;
+            if(this == SUICIDE)
+                return 4;
+            if(this == OTHER)
+                return 5;
+            if(this == UNKNOWN)
+                return 9;
+            return -1;
+        }
+    };
     
     protected String getCentreName(){
         return RegaDBSettings.getInstance().getPropertyValue("centre.name");
@@ -351,4 +456,65 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         }
         return null;
     }
+    
+    private static final String paddingString = "????????????????????";
+    protected static String getPadding(int length){
+        String padding = paddingString;
+        for(int i=1;i< java.lang.Math.ceil(length/paddingString.length()); ++i){
+            padding += paddingString;
+        }
+        return padding.substring(0, length);
+    }
+    private static String getPaddingString(String s, int length){
+        int toPad = length - (s==null?0:s.length());
+        if(toPad < 1)
+            return "";
+        else
+            return getPadding(toPad);
+    }
+    protected static String getPaddedRight(String s, int length){
+        return s + getPaddingString(s,length);
+    }
+    protected static String getPaddedLeft(String s, int length){
+        return getPaddingString(s,length) + s;
+    }
+
+    
+    protected String getFormattedString(PatientAttributeValue pav){
+        String s = null;
+        String attr = pav.getAttribute().getName();
+        
+        if(ValueTypes.getValueType(pav.getAttribute().getValueType()) == ValueTypes.NOMINAL_VALUE){
+            if(pav.getAttribute().getAttributeGroup().getGroupName().equals("WIV")){
+                return getAbbreviation(pav.getAttributeNominalValue().getValue());
+            }
+            
+            if(attr.equals("Gender")){
+                if(pav.getAttributeNominalValue().getValue().equals("male"))
+                    return "M";
+                else
+                    return "F";
+            }
+        }
+        
+        if(ValueTypes.getValueType(pav.getAttribute().getValueType()) == ValueTypes.DATE){
+            return getFormattedDate(DateUtils.parseDate(pav.getValue()));
+        }
+        
+        if(attr.equals("PatCode"))
+            return pav.getValue();
+        
+
+        return s;
+    }
+    
+    protected String getAbbreviation(String nominal){
+        int i = nominal.indexOf(':');
+        if(i != -1)
+            return nominal.substring(0,i);
+        else
+            return nominal;
+    }
+
+
 }

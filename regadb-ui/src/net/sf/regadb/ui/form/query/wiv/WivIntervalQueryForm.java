@@ -19,6 +19,8 @@ public abstract class WivIntervalQueryForm extends WivQueryForm{
         startDate = new DateField(InteractionState.Editing,this);
         endDate = new DateField(InteractionState.Editing,this);
         
+        endDate.setDate(new Date());
+        
         super.addParameter("var_start_date", tr("form.query.wiv.label.startDate"), startDate);
         super.addParameter("var_end_date", tr("form.query.wiv.label.endDate"), endDate);
     }
@@ -27,8 +29,15 @@ public abstract class WivIntervalQueryForm extends WivQueryForm{
         return startDate.getDate();
     }
     
+    public void setStartDate(Date d){
+        startDate.setDate(d);
+    }
+    
     public Date getEndDate(){
         return endDate.getDate();
     }
-
+    
+    public void setEndDate(Date d){
+        endDate.setDate(d);
+    }
 }

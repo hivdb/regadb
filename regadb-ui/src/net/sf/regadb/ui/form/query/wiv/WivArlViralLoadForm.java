@@ -3,9 +3,12 @@ package net.sf.regadb.ui.form.query.wiv;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.date.DateUtils;
 
 public class WivArlViralLoadForm extends WivIntervalQueryForm {
     public WivArlViralLoadForm(){
@@ -17,6 +20,8 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
                         "and tr.test.testType.description = '"+ StandardObjects.getViralLoadTestType().getDescription() +"' "+
                         "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
         setQuery(query);
+        
+        setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }
 
     @Override
@@ -40,11 +45,11 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
             vl = java.lang.Math.log10(vl);
             
             row.add(getCentreName());
-            row.add("1");
+            row.add(OriginCode.ARL.getCode()+"");
             row.add(in.valueAt(CPatCode, i));
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
-            row.add("1");
-            row.add("1");   //VL=1 CD4=2
+            row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
+            row.add(TestCode.VL.getCode()+"");
             row.add(getFormattedDecimal(vl));
             row.add("");
             row.add("");

@@ -2,12 +2,13 @@ package net.sf.regadb.ui.form.query.wiv;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Therapy;
@@ -15,6 +16,7 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.util.date.DateUtils;
 
 import org.hibernate.Query;
 
@@ -42,35 +44,37 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
                 "and pav.attribute.name = 'PatCode' ";
         
         setQuery(query);
+        
+        setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1)); //?
     }
     
     @Override
     protected boolean process(File csvFile){
         Transaction t = RegaDBMain.getApp().createTransaction();
         Query q = createQuery(t);
-        List<Object> res = q.list();
+        List<Object[]> res = q.list();
         
         Calendar cal = Calendar.getInstance();
         String date = cal.get(Calendar.YEAR) +"0401";
         String patcode;
         
-        try{
-            PrintStream ps = new PrintStream(new FileOutputStream(csvFile));
+        Table out = new Table();
         
-            for(Object o : res){
-                Object[] duo = (Object[]) o;
-                Therapy tp = (Therapy)duo[0];
-                PatientAttributeValue pav = (PatientAttributeValue)duo[1];
+        try{
+//            PrintStream ps = new PrintStream(new FileOutputStream(csvFile));
+        
+            for(Object[] o : res){
+                Therapy tp = (Therapy)o[0];
+                PatientAttributeValue pav = (PatientAttributeValue)o[1];
                 
-                patcode = "?????????????";
+                patcode = getPadding(13);
                 if(pav != null){
                     patcode = pav.getValue();
                 }
                 
-                printTherapy(tp,patcode,date,ps);
+                addTherapy(out,tp,patcode,date);
             }
-            
-            ps.close();
+            out.exportAsCsv(new FileOutputStream(csvFile), ';', false);
         }
         catch(Exception e){
             e.printStackTrace();
@@ -86,8 +90,9 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
     }
 
 
-    private void printTherapy(Therapy tp, String patcode, String date, PrintStream ps) throws IOException{
+    private void addTherapy(Table table, Therapy tp, String patcode, String date){
         HashSet<String> atcs = new HashSet<String>();
+        ArrayList<String> row;
         
         for(TherapyGeneric tg : tp.getTherapyGenerics()){
             atcs.add(tg.getId().getDrugGeneric().getAtcCode());
@@ -101,14 +106,17 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
             String atc = s;
             if(atc == null || atc.length() == 0)
                 atc = "9999";
-            ps.print(
-                    getCentreName() +";"+
-                    "2;"+   //origin
-                    patcode +";"+
-                    date+";"+
-                    "2;"+   //type of information therapy=2
-                    atc+";");
-            ps.println();
+            
+            row = new ArrayList<String>();
+            row.add(getCentreName());
+            row.add(OriginCode.ARC.getCode()+"");
+            row.add(patcode);
+            row.add(date);
+            row.add(TypeOfInformationCode.THERAPY.getCode()+"");
+            row.add(atc);
+            row.add("");
+            
+            table.addRow(row);
         }
     }
 }
