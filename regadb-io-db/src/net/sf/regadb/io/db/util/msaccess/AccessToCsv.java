@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Properties;
 
 import net.sf.regadb.io.db.util.export.CsvExporter;
 import net.sf.regadb.io.db.util.export.SqlQueryExporter;
@@ -52,9 +52,12 @@ public class AccessToCsv {
 		if(conn_ == null){
 			try{
 				Class.forName(dbDriver_);
-				
+				Properties prop = new Properties();            
+				prop.put("charSet", "UTF-8");
+				prop.put("user", dbUsername_);
+				prop.put("password", dbPassword_);
 				String dbUrl = dbPrefix_ + dbFile.getAbsolutePath() + dbSuffix_;
-				conn_ = DriverManager.getConnection(dbUrl,dbUsername_,dbPassword_);
+				conn_ = DriverManager.getConnection(dbUrl,prop);
 			}
 			catch(Exception e){
 				e.printStackTrace();
