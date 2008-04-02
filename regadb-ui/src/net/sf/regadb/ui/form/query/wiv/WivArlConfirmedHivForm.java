@@ -13,7 +13,9 @@ import java.util.Map;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.date.DateUtils;
 
@@ -48,11 +50,11 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
         int i=0;
         length.add(13); position.put("PatCode", i++);
         length.add(10); position.put("REF_LABO", i++);
-        length.add(8);  position.put("DATE_TEST", i++);
-        length.add(8);  position.put("BIRTH_DATE", i++);
+        length.add(8);  position.put("TestResult.testDate", i++);
+        length.add(8);  position.put("Patient.birthDate", i++);
         length.add(1);  position.put("Gender", i++);
         length.add(1);  position.put("HIVTYPE", i++);
-        length.add(0);  position.put("VIRLOAD", i++);
+        length.add(0);  position.put("TestResult.value", i++);
         length.add(3);  position.put("NATION", i++);
         length.add(3);  position.put("COUNTRY", i++);
         length.add(2);  position.put("RESID_B", i);
@@ -63,6 +65,14 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
         
         for(Patient p : patients){
             row = new String[position.size()];
+            
+            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
+            
+            TestResult tr = getFirstTestResult(p, StandardObjects.getViralLoadTestType());
+            if(tr != null){
+                row[position.get("TestResult.value")] = getFormattedViralLoadLog10(tr.getValue());
+                row[position.get("TestResult.testDate")] = getFormattedDate(tr.getTestDate());
+            }
             
             for(PatientAttributeValue pav : p.getPatientAttributeValues()){
                 Integer pos = position.get(pav.getAttribute().getName());

@@ -16,7 +16,9 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
@@ -516,5 +518,28 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
             return nominal;
     }
 
-
+    protected TestResult getFirstTestResult(Patient p, TestType tt){
+        TestResult tr = null;
+        
+        Date d = new Date();
+        
+        for(TestResult t : p.getTestResults()){
+            if(t.getTest().getTestType().getDescription().equals(tt.getDescription())){
+                if(t.getTestDate().before(d)){
+                    d = t.getTestDate();
+                    tr = t;
+                }
+                
+            }
+        }
+        
+        return tr;
+    }
+    
+    protected String getFormattedViralLoadLog10(String value){
+        String s = value.replace(">", "").replace("<", "").replace("=", "");
+        
+        double d = java.lang.Math.log10(Double.parseDouble(s));
+        return getFormattedDecimal(d);
+    }
 }
