@@ -20,29 +20,18 @@ public class ExportToCsv extends AccessToCsv {
             File inFile = new File(args[0]);
             File ignoreFile = new File(args[1]);
             
-            if(args.length > 1){
+            a2c.loadIgnoreTables(ignoreFile);
+            if(args.length > 2){
                 File outFile = new File(args[2]);
                 
-                a2c.createCsv(inFile,ignoreFile,outFile);
+                a2c.createCsv(inFile,outFile);
             }
             else{
-                a2c.createCsv(inFile,ignoreFile);
+                a2c.createCsv(inFile);
             }
         }
         else{
             System.out.println("Usage: ExportToCsv <database_input_file> <table_ignore_file> [<csv_output_path>]");
-        }
-    }
-    
-    public void createCsv(File in, File ignore){
-        if(loadIgnoreTables(ignore)){
-            super.createCsv(in);
-        }
-    }
-    
-    public void createCsv(File in, File ignore, File out){
-        if(loadIgnoreTables(ignore)){
-            super.createCsv(in, out);
         }
     }
     
@@ -55,7 +44,7 @@ public class ExportToCsv extends AccessToCsv {
                 while((line = fr.readLine()) != null){
                     ignoreTables_.add(line);
                 }
-                
+                fr.close();
                 return true;
             }
             catch(Exception e){
@@ -68,9 +57,9 @@ public class ExportToCsv extends AccessToCsv {
         }
     }
 
-    protected void exportTable(Connection con, String table, OutputStream os){
-        if(ignoreTables_.contains(table)){
-            super.exportTable(con,table,os);
+    protected void exportTable(File out, Connection con, String table){
+        if(!ignoreTables_.contains(table)){
+            super.exportTable(out,con,table);
         }
         else{
             System.out.println("Ignoring table: "+ table);

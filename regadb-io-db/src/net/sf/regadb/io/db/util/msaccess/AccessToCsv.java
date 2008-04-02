@@ -85,15 +85,12 @@ public class AccessToCsv {
 			ResultSet rs;
 			DatabaseMetaData md;
 			String table;
-			FileOutputStream os;
 			
 			md = con.getMetaData();
 		    rs = md.getTables(null, null, "%", new String [] {"TABLE"});
 		    while (rs.next()) {
 		    	table = rs.getString(3);
-		    	os = new FileOutputStream(new File(out.getAbsolutePath() + File.separator + table +".csv"));
-		    	exportTable(con, table, os);
-		    	os.close();		    	
+		    	exportTable(new File(out.getAbsolutePath() + File.separator + table +".csv"),con, table);
 		    }
 		}
 		catch(Exception e){
@@ -111,11 +108,13 @@ public class AccessToCsv {
 			return s.substring(0,i);
 	}
 	
-	protected void exportTable(Connection con, String table, OutputStream os){
+	protected void exportTable(File out, Connection con, String table){
 		System.out.println("Exporting: "+ table);
 		
 		try{
+			FileOutputStream os = new FileOutputStream(out);
 			sqlQueryExporter_.exportQuery("SELECT * FROM `"+table+"`",os);
+			os.close();		    	
 		}
 		catch(Exception e){
 			System.out.println("Error exporting("+table+"):"+ e);
