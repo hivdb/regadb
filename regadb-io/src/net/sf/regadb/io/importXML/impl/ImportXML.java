@@ -29,9 +29,9 @@ import org.xml.sax.SAXException;
 
 public class ImportXML {
 
-    Login login;
+    public Login login;
 
-    ImportFromXML instance;
+    public ImportFromXML instance;
 
     public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException,
             DisabledUserException {
@@ -101,7 +101,7 @@ public class ImportXML {
         }        
     }
     
-    void importPatients(InputSource s, String datasetName) throws SAXException, IOException {
+    public void importPatients(InputSource s, String datasetName) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
