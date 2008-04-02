@@ -130,7 +130,7 @@ public class WivObjects {
         return nominalValues_.get(getAttributeNominalValueKey(a, nominalValue));
     }
     
-    private static PatientAttributeValue createPatientAttributeNominalValue(String attributeName, char nominalAbbrev, Patient p){
+    public static PatientAttributeValue createPatientAttributeNominalValue(String attributeName, char nominalAbbrev, Patient p){
         Attribute attribute = attributes_.get(attributeName);
         if(attribute==null)
             return null;
@@ -146,7 +146,7 @@ public class WivObjects {
         return pav;
     }
     
-    private static PatientAttributeValue createPatientAttributeValue(String attributeName, String value, Patient p){
+    public static PatientAttributeValue createPatientAttributeValue(String attributeName, String value, Patient p){
         Attribute attribute = attributes_.get(attributeName);
         if(attribute==null)
             return null;
