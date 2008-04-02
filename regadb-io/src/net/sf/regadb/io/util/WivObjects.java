@@ -411,6 +411,11 @@ public class WivObjects {
         l.add(getFormattedCountryCode("504","Hawai"));
         l.add(getFormattedCountryCode("505","US Territories in Oceania"));
         l.add(getFormattedCountryCode("432","US Territories in the Antilles"));
+        //unofficial
+        l.add(getFormattedCountryCode("360","North Africa"));
+        l.add(getFormattedCountryCode("370","Subsaharan Africa"));
+        l.add(getFormattedCountryCode("460","North America"));
+        l.add(getFormattedCountryCode("470","Latin America"));
 
         return l;
     }
