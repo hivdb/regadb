@@ -416,6 +416,7 @@ public class WivObjects {
         l.add(getFormattedCountryCode("370","Subsaharan Africa"));
         l.add(getFormattedCountryCode("460","North America"));
         l.add(getFormattedCountryCode("470","Latin America"));
+        l.add(getFormattedCountryCode("999","Unknown"));
 
         return l;
     }
