@@ -333,6 +333,9 @@ public class PrepareCentralRepos
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North America"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "South America"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Europe"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Subsaharan Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Eastern Europe"));
         
         return geographicOrigin;
     }
