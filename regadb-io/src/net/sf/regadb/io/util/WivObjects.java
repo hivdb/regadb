@@ -109,7 +109,7 @@ public class WivObjects {
         return a.getName() +";"+ nominalValue;
     }
     
-    private static AttributeNominalValue getANVFromAbbrev(Attribute attribute, char abbrev) {
+    private static AttributeNominalValue getANVFromAbbrev(Attribute attribute, String abbrev) {
         for(AttributeNominalValue anv : attribute.getAttributeNominalValues()) {
             if(anv.getValue().startsWith(abbrev+":")) {
                 return anv;
@@ -135,7 +135,26 @@ public class WivObjects {
         if(attribute==null)
             return null;
         
-        AttributeNominalValue anv = getANVFromAbbrev(attribute, nominalAbbrev);
+        AttributeNominalValue anv = getANVFromAbbrev(attribute, nominalAbbrev+"");
+        if(anv==null) {
+            return null;
+        }
+        
+        PatientAttributeValue pav = p.createPatientAttributeValue(attribute);
+        pav.setAttributeNominalValue(anv);
+        
+        return pav;
+    }
+    
+    public static PatientAttributeValue createCountryPANV(String attributeName, String abbrev, Patient p){
+    	if(abbrev.equals("?")) {
+    		abbrev = "999";
+    	}
+        Attribute attribute = attributes_.get(attributeName);
+        if(attribute==null)
+            return null;
+        
+        AttributeNominalValue anv = getANVFromAbbrev(attribute, abbrev);
         if(anv==null) {
             return null;
         }
