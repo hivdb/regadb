@@ -343,7 +343,7 @@ public class UpdateForm extends FormWidget
     @Override
     public void cancel()
     {
-        
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().administratorMain, RegaDBMain.getApp().getTree().getTreeContent().updateFromCentralServerUpdateView);
     }
     
     @Override
