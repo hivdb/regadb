@@ -8,7 +8,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import jxl.Cell;
@@ -117,7 +119,6 @@ public class ParseConfirmation {
                     try {
                         fw.write("19"+code_pat+";\n");
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -163,42 +164,49 @@ public class ParseConfirmation {
                 setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), p);
             
             String nation = getValue(i, "NATION", sheet, colMapping);
+            	handleWIVCountry("NATION", nation, p);
             String country = getValue(i, "COUNTRY", sheet, colMapping);
+            	handleWIVCountry("COUNTRY", country, p);
             
             String resid_b = getValue(i, "RESID_B", sheet, colMapping);
                 handleWIVNumericAttribute("RESID_B", resid_b, p, 2);
                 
             String origin = getValue(i, "ORIGIN", sheet, colMapping);
+        		if(origin!=null) 
+        			handleWIVCountry("ORIGIN", origin, p);
             
             String arrival_b = getValue(i, "ARRIVAL_B", sheet, colMapping);
                 handleWIVNumericAttribute("ARRIVAL_B", arrival_b, p, 4);
             
             String sexcontact = getValue(i, "SEXCONTACT", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: SEXCONTACT", sexcontact, p);
+                handleWIVNominalAttribute("SEXCONTACT", sexcontact, p);
             
             String sexpartner = getValue(i, "SEXPARTNER", sheet, colMapping);
-                handleWIVMultipleNominalAttribute("WIV: SEXPARTNER", sexpartner, p);
+                handleWIVMultipleNominalAttribute("SEXPARTNER", sexpartner, p);
             
             String natpartner = getValue(i, "NATPARTNER", sheet, colMapping);
+            	handleWIVCountry("NATPARTNER", natpartner, p);
             
             String bloodborne = getValue(i, "BLOODBORNE", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: BLOODBORNE", bloodborne, p);
+                handleWIVNominalAttribute("BLOODBORNE", bloodborne, p);
                 
             String yeartransf = getValue(i, "YEARTRANSF", sheet, colMapping);
                 handleWIVNumericAttribute("YEARTRANSF", yeartransf, p, 4);
                 
             String trancountr = getValue(i, "TRANCOUNTR", sheet, colMapping);
+            	handleWIVCountry("TRANCOUNTR", trancountr, p);
                 
             String child = getValue(i, "CHILD", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: CHILD", child, p);
+                handleWIVNominalAttribute("CHILD", child, p);
                 
             String profrisk = getValue(i, "PROFRISK", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: PROFRISK", profrisk, p);
+                handleWIVNominalAttribute("PROFRISK", profrisk, p);
             
             String probyear = getValue(i, "PROBYEAR", sheet, colMapping);
                 handleWIVNumericAttribute("PROBYEAR", probyear, p, 4);
             
             String probcountr = getValue(i, "PROBCOUNTR", sheet, colMapping);
+            	handleWIVCountry("PROBCOUNTR", probcountr, p);
             
             String lympho = getValue(i, "LYMPHO", sheet, colMapping);
                 if(!"".equals(lympho)) {
@@ -210,9 +218,9 @@ public class ParseConfirmation {
                 }
             
             String stad_clin = getValue(i, "STAD_CLIN", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: STAD_CLIN", stad_clin, p);
+                handleWIVNominalAttribute("STAD_CLIN", stad_clin, p);
             String reasontest = getValue(i, "REASONTEST", sheet, colMapping);
-                handleWIVNominalAttribute("WIV: REASONTEST", reasontest, p);
+                handleWIVNominalAttribute("REASONTEST", reasontest, p);
                 
             String form_out = getValue(i, "FORM_OUT", sheet, colMapping);
                 storeDateAttribute("FORM_OUT", form_out, p, df);
@@ -230,7 +238,7 @@ public class ParseConfirmation {
         if(!"".equals(value)) {
             try {
                 Date d = df.parse(value);
-                PatientAttributeValue pav = p.createPatientAttributeValue(WivObjects.getAttribute("WIV: " + attributeName));
+                PatientAttributeValue pav = p.createPatientAttributeValue(WivObjects.getAttribute(attributeName));
                 pav.setValue(d.getTime()+"");
             } catch (ParseException e) {
                 ConsoleLogger.getInstance().logError("Cannot parse date " + attributeName + " value:" + value);
@@ -251,6 +259,19 @@ public class ParseConfirmation {
         tr.setValue(value);
     }
     
+    public void handleWIVCountry(String attributeName, String value, Patient p) {
+        if("".equals(value)) {
+            return;
+        }
+        if(value==null) {
+        	System.err.println("---------------->" + attributeName + " - " + value);
+        }
+        
+        if(WivObjects.createCountryPANV(attributeName, value.toUpperCase(), p)==null) {
+        	ConsoleLogger.getInstance().logError("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+        }
+    }
+    
     public void handleWIVNumericAttribute(String attributeName, String value, Patient p, int length) {
         if(!"".equals(value)) {
             if(value.toUpperCase().equals("U")) {
@@ -258,7 +279,7 @@ public class ParseConfirmation {
             } else if(value.length()==length) {
                 try {
                 int i_value = Integer.parseInt(value);
-                handleWIVAttribute("WIV: " + attributeName, value, p);
+                handleWIVAttribute(attributeName, value, p);
                 } catch(NumberFormatException nfe) {
                     ConsoleLogger.getInstance().logError("No valid " + attributeName + " value: " + value);
                 }
@@ -299,10 +320,14 @@ public class ParseConfirmation {
     }
     
     public PatientAttributeValue getPAV(String attributeName, Patient p) {
-        for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
+        try {
+    	for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
             if(pav.getAttribute().getName().equals(attributeName)) {
                 return pav;
             }
+        } }
+        catch(Exception e) {
+        	System.err.println("test");
         }
         return null;
     }

@@ -15,7 +15,7 @@ public class ParseAll {
         props.put("http.proxyHost", "www-proxy");
         props.put("http.proxyPort", "3128");
         
-        String baseDir = "/home/plibin0/import/jette/import/cd/080320/";
+        String baseDir = "/home/plibin0/import/jette/import/cd/080321/";
         
         Map<Integer, List<String>> consultCodeHistory = new HashMap<Integer, List<String>>();
         Map<Integer, String> codepat = new HashMap<Integer, String>();

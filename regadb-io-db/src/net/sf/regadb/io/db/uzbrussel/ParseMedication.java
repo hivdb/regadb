@@ -88,7 +88,7 @@ public class ParseMedication {
                     boolean found = false;
                     for(DrugCommercial dc2 : getCommercialMapping(name)) {
                         medications.add(createMedication(startDate, stopDate, quantityD, dc2, null));
-                         found = true;
+                        found = true;
                     }
                     if(!found)
                         notParsableMeds.add(name);

@@ -82,8 +82,10 @@ public class ParseConsultDB {
             doc = builder.build(consultDBXml);
         } catch (JDOMException e) {
             ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
+            e.printStackTrace();
         } catch (IOException e) {
             ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
+            e.printStackTrace();
         }
 
         Element root = doc.getRootElement();
@@ -140,6 +142,7 @@ public class ParseConsultDB {
                 Utils.addCountryOrGeographicOrigin(countryOfOriginA, geographicOriginA, origin.replaceAll("\"",""), p);
             }
             if(nationality!=null) {
+            	//TODO
                 //setset.add(nationality);
             }
             if(transmission!=null) {
@@ -199,6 +202,15 @@ public class ParseConsultDB {
             }
             tr.setValue(value);
             return tr;
+        } if(type.equals("CD4")) {
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
+            try {
+                Double.parseDouble(value);
+            } catch(NumberFormatException nfe) {
+                ConsoleLogger.getInstance().logError("Cannot parse CD4% value: " + value);
+            }
+            tr.setValue(value);
+            return tr;
         } else if(type.equals("ABSCD8")) {
             TestResult tr = p.createTestResult(StandardObjects.getGenericCD8Test());
             try {
@@ -208,13 +220,28 @@ public class ParseConsultDB {
             }
             tr.setValue(value);
             return tr;
+        } else if(type.equals("CD8")) {
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
+            try {
+                Double.parseDouble(value);
+            } catch(NumberFormatException nfe) {
+                ConsoleLogger.getInstance().logError("Cannot parse CD8% value: " + value);
+            }
+            tr.setValue(value);
+            return tr;
         } else if(type.equals("H2VL") || type.equals("HIVVL")) {
             TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadTest());
             String val = parseViralLoad(value);
             tr.setValue(val);
+            return tr;
+        } else if(type.equals("VLLOGlog10") || type.equals("H2VLLlog10") || type.equals("VLLOG")) {
+            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadLog10Test());
+            String val = parseViralLoad(value);
+            tr.setValue(val);
+            return tr;
         }
         
-        setset.add(type + unit);
+        setset.add(type);
         
         return null;
     }
@@ -227,6 +254,8 @@ public class ParseConsultDB {
         }
         
         String val = null;
+        
+        value = value.replace(',', '.');
         
         if(Character.isDigit(value.charAt(0))) {
             value = "=" + value;

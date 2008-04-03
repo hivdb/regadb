@@ -5,24 +5,16 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import net.sf.regadb.align.Aligner;
-import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.util.StandardObjects;
 
 import org.apache.commons.io.FileUtils;
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 public class ParseSeqs {
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
@@ -55,7 +47,8 @@ public class ParseSeqs {
                     if(seq.exists()) {
                         Patient p = getPatientForId(id);
                         if(p==null) {
-                            ConsoleLogger.getInstance().logError("Cannot find patient for sequence: " + id);
+                            //TODO
+                        	//ConsoleLogger.getInstance().logError("Cannot find patient for sequence: " + id);
                         } else {
                             ViralIsolate vi = p.createViralIsolate();
                             try {
@@ -72,7 +65,8 @@ public class ParseSeqs {
                             counter++;
                         }
                     } else {
-                        ConsoleLogger.getInstance().logError("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
+                    	//TODO
+                        //ConsoleLogger.getInstance().logError("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
                     }
                 }
                 else {
