@@ -316,7 +316,7 @@ public class PrepareCentralRepos
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "other"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "vertical"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "transfusion"));
-        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "puncture accident"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "occupational exposure"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "unknown"));
         
         return transmissionGroup;
