@@ -225,7 +225,7 @@ public class PrepareCentralRepos
     private static Test createGenericViralLoadLog10()
     {
         TestType vlType = new TestType(new TestObject("Patient test", 0), "Viral Load (log10)");
-        vlType.setValueType(number);
+        vlType.setValueType(limitedNumber);
         Test vlTest = new Test(vlType, "Viral Load log10 (generic)");
         
         return vlTest;

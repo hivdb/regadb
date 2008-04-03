@@ -25,7 +25,7 @@ public class StandardObjects {
     private static ValueType stringValueType = new ValueType("string");
     private static ValueType dateValueType = new ValueType("date");
     private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
-    private static TestType viralLoadLog10TestType = new TestType(numberValueType, patientObject, "Viral Load (log10)", new TreeSet<TestNominalValue>());
+    private static TestType viralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (log10)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static TestType cd4PercentageTestType = new TestType(numberValueType, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
