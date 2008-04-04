@@ -1,6 +1,6 @@
 <project name="regadb-io-db" default="all" basedir=".">
     <description>
-        RegaDB build file for regadb-io
+        RegaDB build file for regadb-io-db
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
@@ -35,6 +35,12 @@
   	<jar jarfile="${dist}/${proj.name}-brescia-auto-import.jar" basedir="${build}">
   		<manifest>
   			<attribute name="Main-Class" value="net.sf.regadb.io.db.brescia.BresciaAutoImport"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+ 	<jar jarfile="${dist}/${proj.name}-uzbrussel-auto-import.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.io.db.uzbrussel.UZBrusselAutoImport"/>
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
