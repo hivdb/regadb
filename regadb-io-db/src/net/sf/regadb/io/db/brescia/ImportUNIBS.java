@@ -34,6 +34,7 @@ import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.frequency.Frequency;
 
 public class ImportUNIBS 
 {
@@ -60,7 +61,7 @@ public class ImportUNIBS
 
 	private HashMap<String, String> stopTherapyTranslation;
 	
-	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
+	private Map<String, Patient> patientMap = new HashMap<String, Patient>();
 	
 	private List<DrugGeneric> regaDrugGenerics;
 	
@@ -83,7 +84,7 @@ public class ImportUNIBS
     	try
     	{
     		//Just for testing purposes...otherwise remove
-    		ConsoleLogger.getInstance().setInfoEnabled(true);
+    		//ConsoleLogger.getInstance().setInfoEnabled(true);
     		
     		ImportUNIBS imp = new  ImportUNIBS();
         
@@ -95,7 +96,7 @@ public class ImportUNIBS
     	}
     }
     
-    private void getData(File workingDirectory, String mappingBasePath)
+    public void getData(File workingDirectory, String mappingBasePath)
     {
     	try
     	{
@@ -103,20 +104,20 @@ public class ImportUNIBS
     		
     		ConsoleLogger.getInstance().logInfo("Reading input files...");
     		//Filling DB tables
-    		patientTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_1_Pazienti.sql");
-    		deathTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_7_Decessi.sql");
+    		patientTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "1_Pazienti.csv");
+    		deathTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "7_Decessi.csv");
     		
-    		cd4Table = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_2_CD4.sql");
-    		rnaTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_3_HIVRNA.sql");
+    		cd4Table = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "2_CD4.csv");
+    		rnaTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "3_HIVRNA.csv");
     		
-    		aMarkersTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_4a_Markers.sql");
-    		bMarkersTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_4b_Markers.sql");
+    		aMarkersTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "4a_Markers.csv");
+    		bMarkersTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "4b_Markers.csv");
     		
-    		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_5_TARV.sql");
+    		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "5_TARV.csv");
     		
-    		adeTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_6_ADEs.sql");
+    		adeTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "6_ADEs.csv");
     		
-    		sequencesTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "Virolabdata_sample_8_Sequenze.sql");
+    		sequencesTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "8_Sequenze.csv");
     		
     		//Filling translation mapping tables
     		countryMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "county_of_origin.mapping");   		
@@ -150,11 +151,13 @@ public class ImportUNIBS
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
-    		HashMap<String, ViralIsolate> viralisolates = handleSequences();
+    		//TODO
+    		//HashMap<String, ViralIsolate> viralisolates = handleSequences();
     		
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_patients.xml");
-    		Utils.exportNTXML(viralisolates, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_ntseq.xml");
+    		//TODO
+    		//Utils.exportNTXML(viralisolates, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_ntseq.xml");
     		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)
@@ -169,11 +172,17 @@ public class ImportUNIBS
     	int Csex = Utils.findColumn(this.patientTable, "Sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "DataNascita");
     	int Cnationality = Utils.findColumn(this.patientTable, "Nazionalita");
+        //TODO
+        //can be empty
     	int CfirstTest = Utils.findColumn(this.patientTable, "Data_HIV+");
     	int CriskGroup = Utils.findColumn(this.patientTable, "FR");
+    	//TODO
+    	//can be empty
     	int ClastTest = Utils.findColumn(this.patientTable, "Fup");
+        //TODO
+        //can be empty
     	int Cstatus = Utils.findColumn(this.patientTable, "Status");
-    	int CseroConverter = Utils.findColumn(this.patientTable, "sieroconv");
+    	int CseroConverter = Utils.findColumn(this.patientTable, "Sieroconv");
     	
     	int CdeathPatientID = Utils.findColumn(this.deathTable, "ID_Coorte");
      	int CdeathDate = Utils.findColumn(this.deathTable, "DataDecesso");
@@ -249,8 +258,9 @@ public class ImportUNIBS
             	
             	if(Utils.checkColumnValue(lastTest, i, patientId))
             	{
-            		TestResult t = p.createTestResult(hivTest);
-                    t.setValue("Last date of follow-up available");
+            	    //TODO
+            	    TestResult t = p.createTestResult(hivTest);
+                    t.setValue("Contact");
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
@@ -332,7 +342,9 @@ public class ImportUNIBS
     		}
     		else
     		{
+    		    //TODO properly check CD4
 	    		//CD4
+    		    //sometimes only count or perc
 	    		if (Utils.checkColumnValue(cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
@@ -354,6 +366,11 @@ public class ImportUNIBS
     		String rnaAnalysisDate = this.rnaTable.valueAt(CrnaAnalysisDate, i);;
     		String VLTest = this.rnaTable.valueAt(CVLTest, i);
     		String VLHIV = this.rnaTable.valueAt(CVLHIV, i);
+    		//TODO
+    		//cutoff can be missing
+    		//viral load <50 -> value=1 -> save as <50
+    		//no cutoff, val 1 -> <50
+    		///val=1, cutoff  is specifified -> use less than cutoff
     		String VLCutOff = this.rnaTable.valueAt(CVLCutOff, i);
     		
     		Patient p = patientMap.get(rnaPatientID);
@@ -445,8 +462,10 @@ public class ImportUNIBS
     {
         Map<String, Test> coinfection = new HashMap<String, Test>();
         
+        //TODO
+        //agree on naming
         coinfection.put("HCVAb",createCoinfectionTest("HCVAb", "HCVAb (generic)"));
-        coinfection.put("HBaAg",createCoinfectionTest("HBaAg", "HBaAg (generic)"));
+        coinfection.put("HBeAg",createCoinfectionTest("HBeAg", "HBeAg (generic)"));
         coinfection.put("HBcAb",createCoinfectionTest("HBcAb", "HBcAb (generic)"));
         coinfection.put("HBsAb",createCoinfectionTest("HBsAb", "HBsAb (generic)"));
         coinfection.put("HBsAg",createCoinfectionTest("HBsAg", "HBsAg (generic)"));
@@ -477,6 +496,7 @@ public class ImportUNIBS
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
+		    			//TODO check result
 		    			tr.setValue(result);
     				}
     			}
@@ -505,7 +525,7 @@ public class ImportUNIBS
             String method = bMarkersTable.valueAt(CMethod, i);
             String result = bMarkersTable.valueAt(CResult, i);
             String value = bMarkersTable.valueAt(CValue, i);
-            //TODO: Clarify with Guiseppe
+            //TODO: Clarify with Guiseppe -> Dagstuhl
             //String cutoff = bMarkersTable.valueAt(CCutOff, i);
             
             Patient p = patientMap.get(patientId);
@@ -537,95 +557,6 @@ public class ImportUNIBS
         TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), testTypeDescription, new TreeSet<TestNominalValue>());
         Test tst = new Test(tt,testDescription);
         return tst;
-    }
-    
-    private HashMap<String,ViralIsolate> handleSequences()
-    {
-    	HashMap<String, ViralIsolate> samvi = new HashMap<String,ViralIsolate>();
-    	
-    	int CPatientId	= Utils.findColumn(sequencesTable, "ID_Coorte");
-    	int CGTDate		= Utils.findColumn(sequencesTable, "DataTest");
-    	int CGT			= Utils.findColumn(sequencesTable, "Sequenza");
-    	
-    	 for(int i = 1; i < sequencesTable.numRows(); i++) 
-         {
-             String patientId = sequencesTable.valueAt(CPatientId, i);
-             String date = sequencesTable.valueAt(CGTDate, i);
-             String seq = sequencesTable.valueAt(CGT, i);
-    	
-	    	Patient p = patientMap.get(patientId);
-			
-			if(p == null)
-			{
-				ConsoleLogger.getInstance().logWarning("No sequence patient with id "+patientId+" found.");
-			}
-			else
-			{
-				if(Utils.checkColumnValue(seq, i, patientId) && Utils.checkColumnValue(date, i, patientId))
-    			{
-					Date gtDate = Utils.parseBresciaSeqDate(date);
-					
-					if(gtDate != null)
-					{
-		    			Set<NtSequence> seqs;
-		    			String sampleid = patientId+gtDate.toString();
-		    			ViralIsolate vi = samvi.get(sampleid);
-		    			
-		    			if(vi == null)
-		    			{
-		    				vi = p.createViralIsolate();
-		    				vi.setSampleDate(gtDate);
-		    				vi.setSampleId(sampleid);
-		    				seqs = new HashSet<NtSequence>();
-		       				vi.setNtSequences(seqs);
-		       				
-		       				samvi.put(sampleid,vi);
-		    			}
-		    			else
-		    			{
-		    				if(gtDate.before(vi.getSampleDate()))
-		    					vi.setSampleDate(gtDate);
-		    			}
-		    				
-		    			seqs = vi.getNtSequences();
-						NtSequence ntSeq = new NtSequence();
-						ntSeq.setNucleotides(parseNucleotides(seq, patientId));
-						ntSeq.setLabel("Sequence1");
-						ntSeq.setSequenceDate(gtDate);
-							
-						seqs.add(ntSeq);
-					}
-		    		else
-		    		{
-		    			ConsoleLogger.getInstance().logWarning("Invalid date specified in the viral isolate file ("+ i +").");
-		    		}
-    			}
-			}
-         }
-    	
-    	 return samvi;
-    }
-    
-    private String parseNucleotides(String nucleotides, String patientID)
-    {
-    	int index = nucleotides.indexOf("D0");
-    	
-    	if(index != -1)
-    	{
-    		String tempSeq = nucleotides.substring(index+2, nucleotides.length());
-    		
-    		ConsoleLogger.getInstance().logInfo("TempSeq: "+tempSeq);
-    		
-    		nucleotides = Utils.clearNucleotides(tempSeq);
-    		
-    		ConsoleLogger.getInstance().logInfo("Cleared Seq: "+nucleotides.toLowerCase());
-    	}
-    	else
-		{
-			ConsoleLogger.getInstance().logWarning("Could not determine sequence for patient "+patientID+" from string "+nucleotides);
-		}
-    	
-    	return nucleotides.toLowerCase();
     }
     
     private void handleTherapies()
@@ -761,13 +692,18 @@ public class ImportUNIBS
     	
     	for (int i = 0; i < medicinsList.size(); i++) 
     	{
-    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)),false,false);
+    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
+    		                                        1.0, 
+    		                                        false,
+    		                                        false, 
+    		                                        (long)Frequency.DAYS.getSeconds());
     		t.getTherapyGenerics().add(tg);
     	}
     	
     	if(motivation != null && !motivation.equals(""))
     	{
-    		//Needs improvement
+    		//TODO
+    	    //Needs improvement, requires the mapping of motivation
     		TherapyMotivation therapyMotivation = new TherapyMotivation("Toxicity");
     	
     		t.setTherapyMotivation(therapyMotivation);
