@@ -41,6 +41,8 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
+import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.seq.Sequence;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -143,7 +145,11 @@ public class Utils {
         
         String [] dateTokens = date.split("/");
         
+        try {
         return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
+        } catch (Exception e) {
+            return null;
+        }
     }
     
      public static boolean checkColumnValue(String value, int row, String patientID)
@@ -548,7 +554,7 @@ public class Utils {
     	 
     	 return array;
      }
-     
+
      public static String clearNucleotides(String nucleotides) 
      {
          StringBuffer toReturn = new StringBuffer();
