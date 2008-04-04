@@ -38,6 +38,9 @@ create sequence event_nominal_value_event_nominal_value_ii_seq start with 1 incr
 create table dual_nt_sequence_nt_sequence_ii_seq (zero integer);
 insert into dual_nt_sequence_nt_sequence_ii_seq values (0);
 create sequence nt_sequence_nt_sequence_ii_seq start with 1 increment by 1;
+create table dual_patient_attribute_value_patient_attribute_value_ii_seq (zero integer);
+insert into dual_patient_attribute_value_patient_attribute_value_ii_seq values (0);
+create sequence patient_attribute_value_patient_attribute_value_ii_seq start with 1 increment by 1;
 create table dual_patient_event_value_patient_event_value_ii_seq (zero integer);
 insert into dual_patient_event_value_patient_event_value_ii_seq values (0);
 create sequence patient_event_value_patient_event_value_ii_seq start with 1 increment by 1;
@@ -114,7 +117,7 @@ create table public.event (event_ii integer not null, version integer not null, 
 create table public.event_nominal_value (nominal_value_ii integer not null, version integer not null, event_ii integer not null, value varchar(500) not null, primary key (nominal_value_ii));
 create table public.nt_sequence (nt_sequence_ii integer not null, version integer not null, viral_isolate_ii integer not null, label varchar(50), sequence_date date, nucleotides longvarchar, primary key (nt_sequence_ii));
 create table public.patient (patient_ii integer not null, version integer not null, patient_id varchar(50) not null, last_name varchar(50), first_name varchar(50), birth_date date, death_date date, primary key (patient_ii));
-create table public.patient_attribute_value (patient_ii integer not null, attribute_ii integer not null, version integer not null, nominal_value_ii integer, value varchar(100), primary key (patient_ii, attribute_ii));
+create table public.patient_attribute_value (patient_attribute_value_ii integer not null, version integer not null, attribute_ii integer not null, patient_ii integer not null, nominal_value_ii integer, value varchar(100), primary key (patient_attribute_value_ii));
 create table public.patient_dataset (dataset_ii integer not null, patient_ii integer not null, primary key (dataset_ii, patient_ii));
 create table public.patient_event_value (patient_event_value_ii integer not null, version integer not null, patient_ii integer not null, nominal_value_ii integer, event_ii integer not null, value varchar(100), start_date date, end_date date, primary key (patient_event_value_ii));
 create table public.protein (protein_ii integer not null, version integer not null, abbreviation varchar(50) not null, full_name varchar(50), primary key (protein_ii));
