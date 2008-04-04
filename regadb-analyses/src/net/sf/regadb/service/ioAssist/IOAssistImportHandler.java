@@ -177,7 +177,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         }
     }
     
-    private TestResult ntSeqAnalysis(NtSequence ntseq, Test test)
+    public static TestResult ntSeqAnalysis(NtSequence ntseq, Test test)
     {
         WtsClient client_ = new WtsClient(test.getAnalysis().getUrl());
         
