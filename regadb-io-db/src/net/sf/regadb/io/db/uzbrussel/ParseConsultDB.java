@@ -41,36 +41,36 @@ public class ParseConsultDB {
     
     private NominalTestMapper therapyAdherenceT;
     
-    private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
-    
     private List<Attribute> regadbAttributes_;
     
     private Set<String> setset = new HashSet<String>();
     
-    public ParseConsultDB(String baseDir, Map<Integer, Patient> patients, ParseIds parseIds) {
+    private Map<Integer, String> codepat_;
+    
+    public ParseConsultDB(String baseDir, Map<Integer, Patient> patients, ParseIds parseIds, String mappingBasePath, Map<Integer, String> codepat) {
         baseDir_ = baseDir;
         patients_ = patients;
         parseIds_ = parseIds;
-        
-        String mappingBasePath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings";
         
         ParseMedication.mappingPath = mappingBasePath;
         ParseMedication.init();
     
         regadbAttributes_ = Utils.prepareRegaDBAttributes();
             
-        genderNominal_.attribute.setAttributeGroup(regadbAttributeGroup_);
+        genderNominal_.attribute.setAttributeGroup(Items.getRegadbAttributeGroup());
         
         Table countryTable = Utils.readTable(mappingBasePath + File.separatorChar + "countryOfOrigin.mapping");
-        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, regadbAttributeGroup_, Utils.selectAttribute("Country of origin", regadbAttributes_), false);
+        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes_), false);
         
         Table geoTable = Utils.readTable(mappingBasePath + File.separatorChar + "geographicOrigin.mapping");
-        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, regadbAttributeGroup_, Utils.selectAttribute("Geographic origin", regadbAttributes_), false);
+        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Geographic origin", regadbAttributes_), false);
         
         Table transmissionTable = Utils.readTable(mappingBasePath + File.separatorChar + "transmissionRisk.mapping");
-        transmissionA = new NominalAttribute("Transmission group", transmissionTable, regadbAttributeGroup_, Utils.selectAttribute("Transmission group", regadbAttributes_));
+        transmissionA = new NominalAttribute("Transmission group", transmissionTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Transmission group", regadbAttributes_));
         
         therapyAdherenceT = new NominalTestMapper(mappingBasePath + File.separatorChar + "therapyAdherence.mapping", Items.getGenerichivTherapyAdherence());
+    
+        codepat_ = codepat;
     }
     
     public void exec() {
@@ -111,6 +111,8 @@ public class ParseConsultDB {
             Patient p = new Patient();
             p.setPatientId(id+"");
             patients_.put(id, p);
+            
+            p.createPatientAttributeValue(Items.getPatCodeAttribute()).setValue(codepat_.get(id));
             
             String birthDate = text(patientEl, "BirthDate");
             String deathDate = text(patientEl, "DeathDate");
@@ -194,49 +196,57 @@ public class ParseConsultDB {
             unit = "";
         
         if(type.equals("ABSCD4")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericCD4Test());
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
                 ConsoleLogger.getInstance().logError("Cannot parse CD4 value: " + value);
+                return null;
             }
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD4Test());
             tr.setValue(value);
             return tr;
         } if(type.equals("CD4")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
                 ConsoleLogger.getInstance().logError("Cannot parse CD4% value: " + value);
+                return null;
             }
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
             tr.setValue(value);
             return tr;
         } else if(type.equals("ABSCD8")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericCD8Test());
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
                 ConsoleLogger.getInstance().logError("Cannot parse CD8 value: " + value);
+                return null;
             }
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD8Test());
             tr.setValue(value);
             return tr;
         } else if(type.equals("CD8")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
                 ConsoleLogger.getInstance().logError("Cannot parse CD8% value: " + value);
+                return null;
             }
+            TestResult tr = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
             tr.setValue(value);
             return tr;
         } else if(type.equals("H2VL") || type.equals("HIVVL")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadTest());
             String val = parseViralLoad(value);
+            if(val==null)
+            	return null;
+            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadTest());
             tr.setValue(val);
             return tr;
         } else if(type.equals("VLLOGlog10") || type.equals("H2VLLlog10") || type.equals("VLLOG")) {
-            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadLog10Test());
             String val = parseViralLoad(value);
+            if(val==null)
+            	return null;
+            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadLog10Test());
             tr.setValue(val);
             return tr;
         }
@@ -266,6 +276,7 @@ public class ParseConsultDB {
                 val = value;
             } catch(NumberFormatException nfe) {
                 ConsoleLogger.getInstance().logError("Cannot parse Viral Load value: " + value);
+                return null;
             }
         }
         

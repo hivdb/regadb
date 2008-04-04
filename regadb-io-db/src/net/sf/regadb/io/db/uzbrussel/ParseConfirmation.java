@@ -8,9 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import jxl.Cell;
@@ -18,6 +16,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
@@ -126,6 +125,13 @@ public class ParseConfirmation {
             if(p!=null) {
             String ref_labo = getValue(i, "REF_LABO", sheet, colMapping);
             String date_test = getValue(i, "DATE_TEST", sheet, colMapping);
+            Date testDate = null;
+            try {
+				testDate = df.parse(date_test);
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+            
             String birth_date = getValue(i, "BIRTH_DATE", sheet, colMapping);
             if(!"".equals(birth_date)) {
                 Date birthDate = null;
@@ -150,10 +156,11 @@ public class ParseConfirmation {
             String sex = getValue(i, "SEX", sheet, colMapping);
             if(!"".equals(sex)) {
                 PatientAttributeValue pav = getPAV("Gender", p);
-                Utils.createPAV(genderNominal_, sex.toUpperCase(), p);
-                PatientAttributeValue pavNew = getPAV("Gender", p);
-                if(pav!=null) {
-                    if(!pav.getAttributeNominalValue().getValue().equals(pavNew.getAttributeNominalValue().getValue())) {
+                if(pav==null) {
+                	Utils.createPAV(genderNominal_, sex.toUpperCase(), p);
+                } else {
+                	AttributeNominalValue gnv = genderNominal_.nominalValueMap.get(sex.toUpperCase());
+                    if(!pav.getAttributeNominalValue().getValue().equals(gnv.getValue())) {
                         ConsoleLogger.getInstance().logError("Confirmation sex and original sex are not the same for Patient with id: "+p.getPatientId());
                     }
                 }
@@ -161,7 +168,7 @@ public class ParseConfirmation {
             String hivtype = getValue(i, "HIVTYPE", sheet, colMapping);
             
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
-                setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), p);
+                setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
             
             String nation = getValue(i, "NATION", sheet, colMapping);
             	handleWIVCountry("NATION", nation, p);
@@ -211,7 +218,7 @@ public class ParseConfirmation {
             String lympho = getValue(i, "LYMPHO", sheet, colMapping);
                 if(!"".equals(lympho)) {
                     try{ 
-                        setTest(StandardObjects.getGenericCD4Test(), Double.parseDouble(lympho)+"", p);
+                        setTest(StandardObjects.getGenericCD4Test(), Double.parseDouble(lympho)+"", testDate, p);
                     } catch (NumberFormatException nfe) {
                         ConsoleLogger.getInstance().logError("Cannot parse confirmations CD4 value: " + lympho);
                     }
@@ -246,7 +253,7 @@ public class ParseConfirmation {
         }
     }
     
-    public void setTest(Test test, String value, Patient p) {
+    public void setTest(Test test, String value, Date date, Patient p) {
         if(value==null || "".equals(value)) {
             return;
         }
@@ -255,8 +262,13 @@ public class ParseConfirmation {
                 return;
             }
         }
+        if(date==null) {
+        	ConsoleLogger.getInstance().logError("No date for confirmation test " + p.getPatientId());
+        	return;
+        }
         TestResult tr = p.createTestResult(test);
         tr.setValue(value);
+        tr.setTestDate(date);
     }
     
     public void handleWIVCountry(String attributeName, String value, Patient p) {
