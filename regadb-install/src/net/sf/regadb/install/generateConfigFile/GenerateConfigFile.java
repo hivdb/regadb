@@ -30,6 +30,9 @@ public class GenerateConfigFile {
 	private static String username;
 	private static String password;
 	private static String queryDir;
+	private static String logDir;
+	private static String centreName;
+	private static String reportDateTolerance;
 	private static String proxyUrlA;
 	private static String proxyPortA;
 	private static String proxyUrlB;
@@ -133,6 +136,10 @@ public class GenerateConfigFile {
     	}
 		
 		queryDir = installDir + "queryResult";
+		logDir = installDir + "logs";
+		
+		reportDateTolerance = "2";
+		centreName = "???";
 		
 		configMap.put("hibernate.connection.driver_class", driverClass);
     	configMap.put("hibernate.dialect", dialect);
@@ -140,6 +147,9 @@ public class GenerateConfigFile {
     	configMap.put("hibernate.connection.username", username);
     	configMap.put("hibernate.connection.password", password);
     	configMap.put("regadb.query.resultDir", queryDir);
+    	configMap.put("regadb.log.dir", logDir);
+    	configMap.put("regadb.report.dateTolerance", reportDateTolerance);
+    	configMap.put("centre.name", centreName);
 	}
 	
 	private static void generateProxyConfiguration() {
