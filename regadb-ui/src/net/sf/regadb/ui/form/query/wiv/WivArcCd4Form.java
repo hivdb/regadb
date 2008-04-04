@@ -15,7 +15,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
     public WivArcCd4Form(){
         super(tr("menu.query.wiv.arc.cd4"),tr("form.query.wiv.label.arc.cd4"),tr("file.query.wiv.arc.cd4"));
         
-        String query =  "select p, tr, pav "+
+        String query =  "select tr, pav "+
                         "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
                         "where pav.patient = p and pav.attribute.name = 'PatCode' "+
                         "and tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
@@ -50,7 +50,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
             row.add(TestCode.T4.getCode()+"");
             row.add(getFormattedDecimal(in.valueAt(CValue,i)));
             row.add("");
-
+            
             out.addRow(row);
         }
         
