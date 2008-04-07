@@ -44,6 +44,7 @@ public class WivArlEpidemiologyForm extends WivIntervalQueryForm {
         
         
         prevQueryRes = new ComboBox<File>(InteractionState.Editing,this);
+        prevQueryRes.addItem(new DataComboMessage<File>(null,"none"));
         
         File resDir = getResultDir();
         for(File f : resDir.listFiles()){
@@ -153,7 +154,7 @@ public class WivArlEpidemiologyForm extends WivIntervalQueryForm {
     @Override
     protected File postProcess(File csvFile) {
         File prevRes = prevQueryRes.currentValue();
-        if(prevRes != null){
+        if(prevRes != null && prevRes.exists()){
             csvFile = diff(prevRes,csvFile);
         }
         
