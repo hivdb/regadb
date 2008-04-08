@@ -145,17 +145,23 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     {
         run_.disable();
         status_.setText(tr("form.query.wiv.label.status.running"));
-        
-        File csvFile =  getOutputFile();
-        
-        if(process(csvFile)){
-            File output = postProcess(csvFile);
+
+        try{
+            File csvFile =  getOutputFile();
             
-            setDownloadLink(output);
-            
-            status_.setText(tr("form.query.wiv.label.status.finished"));
+            if(process(csvFile)){
+                File output = postProcess(csvFile);
+                
+                setDownloadLink(output);
+                
+                status_.setText(tr("form.query.wiv.label.status.finished"));
+            }
+            else{
+                status_.setText(tr("form.query.wiv.label.status.failed"));
+            }
         }
-        else{
+        catch(Exception e){
+            e.printStackTrace();
             status_.setText(tr("form.query.wiv.label.status.failed"));
         }
         
@@ -314,7 +320,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
      
     public void setDownloadLink(File file){
         link_.label().setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
-        link_.setRef(new WFileResource("text/csv", file.getAbsolutePath()).generateUrl());
+        link_.setRef(new WFileResource("application/csv", file.getAbsolutePath()).generateUrl());
     }
 
     @Override
