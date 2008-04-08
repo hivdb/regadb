@@ -2,11 +2,11 @@ package net.sf.regadb.io.db.jerusalem;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
@@ -34,13 +34,12 @@ public class ParseTests extends Parser {
 //        if(!check(sampleFile))
 //            parseTestResults(patients, tests, sampleFile);
 
-        if(!check(testResultFile))
+        if(check(testResultFile)){
             parseTestResults(patients, tests, testResultFile);
-
+        }
     }
     
-    private List<TestResult> parseTestResults(Map<String,Patient> patients, Map<String,Test> tests, File testResultFile){
-        List<TestResult> trs = new ArrayList<TestResult>();
+    private void parseTestResults(Map<String,Patient> patients, Map<String,Test> tests, File testResultFile){
         
         Table testTable = Utils.readTable(testResultFile.getAbsolutePath());
         
@@ -69,7 +68,6 @@ public class ParseTests extends Parser {
             
             if(p != null){
                 Date d;
-                
                 d = getDate(vlDate);
                 if(d != null){
                     
@@ -79,13 +77,13 @@ public class ParseTests extends Parser {
                         if(t == null)
                             t = StandardObjects.getGenericViralLoadTest();
                         
-                        trs.add(createTestResult(p,t,d,getFormattedValue(unitNo, vl),sampleNo));
+                        createTestResult(p,t,d,getFormattedValue(unitNo, vl),sampleNo);
                     }
                     if(check(cd4)){
-                        trs.add(createTestResult(p,StandardObjects.getGenericCD4Test(),d,cd4,sampleNo));
+                        createTestResult(p,StandardObjects.getGenericCD4Test(),d,cd4,sampleNo);
                     }
                     if(check(cd4p)){
-                        trs.add(createTestResult(p,StandardObjects.getGenericCD4PercentageTest(),d,cd4p,sampleNo));
+                        createTestResult(p,StandardObjects.getGenericCD4PercentageTest(),d,cd4p,sampleNo);
                     }
                 }
                 else
@@ -95,8 +93,6 @@ public class ParseTests extends Parser {
                 logWarn("Invalid patient ID",testResultFile,i,id);
             }
         }
-        
-        return trs;
     }
     
     private TestResult createTestResult(Patient p, Test t, Date d, String v, String sampleId){

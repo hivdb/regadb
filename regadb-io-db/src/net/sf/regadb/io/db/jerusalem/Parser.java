@@ -31,6 +31,14 @@ public class Parser {
         this.name = name;
     }
     
+    public File getCurrentFile(){
+        return currentFile;
+    }
+    
+    public void setCurrentFile(File currentFile){
+        this.currentFile = currentFile;
+    }
+    
     public Logging getLogger(){
         return logger;
     }

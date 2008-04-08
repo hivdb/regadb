@@ -35,21 +35,23 @@ public class ParseDrugs extends Parser{
             String type    = mapTable.valueAt(CType, i);
             String mapping = mapTable.valueAt(CMapping, i);
             
-            Drug d = new Drug();
-            
-            if("0".equals(type)){
-                d.setType(DrugType.UNKNOWN);
+            if(check(mapping) && check(type) && check(agentNo)){
+                Drug d = new Drug();
+                
+                if("0".equals(type)){
+                    d.setType(DrugType.UNKNOWN);
+                }
+                else if("1".equals(type)){
+                    d.setType(DrugType.GENERIC);
+                    d.setDrug(new DrugGeneric(null,mapping,null));
+                }
+                else if("2".equals(type)){
+                    d.setType(DrugType.COMMERCIAL);
+                    d.setDrug(new DrugCommercial(mapping));
+                }
+                
+                map.put(agentNo, d);
             }
-            else if("1".equals(type)){
-                d.setType(DrugType.GENERIC);
-                d.setDrug(new DrugGeneric(null,mapping,null));
-            }
-            else if("2".equals(type)){
-                d.setType(DrugType.COMMERCIAL);
-                d.setDrug(new DrugCommercial(mapping));
-            }
-            
-            map.put(agentNo, d);
         }
         
         return map;
