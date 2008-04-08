@@ -47,6 +47,8 @@ public class PrepareCentralRepos
     private static ValueType number = new ValueType("number");
     private static ValueType limitedNumber = new ValueType("limited number (<,=,>)");
     private static ValueType string  = new ValueType("string");
+    private static ValueType date = new ValueType("date");
+
     private static AttributeGroup regadb = new AttributeGroup("RegaDB");
     private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), StandardObjects.getGssId());
     
@@ -95,6 +97,9 @@ public class PrepareCentralRepos
         export.writeTopTest(pregnancy, tests);
         Test seroconvertion = createSeroconvertionTest();
         export.writeTopTest(seroconvertion, tests);
+        
+        Test followUp = createFollowUpTest();
+        export.writeTopTest(followUp, tests);
         
         //Resistance tests
         Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
@@ -289,6 +294,16 @@ public class PrepareCentralRepos
         Test pregnancy = new Test(pregnancyType, "Pregnancy");
         
         return pregnancy;
+    }
+    
+    private static Test createFollowUpTest()
+    {
+        TestType followUpType = new TestType(new TestObject("Patient test", 0), "Follow up");
+        followUpType.setValueType(date);
+        
+        Test followUp = new Test(followUpType, "Follow up");
+        
+        return followUp;
     }
 
     private static Attribute createGender()

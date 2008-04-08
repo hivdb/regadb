@@ -31,6 +31,7 @@ public class StandardObjects {
     private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
     private static TestType cd8PercentageTestType = new TestType(numberValueType, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType hivSeroStatusTestType;
+    private static TestType followUpTestType = new TestType(dateValueType, patientObject, "Follow up",new TreeSet<TestNominalValue>());
     private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
     private static Test genericViralLoadLog10Test = new Test(viralLoadLog10TestType, "Viral Load log10 (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
@@ -38,6 +39,7 @@ public class StandardObjects {
     private static Test genericCD8Test = new Test(cd8TestType, "CD8 Count (generic)");
     private static Test genericCD8PercentageTest = new Test(cd8PercentageTestType, "CD8 Count % (generic)");
     private static Test genericHivSeroStatusTest;
+    private static Test followUpTest = new Test(followUpTestType, "Follow up");
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
     private static String clinicalFileNumberAttribute = "Clinical File Number";
@@ -153,5 +155,10 @@ public class StandardObjects {
     public static Test getGenericCD8PercentageTest() {
         return genericCD8PercentageTest;
     }
-
+    public static TestType getFollowUpTestType(){
+        return followUpTestType;
+    }
+    public static Test getFollowUpTest(){
+        return followUpTest;
+    }
 }
