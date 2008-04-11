@@ -3,1744 +3,1933 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.sql.SQLException;
 import java.util.*;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.TestType;
 
 public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	    
-	    private static AWCPrototypeCatalog mainCatalog = null;
+    private static AWCPrototypeCatalog mainCatalog = null;
 	    
-	    public static AWCPrototypeCatalog getInstance() {
-	        if (mainCatalog == null) {
-	            initMainCatalog();
-	        }
-	        return mainCatalog;
-	    }
+    private Map<String, String> objectNameToVariableName = new HashMap<String, String>();
+    private Map<String, String> tableNameToAlias = new HashMap<String, String>();
+    private Map<String, String> tableNameToDescription = new HashMap<String, String>();
+    private List<AtomicWhereClause> atomicWhereClauses = new ArrayList<AtomicWhereClause>();
+
+    public static AWCPrototypeCatalog getInstance() {
+        if (mainCatalog == null) {
+            initMainCatalog();
+        }
+        return mainCatalog;
+    }
 	    
 
-	    private static void initMainCatalog() {
-	    	HibernateAWCPrototypeCatalog catalog = new HibernateAWCPrototypeCatalog();
-	        mainCatalog = catalog;
+    private static void initMainCatalog() {
+    	HibernateAWCPrototypeCatalog catalog = new HibernateAWCPrototypeCatalog();
+        mainCatalog = catalog;
 
+        catalog.addVariableNames();	    
+        catalog.addNumberClauses();
+        catalog.addStringClauses();
+        catalog.addBooleanClauses();
+        catalog.addDateClauses();
+        catalog.addAllTableClauses();
+    }
+
+    public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
+        this.atomicWhereClauses.add(atomicWhereClause);
+    }
+	    
+    /**
+     * Adds a plain english description for the persistent object with the given name
+     * @param objectName name of the persistent object
+     * @param description description for the persistent object
+     */
+    private void addTableDescription(String objectName, String description) {
+    	tableNameToDescription.put(objectName.toLowerCase(), description);
+    }
+	    
+    /**
+     * gets the plain english description for the persistent object with the given name
+     * if no plain english description has been set the simple class name of the object
+     * will be used
+     * @param objectName name of the persistent object
+     * @return a description for the given persistent object
+     */
+    public String getTableDescription(String objectName) {
+        String varName = (String)tableNameToDescription.get(objectName.toLowerCase());
+        if (varName == null) {
+            return objectName.substring(objectName.lastIndexOf('.')+1);
+        } else {
+            return varName;
+        }
+    }
+    
+    /**
+     * adds an variable name to the given object 
+     * @param objectName either the class name of a persistent object
+     *                   or the property of a persistent object
+     * @param variableName name for the variable
+     */
+    private void addVariableName(String objectName, String variableName) {
+        objectNameToVariableName.put(objectName.toLowerCase(), variableName);
+    }
+
+    
+    /**
+     * gets the variable name to the given object 
+     * if no variable name is specified, the first letter of the object or propert name is used
+     * @param objectName either the class name of a persistent object
+     *                   or the property of a persistent object
+     */
+    public String getVariableName(String objectName) {
+        String varName = (String)objectNameToVariableName.get(objectName.toLowerCase());
+        if (varName == null) {
+        	varName = objectName.substring(objectName.lastIndexOf('.')+1);
+            return varName.substring(0, 1);
+        } else {
+            return varName;
+        }
+    }
+	    
+    /**
+     * adds an hql alias for the given persistent object
+     * @param objectName name of the persistent object
+     * @param alias alias for the given persistent object
+     * @pre	alias must be a valid hql alias
+     */
+    private void addTableAlias(String objectName, String alias) {
+    	tableNameToAlias.put(objectName.toLowerCase(), alias);
+    }
+
+    /**
+     * gets the hql alias for the persistent object with the given name
+     * if no hql alias has been set the simple class name of the object
+     * will be used
+     * @param objectName name of the persistent object
+     * @return an alias for the given persistent object
+     */
+    public String getTableAlias(String objectName) {
+        String varName = (String)tableNameToAlias.get(objectName.toLowerCase());
+        if (varName == null) {
+            return objectName.substring(objectName.lastIndexOf('.')+1);
+        } else {
+            return varName;
+        }
+    }
+	    
+    /**
+     * returns true if a table with the given name exists in the database
+     * @param tableName the name of a table
+     * @return true if the table exists
+     *         false if it doesn't
+     */
+    private boolean tableExists(String tableName) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+        	return manager.getTableNames().contains(tableName);
+        }
+        else {
+        	return false;
+        }
+    }
+	    
+    /**
+     * returns the sql data type string from the given property of the given table.
+     * returns null if the table or property is not found
+	 * @param tableName table to check the property of
+	 * @param propertyName the property to check
+	 *                     this must be a property of the given table or of its composite id
+	 *                     If it is a property of the composite id, include
+	 *                     the id in the path, like so: id.property
+     * @return the data type string of the given property
+     */
+    private String getDataTypeString(String tableName, String propertyName) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        String typeString = null;
+        if (manager != null) {
+        	typeString = manager.getDatabaseConnector().getColumnType(tableName, propertyName);
+        }
+        else {
+            System.err.println("Unknown column " + propertyName + " for " + tableName);
+        }
+        return typeString;
+    }
+	    
+	/**
+	 * returns true if the given sql data type number belongs to a string
+	 * @param dataType an sql data type number
+	 * @return true when the data type is a string
+	 */
+    private boolean isStringType(int dataType) {
+    	return dataType == 12;
+    }
+
+	/**
+	 * returns true if the given sql data type number belongs to a boolean
+	 * @param dataType an sql data type number
+	 * @return true when the data type is a boolean
+	 */
+    private boolean isBooleanType(int dataType) {
+    	return dataType == -7;
+    }
+    
+	/**
+	 * returns true if the given sql data type number belongs to a date
+	 * @param dataType an sql data type number
+	 * @return true when the data type is a date
+	 */
+    private boolean isDateType(int dataType) {
+    	return (dataType >= 91) && (dataType <= 93);
+    }
+    
+	/**
+	 * returns true if the given sql data type number belongs to a numeric value
+	 * @param dataType an sql data type number
+	 * @return true when the data type is a number
+	 */
+    private boolean isNumericType(int dataType) {
+    	return (((8 >= dataType) && (dataType >=1)) || dataType == 1111 || dataType == -5);
+    }
+	    
+	/**
+     * find the data type of the property with the given name of the given table
+     * this method can resolve properties of composite ids
+     * returns null if the property is not found
+	 * @param tableName table to check the property of
+	 * @param propertyName the property to check
+	 *                     this must be a property of the given table or of its composite id
+	 *                     If it is a property of the composite id, include
+	 *                     the id in the path, like so: id.property
+	 * @return the data type of the property
+	 * 		  String for strings
+	 *        Numeric for numbers
+	 *        Boolean for booleans
+	 *        Date for dates
+	 */
+    private String getDataTypeOfProperty(String tableName, String propertyName) {
+    	String valueType = null;
+    	
+    	String dataTypeString = getDataTypeString(tableName, propertyName);
+    	if (dataTypeString != null) {
+    		int dataType = Integer.parseInt(dataTypeString);
 	    	
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl", "patient");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Therapy", "therapy");
-	        catalog.addGoodVariableName("net.sf.regadb.db.ViralIsolate", "viralIsolate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.NtSequence", "ntSequence");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaSequence", "aaSequence");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation", "aaMutation");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaInsertion", "aaInsertion");
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientAttributeValue", "attribute");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugGeneric", "genericDrug");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugCommercial", "commercialDrug");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass", "drugClass");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyCommercial", "commercialTherapy");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyGeneric", "genericTherapy");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Dataset", "dataset");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TestResult", "testResult");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Test", "test");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl.patientId", "PatientId");
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl.birthDate", "BirthDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl.deathDate", "DeathDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl.lastName", "LastName");
-	        catalog.addGoodVariableName("net.sf.regadb.db.PatientImpl.firstName", "FirstName");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.Therapy.startDate", "StartDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Therapy.stopDate", "StopDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Therapy.comment", "Comment");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyMotivation.value", "Motivation");
-
-	        catalog.addGoodVariableName("net.sf.regadb.db.ViralIsolate.sampleDate", "SampleDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.ViralIsolate.sampleId", "SampleId");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.NtSequence.sequenceDate", "SequenceDate");
-	        catalog.addGoodVariableName("net.sf.regadb.db.NtSequence.label", "Value");
-	        catalog.addGoodVariableName("net.sf.regadb.db.NtSequence.nucleotides", "Nucleotides");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.Protein.abbreviation", "ProteinAbbreviation");
-	        catalog.addGoodVariableName("net.sf.regadb.db.Protein.fullName", "ProteinName");
-
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaSequence.firstAaPos", "AaPosition");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaSequence.lastAaPos", "AaPosition");
-
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation.aaReference", "AaStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation.aaMutation", "AaStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation.ntReferenceCodon", "NtStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation.ntMutationCodon", "NtStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaMutation.id.mutationPosition", "MutationPosition");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaInsertion.aaInsertion", "AaStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaInsertion.ntInsertionCodon", "NtStr");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaInsertion.id.insertionPosition", "InsertionPosition");
-	        catalog.addGoodVariableName("net.sf.regadb.db.AaInsertion.id.insertionOrder", "InsertionOrder");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.classId", "DrugClassId");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.className", "DrugClassName");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder");
-
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.classId", "DrugClassId");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.className", "DrugClassName");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.classId", "DrugClassId");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.className", "DrugClassName");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder");
-	        catalog.addGoodVariableName("net.sf.regadb.db.DrugClass.classId", "DrugClassId");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "DailyDosage");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyCommercial.frequency", "Frequency");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyCommercial.placebo", "Placebo");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyCommercial.blind", "Blind");
-	        
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyGeneric.dayDosageUnits", "DailyDosage");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyGeneric.frequency", "Frequency");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyGeneric.placebo", "Placebo");
-	        catalog.addGoodVariableName("net.sf.regadb.db.TherapyGeneric.blind", "Blind");
-	        
-	        catalog.addGoodTableName("net.sf.regadb.db.PatientEventValue", "event");
-	        catalog.addGoodTableName("net.sf.regadb.db.PatientImpl", "patient");
-	        catalog.addGoodTableName("net.sf.regadb.db.Therapy", "therapy");
-	        catalog.addGoodTableName("net.sf.regadb.db.ViralIsolate", "viral isolate");
-	        catalog.addGoodTableName("net.sf.regadb.db.NtSequence", "nucleotide sequence");
-	        catalog.addGoodTableName("net.sf.regadb.db.AaSequence", "amino acid sequence");
-	        catalog.addGoodTableName("net.sf.regadb.db.AaMutation", "amino acid mutation");
-	        catalog.addGoodTableName("net.sf.regadb.db.AaInsertion", "amino acid insertion");
-	        catalog.addGoodTableName("net.sf.regadb.db.PatientAttributeValue", "attribute");
-	        catalog.addGoodTableName("net.sf.regadb.db.DrugGeneric", "generic drug");
-	        catalog.addGoodTableName("net.sf.regadb.db.DrugCommercial", "commercial drug");
-	        catalog.addGoodTableName("net.sf.regadb.db.DrugClass", "drug class");
-	        catalog.addGoodTableName("net.sf.regadb.db.TherapyCommercial", "treatment with a commercial drug");
-	        catalog.addGoodTableName("net.sf.regadb.db.TherapyGeneric", "treatment with a generic drug");
-	        catalog.addGoodTableName("net.sf.regadb.db.Dataset", "dataset");
-	        catalog.addGoodTableName("net.sf.regadb.db.TestResult", "test result");
-	        catalog.addGoodTableName("net.sf.regadb.db.Test", "test");
-	        
-	        catalog.addGoodDbName("net.sf.regadb.db.PatientImpl", "patient");
-	        catalog.addGoodDbName("net.sf.regadb.db.TherapyMotivation", "motivation");
-	        catalog.addGoodDbName("net.sf.regadb.db.Therapy", "therapy");
-	        catalog.addGoodDbName("net.sf.regadb.db.ViralIsolate", "vi");
-	        catalog.addGoodDbName("net.sf.regadb.db.NtSequence", "ntSeq");
-	        catalog.addGoodDbName("net.sf.regadb.db.AaSequence", "aaSeq");
-	        catalog.addGoodDbName("net.sf.regadb.db.AaMutation", "aaMut");
-	        catalog.addGoodDbName("net.sf.regadb.db.AaInsertion", "aaIns");
-	        catalog.addGoodDbName("net.sf.regadb.db.PatientAttributeValue", "attribute");
-	        catalog.addGoodDbName("net.sf.regadb.db.DrugGeneric", "gDrug");
-	        catalog.addGoodDbName("net.sf.regadb.db.DrugCommercial", "cDrug");
-	        catalog.addGoodDbName("net.sf.regadb.db.DrugClass", "drug class");
-	        catalog.addGoodDbName("net.sf.regadb.db.TherapyCommercial", "cTherapy");
-	        catalog.addGoodDbName("net.sf.regadb.db.TherapyGeneric", "gTherapy");
-	        catalog.addGoodDbName("net.sf.regadb.db.Dataset", "dataset");
-	        catalog.addGoodDbName("net.sf.regadb.db.TestResult", "result");
-	        catalog.addGoodDbName("net.sf.regadb.db.Test", "test");
-
-	        
-	        
-	        
-	        /*	        
-	        catalog.addGoodVariableName("", "");
-	        catalog.addGoodVariableName("", "");
-	        catalog.addGoodVariableName("", "");
-	        
-	        
-	        catalog.addGoodVariableName("GENERIC_NAME", "Name");
-	        catalog.addGoodVariableName("ATC_CODE", "AtcCode");
-*/	        
-	        catalog.addRealValueConstraintClause(true);
-	        catalog.addRealValueConstraintClause(false);
-	        catalog.addRealValueIntervalClause();
-	        catalog.addRealValueCompareClause();
-	        catalog.addRealConstantToVariableClause();
-	        catalog.addRealValueEqualsClause();
-	        
-	        catalog.addTimeConstantClause(true);
-	        catalog.addTimeConstantClause(false);
-	        catalog.addTimeIntervalClause();
-	        catalog.addTimeCompareClause();
-	        catalog.addTimeCalculationClause(true);
-	        catalog.addTimeCalculationClause(false);
-	        catalog.addTimeConstantToVariableClause();
-	        catalog.addTimeEqualsClause();
-
-	        
-	        
-	        ///////////////////////////////////////
-	        // events
-	        catalog.addBaseClause("net.sf.regadb.db.ValueType");
-	        AtomicWhereClause mvClause = catalog.addBaseClauseWithConstraint("net.sf.regadb.db.PatientEventValue", "event", "net.sf.regadb.db.Event", null, "net.sf.regadb.db.Event", null, "name", "is of type", false);
-	        catalog.addMandatoryValuesToClause(mvClause, new String[] {"net.sf.regadb.db.Event"}, new String[] {"name"});
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "startDate", "started on");
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "endDate", "ended on");
-	        catalog.addMandatoryValuesToClause(catalog.addPropertyCheckClause("net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "value", "has value", false, false),
-	        		"net.sf.regadb.db.PatientEventValue", "event", "net.sf.regadb.db.EventNominalValue", mvClause.getFromVariables().iterator().next(), mvClause.getConstants().iterator().next());
-	        
-	        
-	        // link patients - event
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.PatientEventValue", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from patient",  "has an event");
-	        
-	        
-	        ///////////////////////////////////////
-	        // patients
-	        catalog.addBaseClause("net.sf.regadb.db.PatientImpl");
-	   		catalog.addPropertyCheckClause("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null,  "net.sf.regadb.db.PatientImpl", null, "patientId",  "has id", false, false);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "lastName", "has last name", false);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "firstName", "has first name", false);
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "birthDate", "is born on");
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "deathDate", "has died on");
-
-	        // link patients - therapy
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.Therapy", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "was performed on patient",  "has received therapy");
-	        
-	        // link patient - viral isolate
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.ViralIsolate", "patient", "net.sf.regadb.db.PatientImpl",  null, "net.sf.regadb.db.PatientImpl", null, "comes from patient",  "has a viral isolate");
-	        
-	        // link patient - dataset
-//	        catalog.addGetAssociationClauses("net.sf.regadb.db.Dataset", "id.patient", "net.sf.regadb.db.PatientImpl",  null, "net.sf.regadb.db.PatientImpl", "patientIi", "has patient",  "is in dataset");
-	        
-	        
-
-	        ///////////////////////////////////////
-	        // data sets
-	        catalog.addBaseClause("net.sf.regadb.db.Dataset");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Dataset", null, "net.sf.regadb.db.Dataset", null, "net.sf.regadb.db.Dataset", null, "description", "has name", false, true);
-
-	   		
-	   		
-	        
-	        ///////////////////////////////////////
-	        // therapies
-	        catalog.addBaseClause("net.sf.regadb.db.Therapy");
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "startDate", "was started on");
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "stopDate", "was stopped on");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "comment", "has a comment", false);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Therapy", "therapyMotivation", "net.sf.regadb.db.TherapyMotivation", null, "net.sf.regadb.db.TherapyMotivation", null, "value", "has motivation", false, true);
-	   		
-	        // link therapy - therapyCommercial
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.TherapyCommercial", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the therapy",  "has a commercial drug treatment");
-
-	        // link therapy - therapyGeneric
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.TherapyGeneric", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the therapy",  "has a generic drug treatment");
-	        
-
-
-	        ///////////////////////////////////////
-	        // therapyCommercial
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "dayDosageUnits", "has a daily dosage", true);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "frequency", "has a frequency", false);
-	   		catalog.addBooleanPropertyClause("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "placebo",  "is a placebo");
-	   		catalog.addBooleanPropertyClause("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "blind",  "is blind");
-	        
-	        
-	        
-	        // link therapyCommercial - DrugCommercial
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.TherapyCommercial", "id.drugCommercial", "net.sf.regadb.db.DrugCommercial", null, "is used in the treatment",  "consist of the commercial drug");
-	        
-	        
-	        
-	        ///////////////////////////////////////
-	        // therapyGeneric
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "dayDosageMg", "has a daily dosage in mg", true);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "frequency", "has a frequency", false);
-	   		catalog.addBooleanPropertyClause("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "placebo",  "is a placebo");
-	   		catalog.addBooleanPropertyClause("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "blind",  "is blind");
-	        
-	        
-	        // link therapyGeneric - DrugCommercial
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in the treatment",  "consist of the generic drug");
-	        
-	        
-	        
-	        ///////////////////////////////////////
-	        // viral isolates
-	        catalog.addBaseClause("net.sf.regadb.db.ViralIsolate");
-	        catalog.addPropertyCheckClause("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleId", "has Id", false, false);
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleDate", "was taken on");
-	        
-	        // link viral isolate  - nt sequence
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.NtSequence", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from the viral isolate",  "has a nucleotide sequence");
-	 
-	        
-	        ///////////////////////////////////////
-	        // nucleotide sequence
-	        catalog.addBaseClause("net.sf.regadb.db.NtSequence");
-	        catalog.addDateClauses(catalog, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "sequenceDate", "was sequenced on");
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "label", "has label", false);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "nucleotides", "has nucleotides", false);
-	        
-	        // link nt sequence - aa sequence
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.AaSequence", "ntSequence", "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "comes from the nucleotide sequence",  "has a amino acid sequence");
-
-	        
-
-	        ///////////////////////////////////////
-	        // amino acid sequence
-	        catalog.addBaseClause("net.sf.regadb.db.AaSequence");
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "firstAaPos", "has first amino acid position", false);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "lastAaPos", "has last amino acid position", false);
-	        
-	        // link aa sequence - aa mutation
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the amino acid sequence",  "has an amino acid mutation");
-	        
-	        // link aa sequence - aa insertion
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.AaInsertion", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the amino acid sequence",  "has an amino acid insertion");
-	        
-	        // link aa sequence - protein
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.Protein", null, "net.sf.regadb.db.AaSequence", "protein", "net.sf.regadb.db.Protein", null, "is present in the amino acid sequence",  "has a protein");
-
-	        
-	        
-	        ///////////////////////////////////////
-	        // protein
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null,"abbreviation", "has abbreviation", false, true);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null,"fullName", "has name", false, true);
-
-	        
-	        
-	        ///////////////////////////////////////
-	        // amino acid mutation
-	        catalog.addBaseClause("net.sf.regadb.db.AaMutation");
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaReference", "has amino acid reference", false);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaMutation", "has amino acid mutation", false);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntReferenceCodon", "has nucleotide reference", false);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntMutationCodon", "has nucleotide mutation", false);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "id.mutationPosition", "is at position", false);
-	        
-	        
-
-	        ///////////////////////////////////////
-	        // amino acid insertion
-	        catalog.addBaseClause("net.sf.regadb.db.AaInsertion");
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "aaInsertion", "has amino acid insertion", false);
-	        catalog.addStringClauses(catalog, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "ntInsertionCodon", "has nucleotide insertion", false);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionPosition", "is at position", false);
-	        catalog.addNumberClauses(catalog, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionOrder", "has insertion order", false);
-	        
-
-	        
-	        ///////////////////////////////////////
-	        // custom Attributes
-	        try {
-	        	QueryResult result = DatabaseManager.getInstance().executeQuery("from net.sf.regadb.db.Attribute");
-	        	for (int i = 0 ; i < result.size() ; i++) {
-	        		Attribute a = (Attribute) result.get(i, 0);
-//	    	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.PatientImpl", new String[] {"genericId"}, "net.sf.regadb.db.DrugGeneric",  "has " + a.getName(), false, true);
-	        		
-//	    	   		select distinct nv.value
-//	    	   		from AttributeNominalValue nv
-//	    	   		where nv.attribute.attributeIi = ?	    	   		
-	    	   		
-	        	}
+	        if (isStringType(dataType)) {
+	        	valueType = "String";
 	        }
-	        catch(SQLException e) {
-	        	
+	        else if (isDateType(dataType)) {
+	        	valueType = "Date";
+	        }
+	        else if (isNumericType(dataType)) {
+	        	valueType = "Numeric";
+	        }
+	        else if (isBooleanType(dataType)) {
+	        	valueType = "Boolean";
 	        }
 	        
-	        // link net.sf.regadb.db.PatientImpl - custom Attribute
-//	        String[][] assocListPatienttoAttribute = {{"net.sf.regadb.db.PatientImpl", null, "patientIi"}, {"net.sf.regadb.db.PatientAttributeValue", "patientIi",null}};
-//	        catalog.addGetRemoteAssociationClause(assocListPatienttoAttribute, "has the Attribute");
-
-	        // link custom Attribute - Attribute name
-//	        catalog.addMandatoryValuesToClause(
-//	        		catalog.addCodedPropertyCheckClause("net.sf.regadb.db.PatientAttributeValue", "attributeIi", "net.sf.regadb.db.Attribute", "attributeIi", "name", "has the name", true),
-//	        		new String[] {"Attribute"},
-//	        		new String[] {"name"});
-	        		
-	        // link custom Attribute - nominal value
-//	        catalog.addMandatoryValuesToClause(
-//	        		catalog.addCodedPropertyCheckClause("net.sf.regadb.db.PatientAttributeValue", "nominalValueIi", "net.sf.regadb.db.AttributeNominalValue", "nominalValueIi", "value", "has the nominal value", true),
-//	        		new String[] {"AttributeNominalValue"},
-//	        		new String[] {"value"});
-	        
-	        
-	        ///////////////////////////////////////
-	        // generic drugs
-	        catalog.addBaseClause("net.sf.regadb.db.DrugGeneric");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericId", "has id", false, false);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericName", "has name", false, true);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "atcCode", "has atc code", false, true);
-	   		catalog.addNumberClauses(catalog, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "resistanceTableOrder", "has resistance table order", true);
-
-	        // link generic drug - drug class
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugGeneric", "drugClass", "net.sf.regadb.db.DrugClass", null, "has a drug",  "belongs to the drug class");
-	   		
-	        
-	        ///////////////////////////////////////
-	        // commercial drug
-	        catalog.addBaseClause("net.sf.regadb.db.DrugCommercial");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "name", "has name", false, true);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "atcCode", "has atc code", false, true);
-	        
-	        // link comercial - generic
-	   		catalog.addGetCollectionAssociation("net.sf.regadb.db.DrugGeneric", "net.sf.regadb.db.DrugCommercial", "drugGenerics", "has a commercial component");
-	   		catalog.addGetCollectionAssociation("net.sf.regadb.db.DrugCommercial", "net.sf.regadb.db.DrugGeneric", "drugCommercials", "is used in the generic drug");
-	   		
-	   		
-	        ///////////////////////////////////////
-	        // drug class
-	        catalog.addBaseClause("net.sf.regadb.db.DrugClass");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "className", "has name", false, true);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "classId", "has id", false);
-	   		catalog.addNumberClauses(catalog, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "resistanceTableOrder", "has resistance table order", false);
-	   		
-	   		
-	   		
-	        ///////////////////////////////////////
-	        // test result
-	        catalog.addBaseClause("net.sf.regadb.db.TestResult");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "value", "has value", false);
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "sampleId", "has sample id", false);
-	   		catalog.addDateClauses(catalog, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "testDate", "comes from a test on");
-
-	   		
-	        // link test result -  patients
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.TestResult", "patient", "net.sf.regadb.db.PatientImpl", null, "has a test result",  "comes from a test on patient");
-	   		
-	        // link test result -  generic drug
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TestResult", "drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "has a test result",  "comes from a test on generic drug");
-
-	        // link test result -  viral isolate
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.TestResult", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "has a test result",  "comes from a test on viral isolate");
-
-	        // link test result -  nucleotide sequence
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.TestResult", "ntSequence", "net.sf.regadb.db.NtSequence", null, "has a test result",  "comes from a test on nucleotide sequence");
-	        
-	        
-	        ///////////////////////////////////////
-	        // test
-	        catalog.addBaseClause("net.sf.regadb.db.Test");
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "description", "has name", false, true);
-	        
-	        // link test - test type
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Test", "testType", "net.sf.regadb.db.TestType", null, "net.sf.regadb.db.TestType", null, "description", "is a test of type", false, true);
-
-	   		// link test - test result
-	        catalog.addGetAssociationClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "has a test result",  "comes from the test");
-	   		
-	        // link test - test object
-	   		catalog.addStringClauses(catalog, "net.sf.regadb.db.Test", "testType.testObject", "net.sf.regadb.db.TestObject", null, "net.sf.regadb.db.TestObject", null, "description", "is a", false, true);
-
-	        
-	        
-	        /*      
-	        catalog.addConvertMicrogramsToMillimolarityClause();
-	        catalog.addRealValueWithRelationConstraintClause("Result", "REAL_VALUE", "RELATION", true);
-	        catalog.addRealValueWithRelationConstraintClause("Result", "REAL_VALUE", "RELATION", false);
-	        catalog.addRealValueWithRelationConstraintClause("Calc_Result", "REAL_VALUE", "RELATION", true);
-	        catalog.addRealValueWithRelationConstraintClause("Calc_Result", "REAL_VALUE", "RELATION", false);
-	       */ 
-	    }
+	        else {
+                System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
+	        }
+    	}
+    	return valueType;
+    }
 	    
-	    public void addNumberClauses(HibernateAWCPrototypeCatalog catalog, String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean dropdown) {
-	    	boolean show = foreignTableName != tableName;
-	        catalog.addGetPropertyClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description);
-	    	if (dropdown) {
-	            catalog.addMandatoryValuesToClause(
-	            		catalog.addPropertyCheckClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " of", show, false),
-	            		new String[] {foreignTableName},
-	            		new String[] {foreignTableProperty});
+    /**
+     * <p>
+     * Returns a collection with all AtomicWhereClause prototypes that are
+     * compatible with the given list of OutputVariables. Compatible means that
+     * for all types of the InputVariables of an AtomicWhereClause prototype,
+     * there is at least one OutputVariable present in the given Collection.
+     * Note that the presence of one OutputVariable may satisfy many
+     * InputVariables.
+     * </p>
+     * <p>
+     *
+     * @param availableOutputVariables the Collection of OutputVariables that
+     * are available to bind InputVariables to.
+     * </p>
+     * <p>
+     * @return a Collection with all AtomicWhereClause prototypes that are
+     * compatible with the given list of OutputVariables
+     * </p>
+     */
+    public Collection<AtomicWhereClause> getAWCPrototypes(Collection availableOutputVariables) {
+    	// your code here
+        Collection<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
+        Iterator<AtomicWhereClause> iter = atomicWhereClauses.iterator();
+        while (iter.hasNext()) {
+            AtomicWhereClause clause = iter.next();
+            boolean clauseOk = true;
+            Iterator<InputVariable> inputIter = clause.getInputVariables().iterator();
+            while (inputIter.hasNext()) {
+                InputVariable ivar = inputIter.next();
+                boolean varOk = false;
+                Iterator<OutputVariable> outputIter = availableOutputVariables.iterator();
+                while (outputIter.hasNext()) {
+                    OutputVariable ovar = outputIter.next();
+                    if (ivar.isCompatible(ovar)) {
+                        varOk = true;
+                        break;
+                    } 
+                }
+                if (! varOk) {
+                    clauseOk = false;
+                    break;
+                }
+            }
+            if (clauseOk) {
+            	if (!result.contains(clause)) {
+            		result.add(clause);
+            	}
+            }
+        }
+        return result;
+    }
+	    
+	/**
+	 * add the clauses for a given custom property
+	 * @param propertyName name of the custom property
+	 * @param valueType type of the custom properties. One of the types from the ValueType table.
+	 *                  currently supported: nominal value
+	 *                                       string
+	 *                                       number
+	 *                                       limited number (<,=,>)
+	 * @param customPropertiesTable the table containing the names of all the custom properties
+	 * @param nominalValuesTable The table containing all the possible nominal values
+	 * @param idTableName table that holds:
+	 * 				the references to the custom properties table
+	 *              the reference to the nominal values table
+	 *              the regular property value if it is not a nominal value
+	 * @param idTableToCustomPropertiesTable path from the id table to the custom properties table
+	 * @param idTableToNominalValuesTable path from the id table to the nominal values table
+	 * @param nominalValuesTableToCustomPropertiesTable path from the nominal values table to the custom properties table
+	 * @param inputTableName table to start from
+	 * @param idTableToInputTable path from the id table to the input table
+	 *                            null if they are the same table
+	 * @param customPropertiesTableNameProperty The attribute of the custom properties table that points to it's name
+	 */
+	private void addCustomPropertyComparisonClauses(String propertyName, String valueType, String customPropertiesTable, String nominalValuesTable, String idTableName, String idTableToCustomPropertiesTable, String idTableToNominalValuesTable, String nominalValuesTableToCustomPropertiesTable, String inputTableName, String idTableToInputTable, String customPropertiesTableNameProperty) {
+    	boolean caseSensitive = true;		// default comparison is case sensitive
+    	String property = "value";			// regular value is always found in the value property
+    	String description = propertyName;	// use name of the property as description
+    	String realVariableType = "String"; // all values are stored as strings
+    	
+    	String inputTable = inputTableName;		  // use input table as starting point
+    	String foreingTableName = inputTableName; // start with foreign table and id table same as input table
+    	String inputTableToIdTable = null;
+    	String idTable = inputTableName;	      // start with id table same as input table		
+    	String foreignTableToIdTable = null;
+    	
+    	if (valueType.equals("nominal value")) {
+    		foreingTableName = nominalValuesTable;			// select from the table of nominal values
+    		foreignTableToIdTable = idTableToNominalValuesTable;	
+    		idTable = idTableName;							// use the id table as the id 
+    		inputTableToIdTable = idTableToInputTable;
+
+    		String suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t" + nominalValuesTable + " nv,\n\t" + customPropertiesTable + " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableNameProperty + "='" + propertyName + "'";
+            addTypeRestrictionToNominalValueClause(addStringPropertyComparisonClauses(inputTable, inputTableToIdTable, foreingTableName, foreignTableToIdTable, idTable, null, property, description, suggestedValuesQuery, caseSensitive, realVariableType, true),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
+    	}
+    	else if (valueType.equals("string")) {
+    		foreingTableName = idTableName;					// select from the single attribute table
+    		foreignTableToIdTable = idTableToInputTable;	
+    		caseSensitive = false;
+    		
+            addTypeRestrictionToNominalValueClause(addStringPropertyComparisonClauses(inputTable, inputTableToIdTable, foreingTableName, foreignTableToIdTable, idTable, null, property, description, null, caseSensitive, realVariableType, false),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
+    	}
+    	else if (valueType.equals("number")) {
+    		foreingTableName = idTableName;					// select from the single attribute table
+    		foreignTableToIdTable = idTableToInputTable;	
+    		caseSensitive = true;
+    		
+            addTypeRestrictionToNominalValueClause(addNumberPropertyComparisonClauses(inputTable, inputTableToIdTable, foreingTableName, foreignTableToIdTable, idTable, null, property, description, null, caseSensitive, realVariableType, false),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
+    	}
+    	else if (valueType.equals("limited number (<,=,>)")) {
+    		foreingTableName = idTableName;					// select from the single attribute table
+    		foreignTableToIdTable = idTableToInputTable;	
+    		caseSensitive = true;
+    		
+            addTypeRestrictionToNominalValueClause(addNumberPropertyComparisonClauses(inputTable, inputTableToIdTable, foreingTableName, foreignTableToIdTable, idTable, null, property, description, null, caseSensitive, realVariableType, false),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
+    	}
+    	else {
+    		System.err.println("Unknown value type " + valueType + ":" + customPropertiesTable + "." + propertyName);
+    	}
+	}
+		
+	/**
+	 * Adds an additional part to the outputvariables of the clauses in the given list to translates the types
+	 * of their outputvariables from string to the given valueType
+	 * Adds an additional part to the where clause of the clauses in the given list to restrict the results to
+	 * properties of the given propertyName
+	 * @param clauses list of clauses
+	 * @param idTableToCustomPropertiesTable path from the id table (the first table (from or inputvariable) in the clauses)
+	 *                                       to the custom properties table
+	 * @param propertyName name of the custom property
+	 * @param customPropertiesTableNameProperty The attribute of the custom properties table that points to it's name
+	 * @param valueType type of the custom properties. One of the types from the ValueType table.
+	 *                  currently supported: nominal value
+	 *                                       string
+	 *                                       number
+	 *                                       limited number (<,=,>)
+	 */
+	private void addTypeRestrictionToNominalValueClause(List<AtomicWhereClause> clauses, String idTableToCustomPropertiesTable, String propertyName, String customPropertiesTableNameProperty, String valueType) {
+		for (AtomicWhereClause clause : clauses) {
+
+			//// add extra condition to where clause
+			//
+			
+			WhereClauseComposer aComposer = clause.getWhereClauseComposer();
+    		// if inputtable != foreignTable => fromvariable
+    		// else => inputvariable
+    		aComposer.addFixedString(new FixedString(" "));
+	    	if (clause.getFromVariables().isEmpty()) {
+	    		// empty constants list means no previous statements and thus no AND needed
+	    		if (!clause.getConstants().isEmpty()) {
+		    		aComposer.addFixedString(new FixedString(" AND\n\t"));
+	    		}
+	    		aComposer.addInputVariable(clause.getInputVariables().iterator().next());
 	    	}
 	    	else {
-	    		catalog.addPropertyCheckClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " of", show, false);
+	    		aComposer.addFixedString(new FixedString(" AND\n\t"));
+	    		aComposer.addFromVariable(clause.getFromVariables().iterator().next());
 	    	}
-	    	catalog.addPropertyValueClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " above", show, false);
-	    	catalog.addPropertyValueClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " below", show, true);
-	        
-	    }
-	    
-	    private AtomicWhereClause addPropertyValueClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean below) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	        if (p != null) {
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-	            Constant constant = (Constant) p.get("constant");
-	            
-	            if (isNumericType(dataTypeString)) {
-		            AtomicWhereClause aClause = new AtomicWhereClause();
-		            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-		            
-		            description	= description == null ? "has a " + foreignTablePropertySimple : description;
-	                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                	InputVariable ivar2 = foreignTableName.equals(tableName) ? ivar : new InputVariable(new VariableType(foreignTableName));
-	                FromVariable newFromVar = new FromVariable(foreignTableName);
-                	OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-	    	        ovar.setUniqueName(ovar.getFormalName());
-                	if (foreignTableName.equals(tableName)) {
-    	    	        ovar.getExpression().addInputVariable(ivar2);
-                	}
-                	else {
-    	    	        ovar.getExpression().addFromVariable(newFromVar);
-                	}
-	    	        
-	    	        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
-	                
-	                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-	                aVisList.addInputVariable(ivar);
-	                aVisList.addFixedString(new FixedString(description));
-	                if (show) aVisList.addOutputVariable(ovar);
-	                aVisList.addConstant(constant);
-		                
-	                if (!foreignTableName.equals(tableName)) {
-		                aComposer.addFixedString(new FixedString("("));
-		                aComposer.addInputVariable(ivar);
-		                aComposer.addFixedString(new FixedString("." + (tableRelations != null ? tableRelations + "." : "") + idTableKey + " = "));
-		                aComposer.addFromVariable(newFromVar);
-		                aComposer.addFixedString(new FixedString("." + (foreignTableRelations != null ? foreignTableRelations + ".":"") + idTableKey));
-		                aComposer.addFixedString(new FixedString(") AND\n\t"));
-	                }
-	                aComposer.addFixedString(new FixedString("("));
-                	if (foreignTableName.equals(tableName)) {
-    	                aComposer.addInputVariable(ivar2);
-                	}
-                	else {
-    	                aComposer.addFromVariable(newFromVar);
-                	}
-                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-    	            aComposer.addFixedString(new FixedString(below ? " < " : " > "));
-	                aComposer.addConstant(constant);
-	                aComposer.addFixedString(new FixedString(")"));
-		            
-		            addAtomicWhereClause(aClause);
-		            return aClause;
-	            }
-	            else {
-	                System.err.println("Incompatible datatype, number expected: " + foreignTableName + "." + foreignTableProperty);
-	                return null;
-	            }
-	        } else {
-	            return null;
-	        }
-		}
-
-		public void addDateClauses (HibernateAWCPrototypeCatalog catalog, String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description) {
-	        catalog.addGetPropertyClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " date");
-	        catalog.addPropertyTimeIntervalClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " date", false);
-	        catalog.addPropertyCheckClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description + " date", false, false);
-	    }
-
-	    public void addStringClauses(HibernateAWCPrototypeCatalog catalog, String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean caseSensitive, boolean dropdown) {
-	    	boolean show = foreignTableName != tableName || foreignTableProperty.indexOf('.') >= 0;
-	    	
-	    	if (dropdown) {
-	            catalog.addMandatoryValuesToClause(
-	            		catalog.addPropertyCheckClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive),
-	            		new String[] {foreignTableName},
-	            		new String[] {foreignTableProperty});
-	    	}
-	    	else {
-	    		catalog.addPropertyCheckClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive);
-				catalog.addPropertyLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive);
-		        catalog.addPropertyStartsLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive);
-		        catalog.addPropertyEndsLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive);
-	    	}
-	    }
-	    
-	    public void addStringClauses(HibernateAWCPrototypeCatalog catalog, String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean caseSensitive) {
-	    	addStringClauses(catalog, tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, caseSensitive, false);
-	    }
-	    
-	    ///////////////////////////////////////
-	    // associations
-	    
-	    private Map<String, String> typeNameToGoodVariableName = new HashMap<String, String>();
-	    private Map<String, String> tableNameToDbName = new HashMap<String, String>();
-	    private Map<String, String> tableNameToGoodName = new HashMap<String, String>();
-	    private List<AtomicWhereClause> atomicWhereClauses = new ArrayList<AtomicWhereClause>();
-	    
-	    ///////////////////////////////////////
-	    // access methods for associations
-	    
-	    public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
-	        this.atomicWhereClauses.add(atomicWhereClause);
-	    }
-	    
-	    private void addGoodVariableName(String typeName, String varName) {
-	        typeNameToGoodVariableName.put(typeName.toLowerCase(), varName);
-	    }
-	    
-	    private void addGoodTableName(String tableName, String name) {
-	    	tableNameToGoodName.put(tableName.toLowerCase(), name);
-	    }
-	    
-	    private void addGoodDbName(String tableName, String name) {
-	    	tableNameToDbName.put(tableName.toLowerCase(), name);
-	    }
-
-	    
-	    public String getGoodVariableName(String tableName) {
-	        String varName = (String)typeNameToGoodVariableName.get(tableName.toLowerCase());
-	        if (varName == null) {
-	            return tableName.substring(0, 1);
-	        } else {
-	            return varName;
-	        }
-	    }
-	    
-	    public String getGoodTableName(String tableName) {
-	        String varName = (String)tableNameToGoodName.get(tableName.toLowerCase());
-	        if (varName == null) {
-	            return tableName.substring(tableName.lastIndexOf('.')+1);
-	        } else {
-	            return varName;
-	        }
-	    }
-
-	    public String getGoodDbName(String tableName) {
-	        String varName = (String)tableNameToDbName.get(tableName.toLowerCase());
-	        if (varName == null) {
-	            return tableName.substring(tableName.lastIndexOf('.')+1);
-	        } else {
-	            return varName;
-	        }
-	    }
-	    
-	    
-	    /**
-	     * returns true if a table with the given name exists in the database
-	     * @param tableName the name of a table
-	     * @return
-	     */
-	    private boolean tableExists(String tableName) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	        	return manager.getTableNames().contains(tableName);
-	        }
-	        else {
-	        	return false;
-	        }
-	    }
-	    
-	    /**
-	     * returns the data type string from the given property of the given table. Returns null if the table
-	     * or property is not found
-	     * @param tableName
-	     * @param propertyName
-	     * @return
-	     */
-	    private String getDataTypeString(String tableName, String propertyName) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        String typeString = null;
-	        if (manager != null) {
-	        	typeString = manager.getColumnType(tableName, propertyName);
-	        	if (typeString == null) {
-	        		
-	        	}
-	        }
-	        else {
-	            System.err.println("Unknown column " + propertyName + " for " + tableName);
-	        }
-	        return typeString;
-	    }
-	    
-	    private OutputVariable getOutputVariable(String typeString, String propertyName, FromVariable fromVar) {
-	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(typeString));
-	        ovar.setUniqueName(ovar.getFormalName());
-	        ovar.getExpression().addFromVariable(fromVar);
-	        return ovar;
-	    }
-	    
-	    private boolean isStringType(String dataTypeString) {
-	    	return isStringType(Integer.parseInt(dataTypeString));
-	    }
-	    
-	    private boolean isStringType(int dataType) {
-	    	return dataType == 12;
-	    }
-
-	    private boolean isBooleanType(int dataType) {
-	    	return dataType == -7;
-	    }
-	    
-	    
-	    private boolean isDateType(String dataTypeString) {
-	    	return isDateType(Integer.parseInt(dataTypeString));
-	    }
-	    
-	    private boolean isDateType(int dataType) {
-	    	return (dataType >= 91) && (dataType <= 93);
-	    }
-	    
-	    private boolean isNumericType(String dataTypeString) {
-	    	return isNumericType(Integer.parseInt(dataTypeString));
-	    }
-	    
-	    private boolean isBooleanType(String dataTypeString) {
-	    	return isBooleanType(Integer.parseInt(dataTypeString));
-	    }
-	    
-	    private boolean isNumericType(int dataType) {
-	    	return (((8 >= dataType) && (dataType >=1)) || dataType == 1111 || dataType == -5);
-	    }
-	    
-	    private Properties getDataTypeDependantProperties(String tableName, String propertyName) {
-	    	String dataTypeString = getDataTypeString(tableName, propertyName);
-	    	if (dataTypeString != null) {
-	    			int dataType = Integer.parseInt(dataTypeString);
-		    	
-		        String variableType;
-		        Constant valueConstant = null;
-		        if (isStringType(dataType)) {
-		            valueConstant = new StringConstant();
-		            variableType = "String";
-		        }
-		        else if (isDateType(dataType)) {
-		            valueConstant = new DateConstant();
-		            variableType = "Date";
-		        }
-		        else if (isNumericType(dataType)) {
-		            valueConstant = new DoubleConstant();
-		            variableType = "Numeric";
-		        }
-		        else if (isBooleanType(dataType)) {
-		            //TODO check in booleanconstant!!!!!
-		            //valueConstant = new BooleanConstant();
-		            variableType = "Boolean";
-		        }
-		        
-		        else {
-	                System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
-		            return null;
-		        }
-		        
-		    	Properties p = new Properties();
-		    	p.put("typeString", variableType);
-		    	p.put("constant", valueConstant);
-		    	p.put("dataTypeString", dataTypeString);
-		    	return p;
-	    	}
-	    	return null;
-	    }
-	    
-	    private AtomicWhereClause addMandatoryValuesToClause(AtomicWhereClause clause, String[] tables, String[] properties) {
-		    if (clause != null) {
-		    	int i = 0;
-		    	Iterator<Constant> it = clause.getConstants().iterator();
-		    	while (it.hasNext() && i < tables.length && i < properties.length) {
-		    		Constant constant = it.next();
-		    		AtomicWhereClause awc = new AtomicWhereClause();
-		    		
-		    		FromVariable fromVar = new FromVariable(tables[i]);
-		    		String typeString = getDataTypeDependantProperties(tables[i], properties[i]).getProperty("typeString");
-	    	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(tables[i] + "." + properties[i]));
-	    	        ovar.setUniqueName(ovar.getFormalName());
-    	        	ovar.getExpression().addFromVariable(fromVar);
-    	        	ovar.getExpression().addFixedString(new FixedString("." + properties[i]));
-		    		
-		    		awc.addFromVariable(fromVar);
-		    		Query query = new Query(awc);
-	    	        
-		    		Selection sel = new OutputSelection(ovar);
-		    		sel.setSelected(true);
-		    		query.getSelectList().getSelections().add(sel);
-
-		    		constant.setSuggestedValuesQuery(query);
-		    		constant.setSuggestedValuesMandatory(true);
-		    		i++;
-		    	}
-		    }
-		    return clause;
-		}
-	    
-	    
-	    
-	    
-	    ///////////////////////////////////////
-	    // operations
-	    
-	    
-	    /**
-	     * <p>
-	     * Returns a collection with all AtomicWhereClause prototypes that are
-	     * compatible with the given list of OutputVariables. Compatible means that
-	     * for all types of the InputVariables of an AtomicWhereClause prototype,
-	     * there is at least one OutputVariable present in the given Collection.
-	     * Note that the presence of one OutputVariable may satisfy many
-	     * InputVariables.
-	     * </p>
-	     * <p>
-	     *
-	     * @param availableOutputVariables the Collection of OutputVariables that
-	     * are available to bind InputVariables to.
-	     * </p>
-	     * <p>
-	     * @return a Collection with all AtomicWhereClause prototypes that are
-	     * compatible with the given list of OutputVariables
-	     * </p>
-	     */
-	    public Collection<AtomicWhereClause> getAWCPrototypes(Collection availableOutputVariables) {
-	    	// your code here
-	        Collection<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
-	        Iterator<AtomicWhereClause> iter = atomicWhereClauses.iterator();
-	        while (iter.hasNext()) {
-	            AtomicWhereClause clause = iter.next();
-	            boolean clauseOk = true;
-	            Iterator<InputVariable> inputIter = clause.getInputVariables().iterator();
-	            while (inputIter.hasNext()) {
-	                InputVariable ivar = inputIter.next();
-	                boolean varOk = false;
-	                Iterator<OutputVariable> outputIter = availableOutputVariables.iterator();
-	                while (outputIter.hasNext()) {
-	                    OutputVariable ovar = outputIter.next();
-	                    if (ivar.isCompatible(ovar)) {
-	                        varOk = true;
-	                        break;
-	                    } 
-	                }
-	                if (! varOk) {
-	                    clauseOk = false;
-	                    break;
-	                }
-	            }
-	            if (clauseOk) {
-	            	if (!result.contains(clause)) {
-	            		result.add(clause);
-	            	}
-	            }
-	        }
-	        return result;
-	        
-	    } // end getAWCPrototypes
-	    
-	    /*
-	     * JDBC version
-	     */
-
-	    /**
-	     * add the table with the given name to the list of available clauses
-	     * @param tableName
-	     * @return
-	     */
-	    public AtomicWhereClause addBaseClause(String tableName) {
-	        if (tableExists(tableName)) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-
-	            aVisList.addFixedString(new FixedString("There is a " + getTable(tableName).getSingularName()));
-	            
-	            FromVariable tableFromVariable = new FromVariable(tableName);
-	            aClause.addFromVariable(tableFromVariable);
-	            aVisList.addOutputVariable(getOutputVariable(tableName, tableName, tableFromVariable));
-	            
-	            aComposer.addFixedString(new FixedString("1=1"));
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            System.err.println("No table " + tableName + " found.");
-	            return null;
-	        }
-	    }
-	    
-	    private AtomicWhereClause addMandatoryValuesToClause(AtomicWhereClause clause, String joinTable, String joinPath, String nominalValTable, FromVariable fromVar, Constant nominalName) {
-	    	Constant constant = clause.getConstants().iterator().next();
-    		AtomicWhereClause awc = new AtomicWhereClause();
-            WhereClauseComposer aComposer = awc.getWhereClauseComposer();
-    		Query query = new Query(awc);
+    		aComposer.addFixedString(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
     		
-    		FromVariable fromVarJoin = new FromVariable(joinTable);
-    		FromVariable fromVarNominal = new FromVariable(nominalValTable);
-    		String typeString = getDataTypeDependantProperties(nominalValTable, "value").getProperty("typeString");
-    		OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(nominalValTable + "." + "value"));
-	        ovar.setUniqueName(ovar.getFormalName());
-        	ovar.getExpression().addFromVariable(fromVarNominal);
-        	ovar.getExpression().addFixedString(new FixedString(".value"));
+    		//// wrap outputvariable when it should be interpreted as a number
+    		//
     		
-    		Selection sel = new OutputSelection(ovar);
-    		sel.setSelected(true);
-    		query.getSelectList().getSelections().add(sel);
+    		if (!clause.getOutputVariables().isEmpty() ) {
+    			OutputVariable ovar = clause.getOutputVariables().iterator().next();
+    			if (valueType.equals("number")) {
+	    			List<ConfigurableWord> words = ovar.getExpression().getWords();
+	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
+	    			newWords.add(new FixedString("CASE WHEN "));
+	    			newWords.add(words.get(0));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
+	    			newWords.add(new FixedString("THEN cast ("));
+	    			newWords.addAll(words);
+	    			newWords.add(new FixedString(", big_decimal) ELSE 0 END"));
+	    			ovar.getExpression().setWords(newWords);
+    			}
+    			else if (valueType.equals("limited number (<,=,>)")) {
+	    			List<ConfigurableWord> words = ovar.getExpression().getWords();
+	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
+	    			newWords.add(new FixedString("CASE WHEN "));
+	    			newWords.add(words.get(0));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
+	    			newWords.add(new FixedString(" THEN ("));
+	    			newWords.add(new FixedString("CASE WHEN substring("));
+	    			newWords.addAll(words);
+	    			newWords.add(new FixedString(", 1 , 1) in ('<', '>', '=') THEN cast(substring("));
+	    			newWords.addAll(words);
+	    			newWords.add(new FixedString(", 2, length("));
+	    			newWords.addAll(words);
+	    			newWords.add(new FixedString(") ), big_decimal) ELSE cast("));
+	    			newWords.addAll(words);
+	    			newWords.add(new FixedString(", big_decimal) END"));
+	    			newWords.add(new FixedString(") ELSE 0 END"));
+	    			ovar.getExpression().setWords(newWords);
+    			}
+    		}
+		}
+	}
 
-    		aComposer.addFromVariable(fromVar);
-    		aComposer.addFixedString(new FixedString(" = "));
-    		aComposer.addFromVariable(fromVarJoin);
-    		aComposer.addFixedString(new FixedString("." + joinPath + " AND\n\t"));
-    		aComposer.addFromVariable(fromVar);
-    		aComposer.addFixedString(new FixedString(" = "));
-    		aComposer.addFromVariable(fromVarNominal);
-    		aComposer.addFixedString(new FixedString("." + joinPath + " AND\n\t"));
-    		aComposer.addFromVariable(fromVar);
-    		aComposer.addFixedString(new FixedString(".name = "));
-    		aComposer.addConstant(nominalName);
-        	
-    		constant.setSuggestedValuesQuery(query);
-    		constant.setSuggestedValuesMandatory(true);
-	    	
-	    	constant.setSuggestedValuesQuery(query);
-	    	constant.setSuggestedValuesMandatory(false);
-	    	return clause;
-	    }
+    /**
+     * Adds clauses to check for a relation between the given input table and foreign table
+     * and vice-versa
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table to check the relationship with
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+     * @param description1 A description of the relation between the input table and the foreign table
+     * @param description1 A description of the relation between the foreign table and the input table
+     * @return All the clause that have been added
+     */
+    private List<AtomicWhereClause> addRelationClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String description1, String description2) {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+        list.add(addRelationClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, description1));
+        list.add(addRelationClause(foreignTableName, foreignTableToIdTable, inputTableName, inputTableToIdTable, idTableName, idTableKey, description2));
+        return list;
+    }
 	    
-//	    private AtomicWhereClause add
-	    
-	    public AtomicWhereClause addBaseClauseWithConstraint(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean caseSensitive) {
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	        if (p != null) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            Constant constant = (Constant) p.get("constant");
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-	            
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-            	InputVariable ivar2 = foreignTableName.equals(tableName) ? ivar : new InputVariable(new VariableType(foreignTableName));
-                FromVariable fromVar = new FromVariable(tableName);
-                FromVariable newFromVar = new FromVariable(foreignTableName);
-    	        OutputVariable ovar = new OutputVariable(new VariableType(tableName), getGoodVariableName(tableName));
-    	        ovar.setUniqueName(ovar.getFormalName());
-    	        ovar.getExpression().addFromVariable(fromVar);
-                
-                aVisList.addFixedString(new FixedString("there is a " + getTable(tableName).getSingularName()));
-                aVisList.addOutputVariable(ovar);
-                aVisList.addFixedString(new FixedString(description));
-                aVisList.addConstant(constant);
-                
-	            aClause.addFromVariable(fromVar);
+    /**
+     * Add a clause to check for a relation between the given input table and foreign table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table to check the relationship with
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+     * @param description A description of the relation between the input table and the foreign table
+     * @return The clause that has been added
+     */
+    private AtomicWhereClause addRelationClause(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String description) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+            
+            InputVariable ivar = new InputVariable(new VariableType(inputTableName));
+            description = description == null?"have an associated " + getTable(foreignTableName).getSingularName():description;
+            FromVariable newfromVar = new FromVariable(foreignTableName);
+            OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), getVariableName(foreignTableName));
+            ovar.setUniqueName(ovar.getFormalName());
+            ovar.getExpression().addFromVariable(newfromVar);
+            
+            aVisList.addFixedString(new FixedString("The " + getTable(inputTableName).getSingularName()));
+            aVisList.addInputVariable(ivar);
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addOutputVariable(ovar);
+            
+            aComposer.addInputVariable(ivar);
+            aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + (idTableKey!= null ? "." + idTableKey: "") + " = "));
+            aComposer.addFromVariable(newfromVar);
+            aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable:"") + (idTableKey!= null ? "." + idTableKey: "") ));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
 
-                
-                if(!foreignTableName.equals(tableName)) {
-	                aComposer.addFixedString(new FixedString("("));
-	                aComposer.addOutputVariable(ovar);
-	                aComposer.addFixedString(new FixedString((tableRelations != null ?"." +  tableRelations: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
-	                aComposer.addFromVariable(newFromVar);
-	                aComposer.addFixedString(new FixedString((foreignTableRelations != null ? "." + foreignTableRelations:"") + (idTableKey != null ?"." + idTableKey:"")));
-	                aComposer.addFixedString(new FixedString(") AND\n\t"));
-                }
-                
-                aComposer.addFixedString(new FixedString("("));
-                if (!isStringType(dataTypeString) || caseSensitive) {
-                	if (foreignTableName.equals(tableName)) {
-                		aComposer.addOutputVariable(ovar);
-                	}
-                	else {
-                		aComposer.addFromVariable(newFromVar);
-                	}
-                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-	                aComposer.addFixedString(new FixedString(" = "));
-	                aComposer.addConstant(constant);
-	            }
-	            else {
-	                aComposer.addFixedString(new FixedString("UPPER("));
-                	if (foreignTableName.equals(tableName)) {
-                		aComposer.addOutputVariable(ovar);
-                	}
-                	else {
-                		aComposer.addFromVariable(newFromVar);
-                	}
-                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-	                aComposer.addFixedString(new FixedString(") = UPPER("));
-	                aComposer.addConstant(constant);
-	                aComposer.addFixedString(new FixedString(")"));
-	            }
-                aComposer.addFixedString(new FixedString(")"));
-	        
-                
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    /**
-	     * allow users to search for an identical property match
-	     * @param tableName table we start in
-	     * @param propertyName list of properties to follow 
-	     * @param resultTable name of table of the lat property in the list
-	     * @param description
-	     * @param show true if the last property should be selectable
-	     * @param caseSensitive is check case sensitive
-	     * @return
-	     */
-	    public AtomicWhereClause addPropertyCheckClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	        if (p != null) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            Constant constant = (Constant) p.get("constant");
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-                
-	            description	= description == null ? "has a " + foreignTablePropertySimple : description;
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-            	InputVariable ivar2 = foreignTableName.equals(tableName) ? ivar : new InputVariable(new VariableType(foreignTableName));
-                FromVariable newFromVar = new FromVariable(foreignTableName);
-    	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-    	        ovar.setUniqueName(ovar.getFormalName());
-    	        if (!foreignTableName.equals(tableName)) {
-    	        	ovar.getExpression().addFromVariable(newFromVar);
-    	        }
-    	        else {
-    	        	ovar.getExpression().addInputVariable(ivar2);
-    	        }
-                
-                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-                aVisList.addInputVariable(ivar);
-                aVisList.addFixedString(new FixedString(description));
-                if (show) aVisList.addOutputVariable(ovar);
-                aVisList.addConstant(constant);
-                
-                if(!foreignTableName.equals(tableName)) {
-	                aComposer.addFixedString(new FixedString("("));
-	                aComposer.addInputVariable(ivar);
-	                aComposer.addFixedString(new FixedString((tableRelations != null ?"." +  tableRelations: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
-	                aComposer.addFromVariable(newFromVar);
-	                aComposer.addFixedString(new FixedString((foreignTableRelations != null ? "." + foreignTableRelations:"") + (idTableKey != null ?"." + idTableKey:"")));
-	                aComposer.addFixedString(new FixedString(") AND\n\t"));
-                }
-                aComposer.addFixedString(new FixedString("("));
-                if (!isStringType(dataTypeString) || caseSensitive) {
-                	if (foreignTableName.equals(tableName)) {
-                		aComposer.addInputVariable(ivar2);
-                	}
-                	else {
-                		aComposer.addFromVariable(newFromVar);
-                	}
-                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-	                aComposer.addFixedString(new FixedString(" = "));
-	                aComposer.addConstant(constant);
-	            }
-	            else {
-	                aComposer.addFixedString(new FixedString("UPPER("));
-                	if (foreignTableName.equals(tableName)) {
-                		aComposer.addInputVariable(ivar2);
-                	}
-                	else {
-                		aComposer.addFromVariable(newFromVar);
-                	}
-                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-	                aComposer.addFixedString(new FixedString(") = UPPER("));
-	                aComposer.addConstant(constant);
-	                aComposer.addFixedString(new FixedString(")"));
-	            }
-                aComposer.addFixedString(new FixedString(")"));
-	                
-                addAtomicWhereClause(aClause);
-                return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addPropertyLikeClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive, Constant likeConstant, String constantDescription) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	    	if (p != null) {
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-	            Constant constant = likeConstant;
-	            
-	            if (isStringType(dataTypeString)) {
-		            AtomicWhereClause aClause = new AtomicWhereClause();
-		            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-		            
-		            description	= description == null ? "has a " + foreignTablePropertySimple : description;
-	                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                	InputVariable ivar2 = foreignTableName.equals(tableName) ? ivar : new InputVariable(new VariableType(foreignTableName));
-	                FromVariable newFromVar = new FromVariable(foreignTableName);
-	    	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-	    	        ovar.setUniqueName(ovar.getFormalName());
-	    	        if (!foreignTableName.equals(tableName)) {
-		    	        ovar.getExpression().addFromVariable(newFromVar);
-	    	        }
-	    	        else {
-	    	        	ovar.getExpression().addInputVariable(ivar2);
-	    	        }
-	    	        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
-	                
-	                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-	                aVisList.addInputVariable(ivar);
-	                aVisList.addFixedString(new FixedString(description));
-	                if (show) aVisList.addOutputVariable(ovar);
-	                aVisList.addFixedString(new FixedString(constantDescription));
-	                aVisList.addConstant(constant);
-		                
-	                if (!foreignTableName.equals(tableName)) {
-		                aComposer.addFixedString(new FixedString("("));
-		                aComposer.addInputVariable(ivar);
-		                aComposer.addFixedString(new FixedString((tableRelations != null ? "." + tableRelations: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
-		                aComposer.addFromVariable(newFromVar);
-		                aComposer.addFixedString(new FixedString((foreignTableRelations != null ? "." + foreignTableRelations:"") + (idTableKey != null ?"." + idTableKey:"")));
-		                aComposer.addFixedString(new FixedString(") AND\n\t ("));
-	                }
-		            if (caseSensitive) {
-	                	if (foreignTableName.equals(tableName)) {
-	                		aComposer.addInputVariable(ivar2);
-	                	}
-	                	else {
-	                		aComposer.addFromVariable(newFromVar);
-	                	}
-	                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-		                aComposer.addFixedString(new FixedString(" LIKE "));
-		                aComposer.addConstant(constant);
-		            }
-		            else {
-		                aComposer.addFixedString(new FixedString("UPPER("));
-	                	if (foreignTableName.equals(tableName)) {
-	                		aComposer.addInputVariable(ivar2);
-	                	}
-	                	else {
-	                		aComposer.addFromVariable(newFromVar);
-	                	}
-	                    aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-		                aComposer.addFixedString(new FixedString(") LIKE UPPER("));
-		                aComposer.addConstant(constant);
-		                aComposer.addFixedString(new FixedString(")"));
-		            }
-		            if (!foreignTableName.equals(tableName)) {
-		            	aComposer.addFixedString(new FixedString(")"));
-		            }
-		            addAtomicWhereClause(aClause);
-		            return aClause;
-	            }
-	            else {
-	                System.err.println("Incompatible datatype, string expected: " + foreignTableName + "." + foreignTableProperty);
-	                return null;
-	            }
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    /**
-	     * allows users to search for a property containing a specified string
-	     * @param tableName
-	     * @param propertyName
-	     * @param description
-	     * @param show
-	     * @param caseSensitive
-	     * @return
-	     */
-	    public AtomicWhereClause addPropertyLikeClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive) {
-	    	return addPropertyLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, new SubstringConstant(), "containing");
-	    }
-	    
-	    /**
-	     * allows users to search for a property ending on a specified string
-	     * @param tableName
-	     * @param propertyName
-	     * @param description
-	     * @param show
-	     * @param caseSensitive
-	     * @return
-	     */
-	    public AtomicWhereClause addPropertyEndsLikeClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive) {
-	    	return addPropertyLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, new EndstringConstant(), "that ends with");
-	    }
-	    
-	    /**
-	     * allows users to search for a property ending with a specified string
-	     * @param tableName
-	     * @param propertyName
-	     * @param description
-	     * @param show
-	     * @param caseSensitive
-	     * @return
-	     */
-	    public AtomicWhereClause addPropertyStartsLikeClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive) {
-	    	return addPropertyLikeClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, new StartstringConstant(), "that starts with");
-	    }
-	    
-	    
-	    /**
-	     * gets the property from the given table as a variable
-	     * @param tableName
-	     * @param propertyName
-	     * @param description
-	     * @return
-	     */
-	    public AtomicWhereClause addBooleanPropertyClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	    	if (p != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-	            if (isBooleanType(dataTypeString)) {
-		            description			= description == null ? "has a " + foreignTablePropertySimple : description;
-		            InputVariable ivar  = new InputVariable(new VariableType(tableName));
-	                FromVariable newFromVar = new FromVariable(foreignTableName);
-	    	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-	    	        ovar.setUniqueName(ovar.getFormalName());
-	    	        if (!foreignTableName.equals(tableName)) {
-	    	        	ovar.getExpression().addFromVariable(newFromVar);
-	    	        }
-	    	        else {
-	    	        	ovar.getExpression().addInputVariable(ivar);
-	    	        }
-			        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
+	/**
+	 * add a clause to check if instances of the table tableName can be found in the collection foreignTableProperty of foreignTableName
+	 * @param inputTableName table to start from
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableProperty A property of the foreign table that is a collection of input tables
+	 * @param description A description of the relation between the input table and the foreign table
+	 * @return The clause that has been added
+	 */
+    private AtomicWhereClause addCollectionRelationClause(String inputTableName, String foreignTableName, String foreignTableProperty, String description) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+            
+            InputVariable ivar = new InputVariable(new VariableType(inputTableName));
+            description = description == null ? "have an associated " + getTable(foreignTableName).getSingularName() : description;
+            FromVariable newFromVar = new FromVariable(foreignTableName);
+            OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), getVariableName(foreignTableName));
+            ovar.setUniqueName(ovar.getFormalName());
+            ovar.getExpression().addFromVariable(newFromVar);
+
+            aVisList.addFixedString(new FixedString("The " + getTable(inputTableName).getSingularName()));
+            aVisList.addInputVariable(ivar);
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addOutputVariable(ovar);
+            
+            aComposer.addInputVariable(ivar);
+            aComposer.addFixedString(new FixedString(" IN ELEMENTS("));
+            aComposer.addFromVariable(newFromVar);
+            aComposer.addFixedString(new FixedString("." +  foreignTableProperty));
+            aComposer.addFixedString(new FixedString(")"));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
 	
-	                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-	                aVisList.addInputVariable(ivar);
-	                aVisList.addFixedString(new FixedString(description));
-	                aVisList.addOutputVariable(ovar);
-		                
-	                if (!foreignTableName.equals(tableName)) {
+	/**
+	 * add all clauses that check a given numeric property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param suggestedValuesQuery the query for suggested values if you want a dropdown
+	 *                             null if you don't want a dropdown
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+	 * @param valueType value type of the property
+	 *                  most likely Numeric, but could be String if you want to force
+	 *                  a string value to be interpreted as a number
+	 * @param invertLink false for a relation from input and foreigntable to idtable
+	 *                   true for a relation from idtable to input and foreigntable
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, String suggestedValuesQuery, boolean caseSensitive, String valueType, boolean invertLink) {
+		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
+    	
+		Constant constant = new DoubleConstant();
+    	if (suggestedValuesQuery != null) {
+    		constant.setSuggestedValuesQuery(suggestedValuesQuery);
+    		constant.setSuggestedValuesMandatory(true);
+    	}
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, null, valueType, invertLink));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, getNumberComparisonOperator(), valueType, invertLink));
+    	return list;
+	}
+    
+    /**
+	 * add all clauses that check a given numeric property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param dropdown true if the possible values should be selected from a dropdown
+	 *                 the most likely suggested values will be set to
+	 *                 select distinct foreignTableProperty from foreignTableName
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean dropdown) {
+		String suggestedValuesQuery = null;
+    	if (dropdown) {
+    		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
+    	}
+		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, suggestedValuesQuery, true, "Numeric", false);
+	}
+	    
+	/**
+	 * add all clauses that check a given boolean property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addBooleanPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description) {
+		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
+    	boolean caseSensitive = true;
+    	String valueType = "Boolean";
+    	Constant constant = new BooleanConstant();
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, null, valueType, false));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, getBooleanComparisonOperator(), valueType, false));
+		return list;
+	}
+	    
+	/**
+	 * add all clauses that check a given date property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param dropdown true if the possible values should be selected from a dropdown
+	 *                 the most likely suggested values will be set to
+	 *                 select distinct foreignTableProperty from foreignTableName
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addDatePropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean dropdown) {
+		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
+    	boolean caseSensitive = true;
+    	String valueType = "Date";
+    	
+		Constant constant = new DateConstant();
+    	if (dropdown) {
+    		constant.setSuggestedValuesQuery("SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj");
+    		constant.setSuggestedValuesMandatory(true);
+    	}
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, null, valueType, false));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, getDateComparisonOperator(), valueType, false));
+    	
+    	return list;
+	}
+	   
+	
+	/**
+	 * add all clauses that check a given string property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param suggestedValuesQuery the query for suggested values if you want a dropdown
+	 *                             null if you don't want a dropdown
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+	 * @param valueType value type of the property
+	 *                  most likely String, but could be Numeric if you want to force
+	 *                  a numeric value to be interpreted as a string
+	 * @param invertLink false for a relation from input and foreigntable to idtable
+	 *                   true for a relation from idtable to input and foreigntable
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addStringPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, String suggestedValuesQuery, boolean caseSensitive, String valueType, boolean invertLink) {
+		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
+    	
+		Constant constant = new StringConstant();
+    	if (suggestedValuesQuery != null) {
+    		constant.setSuggestedValuesQuery(suggestedValuesQuery);
+    		constant.setSuggestedValuesMandatory(true);
+    	}
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, null, valueType, invertLink));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, show, caseSensitive, constant, getStringComparisonOperator(), valueType, invertLink));
+    	
+    	return list;
+	}
+	
+	/**
+	 * add all clauses that check a given string property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param dropdown true if the possible values should be selected from a dropdown
+	 *                 the most likely suggested values will be set to
+	 *                 select distinct foreignTableProperty from foreignTableName
+	 * @return All the clauses that have been added
+	 */
+	private List<AtomicWhereClause> addStringPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean dropdown) {
+		return addStringPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, dropdown, false);
+	}
+	
+	/**
+	 * add all clauses that check a given string property of a table
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 * @param foreignTableProperty the property to check
+	 * @param description
+	 * @param dropdown true if the possible values should be selected from a dropdown
+	 *                 the most likely suggested values will be set to
+	 *                 select distinct foreignTableProperty from foreignTableName
+	 * @param invertLink false for a relation from input and foreigntable to idtable
+	 *                   true for a relation from idtable to input and foreigntable
+	 * @return All the clauses that have been added
+	 */	private List<AtomicWhereClause> addStringPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean dropdown, boolean invertLink) {
+		String suggestedValuesQuery = null;
+    	if (dropdown) {
+    		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
+    	}
+		return addStringPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, description, suggestedValuesQuery, false, "String", invertLink);
+	}
+	    
+	 /**
+	 * add a clause to check a property of a given table 
+	 * @param inputTableName table to start from
+	 * @param inputTableToIdTable path from the input table to the id table 
+	 *                            null if they are the same table
+	 * @param foreignTableName name of the table that has the property
+	 * @param foreignTableToIdTable path from the foreign table to the id table
+	 *                              null if they are the same table
+	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTableKey element of idTableName that is the key
+	 *                   null if the table should be used as key
+	 *                   this will be ignored if invertLink is true
+	 * @param foreignTableProperty the property to check
+	 *                             this must be a property of the foreign table or of the composite id
+	 *                             of the foreign table. If it is a property of the composite id, include
+	 *                             the id in the path, like so: id.property
+	 * @param description
+	 * @param show true if the property should be shown in the list of selectable columns
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+	 * @param propertyConstant constant to use for the property
+     * @param comparisonOperator constant with the possible comparison operations
+	 *        null to simply fetch the property without comparison
+	 * @param comparisonDescription description of the comparison operation
+	 *        null to simply fetch the property without comparison
+	 * @param valueType type of the property
+	 * 		  String for strings
+	 *        Numeric for numbers
+	 *        Boolean for booleans
+	 *        Date for dates
+	 * @param invertLink false for a relation from input and foreigntable to idtable
+	 *                   true for a relation from idtable to input and foreigntable
+	 * @return All the clauses that have been added
+	 */
+    private AtomicWhereClause addPropertyComparisonClause(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show, boolean caseSensitive, Constant propertyConstant, Constant comparisonOperator, String valueType, boolean invertLink) {
+    	// the foreign table property can be a property of the id
+    	// get only the property names
+    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
+    	
+    	// find the data type of the property
+    	// this method can resolve properties of ids
+    	// returns null if the property is not found
+    	String typeString = getDataTypeOfProperty(foreignTableName, foreignTableProperty);   	
+    	if (typeString != null) {
+            Constant constant = propertyConstant;
+            
+            // check if the type reported by the database is the same as specified in the catalog
+            if (typeString.equals(valueType)) {
+	            AtomicWhereClause aClause = new AtomicWhereClause();
+	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+	            
+                //// set all needed variables
+                //
+                
+                // if we aren't doing a comparison we have to return a variable
+                boolean fetchAsVariable = (comparisonOperator == null);
+                
+                // if we are returning a variable it has to be in the list of selectable outputvariables
+                show = show || fetchAsVariable;
+                
+                // if no description is provided use the property name
+	            description	= description == null ? foreignTablePropertySimple : description;
+	            description = fetchAsVariable ? "has a " + description : "'s " + description;
+
+	            // input table needed for input
+	            // if both input table and foreign table are equal this variable will also be used
+	            // to refer to the foreign table
+	            InputVariable ivar = new InputVariable(new VariableType(inputTableName));
+	            
+	            // if input table and foreign table are not equal we will
+	            // also need to select from the foreign table
+                FromVariable newFromVar = new FromVariable(foreignTableName);
+                
+                
+    	        //// build what gets shown in the query selector dialog
+    	        //
+    	        
+                aVisList.addFixedString(new FixedString("The " + getTable(inputTableName).getSingularName()));
+                aVisList.addInputVariable(ivar);
+                aVisList.addFixedString(new FixedString(description));
+                
+                // add the output variable if the result should be selectable
+                if (show) {
+                    // build an outputvariable from the foreign table property and assign it a nice name
+        	        OutputVariable ovar = new OutputVariable(new VariableType(constant.getValueTypeString()), getVariableName(foreignTableName + "." + foreignTableProperty));
+        	        ovar.setUniqueName(ovar.getFormalName());
+        	        // outputvariables are defined as an expression. Without this expression they are useless
+        	        if (foreignTableName.equals(inputTableName)) {
+        	        	ovar.getExpression().addInputVariable(ivar);
+        	        }
+        	        else {
+    	    	        ovar.getExpression().addFromVariable(newFromVar);
+        	        }
+        	        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
+        	        aVisList.addOutputVariable(ovar);
+                }
+                
+                // only show the input control for the constant if when needed 
+                if (!fetchAsVariable) {
+	                aVisList.addConstant(comparisonOperator);
+	                aVisList.addConstant(constant);
+                }
+                
+                //// build the query
+                //
+
+                // only make a link between the foreign table and the input table if they
+                // are not the same so we can keep the resulting query simple
+                if (!foreignTableName.equals(inputTableName)) {
+                	if (!invertLink) {
+                		// regular link between input table and foreign table
+                		// check if they point to the same id table
 		                aComposer.addFixedString(new FixedString("("));
 		                aComposer.addInputVariable(ivar);
-		                aComposer.addFixedString(new FixedString("." + (tableRelations != null ? tableRelations + "." : "") + idTableKey + " = "));
+		                aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
 		                aComposer.addFromVariable(newFromVar);
-		                aComposer.addFixedString(new FixedString("." + (foreignTableRelations != null ? foreignTableRelations + ".":"") + idTableKey));
+		                aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable:"") + (idTableKey != null ?"." + idTableKey:"")));
 		                aComposer.addFixedString(new FixedString(")"));
-	                }
-	                else {
-		    	        if (!foreignTableName.equals(tableName)) {
-		    	        	aComposer.addFromVariable(newFromVar);
-		    	        }
-		    	        else {
-		    	        	aComposer.addInputVariable(ivar);
-		    	        }
-	                    aComposer.addFixedString(new FixedString("." + foreignTableProperty + " = true"));
-	                }
-		            addAtomicWhereClause(aClause);
-		            return aClause;
-	            }
-	            else {
-	                System.err.println("Incompatible datatype, bolean expected: " + foreignTableName + "." + foreignTableProperty);
-	                return null;
-	            }
-		            
-	    	}
-	    	return null;
-	    }
-	    
-	    
-	    /**
-	     * gets the property from the given table as a variable
-	     * @param tableName
-	     * @param propertyName
-	     * @param description
-	     * @return
-	     */
-	    public AtomicWhereClause addGetPropertyClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	    	if (p != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            
-	            String typeString = (String) p.get("typeString");
-
-	            description			= description == null ? "has a " + foreignTablePropertySimple : description;
-	            InputVariable ivar  = new InputVariable(new VariableType(tableName));
-                FromVariable newFromVar = new FromVariable(foreignTableName);
-    	        OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-    	        ovar.setUniqueName(ovar.getFormalName());
-    	        if (!foreignTableName.equals(tableName)) {
-    	        	ovar.getExpression().addFromVariable(newFromVar);
-    	        }
-    	        else {
-    	        	ovar.getExpression().addInputVariable(ivar);
-    	        }
-		        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
-
-                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-                aVisList.addInputVariable(ivar);
-                aVisList.addFixedString(new FixedString(description));
-                aVisList.addOutputVariable(ovar);
-	                
-                if (!foreignTableName.equals(tableName)) {
-	                aComposer.addFixedString(new FixedString("("));
-	                aComposer.addInputVariable(ivar);
-	                aComposer.addFixedString(new FixedString("." + (tableRelations != null ? tableRelations + "." : "") + idTableKey + " = "));
-	                aComposer.addFromVariable(newFromVar);
-	                aComposer.addFixedString(new FixedString("." + (foreignTableRelations != null ? foreignTableRelations + ".":"") + idTableKey));
-	                aComposer.addFixedString(new FixedString(")"));
-                }
-                else {
-                	aComposer.addFixedString(new FixedString("1=1"));
-                }
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	    	}
-	    	return null;
-	    }
-
-
-	    
-	    public AtomicWhereClause addGetAssociationClauses(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String description1, String description2) {
-	        AtomicWhereClause aClause1 = addGetAssociationClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, description1);
-	        AtomicWhereClause aClause2 = addGetReverseAssociationClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, description2);
-	        if (aClause1 == null) {
-	            return aClause2;
-	        } else {
-	            return aClause1;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addGetAssociationClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey) {
-	        return addGetAssociationClause(tableName, tableRelations, foreignTableName, foreignTableRelations, idTableName, idTableKey, null);
-	    }
-	    
-	    public AtomicWhereClause addGetAssociationClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String description) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                description = description == null?"has an associated " + getTable(foreignTableName).getSingularName():description;
-                FromVariable newFromVar = new FromVariable(foreignTableName);
-                OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), getGoodVariableName(foreignTableName));
-                ovar.setUniqueName(ovar.getFormalName());
-                ovar.getExpression().addFromVariable(newFromVar);
-                
-                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-                aVisList.addInputVariable(ivar);
-                aVisList.addFixedString(new FixedString(description));
-                aVisList.addOutputVariable(ovar);
-                
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString((tableRelations != null ? "." + tableRelations: "") + (idTableKey!= null ? "." + idTableKey: "") + " = "));
-                aComposer.addFromVariable(newFromVar);
-                aComposer.addFixedString(new FixedString((foreignTableRelations != null ? "." + foreignTableRelations:"") + (idTableKey!= null ? "." + idTableKey: "") ));
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-
-	    public AtomicWhereClause addGetReverseAssociationClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String description) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                String singularName = getTable(foreignTableName).getSingularName();
-                aVisList.addFixedString(new FixedString("The " + singularName));
-                InputVariable ivar = new InputVariable(new VariableType(foreignTableName));
-                aVisList.addInputVariable(ivar);
-                String foreignSingularName = getTable(tableName).getSingularName();
-                if (description == null) {
-                    aVisList.addFixedString(new FixedString("has an associated " + foreignSingularName));
-                } else {
-                    aVisList.addFixedString(new FixedString(description));
-                }
-                FromVariable newFromVar = new FromVariable(tableName);
-                OutputVariable ovar = new OutputVariable(new VariableType(tableName), getGoodVariableName(tableName));
-                ovar.setUniqueName(ovar.getFormalName());
-                aVisList.addOutputVariable(ovar);
-                ovar.getExpression().addFromVariable(newFromVar);
-                
-                aComposer.addFromVariable(newFromVar);
-                aComposer.addFixedString(new FixedString((tableRelations != null ? "." + tableRelations: "") + (idTableKey!= null ? "." + idTableKey: "")  + " = "));
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString((foreignTableRelations != null ? "." + foreignTableRelations : "") + (idTableKey!= null ? "." + idTableKey: "") ));
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addGetCollectionAssociation(String tableName, String foreignTableName, String foreignTableProperty, String description) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-                AtomicWhereClause aClause = new AtomicWhereClause();
-                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-                WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                
-                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                description = description == null ? "has an associated " + getTable(foreignTableName).getSingularName() : description;
-                FromVariable newFromVar = new FromVariable(foreignTableName);
-
-                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-                aVisList.addInputVariable(ivar);
-                aVisList.addFixedString(new FixedString(description));
-                OutputVariable ovar = new OutputVariable(new VariableType(tableName), getGoodVariableName(foreignTableName));
-                ovar.setUniqueName(ovar.getFormalName());
-                ovar.getExpression().addFromVariable(newFromVar);
-                aVisList.addOutputVariable(ovar);
-                
-                aComposer.addInputVariable(ivar);
-                aComposer.addFixedString(new FixedString(" in elements("));
-                aComposer.addFromVariable(newFromVar);
-                aComposer.addFixedString(new FixedString("." +  foreignTableProperty));
-                aComposer.addFixedString(new FixedString(")"));
-                
-                addAtomicWhereClause(aClause);
-                return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    
-	    public AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String tableRelations, String foreignTableName, String foreignTableRelations, String idTableName, String idTableKey, String foreignTableProperty, String description, boolean show) {
-	    	String foreignTablePropertySimple = (foreignTableProperty.indexOf('.') >= 0 ? foreignTableProperty.substring(foreignTableProperty.lastIndexOf('.')+1) : foreignTableProperty );
-	    	Properties p = getDataTypeDependantProperties(foreignTableName, foreignTableProperty);   	
-	        if (p != null) {
-	            String dataTypeString = (String) p.get("dataTypeString");
-	            String typeString = (String) p.get("typeString");
-	            
-	            if (isDateType(dataTypeString)) {
-		            AtomicWhereClause aClause = new AtomicWhereClause();
-		            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	                VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-		            
-		            description	= description == null ? "has a " + foreignTablePropertySimple : description;
-	                InputVariable ivar = new InputVariable(new VariableType(tableName));
-                	InputVariable ivar2 = foreignTableName.equals(tableName) ? ivar : new InputVariable(new VariableType(foreignTableName));
-	                FromVariable newFromVar = new FromVariable(foreignTableName);
-                	OutputVariable ovar = new OutputVariable(new VariableType(typeString), getGoodVariableName(foreignTableName + "." + foreignTableProperty));
-	    	        ovar.setUniqueName(ovar.getFormalName());
-	    	        if (!foreignTableName.equals(tableName)) {
-	    	        	ovar.getExpression().addFromVariable(newFromVar);
-	    	        }
-	    	        else {
-	    	        	ovar.getExpression().addInputVariable(ivar2);
-	    	        }
-	    	        ovar.getExpression().addFixedString(new FixedString("." + foreignTableProperty));
-	                
-	                aVisList.addFixedString(new FixedString("The " + getTable(tableName).getSingularName()));
-	                aVisList.addInputVariable(ivar);
-	                aVisList.addFixedString(new FixedString(description));
-	                if (show) aVisList.addOutputVariable(ovar);
-                    aVisList.addFixedString(new FixedString("between"));
-                    Constant valueConstant1 = new DateConstant("1900-01-01");
-                    aVisList.addConstant(valueConstant1);
-                    aVisList.addFixedString(new FixedString("and"));
-                    Constant valueConstant2 = new DateConstant();
-                    aVisList.addConstant(valueConstant2);
-		                
-                    if (!foreignTableName.equals(tableName)) {
+                	}
+                	else {
+                		// inverted link
+                		// go from the id table to the input table and foreign table
+                        FromVariable fromVarId = new FromVariable(idTableName);
 		                aComposer.addFixedString(new FixedString("("));
+		                aComposer.addFromVariable(fromVarId);
+		                aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + " = "));
 		                aComposer.addInputVariable(ivar);
-		                aComposer.addFixedString(new FixedString("." + (tableRelations != null ? tableRelations + "." : "") + idTableKey + " = "));
+		                aComposer.addFixedString(new FixedString(" AND "));
+		                aComposer.addFromVariable(fromVarId);
+		                aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable: "") + " = "));
 		                aComposer.addFromVariable(newFromVar);
-		                aComposer.addFixedString(new FixedString("." + (foreignTableRelations != null ? foreignTableRelations + ".":"") + idTableKey));
-		                aComposer.addFixedString(new FixedString(") AND\n\t"));
-	                }
-	                aComposer.addFixedString(new FixedString("("));
-                    if (show) {
-                    	aComposer.addOutputVariable(ovar);
-                    }
-                    else {
-                        aComposer.addInputVariable(ivar2);
-                    	aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-                    }
-                    aComposer.addFixedString(new FixedString(" > "));
-                    aComposer.addConstant(valueConstant1);
-                    aComposer.addFixedString(new FixedString(") AND\n\t ("));
-                    if (show) {
-                    	aComposer.addOutputVariable(ovar);
-                    }
-                    else {
-                        aComposer.addInputVariable(ivar2);
-                    	aComposer.addFixedString(new FixedString("." + foreignTableProperty));
-                    }
-                    aComposer.addFixedString(new FixedString(" < "));
-                    aComposer.addConstant(valueConstant2);
-	                aComposer.addFixedString(new FixedString(")"));
-		            
-		            addAtomicWhereClause(aClause);
-		            return aClause;
+		                aComposer.addFixedString(new FixedString(")"));
+                		
+                	}
+                	if (!fetchAsVariable) aComposer.addFixedString(new FixedString("AND\n\t ("));
+                }
+                if (!fetchAsVariable) {
+                	// create comparison constraint
+                	// [foreigntable.property] [operator] [constant]
+	                if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
+	            	if (foreignTableName.equals(inputTableName)) {
+	            		aComposer.addInputVariable(ivar);
+	            	}
+	            	else {
+	            		aComposer.addFromVariable(newFromVar);
+	            	}
+	                aComposer.addFixedString(new FixedString("." + foreignTableProperty));
+	                if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+	                aComposer.addFixedString(new FixedString(" "));
+	                aComposer.addConstant(comparisonOperator);
+	                aComposer.addFixedString(new FixedString(" "));
+	                if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+	                aComposer.addConstant(constant);
+	                if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+                }
+                if (!foreignTableName.equals(inputTableName) && !fetchAsVariable) {
+                	// don't forget to close the extra bracket we opened when we
+                	// linked the two tables
+	            	aComposer.addFixedString(new FixedString(")"));
 	            }
-	            else {
-	                System.err.println("Incompatible datatype, number expected: " + foreignTableName + "." + foreignTableProperty);
-	                return null;
-	            }
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addTimeConstantClause(boolean before) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+                
+	            addAtomicWhereClause(aClause);
+	            return aClause;
+            }
+            else {
+                System.err.println("Incompatible datatype, " + valueType + " expected: " + foreignTableName + "." + foreignTableProperty);
+                return null;
+            }
+        } else {
+            System.err.println("property not found: " + foreignTableName + "." + foreignTableProperty);
+            return null;
+        }
+    }	    
 
-	            InputVariable ivar = new InputVariable(new VariableType("Date"));
-	            Constant valueConstant = new DateConstant();
-	            
-	            aVisList.addFixedString(new FixedString("Date"));
-	            aVisList.addInputVariable(ivar);
-	            aVisList.addFixedString(new FixedString(before ? "is before" : "is after"));
-	            aVisList.addConstant(valueConstant);
-	            
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(before ? " < " : " > "));
-	            aComposer.addConstant(valueConstant);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addTimeIntervalClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            aVisList.addFixedString(new FixedString("Date"));
-	            InputVariable ivar = new InputVariable(new VariableType("Date"));
-	            aVisList.addInputVariable(ivar);
-	            aVisList.addFixedString(new FixedString("is between"));
-	            Constant valueConstant1 = new DateConstant("1900-01-01");
-	            aVisList.addConstant(valueConstant1);
-	            aVisList.addFixedString(new FixedString("and"));
-	            Constant valueConstant2 = new DateConstant();
-	            aVisList.addConstant(valueConstant2);
-	            
-	            aComposer.addFixedString(new FixedString("("));
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(" > "));
-	            aComposer.addConstant(valueConstant1);
-	            aComposer.addFixedString(new FixedString(") AND\n\t("));
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(" < "));
-	            aComposer.addConstant(valueConstant2);
-	            aComposer.addFixedString(new FixedString(")"));
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addTimeConstantToVariableClause() {
-	        AtomicWhereClause aClause = new AtomicWhereClause();
-	        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	        aVisList.addFixedString(new FixedString("Date"));
-	        Constant dateConstant = new DateConstant();
-	        OutputVariable ovar = new OutputVariable(new VariableType("Date"), getGoodVariableName("Date"));
-	        ovar.setUniqueName(ovar.getFormalName());
-	        ovar.getExpression().addConstant(dateConstant);
-	        aVisList.addOutputVariable(ovar);
-	        aVisList.addFixedString(new FixedString("is"));
-	        aVisList.addConstant(dateConstant);
-	        
-	        aComposer.addFixedString(new FixedString("1=1"));
-	        
-	        addAtomicWhereClause(aClause);
-	        return aClause;
-	    }
-	    
-	    
-	    public AtomicWhereClause addTimeCompareClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            aVisList.addFixedString(new FixedString("Date"));
-	            InputVariable ivar1 = new InputVariable(new VariableType("Date"));
-	            InputVariable ivar2 = new InputVariable(new VariableType("Date"));
-	            aVisList.addInputVariable(ivar1);
-	            aVisList.addFixedString(new FixedString("is before"));
-	            aVisList.addInputVariable(ivar2);
-	            aComposer.addInputVariable(ivar1);
-	            aComposer.addFixedString(new FixedString(" < "));
-	            aComposer.addInputVariable(ivar2);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addTimeEqualsClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+	/**
+     * add all clauses related to number variables
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addNumberClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addNumericVariableDeclarationClause());
+    	list.add(addNumericVariableToConstantComparisonClause());
+    	list.add(addNumericVariableToVariableComparisonClause());
+		list.add(addNumericVariableIntervalClause());
+    	list.addAll(addNumericCalculationClauses());
+    	return list;
+    }
+    
+    /**
+     * add all clauses related to string variables
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addStringClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addStringVariableDeclarationClause());
+    	list.add(addStringVariableToConstantComparisonClause());
+    	list.add(addStringVariableToVariableComparisonClause());
+    	list.add(addStringVariableIntervalClause());
+    	list.addAll(addStringCalculationClauses());
+    	return list;
+    }
+    
+    /**
+     * add all clauses related to boolean variables
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addBooleanClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addBooleanVariableDeclarationClause());
+    	list.add(addBooleanVariableToConstantComparisonClause());
+    	list.add(addBooleanVariableToVariableComparisonClause());
+    	list.addAll(addBooleanCalculationClauses());
+    	return list;
+    }
 
-	            InputVariable ivar1 = new InputVariable(new VariableType("Date"));
-	            Constant timeConstant = new DateConstant();
+    /**
+     * add all clauses related to date variables
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addDateClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addDateVariableDeclarationClause());
+    	list.add(addDateVariableToConstantComparisonClause());
+    	list.add(addDateVariableToVariableComparisonClause());
+    	list.add(addDateVariableIntervalClause());
+    	list.addAll(addDateCalculationClauses());
+    	return list;
+    }
+    
+    /**
+     * add all clauses related to persistent object variables of the given type
+     * @param objectName name of the persistent object
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addObjectClauses(String objectName) {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addObjectVariableDeclarationClause(objectName));
+    	list.add(addObjectVariableToVariableComparisonClause(objectName));
+    	return list;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for persistent objects: (=, <>)
+     * @return a constant with the possible comparison operations for persistent objects
+     */
+    private OperatorConstant getObjectComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+    	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for date values: (=, <>, <, >)
+     * @return a constant with the possible comparison operations for date values
+     */
+    private OperatorConstant getDateComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
+       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is before"));
+    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for boolean values: (=, <>)
+     * @return a constant with the possible comparison operations for boolean values
+     */
+    private OperatorConstant getBooleanComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for string values: (like, not like)
+     * @return a constant with the possible comparison operations for string values
+     */
+    private OperatorConstant getStringComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("LIKE", "is"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("NOT LIKE", "is not"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<", "comes before"));
+    	constant.addSuggestedValue(new SuggestedValuesOption(">", "comes after"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for numeric values: (=, <>, <, >)
+     * @return a constant with the possible comparison operations for numeric values
+     */
+    private OperatorConstant getNumberComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
+       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is smaller than"));
+    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is greater than"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * Get a constant with the possible comparison operations for checking an interval: (between, not between)
+     * @return a constant with the possible comparison operations for checking an interval
+     */
+    private OperatorConstant getIntervalComparisonOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("BETWEEN", "is between"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("NOT BETWEEN", "is not between"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
 
-	            aVisList.addFixedString(new FixedString("Date"));
-	            aVisList.addInputVariable(ivar1);
-	            aVisList.addFixedString(new FixedString(" is "));
-	            aVisList.addConstant(timeConstant);
-	            
-	            aComposer.addInputVariable(ivar1);
-	            aComposer.addFixedString(new FixedString(" = "));
-	            aComposer.addConstant(timeConstant);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    
-	    public AtomicWhereClause addTimeCalculationClause(boolean plus) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            aVisList.addFixedString(new FixedString("Date "));
-	            InputVariable ivar = new InputVariable(new VariableType("Date"));
-	            
-	            OutputVariable ovar = new OutputVariable(new VariableType("Date"), getGoodVariableName("Date"));
-	            ovar.setUniqueName(ovar.getFormalName());
-	            ovar.getExpression().addInputVariable(ivar);
-	            ovar.getExpression().addFixedString(new FixedString(plus ? " + " : " - "));
-	            DateConstant timeConstant = new DateConstant();
-	            ovar.getExpression().addConstant(timeConstant);
-	            
-	            aVisList.addOutputVariable(ovar);
-	            aVisList.addFixedString(new FixedString("is"));
-	            aVisList.addInputVariable(ivar);
-	            aVisList.addFixedString(new FixedString(plus ? " + " : " - "));
-	            aVisList.addConstant(timeConstant);
-	            aVisList.addFixedString(new FixedString("days"));
-	            
-	            aComposer.addFixedString(new FixedString("1=1"));
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addRealValueConstraintClause(boolean below) {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            aVisList.addFixedString(new FixedString("Value"));
-	            InputVariable ivar = new InputVariable(new VariableType("Numeric"));
-	            aVisList.addInputVariable(ivar);
-	            aVisList.addFixedString(new FixedString(below ? " < " : " > "));
-	            Constant valueConstant = new DoubleConstant();
-	            aVisList.addConstant(valueConstant);
-	            
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(below ? " < " : " > "));
-	            aComposer.addConstant(valueConstant);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addRealValueCompareClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            
-	            InputVariable ivar1 = new InputVariable(new VariableType("Numeric"));
-	            InputVariable ivar2 = new InputVariable(new VariableType("Numeric"));
 
-	            aVisList.addFixedString(new FixedString("Value"));
-	            aVisList.addInputVariable(ivar1);
-	            aVisList.addFixedString(new FixedString("is lower than"));
-	            aVisList.addInputVariable(ivar2);
+    /**
+     * Get a constant with the possible calculation operations for numbers: (+, -, *, /)
+     * @return a constant with the possible calculation operations for numbers
+     */
+    private OperatorConstant getNumberCalculationOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("+", "+"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("-", "-"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("*", "*"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("/", "/"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
 
-	            aComposer.addInputVariable(ivar1);
-	            aComposer.addFixedString(new FixedString(" < "));
-	            aComposer.addInputVariable(ivar2);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addRealValueIntervalClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	            aVisList.addFixedString(new FixedString("Value"));
-	            InputVariable ivar = new InputVariable(new VariableType("Numeric"));
-	            aVisList.addInputVariable(ivar);
-	            aVisList.addFixedString(new FixedString("is between"));
-	            Constant valueConstant1 = new DoubleConstant();
-	            aVisList.addConstant(valueConstant1);
-	            aVisList.addFixedString(new FixedString("and"));
-	            Constant valueConstant2 = new DoubleConstant();
-	            aVisList.addConstant(valueConstant2);
-	            
-	            aComposer.addFixedString(new FixedString("("));
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(" > "));
-	            aComposer.addConstant(valueConstant1);
-	            aComposer.addFixedString(new FixedString(") AND\n\t("));
-	            aComposer.addInputVariable(ivar);
-	            aComposer.addFixedString(new FixedString(" < "));
-	            aComposer.addConstant(valueConstant2);
-	            aComposer.addFixedString(new FixedString(")"));
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    public AtomicWhereClause addRealConstantToVariableClause() {
-	        AtomicWhereClause aClause = new AtomicWhereClause();
-	        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-	        aVisList.addFixedString(new FixedString("Value"));
-	        Constant dateConstant = new DoubleConstant();
-	        OutputVariable ovar = new OutputVariable(new VariableType("Numeric"), getGoodVariableName("Number"));
-	        ovar.setUniqueName(ovar.getFormalName());
-	        ovar.getExpression().addConstant(dateConstant);
-	        aVisList.addOutputVariable(ovar);
-	        aVisList.addFixedString(new FixedString("is"));
-	        aVisList.addConstant(dateConstant);
-	        
-	        aComposer.addFixedString(new FixedString("1=1"));
-	        
-	        addAtomicWhereClause(aClause);
-	        return aClause;
-	    }
-	    
-	    public AtomicWhereClause addRealValueEqualsClause() {
-	        DatabaseManager manager = DatabaseManager.getInstance();
-	        if (manager != null) {
-	            AtomicWhereClause aClause = new AtomicWhereClause();
-	            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+    /**
+     * Get a constant with the possible calculation operations for strings: (||)
+     * @return a constant with the possible calculation operations for strings
+     */
+    private OperatorConstant getStringCalculationOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("||", "+"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
 
-	            InputVariable ivar1 = new InputVariable(new VariableType("Numeric"));
-	            Constant numberConstant = new DoubleConstant();
+    /**
+     * Get a constant with the possible calculation operations for booleans: (or, and)
+     * @return a constant with the possible calculation operations for booleans
+     */
+    private OperatorConstant getBooleanCalculationOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("or", "is true or"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("and", "is true and"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("and not", "is true but not"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
 
-	            aVisList.addFixedString(new FixedString("Value"));
-	            aVisList.addInputVariable(ivar1);
-	            aVisList.addFixedString(new FixedString(" is "));
-	            aVisList.addConstant(numberConstant);
-	            
-	            aComposer.addInputVariable(ivar1);
-	            aComposer.addFixedString(new FixedString(" = "));
-	            aComposer.addConstant(numberConstant);
-	            
-	            addAtomicWhereClause(aClause);
-	            return aClause;
-	        } else {
-	            return null;
-	        }
-	    }
+    /**
+     * Get a constant with the possible calculation operations for dates: (+, -)
+     * @return a constant with the possible calculation operations for dates
+     */
+    private OperatorConstant getDateCalculationOperator() {
+    	OperatorConstant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("+", "+"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("-", "-"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+    }
+    
+    /**
+     * add a clause to check if a numeric variable is between two constants
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addNumericVariableIntervalClause() {
+    	return addVariableIntervalClause("Numeric", new DoubleConstant(), new DoubleConstant(), getIntervalComparisonOperator(), "Number", true);
+    }
+    
+    /**
+     * add a clause to check if a date variable is between two constants
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addDateVariableIntervalClause() {
+    	return addVariableIntervalClause("Date", new DateConstant("1900-01-01"), new DateConstant(), getIntervalComparisonOperator(), "Date", true);
+    }
+    
+    /**
+     * add a clause to check if a string variable is between two constants
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addStringVariableIntervalClause() {
+    	return addVariableIntervalClause("Date", new StringConstant(), new StringConstant(), getIntervalComparisonOperator(), "Date", false);
+    }
+
+    /**
+     * add a clause to check if a variable of the given type is between two constants
+     * @param variableType Numeric for numbers
+     * 	                   Date for dates
+     * @param startConstant the variable should be bigger than the value of this constant
+     *                      preferably of the same type as variableType
+     * @param endConstant the variable should be smaller than the value of this constant
+     *                    preferably of the same type as variableType
+     * @param comparisonOperator constant with the possible comparison operations
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addVariableIntervalClause(String variableType, Constant startConstant, Constant endConstant, Constant comparisonOperator, String description, boolean caseSensitive) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+            
+            InputVariable ivar = new InputVariable(new VariableType(variableType));
+
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addInputVariable(ivar);
+            aVisList.addConstant(comparisonOperator);
+            aVisList.addConstant(startConstant);
+            aVisList.addFixedString(new FixedString("and"));
+            aVisList.addConstant(endConstant);
+            
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addInputVariable(ivar);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            aComposer.addFixedString(new FixedString(" "));
+            aComposer.addConstant(comparisonOperator);
+            aComposer.addFixedString(new FixedString(" "));
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addConstant(startConstant);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            aComposer.addFixedString(new FixedString(" AND "));
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addConstant(endConstant);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * add a clause to turn a constant in a new numeric variable
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addNumericVariableDeclarationClause() {
+    	return addVariableDeclarationClause("Numeric", new DoubleConstant(), "Number");
+    }
+    
+    /**
+     * add a clause to turn a constant in a new string variable
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addStringVariableDeclarationClause() {
+    	return addVariableDeclarationClause("String", new StringConstant(), "String");
+    }
+
+    /**
+     * add a clause to turn a constant in a new boolean variable
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addBooleanVariableDeclarationClause() {
+    	Constant constant = new BooleanConstant();
+    	return addVariableDeclarationClause("Boolean", constant, "Boolean");
+    }
+
+    /**
+     * add a clause to turn a constant in a new date variable 
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addDateVariableDeclarationClause() {
+    	return addVariableDeclarationClause("Date", new DateConstant(), "Date");
+    }
+    
+    /**
+     * add a clause to create a new persistent object variable
+     * @param objectName name of the persistent object
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addObjectVariableDeclarationClause(String objectName) {
+    	return addVariableDeclarationClause(objectName, null, getTable(objectName).getSingularName());
+    }
+    
+    /**
+     * add a clause to create a variable of the given type from the given constant
+     * @param variableType Numeric for numbers
+     * 	                   Date for dates
+     *                     String for strings
+     *                     Boolean for booleans
+     *                     Name of a persistent object for persistent objects
+     * @param constant     The constant to turn into a variable
+     *                     preferably of the same type as variableType
+     *                     null if a persistent object
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addVariableDeclarationClause(String variableType, Constant constant, String description) {
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        
+        OutputVariable ovar = new OutputVariable(new VariableType(variableType), getVariableName(variableType));
+        ovar.setUniqueName(ovar.getFormalName());
+
+        aVisList.addFixedString(new FixedString("There is a " + description));
+        aVisList.addOutputVariable(ovar);
+
+        if (constant != null) {
+        	ovar.getExpression().addConstant(constant);
+	        aVisList.addFixedString(new FixedString(" = "));
+	        aVisList.addConstant(constant);
+        }
+        else if (tableExists(variableType)){
+            FromVariable fromVar = new FromVariable(variableType);
+	        ovar.getExpression().addFromVariable(fromVar);
+            aClause.addFromVariable(fromVar);
+        }
+        
+        aComposer.addFixedString(new FixedString("1=1"));
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
+    }
+
+    /**
+     * add a clause to compare between a numeric variable and a numeric constant
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addNumericVariableToConstantComparisonClause() {
+    	return addVariableToConstantComparisonClause("Numeric", new DoubleConstant(), "Number", getNumberComparisonOperator(), true);
+    }
+    
+    /**
+     * add a clause to compare between a string variable and a string constant
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addStringVariableToConstantComparisonClause() {
+    	return addVariableToConstantComparisonClause("String", new StringConstant(), "String", getStringComparisonOperator(), false);
+    }
+    
+    /**
+     * add a clause to compare between a boolean variable and a boolean constant
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addBooleanVariableToConstantComparisonClause() {
+    	return addVariableToConstantComparisonClause("Boolean", new BooleanConstant(), "Boolean", getBooleanComparisonOperator(), true);
+    }
+    
+    /**
+     * add a clause to compare between a date variable and a date constant
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addDateVariableToConstantComparisonClause() {
+    	return addVariableToConstantComparisonClause("Date", new DateConstant(), "Date", getDateComparisonOperator(), true);
+    }
+    
+    /**
+     * add a clause to compare between a variable of the given type and a given constant
+     * @param variableType Numeric for numbers
+     * 	                   Date for dates
+     *                     String for strings
+     *                     Boolean for booleans
+     * @param constant     The constant to compare to
+     *                     preferably of the same type as variableType
+     * @param comparisonOperator constant with the possible comparison operations
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addVariableToConstantComparisonClause(String variableType, Constant constant, String description, OperatorConstant comparisonOperator, boolean caseSensitive) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+
+            InputVariable ivar1 = new InputVariable(new VariableType(variableType));
+
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addInputVariable(ivar1);
+            aVisList.addConstant(comparisonOperator);
+            aVisList.addConstant(constant);
+            
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addInputVariable(ivar1);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            aComposer.addFixedString(new FixedString(" "));
+            aComposer.addConstant(comparisonOperator);
+            aComposer.addFixedString(new FixedString(" "));
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addConstant(constant);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * add a clause to compare between two numbers
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addNumericVariableToVariableComparisonClause() {
+    	return addVariableToVariableComparisonClause("Numeric", "Number", getNumberComparisonOperator(), true);
+    }
+    
+    /**
+     * add a clause to compare between two strings
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addStringVariableToVariableComparisonClause() {
+    	return addVariableToVariableComparisonClause("String", "String", getStringComparisonOperator(), false);
+    }
+
+    /**
+     * add a clause to compare between two booleans
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addBooleanVariableToVariableComparisonClause() {
+    	return addVariableToVariableComparisonClause("Boolean", "Boolean", getBooleanComparisonOperator(), true);
+    }
+
+    /**
+     * add a clause to compare between two dates
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addDateVariableToVariableComparisonClause() {
+    	return addVariableToVariableComparisonClause("Date", "Date", getDateComparisonOperator(), true);
+    }
+
+    /**
+     * add a clause to compare between two instances of the given persistent object
+     * @param objectName name of the persistent object
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addObjectVariableToVariableComparisonClause(String objectName) {
+    	return addVariableToVariableComparisonClause(objectName, getTable(objectName).getSingularName(), getObjectComparisonOperator(), true);
+    }
+    
+    /**
+     * add a clause to compare between two variables of the given type
+     * @param variableType Numeric for numbers
+     * 	                   Date for dates
+     *                     String for strings
+     *                     Boolean for booleans
+     *                     Name of a persistent object for a persistent object
+     * @param comparisonOperator constant with the possible comparison operations
+     * @param caseSensitive true for case sensitive comparison
+     *                      false for case insensitive comparison
+     * @return the clause that has been added
+     */
+    private AtomicWhereClause addVariableToVariableComparisonClause(String variableType, String description, OperatorConstant comparisonOperator, boolean caseSensitive) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+
+            InputVariable ivar1 = new InputVariable(new VariableType(variableType));
+            InputVariable ivar2 = new InputVariable(new VariableType(variableType));
+
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addInputVariable(ivar1);
+            aVisList.addConstant(comparisonOperator);
+            aVisList.addInputVariable(ivar2);
+            
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addInputVariable(ivar1);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            aComposer.addFixedString(new FixedString(" "));
+            aComposer.addConstant(comparisonOperator);
+            aComposer.addFixedString(new FixedString(" "));
+            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+            aComposer.addInputVariable(ivar2);
+            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * add all clause to create a new number variable from a calculation between a two numbers
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addNumericCalculationClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addVariableCalculationClause("Numeric", "number", new DoubleConstant(), null, getNumberCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause("Numeric", "number", null, "Numeric", getNumberCalculationOperator(), ""));
+    	return list;
+    }
+    
+    /**
+     * add all clause to create a new boolean variable from a calculation between a two booleans
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addBooleanCalculationClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addVariableCalculationClause("Boolean", "boolean", null, "Boolean",  getBooleanCalculationOperator(), "is true"));
+    	return list;
+    }
+    
+    /**
+     * add all clause to create a new strng variable from a calculation between a two string
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addStringCalculationClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addVariableCalculationClause("String", "string", new StringConstant(), null, getStringCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause("String", "string", null, "String", getStringCalculationOperator(), ""));
+    	return list;
+    }
+
+    /**
+     * add all clause to create a new date variable from a calculation between a string and a number of days
+     * @return all the clauses that have been added
+     */
+    private List<AtomicWhereClause> addDateCalculationClauses() {
+    	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
+    	list.add(addVariableCalculationClause("Date", "date", new DoubleConstant(), null, getDateCalculationOperator(), "days"));
+    	list.add(addVariableCalculationClause("Date", "date", null, "Numeric", getDateCalculationOperator(), "days"));
+    	return list;
+    }
+    
+    /**
+     * add a clause to create a new variable of the given type from a calculation between a variable of the given type
+     * and either a given constant or another variable
+     * @param variableType Numeric for numbers
+     * 	                   Date for dates
+     *                     String for strings
+     *                     Boolean for booleans
+     * @param comparisonOperator constant with the possible calculation operations
+     * @param calculationConstant The constant to do the calculation with
+     *                           null if you do not want to do a calculation with a constant
+     * @param calculationVariableType The type of variable you want to do the calculation with
+     *                               null if you do not want to do a calculation with a variable
+     * @param calculationOperator constant with the possible comparison operations
+     * @param description text at the start of the english representation of the clause
+     * @param additionalDescription text at the end of the english representation of the clause
+     * @return the clause that has been added
+     */    private AtomicWhereClause addVariableCalculationClause(String variableType, String description, Constant calculationConstant, String calculationVariableType, OperatorConstant calculationOperator, String additionalDescription) {
+        DatabaseManager manager = DatabaseManager.getInstance();
+        if (manager != null && (calculationConstant != null || calculationVariableType != null)) {
+            AtomicWhereClause aClause = new AtomicWhereClause();
+            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+
+            InputVariable ivar1 = new InputVariable(new VariableType(variableType));
+            InputVariable ivar2 = null;
+            
+            OutputVariable ovar = new OutputVariable(new VariableType(variableType), getVariableName(variableType));
+            ovar.setUniqueName(ovar.getFormalName());
+            ovar.getExpression().addInputVariable(ivar1);
+            ovar.getExpression().addFixedString(new FixedString(" "));
+            ovar.getExpression().addConstant(calculationOperator);
+            if (calculationConstant != null) {
+	            ovar.getExpression().addFixedString(new FixedString(" "));
+	            ovar.getExpression().addConstant(calculationConstant);
+            }
+            if (calculationConstant != null && calculationVariableType != null) {
+                ovar.getExpression().addFixedString(new FixedString(" "));
+                ovar.getExpression().addConstant(calculationOperator);
+            }
+            if (calculationVariableType != null) {
+            	ivar2 =  new InputVariable(new VariableType(calculationVariableType));
+	            ovar.getExpression().addFixedString(new FixedString(" "));
+	            ovar.getExpression().addInputVariable(ivar2);
+            }
+            
+            aVisList.addFixedString(new FixedString(description));
+            aVisList.addOutputVariable(ovar);
+            aVisList.addFixedString(new FixedString(" = "));
+            aVisList.addInputVariable(ivar1);
+            aVisList.addConstant(calculationOperator);
+            if (calculationConstant != null) {
+            	aVisList.addConstant(calculationConstant);
+            }
+            if (calculationConstant != null && calculationVariableType != null) {
+                aVisList.addConstant(calculationOperator);
+            }
+            if (calculationVariableType != null) {
+                aVisList.addInputVariable(ivar2);
+            }
+            aVisList.addFixedString(new FixedString(additionalDescription));
+            
+            aComposer.addFixedString(new FixedString("1=1"));
+            
+            addAtomicWhereClause(aClause);
+            return aClause;
+        } else {
+            return null;
+        }
+    }
+	    
+    /**
+     * set all variable names, table descriptions and table aliases
+     */
+    public void addVariableNames() {
+    	// primitive types
+        addVariableName("Numeric", "number");
+        addVariableName("String", "string");
+        addVariableName("Boolean", "bool");
+        addVariableName("Date", "date");
+    	
+        // patients 
+        addTableDescription("net.sf.regadb.db.PatientImpl", "patient");
+        addTableAlias("net.sf.regadb.db.PatientImpl", "patient");
+        addVariableName("net.sf.regadb.db.PatientImpl", "patient");
+        addVariableName("net.sf.regadb.db.PatientImpl.patientId", "PatientId");
+        addVariableName("net.sf.regadb.db.PatientImpl.birthDate", "BirthDate");
+        addVariableName("net.sf.regadb.db.PatientImpl.deathDate", "DeathDate");
+        addVariableName("net.sf.regadb.db.PatientImpl.lastName", "LastName");
+        addVariableName("net.sf.regadb.db.PatientImpl.firstName", "FirstName");
+        addVariableName("net.sf.regadb.db.AttributeNominalValue.value", "Attribute");
+        
+        // therapy
+        addTableDescription("net.sf.regadb.db.Therapy", "therapy");
+        addTableAlias("net.sf.regadb.db.Therapy", "therapy");
+        addVariableName("net.sf.regadb.db.Therapy", "therapy");
+        addVariableName("net.sf.regadb.db.Therapy.startDate", "StartDate");
+        addVariableName("net.sf.regadb.db.Therapy.stopDate", "StopDate");
+        addVariableName("net.sf.regadb.db.Therapy.comment", "Comment");
+
+        // viral isolate
+        addTableDescription("net.sf.regadb.db.ViralIsolate", "viral isolate");
+        addTableAlias("net.sf.regadb.db.ViralIsolate", "vi");
+        addVariableName("net.sf.regadb.db.ViralIsolate", "viralIsolate");
+        addVariableName("net.sf.regadb.db.ViralIsolate.sampleDate", "SampleDate");
+        addVariableName("net.sf.regadb.db.ViralIsolate.sampleId", "SampleId");
+        
+        // nt sequence
+        addTableDescription("net.sf.regadb.db.NtSequence", "nucleotide sequence");
+        addTableAlias("net.sf.regadb.db.NtSequence", "ntSeq");
+        addVariableName("net.sf.regadb.db.NtSequence", "ntSequence");
+        addVariableName("net.sf.regadb.db.NtSequence.sequenceDate", "SequenceDate");
+        addVariableName("net.sf.regadb.db.NtSequence.label", "Value");
+        addVariableName("net.sf.regadb.db.NtSequence.nucleotides", "Nucleotides");
+        
+        // protein
+        addVariableName("net.sf.regadb.db.Protein", "protein");
+        addVariableName("net.sf.regadb.db.Protein.abbreviation", "ProteinAbbreviation");
+        addVariableName("net.sf.regadb.db.Protein.fullName", "ProteinName");
+
+        // aa sequence
+        addTableDescription("net.sf.regadb.db.AaSequence", "amino acid sequence");
+        addTableAlias("net.sf.regadb.db.AaSequence", "aaSeq");
+        addVariableName("net.sf.regadb.db.AaSequence", "aaSequence");
+        addVariableName("net.sf.regadb.db.AaSequence.firstAaPos", "AaPosition");
+        addVariableName("net.sf.regadb.db.AaSequence.lastAaPos", "AaPosition");
+
+        // aa mutation
+        addTableDescription("net.sf.regadb.db.AaMutation", "amino acid mutation");
+        addTableAlias("net.sf.regadb.db.AaMutation", "aaMut");
+        addVariableName("net.sf.regadb.db.AaMutation", "aaMutation");
+        addVariableName("net.sf.regadb.db.AaMutation.aaReference", "AaStr");
+        addVariableName("net.sf.regadb.db.AaMutation.aaMutation", "AaStr");
+        addVariableName("net.sf.regadb.db.AaMutation.ntReferenceCodon", "NtStr");
+        addVariableName("net.sf.regadb.db.AaMutation.ntMutationCodon", "NtStr");
+        addVariableName("net.sf.regadb.db.AaMutation.id.mutationPosition", "MutationPosition");
+        
+        // aa insertion
+        addTableDescription("net.sf.regadb.db.AaInsertion", "amino acid insertion");
+        addTableAlias("net.sf.regadb.db.AaInsertion", "aaIns");
+        addVariableName("net.sf.regadb.db.AaInsertion", "aaInsertion");
+        addVariableName("net.sf.regadb.db.AaInsertion.aaInsertion", "AaStr");
+        addVariableName("net.sf.regadb.db.AaInsertion.ntInsertionCodon", "NtStr");
+        addVariableName("net.sf.regadb.db.AaInsertion.id.insertionPosition", "InsertionPosition");
+        addVariableName("net.sf.regadb.db.AaInsertion.id.insertionOrder", "InsertionOrder");
+        
+        // drug class
+        addTableDescription("net.sf.regadb.db.DrugClass", "drug class");
+        addTableAlias("net.sf.regadb.db.DrugClass", "drugClass");
+        addVariableName("net.sf.regadb.db.DrugClass", "drugClass");
+        addVariableName("net.sf.regadb.db.DrugClass.classId", "DrugClassId");
+        addVariableName("net.sf.regadb.db.DrugClass.className", "DrugClassName");
+        addVariableName("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder");
+
+        // therapy commercial
+        addTableDescription("net.sf.regadb.db.TherapyCommercial", "treatment with a commercial drug");
+        addTableAlias("net.sf.regadb.db.TherapyCommercial", "cTherapy");
+        addVariableName("net.sf.regadb.db.TherapyCommercial", "commercialTherapy");
+        addVariableName("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "DailyDosage");
+        addVariableName("net.sf.regadb.db.TherapyCommercial.frequency", "Frequency");
+        addVariableName("net.sf.regadb.db.TherapyCommercial.placebo", "Placebo");
+        addVariableName("net.sf.regadb.db.TherapyCommercial.blind", "Blind");
+        
+        // therapy generic
+        addTableDescription("net.sf.regadb.db.TherapyGeneric", "treatment with a generic drug");
+        addTableAlias("net.sf.regadb.db.TherapyGeneric", "gTherapy");
+        addVariableName("net.sf.regadb.db.TherapyGeneric", "genericTherapy");
+        addVariableName("net.sf.regadb.db.TherapyGeneric.dayDosageUnits", "DailyDosage");
+        addVariableName("net.sf.regadb.db.TherapyGeneric.frequency", "Frequency");
+        addVariableName("net.sf.regadb.db.TherapyGeneric.placebo", "Placebo");
+        addVariableName("net.sf.regadb.db.TherapyGeneric.blind", "Blind");
+        
+        // events
+        addTableDescription("net.sf.regadb.db.PatientEventValue", "event");
+        addTableAlias("net.sf.regadb.db.PatientEventValue", "event");
+        addVariableName("net.sf.regadb.db.PatientEventValue", "event");
+        addVariableName("net.sf.regadb.db.PatientEventValue.startDate", "startDate");
+        addVariableName("net.sf.regadb.db.PatientEventValue.endDate", "endDate");
+        addVariableName("net.sf.regadb.db.EventNominalValue.value", "Event");
+        
+        // drug generic
+        addTableDescription("net.sf.regadb.db.DrugGeneric", "generic drug");
+        addTableAlias("net.sf.regadb.db.DrugGeneric", "gDrug");
+        addVariableName("net.sf.regadb.db.DrugGeneric", "genericDrug");
+        
+        // drug commercial
+        addTableDescription("net.sf.regadb.db.DrugCommercial", "commercial drug");
+        addTableAlias("net.sf.regadb.db.DrugCommercial", "cDrug");
+        addVariableName("net.sf.regadb.db.DrugCommercial", "commercialDrug");
+        
+        // dataset
+        addTableDescription("net.sf.regadb.db.Dataset", "dataset");
+        addTableAlias("net.sf.regadb.db.Dataset", "dataset");
+        addVariableName("net.sf.regadb.db.Dataset", "dataset");
+        addVariableName("net.sf.regadb.db.Dataset.description", "datasetName");
+        
+        // test result
+        addTableDescription("net.sf.regadb.db.TestResult", "test result");
+        addTableAlias("net.sf.regadb.db.TestResult", "result");
+        addVariableName("net.sf.regadb.db.TestResult", "testResult");
+        addVariableName("net.sf.regadb.db.TestNominalValue.value", "Attribute");
+        
+        // test
+        addTableDescription("net.sf.regadb.db.Test", "test");
+        addTableAlias("net.sf.regadb.db.Test", "test");
+        addVariableName("net.sf.regadb.db.Test", "test");
+
+        // therapy motivation
+        addTableAlias("net.sf.regadb.db.TherapyMotivation", "motivation");
+        addVariableName("net.sf.regadb.db.TherapyMotivation.value", "Motivation");
+    }
+    
+    public void addAllTableClauses() {
+        ///////////////////////////////////////
+        // events
+        addObjectClauses("net.sf.regadb.db.PatientEventValue");
+        addDatePropertyComparisonClauses("net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "startDate", "start date", false);
+        addDatePropertyComparisonClauses("net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "endDate", "stop date", false);
+        
+        try {
+        	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.Event");
+        	for (int i = 0 ; i < result.size() ; i++) {
+        		Event event = (Event) result.get(i, 0);
+        		addCustomPropertyComparisonClauses(event.getName(), event.getValueType().getDescription(), "net.sf.regadb.db.Event", "net.sf.regadb.db.EventNominalValue", "net.sf.regadb.db.PatientEventValue", "event", "eventNominalValue", "event", "net.sf.regadb.db.PatientEventValue", null, "name");
+        	}
+        }
+        catch(SQLException e) {}
+        
+        // link patients - event
+        addRelationClauses("net.sf.regadb.db.PatientEventValue", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from patient",  "has an event");
+        
+        
+        ///////////////////////////////////////
+        // patients
+        addObjectClauses("net.sf.regadb.db.PatientImpl");
+        addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null,  "net.sf.regadb.db.PatientImpl", null, "patientId", "id", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "lastName", "last name", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "firstName", "first name", false);
+   		addDatePropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "birthDate", "birth date", false);
+        addDatePropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "deathDate", "death date", false);
+
+        // data set
+        addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", "id.patient", "net.sf.regadb.db.Dataset", "id.dataset",  "net.sf.regadb.db.PatientDataset", null, "description", "dataset", true, true);
+        
+        
+        // patient custom attributes
+        try {
+        	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.Attribute");
+        	for (int i = 0 ; i < result.size() ; i++) {
+        		Attribute attribute = (Attribute) result.get(i, 0);
+        		addCustomPropertyComparisonClauses(attribute.getName(), attribute.getValueType().getDescription(), "net.sf.regadb.db.Attribute", "net.sf.regadb.db.AttributeNominalValue", "net.sf.regadb.db.PatientAttributeValue", "attribute", "attributeNominalValue", "attribute", "net.sf.regadb.db.PatientImpl", "patient", "name");
+        	}
+        }
+        catch(SQLException e) {}
+
+        // link patients - therapy
+        addRelationClauses("net.sf.regadb.db.Therapy", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "was performed on patient",  "has received therapy");
+        
+        // link patient - viral isolate
+        addRelationClauses("net.sf.regadb.db.ViralIsolate", "patient", "net.sf.regadb.db.PatientImpl",  null, "net.sf.regadb.db.PatientImpl", null, "comes from patient",  "has a viral isolate");
+        
+        
+
+        ///////////////////////////////////////
+        // therapies
+        addObjectClauses("net.sf.regadb.db.Therapy");
+        addDatePropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "startDate", "start date", false);
+        addDatePropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "stopDate", "stop date", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "comment", "has a comment", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", "therapyMotivation", "net.sf.regadb.db.TherapyMotivation", null, "net.sf.regadb.db.TherapyMotivation", null, "value", "motivation", true);
+   		
+        // link therapy - therapyCommercial
+        addRelationClauses("net.sf.regadb.db.TherapyCommercial", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the therapy",  "has a commercial drug treatment");
+
+        // link therapy - therapyGeneric
+        addRelationClauses("net.sf.regadb.db.TherapyGeneric", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the therapy",  "has a generic drug treatment");
+        
+
+
+        ///////////////////////////////////////
+        // therapyCommercial
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "dayDosageUnits", "daily dosage", true);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null, "frequency", "frequency", false);
+   		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "placebo",  "placebo");
+   		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "blind",  "blind");
+        
+        // link therapyCommercial - DrugCommercial
+        addRelationClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.TherapyCommercial", "id.drugCommercial", "net.sf.regadb.db.DrugCommercial", null, "is used in the treatment",  "consist of the commercial drug");
+        
+        
+        
+        ///////////////////////////////////////
+        // therapyGeneric
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "dayDosageMg", "daily dosage in mg", true);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null, "frequency", "frequency", false);
+   		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "placebo",  "placebo");
+   		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "blind",  "blind");
+        
+        
+        // link therapyGeneric - DrugCommercial
+        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in the treatment",  "consist of the generic drug");
+        
+        
+        
+        ///////////////////////////////////////
+        // viral isolates
+        addObjectClauses("net.sf.regadb.db.ViralIsolate");
+        addStringPropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleId", "has Id", false);
+        addDatePropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleDate", "sample date", false);
+        
+        // link viral isolate  - nt sequence
+        addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from the viral isolate",  "has a nucleotide sequence");
+ 
+        
+        ///////////////////////////////////////
+        // nucleotide sequence
+        addObjectClauses("net.sf.regadb.db.NtSequence");
+        addDatePropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "sequenceDate", "sequenced date", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "label", "label", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "nucleotides", "nucleotides", false);
+        
+        // link nt sequence - aa sequence
+        addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence", "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "comes from the nucleotide sequence",  "has a amino acid sequence");
+
+        
+
+        ///////////////////////////////////////
+        // amino acid sequence
+        addObjectClauses("net.sf.regadb.db.AaSequence");
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "firstAaPos", "first amino acid position", false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "lastAaPos", "last amino acid position", false);
+        
+        // link aa sequence - aa mutation
+        addRelationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the amino acid sequence",  "has an amino acid mutation");
+        
+        // link aa sequence - aa insertion
+        addRelationClauses("net.sf.regadb.db.AaInsertion", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the amino acid sequence",  "has an amino acid insertion");
+        
+        // link aa sequence - protein
+        addRelationClauses("net.sf.regadb.db.Protein", null, "net.sf.regadb.db.AaSequence", "protein", "net.sf.regadb.db.Protein", null, "is present in the amino acid sequence",  "has a protein");
+
+        
+        
+        ///////////////////////////////////////
+        // protein
+        addStringPropertyComparisonClauses("net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null,"abbreviation", "abbreviation", true);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null, "net.sf.regadb.db.Protein", null,"fullName", "name", true);
+
+        
+        
+        ///////////////////////////////////////
+        // amino acid mutation
+        addObjectClauses("net.sf.regadb.db.AaMutation");
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaReference", "amino acid reference", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaMutation", "amino acid mutation", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntReferenceCodon", "nucleotide reference codon", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntMutationCodon", "nucleotide mutation codon", false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "id.mutationPosition", "position", false);
+        
+        
+
+        ///////////////////////////////////////
+        // amino acid insertion
+        addObjectClauses("net.sf.regadb.db.AaInsertion");
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "aaInsertion", "amino acid insertion", false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "ntInsertionCodon", "nucleotide insertion codon", false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionPosition", "position", false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionOrder", "insertion order", false);
+        
+
+        
+        ///////////////////////////////////////
+        // generic drugs
+        addObjectClauses("net.sf.regadb.db.DrugGeneric");
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericId", "id", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericName", "name", true);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "atcCode", "atc code", true);
+   		addNumberPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "resistanceTableOrder", "resistance table order", true);
+
+        // link generic drug - drug class
+        addRelationClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugGeneric", "drugClass", "net.sf.regadb.db.DrugClass", null, "has a drug",  "belongs to the drug class");
+   		
+        
+        
+        ///////////////////////////////////////
+        // commercial drug
+        addObjectClauses("net.sf.regadb.db.DrugCommercial");
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "name", "name", true);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "atcCode", "atc code", true);
+        
+        // link commercial - generic
+   		addCollectionRelationClause("net.sf.regadb.db.DrugGeneric", "net.sf.regadb.db.DrugCommercial", "drugGenerics", "has a commercial component");
+   		addCollectionRelationClause("net.sf.regadb.db.DrugCommercial", "net.sf.regadb.db.DrugGeneric", "drugCommercials", "has a use in the generic drug");
+   		
+   		
+        
+   		///////////////////////////////////////
+        // drug class
+        addObjectClauses("net.sf.regadb.db.DrugClass");
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "className", "name", true);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "classId", "id", false);
+   		addNumberPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "resistanceTableOrder", "resistance table order", false);
+   		
+   		
+   		
+        ///////////////////////////////////////
+        // test result
+        addObjectClauses("net.sf.regadb.db.TestResult");
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "sampleId", "sample id", false);
+   		addDatePropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "testDate", "test date", false);
+
+        // link test result -  patients
+        addRelationClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.TestResult", "patient", "net.sf.regadb.db.PatientImpl", null, "has a test result",  "comes from a test on patient");
+   		
+        // link test result -  generic drug
+        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TestResult", "drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "has a test result",  "comes from a test on generic drug");
+
+        // link test result -  viral isolate
+        addRelationClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.TestResult", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "has a test result",  "comes from a test on viral isolate");
+
+        // link test result -  nucleotide sequence
+        addRelationClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.TestResult", "ntSequence", "net.sf.regadb.db.NtSequence", null, "has a test result",  "comes from a test on nucleotide sequence");
+        
+        // test result value
+        try {
+        	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.TestType");
+        	for (int i = 0 ; i < result.size() ; i++) {
+        		TestType type = (TestType) result.get(i, 0);
+        		addCustomPropertyComparisonClauses(type.getDescription(), type.getValueType().getDescription(), "net.sf.regadb.db.TestType", "net.sf.regadb.db.TestNominalValue", "net.sf.regadb.db.TestResult", "test.testType", "testNominalValue", "testType", "net.sf.regadb.db.TestResult", null, "description");
+        	}
+        }
+        catch(SQLException e) {}
+        
+        
+        ///////////////////////////////////////
+        // test
+        addObjectClauses("net.sf.regadb.db.Test");
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "description", "name", true);
+        
+        // link test - test type
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType", "net.sf.regadb.db.TestType", null, "net.sf.regadb.db.TestType", null, "description", "test type", true);
+
+   		// link test - test result
+        addRelationClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "has a test result",  "comes from the test");
+   		
+        // link test - test object
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType.testObject", "net.sf.regadb.db.TestObject", null, "net.sf.regadb.db.TestObject", null, "description", "test subject", true);
+    }
 }

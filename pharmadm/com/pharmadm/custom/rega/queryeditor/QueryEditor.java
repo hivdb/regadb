@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+import java.beans.DefaultPersistenceDelegate;
 import java.io.*;
 import javax.swing.tree.*;
 
@@ -26,7 +27,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     
     private Query query;
     private boolean dirty = false;
-    private Collection dirtinessListeners = new ArrayList();
+    private Collection<DirtinessListener> dirtinessListeners = new ArrayList<DirtinessListener>();
     private Collection listChangeListeners = new ArrayList();
 
     private final SelectionChangeListener selectionListener = new SelectionChangeListener() {
@@ -181,7 +182,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      * requested
      * </p>
      */
-    public Iterator iterateChildren(WhereClause clause) {
+    public Iterator<WhereClause> iterateChildren(WhereClause clause) {
         return clause.iterateChildren();
     }
     
@@ -200,7 +201,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      * @param clause the parent of which the atomic children are requested
      * </p>
      */
-    public Iterator iterateAtomicChildren(WhereClause clause) {
+    public Iterator<WhereClause> iterateAtomicChildren(WhereClause clause) {
         return clause.iterateAtomicChildren();
     }
     
@@ -438,7 +439,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      * @param The clause to which the new clauses could be added.
      * </p>
      */
-    public Collection getAvailableClauses(WhereClause clause) {
+    public Collection<AtomicWhereClause> getAvailableClauses(WhereClause clause) {
         return clause.getAvailableAtomicClauses(getAWCPrototypeCatalog());
     }
     
@@ -450,6 +451,16 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         encoder.setPersistenceDelegate(OutputSelection.class, new SelectionPersistenceDelegate());
         encoder.setPersistenceDelegate(TableSelection.class, new SelectionPersistenceDelegate());
         encoder.setPersistenceDelegate(AtomicWhereClause.class, new AWCPersistenceDelegate());
+        encoder.setPersistenceDelegate(StringConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(OperatorConstant.class, new OperatorConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(DoubleConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(Boolean.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(StartstringConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(SubstringConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(EndstringConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(DateConstant.class, new ConstantPersistenceDelegate());
+        encoder.setPersistenceDelegate(SuggestedValues.class, new SuggestedValuesPersistenceDelegate());
+        encoder.setPersistenceDelegate(SuggestedValuesOption.class, new DefaultPersistenceDelegate());
 //        encoder.setPersistenceDelegate(MoleculeClause.class, new MoleculeClausePersistenceDelegate());
 //        encoder.setPersistenceDelegate(MoleculeConstant.class, new MoleculeConstantPersistenceDelegate());
     }
@@ -490,7 +501,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     protected void setDirty(boolean dirty) {
         if (this.dirty != dirty) {
             this.dirty = dirty;
-            Iterator dLIter = dirtinessListeners.iterator();
+            Iterator<DirtinessListener> dLIter = dirtinessListeners.iterator();
             DirtinessEvent de = new DirtinessEvent(this);
             while (dLIter.hasNext()) {
                 ((DirtinessListener)dLIter.next()).dirtinessChanged(de);

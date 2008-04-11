@@ -120,10 +120,10 @@ public abstract class ComposedWhereClause extends WhereClause {
         };
     }
     
-    protected Collection getOutputVariablesAvailableForImport(WhereClause excludeChild) {
-        Collection result;
+    protected Collection<OutputVariable> getOutputVariablesAvailableForImport(WhereClause excludeChild) {
+        Collection<OutputVariable> result;
         if (getParent() == null) {
-            result = new ArrayList();
+            result = new ArrayList<OutputVariable>();
         } else {
             result = getParent().getOutputVariablesAvailableForImport(this);
         }
@@ -141,17 +141,17 @@ public abstract class ComposedWhereClause extends WhereClause {
         return visitor.visitFromClauseComposedWhereClause(this);
     }
     
-    public Collection getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {
+    public Collection<AtomicWhereClause> getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {
         if (!acceptsAdditionalChild()) {
-            return new ArrayList(0);
+            return new ArrayList<AtomicWhereClause>(0);
         } else {
-            Collection prototypes = catalog.getAWCPrototypes(getOutputVariablesAvailableForImport());
-            Collection clones = new ArrayList(prototypes.size());
-            Iterator iterPrototypes = prototypes.iterator();
+            Collection<AtomicWhereClause> prototypes = catalog.getAWCPrototypes(getOutputVariablesAvailableForImport());
+            Collection<AtomicWhereClause> clones = new ArrayList<AtomicWhereClause>(prototypes.size());
+            Iterator<AtomicWhereClause> iterPrototypes = prototypes.iterator();
             try {
                 while (iterPrototypes.hasNext()) {
                     AtomicWhereClause prototype = (AtomicWhereClause)iterPrototypes.next();
-                    clones.add(prototype.clone());
+                    clones.add( (AtomicWhereClause) prototype.clone());
                 }
             } catch (CloneNotSupportedException cnse) {
                 System.err.println();

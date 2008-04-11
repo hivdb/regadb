@@ -102,7 +102,7 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
  */
     private ValueSpecifier specifier;
 
-    private List properties = null;
+    private List<Property> properties = null;
     
     public String getFormalName() {
         return formalName;
@@ -155,7 +155,7 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
     }
     
     public Property getProperty(String name) {
-        Iterator iter = getProperties().iterator();
+        Iterator<Property> iter = getProperties().iterator();
         while (iter.hasNext()) {
             Property prop = (Property)iter.next();
             if (prop.getName().equals(name)) {
@@ -165,14 +165,14 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
         return null;
     }
     
-    public List getProperties() {
+    public List<Property> getProperties() {
         if (hasDomainClassType()) {
             if (properties == null) {
                 properties = Property.getDomainProperties(this);
             }
             return properties;
         } else {
-            return new ArrayList();
+            return new ArrayList<Property>();
         }
     }
     

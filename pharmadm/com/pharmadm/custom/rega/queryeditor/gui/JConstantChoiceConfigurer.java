@@ -12,7 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor.gui;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
 import javax.swing.JFormattedTextField;
@@ -48,7 +49,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         textField.setValue(constant.getValue());
         setModel(new JDBCComboBoxModel(textField));
         setEditor(new FormattedComboBoxEditor(textField));
-        setEditable(true);
+        setEditable(constant.areSuggestedValuesMandatory());
     }
     
     public ConfigurableWord getWord() {
@@ -58,7 +59,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     public void configureWord() {
         String valueToSet = null;
         if (getSelectedItem() != null) {
-            valueToSet = getSelectedItem().toString();
+            valueToSet = ((JDBCComboBoxModel)getModel()).getSelectedValue().toString();
         }
         if (! controller.setConstantValueString(constant, valueToSet)) {
             System.err.println("Warning : word configuration failed !");
@@ -68,7 +69,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     public void freeResources() {
         ((JDBCComboBoxModel)getModel()).close();
     }
-    
+
     public void addFocusListener(java.awt.event.FocusListener listener) {
         if (textField == null) {
             return;
@@ -77,20 +78,11 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     }
     
     private class JDBCComboBoxModel implements ComboBoxModel {
-        private QueryResult rs;
-        private int rowCount;
-        private Object selectedItem;
+        private ArrayList<SuggestedValuesOption> values;
+        private SuggestedValuesOption selectedItem;
         public JDBCComboBoxModel(JFormattedTextField textField) {
-            selectedItem = textField.getValue();
-            try {
-                System.err.println("Trying to execute query: " +constant.getSuggestedValuesQuery());
-                rs = DatabaseManager.getInstance().executeQuery(constant.getSuggestedValuesQuery());
-                this.rowCount = rs.size();
-                System.err.println("Number of results: " + rowCount);
-            } catch (SQLException sqle) {
-                System.err.println("Could not fill Combo box with values due to JDBC exception.");
-                sqle.printStackTrace();
-            }
+            values = constant.getSuggestedValuesList();
+        	setSelectedItem(textField.getValue());
         }
         
         public void addListDataListener(javax.swing.event.ListDataListener l) {
@@ -99,18 +91,22 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         
         public Object getElementAt(int index) {
             Object value = null;
-            if (rs != null) {
-                value = rs.get(index, 0);
+            if (values != null) {
+                value = values.get(index).getOption();
             }
             return value;
         }
         
         public Object getSelectedItem() {
-            return selectedItem;
+            return selectedItem.getOption();
+        }
+        
+        public Object getSelectedValue() {
+        	return selectedItem.getValue();
         }
         
         public int getSize() {
-            return rowCount;
+            return values.size();
         }
         
         public void removeListDataListener(javax.swing.event.ListDataListener l) {
@@ -118,11 +114,26 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         }
         
         public void setSelectedItem(Object anItem) {
-            this.selectedItem = anItem;
+    		boolean found = false;
+
+    		if (anItem != null) {
+    			int i = 0;
+    			while (!found && i < values.size()) {
+    				SuggestedValuesOption option = values.get(i);
+        			if (option.getOption().equals(anItem) || option.getValue().equals(anItem)) {
+        				this.selectedItem = option;
+        				found = true;
+        			}
+        			i++;
+        		}
+        	}
+            	
+            if (!found && values.size() > 0){
+        		this.selectedItem = values.get(0);
+        	}
         }
         
         public void close() {
-            rs.close();
         }
     }
 }

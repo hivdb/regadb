@@ -18,7 +18,7 @@ package com.pharmadm.custom.rega.queryeditor;
  */
 public interface InputVariableController {
     
-    public java.util.Collection getCompatibleOutputVariables(InputVariable input);
+    public java.util.Collection<OutputVariable> getCompatibleOutputVariables(InputVariable input);
     
     public void assignOutputVariable(InputVariable input, OutputVariable output);
     

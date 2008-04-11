@@ -41,7 +41,7 @@ public class Table implements Comparable {
     public Table(String name) {
         if (name != null) {
             this.name = name;
-            comment = DatabaseManager.getInstance().getCommentForTable(name);
+            comment = DatabaseManager.getInstance().getDatabaseConnector().getCommentForTable(name);
             seqId = 1;
         }
     }
@@ -57,8 +57,8 @@ public class Table implements Comparable {
     
     public Collection<Field> getFields() {
         if (fields == null) {
-            List<String> fieldNames = DatabaseManager.getInstance().getColumnNames(getName());
-            List<String> keyNames = DatabaseManager.getInstance().getPrimaryKeys(getName());
+            List<String> fieldNames = DatabaseManager.getInstance().getDatabaseConnector().getColumnNames(getName());
+            List<String> keyNames = DatabaseManager.getInstance().getDatabaseConnector().getPrimaryKeys(getName());
             fields = new ArrayList<Field>();
             Iterator<String> fieldNameIter = fieldNames.iterator();
             while (fieldNameIter.hasNext()) {
@@ -101,7 +101,7 @@ public class Table implements Comparable {
     }
     
     public String getSingularName() {
-    	return AWCPrototypeCatalog.getInstance().getGoodTableName(getName());
+    	return AWCPrototypeCatalog.getInstance().getTableDescription(getName());
     }
     
     public String getComment() {

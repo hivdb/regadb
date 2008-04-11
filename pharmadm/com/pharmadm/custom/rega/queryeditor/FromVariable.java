@@ -11,8 +11,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
-//import com.pharmadm.custom.rega.chem.search.*;
 
 /**
  * <p>
@@ -71,7 +69,7 @@ public class FromVariable implements AWCWord, Cloneable {
     	if (!locked) {
     		acquireSeqId();
     	}
-        return AWCPrototypeCatalog.getInstance().getGoodDbName(tableName) + seqId;
+        return AWCPrototypeCatalog.getInstance().getTableAlias(tableName) + seqId;
     }
     
     public String getFromClauseStringValue(QueryVisitor visitor) {

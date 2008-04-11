@@ -738,7 +738,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 }
                 setRunning(true);
                 try {
-                    QueryStatement runningStatement = DatabaseManager.getInstance().createScrollableReadOnlyStatement();
+                    QueryStatement runningStatement = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement();
                     runningExecution = new ExecuteQueryRunnable(runningStatement, query);
                     Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
                     executeQuery.start();
@@ -975,7 +975,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             }
             WhereClause parentClause = (WhereClause)parentNode.getUserObject();
             if (parentClause.acceptsAdditionalChild()) {
-                Collection prototypeList = parentClause.getAvailableAtomicClauses(AWCPrototypeCatalog.getInstance());
+                Collection<AtomicWhereClause> prototypeList = parentClause.getAvailableAtomicClauses(AWCPrototypeCatalog.getInstance());
                 AtomicClauseSelectionDialog selectionDialog = new AtomicClauseSelectionDialog(this, editorModel, parentClause, prototypeList, true);
                 selectionDialog.setVisible(true);
                 WhereClause newClause = selectionDialog.getSelectedClause();

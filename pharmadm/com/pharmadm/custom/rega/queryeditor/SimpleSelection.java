@@ -59,7 +59,7 @@ public abstract class SimpleSelection implements Selection {
         this.selected = selected;
     }
     
-    public java.util.Collection getSubSelections() {
+    public java.util.Collection<Selection> getSubSelections() {
         return null;
     }
     

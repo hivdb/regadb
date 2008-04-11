@@ -48,7 +48,7 @@ public class Field {
         this.name = name;
         this.table = table;
         this.primaryKey = primaryKey;
-        this.comment = DatabaseManager.getInstance().getCommentForColumn(table.getName(), name);
+        this.comment = DatabaseManager.getInstance().getDatabaseConnector().getCommentForColumn(table.getName(), name);
     }
     
 

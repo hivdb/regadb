@@ -86,9 +86,9 @@ public class Property implements Valuable, Cloneable {
      * of the Class (value type) of that variable : these are each specified by
      * a public method with no arguments which has a name starting with "getProperty" 
      */
-    public static List getDomainProperties(DataOutputVariable ovar) {
+    public static List<Property> getDomainProperties(DataOutputVariable ovar) {
         Class domainClass = ovar.getValueType();
-        ArrayList res = new ArrayList();
+        ArrayList<Property> res = new ArrayList<Property>();
         try {
             Method[] methods = domainClass.getMethods();
             for (int i = 0; i < methods.length; i++) {

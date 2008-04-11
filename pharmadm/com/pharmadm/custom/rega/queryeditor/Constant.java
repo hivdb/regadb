@@ -11,7 +11,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.sql.SQLException;
 import java.text.Format;
 import java.util.*;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
@@ -49,10 +48,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      *
      */
     private Object value = null;
-    
-    private boolean suggestedValuesMandatory = false;
-    private Query suggestedValuesQuery = null;
-    private String suggestedValuesQueryDefault = null;
+    private SuggestedValues suggestedValues = new SuggestedValues();
     
     // Yes, I *know* ! Mind your own business :-)
     private ArrayList<ValueChangeListener> valueChangeListeners = new ArrayList<ValueChangeListener>();
@@ -66,10 +62,20 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     // access methods for associations
     
     public abstract Format getFormat();
+    public abstract String getValueTypeString();
     
     ///////////////////////////////////////
     // operations
     
+    
+    public Constant(SuggestedValues suggestedValues) {
+    	this.suggestedValues = suggestedValues;
+    }
+
+    
+    public Constant() {
+    	
+    }
     
     /**
      * <p>
@@ -86,6 +92,14 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         setValue(value);
         return value;
     } 
+    
+    public void setSuggestedValues(SuggestedValues values) {
+    	this.suggestedValues = values;
+    }
+    
+    public SuggestedValues getSuggestedValues() {
+    	return suggestedValues;
+    }
     
     
     /* Implementing ValueSpecifier */
@@ -121,7 +135,8 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     }
     
     public Object clone() throws CloneNotSupportedException {
-        Object clone = super.clone();
+        Constant clone = (Constant) super.clone();
+        clone.setSuggestedValues(suggestedValues);
         return clone;
     }
     
@@ -130,29 +145,17 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         return (ValueSpecifier)originalToCloneMap.get(this);
     }
     
-    /**
-     * A String that represents a query to ask the database for possible values for this field.
-     * The query should return a result set consisting of a single column.
-     */
-    public String getSuggestedValuesQuery() {
-    	String query = suggestedValuesQueryDefault;
-    	if (suggestedValuesQuery != null) {
-	    	try {
-	    		query = DatabaseManager.getInstance().getQueryBuilder().visitDistinctResultQuery(suggestedValuesQuery);
-	    	}
-	    	catch (SQLException e) {}
-    	}
-    	return query;
-    }
-    
-    public void setSuggestedValuesQuery(Query query) {
-        this.suggestedValuesQuery = query;
+    public ArrayList<SuggestedValuesOption> getSuggestedValuesList() {
+    	return suggestedValues.getSuggestedValues();
     }
     
     public void setSuggestedValuesQuery(String query) {
-        this.suggestedValuesQueryDefault = query;
+    	suggestedValues.setQuery(query);
     }
     
+    public void addSuggestedValue(SuggestedValuesOption option) {
+    	suggestedValues.addOption(option);
+    }
     
     /**
      * Whether values other than those returned by the suggested values string are allowed.
@@ -160,19 +163,11 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      * This can be ignored if the suggested values query is null.
      */
     public boolean areSuggestedValuesMandatory() {
-        return suggestedValuesMandatory;
-    }
-    
-    public boolean isSuggestedValuesMandatory() {
-        return suggestedValuesMandatory;
-    }
-    
-    public boolean getSuggestedValuesMandatory() {
-        return suggestedValuesMandatory;
+        return suggestedValues.isMandatory();
     }
     
     public void setSuggestedValuesMandatory(boolean mandatory) {
-        this.suggestedValuesMandatory = mandatory;
+        suggestedValues.setMandatory(true);
     }
     
     public String getHumanStringValue(com.pharmadm.custom.rega.reporteditor.QueryOutputReportSeeder context) {

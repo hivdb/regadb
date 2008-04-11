@@ -95,7 +95,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      */
     private VisualizationClauseList visualizationClauseList = new VisualizationClauseList(this);
     
-    private static final Iterator EMPTY_ITERATOR = Collections.EMPTY_LIST.iterator();
+    private static final Iterator<WhereClause> EMPTY_ITERATOR = Collections.EMPTY_LIST.iterator();
     
     ///////////////////////////////////////
     // access methods for associations
@@ -175,18 +175,18 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         return getWhereClauseComposer().composeWhereClause(visitor);
     }
     
-    public Collection getOutputVariablesAvailableForImport() {
+    public Collection<OutputVariable> getOutputVariablesAvailableForImport() {
         if (getParent() != null) {
             return getParent().getOutputVariablesAvailableForImport();
         } else {
-            return new HashSet();
+            return new HashSet<OutputVariable>();
         }
     }
-    public Collection getOutputVariablesAvailableForImportInContext(WhereClause context) {
+    public Collection<OutputVariable> getOutputVariablesAvailableForImportInContext(WhereClause context) {
         return context.getOutputVariablesAvailableForImport();
     }
     
-    protected Collection getOutputVariablesAvailableForImport(WhereClause excludeChild) {
+    protected Collection<OutputVariable> getOutputVariablesAvailableForImport(WhereClause excludeChild) {
         return getOutputVariablesAvailableForImport();
     }
     protected Collection<OutputVariable> getExportedOutputVariables() {
@@ -247,7 +247,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         // now let inputclones point to correct outputclones
         Iterator<InputVariable> iterInputVariables = getInputVariables().iterator();
         while (iterInputVariables.hasNext()) {
-            InputVariable inputVar = (InputVariable)iterInputVariables.next();
+            InputVariable inputVar = iterInputVariables.next();
             OutputVariable outputVar = inputVar.getOutputVariable();
             OutputVariable outputVarClone = (OutputVariable)originalToCloneMap.get(outputVar);
             
@@ -263,8 +263,8 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         }
     }
     
-    public Collection getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {
-        return new ArrayList(0);
+    public Collection<AtomicWhereClause> getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {
+        return new ArrayList<AtomicWhereClause>(0);
     }
     
     public boolean isValid() {
@@ -308,11 +308,11 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         return false;
     }
     
-    public Iterator iterateChildren() {
+    public Iterator<WhereClause> iterateChildren() {
         return EMPTY_ITERATOR;
     }
     
-    public Iterator iterateAtomicChildren() {
+    public Iterator<WhereClause> iterateAtomicChildren() {
         return EMPTY_ITERATOR;
     }
     

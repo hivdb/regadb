@@ -43,7 +43,7 @@ public class OrderedDGWordList extends OrderedConfigurableWordList {
      
     public String getHumanStringValue(QueryOutputReportSeeder context) {
         StringBuffer sb = new StringBuffer();
-        Iterator iterWords = getWords().iterator();
+        Iterator<ConfigurableWord> iterWords = getWords().iterator();
         while (iterWords.hasNext()) {
             DataGroupWord word = (DataGroupWord)iterWords.next();
             sb.append(word.getHumanStringValue(context));

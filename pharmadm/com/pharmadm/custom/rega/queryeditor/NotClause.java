@@ -41,8 +41,8 @@ public class NotClause extends ComposedWhereClause {
         return (getChildren().size() < 1);
     }
     
-    protected Collection getExportedOutputVariables() {
-        return new ArrayList(0);
+    protected Collection<OutputVariable> getExportedOutputVariables() {
+        return new ArrayList<OutputVariable>(0);
     }
     
     

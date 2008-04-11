@@ -12,7 +12,13 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.pharmadm.util.work.Work;
 
 //import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
 
@@ -91,9 +97,9 @@ public abstract class WhereClause implements Cloneable {
      *
      * @return a Collection with all Works required to prepare the query.
      */
-    public Collection getQueryPreparationWorks() {
-        Collection preparationWorks = new ArrayList(0);
-        Iterator children = iterateChildren();
+    public Collection<Work> getQueryPreparationWorks() {
+        Collection<Work> preparationWorks = new ArrayList<Work>(0);
+        Iterator<WhereClause> children = iterateChildren();
         while (children.hasNext()) {
             WhereClause child = (WhereClause)children.next();
             preparationWorks.addAll(child.getQueryPreparationWorks());
@@ -177,7 +183,7 @@ public abstract class WhereClause implements Cloneable {
      * WhereClause
      * </p>
      */
-    public abstract Iterator iterateAtomicChildren();
+    public abstract Iterator<WhereClause> iterateAtomicChildren();
     
     /**
      * <p>
@@ -209,7 +215,7 @@ public abstract class WhereClause implements Cloneable {
      * @return a Collection of all OutputVariables available to bind to at
      * this point in the WhereClause composition.
      */
-    public Collection getOutputVariablesAvailableForImport() {
+    public Collection<OutputVariable> getOutputVariablesAvailableForImport() {
         return getOutputVariablesAvailableForImport(null);
     }
     
@@ -233,17 +239,17 @@ public abstract class WhereClause implements Cloneable {
      * @param catalog the catalog for the base Table of the query
      * </p>
      */
-    public abstract Collection getAvailableAtomicClauses(AWCPrototypeCatalog catalog);
+    public abstract Collection<AtomicWhereClause> getAvailableAtomicClauses(AWCPrototypeCatalog catalog);
     
     /**
      * Collects all available output variables, excluding those from the mentioned child.
      */
-    protected abstract Collection getOutputVariablesAvailableForImport(WhereClause excludeChild);
+    protected abstract Collection<OutputVariable> getOutputVariablesAvailableForImport(WhereClause excludeChild);
     
     /**
      * Collects all available output variables that are exported to WhereClauses elsewhere in the tree.
      */
-    protected abstract Collection getExportedOutputVariables();
+    protected abstract Collection<OutputVariable> getExportedOutputVariables();
     
     public Object clone() throws CloneNotSupportedException {
         Map originalToCloneMap = new HashMap();

@@ -65,7 +65,7 @@ public class VisualizationComponentFactory {
 //        } else 
             if (word instanceof Constant) {
             Constant constant = (Constant)word;
-            if (constant.getSuggestedValuesQuery() != null) {
+            if (constant.getSuggestedValuesList().size() > 0) {
                 return new JConstantChoiceConfigurer(constant, (ConstantController)controller);
             } else {
                 return new JConstantConfigurer(constant, (ConstantController)controller);

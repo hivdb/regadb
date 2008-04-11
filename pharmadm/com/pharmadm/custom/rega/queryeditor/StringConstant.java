@@ -12,7 +12,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.text.Format;
-import java.util.Date;
 
 /**
  * <p>
@@ -21,7 +20,13 @@ import java.util.Date;
  */
 public class StringConstant extends Constant {
     
+	public StringConstant(){}
+	
     private static final Format STRING_FORMAT = new StringFormat();
+
+	public StringConstant(SuggestedValues suggestedValues) {
+		super(suggestedValues);
+	}
     
     public Class getValueType() {
         return String.class;
@@ -71,6 +76,12 @@ public class StringConstant extends Constant {
         }
         
     }
+
+
+	@Override
+	public String getValueTypeString() {
+		return "String";
+	}
 }
 
 

@@ -25,9 +25,9 @@ public class WhereClauseTreeNode extends javax.swing.tree.DefaultMutableTreeNode
         super(clause);
         if (clause instanceof ComposedWhereClause) {
             setAllowsChildren(true);
-            Iterator iter = clause.iterateChildren();
+            Iterator<WhereClause> iter = clause.iterateChildren();
             while (iter.hasNext()) {
-                WhereClause childClause = (WhereClause)iter.next();
+                WhereClause childClause = iter.next();
                 WhereClauseTreeNode childNode = new WhereClauseTreeNode(childClause);
                 this.add(childNode);
             }

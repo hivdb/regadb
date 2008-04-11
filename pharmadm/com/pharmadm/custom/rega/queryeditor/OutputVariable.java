@@ -162,7 +162,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
     }
     
     public boolean consistsOfSingleFromVariable() {
-        List wordList = expression.getWords();
+        List<ConfigurableWord> wordList = expression.getWords();
         return ((wordList.size() == 1) && (wordList.get(0) instanceof FromVariable));
     }
     
@@ -176,13 +176,13 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
         }
     }
     
-    public Collection getPrimaryKeyColumnNames() {
+    public Collection<String> getPrimaryKeyColumnNames() {
         if (consistsOfSingleFromVariable()) {
             Table table = ((FromVariable)expression.getWords().get(0)).getTable();
-            Collection res = new ArrayList();
-            Iterator iter = table.getPrimaryKeyFields().iterator();
+            Collection<String> res = new ArrayList<String>();
+            Iterator<Field> iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
-                Field field = (Field)iter.next();
+                Field field = iter.next();
                 res.add(getFullColumnName(field)); 
             }
             return res;
@@ -197,13 +197,13 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
     	return visitor.visitWhereClauseFullNameOutputVariable(this, field);
     }
     
-    public Collection getPrimaryKeyWhereClauseNames() {
+    public Collection<String> getPrimaryKeyWhereClauseNames() {
         if (consistsOfSingleFromVariable()) {
             Table table = ((FromVariable)expression.getWords().get(0)).getTable();
-            Collection res = new ArrayList();
-            Iterator iter = table.getPrimaryKeyFields().iterator();
+            Collection<String> res = new ArrayList<String>();
+            Iterator<Field> iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
-                Field field = (Field)iter.next();
+                Field field = iter.next();
                 res.add(acceptWhereClauseFullName(DatabaseManager.getInstance().getQueryBuilder(), field)); 
             }
             return res;

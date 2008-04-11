@@ -19,7 +19,12 @@ package com.pharmadm.custom.rega.queryeditor;
  * @author  kdg
  */
 public class SubstringConstant extends StringConstant {
-    
+    public SubstringConstant(){}
+	
+	public SubstringConstant(SuggestedValues suggestedValues) {
+		super(suggestedValues);
+	}
+	
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseSubstringConstant(this);
     }

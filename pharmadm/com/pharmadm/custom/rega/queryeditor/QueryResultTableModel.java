@@ -33,7 +33,7 @@ public class QueryResultTableModel extends AbstractTableModel {
      *
      * @param resultSet a _scrollable_ ResultSet aquired from DatabaseManager
      */
-    public QueryResultTableModel(QueryResult resultSet, List columnSelections) throws SQLException {
+    public QueryResultTableModel(QueryResult resultSet, List<String> columnSelections) throws SQLException {
         this.resultSet = resultSet;
         this.colCount = resultSet.getColumnCount();
         colNames = new String[colCount];

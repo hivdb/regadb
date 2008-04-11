@@ -11,8 +11,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
-
 /**
  * <p>
  * An OrderedAWCWordList can properly concatenate the String representation of

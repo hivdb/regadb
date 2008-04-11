@@ -32,7 +32,7 @@ public abstract class ComposedSelection implements Selection {
     private Object objectSpec;
     private boolean selected = false;
     private SelectionList controller = null;
-    private Collection subSelections;
+    private Collection<Selection> subSelections;
     
     /** Creates a new instance of ComposedSelection */
     public ComposedSelection(Object objectSpec) {
@@ -64,19 +64,19 @@ public abstract class ComposedSelection implements Selection {
         this.selected = selected;
     }
     
-    public Collection getSubSelections() {
+    public Collection<Selection> getSubSelections() {
         return subSelections;
     }
     
     /* For xml encoding purposes only */
-    public void setSubSelections(Collection subSelections) {
+    public void setSubSelections(Collection<Selection> subSelections) {
         this.subSelections = subSelections;
     }
     
     public Selection find(Object object) {
-        Iterator iter = getSubSelections().iterator(); 
+        Iterator<Selection> iter = getSubSelections().iterator(); 
         while (iter.hasNext()) {
-            Selection selection = (Selection)iter.next();
+            Selection selection = iter.next();
             if (selection.getObject().equals(object)) {
                 //System.err.println("Found : " + object);
                 return selection;

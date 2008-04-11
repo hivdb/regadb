@@ -2,12 +2,9 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -19,7 +16,6 @@ import net.sf.regadb.db.session.Login;
 import org.hibernate.Query;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.Type;
 
@@ -161,5 +157,9 @@ public class HibernateConnector implements DatabaseConnector {
 			list.add(name);
 		}
 		return list;
+	}
+
+	public boolean isTableSelectionAllowed() {
+		return true;
 	}
 }

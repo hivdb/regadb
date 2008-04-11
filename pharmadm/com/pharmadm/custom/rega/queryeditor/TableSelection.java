@@ -58,9 +58,9 @@ public class TableSelection extends ComposedSelection {
      * JDBC version of the method.
      */
     private void initFieldSelections() {
-        ArrayList fieldSelections = new ArrayList();
+        ArrayList<Selection> fieldSelections = new ArrayList<Selection>();
         
-        Iterator fieldIter = getTable().getFields().iterator();
+        Iterator<Field> fieldIter = getTable().getFields().iterator();
         while (fieldIter.hasNext()) {
             Field field = (Field)fieldIter.next();
             FieldSelection fieldSelection = new FieldSelection(field);

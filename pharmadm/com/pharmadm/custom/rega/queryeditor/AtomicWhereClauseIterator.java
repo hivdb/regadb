@@ -21,8 +21,8 @@ import java.util.*;
  */
 public class AtomicWhereClauseIterator implements Iterator {
     
-    private Iterator thisLevelIterator;
-    private ArrayList childIterators = new ArrayList(); 
+    private Iterator<Iterator> thisLevelIterator;
+    private ArrayList<Iterator> childIterators = new ArrayList<Iterator>(); 
     private Iterator currentAtLevel = null;
     private Object next = null;
     
@@ -51,7 +51,7 @@ public class AtomicWhereClauseIterator implements Iterator {
     public boolean hasNext() {
         while (currentAtLevel == null || (! currentAtLevel.hasNext())) {
             if (thisLevelIterator.hasNext()) {
-                currentAtLevel = (Iterator)thisLevelIterator.next();
+                currentAtLevel = thisLevelIterator.next();
             } else {
                 return false;
             }

@@ -48,8 +48,8 @@ public class AndClause extends ComposedWhereClause {
         return visitor.visitWhereClauseAndClause(this);
     }
     
-    protected Collection getExportedOutputVariables() {
-        Collection result = new ArrayList();
+    protected Collection<OutputVariable> getExportedOutputVariables() {
+        Collection<OutputVariable> result = new ArrayList<OutputVariable>();
         Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {
             WhereClause aChild = iterCh.next();

@@ -41,8 +41,8 @@ public class InclusiveOrClause extends ComposedWhereClause {
         return true;
     }
     
-    protected Collection getExportedOutputVariables() {
-        return new ArrayList(0);
+    protected Collection<OutputVariable> getExportedOutputVariables() {
+        return new ArrayList<OutputVariable>(0);
     }
     
     // Optimization : the OR clause has no output variables, hence an empty 

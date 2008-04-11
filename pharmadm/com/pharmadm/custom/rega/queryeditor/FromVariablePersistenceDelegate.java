@@ -23,4 +23,5 @@ public class FromVariablePersistenceDelegate extends java.beans.DefaultPersisten
     protected Expression instantiate(Object oldInstance, Encoder out) {
         return new Expression(oldInstance, oldInstance.getClass(), "new", new Object[]{((FromVariable)oldInstance).getTableName()});
     }
+    
 }

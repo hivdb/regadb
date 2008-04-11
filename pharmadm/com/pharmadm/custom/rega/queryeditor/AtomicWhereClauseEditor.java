@@ -170,7 +170,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      */
     public boolean setConstantValueString(Constant cst, String value) {
         try {
-            Object o = cst.parseValue(value);
+            cst.parseValue(value);
             notifyQueryEditorDirty();
             return true;
         } catch (java.text.ParseException pe) {
@@ -204,8 +204,14 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * @return a List with all AWCWords needed for visualization
      * </p>
      */
-    public List getVisualizationList() {
-        return getAtomicWhereClause().getVisualizationClauseList().getWords();
+    public List<AWCWord> getVisualizationList() {
+    	
+    	List<AWCWord> words = new ArrayList<AWCWord>();
+    	List<ConfigurableWord> confWords = getAtomicWhereClause().getVisualizationClauseList().getWords();
+    	for (ConfigurableWord word : confWords) {
+    		words.add((AWCWord) word);
+    	}
+        return words;
     } // end getVisualizationList
     
     private void notifyQueryEditorDirty() {

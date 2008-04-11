@@ -21,7 +21,11 @@ import java.text.SimpleDateFormat;
  * </p>
  */
 public class DateConstant extends Constant {
-    
+
+	
+	public DateConstant(SuggestedValues suggestedValues) {
+		super(suggestedValues);
+	}
     private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
     public Class getValueType() {
@@ -58,5 +62,10 @@ public class DateConstant extends Constant {
         }
         return clone;
     }
+
+	@Override
+	public String getValueTypeString() {
+		return "Date";
+	}
     
 }

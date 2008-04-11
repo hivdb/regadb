@@ -11,7 +11,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.*;
 
 /**
  * <p>

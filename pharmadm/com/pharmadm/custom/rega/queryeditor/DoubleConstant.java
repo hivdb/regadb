@@ -21,8 +21,14 @@ import java.text.DecimalFormat;
  */
 public class DoubleConstant extends Constant {
     
-    private static final Format DOUBLE_FORMAT = new DecimalFormat();
+	private static final Format DOUBLE_FORMAT = new DecimalFormat();
     
+	public DoubleConstant(){}
+	
+	public DoubleConstant(SuggestedValues suggestedValues) {
+		super(suggestedValues);
+	}
+	
     public Class getValueType() {
         return Number.class;
     }
@@ -30,5 +36,10 @@ public class DoubleConstant extends Constant {
     public Format getFormat() {
         return DOUBLE_FORMAT;
     }
+
+	@Override
+	public String getValueTypeString() {
+		return "Numeric";
+	}
     
 }

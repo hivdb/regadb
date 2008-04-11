@@ -7,6 +7,7 @@ public class HibernateStatement implements QueryStatement {
 
 	private boolean closed;
 	private Transaction transaction;
+	private int fetchSize = 50;
 	
 	public HibernateStatement(Transaction t){
 		transaction = t;
@@ -22,6 +23,8 @@ public class HibernateStatement implements QueryStatement {
 
 	public QueryResult executeQuery(String query) {
 		Query q = transaction.createQuery(query);
+		q.setFetchSize(fetchSize);
+		q.setReadOnly(true);
 		QueryResult result = new HibernateResult(q.list(), q.getReturnAliases(), q.getReturnTypes());
 		transaction.commit();
 		closed = true;
@@ -33,6 +36,6 @@ public class HibernateStatement implements QueryStatement {
 	}
 
 	public void setFetchSize(int size) {
-	    //TODO implement this method
+		this.fetchSize = size;
 	}
 }

@@ -79,7 +79,7 @@ public class OrderedConfigurableWordList implements Cloneable {
         StringBuffer sb = new StringBuffer();
         Iterator<ConfigurableWord> iterWords = getWords().iterator();
         while (iterWords.hasNext()) {
-            ConfigurableWord word = (ConfigurableWord)iterWords.next();
+        	ConfigurableWord word = iterWords.next();
             sb.append(word.getHumanStringValue());
             sb.append(" ");
         }
@@ -99,11 +99,11 @@ public class OrderedConfigurableWordList implements Cloneable {
         Iterator<ConfigurableWord> origWordIterator = getWords().iterator();
         ArrayList<ConfigurableWord> cloneWords = new ArrayList<ConfigurableWord>();  // MUST be new list, not a reference to the original list
         while (origWordIterator.hasNext()) {
-            ConfigurableWord word = origWordIterator.next();
+        	ConfigurableWord word = origWordIterator.next();
             if (word instanceof FixedString) {
                 cloneWords.add(word);  // immutable, no need to clone
             } else {
-                ConfigurableWord cloneWord = (ConfigurableWord)originalToCloneMap.get(word);
+            	ConfigurableWord cloneWord = (ConfigurableWord)originalToCloneMap.get(word);
                 cloneWords.add(cloneWord);
             }
         }

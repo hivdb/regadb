@@ -1,17 +1,16 @@
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.type.Type;
 
 public class HibernateResult implements QueryResult {
 
-	private List list;
+	private List<Object> list;
 	private String[] columnNames;
 	private Type[] classNames;
 	
-	public HibernateResult(List list, String[] columnNames, Type[] classNames) {
+	public HibernateResult(List<Object> list, String[] columnNames, Type[] classNames) {
 		this.list = list;
 		this.columnNames = columnNames;
 		this.classNames = classNames;
@@ -36,9 +35,9 @@ public class HibernateResult implements QueryResult {
 	}
 
 	public String getColumnClassName(int index) {
-		if (columnNames != null) {
+		if (classNames != null) {
 			Type t = classNames[index];
-			return t.getClass().getName();
+			return t.getReturnedClass().getName();
 		}
 		return "";
 	}

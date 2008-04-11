@@ -27,7 +27,7 @@ public interface Selection {
     
     public void setSelected(boolean selected);
     
-    public java.util.Collection getSubSelections(); // of type Selection
+    public java.util.Collection<Selection> getSubSelections(); // of type Selection
     
     public SelectionList getController();
     

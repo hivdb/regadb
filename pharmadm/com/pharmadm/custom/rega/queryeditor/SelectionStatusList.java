@@ -47,7 +47,7 @@ public class SelectionStatusList implements SelectionList {
     /** Creates a new instance of SelectionStatusList */
     public SelectionStatusList(Query query) {
         this.query = query;
-        Iterator iter = query.getRootClause().getExportedOutputVariables().iterator();
+        Iterator<OutputVariable> iter = query.getRootClause().getExportedOutputVariables().iterator();
         while (iter.hasNext()) {
             OutputVariable ovar = (OutputVariable)iter.next();
             addVariable(ovar);
@@ -59,8 +59,8 @@ public class SelectionStatusList implements SelectionList {
     }
     
     // %$ KVB : It is essential that this method returns column names in the same order they are appended in getSelectClause !
-    public List getSelectedColumnNames() {
-        ArrayList selectedColumns = new ArrayList();
+    public List<String> getSelectedColumnNames() {
+        ArrayList<String> selectedColumns = new ArrayList<String>();
         Iterator<Selection> iter = getSelections().iterator();
         while (iter.hasNext()) {
             Selection selection = (Selection)iter.next();
@@ -68,12 +68,17 @@ public class SelectionStatusList implements SelectionList {
                 OutputVariable var = (OutputVariable)selection.getObject();
                 String varName = var.getUniqueName();
                 if (selection instanceof TableSelection) {
-                    Iterator fieldIter = ((TableSelection)selection).getSubSelections().iterator();
+                    Iterator<Selection> fieldIter = ((TableSelection)selection).getSubSelections().iterator();
+                    int selectedColumnCount = 0;
                     while (fieldIter.hasNext()) {
                         FieldSelection subSelection = (FieldSelection)fieldIter.next();
                         if (subSelection.isSelected()) {
                             selectedColumns.add(var.getFullColumnName((Field)(subSelection.getObject())));
+                            selectedColumnCount++;
                         }
+                    }
+                    if (selectedColumnCount == 0 && DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                    	selectedColumns.add(((TableSelection)selection).getTable().getName());
                     }
                 }
                 else { // selection instanceof OutputSelection
@@ -127,12 +132,16 @@ public class SelectionStatusList implements SelectionList {
             Selection selection = (Selection)iter.next();
             if (selection.isSelected()) {
                 if (selection instanceof TableSelection) {
-                    Iterator fieldIter = ((TableSelection)selection).getSubSelections().iterator();
+                    Iterator<Selection> fieldIter = ((TableSelection)selection).getSubSelections().iterator();
                     while (fieldIter.hasNext()) {
                         FieldSelection subSelection = (FieldSelection)fieldIter.next();
                         if (subSelection.isSelected()) {
                             return true;
                         }
+                    }
+                    // only table selected
+                   if (DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                    	return true;
                     }
                 } else {
                     return true;

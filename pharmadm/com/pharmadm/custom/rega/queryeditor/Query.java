@@ -13,6 +13,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.util.work.Work;
+
 /**
  * <p>
  * Represents a query to the database.
@@ -100,7 +102,7 @@ public class Query {
      *
      * @return a Collection with all Works required to prepare the query.
      */
-    public Collection getPreparationWorks() {
+    public Collection<Work> getPreparationWorks() {
         return rootClause.getQueryPreparationWorks();
     }
     

@@ -19,7 +19,13 @@ package com.pharmadm.custom.rega.queryeditor;
  * @author  kdg
  */
 public class StartstringConstant extends StringConstant {
-    
+    public StartstringConstant(){}
+	
+	public StartstringConstant(SuggestedValues suggestedValues) {
+		super(suggestedValues);
+	}
+	
+	
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseStartstringConstant(this);
     }

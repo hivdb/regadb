@@ -12,7 +12,6 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.sql.*;
 import java.util.*;
 
 
@@ -22,7 +21,7 @@ import java.util.*;
  *
  * @author  kdg
  */
-public class DatabaseManager implements DatabaseConnector {
+public class DatabaseManager {
 	private static DatabaseManager instance;
 	
     private DatabaseConnector DbManager;
@@ -54,6 +53,10 @@ public class DatabaseManager implements DatabaseConnector {
         return tableCatalog;
     }
     
+    public DatabaseConnector getDatabaseConnector() {
+    	return DbManager;    	
+    }
+    
     public List<String> getTableNames() {
         if (tableNames == null) {
         	tableNames = DbManager.getTableNames();
@@ -69,32 +72,4 @@ public class DatabaseManager implements DatabaseConnector {
     public boolean tableExists(String tableName) {
         return getTableNames().contains(tableName);
     }    
-    
-    public QueryResult executeQuery(String query) throws SQLException {
-    	return DbManager.executeQuery(query);
-    }
-    
-    public List<String> getColumnNames(String tableName) {
-    	return DbManager.getColumnNames(tableName);
-    }
-    
-    public String getColumnType(String tableName, String columnName) {
-    	return DbManager.getColumnType(tableName, columnName);
-    }
-    
-    public List<String> getPrimaryKeys(String tableName) {
-    	return DbManager.getPrimaryKeys(tableName);
-    }
-    
-    public String getCommentForTable(String tableName) {
-    	return DbManager.getCommentForTable(tableName);
-    }
-    
-    public String getCommentForColumn(String tableName, String fieldName) {
-    	return DbManager.getCommentForColumn(tableName, fieldName);
-    }
-    
-    public QueryStatement createScrollableReadOnlyStatement() throws SQLException {
-        return DbManager.createScrollableReadOnlyStatement();
-    }
 }
