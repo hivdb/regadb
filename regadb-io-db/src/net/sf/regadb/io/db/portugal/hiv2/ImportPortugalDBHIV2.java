@@ -67,7 +67,7 @@ public class ImportPortugalDBHIV2
         
         //imp.listGeographicOrigins();
         //imp.listInstitutes();
-        List<Attribute> regadbAttributesList = imp.prepareRegaDBAttributes();
+        List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
         Attribute countryOfOrigin = imp.selectAttribute("Country of origin", regadbAttributesList);
         Attribute gender = imp.selectAttribute("Gender", regadbAttributesList);
         imp.parsePatient(gender, countryOfOrigin);
@@ -170,7 +170,7 @@ public class ImportPortugalDBHIV2
         }
         
         System.err.println("Fixing the country of origin list");
-        List<Attribute> regadbAttributesList = prepareRegaDBAttributes();
+        List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
         Attribute countryOfOrigin = selectAttribute("Country of origin", regadbAttributesList);
         
         for(String c : countries)
@@ -247,44 +247,6 @@ public class ImportPortugalDBHIV2
         }
         
         return toReturn;
-    }
-    
-    private List<Attribute> prepareRegaDBAttributes()
-    {
-        RegaDBSettings.getInstance().initProxySettings();
-        
-        FileProvider fp = new FileProvider();
-        List<Attribute> list = null;
-        File attributesFile = null;
-        try {
-            attributesFile = File.createTempFile("attributes", "xml");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        try 
-        {
-            fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        final ImportFromXML imp = new ImportFromXML();
-        try 
-        {
-            imp.loadDatabaseObjects(null);
-            list = imp.readAttributes(new InputSource(new FileReader(attributesFile)), null);
-        }
-        catch(SAXException saxe)
-        {
-            saxe.printStackTrace();
-        }
-        catch(IOException ioex)
-        {
-            ioex.printStackTrace();
-        }
-        
-        return list;
     }
     
     private void parsePatient(Attribute genderA, Attribute countryOfOriginA)
