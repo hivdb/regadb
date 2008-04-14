@@ -16,6 +16,8 @@ import java.util.*;
 import java.sql.*;
 import javax.swing.table.AbstractTableModel;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
+
 /**
  *
  * @author  kdg

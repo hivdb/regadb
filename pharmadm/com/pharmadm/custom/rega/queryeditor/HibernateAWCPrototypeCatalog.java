@@ -2,6 +2,10 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.sql.SQLException;
 import java.util.*;
+
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
+
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.TestType;

@@ -1,5 +1,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 public class EndstringConstant extends StringConstant {
 	public EndstringConstant() {}
 	

@@ -12,6 +12,8 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
 import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;

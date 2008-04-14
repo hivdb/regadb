@@ -14,6 +14,9 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 /**
  *
  * @author  kristof

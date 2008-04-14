@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.util.work.Work;
 
 //import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;

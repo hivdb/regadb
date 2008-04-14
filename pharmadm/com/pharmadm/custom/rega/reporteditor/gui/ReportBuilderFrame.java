@@ -22,6 +22,9 @@ import javax.swing.table.TableModel;
 import javax.swing.event.*;
 
 import com.pharmadm.custom.rega.reporteditor.*;
+import com.pharmadm.custom.rega.gui.BusyTableModel;
+import com.pharmadm.custom.rega.gui.FileExtensionFilter;
+import com.pharmadm.custom.rega.gui.JTableExporter;
 import com.pharmadm.custom.rega.queryeditor.gui.*;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.RegaSettings;

@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.reporteditor.gui;
 
+import com.pharmadm.custom.rega.gui.WLOEditorPanel;
 import com.pharmadm.custom.rega.queryeditor.gui.*;
 import com.pharmadm.custom.rega.reporteditor.*;
 

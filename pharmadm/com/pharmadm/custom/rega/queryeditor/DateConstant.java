@@ -15,6 +15,8 @@ import java.util.Date;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 /**
  * <p>
  * This class supports xml-encoding. No new properties are encoded.

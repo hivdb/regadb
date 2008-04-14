@@ -11,6 +11,9 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 
 /**
  * <p>

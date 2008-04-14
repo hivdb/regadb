@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 /**
  * <p>
  * An AWCWord can produce an unambiguous String representation of it's current

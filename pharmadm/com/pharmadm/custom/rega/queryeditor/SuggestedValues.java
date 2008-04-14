@@ -3,6 +3,9 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
+
 public class SuggestedValues {
 	private ArrayList<SuggestedValuesOption> options;
 	private String query = null;

@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
 import javax.swing.JFormattedTextField;
 
+import com.pharmadm.custom.rega.gui.FormattedComboBoxEditor;
 import com.pharmadm.custom.rega.queryeditor.*;
 
 /**

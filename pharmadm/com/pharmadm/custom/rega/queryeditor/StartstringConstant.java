@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+
 /**
  * A StringConstant for use in LIKE-statements.
  * It appends and prepends a percentage sign o the user-selected string.

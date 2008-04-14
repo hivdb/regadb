@@ -13,6 +13,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 /**
  * <p>
  * A catalog containing AtomicWhereClause prototypes ('Prototype' pattern).

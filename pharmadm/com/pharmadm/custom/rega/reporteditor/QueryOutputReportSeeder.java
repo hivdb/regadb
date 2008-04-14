@@ -16,6 +16,8 @@ import java.util.*;
 import java.sql.*;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.util.work.Work;
 import com.pharmadm.util.work.WorkAdapter;
 
