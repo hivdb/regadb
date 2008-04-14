@@ -116,24 +116,32 @@ public class ImportPortugalDB {
     private ValueType stringValueType;
     
     private Map<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
+    
+    private File patientXmlFile;
+    private File sequenceXmlFile;
  
     public ImportPortugalDB(String sampleFName, String countryFName,
             				String ethnicityFName, String geographicOriginFName,
             				String institutionFName, String medicinsFName,
             				String therapeuticsFName, String therapeuticMedicinsFname,
-            				String transmissionGroupFName, String sequenceDirName)
+            				String transmissionGroupFName, String sequenceDirName,
+            				String patientXmlFile, String sequenceXmlFile)
             throws FileNotFoundException {
 
         System.err.println("Reading data...");
-        this.sampleTable = readTable(sampleFName);
-        this.countryTable = readTable(countryFName);
-        this.ethnicityTable = readTable(ethnicityFName);
-        this.geographicOriginTable = readTable(geographicOriginFName);
-        this.institutionTable = readTable(institutionFName);
-        this.medicinsTable = readTable(medicinsFName);
-        this.therapeuticsTable = readTable(therapeuticsFName);
-        this.therapeuticMedicinsTable = readTable(therapeuticMedicinsFname);
-        this.transmissionGroupTable = readTable(transmissionGroupFName);
+        this.sampleTable = Utils.readTable(sampleFName);
+        this.countryTable = Utils.readTable(countryFName);
+        this.ethnicityTable = Utils.readTable(ethnicityFName);
+        this.geographicOriginTable = Utils.readTable(geographicOriginFName);
+        this.institutionTable = Utils.readTable(institutionFName);
+        this.medicinsTable = Utils.readTable(medicinsFName);
+        this.therapeuticsTable = Utils.readTable(therapeuticsFName);
+        this.therapeuticMedicinsTable = Utils.readTable(therapeuticMedicinsFname);
+        this.transmissionGroupTable = Utils.readTable(transmissionGroupFName);
+        
+        this.patientXmlFile = new File(patientXmlFile);
+        this.sequenceXmlFile = new File(sequenceXmlFile);
+        
         System.err.println("done.");
         
         System.err.println("Fixing the country of origin list");
@@ -170,43 +178,43 @@ public class ImportPortugalDB {
         
         this.sequenceDirName = sequenceDirName;
         
-        this.CSamplePatientID = findColumn(sampleTable, "PatientID");
-        this.CSampleYearCollection = findColumn(sampleTable, "YearCollection");
-        this.CSampleMonthCollection = findColumn(sampleTable, "MonthCollection");
-        this.CSampleYearBirth = findColumn(sampleTable, "YearBirth");
-        this.CSampleGender = findColumn(sampleTable, "Gender");
-        this.CSampleViralLoad = findColumn(sampleTable, "ViralLoad");
-        this.CSampleCD4Count = findColumn(sampleTable, "CD4Count");
-        this.CSampleSampleID = findColumn(sampleTable, "SampleID");
-        this.CSampleId_Sample = findColumn(sampleTable, "ID_Sample");
-        this.CSampleClinicalFileNumber = findColumn(sampleTable, "ClinicalFileNumber");
-        this.CSampleIdInstitution = findColumn(sampleTable, "Id_Institution");
-        this.CSampleIdTransmissionGroup = findColumn(sampleTable, "Id_TransmissionGroup");
-        this.CSampleIdGeographicOrigin = findColumn(sampleTable, "Id_GeographicOrigin");
-        this.CSampleIdEthnicity = findColumn(sampleTable, "Id_Ethnicity");
-        this.CSampleIdCountry = findColumn(sampleTable, "Id_Country");
+        this.CSamplePatientID = Utils.findColumn(sampleTable, "PatientID");
+        this.CSampleYearCollection = Utils.findColumn(sampleTable, "YearCollection");
+        this.CSampleMonthCollection = Utils.findColumn(sampleTable, "MonthCollection");
+        this.CSampleYearBirth = Utils.findColumn(sampleTable, "YearBirth");
+        this.CSampleGender = Utils.findColumn(sampleTable, "Gender");
+        this.CSampleViralLoad = Utils.findColumn(sampleTable, "ViralLoad");
+        this.CSampleCD4Count = Utils.findColumn(sampleTable, "CD4Count");
+        this.CSampleSampleID = Utils.findColumn(sampleTable, "SampleID");
+        this.CSampleId_Sample = Utils.findColumn(sampleTable, "ID_Sample");
+        this.CSampleClinicalFileNumber = Utils.findColumn(sampleTable, "ClinicalFileNumber");
+        this.CSampleIdInstitution = Utils.findColumn(sampleTable, "Id_Institution");
+        this.CSampleIdTransmissionGroup = Utils.findColumn(sampleTable, "Id_TransmissionGroup");
+        this.CSampleIdGeographicOrigin = Utils.findColumn(sampleTable, "Id_GeographicOrigin");
+        this.CSampleIdEthnicity = Utils.findColumn(sampleTable, "Id_Ethnicity");
+        this.CSampleIdCountry = Utils.findColumn(sampleTable, "Id_Country");
 
-        this.CTherapeuticsIdSample = findColumn(therapeuticsTable, "Id_Sample");
+        this.CTherapeuticsIdSample = Utils.findColumn(therapeuticsTable, "Id_Sample");
 
         System.err.println("Merging therapeutics data... (from "+therapeuticsFName+")");
         therapeuticsTable.merge(sampleTable, CTherapeuticsIdSample, CSampleId_Sample, true);
         System.err.println("OK.");
 
-        this.CTherapeuticsTherapy = findColumn(therapeuticsTable, "Therapy");
-        this.CTherapeuticsIdSampleStartMonth = findColumn(therapeuticsTable, "StartMonth");
-        this.CTherapeuticsIdSampleStartYear = findColumn(therapeuticsTable, "StartYear");
-        this.CTherapeuticsId = findColumn(therapeuticsTable, "Id_Therapeutics");
-        this.CTherapeuticsIdSampleEndMonth = findColumn(therapeuticsTable, "EndMonth");
-        this.CTherapeuticsIdSampleEndYear = findColumn(therapeuticsTable, "EndYear");        
-        this.CTherapeuticsPatientId = findColumn(therapeuticsTable, "PatientID");
-        this.CTherapeuticsYearCollection = findColumn(therapeuticsTable, "YearCollection");
-        this.CTherapeuticsMonthCollection = findColumn(therapeuticsTable, "MonthCollection");
+        this.CTherapeuticsTherapy = Utils.findColumn(therapeuticsTable, "Therapy");
+        this.CTherapeuticsIdSampleStartMonth = Utils.findColumn(therapeuticsTable, "StartMonth");
+        this.CTherapeuticsIdSampleStartYear = Utils.findColumn(therapeuticsTable, "StartYear");
+        this.CTherapeuticsId = Utils.findColumn(therapeuticsTable, "Id_Therapeutics");
+        this.CTherapeuticsIdSampleEndMonth = Utils.findColumn(therapeuticsTable, "EndMonth");
+        this.CTherapeuticsIdSampleEndYear = Utils.findColumn(therapeuticsTable, "EndYear");        
+        this.CTherapeuticsPatientId = Utils.findColumn(therapeuticsTable, "PatientID");
+        this.CTherapeuticsYearCollection = Utils.findColumn(therapeuticsTable, "YearCollection");
+        this.CTherapeuticsMonthCollection = Utils.findColumn(therapeuticsTable, "MonthCollection");
 
-        this.CMedicinsIdMedicins = findColumn(medicinsTable, "Id_Medicins");
-        this.CMedicinsMedicinCode = findColumn(medicinsTable, "MedicinCode");
+        this.CMedicinsIdMedicins = Utils.findColumn(medicinsTable, "Id_Medicins");
+        this.CMedicinsMedicinCode = Utils.findColumn(medicinsTable, "MedicinCode");
 
-        this.CTherapeuticMedicinsTableIdMedicins = findColumn(therapeuticMedicinsTable, "Id_Medicins");
-        this.CTherapeuticMedicinsTableIdTherapeutics = findColumn(therapeuticMedicinsTable, "Id_Therapeutics");
+        this.CTherapeuticMedicinsTableIdMedicins = Utils.findColumn(therapeuticMedicinsTable, "Id_Medicins");
+        this.CTherapeuticMedicinsTableIdTherapeutics = Utils.findColumn(therapeuticMedicinsTable, "Id_Therapeutics");
         
         System.err.print("Creating indexes... ");
         this.sampleIndex = sampleTable.addIndex("Patient_Sample",
@@ -220,20 +228,6 @@ public class ImportPortugalDB {
         this.stringValueType = new ValueType("string");
     }
 
-	int findColumn(Table t, String name) {
-		int column = t.findInRow(0, name);
-		
-		if (column == -1)
-			throw new RuntimeException("Could not find column " + name);
-
-		return column;
-	}
-    
-     private Table readTable(String filename) throws FileNotFoundException {
-        System.err.println(filename);
-        return new Table(new BufferedInputStream(new FileInputStream(filename)), false);
-    }
-
     private void importTherapy() throws NumberFormatException {
         System.err.println("Importing therapy ...");
         int therapy = 0;
@@ -245,7 +239,7 @@ public class ImportPortugalDB {
             String id = medicinsTable.valueAt(CMedicinsIdMedicins, i);
             String code = medicinsTable.valueAt(CMedicinsMedicinCode, i).toUpperCase();
 
-            medicinsMap.put(id, new DrugGeneric(null, code, null)); // FIXME
+            medicinsMap.put(id, new DrugGeneric(null, code, null));
         }
 
         /*
@@ -401,9 +395,7 @@ public class ImportPortugalDB {
     }
 
     private void storeTherapy(Map<String, DrugGeneric> medicinsMap, Date endDate, Date startDate,
-            		          String patientId, Set drugs, String comment) {
-        //System.err.print("TH: " + patientId + " " + startDate + " - " + endDate + " (" + comment + "): ");
-        
+            		          String patientId, Set<String> drugs, String comment) {        
         Patient p = patientMap.get(patientId);
         if (p == null)
             return;
@@ -419,14 +411,10 @@ public class ImportPortugalDB {
         t.setStopDate(endDate);
         t.setComment(comment);
 
-        for (Iterator k = drugs.iterator(); k.hasNext();) {
-            String drug = (String) k.next();
-            //System.err.print(" " + drug);
-
-            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(drug)),false,false);
+        for (String drug : drugs) {
+           TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(drug)),false,false);
             t.getTherapyGenerics().add(tg);
         }
-        //System.err.println();
     }
 
     private void importViralLoad_CD4() {
@@ -667,40 +655,11 @@ public class ImportPortugalDB {
         }
     }
     
-    private void exportXML(String fileName) {
-        ExportToXML l = new ExportToXML();
-        Element root = new Element("patients");
-        
-        for (String patientId:patientMap.keySet()) {
-            Element patient = new Element("patients-el");
-            root.addContent(patient);
-
-            Patient p = patientMap.get(patientId);
-            l.writePatient(p, patient);            
-        }
-        
-        Document n = new Document(root);
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.setFormat(Format.getPrettyFormat());
-        /*
-        try {
-            outputter.output(n, System.out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
-        java.io.FileWriter writer;
-        try {
-            writer = new java.io.FileWriter(fileName);
-            outputter.output(n, writer);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void exportToXml() {
+        Utils.exportPatientsXML(patientMap, patientXmlFile.getAbsolutePath());
+        Utils.exportNTXMLFromPatients(patientMap, sequenceXmlFile.getAbsolutePath());
     }
-
+    
  	public static void main(String[] args)
         throws FileNotFoundException, ClassNotFoundException {
         
@@ -719,14 +678,17 @@ public class ImportPortugalDB {
                     dir+File.separatorChar+"Medicins.csv",
                     dir+File.separatorChar+"Therapeutics.csv",
                     dir+File.separatorChar+"TherapeuticMedicins.csv",
-                    dir+File.separatorChar+"TransmissionGroup.csv", 
+                    dir+File.separatorChar+"TransmissionGroup.csv",
+                    dir+File.separatorChar+"patients.xml",
+                    dir+File.separatorChar+"sequences.xml",
                     args[1]);
                     
         }
         else
         {
             instance = new ImportPortugalDB(    args[0], args[1], args[2], args[3], args[4],
-                                                args[5], args[6], args[7], args[8], args[9]);
+                                                args[5], args[6], args[7], args[8], args[9],
+                                                args[10], args[11]);
         }
         
         instance.importPatients();
@@ -735,7 +697,7 @@ public class ImportPortugalDB {
 
         instance.importSequencesNoAlign("sequences.xml");
         instance.importPatientAttributes();
-        instance.exportXML("result.xml");
+        instance.exportToXml();
         System.err.println("Finished");
     }
 }
