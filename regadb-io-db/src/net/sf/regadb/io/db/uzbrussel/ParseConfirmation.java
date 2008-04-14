@@ -34,7 +34,6 @@ public class ParseConfirmation {
     private String basePath_;
     private ParseIds parseIds_;
     private Map<Integer, Patient> patients_;
-    private FileWriter fw;
     
     private NominalAttribute genderNominal_ = new NominalAttribute("Gender", -1, new String[] { "M", "F" },
             new String[] { "male", "female" } );
@@ -47,14 +46,6 @@ public class ParseConfirmation {
         patients_ = patients;
         
         genderNominal_.attribute.setAttributeGroup(regadbAttributeGroup_);
-        
-        //Cannot retrieve patientId for patcode
-        try {
-            fw = new FileWriter(new File("/home/plibin0/Desktop/Annelies_pat.csv"));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
     
     public void exec() {
@@ -73,12 +64,6 @@ public class ParseConfirmation {
           parseSheet(wb.getSheet(1), this.dateFormatter2);
        
         System.err.println("CONFIRMATION EPIDEM=================================");
-          
-       try {
-        fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     
     private void parseSheet(Sheet sheet, DateFormat df) {
@@ -115,11 +100,6 @@ public class ParseConfirmation {
                      }
                 } else {
                     ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
-                    try {
-                        fw.write("19"+code_pat+";\n");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
             if(p!=null) {
