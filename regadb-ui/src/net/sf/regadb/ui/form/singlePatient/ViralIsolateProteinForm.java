@@ -166,6 +166,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 					public void notify(WEmptyEvent a)
 					{
 						setAaSequenceCombo();
+						setAaData();
 					}
 				});
 		
