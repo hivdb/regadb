@@ -56,8 +56,13 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private List<Test> resistanceTests_;
     
     private List<AaSequence> aaSeqs_;
-        
+    
     public IOAssistImportHandler(FileWriter fw)
+    {    
+        this(fw, null);
+    }
+    
+    public IOAssistImportHandler(FileWriter fw, String wtsURL)
     {        
         proteinMap_ = new HashMap<String, Protein>();
         
@@ -76,6 +81,15 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         //find resistance tests --start
         resistanceTests_ = Utils.getResistanceTests();
         //find resistance tests --end
+        
+        if(wtsURL!=null) {
+            subType_.getAnalysis().setUrl(wtsURL);
+            type_.getAnalysis().setUrl(wtsURL);
+            
+            for(Test rt : resistanceTests_) {
+                rt.getAnalysis().setUrl(wtsURL);
+            }
+        }
     }
     
     public void importObject(ViralIsolate object) {

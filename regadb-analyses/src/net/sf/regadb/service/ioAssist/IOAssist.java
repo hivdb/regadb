@@ -16,7 +16,7 @@ public class IOAssist
     public static void main(String [] args)
     {
         if(args.length<3) {
-            System.err.println("IOAssist usage: IOAssist inputfile outputfile [proxyurl:proxyport]");
+            System.err.println("IOAssist usage: IOAssist inputfile outputfile [proxyurl:proxyport] [--wtsUrl url]");
             System.exit(0);
         }
         System.err.println("IOAssist started");
@@ -25,6 +25,13 @@ public class IOAssist
             String proxyPort = args[2].split(":")[1];
             System.setProperty("http.proxyHost", proxyHost);
             System.setProperty("http.proxyPort", proxyPort);
+        }
+        String wtsUrl = null;
+        for(int i = 0; i<args.length; i++) {
+            if(args[i].equals("--wtsUrl")) {
+                wtsUrl = args[i+1];
+                break;
+            }
         }
         long start = System.currentTimeMillis();
         ImportFromXML imp = new ImportFromXML();
