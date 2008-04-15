@@ -11,7 +11,7 @@ import net.sf.regadb.io.db.util.Utils;
 
 public class ParseAll {
     public static void main(String [] args) {
-    	exec(	"/home/plibin0/import/jette/import/cd/080321/",
+    	exec(	"/home/plibin0/import/jette/import/cd/080415/",
     			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
     			"www-proxy",
     			"3128",

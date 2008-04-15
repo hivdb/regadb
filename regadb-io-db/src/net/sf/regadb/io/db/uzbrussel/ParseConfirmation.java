@@ -76,12 +76,6 @@ public class ParseConfirmation {
                 Integer id = parseIds_.getPatientId(dossiernummer);
                 if(id!=null) {
                     p = patients_.get(id);
-                    if(p==null) {
-                        //TODO don't do this, should always work!!!!
-                       p = new Patient();
-                       p.setPatientId(id+"");
-                       patients_.put(id, p);
-                    }
                 } else {
                     ConsoleLogger.getInstance().logError("Cannot retrieve patientConsultId from : " + dossiernummer);
                 }
@@ -92,14 +86,9 @@ public class ParseConfirmation {
                 }
                 if(id != null) {
                     p = patients_.get(id);
-                    if(p==null) {
-                        p = new Patient();
-                        //TODO should we make a new patient in this case????
-                        p.setPatientId(id+"");
-                        patients_.put(id, p);
-                     }
                 } else {
-                    ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
+                    //TODO check excell file!
+                    //ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
                 }
             }
             if(p!=null) {
@@ -217,6 +206,9 @@ public class ParseConfirmation {
             
             //String labo = getValue(i, "LABO", sheet, colMapping);
             //String opmerking = getValue(i, "OPMERKING", sheet, colMapping);
+            } else {
+                //TODO check excel file, some headers changed, extra tab
+                //ConsoleLogger.getInstance().logError("No patient for id - code_pat " + dossiernummer + " - " + code_pat);
             }
         }
     }
