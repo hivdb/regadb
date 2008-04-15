@@ -4,19 +4,14 @@
  */
 package net.sf.regadb.io.db.portugal;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,28 +35,22 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
-import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.FileProvider;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import uk.ac.shef.wit.simmetrics.similaritymetrics.NeedlemanWunch;
 
 /**
  * @author kdforc0
  */
 public class ImportPortugalDB {    
-    static final String SOURCE = "PT";
+    static final String SOURCE = "Lisbon";
     
     private Table sampleTable;
     private Table countryTable;
@@ -119,6 +108,8 @@ public class ImportPortugalDB {
     
     private File patientXmlFile;
     private File sequenceXmlFile;
+    
+    private String mappingBasePath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/portugal/mapping/";
  
     public ImportPortugalDB(String sampleFName, String countryFName,
             				String ethnicityFName, String geographicOriginFName,
@@ -149,30 +140,25 @@ public class ImportPortugalDB {
         Attribute countryOfOrigin = Utils.selectAttribute("Country of origin", regadbAttributesList);
         ArrayList<String> countryIndex = this.countryTable.getColumn(0);
         ArrayList<String> countryName = this.countryTable.getColumn(1);
-        String country;
-        String bestCountryMatchForNow="";
-        float score;
-        NeedlemanWunch nmw = new NeedlemanWunch();
+        Mappings mappings = Mappings.getInstance(mappingBasePath);
         for(int i = 1; i<countryIndex.size(); i++)
         {
-            score = Integer.MIN_VALUE;
-            country = countryName.get(i);
-            if(!country.trim().equals("")) {
-                for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues())
-                {
-                    float oneScore = nmw.getSimilarity(country, anv.getValue());
-                    if(oneScore>score)
-                    {
-                        bestCountryMatchForNow = anv.getValue();
-                        score = oneScore;
-                    }
-                }
-                if(!country.trim().equals(bestCountryMatchForNow.trim())) {
-                System.err.println("country:"+country+" -> "+bestCountryMatchForNow+" :: "+score);
-                countryTable.setValue(1, i, bestCountryMatchForNow);
+            String country = countryName.get(i);
+            boolean foundMatch = false;
+            for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues()) {
+                if(country.equals(anv.getValue().trim())) {
+                    foundMatch = true;
+                    break;
                 }
             }
-            
+            if(!foundMatch && !country.trim().equals("")) {
+                String mapping = mappings.getMapping("countryOfOrigin.mapping", country);
+                if(mapping == null) {
+                    System.err.println("Cannot map country: " + country);
+                } else {
+                    countryTable.setValue(1, i, mapping);
+                }
+            }
         }
         System.err.println("Done fixing the country of origin list");
         
@@ -492,11 +478,8 @@ public class ImportPortugalDB {
         System.err.println(" n = " + patientMap.size());
     }
 
-    public void importSequencesNoAlign(String sequencesFile) throws FileNotFoundException {
+    public void importSequences() throws FileNotFoundException {
         System.err.println("Importing sequences ...");
-
-        ExportToXML l = new ExportToXML();
-        Element root = new Element("viralIsolates");
         
         HashMap<String, Integer> sampleMap = new HashMap<String, Integer>();
         for (int i = 1; i < sampleTable.numRows(); ++i) {
@@ -506,10 +489,6 @@ public class ImportPortugalDB {
         File dir = new File(sequenceDirName);
         File[] files = dir.listFiles();
         
-        Map<String, Protein> proteins = new HashMap<String, Protein>();
-        proteins.put("PRO", new Protein("PRO", "protease"));
-        proteins.put("RT", new Protein("RT", "reverse transcriptase"));
-
         int seq_found = 0;
         for (int i = 0; i < files.length; ++i) {            
             FastaRead fr = FastaHelper.readFastaFile(files[i], true);
@@ -522,7 +501,7 @@ public class ImportPortugalDB {
             case MultipleSequences:
             case FileNotFound:
             case Invalid:
-                
+                System.err.println("invalid fasta " + files[i]);
                 continue;
             }
 
@@ -566,12 +545,8 @@ public class ImportPortugalDB {
                 NtSequence nts = new NtSequence(vi);
                 vi.getNtSequences().add(nts);
                 nts.setNucleotides(fr.xna_);
-                nts.setLabel("Sequence1");
-                
-                Element viralIsolateE = new Element("viralIsolates-el");
-                root.addContent(viralIsolateE);
+                nts.setLabel("Sequence 1");
 
-                l.writeViralIsolate(vi, viralIsolateE);
                 viralIsolateHM.put(seqFinalSampleId, vi);
                 }
                 else
@@ -579,20 +554,6 @@ public class ImportPortugalDB {
                     System.err.println("Duplicate viral isolate " +  seqFinalSampleId + " -> ignoring");
                 }
             }
-        }
-        
-        Document n = new Document(root);
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.setFormat(Format.getPrettyFormat());
-
-        java.io.FileWriter writer;
-        try {
-            writer = new java.io.FileWriter(sequencesFile);
-            outputter.output(n, writer);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         
         System.err.println("Sequences: " + seq_found);
@@ -608,22 +569,22 @@ public class ImportPortugalDB {
         clinicalFileAttribute.setAttributeGroup(portugal);
         clinicalFileAttribute.setValueType(stringValueType);
 
-		ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
-		nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
+        ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
+        nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
-		nominals.add(new NominalAttribute("Transmission group", CSampleIdTransmissionGroup, transmissionGroupTable));
+        nominals.add(new NominalAttribute("Transmission group", CSampleIdTransmissionGroup, transmissionGroupTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-		nominals.add(new NominalAttribute("Geographic origin", CSampleIdGeographicOrigin, geographicOriginTable));
+        nominals.add(new NominalAttribute("Geographic origin", CSampleIdGeographicOrigin, geographicOriginTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-		nominals.add(new NominalAttribute("Ethnicity", CSampleIdEthnicity, ethnicityTable));
+        nominals.add(new NominalAttribute("Ethnicity", CSampleIdEthnicity, ethnicityTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-		nominals.add(new NominalAttribute("Country of origin pt", CSampleIdCountry, countryTable));
+        nominals.add(new NominalAttribute("Country of origin pt", CSampleIdCountry, countryTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
         
-		String lastPatientId = null;
+        String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {
             int row = sampleIndex.row(i);
             
@@ -679,9 +640,9 @@ public class ImportPortugalDB {
                     dir+File.separatorChar+"Therapeutics.csv",
                     dir+File.separatorChar+"TherapeuticMedicins.csv",
                     dir+File.separatorChar+"TransmissionGroup.csv",
+                    args[1],
                     dir+File.separatorChar+"patients.xml",
-                    dir+File.separatorChar+"sequences.xml",
-                    args[1]);
+                    dir+File.separatorChar+"sequences.xml");
                     
         }
         else
@@ -695,7 +656,7 @@ public class ImportPortugalDB {
         instance.importViralLoad_CD4();
         instance.importTherapy();
 
-        instance.importSequencesNoAlign("sequences.xml");
+        instance.importSequences();
         instance.importPatientAttributes();
         instance.exportToXml();
         System.err.println("Finished");
