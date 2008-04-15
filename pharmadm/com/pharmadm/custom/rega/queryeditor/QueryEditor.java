@@ -17,6 +17,15 @@ import java.io.*;
 import javax.swing.tree.*;
 
 //import com.pharmadm.custom.rega.chem.search.*;
+import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.SubstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.SuggestedValues;
+import com.pharmadm.custom.rega.queryeditor.constant.SuggestedValuesOption;
 import com.pharmadm.custom.rega.savable.*;
 
 /**
@@ -28,7 +37,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     private Query query;
     private boolean dirty = false;
     private Collection<DirtinessListener> dirtinessListeners = new ArrayList<DirtinessListener>();
-    private Collection listChangeListeners = new ArrayList();
+    private Collection<SelectionListChangeListener> listChangeListeners = new ArrayList<SelectionListChangeListener>();
 
     private final SelectionChangeListener selectionListener = new SelectionChangeListener() {
         public void selectionChanged() {
@@ -460,9 +469,9 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         encoder.setPersistenceDelegate(EndstringConstant.class, new ConstantPersistenceDelegate());
         encoder.setPersistenceDelegate(DateConstant.class, new ConstantPersistenceDelegate());
         encoder.setPersistenceDelegate(SuggestedValues.class, new SuggestedValuesPersistenceDelegate());
+        encoder.setPersistenceDelegate(VisualizationClauseList.class, new VisualizationClauseListPersistenceDelegate());
+        encoder.setPersistenceDelegate(WhereClauseComposer.class, new WhereClauseComposerPersistenceDelegate());
         encoder.setPersistenceDelegate(SuggestedValuesOption.class, new DefaultPersistenceDelegate());
-//        encoder.setPersistenceDelegate(MoleculeClause.class, new MoleculeClausePersistenceDelegate());
-//        encoder.setPersistenceDelegate(MoleculeConstant.class, new MoleculeConstantPersistenceDelegate());
     }
     
     public void saveSubquery(WhereClause clause, File file) throws java.io.FileNotFoundException {
@@ -498,7 +507,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         dirtinessListeners.add(listener);
     }
     
-    protected void setDirty(boolean dirty) {
+    public void setDirty(boolean dirty) {
         if (this.dirty != dirty) {
             this.dirty = dirty;
             Iterator<DirtinessListener> dLIter = dirtinessListeners.iterator();
@@ -525,7 +534,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     }
     
     private void notifySelectionListChangeListeners() {
-        Iterator iter = listChangeListeners.iterator();
+        Iterator<SelectionListChangeListener> iter = listChangeListeners.iterator();
         while (iter.hasNext()) {
             SelectionListChangeListener listener = (SelectionListChangeListener)iter.next();
             listener.listChanged();
@@ -534,8 +543,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     
     public void addSelectionListChangeListener(SelectionListChangeListener listener) {
         listChangeListeners.add(listener);
-    }
-    
+    } 
 }
 
 

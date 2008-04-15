@@ -20,6 +20,8 @@ import javax.swing.JFormattedTextField;
 
 import com.pharmadm.custom.rega.gui.FormattedComboBoxEditor;
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.constant.SuggestedValuesOption;
 
 /**
  *
@@ -58,9 +60,9 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     }
     
     public void configureWord() {
-        String valueToSet = null;
+        Object valueToSet = null;
         if (getSelectedItem() != null) {
-            valueToSet = ((JDBCComboBoxModel)getModel()).getSelectedValue().toString();
+            valueToSet = ((JDBCComboBoxModel)getModel()).getSelectedValue();
         }
         if (! controller.setConstantValueString(constant, valueToSet)) {
             System.err.println("Warning : word configuration failed !");

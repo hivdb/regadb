@@ -87,6 +87,10 @@ public class FromVariable implements AWCWord, Cloneable {
         return getUniqueName();
     }
     
+    public String toString() {
+    	return getUniqueName();
+    }
+    
     public void unlock() {
     	locked = false;
     }

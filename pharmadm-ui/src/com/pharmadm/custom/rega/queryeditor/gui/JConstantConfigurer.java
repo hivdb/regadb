@@ -13,6 +13,7 @@
 package com.pharmadm.custom.rega.queryeditor.gui;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 
 /**
  *

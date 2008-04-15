@@ -14,7 +14,6 @@ package com.pharmadm.custom.rega.gui;
 
 import java.sql.Connection;
 
-import com.pharmadm.custom.rega.queryeditor.RegaSettings;
 import com.pharmadm.util.event.PDMEvent;
 import com.pharmadm.util.event.PDMEventListener;
 import com.pharmadm.util.gui.RDBMSConnectPanel;

@@ -13,7 +13,7 @@
 package com.pharmadm.custom.rega.gui;
 
 
-import com.pharmadm.custom.rega.queryeditor.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.gui.AtomicWhereClauseEditor;
 
 /**
  *

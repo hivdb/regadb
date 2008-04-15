@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 /**
@@ -24,13 +25,31 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * 
  */
 public class OrderedAWCWordList extends OrderedConfigurableWordList {
-    
+	   
     /** For xml-encoding purposes only */
     public OrderedAWCWordList() {
     }
     
     public OrderedAWCWordList(AtomicWhereClause owner) {
         super(owner);
+    }
+    
+    public void addWord(AWCWord word) {
+    	if (word instanceof FixedString) {
+    		addFixedString((FixedString) word);
+    	}
+    	else if (word instanceof Constant) {
+    		addConstant((Constant) word);
+    	}
+    	else if (word instanceof InputVariable) {
+    		addInputVariable((InputVariable) word);
+    	}
+    	else if (word instanceof OutputVariable) {
+    		addOutputVariable((OutputVariable) word);
+    	}
+    	else if (word instanceof FromVariable) {
+    		addFromVariable((FromVariable) word);
+    	}
     }
      
     public void addConstant(Constant constant) {
@@ -79,5 +98,4 @@ public class OrderedAWCWordList extends OrderedConfigurableWordList {
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseOrderedAWCWordList(this);
     }
-    
 }

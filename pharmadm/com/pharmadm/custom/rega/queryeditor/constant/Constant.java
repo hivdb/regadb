@@ -9,11 +9,13 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.text.Format;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.AWCWord;
+import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
@@ -89,8 +91,8 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      * @param s ...
      * </p>
      */
-    public Object parseValue(String s) throws java.text.ParseException {
-        Object value = getFormat().parseObject(s);
+    public Object parseValue(Object s) throws java.text.ParseException {
+        Object value = getFormat().parseObject(s.toString());
         setValue(value);
         return value;
     } 
@@ -137,9 +139,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     }
     
     public Object clone() throws CloneNotSupportedException {
-        Constant clone = (Constant) super.clone();
-        clone.setSuggestedValues(suggestedValues);
-        return clone;
+        return super.clone();
     }
     
     /* Implementing ValueSpecifier */

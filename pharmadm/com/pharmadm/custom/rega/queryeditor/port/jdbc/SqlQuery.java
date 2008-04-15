@@ -8,9 +8,6 @@ import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ComposedWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.Constant;
-import com.pharmadm.custom.rega.queryeditor.DateConstant;
-import com.pharmadm.custom.rega.queryeditor.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.Field;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
@@ -21,11 +18,14 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
-import com.pharmadm.custom.rega.queryeditor.StartstringConstant;
-import com.pharmadm.custom.rega.queryeditor.StringConstant;
-import com.pharmadm.custom.rega.queryeditor.SubstringConstant;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.SubstringConstant;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 public class SqlQuery implements QueryVisitor {

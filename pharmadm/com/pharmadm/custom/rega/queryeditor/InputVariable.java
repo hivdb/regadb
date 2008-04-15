@@ -90,7 +90,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable {
  
     public String getHumanStringValue() {
         OutputVariable ovar = getOutputVariable();
-        return (((ovar = getOutputVariable()) == null) ? null : ovar.getHumanStringValue());
+        return (((ovar = getOutputVariable()) == null) ? this.getVariableType().getName() : ovar.getHumanStringValue());
     }    
  
     /**

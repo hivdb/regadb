@@ -13,6 +13,8 @@
 package com.pharmadm.custom.rega.reporteditor;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
+
 import java.util.*;
 
 /**

@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.constant;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 

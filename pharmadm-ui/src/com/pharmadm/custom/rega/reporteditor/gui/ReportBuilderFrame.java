@@ -27,8 +27,8 @@ import com.pharmadm.custom.rega.gui.FileExtensionFilter;
 import com.pharmadm.custom.rega.gui.JTableExporter;
 import com.pharmadm.custom.rega.queryeditor.gui.*;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
-import com.pharmadm.custom.rega.queryeditor.RegaSettings;
 import com.pharmadm.custom.rega.savable.*;
+import com.pharmadm.util.settings.RegaSettings;
 import com.pharmadm.util.work.Work;
 import com.pharmadm.util.work.WorkManager;
 

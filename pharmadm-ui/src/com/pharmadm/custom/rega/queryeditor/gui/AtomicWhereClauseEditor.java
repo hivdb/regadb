@@ -9,13 +9,19 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.gui;
 
 import java.util.*;
-import java.util.Collection;
-import java.util.List;
 
-import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
+import com.pharmadm.custom.rega.queryeditor.AWCWord;
+import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
+import com.pharmadm.custom.rega.queryeditor.InputVariableController;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.QueryEditor;
+import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 
 /**
  * The controller ('Controller' pattern) for editing an AtomicWhereClause.
@@ -168,7 +174,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * then no change has been made.
      * </p>
      */
-    public boolean setConstantValueString(Constant cst, String value) {
+    public boolean setConstantValueString(Constant cst, Object value) {
         try {
             cst.parseValue(value);
             notifyQueryEditorDirty();

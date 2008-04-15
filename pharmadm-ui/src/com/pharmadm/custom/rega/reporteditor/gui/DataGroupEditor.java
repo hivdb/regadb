@@ -10,11 +10,19 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.reporteditor;
+package com.pharmadm.custom.rega.reporteditor.gui;
 
 import java.util.*;
+
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.gui.ConfigurationController;
+import com.pharmadm.custom.rega.queryeditor.gui.ConstantController;
 import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.reporteditor.DataGroup;
+import com.pharmadm.custom.rega.reporteditor.DataInputVariable;
+import com.pharmadm.custom.rega.reporteditor.DataInputVariableController;
+import com.pharmadm.custom.rega.reporteditor.DataOutputVariable;
 
 /**
  *
@@ -178,7 +186,7 @@ public class DataGroupEditor implements ConfigurationController, ConstantControl
  * then no change has been made.
  * </p>
  */
-    public boolean setConstantValueString(Constant cst, String value) {   
+    public boolean setConstantValueString(Constant cst, Object value) {   
         try {
             Object o = cst.parseValue(value);
             return true;

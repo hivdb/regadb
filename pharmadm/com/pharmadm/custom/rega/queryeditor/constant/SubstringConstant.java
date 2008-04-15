@@ -10,7 +10,7 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.constant;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
@@ -20,15 +20,14 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *
  * @author  kdg
  */
-public class StartstringConstant extends StringConstant {
-    public StartstringConstant(){}
+public class SubstringConstant extends StringConstant {
+    public SubstringConstant(){}
 	
-	public StartstringConstant(SuggestedValues suggestedValues) {
+	public SubstringConstant(SuggestedValues suggestedValues) {
 		super(suggestedValues);
 	}
 	
-	
     public String acceptWhereClause(QueryVisitor visitor) {
-    	return visitor.visitWhereClauseStartstringConstant(this);
+    	return visitor.visitWhereClauseSubstringConstant(this);
     }
 }

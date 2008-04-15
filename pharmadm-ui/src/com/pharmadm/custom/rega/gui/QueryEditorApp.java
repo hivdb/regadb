@@ -18,7 +18,6 @@ import com.pharmadm.custom.rega.queryeditor.FrontEnd;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
-import com.pharmadm.custom.rega.queryeditor.RegaSettings;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -26,6 +25,7 @@ import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 import com.pharmadm.custom.rega.queryeditor.port.jdbc.JDBCConnector;
 import com.pharmadm.custom.rega.queryeditor.port.jdbc.SqlQuery;
+import com.pharmadm.util.settings.RegaSettings;
 import com.pharmadm.util.thread.ThreadManager;
 import com.pharmadm.util.thread.WorkManagerThreadManagerAdapter;
 

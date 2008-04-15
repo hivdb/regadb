@@ -13,6 +13,13 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.SubstringConstant;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 /**

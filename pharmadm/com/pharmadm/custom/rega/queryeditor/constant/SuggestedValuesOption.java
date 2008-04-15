@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.constant;
 
 public class SuggestedValuesOption {
 	private Object option, value;

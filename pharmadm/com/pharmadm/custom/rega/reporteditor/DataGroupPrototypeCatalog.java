@@ -14,6 +14,10 @@ package com.pharmadm.custom.rega.reporteditor;
 
 import java.util.*;
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
     
     
 /**

@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor.gui;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 //import com.pharmadm.custom.rega.chem.search.MoleculeConstant;
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.reporteditor.gui.*;

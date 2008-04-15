@@ -14,6 +14,7 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.util.*;
 import java.sql.SQLException;
 
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 /**

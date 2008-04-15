@@ -4,7 +4,7 @@ package com.pharmadm.custom.rega.gui;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.ConfigurationController;
+import com.pharmadm.custom.rega.queryeditor.gui.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.gui.WordConfigurer;
 
