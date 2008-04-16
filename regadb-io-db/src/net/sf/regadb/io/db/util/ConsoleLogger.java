@@ -5,8 +5,10 @@ public class ConsoleLogger implements Logging {
 	protected static ConsoleLogger _singleton;
 	
 	private final boolean ENABLE_INFO_LOGGING = false;
+	private final boolean ENABLE_UNINITIALIZEDVALUE_LOGGING = false;
 	
 	private boolean _isInfoEnabled = ENABLE_INFO_LOGGING;
+	private boolean _isUninitializedValueEnabled = ENABLE_UNINITIALIZEDVALUE_LOGGING;
 	
 	public static ConsoleLogger getInstance()
 	{
@@ -59,8 +61,18 @@ public class ConsoleLogger implements Logging {
 		return _isInfoEnabled;
 	}
 	
+	public boolean isUninitializedValueEnabled()
+	{
+		return _isUninitializedValueEnabled;
+	}
+	
 	public void setInfoEnabled(boolean enable)
 	{
 		_isInfoEnabled = enable;
+	}
+	
+	public void setUninitializedValueEnabled(boolean enable)
+	{
+		_isUninitializedValueEnabled = enable;
 	}
 }
