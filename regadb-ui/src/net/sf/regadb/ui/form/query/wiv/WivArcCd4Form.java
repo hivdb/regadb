@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.io.util.StandardObjects;
@@ -48,7 +47,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(TestCode.T4.getCode()+"");
-            row.add(getFormattedDecimal(in.valueAt(CValue,i)));
+            row.add(getFormattedDecimal(in.valueAt(CValue,i),0));
             row.add("");
             
             out.addRow(row);

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.io.util.StandardObjects;

@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.csv.Table;
@@ -18,12 +21,14 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.io.util.WivObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -44,7 +49,6 @@ import net.sf.witty.wt.i8n.WMessage;
 
 import org.hibernate.Query;
 
-//public abstract class WivQueryForm extends QueryDefinitionRunForm implements SignalListener<WMouseEvent>{
 public abstract class WivQueryForm extends FormWidget implements SignalListener<WMouseEvent>{
     private WGroupBox generalGroup_;
     private WGroupBox parameterGroup_;
@@ -78,37 +82,6 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         filename_ = filename.value();
         description_ = new Label(description);
         
-//        QueryDefinition qd = new QueryDefinition();
-//        qd.setName(formName.value());
-//        qd.setDescription(description.value());
-//        
-//        QueryDefinitionParameter qdp = new QueryDefinitionParameter();
-//        qdp.setName(tr("form.query.wiv.label.startDate").value());
-//        QueryDefinitionParameterType qdpt = new QueryDefinitionParameterType();
-//        qdpt.setId(QueryDefinitionParameterTypes.DATE.getValue());
-//        qdp.setQueryDefinitionParameterType(qdpt);
-//        
-//        qd.getQueryDefinitionParameters().add(qdp);
-//        
-//        QueryDefinitionRun qdr = new QueryDefinitionRun();
-//        
-//        QueryDefinitionRunParameter qdrp = new QueryDefinitionRunParameter();
-//        qdrp.setQueryDefinitionParameter(qdp);
-//        
-//        qdr.getQueryDefinitionRunParameters().add(qdrp);
-//        
-//        qdr.setName(formName.value());
-//        qdr.setQueryDefinition(qd);
-//        
-//        
-//        super.setQueryDefinitionRun(qdr);
-//        
-//        super.init();
-//        
-//        super.fillData();
-//        
-//        super.addControlButtons();
-        
         init();
     }
     
@@ -138,7 +111,6 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         addLineToTable(resultTable_,new WWidget[]{linkL_,link_});
         
         run_.clicked.addListener(this);
-        
     }
     
     public void notify(WMouseEvent a) 
@@ -167,7 +139,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         
         run_.enable();
     }
-    
+
+    @SuppressWarnings("unchecked")
     protected boolean process(File csvFile){
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -439,19 +412,27 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected double parseValue(String value){
-        String number = value.replace("<", "");
-        number = number.replace("=", "");
-        return Double.parseDouble(number.replace(">", ""));
+        return Double.parseDouble(value.replace("<", "").replace("=", "").replace(">", ""));
+    }
+
+    protected String getFormattedDecimal(String value){
+        return getFormattedDecimal(value, 2);
     }
     
-    protected String getFormattedDecimal(String value){
-        return value.replace('.', ',');
+    protected String getFormattedDecimal(String value, int maxFractionDigits){
+        double d =  parseValue(value);
+        return getFormattedDecimal(d,maxFractionDigits);
     }
     
     protected String getFormattedDecimal(double value){
+        return getFormattedDecimal(value,2);
+    }
+    
+    protected String getFormattedDecimal(double value, int maxFractionDigits){
         DecimalFormat df = new DecimalFormat("##########.00");
-        String s = df.format(value);
-        return getFormattedDecimal(s);
+        df.setMaximumFractionDigits(maxFractionDigits);
+        String s = df.format(value).replace(".", ",");
+        return s;
     }
     
     protected Table readTable(File csvFile) {
@@ -524,28 +505,149 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
             return nominal;
     }
 
-    protected TestResult getFirstTestResult(Patient p, TestType tt){
+    protected TestResult getFirstTestResult(Patient p, TestType[] tt){
         TestResult tr = null;
         
         Date d = new Date();
         
         for(TestResult t : p.getTestResults()){
-            if(t.getTest().getTestType().getDescription().equals(tt.getDescription())){
-                if(t.getTestDate().before(d)){
-                    d = t.getTestDate();
-                    tr = t;
-                }
-                
+        	for(int i=0;i<tt.length;++i){
+        		if(t.getTest().getTestType().getDescription().equals(tt[i].getDescription())){
+        			if(t.getTestDate().before(d)){
+        				d = t.getTestDate();
+        				tr = t;
+        			}
+        			break;
+        		}
             }
         }
         
         return tr;
     }
     
+
+    protected String getFormattedViralLoadResult(TestResult tr){
+    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getViralLoadTestType().getDescription()))
+    		return getFormattedViralLoadLog10(tr.getValue());
+    	else
+    		return getFormattedDecimal(tr.getValue(),2);
+    }
+    
     protected String getFormattedViralLoadLog10(String value){
-        String s = value.replace(">", "").replace("<", "").replace("=", "");
+        double d = java.lang.Math.log10(parseValue(value));
+        return getFormattedDecimal(d,2);
+    }
+    
+    protected Table getArlEpidemiologyTable(List<Patient> patients){
+    	Map<String, Integer> position = new HashMap<String, Integer>();
+        List<Integer> length = new ArrayList<Integer>();
+        int i=0;
+        length.add(13); position.put("PatCode", i++);
+        length.add(10); position.put("REF_LABO", i++);
+        length.add(8);  position.put("TestResult.testDate", i++);
+        length.add(8);  position.put("Patient.birthDate", i++);
+        length.add(1);  position.put("Gender", i++);
+        length.add(1);  position.put("HivType.TestResult.value", i++);
+        length.add(0);  position.put("VL.TestResult.value", i++);
+        length.add(3);  position.put("NATION", i++);
+        length.add(3);  position.put("COUNTRY", i++);
+        length.add(2);  position.put("RESID_B", i++);
+        length.add(3);  position.put("ORIGIN", i++);
+        length.add(4);  position.put("ARRIVAL_B", i++);
+        length.add(1);  position.put("SEXCONTACT", i++);
+        length.add(4);  position.put("SEXPARTNER", i++);
+        length.add(3);  position.put("NATPARTNER", i++);
+        length.add(1);  position.put("BLOODBORNE", i++);
+        length.add(4);  position.put("YEARTRANSF", i++);
+        length.add(3);  position.put("TRANCOUNTR", i++);
+        length.add(1);  position.put("CHILD", i++);
+        length.add(1);  position.put("PROFRISK", i++);
+        length.add(4);  position.put("PROBYEAR", i++);
+        length.add(3);  position.put("PROBCOUNTR", i++);
+        length.add(4);  position.put("CD4.TestResult.value", i++);
+        length.add(1);  position.put("STAD_CLIN", i++);
+        length.add(1);  position.put("REASONTEST", i++);
+        length.add(8);  position.put("FORM_OUT", i++);
+        length.add(8);  position.put("FORM_IN", i++);
+        length.add(3);  position.put("LABO", i);
         
-        double d = java.lang.Math.log10(Double.parseDouble(s));
-        return getFormattedDecimal(d);
+        Table res = new Table();
+        String [] row;
+        
+        for(Patient p : patients){
+            
+            TestResult tr;
+            
+            tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
+            if(tr != null){
+                row = new String[position.size()];
+
+                TestNominalValue tnv = tr.getTestNominalValue();
+                if(tnv == null){
+                	continue;
+                }
+                else if(tnv.getValue().equals("HIV 1")){
+            		row[position.get("HivType.TestResult.value")] = "1";
+            	}
+            	else if(tnv.getValue().equals("HIV 2")){
+            		row[position.get("HivType.TestResult.value")] = "2";
+            	}
+            	else{
+            		continue;
+            	}
+            	
+	            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
+	            
+	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getViralLoadTestType(),StandardObjects.getViralLoadLog10TestType()});
+	            if(tr != null){
+	            	row[position.get("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
+	                row[position.get("TestResult.testDate")] = getFormattedDate(tr.getTestDate());
+	            }
+	            
+	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
+	            if(tr != null){
+	            	row[position.get("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0);
+	            }
+	            else
+	            	row[position.get("CD4.TestResult.value")] = "U";
+	            
+	
+	            
+	            for(PatientAttributeValue pav : p.getPatientAttributeValues()){
+	                Integer pos = position.get(pav.getAttribute().getName());
+	                if(pos != null){
+	                    String s = null;
+	
+	                    s = getFormattedString(pav);
+	                    if(row[pos] != null)
+	                        s = row[pos] + s;
+	 
+	                    row[pos] = s;
+	                }
+	                
+	            }
+	            
+	            //fill empty fields with question marks
+	            for(int j=0; j<row.length; ++j){
+	                if(row[j] == null){
+	                    row[j] = getPadding(length.get(j));
+	                }
+	            }
+	
+	            ArrayList<String> lRow = new ArrayList<String>(Arrays.asList(row));
+	            lRow.add("");
+	            res.addRow(lRow);
+	        }
+        }
+        
+        return res;
+    }
+    
+    protected PatientAttributeValue getPatientAttributeValue(Patient p, String name){
+    	for(PatientAttributeValue pav : p.getPatientAttributeValues()){
+    		if(pav.getAttribute().getName().equals(name))
+    			return pav;
+    	}
+    	return null;
     }
 }

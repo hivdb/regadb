@@ -5,13 +5,12 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.hibernate.Query;
-
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.util.date.DateUtils;
+
+import org.hibernate.Query;
 
 public class WivArcLastContactForm extends WivIntervalQueryForm {
     
@@ -23,7 +22,7 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
                 "and pav2.value >= :var_start_date " +
                 "and pav2.value <= :var_end_date ");
         
-        setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1)); //?
+        setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }
 
     @Override
@@ -51,8 +50,8 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         for(int i=1; i<in.numRows(); ++i){
             row = new ArrayList<String>();
             
-            row.add(in.valueAt(CPatCode, i));   //patcode
-            row.add(getFormattedDate(getDate(in.valueAt(CLastContact, i))));  //last contact date
+            row.add(in.valueAt(CPatCode, i));
+            row.add(getFormattedDate(getDate(in.valueAt(CLastContact, i))));
             row.add(TypeOfInformationCode.LAST_CONTACT_DATE.getCode()+"");
             row.add("");
 

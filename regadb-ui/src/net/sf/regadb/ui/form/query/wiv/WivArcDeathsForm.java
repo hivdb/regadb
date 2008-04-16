@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.util.date.DateUtils;
@@ -40,10 +39,10 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
             
             row.add(getCentreName());
             row.add(OriginCode.ARC.getCode()+"");
-            row.add(in.valueAt(CPatCode, i));   //patcode
-            row.add(getFormattedDate(getDate(in.valueAt(CDeathDate, i))));  //death date
+            row.add(in.valueAt(CPatCode, i));
+            row.add(getFormattedDate(getDate(in.valueAt(CDeathDate, i))));
             row.add(TypeOfInformationCode.DEATH.getCode()+"");
-            row.add(CauseOfDeathCode.UNKNOWN.getCode()+"");   //cause of death n/a=9
+            row.add(CauseOfDeathCode.UNKNOWN.getCode()+"");
             row.add("");
 
             out.addRow(row);
