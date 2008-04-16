@@ -185,7 +185,7 @@ public class ImportIrsicaixa {
                 v.setAttributeNominalValue(gnv);
             }
             
-            if(Utils.checkColumnValue(country, i, patientId))
+            if(Utils.checkColumnValueForExistance("country of origin", country, i, patientId))
         	{
                 Utils.handlePatientAttributeValue(countryOfOriginA, country, p);
         	}
@@ -201,7 +201,7 @@ public class ImportIrsicaixa {
                 }
             }
 
-            if(Utils.checkColumnValue(routeOfTransmission, i, patientId))
+            if(Utils.checkColumnValueForEmptiness("risk group", routeOfTransmission, i, patientId))
         	{
                 Utils.handlePatientAttributeValue(transmissionGroupA, routeOfTransmission, p);
         	}
@@ -228,7 +228,7 @@ public class ImportIrsicaixa {
                 if(startDate != null){
                     String name = eventTable_.valueAt(CName, i);
                     
-                    if(Utils.checkColumnValue(name, i, patientId))
+                    if(Utils.checkColumnValueForExistance("ade", name, i, patientId))
                     {
                         Utils.handlePatientEventValue(aidsDefiningIllnessA, name, startDate, endDate, p);
                     }
