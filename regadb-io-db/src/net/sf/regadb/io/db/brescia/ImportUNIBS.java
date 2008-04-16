@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
@@ -16,7 +14,6 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
@@ -27,7 +24,6 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -238,7 +234,7 @@ public class ImportUNIBS
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
+            	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(originA, nationality, p);
             	}
