@@ -86,17 +86,17 @@ public class ParsePatients extends Parser{
                     logWarn("Invalid birth date",patientsFile,i,birthDate);
                 
 
-                if(Utils.checkColumnValue(sexNo, i, id))
+                if(Utils.checkColumnValueForEmptiness("gender", sexNo, i, id))
                 {
                     Utils.handlePatientAttributeValue(genderNominal, sexNo, p);
                 }
                 
-                if(Utils.checkColumnValue(birthPlace, i, id))
+                if(Utils.checkColumnValueForEmptiness("birthplace", birthPlace, i, id))
                 {
                     Utils.handlePatientAttributeValue(countryNominal, birthPlace, p);
                 }
                 
-                if(Utils.checkColumnValue(riskGrNo, i, id))
+                if(Utils.checkColumnValueForEmptiness("risk group", riskGrNo, i, id))
                 {
                     Utils.handlePatientAttributeValue(transmissionGroupNominal, riskGrNo, p);
                 }
