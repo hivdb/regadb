@@ -6,12 +6,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugCommercial;
@@ -24,6 +28,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.frequency.Frequency;
 
 import org.jdom.Element;
 
@@ -103,40 +108,96 @@ public class ParseMedication {
     private static List<Therapy> createTherapies(Patient p, List<Medication> meds) {
         List<Therapy> therapies = new ArrayList<Therapy>();
         
-        for(Medication m : meds) {
-            Therapy t = getTherapy(m, therapies);
-            if(t==null) {
-                t = p.createTherapy(m.start);
-                t.setStopDate(m.stop);
-                therapies.add(t);
-            }
-            if(m.dc!=null) {
-                boolean duplicate = false;
-                for(TherapyCommercial tc : t.getTherapyCommercials()) {
-                    if(tc.getId().getDrugCommercial().getName().equals(m.dc.getName())) {
-                        duplicate = true;
-                    }
-                }
-                if(!duplicate) {
-                    TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, m.dc),false,false);
-                    t.getTherapyCommercials().add(tc);
-                }
-            } else if(m.dg!=null) {
-                boolean duplicate = false;
-                for(TherapyGeneric tg : t.getTherapyGenerics()) {
-                    if(tg.getId().getDrugGeneric().getGenericId().equals(m.dg.getGenericId())) {
-                        duplicate = true;
-                    }
-                }
-                if(!duplicate) {
-                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, m.dg),false,false);
-                t.getTherapyGenerics().add(tg);
-                }
-            }
+        SortedSet<Date> timeline = new TreeSet<Date>();
+        
+        for(Medication m : meds){
+        	if(m.start != null && !timeline.contains(m.start))
+        		timeline.add(m.start);
+        	if(m.stop != null && !timeline.contains(m.stop))
+        		timeline.add(m.stop);
+        }
+
+        Therapy t=null;
+        for(Date d : timeline){
+        	if(t == null){
+        		t = p.createTherapy(d);
+        		therapies.add(t);
+        	}
+        	else{
+        		t.setStopDate(d);
+        		t= null;
+        	}
+        }
+
+        Iterator<Therapy> it = therapies.iterator();
+        while(it.hasNext()){
+        	t = it.next();
+        	Date a = t.getStartDate();
+        	Date b = t.getStopDate();
+        	
+        	for(Medication m : meds){
+        		if(m.start.equals(a) || intervalsOverlap(a,b,m.start,m.stop)){
+        			addDrugsToTherapy(t,m.dc,m.dg);
+        		}
+        	}
+        	
+        	if(t.getTherapyCommercials().size() == 0 && t.getTherapyGenerics().size() == 0){
+        		p.getTherapies().remove(t);
+        		it.remove();
+        	}
         }
         
         return therapies;
     }
+    
+    private static boolean intervalsOverlap(Date a1, Date b1, Date a2, Date b2){
+    	if(b2 != null && a1.after(b2))
+    		return false;
+    	
+    	if(b1 != null && a2.after(b1))
+    		return false;
+    	
+    	return true;
+    }
+    
+	private static void addDrugsToTherapy(Therapy t, DrugCommercial dc, DrugGeneric dg){
+		long stdFreq = (long)Frequency.getDefaultFrequency();
+		double stdDos = 1;
+		
+		if(dc != null){
+			if(!therapyContains(t, dc)){
+				TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t,dc),stdDos,false,false,stdFreq);
+				t.getTherapyCommercials().add(tc);
+			}
+			else
+				ConsoleLogger.getInstance().logError("Duplicate commercial drug for therapy: "+ dc.getName());
+				
+		}
+		if(dg != null){
+			if(!therapyContains(t, dg)){
+				TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t,dg),stdDos,false,false,stdFreq);
+				t.getTherapyGenerics().add(tg);
+			}
+			else
+				ConsoleLogger.getInstance().logError("Duplicate generic drug for therapy: "+ dg.getGenericName());
+		}
+	}
+	
+	private static boolean therapyContains(Therapy t, DrugCommercial dc){
+		for(TherapyCommercial tc : t.getTherapyCommercials()){
+			if(tc.getId().getDrugCommercial().getName().equals(dc.getName()))
+				return true;
+		}
+		return false;
+	}
+	
+	private static boolean therapyContains(Therapy t, DrugGeneric dg){
+		for(TherapyGeneric tg : t.getTherapyGenerics()){
+			if(tg.getId().getDrugGeneric().getGenericName().equals(dg.getGenericName()))
+				return true;
+		}
+		return false;
+	}
     
     private static void printTherapies(List<Therapy> therapies) {
         List<String> lines = new ArrayList<String>();
