@@ -107,11 +107,11 @@ public class ParsePatient {
                     //p.setFirstName(SFirstName);
                     //p.setLastName(SLastName);
                     
-                    if(Utils.checkColumnValue(SGeographicOrigin, i, SPatientId))
+                    if(Utils.checkColumnValueForExistance("geographic origin", SGeographicOrigin, i, SPatientId))
                     {
                         Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
                     }
-                    if(Utils.checkColumnValue(STransmissionGroup, i, SPatientId))
+                    if(Utils.checkColumnValueForEmptiness("risk group", STransmissionGroup, i, SPatientId))
                     {
                         Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
                     }
@@ -122,7 +122,7 @@ public class ParsePatient {
 //                            Utils.handlePatientAttributeValue(countryOfOriginA, SCountryOfOrigin, p);
 //                        }
 //                    }
-                    if(Utils.checkColumnValue(SGender, i, SPatientId))
+                    if(Utils.checkColumnValueForEmptiness("gender", SGender, i, SPatientId))
                     {
                         if(Utils.getAttributeValue("Gender", p) == null)
                             Utils.handlePatientAttributeValue(genderA, SGender, p);
