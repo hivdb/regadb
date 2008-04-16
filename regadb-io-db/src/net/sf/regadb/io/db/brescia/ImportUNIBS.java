@@ -49,7 +49,6 @@ public class ImportUNIBS
 	private Table hivTherapyTable;
 	private Table sequencesTable;
 	
-	
 	//Translation mapping tables
 	private Table countryMappingTable;
 	private Table transmissionGroupmappingTable;
@@ -219,7 +218,7 @@ public class ImportUNIBS
             	Patient p = new Patient();
             	p.setPatientId(patientId);
             	
-            	if(Utils.checkColumnValue(sex, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("gender", sex, i, patientId))
             	{
             		AttributeNominalValue vv = gender.nominalValueMap.get(sex.toUpperCase().trim());
                     
@@ -234,29 +233,29 @@ public class ImportUNIBS
                     }
             	}
             	
-            	if(Utils.checkColumnValue(birthDate, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("date of Birth", birthDate, i, patientId))
             	{
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValue(nationality, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(originA, nationality, p);
             	}
             	
-            	if(Utils.checkColumnValue(firstTest, i, patientId))
+            	if(Utils.checkColumnValueForExistance("date of first positive HIV test", firstTest, i, patientId))
             	{
             		TestResult t = p.createTestResult(StandardObjects.getGenericHivSeroStatusTest());
                     t.setTestNominalValue(posSeroStatus);
                     t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
             	}
             	
-            	if(Utils.checkColumnValue(riskGroup, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("risk group", riskGroup, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(transmissionGroupA, riskGroup, p);
             	}
             	
-            	if(Utils.checkColumnValue(lastTest, i, patientId))
+            	if(Utils.checkColumnValueForExistance("date of last negative HIV test", lastTest, i, patientId))
             	{
             	    //TODO
             	    TestResult t = p.createTestResult(hivTest);
@@ -264,12 +263,12 @@ public class ImportUNIBS
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
-            	if(Utils.checkColumnValue(status, i, patientId))
+            	if(Utils.checkColumnValueForExistance("status", status, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(statusA, status, p);
             	}
             	
-            	if(Utils.checkColumnValue(seroConverter, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("sero converter", seroConverter, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(seroA, seroConverter, p);
             	}
@@ -296,12 +295,12 @@ public class ImportUNIBS
     		}
     		else
     		{
-    			if(Utils.checkColumnValue(deathDate, i, deathPatientID))
+    			if(Utils.checkColumnValueForExistance("date of death", deathDate, i, deathPatientID))
             	{
             		p.setDeathDate(Utils.parseEnglishAccessDate(deathDate));
             	}
     			
-    			if(Utils.checkColumnValue(deathReason, i, deathPatientID))
+    			if(Utils.checkColumnValueForExistance("death reason", deathReason, i, deathPatientID))
             	{
             		Utils.handlePatientAttributeValue(deathReasonA, deathReason, p);
             	}
@@ -345,13 +344,13 @@ public class ImportUNIBS
     		    //TODO properly check CD4
 	    		//CD4
     		    //sometimes only count or perc
-	    		if (Utils.checkColumnValue(cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (µL)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(cd4Count);
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
-	    		if (Utils.checkColumnValue(cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd4PercTest);
 	                t.setValue(cd4Percentage);
@@ -381,7 +380,7 @@ public class ImportUNIBS
     		}
     		else
     		{
-	    		if(Utils.checkColumnValue(VLHIV, i, rnaPatientID) && Utils.checkColumnValue(rnaAnalysisDate, i, rnaPatientID))
+	    		if(Utils.checkColumnValueForEmptiness("HIV RNA test result", VLHIV, i, rnaPatientID) && Utils.checkColumnValueForEmptiness("date ofHIV RNA test result", rnaAnalysisDate, i, rnaPatientID))
 	   		 	{
 		    		 TestResult testResult = null;
 		    		 
@@ -443,9 +442,9 @@ public class ImportUNIBS
     			//No end dates in table available
     			Date endDate = null;
     			
-    			if(Utils.checkColumnValue(startDate, i, patientId))
+    			if(Utils.checkColumnValueForEmptiness("date of ade", startDate, i, patientId))
     			{
-    				if(Utils.checkColumnValue(ade, i, patientId))
+    				if(Utils.checkColumnValueForExistance("ade", ade, i, patientId))
     				{
     					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseEnglishAccessDate(startDate), endDate, p);
     				}
@@ -490,9 +489,9 @@ public class ImportUNIBS
     		}
     		else
     		{
-    			if(Utils.checkColumnValue(method, i, patientId) && Utils.checkColumnValue(date, i, patientId))
+    			if(Utils.checkColumnValueForEmptiness("marker test method", method, i, patientId) && Utils.checkColumnValueForEmptiness("date of marker test", date, i, patientId))
     			{
-    				if(Utils.checkColumnValue(result, i, patientId))
+    				if(Utils.checkColumnValueForExistance("marker test result", result, i, patientId))
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
@@ -536,14 +535,14 @@ public class ImportUNIBS
     		}
     		else
     		{
-    			if(Utils.checkColumnValue(method, i, patientId) && Utils.checkColumnValue(date, i, patientId))
+    			if(Utils.checkColumnValueForEmptiness("marker test method", method, i, patientId) && Utils.checkColumnValueForEmptiness("date of marker test", date, i, patientId))
     			{
-    				if(Utils.checkColumnValue(result, i, patientId))
+    				if(Utils.checkColumnValueForExistance("marker test result", result, i, patientId))
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
 		    			
-		    			if(Utils.checkColumnValue(value, i, patientId))
+		    			if(Utils.checkColumnValueForExistance("marker test result value", value, i, patientId))
 		    				tr.setValue(result+"("+value+")");
 		    			else
 		    				tr.setValue(result);
@@ -594,7 +593,7 @@ public class ImportUNIBS
         		Date startDate = null;
         		Date stopDate = null;
         		
-        		if(Utils.checkColumnValue(startTherapy, i, patientID))
+        		if(Utils.checkColumnValueForEmptiness("start date of therapy", startTherapy, i, patientID))
         		{
         			startDate = Utils.parseEnglishAccessDate(startTherapy);
         		}
@@ -603,7 +602,7 @@ public class ImportUNIBS
                 {
                     String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
                     
-            		if(Utils.checkColumnValue(drugValue, i, patientID) && Utils.checkDrugValue(drugValue, i, patientID))
+            		if(Utils.checkColumnValueForEmptiness("unknown drug value", drugValue, i, patientID) && Utils.checkDrugValue(drugValue, i, patientID))
             		{
             			drugs.add(entry.getValue());
             		} 
@@ -611,12 +610,12 @@ public class ImportUNIBS
         		
         		ArrayList<DrugGeneric> comDrugs = evaluateDrugs(gDrugString.toLowerCase(), drugs);
         		
-        		if(Utils.checkColumnValue(stopTherapy, i, patientID))
+        		if(Utils.checkColumnValueForExistance("stop date of therapy", stopTherapy, i, patientID))
         		{
         			stopDate = Utils.parseEnglishAccessDate(stopTherapy);
         		}
         		
-        		if(Utils.checkColumnValue(stopReasonTherapy, i, patientID))
+        		if(Utils.checkColumnValueForExistance("motivation of stopping therapy", stopReasonTherapy, i, patientID))
         		{
         			if(!stopTherapyTranslation.containsKey(stopReasonTherapy))
         			{
