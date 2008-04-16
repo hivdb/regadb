@@ -2,11 +2,11 @@ package net.sf.regadb.io.db.util.msaccess;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Properties;
 
 import net.sf.regadb.io.db.util.export.CsvExporter;
@@ -98,6 +98,34 @@ public class AccessToCsv {
 		}
 	}
 	
+	public void createCsv(File in, File out, HashMap<String,String> tableSelections)
+	{
+		String pfx = getCsvPrefix(in);
+		
+		try{
+			Connection con = getConnection(in);
+			sqlQueryExporter_.setConnection(con);
+			
+			ResultSet rs;
+			DatabaseMetaData md;
+			String table;
+			
+			md = con.getMetaData();
+		    rs = md.getTables(null, null, "%", new String [] {"TABLE"});
+		    while (rs.next()) {
+		    	table = rs.getString(3);
+		    	
+		    	if(tableSelections.containsKey(table))
+		    	{
+		    		exportTable(new File(out.getAbsolutePath() + File.separator + table +".csv"),con, table, (String)tableSelections.get(table));
+		    	}
+		    }
+		}
+		catch(Exception e){
+			System.out.println("Error: "+ e);
+		}
+	}
+	
 	public String getCsvPrefix(File f){
 		String s = f.getName();
 		int i = s.lastIndexOf('.');
@@ -114,6 +142,19 @@ public class AccessToCsv {
 		try{
 			FileOutputStream os = new FileOutputStream(out);
 			sqlQueryExporter_.exportQuery("SELECT * FROM `"+table+"`",os);
+			os.close();		    	
+		}
+		catch(Exception e){
+			System.out.println("Error exporting("+table+"):"+ e);
+		}
+	}
+	
+	protected void exportTable(File out, Connection con, String table, String query){
+		System.out.println("Exporting "+ table +" with query \n"+query);
+		
+		try{
+			FileOutputStream os = new FileOutputStream(out);
+			sqlQueryExporter_.exportQuery(query ,os);
 			os.close();		    	
 		}
 		catch(Exception e){
