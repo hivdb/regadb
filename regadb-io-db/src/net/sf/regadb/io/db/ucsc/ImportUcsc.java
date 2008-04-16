@@ -233,12 +233,12 @@ public class ImportUcsc
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("birthplace", birthPlace, i, patientId))
+            	if(Utils.checkColumnValueForExistance("birthplace", birthPlace, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(birthplaceA, birthPlace, p);
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
+            	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(countryOfOriginA, nationality, p);
             	}
@@ -499,7 +499,7 @@ public class ImportUcsc
 
     	if("".equals(hivCommercialDrug))
     	{
-    		ConsoleLogger.getInstance().logWarning("No commercial durg found for patient "+patientID+" at row "+row+".");
+    		ConsoleLogger.getInstance().logWarning("No commercial drug found for patient "+patientID+" at row "+row+".");
     		return null;
     	}
     	String[] split = null;
