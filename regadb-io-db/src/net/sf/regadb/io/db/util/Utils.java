@@ -152,12 +152,12 @@ public class Utils {
     
      public static boolean checkColumnValueForExistance(String columnName, String value, int row, String patientID)
      {
-    	 if(value == null)
+    	 if(value != null)
     		 return true;
     	 else
     	 {
     		 if(ConsoleLogger.getInstance().isUninitializedValueEnabled())
-    			 ConsoleLogger.getInstance().logWarning("Uninitialized value found at column "+columnName+" in row "+row+" for patient "+patientID+".");
+    			 ConsoleLogger.getInstance().logWarning("Uninitialized value ("+value+") found at column "+columnName+" in row "+row+" for patient "+patientID+".");
     		 
     		 return false;
     	 }
@@ -169,7 +169,7 @@ public class Utils {
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning("No valid value for column "+columnName+" found in row "+row+" for patient "+patientID+"");
+    		 ConsoleLogger.getInstance().logWarning("No valid value ("+value+") for column "+columnName+" found in row "+row+" for patient "+patientID+"");
     		 
     		 return false;
     	 }
@@ -195,11 +195,14 @@ public class Utils {
     		 return true;
     	 else if(value.equals("1,5"))
     		 return true;
+    	 //For Rome only: A bug in their system according to Iuri's 
+    	 else if(value.equals("-1"))
+    		 return true;
     	 else if(value.equals("0"))
     		 return false;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid drug value found at row "+row+".");
+    		 ConsoleLogger.getInstance().logWarning("No valid drug value ("+value+") found at row "+row+" for patient "+patientID+".");
     		 
     		 return false;
     	 }
