@@ -686,7 +686,8 @@ public class Utils {
          }
          else 
          {
-             ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
+        	 if(!"".equals(value))
+        		 ConsoleLogger.getInstance().logWarning("Unsupported attribute value (" + na.attribute.getName() + "): "+value);
          }
      }
      

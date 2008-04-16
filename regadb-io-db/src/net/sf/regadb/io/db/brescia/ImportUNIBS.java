@@ -234,7 +234,7 @@ public class ImportUNIBS
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
+            	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(originA, nationality, p);
             	}

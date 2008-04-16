@@ -233,12 +233,12 @@ public class ImportUcsc
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("birthplace", birthPlace, i, patientId))
+            	if(Utils.checkColumnValueForExistance("birthplace", birthPlace, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(birthplaceA, birthPlace, p);
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
+            	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(countryOfOriginA, nationality, p);
             	}
@@ -299,7 +299,8 @@ public class ImportUcsc
                     } 
                     else 
                     {
-                    	ConsoleLogger.getInstance().logWarning("Unsupported attribute value (CDC): "+cdc);
+                    	if(!"".equals(cdc))
+                    		ConsoleLogger.getInstance().logWarning("Unsupported attribute value (CDC): "+cdc);
                     }
             	}
             	
@@ -479,7 +480,7 @@ public class ImportUcsc
         			{
         				hivStopReasonTherapy = null;
         			
-        				ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
+        				//ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
         			}
         			else
         				hivStopReasonTherapy = stopTherapyTranslation.get(hivStopReasonTherapy);
@@ -591,7 +592,7 @@ public class ImportUcsc
     	{
 	    	if(startDate.equals(endDate) || startDate.after(endDate))
 	    	{
-	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': " + startDate.toLocaleString() + " - " + endDate.toLocaleString() + ": End date is in the past...ignoring");
+	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": End date is in the past!");
 	    			
 	    		return;
 	    	}
