@@ -20,6 +20,7 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -100,9 +101,12 @@ public class ParseConfirmation {
                 if(id != null) {
                     p = patients_.get(id);
                 } else {
-                    if(!canIgnorePatCode(code_pat) && !canIgnorePatCode("19" + code_pat))
+                    if(canIgnorePatCode(code_pat) || canIgnorePatCode("19" + code_pat)) {
+                        
+                    } else {
                         ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode (confirmation): " + code_pat);
-                }
+                    }
+               }
             }
             if(p!=null) {
             String ref_labo = getValue(i, "REF_LABO", sheet, colMapping);
@@ -123,9 +127,6 @@ public class ParseConfirmation {
                     ConsoleLogger.getInstance().logError("Cannot parse birthDate for Patient with id: "+p.getPatientId() + "(" +birth_date+ ")");
                 }
                 if(birthDate!=null) {
-                    if(p.getPatientId()!=null && p.getPatientId().equals("490")) {
-                        System.err.println("lala");
-                    }
                     if(p.getBirthDate()==null) {
                         p.setBirthDate(birthDate);
                     } else {
@@ -147,9 +148,22 @@ public class ParseConfirmation {
                     }
                 }
             }
+            
             String hivtype = getValue(i, "HIVTYPE", sheet, colMapping);
-                //TODO
-                //setTest(StandardObjects.getGenericViralLoadTest(), , testDate, p);
+            if(hivtype!=null && !hivtype.equals("")) {
+                TestNominalValue nominalValue = null;
+                if(hivtype.equals("1")) {
+                    nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 1");
+                } else if (hivtype.equals("2")) {
+                    nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 2");
+                } else {
+                    System.err.println("Cannot parse HIVTYPE: "+hivtype);
+                }
+                
+                if(nominalValue!=null) {
+                    setTest(WivObjects.getGenericwivConfirmation(), nominalValue, testDate, p);
+                }
+            }
             
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
                 setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
@@ -222,8 +236,6 @@ public class ParseConfirmation {
             
             //String labo = getValue(i, "LABO", sheet, colMapping);
             //String opmerking = getValue(i, "OPMERKING", sheet, colMapping);
-            } else {
-                ConsoleLogger.getInstance().logError("No patient for id - code_pat " + dossiernummer + " - " + code_pat);
             }
         }
     }
@@ -255,6 +267,21 @@ public class ParseConfirmation {
         }
         TestResult tr = p.createTestResult(test);
         tr.setValue(value);
+        tr.setTestDate(date);
+    }
+    
+    public void setTest(Test test, TestNominalValue tnv, Date date, Patient p) {
+        for(TestResult tr : p.getTestResults()) {
+            if(tr.getTest().getTestType().getDescription().equals(test.getTestType().getDescription())) {
+                return;
+            }
+        }
+        if(date==null) {
+            ConsoleLogger.getInstance().logError("No date for confirmation test " + p.getPatientId());
+            return;
+        }
+        TestResult tr = p.createTestResult(test);
+        tr.setTestNominalValue(tnv);
         tr.setTestDate(date);
     }
     
