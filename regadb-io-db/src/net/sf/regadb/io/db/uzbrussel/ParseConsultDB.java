@@ -13,15 +13,13 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalTestMapper;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.io.util.WivObjects;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -49,8 +47,6 @@ public class ParseConsultDB {
     
     private Map<Integer, String> codepat_;
     
-    private Test genericwivConfirmation_;
-    
     public ParseConsultDB(String baseDir, Map<Integer, Patient> patients, ParseIds parseIds, String mappingBasePath, Map<Integer, String> codepat) {
         baseDir_ = baseDir;
         patients_ = patients;
@@ -75,14 +71,6 @@ public class ParseConsultDB {
         therapyAdherenceT = new NominalTestMapper(mappingBasePath + File.separatorChar + "therapyAdherence.mapping", Items.getGenerichivTherapyAdherence());
     
         codepat_ = codepat;
-        
-        TestType wivConfirmation = new TestType(StandardObjects.getPatientObject(), "WIV HIV Confirmation");
-        wivConfirmation.setValueType(StandardObjects.getNominalValueType());
-        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 1"));
-        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 2"));
-        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV Undetermined"));
-        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "Not performed"));
-        genericwivConfirmation_ = new Test(wivConfirmation, "WIV HIV Confirmation (generic)");
     }
     
     public void exec() {
@@ -262,15 +250,15 @@ public class ParseConsultDB {
             tr.setValue(val);
             return tr;
         } else if(type.equals("BHIVC")) {
-            TestResult tr = p.createTestResult(genericwivConfirmation_);
+            TestResult tr = p.createTestResult(WivObjects.getGenericwivConfirmation());
             if(value.trim().startsWith("NH1+") || value.trim().startsWith("FH1+")) {
-                tr.setTestNominalValue(Utils.getNominalValue(genericwivConfirmation_.getTestType(), "HIV 1"));
+                tr.setTestNominalValue(Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 1"));
             } else if(value.trim().startsWith("NH2+") || value.trim().startsWith("FH2+")) {
-                tr.setTestNominalValue(Utils.getNominalValue(genericwivConfirmation_.getTestType(), "HIV 2"));
+                tr.setTestNominalValue(Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 2"));
             } else if(value.trim().equals("N+12P") || value.trim().equals("F+12P")) {
-                tr.setTestNominalValue(Utils.getNominalValue(genericwivConfirmation_.getTestType(), "HIV Undetermined"));
+                tr.setTestNominalValue(Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV Undetermined"));
             } else if(value.trim().equals("ZZ")) {
-                tr.setTestNominalValue(Utils.getNominalValue(genericwivConfirmation_.getTestType(), "Not performed"));
+                tr.setTestNominalValue(Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "Not performed"));
             } else {
                 ConsoleLogger.getInstance().logError("Cannot parse BHIVC value: " + value);
             }
