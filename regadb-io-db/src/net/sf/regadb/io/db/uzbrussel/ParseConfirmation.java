@@ -1,7 +1,6 @@
 package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -15,6 +14,7 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
@@ -35,6 +35,8 @@ public class ParseConfirmation {
     private ParseIds parseIds_;
     private Map<Integer, Patient> patients_;
     
+    private Table patcodesToIgnore;
+    
     private NominalAttribute genderNominal_ = new NominalAttribute("Gender", -1, new String[] { "M", "F" },
             new String[] { "male", "female" } );
     
@@ -46,6 +48,8 @@ public class ParseConfirmation {
         patients_ = patients;
         
         genderNominal_.attribute.setAttributeGroup(regadbAttributeGroup_);
+        
+        patcodesToIgnore = Utils.readTable(basePath_+ File.separatorChar + "emd" + File.separatorChar + "patcodesToIgnore.csv");
     }
     
     public void exec() {
@@ -64,6 +68,15 @@ public class ParseConfirmation {
           parseSheet(wb.getSheet(1), this.dateFormatter2);
        
         System.err.println("CONFIRMATION EPIDEM=================================");
+    }
+    
+    public boolean canIgnorePatCode(String patCode) {
+        for(int i = 0; i<patcodesToIgnore.numRows(); i++) {
+            if(patcodesToIgnore.valueAt(0, i).trim().equals(patCode.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void parseSheet(Sheet sheet, DateFormat df) {
@@ -87,8 +100,8 @@ public class ParseConfirmation {
                 if(id != null) {
                     p = patients_.get(id);
                 } else {
-                    //TODO check excell file!
-                    //ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode: " + code_pat);
+                    if(!canIgnorePatCode(code_pat) && !canIgnorePatCode("19" + code_pat))
+                        ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode (confirmation): " + code_pat);
                 }
             }
             if(p!=null) {
@@ -117,7 +130,7 @@ public class ParseConfirmation {
                         p.setBirthDate(birthDate);
                     } else {
                         if(!p.getBirthDate().equals(birthDate)) {
-                            ConsoleLogger.getInstance().logError("Confirmation birthDate and original birthDate are not the same for Patient with id: "+p.getPatientId());
+                            ConsoleLogger.getInstance().logError("Confirmation birthDate and original birthDate are not the same for Patient with id: "+p.getPatientId() + "(pat code =" + code_pat + ")");
                         }
                     }
                 }
@@ -135,6 +148,8 @@ public class ParseConfirmation {
                 }
             }
             String hivtype = getValue(i, "HIVTYPE", sheet, colMapping);
+                //TODO
+                //setTest(StandardObjects.getGenericViralLoadTest(), , testDate, p);
             
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
                 setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
@@ -152,7 +167,8 @@ public class ParseConfirmation {
         			handleWIVCountry("ORIGIN", origin, p);
             
             String arrival_b = getValue(i, "ARRIVAL_B", sheet, colMapping);
-                handleWIVNumericAttribute("ARRIVAL_B", arrival_b, p, 4);
+                if(arrival_b!=null)
+                    handleWIVNumericAttribute("ARRIVAL_B", arrival_b, p, 4);
             
             String sexcontact = getValue(i, "SEXCONTACT", sheet, colMapping);
                 handleWIVNominalAttribute("SEXCONTACT", sexcontact, p);
@@ -185,7 +201,7 @@ public class ParseConfirmation {
             	handleWIVCountry("PROBCOUNTR", probcountr, p);
             
             String lympho = getValue(i, "LYMPHO", sheet, colMapping);
-                if(!"".equals(lympho)) {
+                if(!"".equals(lympho) && !"U".equals(lympho.trim())) {
                     try{ 
                         setTest(StandardObjects.getGenericCD4Test(), Double.parseDouble(lympho)+"", testDate, p);
                     } catch (NumberFormatException nfe) {
@@ -207,8 +223,7 @@ public class ParseConfirmation {
             //String labo = getValue(i, "LABO", sheet, colMapping);
             //String opmerking = getValue(i, "OPMERKING", sheet, colMapping);
             } else {
-                //TODO check excel file, some headers changed, extra tab
-                //ConsoleLogger.getInstance().logError("No patient for id - code_pat " + dossiernummer + " - " + code_pat);
+                ConsoleLogger.getInstance().logError("No patient for id - code_pat " + dossiernummer + " - " + code_pat);
             }
         }
     }
