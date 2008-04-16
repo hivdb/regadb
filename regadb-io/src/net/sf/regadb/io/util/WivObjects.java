@@ -10,12 +10,17 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 
 public class WivObjects {
     private static Map<String,Attribute> attributes_ = new HashMap<String,Attribute>();
     private static Map<String,AttributeNominalValue> nominalValues_ = new HashMap<String,AttributeNominalValue>();
     private static AttributeGroup wivAttributeGroup_;
+    
+    private static Test genericwivConfirmation_;
     
     static{
         initWivAttributes();
@@ -59,7 +64,7 @@ public class WivObjects {
         createAttributeNominalValues(a, countryCodes);
         
         createAttribute("CHILD",nom,new String[]{"A: Yes","B: No"});
-        createAttribute("PROFRISK",nom,new String[]{"M: Medical","P: Sexual","O: Other"});
+        createAttribute("PROFRISK",nom,new String[]{"M: Medical","P: Sexual","O: Other", "N: No risk"});
         createAttribute("PROBYEAR",dat);
         
         a = createAttribute("PROBCOUNTR",nom);
@@ -71,6 +76,13 @@ public class WivObjects {
         createAttribute("FORM_IN",dat);
         //createAttribute(ag,"LABO",nom,new String[]{"HSP","ITG","KUL","RUG","UCL","ULB","VUB"});
         
+        TestType wivConfirmation = new TestType(StandardObjects.getPatientObject(), "WIV HIV Confirmation");
+        wivConfirmation.setValueType(StandardObjects.getNominalValueType());
+        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 1"));
+        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 2"));
+        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV Undetermined"));
+        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "Not performed"));
+        genericwivConfirmation_ = new Test(wivConfirmation, "WIV HIV Confirmation (generic)");
     }
 
     
@@ -442,5 +454,10 @@ public class WivObjects {
     
     private static String getFormattedCountryCode(String code, String country){
         return code +": "+ country;
+    }
+
+
+    public static Test getGenericwivConfirmation() {
+        return genericwivConfirmation_;
     }
 }
