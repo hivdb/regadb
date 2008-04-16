@@ -41,8 +41,6 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.Sequence;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -152,13 +150,38 @@ public class Utils {
         }
     }
     
-     public static boolean checkColumnValue(String value, int row, String patientID)
+     public static boolean checkColumnValueForExistance(String columnName, String value, int row, String patientID)
+     {
+    	 if(value == null)
+    		 return true;
+    	 else
+    	 {
+    		 if(ConsoleLogger.getInstance().isUninitializedValueEnabled())
+    			 ConsoleLogger.getInstance().logWarning("Uninitialized value found at column "+columnName+" in row "+row+" for patient "+patientID+".");
+    		 
+    		 return false;
+    	 }
+     }
+     
+     public static boolean checkColumnValueForEmptiness(String columnName, String value, int row, String patientID)
      {
     	 if(!"".equals(value))
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid string value found at row "+row+".");
+    		 ConsoleLogger.getInstance().logWarning("No valid value for column "+columnName+" found in row "+row+" for patient "+patientID+"");
+    		 
+    		 return false;
+    	 }
+     }
+     
+     public static boolean checkSequence(String value, int row, String patientID)
+     {
+    	 if(!"".equals(value))
+    		 return true;
+    	 else
+    	 {
+    		 ConsoleLogger.getInstance().logWarning("No sequence found for patient "+patientID+" at row "+row+".");
     		 
     		 return false;
     	 }
@@ -184,7 +207,7 @@ public class Utils {
      
      public static boolean checkCDValue(String value, int row, String patientID)
      {
-    	 if(!value.equals("0"))
+    	 if(!"".equals(value) && !value.equals("0"))
     		 return true;
     	 else
     	 {
