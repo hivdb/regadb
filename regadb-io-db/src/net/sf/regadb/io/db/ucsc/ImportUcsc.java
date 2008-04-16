@@ -140,7 +140,7 @@ public class ImportUcsc
     		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
     		handleSequences();
-    		ConsoleLogger.getInstance().logInfo("Processed "+patientMap.size()+" patient(s)");
+    		ConsoleLogger.getInstance().logInfo("Processed "+patientMap.size()+" patient(s).");
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
     		Utils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml");
@@ -213,7 +213,7 @@ public class ImportUcsc
             	Patient p = new Patient();
             	p.setPatientId(patientId);
             	
-            	if(Utils.checkColumnValue(sex, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("gender", sex, i, patientId))
             	{
                     AttributeNominalValue vv = gender.nominalValueMap.get(sex.toUpperCase().trim());
                     
@@ -228,63 +228,63 @@ public class ImportUcsc
                     }
             	}
             	
-            	if(Utils.checkColumnValue(birthDate, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("date of Birth", birthDate, i, patientId))
             	{
             		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
             	}
             	
-            	if(Utils.checkColumnValue(birthPlace, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("birthplace", birthPlace, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(birthplaceA, birthPlace, p);
             	}
             	
-            	if(Utils.checkColumnValue(nationality, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("nationality", nationality, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(countryOfOriginA, nationality, p);
             	}
             	
-            	if(Utils.checkColumnValue(riskGroup, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("risk group", riskGroup, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(transmissionGroupA, riskGroup, p);
             	}
             	
-            	if(Utils.checkColumnValue(seroConverter, i, patientId))
+            	if(Utils.checkColumnValueForEmptiness("sero converter", seroConverter, i, patientId))
             	{
                     Utils.handlePatientAttributeValue(scA, seroConverter, p);
             	}
             	
-            	if(Utils.checkColumnValue(firstTest, i, patientId))
+            	if(Utils.checkColumnValueForExistance("date of first positive HIV test", firstTest, i, patientId))
             	{
             		TestResult t = p.createTestResult(hivTest);
                     t.setValue("First positive HIV test");
                     t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
             	}
             	
-            	if(Utils.checkColumnValue(lastTest, i, patientId))
+            	if(Utils.checkColumnValueForExistance("date of last negative HIV test", lastTest, i, patientId))
             	{
             		TestResult t = p.createTestResult(hivTest);
                     t.setValue("Last negative HIV test");
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
-            	if(Utils.checkColumnValue(deathDate, i, patientId))
+            	if(Utils.checkColumnValueForExistance("date of death", deathDate, i, patientId))
             	{
             		p.setDeathDate(Utils.parseEnglishAccessDate(deathDate));
             	}
             	
-            	if(Utils.checkColumnValue(deathReason, i, patientId))
+            	if(Utils.checkColumnValueForExistance("death reason", deathReason, i, patientId))
             	{
             		//Ask if necessary, to be translated first (Wait for Mattia)
             	}
             	
-            	if(Utils.checkColumnValue(syndrome, i, patientId) && Utils.checkColumnValue(syndromeDate, i, patientId))
+            	if(Utils.checkColumnValueForExistance("acute syndrom", syndrome, i, patientId) && Utils.checkColumnValueForExistance("date of acute syndrom", syndromeDate, i, patientId))
             	{
             		TestResult t = p.createTestResult(acuteSyndromTest);
                     t.setValue(syndrome);
                     t.setTestDate(Utils.parseEnglishAccessDate(syndromeDate));
             	}
             	
-            	if(Utils.checkColumnValue(cdc, i, patientId))
+            	if(Utils.checkColumnValueForExistance("CDC value", cdc, i, patientId))
             	{
                     AttributeNominalValue vv = cdcA.nominalValueMap.get(cdc.toUpperCase().trim());
                     
@@ -303,7 +303,7 @@ public class ImportUcsc
             }
             else
             {
-           	 	ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set");
+           	 	ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set.");
             }
     	}
     }
@@ -343,7 +343,7 @@ public class ImportUcsc
     		//CD4
     		if(method.equals("CD4 (킠)"))
     		{
-	    		if (Utils.checkColumnValue(result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (킠)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(result.replace(',', '.'));
@@ -352,7 +352,7 @@ public class ImportUcsc
     		}
     		if(method.equals("CD4 (%)"))
     		{
-	    		if (Utils.checkColumnValue(result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd4PercTest);
 	                t.setValue(result.replace(',', '.'));
@@ -363,7 +363,7 @@ public class ImportUcsc
     		//CD8
     		if(method.equals("CD8 (킠)"))
     		{
-	    		if (Utils.checkColumnValue(result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (킠)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd8Test);
 	                t.setValue(result.replace(',', '.'));
@@ -372,7 +372,7 @@ public class ImportUcsc
     		}
     		if(method.equals("CD8 (%)"))
     		{
-	    		if (Utils.checkColumnValue(result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd8PercTest);
 	                t.setValue(result.replace(',', '.'));
@@ -382,7 +382,7 @@ public class ImportUcsc
     		 
     		if(method.equals("HIV-RNA"))
     		{
-	    		if(Utils.checkColumnValue(result, i, patientID) && Utils.checkColumnValue(analysisDate, i, patientID))
+	    		if(Utils.checkColumnValueForEmptiness("HIV RNA test result", result, i, patientID) && Utils.checkColumnValueForEmptiness("date ofHIV RNA test result", analysisDate, i, patientID))
 	    		{
 	    			 try
 	    			 {
@@ -446,7 +446,7 @@ public class ImportUcsc
         		Date startDate = null;
         		Date stopDate = null;
         		
-        		if(Utils.checkColumnValue(hivStartTherapy, i, hivPatientID))
+        		if(Utils.checkColumnValueForEmptiness("start date of therapy", hivStartTherapy, i, hivPatientID))
         		{
         			startDate = Utils.parseEnglishAccessDate(hivStartTherapy);
         		}
@@ -455,20 +455,21 @@ public class ImportUcsc
                 {
                     String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
                     
-            		if(Utils.checkColumnValue(drugValue, i, hivPatientID) && Utils.checkDrugValue(drugValue, i, hivPatientID))
+            		if(Utils.checkColumnValueForEmptiness("unknown drug value", drugValue, i, hivPatientID) && Utils.checkDrugValue(drugValue, i, hivPatientID))
             		{
             			drugs.add(entry.getValue());
             		} 
                 }
         		
-        		ArrayList<DrugCommercial> comDrugs = evaluateDrugs(hivCommercialDrug.toLowerCase(), drugs);
+        		ArrayList<DrugCommercial> comDrugs = evaluateDrugs(hivCommercialDrug.toLowerCase(), drugs, hivPatientID, i);
         		
-        		if(Utils.checkColumnValue(hivStopTherapy, i, hivPatientID))
+        		if(Utils.checkColumnValueForExistance("stop date of therapy", hivStopTherapy, i, hivPatientID))
         		{
         			stopDate = Utils.parseEnglishAccessDate(hivStopTherapy);
         		}
         		
-        		if(Utils.checkColumnValue(hivStopReasonTherapy, i, hivPatientID))
+        		//can be empty
+        		if(Utils.checkColumnValueForExistance("motivation of stopping therapy", hivStopReasonTherapy, i, hivPatientID))
         		{
         			if(!stopTherapyTranslation.containsKey(hivStopReasonTherapy))
         			{
@@ -492,13 +493,15 @@ public class ImportUcsc
     	}
     }
     
-    private ArrayList<DrugCommercial> evaluateDrugs(String hivCommercialDrug, ArrayList<String> drugs)
+    private ArrayList<DrugCommercial> evaluateDrugs(String hivCommercialDrug, ArrayList<String> drugs, String patientID, int row)
     {
     	ArrayList<DrugCommercial> comDrugs = new ArrayList<DrugCommercial>();
 
     	if("".equals(hivCommercialDrug))
+    	{
+    		ConsoleLogger.getInstance().logWarning("No commercial durg found for patient "+patientID+" at row "+row+".");
     		return null;
-    	
+    	}
     	String[] split = null;
     	
     	split = hivCommercialDrug.split("\\+");
@@ -537,7 +540,7 @@ public class ImportUcsc
 		    						{
 		    							if(!tempDrug.equals(currentDrug))
 		    							{
-		    								ConsoleLogger.getInstance().logInfo("Drug "+currentDrug+" found.");
+		    								//ConsoleLogger.getInstance().logInfo("Drug "+currentDrug+" found.");
 		    								comDrugs.add(drug);
 		    							}
 		    							
@@ -575,7 +578,7 @@ public class ImportUcsc
     	
     	if(medicinsList == null)
     	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "'");
+    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found.");
 			
     		return;
     	}
@@ -666,13 +669,13 @@ public class ImportUcsc
     	
     		 if(!"".equals(patientID))
              {
-    			 if(Utils.checkColumnValue(sequenceDate, i, patientID))
+    			 if(Utils.checkColumnValueForEmptiness("date of sequence analysis", sequenceDate, i, patientID))
     			 {
              		Date date = Utils.parseEnglishAccessDate(sequenceDate);
              		
              		if(date != null)
              		{
-             			if(Utils.checkColumnValue(sequence, i, patientID))
+             			if(Utils.checkSequence(sequence, i, patientID))
              			{
              				String clearedSequ = Utils.clearNucleotides(sequence);
              				
@@ -683,27 +686,23 @@ public class ImportUcsc
              					count++;
              				}
              			}
-             			else
-                        {
-                        	ConsoleLogger.getInstance().logWarning("No sequence found for patient "+patientID+"");
-                        }
              		}
              		else
                     {
-                    	ConsoleLogger.getInstance().logWarning("No sequence date found for patient "+patientID+"");
+                    	ConsoleLogger.getInstance().logWarning("No sequence date found for patient "+patientID+".");
                     }
              	}
     			else
                 {
-    				ConsoleLogger.getInstance().logWarning("No sequence date found for patient "+patientID+"");
+    				ConsoleLogger.getInstance().logWarning("No sequence date found for patient "+patientID+".");
                 }
              }
     		 else
              {
-            	 ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set");
+            	 ConsoleLogger.getInstance().logWarning("No patientID in row "+i+" present...Skipping data set.");
              }
     	}
     	
-    	ConsoleLogger.getInstance().logInfo("Processed "+count+" sequence(s)");
+    	ConsoleLogger.getInstance().logInfo("Processed "+count+" sequence(s).");
     }
 }
