@@ -43,6 +43,8 @@ public class StandardObjects {
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
     private static String clinicalFileNumberAttribute = "Clinical File Number";
+    
+    private static Test pregnancy;
 
     static {
         hivSeroStatusTestType = new TestType(patientObject, "HIV Sero Status");
@@ -50,16 +52,16 @@ public class StandardObjects {
         hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Positive"));
         hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Negative"));
         genericHivSeroStatusTest = new Test(hivSeroStatusTestType, "HIV Sero Status (generic)");
-    }
-    
-    public static Test createPregnancyTest() {
+        
         TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
         pregnancyType.setValueType(nominalValueType);
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
         
-        Test pregnancy = new Test(pregnancyType, "Pregnancy");
-        
+        pregnancy = new Test(pregnancyType, "Pregnancy");
+    }
+    
+    public static Test getPregnancyTest() {
         return pregnancy;
     }
     
