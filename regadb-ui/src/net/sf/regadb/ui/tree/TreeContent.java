@@ -27,6 +27,8 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
+import net.sf.regadb.ui.form.impex.ExportForm;
+import net.sf.regadb.ui.form.impex.ImportForm;
 import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
@@ -85,6 +87,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.ResRepTemplateSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestTypeSelectedItem;
+import net.sf.witty.wt.WResource;
 import net.sf.witty.wt.WWidget;
 
 public class TreeContent
@@ -192,7 +195,9 @@ public class TreeContent
     public ActionItem updateFromCentralServer;
     public ActionItem updateFromCentralServerUpdate;
     public ActionItem updateFromCentralServerUpdateView;
-
+    public ActionItem importPatientsViralIsolates;
+//    public ActionItem exportPatientsViralIsolates;
+    
     public ActionItem attributesSettings;
     public ActionItem attributes;
     public ActionItem attributesSelect;
@@ -1122,6 +1127,21 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(WWidget.tr("form.update_central_server"),InteractionState.Editing));
                 }
             });
+            
+            importPatientsViralIsolates = new ActionItem(rootItem.tr("menu.impex.import"), administratorMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ImportForm(WResource.tr("form.impex.import.title"), InteractionState.Viewing));
+                }
+            });
+//            exportPatientsViralIsolates = new ActionItem(rootItem.tr("menu.impex.export"), administratorMain, new ITreeAction()
+//            {
+//                public void performAction(TreeMenuNode node) 
+//                {
+//                    RegaDBMain.getApp().getFormContainer().setForm(new ExportForm(WResource.tr("form.impex.export.title"), InteractionState.Viewing));
+//                }
+//            });
             
             log = new ActionItem(rootItem.tr("menu.log"),administratorMain);
             logSelect = new ActionItem(rootItem.tr("menu.log.select"), log, new ITreeAction()

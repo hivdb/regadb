@@ -78,7 +78,13 @@
 	color : blue;
 	cursor: pointer;
 }
-
+*.spacyTable {
+	min-width: 600px;
+	width: 100%;
+}
+*.spacyTable td {
+	padding: .4em;
+}
 *.table-cell
 {
 	cursor: pointer;
@@ -239,4 +245,7 @@
 *.groupbox div
 {
 	padding-right: 300px
+}
+*.link {
+	color: blue;
 }

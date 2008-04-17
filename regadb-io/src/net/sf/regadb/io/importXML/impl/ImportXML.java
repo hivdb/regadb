@@ -7,6 +7,7 @@
 package net.sf.regadb.io.importXML.impl;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Date;
 
 import net.sf.regadb.db.Dataset;
@@ -33,6 +34,8 @@ public class ImportXML {
 
     public ImportFromXML instance;
 
+    private PrintStream out = System.err;
+    
     public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException,
             DisabledUserException {
         instance = new ImportFromXML();
@@ -80,11 +83,11 @@ public class ImportXML {
             try {
                 patient.setSourceDataset(dataset, t);
                 instance.sync(t, patient, SyncMode.Update, false);
-                System.err.println(instance.getLog());
+                out.println(instance.getLog());
                 instance.getLog().delete(0, instance.getLog().length());
             } catch (Exception e) {
-                System.err.println("sync error:");
-                System.err.println(instance.getLog());
+                out.println("sync error:");
+                out.println(instance.getLog());
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
@@ -111,8 +114,8 @@ public class ImportXML {
         instance.readPatients(s, importHandler);
         importHandler.t.commit();
 
-        System.err.println(instance.getLog());
-        System.err.println("Read: " + importHandler.patientsRead + " patients");
+        out.println(instance.getLog());
+        out.println("Read: " + importHandler.patientsRead + " patients");
     }
 
     private class ViralIsolateImportHandler implements ImportHandler<ViralIsolate>
@@ -130,16 +133,16 @@ public class ImportXML {
         public void importObject(ViralIsolate vi) {
 
             try {
-                System.err.println("Processing: '" + vi.getSampleId() + "'");
+                out.println("Processing: '" + vi.getSampleId() + "'");
                 ViralIsolate dbvi = t.getViralIsolate(dataset, vi.getSampleId());
                 if (dbvi == null)
                     throw new RuntimeException("Viral Isolate '" + vi.getSampleId() + "' not found in database!");
                 instance.syncPair(t, vi, dbvi, SyncMode.Update, false);
-                System.err.println(instance.getLog());
+                out.println(instance.getLog());
                 instance.getLog().delete(0, instance.getLog().length());
             } catch (Exception e) {
-                System.err.println("sync error:");
-                System.err.println(instance.getLog());
+                out.println("sync error:");
+                out.println(instance.getLog());
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
@@ -156,7 +159,7 @@ public class ImportXML {
         }        
     }
     
-    void importViralIsolates(InputSource s, String datasetName) throws SAXException, IOException {
+    public void importViralIsolates(InputSource s, String datasetName) throws SAXException, IOException {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
@@ -166,7 +169,11 @@ public class ImportXML {
         instance.readViralIsolates(s, importHandler);
         importHandler.t.commit();
 
-        System.err.println(instance.getLog());
-        System.err.println("Read: " + importHandler.isolatesRead + " isolates");
+        out.println(instance.getLog());
+        out.println("Read: " + importHandler.isolatesRead + " isolates");
+    }
+    
+    public void setPrintStream(PrintStream ps) {
+    	out = ps;
     }
 }
