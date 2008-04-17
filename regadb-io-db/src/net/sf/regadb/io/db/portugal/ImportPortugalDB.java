@@ -27,7 +27,11 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
@@ -73,6 +77,11 @@ public class ImportPortugalDB {
     private int CSampleIdGeographicOrigin;
     private int CSampleIdEthnicity;
     private int CSampleIdCountry;
+    private int CSampleIdSeroconvertion;
+    private int CSampleIdTherapyFailure;
+    private int CSampleIdPregnancy;
+    private int CSampleIdTherapyInterruption;
+    private int CSampleIdProtocol;
 
     private int CTherapeuticsIdSample;
     private int CTherapeuticsIdSampleStartMonth;
@@ -102,6 +111,14 @@ public class ImportPortugalDB {
     private File sequenceXmlFile;
     
     private String mappingBasePath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/portugal/mapping/";
+    
+    private Test genericTherapyFailure;
+    private TestNominalValue therapyFailurePos;
+    private TestNominalValue therapyFailureNeg;
+    
+    private Test genericTherapyInterruption;
+    private TestNominalValue therapyInterruptionPos;
+    private TestNominalValue therapyInterruptionNeg;
  
     public ImportPortugalDB(String sampleFName, String countryFName,
             				String ethnicityFName, String geographicOriginFName,
@@ -110,6 +127,22 @@ public class ImportPortugalDB {
             				String transmissionGroupFName, String sequenceDirName,
             				String patientXmlFile, String sequenceXmlFile)
             throws FileNotFoundException {
+        
+        TestType therapyFailure = new TestType(new TestObject("Patient test", 0), "Therapy Failure");
+        therapyFailure.setValueType(StandardObjects.getNominalValueType());
+        therapyFailurePos = new TestNominalValue(therapyFailure, "Positive");
+        therapyFailureNeg = new TestNominalValue(therapyFailure, "Negative");
+        therapyFailure.getTestNominalValues().add(therapyFailurePos);
+        therapyFailure.getTestNominalValues().add(therapyFailureNeg);
+        genericTherapyFailure = new Test(therapyFailure, "Therapy Failure (generic)");
+        
+        TestType therapyInterruption = new TestType(new TestObject("Patient test", 0), "Therapy Interruption");
+        therapyInterruption.setValueType(StandardObjects.getNominalValueType());
+        therapyInterruptionPos = new TestNominalValue(therapyInterruption, "Positive");
+        therapyInterruptionNeg = new TestNominalValue(therapyInterruption, "Negative");
+        therapyInterruption.getTestNominalValues().add(therapyInterruptionPos);
+        therapyInterruption.getTestNominalValues().add(therapyInterruptionNeg);
+        genericTherapyInterruption = new Test(therapyInterruption, "Therapy Interruption (generic)");
 
         System.err.println("Reading data...");
         this.sampleTable = Utils.readTable(sampleFName);
@@ -155,6 +188,11 @@ public class ImportPortugalDB {
         this.CSampleIdGeographicOrigin = Utils.findColumn(sampleTable, "Id_GeographicOrigin");
         this.CSampleIdEthnicity = Utils.findColumn(sampleTable, "Id_Ethnicity");
         this.CSampleIdCountry = Utils.findColumn(sampleTable, "Id_Country");
+        this.CSampleIdSeroconvertion = Utils.findColumn(sampleTable, "Seroconvertion");
+        this.CSampleIdTherapyFailure = Utils.findColumn(sampleTable, "TherapyFailure");
+        this.CSampleIdPregnancy = Utils.findColumn(sampleTable, "Pregnancy");
+        this.CSampleIdTherapyInterruption = Utils.findColumn(sampleTable, "TherapyInterruption");
+        this.CSampleIdProtocol = Utils.findColumn(sampleTable, "Protocol");
 
         this.CTherapeuticsIdSample = Utils.findColumn(therapeuticsTable, "Id_Sample");
 
@@ -421,6 +459,12 @@ public class ImportPortugalDB {
           String collectionYear = sampleTable.valueAt(CSampleYearCollection, row);
           String collectionMonth = sampleTable.valueAt(CSampleMonthCollection, row);
           String sampleId = sampleTable.valueAt(CSampleSampleID, row);
+
+          String seroconvertion = sampleTable.valueAt(CSampleIdSeroconvertion, row).trim();
+          String therapyFailure = sampleTable.valueAt(CSampleIdTherapyFailure, row).trim();
+          String pregnancy = sampleTable.valueAt(CSampleIdPregnancy, row).trim();
+          String therapyInterruption = sampleTable.valueAt(CSampleIdTherapyInterruption, row).trim();
+          String protocol = sampleTable.valueAt(CSampleIdProtocol, row).trim();
           //System.err.println(sampleId + " " + collectionYear + " " + collectionMonth);
 
           Patient p = patientMap.get(patientId);
@@ -442,9 +486,48 @@ public class ImportPortugalDB {
               t.setSampleId(sampleId);
               ++cd4;
           }
+          
+          handlePosNegTest(seroconvertion, StandardObjects.getGenericHivSeroStatusTest(), p,
+                  Utils.getNominalValue(StandardObjects.getGenericHivSeroStatusTest().getTestType(), "Positive"),
+                  Utils.getNominalValue(StandardObjects.getGenericHivSeroStatusTest().getTestType(), "Negative"),
+                  Utils.createDate(collectionYear, collectionMonth, null),
+                  sampleId);
+          
+          handlePosNegTest(pregnancy, StandardObjects.getPregnancyTest(), p,
+                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Positive"),
+                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Negative"),
+                  Utils.createDate(collectionYear, collectionMonth, null),
+                  sampleId);
+          
+          handlePosNegTest(therapyFailure, this.genericTherapyFailure, p,
+                  this.therapyFailurePos,
+                  this.therapyFailureNeg,
+                  Utils.createDate(collectionYear, collectionMonth, null),
+                  sampleId);
+          
+          handlePosNegTest(therapyInterruption, this.genericTherapyInterruption, p,
+                  this.therapyInterruptionPos,
+                  this.therapyInterruptionNeg,
+                  Utils.createDate(collectionYear, collectionMonth, null),
+                  sampleId);
       }
 
         System.err.println(" CD4 (n = " + cd4 + "), VL (n = " + vl + ")");
+    }
+    
+    private void handlePosNegTest(String val, Test test, Patient p, TestNominalValue pos, TestNominalValue neg, Date d, String sampleId) {
+        if(!val.equals("")) {
+            TestResult t = p.createTestResult(test);
+            if(val.equals("1")) {
+                t.setTestNominalValue(pos);
+            } else if(val.equals("0")) {
+                t.setTestNominalValue(neg);
+            } else {
+                System.err.println("Invalid " + test.getDescription() + " value: " + val);
+            }
+            t.setTestDate(d);
+            t.setSampleId(sampleId);
+        }
     }
 
     private void importPatients()  {
