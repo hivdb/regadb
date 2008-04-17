@@ -51,6 +51,13 @@ public class NominalAttribute {
             this.attribute.setValueType(nominalValueType);
             this.nominalValueMap = createNominalValues(attribute, t);
         }
+        
+        public NominalAttribute(Attribute attribute, int column, Table t) {
+            this.column = column;
+            this.attribute = attribute;
+            this.attribute.setValueType(nominalValueType);
+            this.nominalValueMap = createNominalValues(attribute, t);
+        }
 
         public NominalAttribute(String name, int column, String[] ids, String[] values) {
             this.column = column;
