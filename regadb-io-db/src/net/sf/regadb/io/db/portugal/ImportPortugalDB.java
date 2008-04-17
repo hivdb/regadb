@@ -6,7 +6,6 @@ package net.sf.regadb.io.db.portugal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +27,6 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
@@ -38,19 +36,13 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 /**
  * @author kdforc0
  */
-public class ImportPortugalDB {    
-    static final String SOURCE = "Lisbon";
+public class ImportPortugalDB {
+    static final String SOURCE = "EgazMoniz";
     
     private Table sampleTable;
     private Table countryTable;
@@ -135,32 +127,16 @@ public class ImportPortugalDB {
         
         System.err.println("done.");
         
-        System.err.println("Fixing the country of origin list");
         List<Attribute> regadbAttributesList = Utils.prepareRegaDBAttributes();
+        
         Attribute countryOfOrigin = Utils.selectAttribute("Country of origin", regadbAttributesList);
-        ArrayList<String> countryIndex = this.countryTable.getColumn(0);
-        ArrayList<String> countryName = this.countryTable.getColumn(1);
-        Mappings mappings = Mappings.getInstance(mappingBasePath);
-        for(int i = 1; i<countryIndex.size(); i++)
-        {
-            String country = countryName.get(i);
-            boolean foundMatch = false;
-            for(AttributeNominalValue anv : countryOfOrigin.getAttributeNominalValues()) {
-                if(country.equals(anv.getValue().trim())) {
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if(!foundMatch && !country.trim().equals("")) {
-                String mapping = mappings.getMapping("countryOfOrigin.mapping", country);
-                if(mapping == null) {
-                    System.err.println("Cannot map country: " + country);
-                } else {
-                    countryTable.setValue(1, i, mapping);
-                }
-            }
-        }
-        System.err.println("Done fixing the country of origin list");
+        fixAttributeTable(countryTable, countryOfOrigin, "countryOfOrigin.mapping");
+        Attribute transmissionGroup = Utils.selectAttribute("Transmission group", regadbAttributesList);
+        fixAttributeTable(transmissionGroupTable, transmissionGroup, "transmissionGroup.mapping");
+        Attribute geographicOrigin = Utils.selectAttribute("Geographic origin", regadbAttributesList);
+        fixAttributeTable(geographicOriginTable, geographicOrigin, "geographicOrigin.mapping");
+        Attribute ethnicity = Utils.selectAttribute("Ethnicity", regadbAttributesList);
+        fixAttributeTable(ethnicityTable, ethnicity, "ethnicity.mapping");
         
         this.sequenceDirName = sequenceDirName;
         
@@ -212,6 +188,33 @@ public class ImportPortugalDB {
         System.err.println(" done");
         
         this.stringValueType = new ValueType("string");
+    }
+    
+    private void fixAttributeTable(Table t, Attribute a, String mappingFile) {
+        System.err.println("Fixing attribute table " + a.getName());
+        ArrayList<String> tableIndex = t.getColumn(0);
+        ArrayList<String> tableName = t.getColumn(1);
+        Mappings mappings = Mappings.getInstance(mappingBasePath);
+        for(int i = 1; i<tableIndex.size(); i++)
+        {
+            String value = tableName.get(i);
+            boolean foundMatch = false;
+            for(AttributeNominalValue anv : a.getAttributeNominalValues()) {
+                if(value.equals(anv.getValue().trim())) {
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if(!foundMatch && !value.trim().equals("")) {
+                String mapping = mappings.getMapping(mappingFile, value);
+                if(mapping == null) {
+                    System.err.println("Cannot map " + a.getName() + " :" + value);
+                } else {
+                    t.setValue(1, i, mapping);
+                }
+            }
+        }
+        System.err.println("Done fixing attribute table " + a.getName());
     }
 
     private void importTherapy() throws NumberFormatException {
@@ -564,6 +567,8 @@ public class ImportPortugalDB {
 
         AttributeGroup portugal = new AttributeGroup("PT");
         AttributeGroup regadb = new AttributeGroup("RegaDB");
+        
+        List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
 
         Attribute clinicalFileAttribute = new Attribute("Clinical File Number");
         clinicalFileAttribute.setAttributeGroup(portugal);
@@ -572,14 +577,13 @@ public class ImportPortugalDB {
         ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
         nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
-        nominals.add(new NominalAttribute("Transmission group", CSampleIdTransmissionGroup, transmissionGroupTable));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-        nominals.add(new NominalAttribute("Geographic origin", CSampleIdGeographicOrigin, geographicOriginTable));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-        nominals.add(new NominalAttribute("Ethnicity", CSampleIdEthnicity, ethnicityTable));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
-        nominals.add(new NominalAttribute("Country of origin pt", CSampleIdCountry, countryTable));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(portugal);
+        
+        //change tables see country of origin
+        nominals.add(new NominalAttribute(Utils.selectAttribute("Transmission group", regadbAttributes), CSampleIdTransmissionGroup, transmissionGroupTable));
+        nominals.add(new NominalAttribute(Utils.selectAttribute("Geographic origin", regadbAttributes), CSampleIdGeographicOrigin, geographicOriginTable));
+        nominals.add(new NominalAttribute(Utils.selectAttribute("Ethnicity", regadbAttributes), CSampleIdEthnicity, ethnicityTable));
+        nominals.add(new NominalAttribute(Utils.selectAttribute("Country of origin", regadbAttributes), CSampleIdCountry, countryTable));
+        
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
         nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
