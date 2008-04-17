@@ -52,6 +52,17 @@ public class StandardObjects {
         genericHivSeroStatusTest = new Test(hivSeroStatusTestType, "HIV Sero Status (generic)");
     }
     
+    public static Test createPregnancyTest() {
+        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
+        pregnancyType.setValueType(nominalValueType);
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
+        
+        Test pregnancy = new Test(pregnancyType, "Pregnancy");
+        
+        return pregnancy;
+    }
+    
     public static TestType getCd4TestType() {
         return cd4TestType;
     }

@@ -93,7 +93,7 @@ public class PrepareCentralRepos
         export.writeTopTest(cd8, tests);
         Test cd8pc = createGenericCD8Percentage();
         export.writeTopTest(cd8pc, tests);
-        Test pregnancy = createPregnancyTest();
+        Test pregnancy = StandardObjects.createPregnancyTest();
         export.writeTopTest(pregnancy, tests);
         Test seroconvertion = createSeroconvertionTest();
         export.writeTopTest(seroconvertion, tests);
@@ -282,18 +282,6 @@ public class PrepareCentralRepos
         Test seroconvertion = new Test(seroconvertionType, "Seroconvertion");
         
         return seroconvertion;
-    }
-    
-    private static Test createPregnancyTest()
-    {
-        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
-        pregnancyType.setValueType(nominalValue);
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
-        
-        Test pregnancy = new Test(pregnancyType, "Pregnancy");
-        
-        return pregnancy;
     }
     
     private static Test createFollowUpTest()
