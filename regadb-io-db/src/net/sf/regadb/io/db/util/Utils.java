@@ -134,7 +134,11 @@ public class Utils {
         String dateNoTime = date.split(" ")[0];
         String [] dateTokens = dateNoTime.split("-");
        
-        return Utils.createDate(dateTokens[0], dateTokens[1], dateTokens[2]);
+        try {
+            return Utils.createDate(dateTokens[0], dateTokens[1], dateTokens[2]);
+        } catch (Exception e) {
+            return null;
+        }
     }
     
     public static Date parseBresciaSeqDate(String date) {
@@ -208,16 +212,19 @@ public class Utils {
     	 }
      }
      
-     public static boolean checkCDValue(String value, int row, String patientID)
-     {
-    	 if(!"".equals(value) && !value.equals("0"))
-    		 return true;
-    	 else
-    	 {
-    		 ConsoleLogger.getInstance().logWarning(patientID, "No valid cd value found at row "+row+".");
-    		 
-    		 return false;
-    	 }
+     public static boolean checkCDValue(String value, int row, String patientID) {
+         try {
+             double d = Double.parseDouble(value);
+             if(d!=0) {
+                 return true;
+             } else {
+                 ConsoleLogger.getInstance().logWarning(patientID, "No valid CD4 value found for patient "+patientID + " for value " + value);
+                 return false;
+             }
+         } catch(NumberFormatException nfe) {
+             ConsoleLogger.getInstance().logWarning(patientID, "No valid CD4 value found for patient "+patientID + " for value " + value);
+             return false;
+         }
      }
      
      public static Date convertDate(String germanDate)
