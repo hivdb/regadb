@@ -80,6 +80,7 @@ public class WivObjects {
         wivConfirmation.setValueType(StandardObjects.getNominalValueType());
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 1"));
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 2"));
+        wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 1/2 Coinfection"));
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV Undetermined"));
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "Not performed"));
         genericwivConfirmation_ = new Test(wivConfirmation, "WIV HIV Confirmation (generic)");
