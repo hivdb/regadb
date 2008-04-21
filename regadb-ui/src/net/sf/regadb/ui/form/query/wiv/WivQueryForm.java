@@ -392,10 +392,14 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected String getFormattedDate(Date date){
-        if(date != null)
-            return (new SimpleDateFormat("yyyyMMdd")).format(date);
+    	return getFormattedDate(date,"yyyyMMdd");
+    }
+    
+    protected String getFormattedDate(Date date,String format){
+    	if(date != null)
+            return (new SimpleDateFormat(format)).format(date);
         else
-            return "????????";
+            return getPadding(format.length());
     }
     
     protected Date getDate(String date){
@@ -496,7 +500,11 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         }
         
         if(ValueTypes.getValueType(pav.getAttribute().getValueType()) == ValueTypes.DATE){
-            return getFormattedDate(DateUtils.parseDate(pav.getValue()));
+        	Date date = DateUtils.parseDate(pav.getValue());
+        	if(attr.equals("ARRIVAL_B") || attr.equals("YEARTRANSF") || attr.equals("PROBYEAR"))
+        		return getFormattedDate(date, "yyyy");
+        	
+       		return getFormattedDate(date);
         }
         
         if(attr.equals("PatCode"))
@@ -593,7 +601,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 
                 TestNominalValue tnv = tr.getTestNominalValue();
                 if(tnv != null){
-                    String hivTypeCode = getHivTypeCode(tr.getValue());
+                    String hivTypeCode = getHivTypeCode(tnv.getValue());
                     if(hivTypeCode != null)
                         row[position.get("HivType.TestResult.value")] = hivTypeCode;
                     else
