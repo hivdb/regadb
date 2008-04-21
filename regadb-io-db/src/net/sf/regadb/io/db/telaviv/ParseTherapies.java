@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.jerusalem;
+package net.sf.regadb.io.db.telaviv;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -17,7 +17,7 @@ import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
-import net.sf.regadb.io.db.jerusalem.ParseDrugs.Drug;
+import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Utils;

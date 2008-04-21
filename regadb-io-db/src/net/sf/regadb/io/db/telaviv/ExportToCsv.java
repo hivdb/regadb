@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.jerusalem;
+package net.sf.regadb.io.db.telaviv;
 
 import java.io.BufferedReader;
 import java.io.File;
