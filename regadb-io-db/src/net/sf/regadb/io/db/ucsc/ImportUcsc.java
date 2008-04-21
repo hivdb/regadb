@@ -103,7 +103,7 @@ public class ImportUcsc
     		
     		ConsoleLogger.getInstance().logInfo("Creating CSV files...");
     		tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
-    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR t_analisi.[desc_risultato] = 'CD8 (킠)' OR t_analisi.[desc_risultato] = 'CD8 (%)' OR t_analisi.[desc_risultato] = 'CD4 (킠)' OR t_analisi.[desc_risultato] = 'CD4 (%)' ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
+    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
     		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
     		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
     		
@@ -346,7 +346,7 @@ public class ImportUcsc
     			ConsoleLogger.getInstance().logWarning("No patient with id "+patientID+" found.");
     			
     		//CD4
-    		if(method.equals("CD4 (킠)"))
+    		if(method.equals("CD4 (?L)"))
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (킠)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
@@ -366,7 +366,7 @@ public class ImportUcsc
     		}
     		 
     		//CD8
-    		if(method.equals("CD8 (킠)"))
+    		if(method.equals("CD8 (?L)"))
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (킠)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
