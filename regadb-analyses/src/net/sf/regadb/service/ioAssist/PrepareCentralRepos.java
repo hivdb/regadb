@@ -93,7 +93,7 @@ public class PrepareCentralRepos
         export.writeTopTest(cd8, tests);
         Test cd8pc = createGenericCD8Percentage();
         export.writeTopTest(cd8pc, tests);
-        Test pregnancy = StandardObjects.createPregnancyTest();
+        Test pregnancy = StandardObjects.getPregnancyTest();
         export.writeTopTest(pregnancy, tests);
         Test seroconvertion = createSeroconvertionTest();
         export.writeTopTest(seroconvertion, tests);
