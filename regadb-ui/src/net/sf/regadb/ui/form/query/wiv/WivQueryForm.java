@@ -378,6 +378,15 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         }
     };
     
+    protected String getHivTypeCode(String value){
+        if(value == null)                       return null;
+        if(value.equals("HIV 1"))               return "1";
+        if(value.equals("HIV 2"))               return "2";
+        if(value.equals("HIV 1/2 Coinfection")) return "3";
+        if(value.equals("HIV Undetermined"))    return "4";
+        return null;
+    }
+    
     protected String getCentreName(){
         return RegaDBSettings.getInstance().getPropertyValue("centre.name");
     }
@@ -583,18 +592,16 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
                 row = new String[position.size()];
 
                 TestNominalValue tnv = tr.getTestNominalValue();
-                if(tnv == null){
-                	continue;
+                if(tnv != null){
+                    String hivTypeCode = getHivTypeCode(tr.getValue());
+                    if(hivTypeCode != null)
+                        row[position.get("HivType.TestResult.value")] = hivTypeCode;
+                    else
+                        continue;
                 }
-                else if(tnv.getValue().equals("HIV 1")){
-            		row[position.get("HivType.TestResult.value")] = "1";
-            	}
-            	else if(tnv.getValue().equals("HIV 2")){
-            		row[position.get("HivType.TestResult.value")] = "2";
-            	}
-            	else{
-            		continue;
-            	}
+                else
+                    continue;
+                
             	
 	            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
