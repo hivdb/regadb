@@ -156,6 +156,10 @@ public class ParseConfirmation {
                     nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 1");
                 } else if (hivtype.equals("2")) {
                     nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 2");
+                } else if (hivtype.equals("3")) {
+                    nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV 1/2 Coinfection");
+                } else if (hivtype.equals("4")) {
+                    nominalValue = Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "HIV Undetermined");
                 } else {
                     System.err.println("Cannot parse HIVTYPE: "+hivtype);
                 }

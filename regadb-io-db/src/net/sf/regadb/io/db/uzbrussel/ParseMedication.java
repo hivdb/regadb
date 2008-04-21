@@ -169,17 +169,12 @@ public class ParseMedication {
 				TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t,dc),stdDos,false,false,stdFreq);
 				t.getTherapyCommercials().add(tc);
 			}
-			else
-				ConsoleLogger.getInstance().logError("Duplicate commercial drug for therapy: "+ dc.getName());
-				
 		}
 		if(dg != null){
 			if(!therapyContains(t, dg)){
 				TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t,dg),stdDos,false,false,stdFreq);
 				t.getTherapyGenerics().add(tg);
 			}
-			else
-				ConsoleLogger.getInstance().logError("Duplicate generic drug for therapy: "+ dg.getGenericName());
 		}
 	}
 	
