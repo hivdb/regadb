@@ -140,6 +140,27 @@ public class Transaction {
 
         return (Patient)q.uniqueResult();
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Patient> getPatients(String from, HibernateFilterConstraint filter)
+    {
+        Query q = session.createQuery("select new net.sf.regadb.db.Patient(patient, max(access.permissions)) from PatientImpl as patient " +
+        		"join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.id.dataset as dataset " +
+                "join dataset.datasetAccesses access " +
+                from +" "+
+                "where ( access.permissions >= 1 " +
+                "and access.id.settingsUser.uid = :uid ) and ( "+ filter.clause_ +" ) group by patient");
+        
+        for(Pair<String, Object> arg : filter.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        
+        q.setParameter("uid", login.getUid());
+
+        return (List<Patient>) q.list();
+    }
     
     //simple get by id
     /*
