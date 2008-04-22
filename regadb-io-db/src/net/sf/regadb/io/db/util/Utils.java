@@ -195,11 +195,15 @@ public class Utils {
      {
     	 if(value.equals("1"))
     		 return true;
-    	 else if(value.equals("0,5"))
+    	 else if(value.equals("1.0"))
     		 return true;
-    	 else if(value.equals("1,5"))
+    	 else if(value.equals("0.5"))
     		 return true;
-    	 //For Rome only: A bug in their system according to Iuri's 
+    	 else if(value.equals("1.5"))
+    		 return true;
+    	 else if(value.equals("0.0"))
+    		 return true;
+    	 //For Rome only: A bug in their system according to Iuri's knowledge
     	 else if(value.equals("-1"))
     		 return true;
     	 else if(value.equals("0"))
@@ -215,7 +219,7 @@ public class Utils {
      public static boolean checkCDValue(String value, int row, String patientID) {
          try {
              double d = Double.parseDouble(value);
-             if(d!=0) {
+             if(d!=0.0) {
                  return true;
              } else {
                  ConsoleLogger.getInstance().logWarning(patientID, "No valid CD4 value found for patient "+patientID + " for value " + value);
