@@ -2,6 +2,7 @@ package net.sf.regadb.io.db.eve;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -35,9 +36,11 @@ public class ImportFromXls {
 	private static HashMap<String, Integer> headers;
 	private static List<DrugGeneric> regaDrugGenerics;
 	private static int sampleID = 0;
+	private static String basePath_ = "/home/dluypa0/Eve"; // data.xls and previousGT.fasta should be in here
+	private static HashMap<String,ViralIsolate> viralisolates = new HashMap<String,ViralIsolate> ();
 	
 	public static void main( String[]args ) {
-		new ImportFromXls("/home/dluypa0/Eve/data.xls");
+		new ImportFromXls(basePath_ + File.separatorChar + "data.xls");
 	}
 	
 	public ImportFromXls(String filename) {
@@ -54,7 +57,8 @@ public class ImportFromXls {
 		try {
         	wb = Workbook.getWorkbook(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("file not found: " + file.getAbsolutePath());
+            System.exit(1);
         }
         
         readHeader(wb.getSheet(0));
@@ -85,7 +89,8 @@ public class ImportFromXls {
     		}
     	}
     	
-    	Utils.exportPatientsXML(patientMap, "/home/dluypa0/Eve/patients_eve.xml");
+    	Utils.exportPatientsXML(patientMap, basePath_ + File.separatorChar + "patients_eve.xml");
+    	Utils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "viralisolates.xml");
 	}
     
 	private void processTherapy(Patient p, Date startDate, Date stopDate, String drugs) {		
@@ -125,9 +130,10 @@ public class ImportFromXls {
 		if ( ( getGenotypeRT(row) != null && !getGenotypeRT(row).equals("") ) || ( getGenotypePR(row) != null && !getGenotypePR(row).equals("") ) ) {
 			DateFormat fastaFormat = new SimpleDateFormat("yyyy-MM-dd");
 			String localString = ">case_" + getQuestionN(row) + "_date_" + fastaFormat.format(getDate(row));
+			String fastaFile = basePath_ + File.separatorChar + "previousGT.fasta";
 			
 			try {
-				BufferedReader br = new BufferedReader( new FileReader("/home/dluypa0/Eve/previousGT.fasta") );
+				BufferedReader br = new BufferedReader( new FileReader(fastaFile) );
 				while ( br.ready() && fasta == null ) {
 					String key = br.readLine().trim();
 					if ( key.indexOf(">") == 0 ) {
@@ -137,8 +143,12 @@ public class ImportFromXls {
 						}
 					}
 				}
+			} catch ( FileNotFoundException fnfe ) {
+				System.err.println("File not found: " + fastaFile);
+				System.exit(1);
 			} catch ( IOException ioe ) {
 				System.err.println(ioe.getMessage());
+				System.exit(1);
 			}
 			
 			if ( fasta == null ) {
@@ -152,6 +162,8 @@ public class ImportFromXls {
 				vi.getNtSequences().add(nts);
 				vi.setSampleId(new Integer(++sampleID).toString());
 				p.getViralIsolates().add(vi);
+				
+				viralisolates.put(sampleID + "", vi);
 			}
 		}
 		return fasta;
