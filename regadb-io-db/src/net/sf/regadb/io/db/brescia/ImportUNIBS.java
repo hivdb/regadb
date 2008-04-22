@@ -72,14 +72,11 @@ public class ImportUNIBS
     
     public static void main(String [] args) 
     {
-    	//For internal network usage at Leuven
-        //System.setProperty("http.proxyHost", "www-proxy");
-        //System.setProperty("http.proxyPort", "3128");
         
     	try
     	{
     		//Just for testing purposes...otherwise remove
-    		//ConsoleLogger.getInstance().setInfoEnabled(true);
+    		ConsoleLogger.getInstance().setInfoEnabled(true);
     		
     		ImportUNIBS imp = new  ImportUNIBS();
         
@@ -115,6 +112,7 @@ public class ImportUNIBS
     		sequencesTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "8_Sequenze.csv");
     		
     		//Filling translation mapping tables
+    		ConsoleLogger.getInstance().logInfo("Initializing mapping tables...");
     		countryMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "county_of_origin.mapping");   		
     		transmissionGroupmappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "transmission_group.mapping");
     		statusMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "status.mapping");
@@ -167,15 +165,12 @@ public class ImportUNIBS
     	int Csex = Utils.findColumn(this.patientTable, "Sesso");
     	int CbirthDate = Utils.findColumn(this.patientTable, "DataNascita");
     	int Cnationality = Utils.findColumn(this.patientTable, "Nazionalita");
-        //TODO
-        //can be empty
+     
     	int CfirstTest = Utils.findColumn(this.patientTable, "Data_HIV+");
     	int CriskGroup = Utils.findColumn(this.patientTable, "FR");
-    	//TODO
-    	//can be empty
+    
     	int ClastTest = Utils.findColumn(this.patientTable, "Fup");
-        //TODO
-        //can be empty
+    
     	int Cstatus = Utils.findColumn(this.patientTable, "Status");
     	int CseroConverter = Utils.findColumn(this.patientTable, "Sieroconv");
     	
@@ -264,7 +259,8 @@ public class ImportUNIBS
             		Utils.handlePatientAttributeValue(statusA, status, p);
             	}
             	
-            	if(Utils.checkColumnValueForEmptiness("sero converter", seroConverter, i, patientId))
+            	//TODO: To check with Giuseppe if this is relevant
+            	if(Utils.checkColumnValueForExistance("sero converter", seroConverter, i, patientId))
             	{
             		Utils.handlePatientAttributeValue(seroA, seroConverter, p);
             	}
@@ -337,16 +333,13 @@ public class ImportUNIBS
     		}
     		else
     		{
-    		    //TODO properly check CD4
-	    		//CD4
-    		    //sometimes only count or perc
 	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (µL)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(cd4Count);
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForExistance("CD4 test result (%)", cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd4PercTest);
 	                t.setValue(cd4Percentage);
@@ -399,12 +392,10 @@ public class ImportUNIBS
 		    		 
 		    		 String value = null;
 		    		 
-		    		 if(Integer.parseInt(VLCutOff) == 50)
-		    			 value = "<";
-		    		 else
-		    			 value = "=";
-		    		 
-		    		 value += VLHIV;	
+		    		 if(Double.parseDouble(VLHIV) == 1)
+		    			 value = "<"+VLCutOff;
+		    		 else if(Integer.parseInt(VLCutOff) == 0)
+		    			 value = "="+VLHIV;	
 		    		 
 		    		 testResult.setValue(value);
 		    		 testResult.setTestDate(Utils.parseEnglishAccessDate(rnaAnalysisDate));
@@ -491,7 +482,6 @@ public class ImportUNIBS
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
 		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
-		    			//TODO check result
 		    			tr.setValue(result);
     				}
     			}
