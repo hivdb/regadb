@@ -75,9 +75,6 @@ public class ImportUNIBS
         
     	try
     	{
-    		//Just for testing purposes...otherwise remove
-    		ConsoleLogger.getInstance().setInfoEnabled(true);
-    		
     		ImportUNIBS imp = new  ImportUNIBS();
         
     		imp.getData(new File(args[0]), args[1]);
@@ -90,6 +87,9 @@ public class ImportUNIBS
     
     public void getData(File workingDirectory, String mappingBasePath)
     {
+    	//Just for testing purposes...otherwise remove
+		ConsoleLogger.getInstance().setInfoEnabled(true);
+    	
     	try
     	{
     		mappings = Mappings.getInstance(mappingBasePath);
@@ -143,7 +143,7 @@ public class ImportUNIBS
     		handleEvent();
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
-    		ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
+    		//ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
     		//TODO
     		//HashMap<String, ViralIsolate> viralisolates = handleSequences();
     		
@@ -339,7 +339,7 @@ public class ImportUNIBS
 	                t.setValue(cd4Count);
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
-	    		if (Utils.checkColumnValueForExistance("CD4 test result (%)", cd4Percentage, i, cd4PatientID) && Utils.checkCDValue(cd4Percentage, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForExistance("CD4 test result (%)", cd4Percentage, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd4PercTest);
 	                t.setValue(cd4Percentage);
@@ -607,7 +607,7 @@ public class ImportUNIBS
         			{
         				stopReasonTherapy = null;
         			
-        				ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
+        				//ConsoleLogger.getInstance().logWarning("No applicable HIV motivation found.");
         			}
         			else
         				stopReasonTherapy = stopTherapyTranslation.get(stopReasonTherapy);
@@ -639,16 +639,21 @@ public class ImportUNIBS
     	
     	if(medicinsList == null)
     	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "'");
+    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found.");
 			
     		return;
     	}
 
     	if(startDate != null && endDate != null)
     	{
-	    	if(startDate.equals(endDate) || startDate.after(endDate))
+    		if(startDate.equals(endDate))
+    		{
+    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": Dates are equal...Ignoring.");
+    		}
+    		
+	    	if(startDate.after(endDate))
 	    	{
-	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': " + startDate.toLocaleString() + " - " + endDate.toLocaleString() + ": End date is in the past...ignoring");
+	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": End date is in the past.");
 	    			
 	    		return;
 	    	}
@@ -657,20 +662,6 @@ public class ImportUNIBS
     	{
     		ConsoleLogger.getInstance().logError(patientId, "No corresponding start date available.");
     	}
-    	
-    	//TODO: Additional error handling...
-    	/*else if(startDate != null && endDate == null)
-    	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable end date available...ignoring");
-			
-    		return;
-    	}
-    	/*else
-    	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable start and end dates available...ignoring");
-			
-    		return;
-    	}*/
 
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
@@ -704,7 +695,7 @@ public class ImportUNIBS
     	
     	gDrugString = gDrugString.replace("-", "");
     	
-    	ConsoleLogger.getInstance().logInfo("DrugString: "+gDrugString);
+    	//ConsoleLogger.getInstance().logInfo("DrugString: "+gDrugString);
     	
     	for(int i = 0; i < drugs.size(); i++)
     	{
@@ -714,7 +705,7 @@ public class ImportUNIBS
     		{
     			if(gDrugString.contains(drug.toLowerCase()));
     			{
-    				ConsoleLogger.getInstance().logInfo("Found drug: "+drug);
+    				//ConsoleLogger.getInstance().logInfo("Found drug: "+drug);
     				
     				DrugGeneric genDrug = getDrugMapping(drug);
     				
@@ -724,7 +715,7 @@ public class ImportUNIBS
     		}
     	}
     	
-    	ConsoleLogger.getInstance().logInfo("Found "+gDrugs.size()+" generic drugs");
+    	//ConsoleLogger.getInstance().logInfo("Found "+gDrugs.size()+" generic drugs");
     	
     	return gDrugs;
     }
@@ -737,7 +728,7 @@ public class ImportUNIBS
         	
         	if(genDrug.getGenericId().equals(drug.toUpperCase()))
         	{
-        		ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
+        		//ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
         		
         		return genDrug;
         	}
