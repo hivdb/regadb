@@ -3,6 +3,8 @@ package net.sf.regadb.io.db.telaviv;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.Patient;
@@ -27,7 +29,10 @@ public class ParseAll {
     public void run(String importDir, String mappingDir, String outputDir){
         Logging logger = ConsoleLogger.getInstance();
         logger.logWarning("Parsing...");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
+        
+        List<DateFormat> df = new ArrayList<DateFormat>();
+        df.add(new SimpleDateFormat("MM/dd/yy HH:mm:ss"));
+        df.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0"));
         
         ParsePatients pPatients = new ParsePatients(logger,df);
         ParseDrugs pDrugs = new ParseDrugs(logger);

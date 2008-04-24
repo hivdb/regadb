@@ -2,11 +2,11 @@ package net.sf.regadb.io.db.telaviv;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
@@ -18,7 +18,7 @@ import net.sf.regadb.io.util.StandardObjects;
 
 public class ParseTests extends Parser {
 
-    public ParseTests(Logging logger, DateFormat df){
+    public ParseTests(Logging logger, List<DateFormat> df){
         super(logger,df);
         setName("Tests");
     }
@@ -87,7 +87,7 @@ public class ParseTests extends Parser {
                     }
                 }
                 else
-                    logWarn("Invalid test date",testResultFile,i,vlDate);
+                    logWarn(p,"Invalid test date",testResultFile,i,vlDate);
             }
             else{
                 logWarn("Invalid patient ID",testResultFile,i,id);

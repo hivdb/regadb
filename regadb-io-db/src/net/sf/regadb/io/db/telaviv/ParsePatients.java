@@ -20,7 +20,7 @@ public class ParsePatients extends Parser{
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
     private List<Attribute> regadbAttributes_;
     
-    public ParsePatients(Logging logger, DateFormat df){
+    public ParsePatients(Logging logger, List<DateFormat> df){
         super(logger,df);
         setName("Patients");
     }
@@ -83,7 +83,7 @@ public class ParsePatients extends Parser{
                 if((d = getDate(birthDate)) != null)
                     p.setBirthDate(d);
                 else
-                    logWarn("Invalid birth date",patientsFile,i,birthDate);
+                    logWarn(p,"Invalid birth date",patientsFile,i,birthDate);
                 
 
                 if(Utils.checkColumnValueForEmptiness("gender", sexNo, i, id))

@@ -2,13 +2,16 @@ package net.sf.regadb.io.db.telaviv;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.Logging;
 
 public class Parser {
     private Logging logger=null;
-    private DateFormat df=null;
+    private List<DateFormat> dateFormats=new ArrayList<DateFormat>();
     private String name=null;
     
     private File currentFile=null;
@@ -21,6 +24,19 @@ public class Parser {
     public Parser(Logging logger,DateFormat df){
         setLogger(logger);
         setDateFormat(df);
+    }
+    
+    public Parser(Logging logger,List<DateFormat> dfs){
+        setLogger(logger);
+        setDateFormats(dfs);
+    }
+    
+    public List<DateFormat> getDateFormats(){
+        return dateFormats;
+    }
+    
+    public void setDateFormats(List<DateFormat> dateFormats){
+        this.dateFormats = dateFormats;
     }
     
     public String getName(){
@@ -48,7 +64,7 @@ public class Parser {
     }
     
     protected void logInfo(String msg){
-        getLogger().logWarning(formatMessage(msg));
+        getLogger().logInfo(formatMessage(msg));
     }
     
     protected void logWarn(String msg){
@@ -70,6 +86,7 @@ public class Parser {
     protected void logErr(String msg, Object o){
         logErr(formatMessage(msg,o));
     }
+
     
     protected void logInfo(String msg, File file, int line){
         logInfo(formatMessage(msg,file,line));
@@ -95,6 +112,59 @@ public class Parser {
         logErr(formatMessage(msg,file,line,o));
     }
     
+    protected void logErr(Patient p, String msg, Object o){
+        logErr(formatMessage(p,msg,o));
+    }
+    
+    protected void logInfo(Patient p, String msg, Object o){
+        logInfo(formatMessage(p,msg,o));
+    }
+    
+    protected void logWarn(Patient p, String msg, Object o){
+        logWarn(formatMessage(p,msg,o));
+    }
+    protected void logInfo(Patient p, String msg, File file, int line){
+        logInfo(formatMessage(p,msg,file,line));
+    }
+    
+    protected void logWarn(Patient p, String msg, File file, int line){
+        logWarn(formatMessage(p,msg,file,line));
+    }
+    
+    protected void logErr(Patient p, String msg, File file, int line){
+        logErr(formatMessage(p,msg,file,line));
+    }
+    
+    protected void logInfo(Patient p, String msg, File file, int line, Object o){
+        logInfo(formatMessage(p,msg,file,line,o));
+    }
+    
+    protected void logWarn(Patient p, String msg, File file, int line, Object o){
+        logWarn(formatMessage(p,msg,file,line,o));
+    }
+    
+    protected void logErr(Patient p, String msg, File file, int line, Object o){
+        logErr(formatMessage(p,msg,file,line,o));
+    }
+
+
+    private String formatMessage(Patient p, String msg, File file, int line, Object o){
+        return formatMessage(p,formatMessage(msg,file,line,o));
+    }
+    
+    private String formatMessage(Patient p, String msg, File file, int line){
+        return formatMessage(p,formatMessage(msg,file,line));
+    }
+    
+    private String formatMessage(Patient p, String msg, Object o){
+        return formatMessage(p,formatMessage(msg,o));
+    }
+
+    private String formatMessage(Patient p, String msg){
+        return "Patient ("+ p.getPatientId() +"): "+ msg;
+    }
+
+    
     private String formatMessage(String msg, File file, int line, Object o){
         return formatMessage(msg +": '"+ o +"'",file,line);
     }
@@ -112,20 +182,26 @@ public class Parser {
     }
     
     public DateFormat getDateFormat(){
-        return df;
+        if(getDateFormats().size() > 0)
+            return getDateFormats().get(0);
+        return null;
     }
     
     public void setDateFormat(DateFormat df){
-        this.df = df;
+        getDateFormats().add(0, df);
     }
     
     public Date getDate(String date){
         Date d=null;
-        try{
-            d = df.parse(date);
-        }
-        catch(Exception e){
-            //logWarn(e.getMessage());
+        
+        for(DateFormat df : getDateFormats()){
+            try{
+                d = df.parse(date);
+                if(d != null)
+                    return d;
+            }
+            catch(Exception e){
+            }
         }
         return d;
     }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ import net.sf.regadb.util.frequency.Frequency;
 
 public class ParseTherapies extends Parser{
 
-    public ParseTherapies(Logging logger, DateFormat df){
+    public ParseTherapies(Logging logger, List<DateFormat> df){
         super(logger,df);
         setName("Therapies");
     }
@@ -79,15 +80,16 @@ public class ParseTherapies extends Parser{
                             }
                         }
                         else
-                            logWarn("Invalid stop date",therapiesFile,i,trDateStop);
+                            logWarn(p,"Invalid stop date",therapiesFile,i,trDateStop);
                     }
                     
-                    tp.setComment(note);
+                    if(check(note))
+                        tp.setComment(note);
                     
                     addDrugs(drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
                 }
                 else{
-                    logWarn("Invalid start date",therapiesFile,i,trDate);
+                    logWarn(p,"Invalid start date",therapiesFile,i,trDate);
                 }
             }
             else{

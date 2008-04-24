@@ -13,7 +13,8 @@ import net.sf.regadb.io.db.util.Utils;
 public class ParseDrugs extends Parser{
     
     public ParseDrugs(Logging logger){
-        super(logger,null);
+        super();
+        setLogger(logger);
         setName("Drugs");
     }
     

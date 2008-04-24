@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.List;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.io.db.util.Logging;
@@ -19,7 +20,7 @@ public class ParseSequences extends Parser{
         
     }
     
-    public ParseSequences(Logging logger, DateFormat df) {
+    public ParseSequences(Logging logger, List<DateFormat> df) {
         super(logger,df);
     }
     
