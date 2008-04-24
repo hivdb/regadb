@@ -7,8 +7,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -25,19 +27,18 @@ import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
+import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryResultTableModel;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClauseTreeNode;
-import com.pharmadm.custom.rega.queryeditor.gui.AtomicWhereClauseEditor;
-import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultJTable;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
-import com.pharmadm.custom.rega.reporteditor.gui.QueryContext;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.util.gui.mdi.DocumentLoader;
@@ -57,7 +58,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     private ExecuteQueryRunnable runningExecution;
     
     private QueryEditor editorModel;
-    private WhereClause cursorClause = null;
+    private List<WhereClause> cursorClauses = null;
     private File currentQueryFile = null;
     
     
@@ -84,6 +85,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     /** Creates new form QueryEditorFrame */
     public QueryEditorFrame(QueryEditor editorModel) {
         this.editorModel = editorModel;
+        cursorClauses = new ArrayList<WhereClause>();
         initComponents();
         initThreadsPanel();
         initResultTable();
@@ -266,6 +268,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         printTableMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         sqlViewMenuItem = new javax.swing.JMenuItem();
+        runQueryMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(QueryEditorApp.getInstance().getProduct());
@@ -345,6 +348,18 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
 
         fileMenu.add(newMenuItem);
 
+        runQueryMenuItem.setMnemonic('r');
+        runQueryMenuItem.setText("run test query");
+        runQueryMenuItem.setToolTipText("run a custom query");
+        runQueryMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runQueryMenuItemActionPerformed(evt);
+            }
+
+        });
+        
+        fileMenu.add(runQueryMenuItem);
+        
         openMenuItem.setMnemonic('o');
         openMenuItem.setText("Open\u2026");
         openMenuItem.setToolTipText("Load a query from disk");
@@ -625,15 +640,9 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     // </editor-fold>//GEN-END:initComponents
     
     
-    
-    
     private void saveSubqueryMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSubqueryMenuItemActionPerformed
         try {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                return;
-            }
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
+            WhereClause currentClause = getLastSelectedNonAtomicClause();
             try {
                 int returnVal = fc2.showSaveDialog(this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -655,11 +664,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private void addFromFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFromFileMenuItemActionPerformed
         try {
-            WhereClauseTreeNode parentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (parentNode == null) {
-                parentNode = (WhereClauseTreeNode)editorModel.getRoot();
-            }
-            WhereClause parentClause = (WhereClause)parentNode.getUserObject();
+            WhereClause parentClause = getLastSelectedNonAtomicClause();
             if (parentClause.acceptsAdditionalChild()) {
                 try {
                     int returnVal = fc2.showOpenDialog(this);
@@ -693,12 +698,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     }//GEN-LAST:event_sqlViewMenuItemActionPerformed
     
     private void unwrapMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unwrapMenuItemActionPerformed
-        WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-        if (currentNode == null) {
-            return;
-        }
-        WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-        editorModel.unwrap(currentClause);
+        editorModel.unwrap(getClauses(getSelectedNodes()));
     }//GEN-LAST:event_unwrapMenuItemActionPerformed
     
     
@@ -715,6 +715,11 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         }
     }//GEN-LAST:event_printTableMenuItemActionPerformed
     
+    private void runQueryMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    	new SQLEditor(this, false, "").setVisible(true);
+    }
+
+    
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
         if (running) {
             setRunning(false);
@@ -726,26 +731,30 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             }
         } else {
             Query query = getQueryAndInformUserOnError();
-            if (query != null) {
-                numberRowsLabel.setText("Busy...");
-                resultTable.setModel(new BusyTableModel("Busy...", "Busy calculating query..."));
-                resultTable.getColumnModel().getColumn(0).setPreferredWidth(200);
-                if (runningExecution != null) {
-                    runningExecution.close();
-                }
-                setRunning(true);
-                try {
-                    QueryStatement runningStatement = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement();
-                    runningExecution = new ExecuteQueryRunnable(runningStatement, query);
-                    Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
-                    executeQuery.start();
-                } catch (SQLException sqle) {
-                    resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
-                    QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
-                }
-            }
+            runQuery(query);
         }
     }//GEN-LAST:event_runButtonActionPerformed
+    
+    public void runQuery(Query query) {
+        if (query != null) {
+            numberRowsLabel.setText("Busy...");
+            resultTable.setModel(new BusyTableModel("Busy...", "Busy calculating query..."));
+            resultTable.getColumnModel().getColumn(0).setPreferredWidth(200);
+            if (runningExecution != null) {
+                runningExecution.close();
+            }
+            setRunning(true);
+            try {
+                QueryStatement runningStatement = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement();
+                runningExecution = new ExecuteQueryRunnable(runningStatement, query);
+                Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
+                executeQuery.start();
+            } catch (SQLException sqle) {
+                resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
+                QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
+            }
+        }
+    }
     
     private Query getQueryAndInformUserOnError() {
         Query query = editorModel.getQuery();
@@ -773,10 +782,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private void modifyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyMenuItemActionPerformed
         try {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                return;
-            }
+            WhereClauseTreeNode currentNode = getSelectedNodes().get(0);
             WhereClause currentClause = (WhereClause)currentNode.getUserObject();
             if (currentClause.isAtomic()) {
                 editAtomicClause((AtomicWhereClause)currentClause);
@@ -866,34 +872,32 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private void deleteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMenuItemActionPerformed
         try {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                return;
-            }
-            WhereClauseTreeNode parentNode = (WhereClauseTreeNode)currentNode.getParent();
-            if (parentNode == null) {
-                return; // can not remove top node
-            }
-            WhereClause parentClause = (WhereClause)parentNode.getUserObject();
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-            editorModel.removeChild(parentClause, currentClause);
-            // %$ KVB set selection to parent node ?
+        	List<WhereClauseTreeNode> selection = getSelectedNodes();
+        	for (WhereClauseTreeNode node : selection) {
+        		if (node != null) {
+	        		WhereClauseTreeNode parentNode  = (WhereClauseTreeNode) node.getParent();
+	        		if (parentNode != null) {
+		        		WhereClause parentClause  = (WhereClause) parentNode.getUserObject();
+		                WhereClause currentClause = (WhereClause)node.getUserObject();
+		                if (currentClause != null && parentClause != null) {
+		                	editorModel.removeChild(parentClause, currentClause);
+		                }
+	        		}
+        		}
+        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_deleteMenuItemActionPerformed
     
     private void pasteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteMenuItemActionPerformed
-        if (cursorClause != null) {
+        if (cursorClauses.size() > 0) {
             try {
-                WhereClauseTreeNode parentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-                if (parentNode == null) {
-                    parentNode = (WhereClauseTreeNode)editorModel.getRoot();
-                }
-                WhereClause parentClause = (WhereClause)parentNode.getUserObject();
-                if (parentClause.acceptsAdditionalChild()) {
-                    editorModel.addChild(parentClause, (WhereClause)cursorClause.clone());
-                    //treeModel.insertNodeInto(new WhereClauseTreeNode(newClause), parentNode, parentNode.getChildCount());
+                WhereClause parentClause = getLastSelectedNonAtomicClause();
+                for (WhereClause clause : cursorClauses) {
+                    if (parentClause.acceptsAdditionalChild()) {
+                        editorModel.addChild(parentClause, (WhereClause) clause.clone());
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -903,13 +907,9 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private void copyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyMenuItemActionPerformed
         try {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                return;
-            }
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-            cursorClause = currentClause;
-            updateEditMode(currentClause);
+            List<WhereClauseTreeNode> selection = getSelectedNodes();
+            cursorClauses = getClauses(selection);
+            updateEditMode(selection);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -917,51 +917,28 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private void cutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutMenuItemActionPerformed
         try {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                return;
+            List<WhereClauseTreeNode> selection = getSelectedNodes();
+            cursorClauses = getClauses(selection);
+            
+            for (WhereClause clause : cursorClauses) {
+                editorModel.removeChild(clause.getParent(), clause);
             }
-            WhereClauseTreeNode parentNode = (WhereClauseTreeNode)currentNode.getParent();
-            if (parentNode == null) {
-                return; // can not remove top node
-            }
-            WhereClause parentClause = (WhereClause)parentNode.getUserObject();
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-            cursorClause = currentClause;
-            editorModel.removeChild(parentClause, currentClause);
-            updateEditMode(null);
-            //treeModel.removeNodeFromParent(currentNode);
-            // %$ KVB set selection to parent node ?
+            updateEditMode(selection);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_cutMenuItemActionPerformed
     
     private void wrapNotMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapNotMenuItemActionPerformed
-        WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-        if (currentNode == null) {
-            return;
-        }
-        WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-        editorModel.wrapNot(currentClause);
+        editorModel.wrapNot(getClauses(getSelectedNodes()));
     }//GEN-LAST:event_wrapNotMenuItemActionPerformed
     
     private void wrapOrMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapOrMenuItemActionPerformed
-        WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-        if (currentNode == null) {
-            return;
-        }
-        WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-        editorModel.wrapOr(currentClause);
+        editorModel.wrapOr(getClauses(getSelectedNodes()));
     }//GEN-LAST:event_wrapOrMenuItemActionPerformed
     
     private void wrapAndMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapAndMenuItemActionPerformed
-        WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-        if (currentNode == null) {
-            return;
-        }
-        WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-        editorModel.wrapAnd(currentClause);
+        editorModel.wrapAnd(getClauses(getSelectedNodes()));
     }//GEN-LAST:event_wrapAndMenuItemActionPerformed
     
     private void addAtomicMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAtomicMenuItemActionPerformed
@@ -969,7 +946,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             WhereClause parentClause = getLastSelectedNonAtomicClause();
             if (parentClause.acceptsAdditionalChild()) {
                 Collection<AtomicWhereClause> prototypeList = parentClause.getAvailableAtomicClauses(AWCPrototypeCatalog.getInstance());
-                AtomicClauseSelectionDialog selectionDialog = new AtomicClauseSelectionDialog(this, editorModel, parentClause, prototypeList, true);
+                AtomicClauseSelectionDialog selectionDialog = new AtomicClauseSelectionDialog(this, this, prototypeList, true);
                 selectionDialog.setVisible(true);
                 WhereClause newClause = selectionDialog.getSelectedClause();
                 if (newClause != null) {
@@ -1022,11 +999,11 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     }//GEN-LAST:event_addAndMenuItemActionPerformed
     
     private WhereClause getLastSelectedNonAtomicClause() {
-        WhereClauseTreeNode parentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-        if (parentNode == null) {
-            parentNode = (WhereClauseTreeNode)editorModel.getRoot();
+        WhereClauseTreeNode node = getSelectedNodes().get(0);
+        if (node == null) {
+        	node = (WhereClauseTreeNode)editorModel.getRoot();
         }
-        WhereClause parentClause = (WhereClause)parentNode.getUserObject();
+        WhereClause parentClause = (WhereClause)node.getUserObject();
         
         if (parentClause.isAtomic()) {
         	parentClause = parentClause.getParent();
@@ -1034,21 +1011,24 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     	
         return parentClause;
     }
-    
+     
     private void initResultTable() {
         resultTable = new QueryResultJTable(QueryEditorApp.getInstance().getWorkManager());
         jScrollPaneTable.setViewportView(resultTable);
     }
     
     private void initQueryTree() {
-        queryTree.getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION);
+        queryTree.getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         queryTree.setShowsRootHandles(true);
         queryTree.putClientProperty("JTree.lineStyle", "Angled");
         queryTree.addTreeSelectionListener(new MyTreeSelectionListener());
         queryTree.addMouseListener(new MyMouseListener());
         queryTree.setModel(editorModel);
         queryTree.setCellRenderer(new QueryTreeCellRenderer());
-        updateEditMode(editorModel.getRootClause());
+        
+        List<WhereClauseTreeNode> selection = new ArrayList<WhereClauseTreeNode>();
+        selection.add(new WhereClauseTreeNode(editorModel.getRootClause()));
+        updateEditMode(selection);
         editorModel.addTreeModelListener(new MyTreeModelListener());
         installSelectPanel();
     }
@@ -1066,13 +1046,34 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private class MyTreeSelectionListener implements javax.swing.event.TreeSelectionListener {
         public void valueChanged(javax.swing.event.TreeSelectionEvent e) {
-            WhereClauseTreeNode currentNode = (WhereClauseTreeNode)queryTree.getLastSelectedPathComponent();
-            if (currentNode == null) {
-                currentNode = (WhereClauseTreeNode)editorModel.getRoot();
-            }
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-            updateEditMode(currentClause);
+            updateEditMode(getSelectedNodes());
+        	
         }
+    }
+    
+    private List<WhereClauseTreeNode> getSelectedNodes() {
+    	List<WhereClauseTreeNode> selection = new ArrayList<WhereClauseTreeNode>();
+    	TreePath[] paths = queryTree.getSelectionPaths();
+    	if (paths != null) {
+	    	for (TreePath path : paths) {
+	    		selection.add(  (WhereClauseTreeNode) path.getLastPathComponent());
+	    	}
+    	}
+    	if (selection.size() == 0) {
+    		queryTree.setSelectionRow(0);
+    		selection.add((WhereClauseTreeNode)editorModel.getRoot());
+    	}
+    	return selection;
+    }
+    
+    private List<WhereClause> getClauses(List<WhereClauseTreeNode> nodes) {
+    	List<WhereClause> clauses = new ArrayList<WhereClause>();
+    	for (WhereClauseTreeNode node : nodes) {
+    		if (node.getUserObject() != null) {
+    			clauses.add((WhereClause) node.getUserObject());
+    		}
+    	}
+    	return clauses;
     }
     
     private class MyTreeModelListener implements TreeModelListener {
@@ -1092,6 +1093,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private class MyMouseListener extends MouseAdapter {
         public void mouseClicked(MouseEvent evt) {
+        	super.mouseClicked(evt);
         	selectNode(evt);
         }
         
@@ -1100,7 +1102,6 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             int y = evt.getPoint().y;
             final TreePath tp = queryTree.getPathForLocation(x,y);
             if (tp != null) {
-                queryTree.setSelectionPath(tp);
                 WhereClauseTreeNode currentNode = (WhereClauseTreeNode)tp.getLastPathComponent();
                 WhereClause currentClause = (WhereClause)currentNode.getUserObject();
                 if ((evt.getClickCount() > 1) && (evt.getModifiers() & java.awt.event.InputEvent.BUTTON1_MASK) != 0) {
@@ -1127,14 +1128,12 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     }
     
     private void editAtomicClause(AtomicWhereClause currentClause) {
-        AtomicWhereClauseEditor atomEditor = new AtomicWhereClauseEditor(editorModel);
-        atomEditor.setAtomicWhereClause(currentClause);
-        atomEditor.setVisualizationComponentFactory(new VisualizationComponentFactory(atomEditor));
+        AtomicWhereClauseEditor atomEditor = new AtomicWhereClauseEditor(this, currentClause);
         new AtomicClauseEditorDialog(this, atomEditor , true).setVisible(true);
     }
     
-    private void updateEditMode(WhereClause forClause) {
-        if (forClause == null) {
+    private void updateEditMode(List<WhereClauseTreeNode> selection) {
+        if (hasNullNodes(selection)) {
             modifyMenuItem.setEnabled(false);
             addMenu.setEnabled(false);
             wrapMenu.setEnabled(false);
@@ -1144,17 +1143,59 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             pasteMenuItem.setEnabled(false);
             deleteMenuItem.setEnabled(false);
         } else {
-            boolean currentIsAtomic = forClause.isAtomic();
-            modifyMenuItem.setEnabled(currentIsAtomic);
-//            addMenu.setEnabled(! currentIsAtomic);
-            wrapMenu.setEnabled(forClause.getParent() != null);
-            WhereClause parentClause = forClause.getParent();
-            unwrapMenuItem.setEnabled(parentClause != null && parentClause.getParent() != null && parentClause.getChildCount() == 1);
-            copyMenuItem.setEnabled(true);
-            cutMenuItem.setEnabled(forClause.getParent() != null);
-            pasteMenuItem.setEnabled((! currentIsAtomic) && (cursorClause != null));
-            deleteMenuItem.setEnabled(forClause.getParent() != null);
+        	WhereClause firstClause = (WhereClause) selection.get(0).getUserObject();
+            boolean firstIsAtomic = firstClause.isAtomic();
+            boolean haveSameParent = haveSameParent(selection);
+            boolean containsRoot = containsRootClause(selection);
+            
+            modifyMenuItem.setEnabled(firstIsAtomic && selection.size() == 1);
+            wrapMenu.setEnabled(haveSameParent);
+
+            WhereClause parentClause = firstClause.getParent();
+            unwrapMenuItem.setEnabled(haveSameParent && parentClause.getParent() != null);
+            
+            copyMenuItem.setEnabled(haveSameParent);
+            cutMenuItem.setEnabled(haveSameParent);
+            pasteMenuItem.setEnabled((! firstIsAtomic) && (cursorClauses.size() > 0) && selection.size() == 1);
+            deleteMenuItem.setEnabled(!containsRoot);
+            
+            addMenu.setEnabled(haveSameParent || selection.get(0).equals(editorModel.getRoot()));
         }
+    }
+    
+    private boolean hasNullNodes(List<WhereClauseTreeNode> selection) {
+    	boolean nullNodes = false;
+    	for (WhereClauseTreeNode node : selection) {
+        	WhereClause clause = (WhereClause) node.getUserObject();
+    		if (clause == null) {
+    			nullNodes = true;
+    		}
+    	}
+    	return nullNodes;
+    	
+    }
+    
+    private boolean haveSameParent(List<WhereClauseTreeNode> selection) {
+    	boolean same = true;
+    	WhereClauseTreeNode parentNode = (WhereClauseTreeNode) selection.get(0).getParent();
+    	for (WhereClauseTreeNode node : selection) {
+    		if (node.getParent() == null || !node.getParent().equals(parentNode)) {
+    			same = false;
+    		}
+    	}
+    	return same;
+    }
+    
+    private boolean containsRootClause(List<WhereClauseTreeNode> selection) {
+    	boolean root = false;
+    	WhereClauseTreeNode parentNode = (WhereClauseTreeNode) selection.get(0).getParent();
+    	for (WhereClauseTreeNode node : selection) {
+    		WhereClause clause = (WhereClause) node.getUserObject();
+    		if (clause.getParent() == null) {
+    			root = true;
+    		}
+    	}
+    	return root;
     }
     
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -1242,6 +1283,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     private javax.swing.JMenu wrapMenu;
     private javax.swing.JMenuItem wrapNotMenuItem;
     private javax.swing.JMenuItem wrapOrMenuItem;
+    private javax.swing.JMenuItem runQueryMenuItem;
     // End of variables declaration//GEN-END:variables
     
     
@@ -1300,7 +1342,8 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                         }
                     });
                 }
-            } catch (final SQLException sqle) {
+            } catch (final Exception sqle) {
+            	sqle.printStackTrace();
                 synchronized (cancelLock) {
                     if (!canceled) {
                         canceled = true;
@@ -1345,5 +1388,10 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             }
         }
     }
+
+	@Override
+	public WhereClause getContextClause() {
+		return getLastSelectedNonAtomicClause();
+	}
 
 }

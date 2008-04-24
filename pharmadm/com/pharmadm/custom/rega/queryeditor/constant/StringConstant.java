@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
 import java.text.Format;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -20,7 +21,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class StringConstant extends Constant {
+public class StringConstant extends Constant implements Serializable{
     
 	public StringConstant(){}
 	

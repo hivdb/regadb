@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
@@ -24,7 +26,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * </p>
  * 
  */
-public class OrderedAWCWordList extends OrderedConfigurableWordList {
+public class OrderedAWCWordList extends OrderedConfigurableWordList implements Serializable {
 	   
     /** For xml-encoding purposes only */
     public OrderedAWCWordList() {

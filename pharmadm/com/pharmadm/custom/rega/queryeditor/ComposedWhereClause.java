@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -31,10 +32,14 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *  children
  * </p>
  */
-public abstract class ComposedWhereClause extends WhereClause {
+public abstract class ComposedWhereClause extends WhereClause implements Serializable {
     
     /** For xml-encoding purposes only */
     public ComposedWhereClause() {
+    }
+    
+    public ComposedWhereClause(ArrayList<WhereClause> children) {
+    	setChildren(children);
     }
     
     ///////////////////////////////////////
@@ -53,14 +58,14 @@ public abstract class ComposedWhereClause extends WhereClause {
     // access methods for associations
     
     public ArrayList<WhereClause> getChildren() {
-        return children;
+    	return children;
     }
     
     /**
      * For XMLdecoder only.
      */
     public void setChildren(ArrayList<WhereClause> children) {
-        this.children = children;
+    	this.children = children;
     }
     
     public int getChildCount() {

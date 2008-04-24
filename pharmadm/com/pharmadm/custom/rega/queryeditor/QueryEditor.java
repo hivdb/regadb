@@ -14,9 +14,9 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.util.*;
 import java.beans.DefaultPersistenceDelegate;
 import java.io.*;
+
 import javax.swing.tree.*;
 
-//import com.pharmadm.custom.rega.chem.search.*;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
@@ -58,7 +58,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         return query;
     }
     
-    public void setQuery(Query query) {
+    private void setQuery(Query query) {
         if (this.query != null) {
             this.query.getSelectList().removeSelectionChangeListener(selectionListener);
         }
@@ -137,7 +137,9 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     public void removeChild(WhereClause parent, WhereClause child) {
         parent.removeChild(child);
         WhereClauseTreeNode childNode = getNode(child);
-        removeNodeFromParent(childNode);
+        if (childNode != null) {
+        	removeNodeFromParent(childNode);
+        }
         updateSelectionList();
         setDirty(true);
     }
@@ -241,17 +243,8 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      *
      * @pre clause !=null
      */
-    public void wrapAnd(WhereClause clause) {
-        try {
-            WhereClause parentClause = clause.getParent();
-            if (parentClause != null) {  // can not wrap top node
-                WhereClause newClause = new AndClause();
-                replaceChild(parentClause, clause, newClause);
-                addChild(newClause, clause);
-            }
-        } catch (IllegalWhereClauseCompositionException iwcce) {
-            System.err.println("Wrap AND failed: " + iwcce.getMessage());
-        }
+    public void wrapAnd(List<WhereClause> clauses) {
+    	wrapInClause(clauses, new AndClause());
     }
     
     /**
@@ -281,16 +274,25 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      *
      * @pre clause !=null
      */
-    public void wrapOr(WhereClause clause) {
+    public void wrapOr(List<WhereClause> clauses) {
+    	wrapInClause(clauses, new InclusiveOrClause());
+    }
+    
+    private void wrapInClause(List<WhereClause> clauses, WhereClause wrapperClause) {
         try {
-            WhereClause parentClause = clause.getParent();
+            WhereClause parentClause = clauses.get(0).getParent();
             if (parentClause != null) {  // can not wrap top node
-                WhereClause newClause = new InclusiveOrClause();
-                replaceChild(parentClause, clause, newClause);
-                addChild(newClause, clause);
+                WhereClause newClause = wrapperClause;
+                replaceChild(parentClause, clauses.get(0), newClause);
+
+            	for (WhereClause clause: clauses) {
+                    removeChild(parentClause, clause);
+                    addChild(newClause, clause);
+            	}
             }
+
         } catch (IllegalWhereClauseCompositionException iwcce) {
-            System.err.println("Wrap OR failed: " + iwcce.getMessage());
+            System.err.println("Wrap AND failed: " + iwcce.getMessage());
         }
     }
     
@@ -321,17 +323,8 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      *
      * @pre clause !=null
      */
-    public void wrapNot(WhereClause clause) {
-        try {
-            WhereClause parentClause = clause.getParent();
-            if (parentClause != null) {  // can not wrap top node
-                WhereClause newClause = new NotClause();
-                replaceChild(parentClause, clause, newClause);
-                addChild(newClause, clause);
-            }
-        } catch (IllegalWhereClauseCompositionException iwcce) {
-            System.err.println("Wrap NOT failed: " + iwcce.getMessage());
-        }
+    public void wrapNot(List<WhereClause> clauses) {
+    	wrapInClause(clauses, new NotClause());
     }
     
     /**
@@ -355,7 +348,7 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         if (grandparent == null) {
             return false; // can not unwrap top node
         }
-        return (parent.getChildCount() == 1);
+        return (true);
     }
     
     /**
@@ -367,17 +360,21 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
      * @pre clause != null
      * @pre canUnwrap(clause)
      */
-    public void unwrap(WhereClause clause) {
-        if (!canUnwrap(clause)) {
-            return;
-        }
-        WhereClause parent = clause.getParent();
-        WhereClause grandparent = parent.getParent();
-        try {
-            replaceChild(grandparent, parent, clause);
-        } catch (IllegalWhereClauseCompositionException iwcce) {
-            System.err.println("Unwrap failed: " + iwcce.getMessage());
-        }
+    public void unwrap(List<WhereClause> clauses) {
+    	for (WhereClause clause : clauses) {
+    		if (canUnwrap(clause)) {
+    	        WhereClause parent = clause.getParent();
+    	        WhereClause grandparent = parent.getParent();
+    	        if (grandparent.acceptsAdditionalChild()) {
+	    	        removeChild(parent, clause);
+	    	        try {
+						addChild(grandparent, clause);
+					} catch (IllegalWhereClauseCompositionException e) {
+						e.printStackTrace();
+					}
+    	        }
+    		}
+    	}
     }
     
     /**
@@ -454,6 +451,9 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
     
     // various classes we will want to encode, require specific Persistence Delegates
     private void installPersistenceDelegates(java.beans.XMLEncoder encoder) {
+        encoder.setPersistenceDelegate(AndClause.class, new ComposedClausePersistenceDelegate());
+        encoder.setPersistenceDelegate(InclusiveOrClause.class, new ComposedClausePersistenceDelegate());
+        encoder.setPersistenceDelegate(NotClause.class, new ComposedClausePersistenceDelegate());
         encoder.setPersistenceDelegate(File.class, new FilePersistenceDelegate());
         encoder.setPersistenceDelegate(FromVariable.class, new FromVariablePersistenceDelegate());
         encoder.setPersistenceDelegate(FieldSelection.class, new SelectionPersistenceDelegate());
@@ -472,34 +472,56 @@ public class QueryEditor extends DefaultTreeModel implements Savable {
         encoder.setPersistenceDelegate(VisualizationClauseList.class, new VisualizationClauseListPersistenceDelegate());
         encoder.setPersistenceDelegate(WhereClauseComposer.class, new WhereClauseComposerPersistenceDelegate());
         encoder.setPersistenceDelegate(SuggestedValuesOption.class, new DefaultPersistenceDelegate());
+        encoder.setPersistenceDelegate(Query.class, new QueryPersistenceDelegate());
     }
     
     public void saveSubquery(WhereClause clause, File file) throws java.io.FileNotFoundException {
-        java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
-        installPersistenceDelegates(encoder);
-        encoder.writeObject(clause);
-        encoder.close();
+    	saveObject(clause, file);
+    }
+    
+    private void saveObject(Object object, File file) throws java.io.FileNotFoundException {
+//      java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
+//      installPersistenceDelegates(encoder);
+//      encoder.writeObject(object);
+//      encoder.close();
+		try {
+			ObjectOutputStream objstream = new ObjectOutputStream(new FileOutputStream(file));
+	        objstream.writeObject(object);
+	        objstream.close();    	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    private Object loadObject(File file) throws java.io.FileNotFoundException {
+    	Object object = null;
+		try {
+	        ObjectInputStream objstream = new ObjectInputStream(new FileInputStream(file));
+	        object = objstream.readObject();
+	        objstream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+//      java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
+//      object = decoder.readObject();
+		return object;
     }
     
     public WhereClause loadSubquery(File file) throws java.io.FileNotFoundException {
-        java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
-        WhereClause clause = (WhereClause)decoder.readObject();
-        // make sure the names of loaded variables are replaced with fresh unique ones for this query
+        WhereClause clause = (WhereClause)loadObject(file);
         getQuery().getUniqueNameContext().assignUniqueNamesToAll(clause);
         return clause;
     }
     
     public void saveXMLQuery(File file) throws java.io.FileNotFoundException {
-        java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
-        installPersistenceDelegates(encoder);
-        encoder.writeObject(query);
-        encoder.close();
+    	saveObject(query, file);
         setDirty(false);
     }
     
     public void loadXMLQuery(File file) throws java.io.FileNotFoundException {
-        java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
-        setQuery((Query)decoder.readObject());
+    	setQuery((Query) loadObject(file));
         setDirty(false);
     }
     

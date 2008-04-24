@@ -1,6 +1,8 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
-public class SuggestedValuesOption {
+import java.io.Serializable;
+
+public class SuggestedValuesOption implements Serializable{
 	private Object option, value;
 	public SuggestedValuesOption(){}
 	

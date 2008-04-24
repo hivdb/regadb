@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -27,7 +28,7 @@ import java.util.*;
  *  subSelections
  * </p>
  */
-public abstract class ComposedSelection implements Selection {
+public abstract class ComposedSelection implements Selection, Serializable {
     
     private Object objectSpec;
     private boolean selected = false;

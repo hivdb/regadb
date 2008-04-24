@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -21,7 +22,7 @@ import java.util.*;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class TableSelection extends ComposedSelection {
+public class TableSelection extends ComposedSelection implements Serializable{
     
     private Table table; // the Table accessed by the FromVariable that is the sole AWCWord in the Expression of this Selection's OutputVariable
     
@@ -71,25 +72,4 @@ public class TableSelection extends ComposedSelection {
         }
         setSubSelections(fieldSelections);
     }
-    
-    /*
-     * Hibernate version of the method.
-     *
-    public void initSubSelections() {
-        subSelections = new ArrayList();
-        try {
-            Class tableClass = Class.forName("com.pharmadm.custom.rega.persistent." + tableName);
-            java.lang.reflect.Field[] fieldArray = tableClass.getDeclaredFields();
-            for (int i = 0; i < fieldArray.length; i++) {
-                java.lang.reflect.Field field = fieldArray[i];
-                String fieldName = field.getName();
-                subSelections.add(new FieldSelection(fieldName));
-            }
-        } catch (ClassNotFoundException cnfe) {
-            System.err.println("Found no class representing table " + tableName);
-            System.err.println(cnfe.getMessage());
-        }
-    }
-     */
-    
 }

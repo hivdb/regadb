@@ -20,10 +20,16 @@ public class HibernateStatement implements QueryStatement {
 	public void cancel() {
 		if (!closed && exists()) {
 			transaction.rollback();
+			transaction.clear();
 		}
 	}
 
-	public void close() {}
+	public void close() {
+		if (!closed && exists()) {
+			transaction.rollback();
+			transaction.clear();
+		}
+	}
 
 	public QueryResult executeQuery(String query) {
 		Query q = transaction.createQuery(query);

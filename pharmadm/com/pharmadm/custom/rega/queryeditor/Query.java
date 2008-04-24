@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
@@ -43,7 +44,7 @@ import com.pharmadm.util.work.Work;
  *  uniqueNameContext
  * </p>
  */
-public class Query {
+public class Query implements Serializable {
     
     ///////////////////////////////////////
     // associations
@@ -61,6 +62,12 @@ public class Query {
     
     public Query(WhereClause whereClause) {
         this.rootClause = whereClause;
+    }
+    
+    public Query(WhereClause whereClause, SelectionStatusList selectList, UniqueNameContext context) {
+    	setRootClause(whereClause);
+    	setSelectList(selectList);
+    	setUniqueNameContext(context);
     }
     
     ///////////////////////////////////////

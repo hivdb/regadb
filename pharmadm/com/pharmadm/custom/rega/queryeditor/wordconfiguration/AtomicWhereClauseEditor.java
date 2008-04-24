@@ -9,7 +9,7 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.gui;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
 import java.util.*;
 
@@ -19,6 +19,7 @@ import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.InputVariableController;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
@@ -33,16 +34,21 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
     // associations
     
     private AtomicWhereClause atomicWhereClause;
-    private WhereClause contextClause = null;
+    private QueryContext context = null;
     private VisualizationComponentFactory visualizationComponentFactory;
-    private QueryEditor queryEditor;
     
-    public AtomicWhereClauseEditor(QueryEditor queryEditor) {
-        this.queryEditor= queryEditor;
+    public AtomicWhereClauseEditor(QueryContext context, AtomicWhereClause clause) {
+    	visualizationComponentFactory = new VisualizationComponentFactory(this);
+    	this.context = context;
+    	atomicWhereClause = clause;
     }
     
     ///////////////////////////////////////
     // access methods for associations
+    
+    public QueryEditor getQueryEditor() {
+    	return context.getEditorModel();
+    }
     
     public AtomicWhereClause getAtomicWhereClause() {
         return atomicWhereClause;
@@ -51,10 +57,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
         this.atomicWhereClause = atomicWhereClause;
     }
     public WhereClause getContextClause() {
-        return contextClause;
-    }
-    public void setContextClause(WhereClause contextClause) {
-        this.contextClause = contextClause;
+        return context.getContextClause();
     }
     public VisualizationComponentFactory getVisualizationComponentFactory() {
         return visualizationComponentFactory;
@@ -79,7 +82,8 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * </p>
      */
     public Collection<OutputVariable> getAvailableOutputVariables() {
-        if (contextClause == null) {
+    	WhereClause contextClause = getContextClause();
+        if (getContextClause() == null) {
             return getAtomicWhereClause().getOutputVariablesAvailableForImport();
         }
         else {
@@ -221,8 +225,9 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
     } // end getVisualizationList
     
     private void notifyQueryEditorDirty() {
-        if (queryEditor != null) {
-            queryEditor.setDirty(true);
+    	QueryEditor editor = getQueryEditor();
+        if (editor != null) {
+            editor.setDirty(true);
         }
     }
 }

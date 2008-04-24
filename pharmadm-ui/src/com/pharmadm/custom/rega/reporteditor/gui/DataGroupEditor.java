@@ -15,9 +15,9 @@ package com.pharmadm.custom.rega.reporteditor.gui;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
-import com.pharmadm.custom.rega.queryeditor.gui.ConfigurationController;
-import com.pharmadm.custom.rega.queryeditor.gui.ConstantController;
-import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConstantController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.reporteditor.DataGroup;
 import com.pharmadm.custom.rega.reporteditor.DataInputVariable;

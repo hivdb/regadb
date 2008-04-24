@@ -10,7 +10,7 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.gui;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
 import java.util.*;
 import javax.swing.AbstractAction;
@@ -25,7 +25,7 @@ import javax.swing.event.ChangeListener;
 public class ToggleAction extends AbstractAction {
     
     private boolean state;
-    private List listeners = new ArrayList();
+    private List<ChangeListener> listeners = new ArrayList<ChangeListener>();
     
     /** Creates a new instance of ToggleAction */
     public ToggleAction(String name, boolean initialState) {
@@ -46,13 +46,13 @@ public class ToggleAction extends AbstractAction {
      */
     private void toggleState(Object source) {
         state = !state;
-        Iterator iterListeners = listeners.iterator();
+        Iterator<ChangeListener> iterListeners = listeners.iterator();
         if (source == null) {
             source = this;
         }
         ChangeEvent changeEvent = new ChangeEvent(source);
         while (iterListeners.hasNext()) {
-            ChangeListener listener = (ChangeListener)iterListeners.next();
+            ChangeListener listener = iterListeners.next();
             listener.stateChanged(changeEvent);
         }
     }

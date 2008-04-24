@@ -1,9 +1,10 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
 import java.text.Format;
 
 
-public class BooleanConstant extends Constant {
+public class BooleanConstant extends Constant implements Serializable {
 
 	public BooleanConstant(SuggestedValues suggestedValues) {
 		super(suggestedValues);

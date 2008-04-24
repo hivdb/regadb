@@ -11,6 +11,11 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
@@ -29,7 +34,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * </p>
  *
  */
-public class InputVariable extends Variable implements AWCWord, Cloneable {
+public class InputVariable extends Variable implements AWCWord, Cloneable, Serializable {
     
     ///////////////////////////////////////
     // associations
@@ -84,13 +89,11 @@ public class InputVariable extends Variable implements AWCWord, Cloneable {
     }
     
     public String acceptWhereClause(QueryVisitor visitor) {
-        OutputVariable ovar = getOutputVariable();
-        return (((ovar = getOutputVariable()) == null) ? null : ovar.acceptWhereClause(visitor));
+        return (outputVariable == null) ? null : outputVariable.acceptWhereClause(visitor);
     }
  
     public String getHumanStringValue() {
-        OutputVariable ovar = getOutputVariable();
-        return (((ovar = getOutputVariable()) == null) ? this.getVariableType().getName() : ovar.getHumanStringValue());
+    	return (outputVariable == null) ? this.getVariableType().getName() : outputVariable.getName(RelationDisplay.HIDE, DescriptionDisplay.HIDE, UniqueNameDisplay.SHOW);
     }    
  
     /**
@@ -99,8 +102,6 @@ public class InputVariable extends Variable implements AWCWord, Cloneable {
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-    
-   
 } // end InputVariable
 
 

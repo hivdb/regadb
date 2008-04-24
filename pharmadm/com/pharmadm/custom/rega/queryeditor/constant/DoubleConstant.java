@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
 import java.text.Format;
 import java.text.DecimalFormat;
 
@@ -20,7 +21,7 @@ import java.text.DecimalFormat;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class DoubleConstant extends Constant {
+public class DoubleConstant extends Constant implements Serializable{
     
 	private static final Format DOUBLE_FORMAT = new DecimalFormat();
     

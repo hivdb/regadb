@@ -41,7 +41,7 @@ public class QueryResultTableModel extends AbstractTableModel {
         colNames = new String[colCount];
         colClasses = new Class[colCount];
         for (int i = 0; i < colCount; i++) {
-            if (columnSelections != null) {
+            if (columnSelections != null && columnSelections.size() >= colCount) {
                 colNames[i] = (String)columnSelections.get(i); //rsmd.getColumnName(i + 1);
             } else {
                 colNames[i] = resultSet.getColumnName(i);

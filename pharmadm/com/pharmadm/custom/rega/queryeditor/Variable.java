@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -22,7 +24,7 @@ package com.pharmadm.custom.rega.queryeditor;
  *  variableType
  * </p>
  */
-public abstract class Variable {
+public abstract class Variable implements Serializable {
     
     ///////////////////////////////////////
     // associations

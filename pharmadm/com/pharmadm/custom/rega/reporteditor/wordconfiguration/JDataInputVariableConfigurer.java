@@ -10,11 +10,13 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.reporteditor.gui;
+package com.pharmadm.custom.rega.reporteditor.wordconfiguration;
+
+import java.util.List;
 
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.*;
-import com.pharmadm.custom.rega.queryeditor.gui.*;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -64,4 +66,15 @@ public class JDataInputVariableConfigurer extends javax.swing.JComboBox implemen
     public void freeResources() {
         // this class uses no database resources
     }
+
+	@Override
+	public void add(List<WordConfigurer> words) {
+	}
+
+	@Override
+	public void reAssign(Object o) {
+		JDataInputVariableConfigurer confy = (JDataInputVariableConfigurer) o;
+		this.controller = confy.controller;
+		this.var = confy.var;
+	}
 }

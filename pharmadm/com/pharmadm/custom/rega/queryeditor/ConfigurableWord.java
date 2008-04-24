@@ -19,5 +19,4 @@ package com.pharmadm.custom.rega.queryeditor;
 public interface ConfigurableWord {
     
     public String getHumanStringValue();
-    
 }

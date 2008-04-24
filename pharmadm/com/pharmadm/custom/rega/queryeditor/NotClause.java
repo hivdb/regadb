@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -28,12 +29,15 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class NotClause extends ComposedWhereClause {
+public class NotClause extends ComposedWhereClause implements Serializable {
     
     /** For xml-encoding purposes only */
     public NotClause() {
     }
     
+    public NotClause(ArrayList<WhereClause> children) {
+    	super(children);
+    }
     
     /**
      * A not clause accepts at most one child.

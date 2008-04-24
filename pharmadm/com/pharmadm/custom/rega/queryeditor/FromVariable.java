@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
@@ -27,7 +29,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * </p>
  *
  */
-public class FromVariable implements AWCWord, Cloneable {
+public class FromVariable implements AWCWord, Cloneable, Serializable {
     
     ///////////////////////////////////////
     // associations
@@ -39,21 +41,16 @@ public class FromVariable implements AWCWord, Cloneable {
      */
 
     private String tableName;
-    private Table table;
-    
     private long seqId;
-//    private static long nextSeqId;
-//    private static Object seqIdLock = new Object();
     private boolean locked;
     
     public FromVariable(String tableName) {
         this.tableName = tableName;
-        this.table = DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
         locked = false;
     }
     
     private void acquireSeqId() {
-    	seqId = table.acquireSeqId();
+    	seqId = getTable().acquireSeqId();
         locked = true;
     }
     
@@ -61,7 +58,7 @@ public class FromVariable implements AWCWord, Cloneable {
     // access methods for associations
     
     public Table getTable() {
-        return table;
+    		return DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
     }
     
     public String getTableName() {
@@ -97,11 +94,6 @@ public class FromVariable implements AWCWord, Cloneable {
     
     protected Object clone() throws CloneNotSupportedException {
         FromVariable clone = (FromVariable)super.clone();
-//        clone.unlock();
-//        clone.acquireSeqId();
         return clone;
     }
-    
-    
-    
 }

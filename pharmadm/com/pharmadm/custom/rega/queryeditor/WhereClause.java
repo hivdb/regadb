@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,14 +48,14 @@ import com.pharmadm.util.work.Work;
  * </p>
  *
  */
-public abstract class WhereClause implements Cloneable {
+public abstract class WhereClause implements Cloneable, Serializable {
     
     private WhereClause parent;
     
     /** For xml-encoding purposes only */
     public WhereClause() {
     }
-    
+
     ///////////////////////////////////////
     // operations
     

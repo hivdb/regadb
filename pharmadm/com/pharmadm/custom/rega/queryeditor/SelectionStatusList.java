@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
@@ -27,11 +28,11 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *  selections
  * </p>
  */
-public class SelectionStatusList implements SelectionList {
+public class SelectionStatusList implements SelectionList, Serializable {
     
     private Query query;
     private List<Selection> selections = new ArrayList<Selection>(); // of type Selection
-    private List<SelectionChangeListener> changeListeners = new ArrayList<SelectionChangeListener>();
+    private transient List<SelectionChangeListener> changeListeners = new ArrayList<SelectionChangeListener>();
     
     /* for xml-encoding purposes only */
     public Query getQuery() {
@@ -81,7 +82,8 @@ public class SelectionStatusList implements SelectionList {
                         }
                     }
                     if (selectedColumnCount == 0 && DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
-                    	selectedColumns.add(((TableSelection)selection).getTable().getName());
+                    	String name = var.getUniqueName();
+                    	selectedColumns.add(name);
                     }
                 }
                 else { // selection instanceof OutputSelection
@@ -210,6 +212,9 @@ public class SelectionStatusList implements SelectionList {
      * It is highly recommended to unsubscribe from the old list whenever the Selection list is replaced.
      */
     public void addSelectionChangeListener(SelectionChangeListener listener) {
+    	if (changeListeners == null) {
+    		changeListeners	= new ArrayList<SelectionChangeListener>();    		
+    	}
         changeListeners.add(listener);
     }
     

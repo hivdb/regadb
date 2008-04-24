@@ -1,12 +1,13 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
-public class SuggestedValues {
+public class SuggestedValues implements Serializable {
 	private ArrayList<SuggestedValuesOption> options;
 	private String query = null;
 	private boolean mandatory;
@@ -40,9 +41,7 @@ public class SuggestedValues {
 		
 		if (query != null) {
 			try {
-				System.err.println("Trying to execute query: " + query);
 				QueryResult rs = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query);
-				System.err.println("found " + rs.size() + " results");
 	    		for (int i = 0 ; i < rs.size() ; i++) {
 	    			result.add(new SuggestedValuesOption(rs.get(i,0)));
 	    		}

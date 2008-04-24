@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -32,7 +33,7 @@ import java.util.*;
  * </p>
  * @invar !hasOwner() || owner contains all non-fixedstring-Words  of this.
  */
-public class OrderedConfigurableWordList implements Cloneable {
+public class OrderedConfigurableWordList implements Cloneable, Serializable {
     
     private WordListOwner owner = null;
     private List<ConfigurableWord> words = new ArrayList<ConfigurableWord>(); // of type ConfigurableWord

@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
@@ -21,7 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  * </p>
  *
  */
-public class Table implements Comparable {
+public class Table implements Comparable, Serializable {
     
     ///////////////////////////////////////
     // attributes
@@ -102,8 +103,8 @@ public class Table implements Comparable {
         return name;
     }
     
-    public String getSingularName() {
-    	return AWCPrototypeCatalog.getInstance().getTableDescription(getName());
+    public String getDescription() {
+    	return AWCPrototypeCatalog.getInstance().getObjectDescription(getName());
     }
     
     public String getComment() {

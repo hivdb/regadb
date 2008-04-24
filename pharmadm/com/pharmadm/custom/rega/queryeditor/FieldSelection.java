@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 /**
@@ -23,7 +25,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  * </p>
  */
 
-public class FieldSelection extends SimpleSelection {
+public class FieldSelection extends SimpleSelection implements Serializable{
     
     /** Creates a new instance of FieldSelection */
     public FieldSelection(Field field) {

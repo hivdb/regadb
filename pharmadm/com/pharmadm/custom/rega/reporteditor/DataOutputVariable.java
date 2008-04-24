@@ -14,6 +14,9 @@ package com.pharmadm.custom.rega.reporteditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+
 /**
  * <p>
  * Represents a value that gets calculated by a ValueSpecifier in a DataGroup,
@@ -227,5 +230,4 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
         clone.properties = null; // just reset this, new properties will be made as needed
         return clone; 
     }
-    
 } // end DataOutputVariable

@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -32,7 +33,7 @@ import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
  * </p>
  */
 
-public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier {
+public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier, Serializable {
 
   ///////////////////////////////////////
   // attributes
@@ -95,7 +96,6 @@ public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier {
         //context-independent
         return getHumanStringValue();
     }
-    
 } // end FixedString
 
 

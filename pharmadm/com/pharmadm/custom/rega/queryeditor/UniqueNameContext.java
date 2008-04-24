@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 import com.pharmadm.custom.rega.reporteditor.*;
 
@@ -25,7 +26,7 @@ import com.pharmadm.custom.rega.reporteditor.*;
  * </p>
  * @author  kdg
  */
-public class UniqueNameContext {
+public class UniqueNameContext implements Serializable {
     
     private Map formalNameToNumberMap;
     

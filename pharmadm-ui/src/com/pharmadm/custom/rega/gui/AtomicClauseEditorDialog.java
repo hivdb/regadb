@@ -13,7 +13,7 @@
 package com.pharmadm.custom.rega.gui;
 
 
-import com.pharmadm.custom.rega.queryeditor.gui.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 
 /**
  *
@@ -79,7 +79,6 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
     
     private void initEditorComponents(AtomicWhereClauseEditor editor) {
         editPanel = new AWCEditorPanel(editor);
-        //editPanel.setPreferredSize(new java.awt.Dimension(600, 80));
         getContentPane().add(editPanel, java.awt.BorderLayout.CENTER);
     }
     

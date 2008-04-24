@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -24,7 +26,7 @@ package com.pharmadm.custom.rega.queryeditor;
  *  name
  * </p>
  */
-public class VariableType {
+public class VariableType implements Serializable{
     
     private static boolean typeStringEquivalent(String type1, String type2) {
         if ((type1 == null) || (type2 == null)) {
@@ -107,6 +109,10 @@ public class VariableType {
                 return null;
             }
         }
+    }
+    
+    public boolean isTable() {
+    	return !(name.equals("String") || name.equals("Date") || name.equals("Numeric") || name.equals("Boolean"));
     }
     
 } // end VariableType

@@ -9,15 +9,18 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.gui;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
-//import com.pharmadm.custom.rega.chem.search.MoleculeConstant;
 import com.pharmadm.custom.rega.reporteditor.*;
-import com.pharmadm.custom.rega.reporteditor.gui.*;
-import java.util.*;
-import javax.swing.*;
+import com.pharmadm.custom.rega.reporteditor.wordconfiguration.JDataInputVariableConfigurer;
+import com.pharmadm.custom.rega.reporteditor.wordconfiguration.JDataOutputVariableConfigurer;
+import com.pharmadm.custom.rega.reporteditor.wordconfiguration.JObjectListVariableConfigurer;
+import com.pharmadm.custom.rega.reporteditor.wordconfiguration.JObjectListVariableSeeder;
 
 /**
  * <p>
@@ -61,20 +64,17 @@ public class VisualizationComponentFactory {
  * </p>
  */
     public WordConfigurer createComponent(ConfigurableWord word) {   
-//        if (word instanceof MoleculeConstant) {
-//            return new JMoleculeConstantConfigurer((MoleculeConstant)word, (ConstantController)controller);
-//        } else 
-            if (word instanceof Constant) {
-            Constant constant = (Constant)word;
-            if (constant.getSuggestedValuesList().size() > 0) {
-                return new JConstantChoiceConfigurer(constant, (ConstantController)controller);
-            } else {
-                return new JConstantConfigurer(constant, (ConstantController)controller);
-            }
+        if (word instanceof Constant) {
+        	Constant constant = (Constant)word;
+	        if (constant.getSuggestedValuesList().size() > 0) {
+	            return new JConstantChoiceConfigurer(constant, (ConstantController)controller);
+	        } else {
+	            return new JConstantConfigurer(constant, (ConstantController)controller);
+	        }
         } else if (word instanceof FixedString) {
-            return new JFixedStringConfigurer((FixedString)word, controller);
+            return new JFixedStringConfigurer((FixedString)word);
         } else if (word instanceof FromVariable) {
-            return new JFromVariableConfigurer((FromVariable)word, controller); 
+            return new JFromVariableConfigurer((FromVariable)word); 
         } else if (word instanceof ObjectListVariable) {
             if (seedController != null) {
                 return new JObjectListVariableSeeder((ObjectListVariable)word, seedController);
@@ -82,7 +82,7 @@ public class VisualizationComponentFactory {
                 return new JObjectListVariableConfigurer((ObjectListVariable)word, controller);
             }
         } else if (word instanceof OutputVariable) {
-            return new JOutputVariableConfigurer((OutputVariable)word, controller);
+            return new JOutputVariableConfigurer((OutputVariable)word);
         } else if (word instanceof InputVariable) {
             return new JInputVariableConfigurer((InputVariable)word, (InputVariableController)controller); 
         } else if (word instanceof DataOutputVariable) {
@@ -93,8 +93,16 @@ public class VisualizationComponentFactory {
             return null;
         }
         // your code here
-    } // end createComponent        
-
+    } // end createComponent 
+    
+    public List<WordConfigurer> createComponents(List<ConfigurableWord> words) {
+    	List<WordConfigurer> configurers = new ArrayList<WordConfigurer>();
+    	for (ConfigurableWord word : words) {
+    		configurers.add(createComponent(word));
+    	}
+    	return configurers;
+    }
+    
 } // end VisualizationComponentFactory
 
 

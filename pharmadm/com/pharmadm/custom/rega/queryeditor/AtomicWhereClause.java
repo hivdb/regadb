@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
@@ -38,7 +39,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *  whereClauseComposer (via constructor, using AWCPersistenceDelegate)
  * </p>
  */
-public class AtomicWhereClause extends WhereClause implements WordListOwner {
+public class AtomicWhereClause extends WhereClause implements WordListOwner, Serializable {
     
     public AtomicWhereClause() {
     }
@@ -61,28 +62,28 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
      *
      * </p>
      */
-    private Collection<InputVariable> inputVariables = new HashSet<InputVariable>(); // of type InputVariable
+    private Collection<InputVariable> inputVariables = new ArrayList<InputVariable>(); // of type InputVariable
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection<Constant> constants = new HashSet<Constant>(); // of type Constant
+    private Collection<Constant> constants = new ArrayList<Constant>(); // of type Constant
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection<OutputVariable> outputVariables = new HashSet<OutputVariable>(); // of type OutputVariable
+    private Collection<OutputVariable> outputVariables = new ArrayList<OutputVariable>(); // of type OutputVariable
     
     /**
      * <p>
      *
      * </p>
      */
-    private Collection<FromVariable> fromVariables = new HashSet<FromVariable>(); // of type FromVariable
+    private Collection<FromVariable> fromVariables = new ArrayList<FromVariable>(); // of type FromVariable
     
     /**
      * <p>
@@ -100,35 +101,55 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     
     private static final Iterator<WhereClause> EMPTY_ITERATOR = Collections.EMPTY_LIST.iterator();
     
+    private Collection<String> groups = new HashSet<String>();
+    private CompositionBehaviour compositionBehaviour = new NullComposition();
+    
+    
     ///////////////////////////////////////
     // access methods for associations
     
+    public Collection<String> getGroups() {
+    	return groups;
+    }
+    
+    protected void addGroup(String group) {
+    	groups.add(group);
+    }
+   
     public Collection<InputVariable> getInputVariables() {
         return inputVariables;
     }
     protected void addInputVariable(InputVariable inputVariable) {
-        this.inputVariables.add(inputVariable);
+    	if (!this.inputVariables.contains(inputVariable)) {
+    		this.inputVariables.add(inputVariable);
+    	}
     }
     
     public Collection<Constant> getConstants() {
         return constants;
     }
     protected void addConstant(Constant constant) {
-        this.constants.add(constant);
+    	if (!this.constants.contains(constant)) {
+    		this.constants.add(constant);
+    	}
     }
     
     public Collection<OutputVariable> getOutputVariables() {
         return outputVariables;
     }
     protected void addOutputVariable(OutputVariable outputVariable) {
-        this.outputVariables.add(outputVariable);
+    	if (!this.outputVariables.contains(outputVariable)) {
+    		this.outputVariables.add(outputVariable);
+    	}
     }
     
     public Collection<FromVariable> getFromVariables() {
         return fromVariables;
     }
     protected void addFromVariable(FromVariable fromVariable) {
-        this.fromVariables.add(fromVariable);
+    	if (!this.fromVariables.contains(fromVariable)) {
+    		this.fromVariables.add(fromVariable);
+    	}
     }
     
     public WhereClauseComposer getWhereClauseComposer() {
@@ -240,6 +261,9 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
         VisualizationClauseList visClauseListClone = (VisualizationClauseList)getVisualizationClauseList().cloneInContext(originalToCloneMap, clone);
         clone.setVisualizationClauseList(visClauseListClone);
         
+        clone.groups = groups;
+        clone.compositionBehaviour = compositionBehaviour;
+        
         return clone;
     }
     
@@ -322,6 +346,14 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner {
     public String toString() {
         return getVisualizationClauseList().getHumanStringValue();
     }
+
+	public void setCompositionBehaviour(CompositionBehaviour compositionBehaviour) {
+		this.compositionBehaviour = compositionBehaviour;
+	}
+
+	public CompositionBehaviour getCompositionBehaviour() {
+		return compositionBehaviour;
+	}
     
     
 } // end AtomicWhereClause

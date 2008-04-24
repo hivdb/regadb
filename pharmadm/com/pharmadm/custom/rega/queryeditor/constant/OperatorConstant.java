@@ -1,9 +1,12 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
+
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
-public class OperatorConstant extends StringConstant {
+public class OperatorConstant extends StringConstant implements Serializable {
 	
 	private String humanStringValue;
 
@@ -37,7 +40,7 @@ public class OperatorConstant extends StringConstant {
     public String getHumanStringValue() {
     	return humanStringValue;
     }
-	
+    
     public String acceptWhereClause(QueryVisitor visitor) {
         return visitor.visitWhereClauseConstant(this);
     }

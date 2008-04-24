@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 
@@ -31,7 +33,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  * An outputexpression does not have an owner, thus no single AtomicWhereClause is 
  * guaranteed to have all (non-fixedstring-)words of this.
  */
-public class OutputExpression extends OrderedAWCWordList {
+public class OutputExpression extends OrderedAWCWordList implements Serializable {
     
     public OutputExpression() {
     }

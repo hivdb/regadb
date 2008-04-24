@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 /**
  *
  * @author  kristof
@@ -24,7 +26,7 @@ package com.pharmadm.custom.rega.queryeditor;
  *  controller
  * </p>
  */
-public abstract class SimpleSelection implements Selection {
+public abstract class SimpleSelection implements Selection, Serializable {
     
     private Object objectSpec; // specification of the object - the distinction object/spec is important for xml-encoding/decoding
     private boolean selected = false;

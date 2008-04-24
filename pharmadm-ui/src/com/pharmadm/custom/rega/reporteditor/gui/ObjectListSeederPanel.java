@@ -13,6 +13,7 @@
 package com.pharmadm.custom.rega.reporteditor.gui;
 
 import com.pharmadm.custom.rega.reporteditor.*;
+import com.pharmadm.custom.rega.reporteditor.wordconfiguration.JObjectListVariableSeeder;
 
 /**
  *

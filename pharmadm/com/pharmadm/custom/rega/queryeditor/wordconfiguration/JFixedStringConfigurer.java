@@ -10,7 +10,9 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.gui;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+
+import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 /**
@@ -32,7 +34,7 @@ public class JFixedStringConfigurer extends javax.swing.JLabel implements WordCo
      * @param controller The controller in charge of configuration
      * </p>
      */
-    public JFixedStringConfigurer(FixedString string, ConfigurationController controller) {
+    public JFixedStringConfigurer(FixedString string) {
         super(string.getHumanStringValue());
         this.string = string;
     }
@@ -48,5 +50,19 @@ public class JFixedStringConfigurer extends javax.swing.JLabel implements WordCo
     public void freeResources() {
         // this class uses no database resources
     }
+
+	@Override
+	public void add(List<WordConfigurer> words) {
+	}
+
+	@Override
+	public int getSelectedIndex() {
+		return 0;
+	}
+
+	@Override
+	public void reAssign(Object o) {
+		// does nothing. no configuration required
+	}
     
 }

@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 
@@ -20,7 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  * </p>
  * 
  */
-public class Field {
+public class Field implements Serializable {
  
   ///////////////////////////////////////
   // attributes
@@ -44,12 +46,12 @@ public class Field {
  * 
  * </p>
  */
-    private Table table; 
+    private String tableName;
     
     public Field(String name, Table table, boolean primaryKey) {
         this.name = name;
-        this.table = table;
         this.primaryKey = primaryKey;
+        this.tableName = table.getName();
         this.comment = DatabaseManager.getInstance().getDatabaseConnector().getCommentForColumn(table.getName(), name);
     }
     
@@ -58,7 +60,11 @@ public class Field {
    // access methods for associations
 
     public Table getTable() {
-        return table;
+    	return DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
+    }
+    
+    public String getTableName() {
+    	return tableName;
     }
     
     public String getName() {

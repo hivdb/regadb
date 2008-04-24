@@ -274,7 +274,7 @@ public class AWCPrototypeCatalog {
         }
     }
     
-    public String getTableDescription(String tableName) {
+    public String getObjectDescription(String tableName) {
     	return tableName.toLowerCase();
     }
     
@@ -339,7 +339,6 @@ public class AWCPrototypeCatalog {
     
     private OutputVariable getBasicOutputVariable(String typeString, String propertyName) {
         OutputVariable ovar = new OutputVariable(new VariableType(typeString), getVariableName(propertyName));
-        ovar.setUniqueName(ovar.getFormalName());
     	return ovar;
     }
     
@@ -482,7 +481,7 @@ public class AWCPrototypeCatalog {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
 
-            aVisList.addFixedString(new FixedString("There is a " + getTable(tableName).getSingularName()));
+            aVisList.addFixedString(new FixedString("There is a " + getTable(tableName).getDescription()));
             
             FromVariable tableFromVariable = new FromVariable(tableName);
             aClause.addFromVariable(tableFromVariable);
@@ -629,7 +628,7 @@ public class AWCPrototypeCatalog {
      * @return the input variable derived from the table (instance name of the table)
      */
     private InputVariable composeHumanReadableQuery(VisualizationClauseList aVisList, String tableName, InputVariable ivar, String propertyName, String relDescription, Constant constant, OutputVariable ovar, String constantdescription) {
-        String qTableName = getTable(tableName).getSingularName();
+        String qTableName = getTable(tableName).getDescription();
 
         aVisList.addFixedString(new FixedString("The " + qTableName));
         if (ivar == null) ivar = new InputVariable(new VariableType(tableName));
@@ -681,11 +680,11 @@ public class AWCPrototypeCatalog {
                 AtomicWhereClause aClause = new AtomicWhereClause();
                 VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
                 WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                String singularName = getTable(tableName).getSingularName();
+                String singularName = getTable(tableName).getDescription();
                 aVisList.addFixedString(new FixedString("The " + singularName));
                 InputVariable ivar = new InputVariable(new VariableType(tableName));
                 aVisList.addInputVariable(ivar);
-                String foreignSingularName = getTable(foreignTableName).getSingularName();
+                String foreignSingularName = getTable(foreignTableName).getDescription();
                 if (description == null) {
                     aVisList.addFixedString(new FixedString("has an associated " + foreignSingularName));
                 } else {
@@ -693,7 +692,6 @@ public class AWCPrototypeCatalog {
                 }
                 FromVariable newFromVar = new FromVariable(foreignTableName);
                 OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), getVariableName(foreignTableName));
-                ovar.setUniqueName(ovar.getFormalName());
                 aVisList.addOutputVariable(ovar);
                 ovar.getExpression().addFromVariable(newFromVar);
                 
@@ -722,7 +720,7 @@ public class AWCPrototypeCatalog {
             String tableName = args[0][0];
             String keyName = args[0][1];
             String foreignKeyName = args[0][2];
-            String singularName = getTable(tableName).getSingularName();
+            String singularName = getTable(tableName).getDescription();
             aVisList.addFixedString(new FixedString("The " + singularName));
             InputVariable ivar = new InputVariable(new VariableType(tableName));
             aVisList.addInputVariable(ivar);
@@ -785,14 +783,13 @@ public class AWCPrototypeCatalog {
                     aComposer.addFromVariable(newFromVar);
                     aComposer.addFixedString(new FixedString("." + newForeignKeyName + " = "));
                 } else {
-                    String newSingularName = getTable(newTableName).getSingularName();
+                    String newSingularName = getTable(newTableName).getDescription();
                     if (description == null) {
                         aVisList.addFixedString(new FixedString("has an associated " + newSingularName));
                     } else {
                         aVisList.addFixedString(new FixedString(description));
                     }
                     OutputVariable ovar = new OutputVariable(new VariableType(newTableName), getVariableName(newTableName));
-                    ovar.setUniqueName(ovar.getFormalName());
                     aVisList.addOutputVariable(ovar);
                     ovar.getExpression().addFromVariable(newFromVar);
                 }
@@ -815,7 +812,7 @@ public class AWCPrototypeCatalog {
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
                     WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                    String singularName = getTable(tableName).getSingularName();
+                    String singularName = getTable(tableName).getDescription();
                     aVisList.addFixedString(new FixedString("The " + singularName));
                     InputVariable ivar = new InputVariable(new VariableType(tableName));
                     aVisList.addInputVariable(ivar);
@@ -841,7 +838,6 @@ public class AWCPrototypeCatalog {
                     }
                     if (show) {
                         OutputVariable ovar = new OutputVariable(varType, getVariableName(codeName));
-                        ovar.setUniqueName(ovar.getFormalName());
                         ovar.getExpression().addConstant(valueConstant);
                         aVisList.addOutputVariable(ovar);
                     }
@@ -888,7 +884,7 @@ public class AWCPrototypeCatalog {
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
                     WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-                    String singularName = getTable(tableName).getSingularName();
+                    String singularName = getTable(tableName).getDescription();
                     aVisList.addFixedString(new FixedString("The " + singularName));
                     InputVariable ivar = new InputVariable(new VariableType(tableName));
                     aVisList.addInputVariable(ivar);
@@ -901,7 +897,6 @@ public class AWCPrototypeCatalog {
                     OutputVariable ovar = null;
                     if (show) {
 	                    ovar = new OutputVariable(new VariableType("Date"), getVariableName(propertyName));
-	                    ovar.setUniqueName(ovar.getFormalName());
 	                    ovar.getExpression().addInputVariable(ivar);
 	                    ovar.getExpression().addFixedString(new FixedString("." + propertyName));
 	                    aVisList.addOutputVariable(ovar);
@@ -1016,7 +1011,6 @@ public class AWCPrototypeCatalog {
         aVisList.addFixedString(new FixedString("Date"));
         Constant dateConstant = new DateConstant();
         OutputVariable ovar = new OutputVariable(new VariableType("Date"), getVariableName("Date"));
-        ovar.setUniqueName(ovar.getFormalName());
         ovar.getExpression().addConstant(dateConstant);
         aVisList.addOutputVariable(ovar);
         aVisList.addFixedString(new FixedString("is"));
@@ -1062,7 +1056,6 @@ public class AWCPrototypeCatalog {
             InputVariable ivar = new InputVariable(new VariableType("Date"));
             
             OutputVariable ovar = new OutputVariable(new VariableType("Date"), getVariableName("Date"));
-            ovar.setUniqueName(ovar.getFormalName());
             ovar.getExpression().addInputVariable(ivar);
             ovar.getExpression().addFixedString(new FixedString(plus ? " + " : " - "));
             DoubleConstant timeConstant = new DoubleConstant();

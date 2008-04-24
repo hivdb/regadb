@@ -1,12 +1,13 @@
 package com.pharmadm.custom.rega.gui;
 
 
+import java.awt.Component;
+import java.awt.event.MouseListener;
 import java.util.*;
 
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.gui.ConfigurationController;
-import com.pharmadm.custom.rega.queryeditor.gui.VisualizationComponentFactory;
-import com.pharmadm.custom.rega.queryeditor.gui.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -14,7 +15,7 @@ import com.pharmadm.custom.rega.queryeditor.gui.WordConfigurer;
  */
 public class WLOEditorPanel extends javax.swing.JPanel {
     
-    private List<WordConfigurer> configList;
+    protected List<WordConfigurer> configList;
     protected ConfigurationController controller;
 
     /** Creates new form WLOEditorPanel */
@@ -25,19 +26,24 @@ public class WLOEditorPanel extends javax.swing.JPanel {
     
     private void initMoreComponents() {
         setLayout(new java.awt.FlowLayout());
+        configList = getConfigurers(controller);
+        initConfigurers();
+    }
+    
+    protected List<WordConfigurer> getConfigurers(ConfigurationController controller) {
         VisualizationComponentFactory factory = controller.getVisualizationComponentFactory();
-        configList = new ArrayList<WordConfigurer>();
-        Iterator<ConfigurableWord> iter = controller.getVisualizationList().iterator();
-        while (iter.hasNext()) {
-            ConfigurableWord word = iter.next();
-            WordConfigurer wordConfigurer = factory.createComponent(word);
-            configList.add(wordConfigurer); 
+        return factory.createComponents(controller.getVisualizationList());
+    }
+    
+    protected void initConfigurers() {
+    	this.removeAll();
+    	for (WordConfigurer confy : configList) {
             try {
-                add((java.awt.Component)wordConfigurer);
+                add((java.awt.Component)confy);
             } catch (ClassCastException cce) {
                 System.out.println("Warning : Can only add objects of class java.awt.Component to GUI");
             }
-        }
+    	}
     }
         
     /** Applies changes made to all visualisation components in the componentList to the corresponding AWCWords */
@@ -64,6 +70,15 @@ public class WLOEditorPanel extends javax.swing.JPanel {
             java.awt.Component confy = (java.awt.Component)iter.next();
             confy.addFocusListener(listener);
         }
+    }
+    
+    public void addMouseListener(MouseListener listener) {
+    	if (configList != null) {
+    		for (WordConfigurer confy : configList) {
+    			Component comp = (Component) confy;
+    			comp.addMouseListener(listener);
+    		}
+    	}
     }
     
     public void freeResources() {

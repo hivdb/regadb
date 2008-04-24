@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.util.Date;
+import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 
@@ -22,7 +23,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class DateConstant extends Constant {
+public class DateConstant extends Constant implements Serializable{
 
 	
 	public DateConstant(SuggestedValues suggestedValues) {

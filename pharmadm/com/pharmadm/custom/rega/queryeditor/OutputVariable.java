@@ -11,6 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
@@ -42,15 +43,21 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *  expression
  * </p> 
  */
-public class OutputVariable extends Variable implements AWCWord, Cloneable {
+public class OutputVariable extends Variable implements AWCWord, Cloneable, Serializable {
 
+	public enum RelationDisplay {SHOW, HIDE}
+	public enum DescriptionDisplay {SHOW, HIDE, SHOW_WHEN_ASSIGNED, SHOW_WHEN_UNASSIGNED}
+	public enum UniqueNameDisplay {SHOW, HIDE, SHOW_WHEN_ASSIGNED, SHOW_WHEN_UNASSIGNED}
+	
   ///////////////////////////////////////
   // attributes
 
-    public OutputVariable(VariableType type, String formalName) {
+    public OutputVariable(VariableType type, String objectName) {
         super(type);
-        this.formalName = formalName;
         this.expression= new OutputExpression();
+        this.formalName = AWCPrototypeCatalog.getInstance().getVariableName(objectName); 
+        this.description = AWCPrototypeCatalog.getInstance().getObjectDescription(objectName);
+        this.relation = null;
     }
 
     /** For xml-encoding purposes only */
@@ -60,7 +67,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
 /**
  * <p>
  * Represents a non-unique name of the variable that has some meaning to
- * the user. For example, an OutputVariable of the tye 'Time' could be
+ * the user. For example, an OutputVariable of the type 'Time' could be
  * referred to as variable 'T'. A formal name may not:<ul>
  * <li>be null
  * <li>have a zero length
@@ -73,8 +80,19 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
  * </p>
  * 
  */
-    private String formalName; 
+    private String formalName;
+    
+/**
+ * description of the object
+ */
+    private String description; 
 
+/**
+ * description of the relation this outputvariable represents
+ */
+    private String relation;
+    
+    
 /**
  * <p>
  * Represents a unique name of the variable that can is unique for an
@@ -82,7 +100,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
  * longer to allow for uniqueness.
  * </p>
  * <p>
- * For example, two OutputVariables in a query, both of the tye 'Time' and
+ * For example, two OutputVariables in a query, both of the type 'Time' and
  * with formal name 'T', could have uniqueNames 'T1' and 'T2'.
  * </p>
  * <p>
@@ -93,25 +111,67 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
  * </p>
  * 
  */
-    private transient String uniqueName; 
+    private String uniqueName; 
 
     public String getFormalName() {
-        return formalName;
+    	return formalName;
     }
     
-    /** For xml-encoding purposes only */
+    /**
+     * sets a different base variable name for this output variable
+     * than the one found in the prototype catalog
+     * @param formalName
+     */
     public void setFormalName(String formalName) {
-        this.formalName = formalName;
+        this.formalName = formalName.replace(" ", "");
     }
     
+    /**
+     * returns the unique name of this output variable
+     * if no unique name has been assigned yet return the formal name
+     * @return
+     */
     public String getUniqueName() {
-        return uniqueName;
+    	if (uniqueName == null) {
+    		return getFormalName();
+    	}
+		return uniqueName;
     }
+    
     public void setUniqueName(String uniqueName) {
         this.uniqueName = uniqueName;
     }
     
+    public void setRelation(String name) {
+    	this.relation = name;
+    }
     
+    /**
+     * sets a custom description to be used instead of the one specified in
+     * the catalog
+     * @param name
+     */
+    public void setDescription(String name) {
+    	this.description = name;
+    }
+    
+    public String getName(RelationDisplay relation, DescriptionDisplay description, UniqueNameDisplay uName) {
+    	String name = "";
+    	if (relation == RelationDisplay.SHOW && this.relation != null) {
+    		name += this.relation + " ";
+    	}
+    	if (description == DescriptionDisplay.SHOW ||
+    		description == DescriptionDisplay.SHOW_WHEN_UNASSIGNED && uniqueName == null ||
+    		description == DescriptionDisplay.SHOW_WHEN_ASSIGNED && uniqueName != null) {
+    		name += this.description + " ";
+    	}
+    	if (uName == UniqueNameDisplay.SHOW ||
+    			uName == UniqueNameDisplay.SHOW_WHEN_UNASSIGNED && uniqueName == null ||
+    			uName == UniqueNameDisplay.SHOW_WHEN_ASSIGNED && uniqueName != null) {
+        		name += getUniqueName();
+    	}
+    	return name;
+    }
     
    ///////////////////////////////////////
    // associations
@@ -139,18 +199,18 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
     	return visitor.visitWhereClauseOutputVariable(this);
     }
     
+    /**
+     * for display in query tree
+     */
     public String getHumanStringValue() {
-        if ((uniqueName == null) || (uniqueName.equals(""))) {
-            return formalName;
-        }
-        else {
-            return uniqueName;
-        }
+    	return getName(RelationDisplay.SHOW, DescriptionDisplay.SHOW, UniqueNameDisplay.SHOW);
     }
  
-    // for presentation in JComboBox
+    /**
+     * for display in input variable dropdowns
+     */
     public String toString() {
-        return getHumanStringValue();
+        return getName(RelationDisplay.HIDE, DescriptionDisplay.HIDE, UniqueNameDisplay.SHOW);
     }
     
     /**
@@ -171,7 +231,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
     
     /* return the full column name uniquely identifying this field in a result set */ 
     public String getFullColumnName(Field field) {
-        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTable() == field.getTable())) {
+        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTableName().equals(field.getTableName()))) {
             return getUniqueName() + "." + field.getName();
         } else { 
             System.err.println("Error : trying to get a field from a variable that does not know it");
@@ -215,6 +275,5 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable {
             return null;
         }
     }
-    
    
 } // end OutputVariable

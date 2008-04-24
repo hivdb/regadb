@@ -12,6 +12,7 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -30,12 +31,17 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class AndClause extends ComposedWhereClause {
+public class AndClause extends ComposedWhereClause implements Serializable {
     
     
     /** For xml-encoding purposes only */
     public AndClause() {
     }
+
+    public AndClause(ArrayList<WhereClause> children) {
+    	super(children);
+    }
+    
     
     /**
      * An AndClause accepts unlimited children.

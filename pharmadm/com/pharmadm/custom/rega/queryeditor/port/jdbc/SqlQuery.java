@@ -26,6 +26,7 @@ import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.SubstringConstant;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 public class SqlQuery implements QueryVisitor {
@@ -55,6 +56,7 @@ public class SqlQuery implements QueryVisitor {
             if (selection.isSelected()) {
                 OutputVariable ovar = (OutputVariable)selection.getObject();
                 if (selection instanceof TableSelection) {
+                	int selectedCount = 0;
                     // %$ KVB : for the Hibernate version, we need to apply reflection on these fields
                     //          so that fields of class types are represented by an identifier
                     Iterator<Selection> fieldIter = ((TableSelection)selection).getSubSelections().iterator();
@@ -63,7 +65,13 @@ public class SqlQuery implements QueryVisitor {
                         if (subSelection.isSelected()) {
                             buffy.append(ovar.acceptWhereClauseFullName(this, (Field)(subSelection.getObject())));
                             buffy.append(",\n\t");
+                            selectedCount++;
                         }
+                    }
+                    
+                    if (selectedCount == 0 && DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                    	buffy.append(ovar.acceptWhereClause(this));
+                        buffy.append(",\n\t");
                     }
                 }
                 else { // selection instanceof OutputSelection
@@ -125,7 +133,7 @@ public class SqlQuery implements QueryVisitor {
 	}
 
 	public String visitWhereClauseFullNameOutputVariable(OutputVariable ovar, Field field) {
-        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTable() == field.getTable())) {
+        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTableName().equals(field.getTableName()))) {
             return ((FromVariable)ovar.getExpression().getWords().get(0)).acceptWhereClause(this) + "." + field.getName();
         } 
         else { 

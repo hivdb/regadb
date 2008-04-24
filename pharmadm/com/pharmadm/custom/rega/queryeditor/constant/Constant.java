@@ -11,10 +11,13 @@
  */
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
 import java.text.Format;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.AWCWord;
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
@@ -38,7 +41,7 @@ import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
  *  suggestedValuesMandatory
  * </p>
  */
-public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, ValueSpecifier {
+public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, ValueSpecifier, Serializable {
     
     ///////////////////////////////////////
     // attributes
@@ -134,6 +137,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         try {
             return getFormat().format(value);
         } catch (IllegalArgumentException iae) {
+        	iae.printStackTrace();
             return null;
         }
     }

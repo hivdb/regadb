@@ -14,6 +14,9 @@ package com.pharmadm.custom.rega.reporteditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
+
 /**
  * <p>
  * Represents a way to reuse a calculated value (represented by a 
@@ -117,8 +120,7 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
     public String getHumanStringValue(QueryOutputReportSeeder context) {
         DataOutputVariable ovar = getOutputVariable();
         return (((ovar = getOutputVariable()) == null) ? null : ovar.getHumanStringValue(context));
-    }    
-    
+    }
 } // end DataInputVariable
 
 

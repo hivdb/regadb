@@ -10,15 +10,15 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.gui;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
 import javax.swing.JFormattedTextField;
 
-import com.pharmadm.custom.rega.gui.FormattedComboBoxEditor;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.SuggestedValuesOption;
@@ -139,4 +139,17 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         public void close() {
         }
     }
+
+	@Override
+	public void add(List<WordConfigurer> words) {
+	}
+
+	@Override
+	public void reAssign(Object o) {
+		JConstantChoiceConfigurer confy = (JConstantChoiceConfigurer) o;
+		this.controller = confy.controller;
+		this.constant = confy.constant;
+		this.textField = confy.textField;
+		this.setSelectedIndex(confy.getSelectedIndex());
+	}
 }

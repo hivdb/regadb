@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -21,7 +23,7 @@ package com.pharmadm.custom.rega.queryeditor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class VisualizationClauseList extends OrderedAWCWordList {
+public class VisualizationClauseList extends OrderedAWCWordList implements Serializable {
 
     /** For xml-encoding purposes only */
     public VisualizationClauseList() {

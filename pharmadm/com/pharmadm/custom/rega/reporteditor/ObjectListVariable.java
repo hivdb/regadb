@@ -13,6 +13,7 @@
 package com.pharmadm.custom.rega.reporteditor;
 
 import java.util.*;
+
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.VariableType;
 
@@ -120,5 +121,4 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
             }
         }
     }
-    
 }

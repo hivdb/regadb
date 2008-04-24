@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor.constant;
 
+import java.io.Serializable;
+
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 /**
@@ -20,7 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  *
  * @author  kdg
  */
-public class SubstringConstant extends StringConstant {
+public class SubstringConstant extends StringConstant implements Serializable{
     public SubstringConstant(){}
 	
 	public SubstringConstant(SuggestedValues suggestedValues) {

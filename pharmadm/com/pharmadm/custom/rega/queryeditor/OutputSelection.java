@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
+
 /**
  *
  * @author  kristof
@@ -19,7 +21,7 @@ package com.pharmadm.custom.rega.queryeditor;
  * This class supports xml-encoding. No new properties are encoded.
  * </p>
  */
-public class OutputSelection extends SimpleSelection {
+public class OutputSelection extends SimpleSelection implements Serializable {
     
     /** Creates a new instance of OutputSelection */
     public OutputSelection(OutputVariable ovar) {
