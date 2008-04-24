@@ -51,6 +51,8 @@ import org.xml.sax.SAXException;
 public class Utils {
     private static DateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
+    private static String possibleNucleotides  = "ACGTMRWSYKVHDBN";
+    
     public static Table readTable(String filename, String charset, char delim) {
         try {
         return Table.readTable(filename, Charset.defaultCharset().name(), delim);
@@ -597,11 +599,11 @@ public class Utils {
          StringBuffer toReturn = new StringBuffer();
          for(char c : nucleotides.toCharArray()) 
          {
-             if(Character.isLetter(c)) {
+             if(possibleNucleotides.contains(Character.toUpperCase(c)+"")) {
                  toReturn.append(c);
              }
          }
-         return toReturn.toString();
+         return toReturn.toString().toLowerCase();
      }
      
      //TODO: Use more sophisticated algorithms to find a string match...
