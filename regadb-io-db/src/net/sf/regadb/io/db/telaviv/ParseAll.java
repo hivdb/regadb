@@ -58,6 +58,8 @@ public class ParseAll {
                         getFile(importDir,"VLSysNames.csv"),
                         getFile(importDir,"VLunits.csv"));
         
+        pSeqs.run(getFile(importDir,"Sequences.csv"), getFile(importDir,"Samples.csv"), patients);
+        
         //pSeqs.run(      getFile(importDir,""));
         
         Utils.exportPatientsXML(patients, outputDir + File.separatorChar + "patients.xml");
