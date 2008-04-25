@@ -11,18 +11,13 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.io.Serializable;
-
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-
-
 /**
  * <p>
  * Represents a column of a database table.
  * </p>
  * 
  */
-public class Field implements Serializable {
+public class Field implements Comparable<Field>{
  
   ///////////////////////////////////////
   // attributes
@@ -33,10 +28,11 @@ public class Field implements Serializable {
  * </p>
  */
     private boolean primaryKey;
-    
     private String name; 
-    
     private final String comment;
+    private Table table;
+    private int dataType;
+    private String description;
     
    ///////////////////////////////////////
    // associations
@@ -46,13 +42,14 @@ public class Field implements Serializable {
  * 
  * </p>
  */
-    private String tableName;
     
-    public Field(String name, Table table, boolean primaryKey) {
+    public Field(String name, Table table, String comment, boolean primaryKey, int dataType) {
         this.name = name;
         this.primaryKey = primaryKey;
-        this.tableName = table.getName();
-        this.comment = DatabaseManager.getInstance().getDatabaseConnector().getCommentForColumn(table.getName(), name);
+        this.table = table;
+        this.comment = comment;
+        this.dataType = dataType;
+        description = null;
     }
     
 
@@ -60,15 +57,18 @@ public class Field implements Serializable {
    // access methods for associations
 
     public Table getTable() {
-    	return DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
-    }
-    
-    public String getTableName() {
-    	return tableName;
+    	return table;
     }
     
     public String getName() {
         return name;
+    }
+    
+    public String getDescription() {
+    	if (description == null) {
+            description = AWCPrototypeCatalog.getInstance().getObjectDescription(table.getName() + "." + name);
+    	}
+    	return description;
     }
     
     public boolean isPrimaryKey() {
@@ -78,6 +78,21 @@ public class Field implements Serializable {
     public String getComment() {
         return comment;
     }
+    
+    public boolean equals(Object o) {
+    	Field f = (Field) o;
+    	return f.name.equals(name) && f.table.equals(table);
+    }
+    
+    public int getDataType() {
+    	return dataType;
+    }
+
+	@Override
+	public int compareTo(Field o) {
+		if (o == null) return -1;
+		return o.name.compareTo(name);
+	}
 
 } // end Field
 

@@ -19,6 +19,7 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
     private Map<String, String> tableNameToAlias = new HashMap<String, String>();
     private Map<String, String> objectNameToDescription = new HashMap<String, String>();
     private List<AtomicWhereClause> atomicWhereClauses = new ArrayList<AtomicWhereClause>();
+    private DatabaseManager manager;
 
     public static AWCPrototypeCatalog getInstance() {
         if (mainCatalog == null) {
@@ -26,18 +27,24 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         }
         return mainCatalog;
     }
+    
+    private HibernateAWCPrototypeCatalog() {
+        manager = DatabaseManager.getInstance();
+    }
 	    
 
     private static void initMainCatalog() {
     	HibernateAWCPrototypeCatalog catalog = new HibernateAWCPrototypeCatalog();
         mainCatalog = catalog;
 
-        catalog.addVariableNames();	    
-        catalog.addAllTableClauses();
-        catalog.addNumberClauses();
-        catalog.addStringClauses();
-        catalog.addBooleanClauses();
-        catalog.addDateClauses();
+        if (catalog.manager != null) {
+	        catalog.addVariableNames();	    
+	        catalog.addAllTableClauses();
+	        catalog.addNumberClauses();
+	        catalog.addStringClauses();
+	        catalog.addBooleanClauses();
+	        catalog.addDateClauses();
+        }
     }
 
     public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
@@ -61,7 +68,7 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return a description for the given persistent object
      */
     public String getObjectDescription(String objectName) {
-        String varName = (String)objectNameToDescription.get(objectName.toLowerCase());
+        String varName = objectNameToDescription.get(objectName.toLowerCase());
         if (varName == null) {
             return objectName.substring(objectName.lastIndexOf('.')+1);
         } else {
@@ -137,42 +144,16 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         }
     }
 	    
-    /**
-     * returns true if a table with the given name exists in the database
-     * @param tableName the name of a table
-     * @return true if the table exists
-     *         false if it doesn't
-     */
-    private boolean tableExists(String tableName) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-        	return manager.getTableNames().contains(tableName);
-        }
-        else {
-        	return false;
-        }
+    private Table getTable(String tableName) {
+    	return manager.getTableCatalog().getTable(tableName);
     }
-	    
-    /**
-     * returns the sql data type string from the given property of the given table.
-     * returns null if the table or property is not found
-	 * @param tableName table to check the property of
-	 * @param propertyName the property to check
-	 *                     this must be a property of the given table or of its composite id
-	 *                     If it is a property of the composite id, include
-	 *                     the id in the path, like so: id.property
-     * @return the data type string of the given property
-     */
-    private String getDataTypeString(String tableName, String propertyName) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        String typeString = null;
-        if (manager != null) {
-        	typeString = manager.getDatabaseConnector().getColumnType(tableName, propertyName);
-        }
-        else {
-            System.err.println("Unknown column " + propertyName + " for " + tableName);
-        }
-        return typeString;
+    
+    private Field getField(String tableName, String fieldName) {
+    	Table table = getTable(tableName);
+    	if (table != null) {
+    		return table.getField(fieldName);
+    	}
+    	return null;
     }
 	    
 	/**
@@ -229,27 +210,23 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
     private String getDataTypeOfProperty(String tableName, String propertyName) {
     	String valueType = null;
     	
-    	String dataTypeString = getDataTypeString(tableName, propertyName);
-    	if (dataTypeString != null) {
-    		int dataType = Integer.parseInt(dataTypeString);
+    	int dataType = manager.getDatabaseConnector().getColumnType(tableName, propertyName);
 	    	
-	        if (isStringType(dataType)) {
-	        	valueType = "String";
-	        }
-	        else if (isDateType(dataType)) {
-	        	valueType = "Date";
-	        }
-	        else if (isNumericType(dataType)) {
-	        	valueType = "Numeric";
-	        }
-	        else if (isBooleanType(dataType)) {
-	        	valueType = "Boolean";
-	        }
-	        
-	        else {
-                System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
-	        }
-    	}
+        if (isStringType(dataType)) {
+        	valueType = "String";
+        }
+        else if (isDateType(dataType)) {
+        	valueType = "Date";
+        }
+        else if (isNumericType(dataType)) {
+        	valueType = "Numeric";
+        }
+        else if (isBooleanType(dataType)) {
+        	valueType = "Boolean";
+        }
+        else {
+            System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
+        }
     	return valueType;
     }
 	    
@@ -272,7 +249,7 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * compatible with the given list of OutputVariables
      * </p>
      */
-    public Collection<AtomicWhereClause> getAWCPrototypes(Collection availableOutputVariables) {
+    public Collection<AtomicWhereClause> getAWCPrototypes(Collection<OutputVariable> availableOutputVariables) {
     	// your code here
         Collection<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
         Iterator<AtomicWhereClause> iter = atomicWhereClauses.iterator();
@@ -519,54 +496,53 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return The clause that has been added
      */
     private AtomicWhereClause addRelationClause(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String description, boolean invertLink) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-            AtomicWhereClause aClause = new AtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup(getObjectDescription(inputTableName));
-    		aClause.setCompositionBehaviour(new TableFetchComposition());
-            
-            InputVariable ivar = new InputVariable(new VariableType(inputTableName));
-            description = description == null ? "has an associated " : description;
-            FromVariable newFromVar = new FromVariable(foreignTableName);
-            OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), foreignTableName);
-            ovar.setRelation(description);
-            ovar.getExpression().addFromVariable(newFromVar);
-            
-            aVisList.addFixedString(new FixedString(getTable(inputTableName).getDescription()));
-            aVisList.addInputVariable(ivar);
-            aVisList.addOutputVariable(ovar);
-            
-            addRelationClauseToComposer(aComposer, ivar, newFromVar, inputTableToIdTable, foreignTableToIdTable, idTableName, idTableKey, invertLink);
-            
-            addAtomicWhereClause(aClause);
-            return aClause;
-        } else {
-            return null;
-        }
+    	if (!checkLinkValid(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey)) {
+    		return null;
+    	}
+
+    	AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(getObjectDescription(inputTableName));
+		aClause.setCompositionBehaviour(new TableFetchComposition());
+        
+        InputVariable ivar = new InputVariable(new VariableType(inputTableName));
+        description = description == null ? "has an associated " : description;
+        FromVariable newFromVar = new FromVariable(foreignTableName);
+        OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), foreignTableName);
+        ovar.setRelation(description);
+        ovar.getExpression().addFromVariable(newFromVar);
+        
+        aVisList.addFixedString(new FixedString(getTable(inputTableName).getDescription()));
+        aVisList.addInputVariable(ivar);
+        aVisList.addOutputVariable(ovar);
+        
+        addRelationClauseToComposer(aComposer, ivar, newFromVar, inputTableToIdTable, foreignTableToIdTable, new FromVariable(idTableName), idTableKey, invertLink);
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
     }
     
     /**
      * adds a to clause to the given where clause composer to link the given input table to the given foreigntable
      * @param aComposer where clause composer to add the relation to
-     * @param inputTable table to start from
+     * @param inputTable table to start from. Either an inputvariable or a fromvariable
      * @param foreignTable name of the table to make a relation with
 	 * @param inputTableToIdTable path from the input table to the id table 
 	 *                            null if they are the same table
 	 * @param foreignTableToIdTable path from the foreign table to the id table
 	 *                              null if they are the same table
-	 * @param idTableName table that acts as key between the input table and the foreign table
+	 * @param idTable table that acts as key between the input table and the foreign table
 	 * @param idTableKey element of idTableName that is the key
 	 *                   null if the table should be used as key
 	 * @param invertLink false for a relation from input and foreigntable to idtable
 	 *                   true for a relation from idtable to input and foreigntable
      */
-    private void addRelationClauseToComposer(WhereClauseComposer aComposer, InputVariable inputTable, FromVariable foreignTable, String inputTableToIdTable, String foreignTableToIdTable, String idTableName, String idTableKey, boolean invertLink) {
+    private void addRelationClauseToComposer(WhereClauseComposer aComposer, AWCWord inputTable, FromVariable foreignTable, String inputTableToIdTable, String foreignTableToIdTable, FromVariable idTable, String idTableKey, boolean invertLink) {
     	if (!invertLink) {
     		// regular link between input table and foreign table
     		// check if they point to the same id table
-            aComposer.addInputVariable(inputTable);
+            aComposer.addWord(inputTable);
             aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
             aComposer.addFromVariable(foreignTable);
             aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable:"") + (idTableKey != null ?"." + idTableKey:"")));
@@ -574,12 +550,11 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
     	else {
     		// inverted link
     		// go from the id table to the input table and foreign table
-            FromVariable fromVarId = new FromVariable(idTableName);
-            aComposer.addFromVariable(fromVarId);
+            aComposer.addFromVariable(idTable);
             aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + " = "));
-            aComposer.addInputVariable(inputTable);
+            aComposer.addWord(inputTable);
             aComposer.addFixedString(new FixedString(" AND\n\t"));
-            aComposer.addFromVariable(fromVarId);
+            aComposer.addFromVariable(idTable);
             aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable: "") + " = "));
             aComposer.addFromVariable(foreignTable);
     	}
@@ -594,36 +569,41 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	 * @return The clause that has been added
 	 */
     private AtomicWhereClause addCollectionRelationClause(String inputTableName, String foreignTableName, String foreignTableProperty, String description) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-            AtomicWhereClause aClause = new AtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup(getObjectDescription(inputTableName));
-    		aClause.setCompositionBehaviour(new TableFetchComposition());
-            
-            InputVariable ivar = new InputVariable(new VariableType(inputTableName));
-            description = description == null ? "have an associated " : description;
-            FromVariable newFromVar = new FromVariable(foreignTableName);
-            OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), foreignTableName);
-            ovar.setRelation(description);
-            ovar.getExpression().addFromVariable(newFromVar);
+    	if (getTable(inputTableName) == null) {
+    		System.err.println("Can't create collection assocation clause. Table " + inputTableName + " does not exist");
+    		return null;
+    	}
+    	if (getTable(foreignTableName) == null) {
+    		System.err.println("Can't create collection assocation clause. Table " + foreignTableName + " does not exist");
+    		return null;
+    	}
+    	
+    	
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(getObjectDescription(inputTableName));
+		aClause.setCompositionBehaviour(new TableFetchComposition());
+        
+        InputVariable ivar = new InputVariable(new VariableType(inputTableName));
+        description = description == null ? "have an associated " : description;
+        FromVariable newFromVar = new FromVariable(foreignTableName);
+        OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), foreignTableName);
+        ovar.setRelation(description);
+        ovar.getExpression().addFromVariable(newFromVar);
 
-            aVisList.addFixedString(new FixedString("The "));
-            aVisList.addInputVariable(ivar);
-            aVisList.addOutputVariable(ovar);
-            
-            aComposer.addInputVariable(ivar);
-            aComposer.addFixedString(new FixedString(" IN ELEMENTS("));
-            aComposer.addFromVariable(newFromVar);
-            aComposer.addFixedString(new FixedString("." +  foreignTableProperty));
-            aComposer.addFixedString(new FixedString(")"));
-            
-            addAtomicWhereClause(aClause);
-            return aClause;
-        } else {
-            return null;
-        }
+        aVisList.addFixedString(new FixedString("The "));
+        aVisList.addInputVariable(ivar);
+        aVisList.addOutputVariable(ovar);
+        
+        aComposer.addInputVariable(ivar);
+        aComposer.addFixedString(new FixedString(" IN ELEMENTS("));
+        aComposer.addFromVariable(newFromVar);
+        aComposer.addFixedString(new FixedString("." +  foreignTableProperty));
+        aComposer.addFixedString(new FixedString(")"));
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
     }
 	
 	/**
@@ -681,13 +661,17 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	 *                 select distinct foreignTableProperty from foreignTableName
 	 * @return All the clauses that have been added
 	 */
-	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown) {
+	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown, boolean invertLink) {
 		String suggestedValuesQuery = null;
     	if (dropdown) {
     		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
     	}
 		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
-		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, "Numeric", false, null, show);
+		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, "Numeric", invertLink, null, show);
+	}
+	
+	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown) {
+		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, dropdown, false);
 	}
 	    
 	/**
@@ -704,15 +688,19 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	 * @param foreignTableProperty the property to check
 	 * @return All the clauses that have been added
 	 */
-	private List<AtomicWhereClause> addBooleanPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty) {
+	private List<AtomicWhereClause> addBooleanPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean invertLink) {
 		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
     	boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
     	boolean caseSensitive = true;
     	String valueType = "Boolean";
     	Constant constant = new BooleanConstant();
-		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, false, null));
-		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getBooleanComparisonOperator(), valueType, false, null));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, invertLink, null));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getBooleanComparisonOperator(), valueType, invertLink, null));
 		return list;
+	}
+	
+	private List<AtomicWhereClause> addBooleanPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty) {
+		return addBooleanPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, false);
 	}
 	
 	/**
@@ -884,7 +872,8 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	 * @param invertLink false for a relation from input and foreigntable to idtable
 	 *                   true for a relation from idtable to input and foreigntable
 	 * @return All the clauses that have been added
-	 */	private List<AtomicWhereClause> addStringPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown, boolean invertLink) {
+	 */
+	private List<AtomicWhereClause> addStringPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown, boolean invertLink) {
 		String suggestedValuesQuery = null;
     	if (dropdown) {
     		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
@@ -927,6 +916,13 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	 * @return All the clauses that have been added
 	 */
     private AtomicWhereClause addPropertyComparisonClause(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean show, boolean caseSensitive, Constant propertyConstant, Constant comparisonOperator, String valueType, boolean invertLink, String description) {
+    	if (!checkLinkValid(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey)) {
+    		return null;
+    	}
+    	if (getField(foreignTableName, foreignTableProperty) == null) {
+    		System.err.println("Can't create propert comparison clause. Property " + foreignTableProperty + " of table " + foreignTableName + " does not exist");
+    		return null;
+    	}
     	
     	// find the data type of the property
     	// this method can resolve properties of ids
@@ -1010,7 +1006,7 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
                 // only make a link between the foreign table and the input table if they
                 // are not the same so we can keep the resulting query simple
                 if (!foreignTableName.equals(inputTableName)) {
-                	addRelationClauseToComposer(aComposer, ivar, newFromVar, inputTableToIdTable, foreignTableToIdTable, idTableName, idTableKey, invertLink);
+                	addRelationClauseToComposer(aComposer, ivar, newFromVar, inputTableToIdTable, foreignTableToIdTable, new FromVariable(idTableName), idTableKey, invertLink);
                 	if (!fetchAsVariable) aComposer.addFixedString(new FixedString(" AND\n\t "));
                 }
                 if (!fetchAsVariable) {
@@ -1044,7 +1040,86 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
             System.err.println("property not found: " + foreignTableName + "." + foreignTableProperty);
             return null;
         }
-    }	    
+    }
+    
+    private boolean checkLinkValid(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey) {
+    	if (getTable(inputTableName) == null) {
+    		System.err.println("Can't create association clause. Table " + inputTableName + " does not exist");
+    		return false;
+    	}
+    	if (getTable(foreignTableName) == null) {
+    		System.err.println("Can't create association clause. Table " + inputTableName + " does not exist");
+    		return false;
+    	}
+    	if (getTable(idTableName) == null) {
+    		System.err.println("Can't create association clause. Table " + inputTableName + " does not exist");
+    		return false;
+    	}    	
+    	if (idTableKey != null && getField(idTableName, idTableKey) == null) {
+    		System.err.println("Can't create association clause. Id property " + idTableKey + " of table " + idTableName + " does not exist");
+    		return false;
+    	}
+    	return true;
+    }
+    
+    private AtomicWhereClause addGenericDrugResolvedClause() {
+    	String therapyTableName = "net.sf.regadb.db.Therapy";
+    	String genericDrugTableName = "net.sf.regadb.db.DrugGeneric";
+    	String genericTherapyTableName = "net.sf.regadb.db.TherapyGeneric";
+    	String commercialTherapyTableName = "net.sf.regadb.db.TherapyCommercial";
+    	String genericTherapyToTherapy = ".id.therapy";
+    	String genericTherapyToDrug = ".id.drugGeneric";
+    	String commercialTherapyToTherapy = ".id.therapy";
+    	String commercialTherapyToDrug = ".id.drugCommercial";
+    	String genericDrugToCommercialDrug = ".drugCommercials";
+    	
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        aClause.setCompositionBehaviour(new TableFetchComposition());
+        aClause.addGroup(getObjectDescription(therapyTableName));
+        
+        InputVariable therapy1 = new InputVariable(new VariableType(therapyTableName));
+        FromVariable fromgDrug1 = new FromVariable(genericDrugTableName);
+        OutputVariable gDrug1 = new OutputVariable(new VariableType(genericDrugTableName), genericDrugTableName);
+        gDrug1.setRelation("'s medication contains a drug that resolves to a");
+        gDrug1.getExpression().addFromVariable(fromgDrug1);
+        aClause.addFromVariable(fromgDrug1);
+        
+
+        aVisList.addFixedString(new FixedString(getTable(therapyTableName).getDescription()));
+        aVisList.addInputVariable(therapy1);
+        aVisList.addOutputVariable(gDrug1);
+
+        
+        aComposer.addFixedString(new FixedString("EXISTS (\n\t\tSELECT\n\t\t\t1\n\t\tFROM\n\t\t\t"));
+        aComposer.addFixedString(new FixedString(genericTherapyTableName + " " + getTableAlias(genericTherapyTableName)));
+        aComposer.addFixedString(new FixedString("\n\t\tWHERE\n\t\t\t"));
+        
+        aComposer.addFixedString(new FixedString(getTableAlias(genericTherapyTableName) + genericTherapyToTherapy));
+        aComposer.addFixedString(new FixedString(" = "));
+        aComposer.addInputVariable(therapy1);
+        aComposer.addFixedString(new FixedString(" AND\n\t\t\t"));
+        aComposer.addFixedString(new FixedString(getTableAlias(genericTherapyTableName) + genericTherapyToDrug));
+        aComposer.addFixedString(new FixedString(" = "));
+        aComposer.addOutputVariable(gDrug1);
+        
+        aComposer.addFixedString(new FixedString(")\n\tOR EXISTS (\n\t\tSELECT\n\t\t\t1\n\t\tFROM\n\t\t\t"));
+        aComposer.addFixedString(new FixedString(commercialTherapyTableName + " " + getTableAlias(commercialTherapyTableName)));
+        aComposer.addFixedString(new FixedString("\n\t\tWHERE\n\t\t\t"));
+
+        aComposer.addFixedString(new FixedString(getTableAlias(commercialTherapyTableName) +  commercialTherapyToTherapy));
+        aComposer.addFixedString(new FixedString(" = "));
+        aComposer.addInputVariable(therapy1);
+        aComposer.addFixedString(new FixedString(" AND\n\t\t\t"));
+        aComposer.addFixedString(new FixedString(getTableAlias(commercialTherapyTableName) + commercialTherapyToDrug));
+        aComposer.addFixedString(new FixedString(" IN ELEMENTS ("));
+        aComposer.addOutputVariable(gDrug1);
+        aComposer.addFixedString(new FixedString(genericDrugToCommercialDrug + "))\n\t)"));
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
+    }
 
 	/**
      * add all clauses related to number variables
@@ -1265,41 +1340,36 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return the clause that has been added
      */
     private AtomicWhereClause addVariableIntervalClause(String variableType, Constant startConstant, Constant endConstant, Constant comparisonOperator, String description, boolean caseSensitive) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-            AtomicWhereClause aClause = new AtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup(getObjectDescription(variableType));
-            
-            InputVariable ivar = new InputVariable(new VariableType(variableType));
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(getObjectDescription(variableType));
+        
+        InputVariable ivar = new InputVariable(new VariableType(variableType));
 
-            aVisList.addFixedString(new FixedString(description));
-            aVisList.addInputVariable(ivar);
-            aVisList.addConstant(comparisonOperator);
-            aVisList.addConstant(startConstant);
-            aVisList.addFixedString(new FixedString("and"));
-            aVisList.addConstant(endConstant);
-            
-            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
-            aComposer.addInputVariable(ivar);
-            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
-            aComposer.addFixedString(new FixedString(" "));
-            aComposer.addConstant(comparisonOperator);
-            aComposer.addFixedString(new FixedString(" "));
-            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
-            aComposer.addConstant(startConstant);
-            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
-            aComposer.addFixedString(new FixedString(" AND "));
-            if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
-            aComposer.addConstant(endConstant);
-            if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
-            
-            addAtomicWhereClause(aClause);
-            return aClause;
-        } else {
-            return null;
-        }
+        aVisList.addFixedString(new FixedString(description));
+        aVisList.addInputVariable(ivar);
+        aVisList.addConstant(comparisonOperator);
+        aVisList.addConstant(startConstant);
+        aVisList.addFixedString(new FixedString("and"));
+        aVisList.addConstant(endConstant);
+        
+        if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+        aComposer.addInputVariable(ivar);
+        if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+        aComposer.addFixedString(new FixedString(" "));
+        aComposer.addConstant(comparisonOperator);
+        aComposer.addFixedString(new FixedString(" "));
+        if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+        aComposer.addConstant(startConstant);
+        if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+        aComposer.addFixedString(new FixedString(" AND "));
+        if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER ("));
+        aComposer.addConstant(endConstant);
+        if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
     }
     
     /**
@@ -1349,6 +1419,10 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return the clause that has been added
      */
     private AtomicWhereClause addVariableDeclarationClause(String variableType, Constant constant) {
+    	if (new VariableType(variableType).isTable() && getTable(variableType) == null) {
+    		System.err.println("Can not add table declaration. Table " + variableType + " does not exists");
+    		return null;
+    	}
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
@@ -1364,7 +1438,7 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 	        aVisList.addFixedString(new FixedString(" with value "));
 	        aVisList.addConstant(constant);
         }
-        else if (tableExists(variableType)){
+        else {
             FromVariable fromVar = new FromVariable(variableType);
 	        ovar.getExpression().addFromVariable(fromVar);
             aClause.addFromVariable(fromVar);
@@ -1423,27 +1497,26 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return the clause that has been added
      */
     private AtomicWhereClause addVariableToConstantComparisonClause(String variableType, Constant constant, String description, OperatorConstant comparisonOperator, boolean caseSensitive) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-            AtomicWhereClause aClause = new AtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup(getObjectDescription(variableType));
-
-            InputVariable ivar1 = new InputVariable(new VariableType(variableType));
-
-            aVisList.addFixedString(new FixedString(description));
-            aVisList.addInputVariable(ivar1);
-            aVisList.addConstant(comparisonOperator);
-            aVisList.addConstant(constant);
-            
-            addComparisonClauseToComposer(aComposer, ivar1, comparisonOperator, constant, caseSensitive);
-            
-            addAtomicWhereClause(aClause);
-            return aClause;
-        } else {
-            return null;
+        if (new VariableType(variableType).isTable()) {
+        	System.err.println("Invalid variable type: " + variableType + ". Can't create a constant comparison clause with a persistent object.");
+        	return null;
         }
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(getObjectDescription(variableType));
+
+        InputVariable ivar1 = new InputVariable(new VariableType(variableType));
+
+        aVisList.addFixedString(new FixedString(description));
+        aVisList.addInputVariable(ivar1);
+        aVisList.addConstant(comparisonOperator);
+        aVisList.addConstant(constant);
+        
+        addComparisonClauseToComposer(aComposer, ivar1, comparisonOperator, constant, caseSensitive);
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
     }
     
     /**
@@ -1500,28 +1573,28 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return the clause that has been added
      */
     private AtomicWhereClause addVariableToVariableComparisonClause(String variableType, String description, OperatorConstant comparisonOperator, boolean caseSensitive) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-            AtomicWhereClause aClause = new AtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup(getObjectDescription(variableType));
-
-            InputVariable ivar1 = new InputVariable(new VariableType(variableType));
-            InputVariable ivar2 = new InputVariable(new VariableType(variableType));
-
-            aVisList.addFixedString(new FixedString(description));
-            aVisList.addInputVariable(ivar1);
-            aVisList.addConstant(comparisonOperator);
-            aVisList.addInputVariable(ivar2);
-            
-            addComparisonClauseToComposer(aComposer, ivar1, comparisonOperator, ivar2, caseSensitive);
-            
-            addAtomicWhereClause(aClause);
-            return aClause;
-        } else {
-            return null;
+        if (new VariableType(variableType).isTable() && getTable(variableType) == null) {
+        	System.err.println("Persistent object not found : " + variableType);
+        	return null;
         }
+    	
+    	AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(getObjectDescription(variableType));
+
+        InputVariable ivar1 = new InputVariable(new VariableType(variableType));
+        InputVariable ivar2 = new InputVariable(new VariableType(variableType));
+
+        aVisList.addFixedString(new FixedString(description));
+        aVisList.addInputVariable(ivar1);
+        aVisList.addConstant(comparisonOperator);
+        aVisList.addInputVariable(ivar2);
+        
+        addComparisonClauseToComposer(aComposer, ivar1, comparisonOperator, ivar2, caseSensitive);
+        
+        addAtomicWhereClause(aClause);
+        return aClause;
     }
     
     /**
@@ -1596,8 +1669,12 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
      * @return the clause that has been added
      */    
     private AtomicWhereClause addVariableCalculationClause(String variableType, Constant calculationConstant, String calculationVariableType, OperatorConstant calculationOperator, String additionalDescription) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null && (calculationConstant != null || calculationVariableType != null)) {
+        if (new VariableType(variableType).isTable()) {
+        	System.err.println("Invalid variable type: " + variableType + ". Can't create a calculation clause with a persistent object.");
+        	return null;
+        }
+    	
+    	if (calculationConstant != null || calculationVariableType != null) {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
@@ -1710,14 +1787,14 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         addNames("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder", "resistance table order", null);
 
         // therapy commercial
-        addNames("net.sf.regadb.db.TherapyCommercial", "commercialTherapy", "treatment with a commercial drug", "commTherapy");
+        addNames("net.sf.regadb.db.TherapyCommercial", "commercialDrugTreatment", "treatment with a commercial drug", "commTherapy");
         addNames("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "DailyDosage", "daily dosage", null);
         addNames("net.sf.regadb.db.TherapyCommercial.frequency", "Frequency", "administration frequency", null);
         addNames("net.sf.regadb.db.TherapyCommercial.placebo", "Placebo", "placebo", null);
         addNames("net.sf.regadb.db.TherapyCommercial.blind", "Blind", "blind", null);
         
         // therapy generic
-        addNames("net.sf.regadb.db.TherapyGeneric", "genericTherapy", "treatment with a generic drug", "genTherapy");
+        addNames("net.sf.regadb.db.TherapyGeneric", "genericDrugTreatment", "treatment with a generic drug", "genTherapy");
         addNames("net.sf.regadb.db.TherapyGeneric.dayDosageMg", "DailyDosage", "daily dosage in mg", null);
         addNames("net.sf.regadb.db.TherapyGeneric.frequency", "Frequency", "administration frequency", null);
         addNames("net.sf.regadb.db.TherapyGeneric.placebo", "Placebo", "placebo", null);
@@ -1732,9 +1809,15 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         // drug generic
         addNames("net.sf.regadb.db.DrugGeneric", "genericDrug", "generic drug", "genDrug");
+        addNames("net.sf.regadb.db.DrugGeneric.genericId", "GenericDrugId", "id", null);
+        addNames("net.sf.regadb.db.DrugGeneric.atcCode", "AtcCode", "atc code", null);
+        addNames("net.sf.regadb.db.DrugGeneric.resistanceTableOrder", "ResistanceTableOrder", "resistance table order", null);
+        addNames("net.sf.regadb.db.DrugGeneric.genericName", "GenericName", "name", null);
         
         // drug commercial
         addNames("net.sf.regadb.db.DrugCommercial", "commercialDrug", "commercial drug", "commDrug");
+        addNames("net.sf.regadb.db.DrugCommercial.name", "CommercialName", "name", null);
+        addNames("net.sf.regadb.db.DrugCommercial.atcCode", "AtcCode", "atc code", null);
         
         // dataset
         addNames("net.sf.regadb.db.Dataset", "dataset", "dataset", "dataset");
@@ -1759,9 +1842,26 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
     }
     
     public void addAllTableClauses() {
+        addObjectClauses("net.sf.regadb.db.PatientImpl");
+        addObjectClauses("net.sf.regadb.db.Therapy");
+        addObjectClauses("net.sf.regadb.db.TherapyGeneric");
+        addObjectClauses("net.sf.regadb.db.TherapyCommercial");
+        addObjectClauses("net.sf.regadb.db.DrugGeneric");
+        addObjectClauses("net.sf.regadb.db.DrugCommercial");
+        addObjectClauses("net.sf.regadb.db.DrugClass");
+        addObjectClauses("net.sf.regadb.db.ViralIsolate");
+        addObjectClauses("net.sf.regadb.db.NtSequence");
+        addObjectClauses("net.sf.regadb.db.AaSequence");
+        addObjectClauses("net.sf.regadb.db.AaMutation");
+        addObjectClauses("net.sf.regadb.db.AaInsertion");
+        addObjectClauses("net.sf.regadb.db.Protein");
+        addObjectClauses("net.sf.regadb.db.TestResult");
+        addObjectClauses("net.sf.regadb.db.Test");
+        addObjectClauses("net.sf.regadb.db.PatientEventValue");
+    	
+    	
         ///////////////////////////////////////
         // events
-        addObjectClauses("net.sf.regadb.db.PatientEventValue");
         addDatePropertyComparisonClauses("net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "startDate", false);
         addDatePropertyComparisonClauses("net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "net.sf.regadb.db.PatientEventValue", null, "endDate", false);
         
@@ -1780,7 +1880,6 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         ///////////////////////////////////////
         // patients
-        addObjectClauses("net.sf.regadb.db.PatientImpl");
         addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null,  "net.sf.regadb.db.PatientImpl", null, "patientId", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "lastName", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "firstName", false);
@@ -1811,21 +1910,19 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
 
         ///////////////////////////////////////
         // therapies
-        addObjectClauses("net.sf.regadb.db.Therapy");
         addDatePropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "startDate", false);
         addDatePropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "stopDate", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "comment", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", "therapyMotivation", "net.sf.regadb.db.TherapyMotivation", null, "net.sf.regadb.db.TherapyMotivation", null, "value", true);
    		
-        // link therapy - therapyCommercial
-        addRelationClauses("net.sf.regadb.db.TherapyCommercial", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the",  "has a", false);
-        addRelationClauses("net.sf.regadb.db.DrugCommercial", "id.drugCommercial", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyCommercial", null, "is used in the",  "consisted of a", true);
+   		addGenericDrugResolvedClause();   		
+   		
+        // link therapy - commercial drug
+        addRelationClauses("net.sf.regadb.db.DrugCommercial", "id.drugCommercial", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyCommercial", null, "is one of the drugs used in a",  "'s medication contains a", true);
 
-        // link therapy - therapyGeneric
-        addRelationClauses("net.sf.regadb.db.TherapyGeneric", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is part of the",  "has a", false);
-        addRelationClauses("net.sf.regadb.db.DrugGeneric", "id.drugGeneric", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyGeneric", null, "is used in the",  "consisted of a", true);
+        // link therapy - generic drug
+        addRelationClauses("net.sf.regadb.db.DrugGeneric", "id.drugGeneric", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyGeneric", null, "is one of the drugs used in a",  "'s medication contains a", true);
         
-
 
         ///////////////////////////////////////
         // therapyCommercial
@@ -1835,8 +1932,10 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "blind");
         
         // link therapyCommercial - DrugCommercial
-        addRelationClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.TherapyCommercial", "id.drugCommercial", "net.sf.regadb.db.DrugCommercial", null, "is used in the",  "consist of the", false);
+        addRelationClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.TherapyCommercial", "id.drugCommercial", "net.sf.regadb.db.DrugCommercial", null, "is used in a",  "consists of the", false);
         
+        // link therapyComercial - therapy
+        addRelationClauses("net.sf.regadb.db.TherapyCommercial", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is a part of",  "has a", false);
         
         
         ///////////////////////////////////////
@@ -1848,37 +1947,42 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         
         // link therapyGeneric - DrugCommercial
-        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in the",  "consist of the", false);
+        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in a",  "consists of the", false);
         
-        
+        // link therapyGeneric - therapy
+        addRelationClauses("net.sf.regadb.db.TherapyGeneric", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is a part of",  "has a", false);
+
         
         ///////////////////////////////////////
         // viral isolates
-        addObjectClauses("net.sf.regadb.db.ViralIsolate");
         addStringPropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleId", false);
         addDatePropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleDate", false);
         
         // link viral isolate  - nt sequence
-        addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from the",  "has a", false);
+        addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from a",  "has a", false);
  
         
         ///////////////////////////////////////
         // nucleotide sequence
-        addObjectClauses("net.sf.regadb.db.NtSequence");
         addDatePropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "sequenceDate",false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "label", false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "nucleotides", false);
         
+        // link nt sequence - patient
+        addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
+
         // link nt sequence - aa sequence
-        addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence", "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "comes from the",  "has a", false);
+        addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence", "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "comes from a",  "has a", false);
 
         
 
         ///////////////////////////////////////
         // amino acid sequence
-        addObjectClauses("net.sf.regadb.db.AaSequence");
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "firstAaPos",  false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "lastAaPos", false);
+        
+        // link aa sequence - patient
+        addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
         
         // link aa sequence - aa mutation
         addRelationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the",  "has an", false);
@@ -1900,28 +2004,29 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         ///////////////////////////////////////
         // amino acid mutation
-        addObjectClauses("net.sf.regadb.db.AaMutation");
         addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaReference",  false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "aaMutation", false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntReferenceCodon", false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntMutationCodon",  false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "id.mutationPosition",  false);
         
+        // link aa mutation - patient
+        addRelationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence.ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
         
 
         ///////////////////////////////////////
         // amino acid insertion
-        addObjectClauses("net.sf.regadb.db.AaInsertion");
-        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "aaInsertion",  false);
-        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "aaInsertionId", "ntInsertionCodon",  false);
-        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionPosition", false);
-        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", "id" ,"id.insertionOrder",  false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "aaInsertion",  false);
+        addStringPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "ntInsertionCodon",  false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null ,"id.insertionPosition", false);
+        addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null ,"id.insertionOrder",  false);
         
+        // link aa insertion - patient
+        addRelationClauses("net.sf.regadb.db.AaInsertion", "id.aaSequence.ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
 
         
         ///////////////////////////////////////
         // generic drugs
-        addObjectClauses("net.sf.regadb.db.DrugGeneric");
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericId",  false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericName", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "atcCode", true);
@@ -1934,19 +2039,17 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         ///////////////////////////////////////
         // commercial drug
-        addObjectClauses("net.sf.regadb.db.DrugCommercial");
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "name", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "atcCode", true);
         
         // link commercial - generic
-   		addCollectionRelationClause("net.sf.regadb.db.DrugGeneric", "net.sf.regadb.db.DrugCommercial", "drugGenerics", "has a component");
-   		addCollectionRelationClause("net.sf.regadb.db.DrugCommercial", "net.sf.regadb.db.DrugGeneric", "drugCommercials", "has a use in the");
+   		addCollectionRelationClause("net.sf.regadb.db.DrugGeneric", "net.sf.regadb.db.DrugCommercial", "drugGenerics", "is a component of a");
+   		addCollectionRelationClause("net.sf.regadb.db.DrugCommercial", "net.sf.regadb.db.DrugGeneric", "drugCommercials", "has a component");
    		
    		
         
    		///////////////////////////////////////
         // drug class
-        addObjectClauses("net.sf.regadb.db.DrugClass");
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "className", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "classId", false);
    		addNumberPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "resistanceTableOrder", false);
@@ -1955,7 +2058,6 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
    		
         ///////////////////////////////////////
         // test result
-        addObjectClauses("net.sf.regadb.db.TestResult");
    		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "sampleId",  false);
    		addDatePropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "testDate", false);
 
@@ -1984,7 +2086,6 @@ public class HibernateAWCPrototypeCatalog extends AWCPrototypeCatalog {
         
         ///////////////////////////////////////
         // test
-        addObjectClauses("net.sf.regadb.db.Test");
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "description",  true);
         
         // link test - test type

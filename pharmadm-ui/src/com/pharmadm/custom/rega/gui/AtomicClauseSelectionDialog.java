@@ -78,7 +78,7 @@ public class AtomicClauseSelectionDialog extends JDialog {
         getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
 
         getContentPane().add(selectorPanel, java.awt.BorderLayout.NORTH);
-        setPreferredSize(new Dimension(600,550));
+        setPreferredSize(new Dimension(640,560));
         pack();
     }//GEN-END:initComponents
     

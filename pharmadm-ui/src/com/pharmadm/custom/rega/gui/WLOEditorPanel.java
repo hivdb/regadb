@@ -70,6 +70,7 @@ public class WLOEditorPanel extends javax.swing.JPanel {
             java.awt.Component confy = (java.awt.Component)iter.next();
             confy.addFocusListener(listener);
         }
+    	super.addFocusListener(listener);
     }
     
     public void addMouseListener(MouseListener listener) {
@@ -79,6 +80,7 @@ public class WLOEditorPanel extends javax.swing.JPanel {
     			comp.addMouseListener(listener);
     		}
     	}
+    	super.addMouseListener(listener);
     }
     
     public void freeResources() {

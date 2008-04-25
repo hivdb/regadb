@@ -7,9 +7,6 @@ import java.util.Set;
 
 
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.db.session.Login;
 
@@ -27,8 +24,13 @@ public class HibernateConnector implements DatabaseConnector {
 
 	Login login;
 	
-	public HibernateConnector(String user, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException {
-		login = Login.authenticate(user, pwd);
+	public HibernateConnector(String user, String pwd) {
+		try {
+			login = Login.authenticate(user, pwd);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	public QueryStatement createScrollableReadOnlyStatement() throws SQLException {
@@ -47,7 +49,7 @@ public class HibernateConnector implements DatabaseConnector {
 	public List<String> getColumnNames(String tableName) {
 		List<String> list= new ArrayList<String>();
 		ClassMetadata cmd = HibernateUtil.getSessionFactory().getClassMetadata(tableName);
-
+		
 		if (cmd != null) {
 			list.addAll(getPrimaryKeys(tableName));
 
@@ -69,7 +71,7 @@ public class HibernateConnector implements DatabaseConnector {
 		return list;
 	}
 
-	public String getColumnType(String tableName, String columnName) {
+	public int getColumnType(String tableName, String columnName) {
 		ClassMetadata cmd = HibernateUtil.getSessionFactory().getClassMetadata(tableName);
 		if (cmd != null) {
 			SessionFactoryImplementor sfi = (SessionFactoryImplementor) HibernateUtil.getSessionFactory();
@@ -77,7 +79,7 @@ public class HibernateConnector implements DatabaseConnector {
 				Type t = cmd.getPropertyType(columnName);
 				if (t != null) {
 					int[] types = t.sqlTypes(sfi);
-					return "" + types[0];
+					return types[0];
 				}
 				else if (hasComposedIdentifier(cmd)) {
 					t = cmd.getIdentifierType();
@@ -86,17 +88,17 @@ public class HibernateConnector implements DatabaseConnector {
 					String[] names = ct.getPropertyNames();
 					for (int i = 0 ; i < types.length ; i++) {
 						if (("id." + names[i]).equalsIgnoreCase(columnName)) {
-							return "" + types[i].sqlTypes(sfi)[0];
+							return types[i].sqlTypes(sfi)[0];
 						}
 					}
 				}
 			}
 		}
 		else {
-			System.err.println("metadata for table " + tableName + " not found");
+			System.err.println("metadata for column " + tableName + "." + columnName + " not found");
 			System.exit(1);
 		}
-		return null;
+		return 0;
 	}
 
 	public String getCommentForColumn(String tableName, String columnName) {
@@ -129,10 +131,6 @@ public class HibernateConnector implements DatabaseConnector {
 	private boolean hasComposedIdentifier(ClassMetadata cmd) {
 		Type t = cmd.getIdentifierType();
 		return t.isComponentType();
-//		if (t instanceof ComponentType) {
-//			return true;
-//		}
-//		return false;
 	}
 	
 	private boolean isValidType(Type t) {

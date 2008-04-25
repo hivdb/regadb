@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="lib/hibernate2.jar"/>
 	<classpathentry kind="lib" path="/regadb-persist/lib/postgresql-8.2-505.jdbc3.jar"/>
 	<classpathentry kind="src" path="/pharmadm-num"/>
-	<classpathentry kind="src" path="/regadb-analyses"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

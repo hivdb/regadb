@@ -1,8 +1,10 @@
 package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -74,4 +76,22 @@ public class JAttributeConfigurer extends JPanel implements WordConfigurer {
 		this.constantPanels = confy.constantPanels;
 		this.ovar = confy.ovar;
 	}
+	
+    public void addFocusListener(java.awt.event.FocusListener listener) {
+		for (WordConfigurer  confy : this.constantPanels) {
+			Component comp = (Component) confy;
+			comp.addFocusListener(listener);
+    	}
+		ovar.addFocusListener(listener);
+		super.addFocusListener(listener);
+    }
+	
+    public void addMouseListener(MouseListener listener) {
+		for (WordConfigurer  confy : this.constantPanels) {
+			Component comp = (Component) confy;
+			comp.addMouseListener(listener);
+    	}
+		ovar.addMouseListener(listener);
+		super.addMouseListener(listener);
+    }
 }

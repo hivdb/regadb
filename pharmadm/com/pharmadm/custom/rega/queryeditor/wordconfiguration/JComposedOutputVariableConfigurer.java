@@ -1,5 +1,7 @@
 package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
+import java.awt.Component;
+import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
@@ -45,4 +47,18 @@ public class JComposedOutputVariableConfigurer extends javax.swing.JComboBox imp
 		JComposedOutputVariableConfigurer confy = (JComposedOutputVariableConfigurer) o;
 		this.vars = confy.vars;
 	}
+	
+    public void addFocusListener(java.awt.event.FocusListener listener) {
+		for (Component  comp : this.getComponents()) {
+			comp.addFocusListener(listener);
+    	}
+		super.addFocusListener(listener);
+    }
+	
+    public void addMouseListener(MouseListener listener) {
+		for (Component  comp : this.getComponents()) {
+			comp.addMouseListener(listener);
+    	}
+		super.addMouseListener(listener);
+    }	
 }

@@ -58,7 +58,7 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
     // access methods for associations
     
     public Table getTable() {
-    		return DatabaseManager.getInstance().getTableCatalog().doGetTable(tableName);
+    		return DatabaseManager.getInstance().getTableCatalog().getTable(tableName);
     }
     
     public String getTableName() {

@@ -83,25 +83,29 @@ public class JDBCConnector implements  DatabaseConnector{
             rs.close();
         }
         catch (SQLException sqle) {
+        	System.err.println("error fetching column names for table " + tableName);
             sqle.printStackTrace();
+            System.exit(1);
         }
         return result;
 	}
 
-	public String getColumnType(String tableName, String columnName) {
+	public int getColumnType(String tableName, String columnName) {
         try {
             DatabaseMetaData dmd = con.getMetaData();
             ResultSet rs = dmd.getColumns(null, null, tableName, null);
             while (rs.next()) {
                 if (rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName)) {
-                    return rs.getString("DATA_TYPE");
+                    return Integer.parseInt(rs.getString("DATA_TYPE"));
                 }
             }
             rs.close();
         } catch (SQLException sqle) {
+        	System.err.println("error fetching column type for " + tableName + "." + columnName);
             sqle.printStackTrace();
+            System.exit(1);
         }
-        return null;
+        return 0;
 	}
 
 	public List<String> getPrimaryKeys(String tableName) {
@@ -115,7 +119,9 @@ public class JDBCConnector implements  DatabaseConnector{
             rs.close();
         }
         catch (SQLException sqle) {
+        	System.err.println("error fetching primary keys for table " + tableName);
             sqle.printStackTrace();
+            System.exit(1);
         }
         return result;
 	}
@@ -131,7 +137,9 @@ public class JDBCConnector implements  DatabaseConnector{
             rs.close();
         } 
     	catch (SQLException sqle) {
+        	System.err.println("error fetching table names");
             sqle.printStackTrace();
+            System.exit(1);
         }
     	return names;
 	}
@@ -162,6 +170,8 @@ public class JDBCConnector implements  DatabaseConnector{
                 }
             } catch (SQLException sqle) {
                 System.err.println("Could not retrieve comment for column " + columnName + " in table " + tableName + ": " + sqle.getMessage());
+                sqle.printStackTrace();
+                System.exit(1);
             }
         }
         return comment;
@@ -183,6 +193,8 @@ public class JDBCConnector implements  DatabaseConnector{
                 }
             } catch (SQLException sqle) {
                 System.err.println("Could not retrieve comment for table " + tableName + ": " + sqle.getMessage());
+                sqle.printStackTrace();
+                System.exit(1);
             }
         }
         return comment;

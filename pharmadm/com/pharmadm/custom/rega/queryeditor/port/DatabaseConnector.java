@@ -9,7 +9,14 @@ public interface DatabaseConnector {
     public List<String> getTableNames();
     public List<String> getPrimaryKeys(String tableName);
     public List<String> getColumnNames(String tableName);
-    public String getColumnType(String tableName, String columnName);   
+    
+    /**
+     * returns the sql datatype for the given column
+     * @param tableName
+     * @param columnName
+     * @return
+     */
+    public int getColumnType(String tableName, String columnName);   
     public QueryResult executeQuery(String query) throws SQLException;
     public QueryStatement createScrollableReadOnlyStatement() throws SQLException;
     

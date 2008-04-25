@@ -253,10 +253,17 @@ public class AWCPrototypeCatalog {
     ///////////////////////////////////////
     // access methods for associations
     
-    public final Table getTable(String name) {
-        return DatabaseManager.getInstance().getTableCatalog().doGetTable(name);
+    private Table getTable(String tableName) {
+    	return DatabaseManager.getInstance().getTableCatalog().getTable(tableName);
     }
     
+    private Field getField(String tableName, String fieldName) {
+    	Table table = getTable(tableName);
+    	if (table != null) {
+    		return table.getField(fieldName);
+    	}
+    	return null;
+    }    
     public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
         this.atomicWhereClauses.add(atomicWhereClause);
     }
@@ -300,23 +307,23 @@ public class AWCPrototypeCatalog {
         }
     }
     
-    /**
-     * returns the data type string from the given property of the given table. Returns null if the table
-     * or property is not found
-     * @param tableName
-     * @param propertyName
-     * @return
-     */
-    private String getDataTypeString(String tableName, String propertyName) {
-        DatabaseManager manager = DatabaseManager.getInstance();
-        if (manager != null) {
-        	return manager.getDatabaseConnector().getColumnType(tableName, propertyName);
-        }
-        else {
-            System.err.println("Unknown column " + propertyName + " for " + tableName);
-        	return null;
-        }
-    }
+//    /**
+//     * returns the data type string from the given property of the given table. Returns null if the table
+//     * or property is not found
+//     * @param tableName
+//     * @param propertyName
+//     * @return
+//     */
+//    private String getDataTypeString(String tableName, String propertyName) {
+//        DatabaseManager manager = DatabaseManager.getInstance();
+//        if (manager != null) {
+//        	return manager.getDatabaseConnector().getColumnType(tableName, propertyName);
+//        }
+//        else {
+//            System.err.println("Unknown column " + propertyName + " for " + tableName);
+//        	return null;
+//        }
+//    }
     
     private OutputVariable getOutputVariable(String typeString, String propertyName, FromVariable fromVar) {
         OutputVariable ovar = getBasicOutputVariable(typeString, propertyName);
@@ -359,9 +366,7 @@ public class AWCPrototypeCatalog {
     }
     
     private Properties getDataTypeDependantProperties(String tableName, String propertyName) {
-    	String dataTypeString = getDataTypeString(tableName, propertyName);
-    	if (dataTypeString != null) {
-	    	int dataType = Integer.parseInt(dataTypeString);
+    	int dataType = DatabaseManager.getInstance().getDatabaseConnector().getColumnType(tableName, propertyName);
 	    	
 	        String variableType;
 	        Constant valueConstant = null;
@@ -385,10 +390,7 @@ public class AWCPrototypeCatalog {
 	    	Properties p = new Properties();
 	    	p.put("typeString", variableType);
 	    	p.put("constant", valueConstant);
-	    	p.put("dataTypeString", dataTypeString);
 	    	return p;
-    	}
-    	return null;
     }
     
     private AtomicWhereClause addMandatoryValuesToClause(AtomicWhereClause clause, String[] tables, String[] properties) {
@@ -431,7 +433,7 @@ public class AWCPrototypeCatalog {
      * compatible with the given list of OutputVariables
      * </p>
      */
-    public Collection<AtomicWhereClause> getAWCPrototypes(Collection availableOutputVariables) {
+    public Collection<AtomicWhereClause> getAWCPrototypes(Collection<OutputVariable> availableOutputVariables) {
         // your code here
         Collection<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
         Iterator<AtomicWhereClause> iter = atomicWhereClauses.iterator();
@@ -443,7 +445,7 @@ public class AWCPrototypeCatalog {
                 InputVariable ivar = (InputVariable)inputIter.next();
                 boolean varOk = false;
                 //System.out.println("Checking ..." + ivar.getVariableType());
-                Iterator outputIter = availableOutputVariables.iterator();
+                Iterator<OutputVariable> outputIter = availableOutputVariables.iterator();
                 while (outputIter.hasNext()) {
                     OutputVariable ovar = (OutputVariable)outputIter.next();
                     if (ivar.isCompatible(ovar)) {
@@ -675,8 +677,7 @@ public class AWCPrototypeCatalog {
     private AtomicWhereClause addGetAssociationClause(String tableName, String foreignKeyName, String foreignTableName, String foreignTableKey, String description) {
         DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
-            String dataTypeString = manager.getDatabaseConnector().getColumnType(tableName, foreignKeyName);
-            if (dataTypeString != null) {
+            if (getField(tableName, foreignKeyName) != null) {
                 AtomicWhereClause aClause = new AtomicWhereClause();
                 VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
                 WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
@@ -716,7 +717,7 @@ public class AWCPrototypeCatalog {
             AtomicWhereClause aClause = new AtomicWhereClause();
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            HashMap tmpMap = new HashMap(); // for storing parts of expressions that come from different parts of the query
+            HashMap<String, ArrayList<AWCWord>> tmpMap = new HashMap<String, ArrayList<AWCWord>>(); // for storing parts of expressions that come from different parts of the query
             String tableName = args[0][0];
             String keyName = args[0][1];
             String foreignKeyName = args[0][2];
@@ -728,7 +729,7 @@ public class AWCPrototypeCatalog {
                 if (args[0][j+1].startsWith("?")) {
                     String keyString = args[0][j+1].substring(1, args[0][j+1].indexOf(' '));
                     //System.err.println(keyString);
-                    ArrayList expressionList = new ArrayList();
+                    ArrayList<AWCWord> expressionList = new ArrayList<AWCWord>();
                     expressionList.add(ivar);
                     expressionList.add(new FixedString("." + args[0][j] + args[0][j+1].substring(args[0][j+1].indexOf(' ') + 1)));
                     tmpMap.put(keyString, expressionList);
@@ -748,16 +749,16 @@ public class AWCPrototypeCatalog {
                     if (args[i][j+1].startsWith("?")) {
                         String keyString = args[i][j+1].substring(1, args[i][j+1].indexOf(' '));
                         //System.err.println(keyString);
-                        ArrayList expressionList = new ArrayList();
+                        ArrayList<AWCWord> expressionList = new ArrayList<AWCWord>();
                         expressionList.add(newFromVar);
                         expressionList.add(new FixedString("." + args[i][j] + args[i][j+1].substring(args[i][j+1].indexOf(' ') + 1)));
                         tmpMap.put(keyString, expressionList);
                     } else if (args[i][j+1].startsWith("!")) {
                         String keyString = args[i][j+1].substring(1);
                         //System.err.println(keyString);
-                        ArrayList expressionList = (ArrayList)tmpMap.get(keyString);
+                        ArrayList<AWCWord> expressionList = tmpMap.get(keyString);
                         aComposer.addFixedString(new FixedString(" and ("));
-                        Iterator iter = expressionList.iterator();
+                        Iterator<AWCWord> iter = expressionList.iterator();
                         while (iter.hasNext()) {
                             AWCWord word = (AWCWord)iter.next();
                             if (word instanceof FromVariable) {
@@ -805,9 +806,9 @@ public class AWCPrototypeCatalog {
         private AtomicWhereClause addCodedPropertyCheckClause(String tableName, String codeName, String codeTableName, String codeKeyName, String propertyName, String description, boolean show) {
             DatabaseManager manager = DatabaseManager.getInstance();
             if (manager != null) {
-                String dataTypeString = manager.getDatabaseConnector().getColumnType(codeTableName, propertyName);
-                if (dataTypeString != null) {
-                    int dataType = Integer.parseInt(dataTypeString);
+            	Field field = getField(codeTableName, propertyName);
+                if (field != null) {
+                    int dataType = field.getDataType();
                     VariableType varType;
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
@@ -877,9 +878,9 @@ public class AWCPrototypeCatalog {
     private AtomicWhereClause addPropertyTimeIntervalClause(String tableName, String propertyName, String description, boolean show) {
     	DatabaseManager manager = DatabaseManager.getInstance();
         if (manager != null) {
-            String dataTypeString = manager.getDatabaseConnector().getColumnType(tableName, propertyName);
-            if (dataTypeString != null) {
-                int dataType = Integer.parseInt(dataTypeString);
+        	Field field = getField(tableName, propertyName);
+            if (field != null) {
+                int dataType =field.getDataType();
                 if ((dataType >= 91) && (dataType <= 93)) {
                     AtomicWhereClause aClause = new AtomicWhereClause();
                     VisualizationClauseList aVisList = aClause.getVisualizationClauseList();

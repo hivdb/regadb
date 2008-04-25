@@ -133,7 +133,7 @@ public class SqlQuery implements QueryVisitor {
 	}
 
 	public String visitWhereClauseFullNameOutputVariable(OutputVariable ovar, Field field) {
-        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTableName().equals(field.getTableName()))) {
+        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTableName().equals(field.getTable().getName()))) {
             return ((FromVariable)ovar.getExpression().getWords().get(0)).acceptWhereClause(this) + "." + field.getName();
         } 
         else { 

@@ -231,7 +231,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     
     /* return the full column name uniquely identifying this field in a result set */ 
     public String getFullColumnName(Field field) {
-        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTableName().equals(field.getTableName()))) {
+        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTableName().equals(field.getTable().getName()))) {
             return getUniqueName() + "." + field.getName();
         } else { 
             System.err.println("Error : trying to get a field from a variable that does not know it");

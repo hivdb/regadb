@@ -47,7 +47,7 @@ public class JInputVariableConfigurer extends javax.swing.JComboBox implements W
     }    
     
     public void configureWord() {
-        controller.assignOutputVariable(var, (OutputVariable)getSelectedItem());
+        this.controller.assignOutputVariable(var, (OutputVariable)getSelectedItem());
     }    
      
     public void freeResources() {
@@ -63,5 +63,6 @@ public class JInputVariableConfigurer extends javax.swing.JComboBox implements W
 		JInputVariableConfigurer confy = (JInputVariableConfigurer) o;
 		confy.controller = this.controller;
 		confy.var = this.var;
+		this.setSelectedIndex(confy.getSelectedIndex());
 	}
 }

@@ -13,6 +13,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
+
 /**
  * <p>
  * A Set that contains all Tables that are mentioned in the WhereClauses of
@@ -31,9 +33,33 @@ public class DatabaseTableCatalog {
  * </p>
  */
     
-    public Collection<Table> tables = new TreeSet<Table>(); // of type Table
+	// all tables
+    private HashMap<String, Table> tables;
+    
+    
+    public DatabaseTableCatalog(DatabaseConnector connector) {
+    	tables = new HashMap<String, Table>();
+    	List<String> tableNames = connector.getTableNames();
 
-    public DatabaseTableCatalog() {
+    	
+    	for (String tableName : tableNames) {
+    		List<String> fieldNames = connector.getColumnNames(tableName);
+    		List<String> keys = connector.getPrimaryKeys(tableName);
+    		HashMap<String,Field> fields = new HashMap<String,Field>();
+    		
+    		String tableComment = connector.getCommentForTable(tableName);
+    		Table table = new Table(tableName, tableComment);
+    		for (String fieldName : fieldNames) {
+    			String fieldComment = connector.getCommentForColumn(tableName, fieldName);
+    			int dataType = connector.getColumnType(tableName, fieldName);
+    			boolean isKey = keys.contains(fieldName);
+    			Field field = new Field(fieldName, table, fieldComment, isKey, dataType);
+    			fields.put(fieldName, field);
+    			table.addField(field);
+    		}
+
+    		tables.put(tableName, table);
+    	}
     }
     
         
@@ -41,41 +67,14 @@ public class DatabaseTableCatalog {
    ///////////////////////////////////////
    // access methods for associations
 
-    public Collection<Table> getTables() {
-        return tables;
+    public boolean hasTable(String tableName) {
+    	return tables.containsKey(tableName);
     }
-    public Table getTable(String name) {
-        if (name.startsWith("TMP_")) {
-            return null;
-        }
-        Iterator<Table> iter = tables.iterator();
-        while (iter.hasNext()) {
-            Table table = (Table)iter.next();
-            if (table.getName().equalsIgnoreCase(name)) {
-                return table;
-            }
-        }
-        return null;
+    
+    public Table getTable(String tableName) {
+    	return tables.get(tableName);
     }
-    public Table doGetTable(String name) {
-//        if (name.startsWith("TMP_")) {
-//            return new TempMoleculeIDSet();
-//        }
-        Table table = getTable(name);
-        if (table == null) {
-            table = new Table(name);
-            tables.add(table);
-        }
-        return table;
-    }
-    public void addTable(Table table) {
-        if (! tables.contains(table)) tables.add(table);
-    }
-    public void removeTable(Table table) {
-        this.tables.remove(table);
-    }
-    public int size() {
-        return tables.size();
-    }
+    
+    
 
 } // end DatabaseTableCatalog

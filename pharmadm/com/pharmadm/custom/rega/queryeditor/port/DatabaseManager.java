@@ -28,12 +28,13 @@ public class DatabaseManager {
 	
     private DatabaseConnector DbManager;
 	private QueryVisitor visitor;
-    private DatabaseTableCatalog tableCatalog = new DatabaseTableCatalog();
+    private DatabaseTableCatalog tableCatalog;
     private List<String> tableNames = null;
     
     private DatabaseManager(QueryVisitor queryBuilder, DatabaseConnector conn) {
     	this.visitor = queryBuilder;
     	DbManager = conn;
+    	tableCatalog = new DatabaseTableCatalog(conn);
     }
     
     public static DatabaseManager getInstance() {

@@ -15,6 +15,8 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 /**
  *
  * @author  kristof
@@ -24,13 +26,13 @@ import java.util.*;
  */
 public class TableSelection extends ComposedSelection implements Serializable{
     
-    private Table table; // the Table accessed by the FromVariable that is the sole AWCWord in the Expression of this Selection's OutputVariable
+    private String tableName; // the Table accessed by the FromVariable that is the sole AWCWord in the Expression of this Selection's OutputVariable
     
     /** Creates a new instance of TableSelection */
     public TableSelection(OutputVariable ovar) {
         super(ovar);
         if (ovar.consistsOfSingleFromVariable()) {
-            table = ((FromVariable)((OutputVariable)getObjectSpec()).getExpression().getWords().get(0)).getTable();
+            tableName = ((FromVariable)((OutputVariable)getObjectSpec()).getExpression().getWords().get(0)).getTableName();
             initFieldSelections();
         } else {
             System.err.println("TableSelection's OutputVariable does not refer to a single FromVariable. Something is terribly wrong !");
@@ -48,7 +50,11 @@ public class TableSelection extends ComposedSelection implements Serializable{
     }
     
     public Table getTable() {
-        return table;
+        return DatabaseManager.getInstance().getTableCatalog().getTable(tableName);
+    }
+    
+    public String getTableName() {
+    	return tableName;
     }
     
     public String getVariableName() {

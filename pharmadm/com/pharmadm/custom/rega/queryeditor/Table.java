@@ -11,10 +11,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
-import java.io.Serializable;
 import java.util.*;
-
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 /**
  * <p>
@@ -22,7 +19,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  * </p>
  *
  */
-public class Table implements Comparable, Serializable {
+public class Table implements Comparable<Table> {
     
     ///////////////////////////////////////
     // attributes
@@ -36,17 +33,16 @@ public class Table implements Comparable, Serializable {
      *
      */
     private String name;
-    private Collection<Field> fields = null; // of type Field
+    private HashMap<String, Field> fields = null; // of type Field
     private String comment;
     private int seqId;
     private static Object seqIdLock = new Object();
     
-    public Table(String name) {
-        if (name != null) {
-            this.name = name;
-            comment = DatabaseManager.getInstance().getDatabaseConnector().getCommentForTable(name);
-            seqId = 1;
-        }
+    public Table(String name, String comment) {
+        this.name = name;
+        this.comment = comment;
+        seqId = 1;
+        this.fields = new HashMap<String, Field>();
     }
     
     public int acquireSeqId() {
@@ -55,45 +51,32 @@ public class Table implements Comparable, Serializable {
         }
     }
     
+    public void addField(Field field) {
+    	fields.put(field.getName(), field);
+    }
+    
     ///////////////////////////////////////
     // access methods for associations
     
     public Collection<Field> getFields() {
-        if (fields == null) {
-            List<String> fieldNames = DatabaseManager.getInstance().getDatabaseConnector().getColumnNames(getName());
-            List<String> keyNames = DatabaseManager.getInstance().getDatabaseConnector().getPrimaryKeys(getName());
-            fields = new ArrayList<Field>();
-            Iterator<String> fieldNameIter = fieldNames.iterator();
-            while (fieldNameIter.hasNext()) {
-                String fieldName = fieldNameIter.next();
-                Field field = new Field(fieldName, this, keyNames.contains(fieldName));
-                fields.add(field);
-            }
-        }
-        return fields;
+    	List<Field> result = new ArrayList<Field>();
+        result.addAll(fields.values());
+        Collections.sort(result);
+        return result;
     }
     
     public Collection<Field> getPrimaryKeyFields() {
         Collection<Field> res = new ArrayList<Field>();
-        Iterator<Field> iter = fields.iterator();
-        while (iter.hasNext()) {
-            Field field = iter.next();
-            if (field.isPrimaryKey()) {
-                res.add(field);
-            }
+        for (Field field: fields.values()) {
+        	if (field.isPrimaryKey()) {
+        		res.add(field);
+        	}
         }
         return res;
     }
         
     public Field getField(String name) {
-        Iterator<Field> iter = getFields().iterator();
-        while (iter.hasNext()) {
-            Field field = (Field)iter.next();
-            if (field.getName().equals(name)) {
-                return field;
-            }
-        }
-        return null;
+        return fields.get(name);
     }
     
     ///////////////////////////////////////
@@ -109,13 +92,6 @@ public class Table implements Comparable, Serializable {
     
     public String getComment() {
         return comment;
-    }
-    
-    /**
-     * For subclasses, in case the name was not yet known at the time of construction.
-     */
-    public void setName(String newName) {
-        this.name = newName;
     }
     
     /**
@@ -146,12 +122,12 @@ public class Table implements Comparable, Serializable {
         }
     }
     
-    public int compareTo(Object obj) {
+    public int compareTo(Table obj) {
         if (obj == null) {
             return -1;
         }
         else {
-            return this.getName().toLowerCase().compareTo(((Table)obj).getName().toLowerCase());
+            return getName().toLowerCase().compareTo(obj.getName().toLowerCase());
         }
     }
     

@@ -59,13 +59,13 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
     
     private void subCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
-        JCheckBox checkBox = ((JCheckBox)evt.getSource());
-        String fieldName = checkBox.getText();
+    	LargeToolTipCheckBox checkBox = ((LargeToolTipCheckBox)evt.getSource());
+        String fieldName = checkBox.getObjectName();
         ((SelectionStatusList)tableSelection.getController()).setSelected((OutputVariable)tableSelection.getObject(), tableSelection.getTable().getField(fieldName), checkBox.isSelected());
     }
     
     private void initTableCheckBox() {
-        tableCheckBox = new LargeToolTipCheckBox(tableSelection.getTable().getName(), tableSelection.getVariableName(), tableSelection.isSelected(), tableSelection.getTable().getComment());
+        tableCheckBox = new LargeToolTipCheckBox(tableSelection.getTableName(), tableSelection.getVariableName(), tableSelection.getTableName(), tableSelection.isSelected(), tableSelection.getTable().getComment());
         tableCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tableCheckBoxActionPerformed(evt);
@@ -83,14 +83,14 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
         fieldsPanel.setLayout(new javax.swing.BoxLayout(fieldsPanel, javax.swing.BoxLayout.Y_AXIS));
         jScrollPane1.setViewportView(fieldsPanel);
         
-        Iterator fields = tableSelection.getSubSelections().iterator();
+        Iterator<Selection> fields = tableSelection.getSubSelections().iterator();
         double preferredHeight = 0;
         
         while (fields.hasNext()) {
             Selection fieldSelection = (FieldSelection)fields.next();
             Field field = (Field)fieldSelection.getObject();
             boolean selected = fieldSelection.isSelected();
-            JCheckBox checkBox = new LargeToolTipCheckBox(tableSelection.getTable().getName() + '.' + field.getName(), field.getName(), selected, field.getComment());
+            JCheckBox checkBox = new LargeToolTipCheckBox(tableSelection.getTableName() + '.' + field.getName(), field.getDescription(), field.getName(), selected, field.getComment());
             checkBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     subCheckBoxActionPerformed(evt);
@@ -154,9 +154,10 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
         
         private final String title;
         private final String toolTipText;
-        
-        public LargeToolTipCheckBox(String title, String text, boolean selected, String toolTipText) {
+        private final String objectName;
+        public LargeToolTipCheckBox(String title, String text, String objectName, boolean selected, String toolTipText) {
             super(text, selected);
+            this.objectName = objectName;
             if (toolTipText == null) {
                 toolTipText = CommentToolTip.NO_COMMENT_AVAILABLE;
             }
@@ -164,6 +165,10 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
             this.toolTipText = toolTipText;
             setToolTipText(toolTipText);
             addMouseListener(new MenuPopupMouseListener());
+        }
+        
+        public String getObjectName() {
+        	return objectName;
         }
         
         public JToolTip createToolTip() {
