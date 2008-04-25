@@ -323,9 +323,9 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         
         public int getCode(){
             if(this == ARC)
-               return 1;
+               return 2;
             if(this == ARL)
-                return 2;
+                return 1;
             return -1;
         }
     };
