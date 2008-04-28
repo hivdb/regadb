@@ -90,7 +90,7 @@ public class ImportFromXls {
     	}
     	
     	Utils.exportPatientsXML(patientMap, basePath_ + File.separatorChar + "patients_eve.xml");
-    	Utils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "viralisolates.xml");
+    	Utils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "sequences_eve.xml");
 	}
     
 	private void processTherapy(Patient p, Date startDate, Date stopDate, String drugs) {		
@@ -154,6 +154,7 @@ public class ImportFromXls {
 			if ( fasta == null ) {
 				System.err.println("Fasta not found for " + localString);
 			} else {
+				fasta = Utils.clearNucleotides(fasta);
 				NtSequence nts = new NtSequence();
 				nts.setNucleotides(fasta);
 				
