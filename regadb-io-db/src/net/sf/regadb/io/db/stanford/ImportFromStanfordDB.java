@@ -31,7 +31,7 @@ public class ImportFromStanfordDB {
 	private static String mapPath = "/home/dluypa0/Projects/impex/regadb-io-db/src/net/sf/regadb/io/db/stanford/mappings";
 	private static String dataPath = "/home/dluypa0/stanford_import/nonB_data";
 	private static int ID = 0, STARTDATE = 1, STOPDATE = 2, DRUGS = 3;
-	private static int SAMPLEDATE = 1, SAMPLEID = 2, SUBTYPE = 3, SEQUENCE = 4;
+	private static int SAMPLEDATE = 1, SAMPLEID = 2, SEQUENCE = 4;
 	private static List<DrugGeneric> regaDrugGenerics;
 	private static Table drugTable_;
 	private static DateFormat stanford = new SimpleDateFormat("yyyy-MM-dd");
@@ -143,8 +143,7 @@ public class ImportFromStanfordDB {
 			}
 			
 			NtSequence nt = new NtSequence();
-			nt.setNucleotides(elements.get(SEQUENCE));
-			
+			nt.setNucleotides( Utils.clearNucleotides( elements.get(SEQUENCE) ) );
 			vi.getNtSequences().add(nt);
 		}
 	}
