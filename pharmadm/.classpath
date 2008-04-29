@@ -2,9 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/hibernate2.jar"/>
-	<classpathentry kind="lib" path="/regadb-persist/lib/postgresql-8.2-505.jdbc3.jar"/>
 	<classpathentry kind="src" path="/pharmadm-num"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

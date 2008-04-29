@@ -22,6 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
+import com.pharmadm.custom.rega.reporteditor.OutputReportSeeder;
 import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
 
 /**
@@ -176,7 +177,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         suggestedValues.setMandatory(true);
     }
     
-    public String getHumanStringValue(com.pharmadm.custom.rega.reporteditor.QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         // context-independent
         return getHumanStringValue();
     }    

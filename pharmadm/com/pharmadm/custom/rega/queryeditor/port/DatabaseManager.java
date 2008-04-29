@@ -12,9 +12,7 @@
  */
 package com.pharmadm.custom.rega.queryeditor.port;
 
-import java.util.*;
-
-import com.pharmadm.custom.rega.queryeditor.DatabaseTableCatalog;
+import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 
 
 
@@ -29,12 +27,17 @@ public class DatabaseManager {
     private DatabaseConnector DbManager;
 	private QueryVisitor visitor;
     private DatabaseTableCatalog tableCatalog;
-    private List<String> tableNames = null;
+    private AWCPrototypeCatalog catalog;
     
     private DatabaseManager(QueryVisitor queryBuilder, DatabaseConnector conn) {
     	this.visitor = queryBuilder;
     	DbManager = conn;
     	tableCatalog = new DatabaseTableCatalog(conn);
+    }
+    
+    public void fillCatalog(CatalogBuilder catalogBuilder) {
+    	catalog = new AWCPrototypeCatalog(this);
+		catalogBuilder.fillCatalog(catalog);
     }
     
     public static DatabaseManager getInstance() {
@@ -60,19 +63,7 @@ public class DatabaseManager {
     	return DbManager;    	
     }
     
-    public List<String> getTableNames() {
-        if (tableNames == null) {
-        	tableNames = DbManager.getTableNames();
-        }
-        return tableNames;
+    public AWCPrototypeCatalog getAWCCatalog() {
+    	return catalog;
     }
-    
-    /**
-     * returns true if a table with the given name exists in the database
-     * @param tableName the name of a table
-     * @return
-     */
-    public boolean tableExists(String tableName) {
-        return getTableNames().contains(tableName);
-    }    
 }

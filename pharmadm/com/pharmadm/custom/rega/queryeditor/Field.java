@@ -11,6 +11,8 @@
  */
 package com.pharmadm.custom.rega.queryeditor;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 /**
  * <p>
  * Represents a column of a database table.
@@ -66,7 +68,7 @@ public class Field implements Comparable<Field>{
     
     public String getDescription() {
     	if (description == null) {
-            description = AWCPrototypeCatalog.getInstance().getObjectDescription(table.getName() + "." + name);
+            description = DatabaseManager.getInstance().getAWCCatalog().getObjectDescription(table.getName() + "." + name);
     	}
     	return description;
     }

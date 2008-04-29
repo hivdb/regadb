@@ -117,7 +117,7 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
         return getVariableType().getValueType();
     }
     
-    public String getHumanStringValue(QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         DataOutputVariable ovar = getOutputVariable();
         return (((ovar = getOutputVariable()) == null) ? null : ovar.getHumanStringValue(context));
     }

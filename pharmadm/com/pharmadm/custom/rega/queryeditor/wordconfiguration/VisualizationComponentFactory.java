@@ -33,13 +33,13 @@ public class VisualizationComponentFactory {
 
 
   private ConfigurationController controller;
-  private QueryOutputReportSeeder seedController = null;
+  private OutputReportSeeder seedController = null;
   
   public VisualizationComponentFactory(ConfigurationController controller) {
       this.controller = controller;
   }
   
-  public VisualizationComponentFactory(ConfigurationController controller, QueryOutputReportSeeder seedController) {
+  public VisualizationComponentFactory(ConfigurationController controller, OutputReportSeeder seedController) {
       this.controller = controller;
       this.seedController = seedController;
   }
@@ -104,6 +104,3 @@ public class VisualizationComponentFactory {
     }
     
 } // end VisualizationComponentFactory
-
-
-

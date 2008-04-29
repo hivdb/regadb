@@ -66,7 +66,7 @@ public class Property implements Valuable, Cloneable {
         return specifier.getValue(dataRow);
     }
     
-    public String getColumnHeader(QueryOutputReportSeeder context) {
+    public String getColumnHeader(OutputReportSeeder context) {
         return getOutputVariable().getHumanStringValue(context) + "." + getName();
     }
     

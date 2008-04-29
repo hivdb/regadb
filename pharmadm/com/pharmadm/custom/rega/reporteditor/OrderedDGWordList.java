@@ -43,7 +43,7 @@ public class OrderedDGWordList extends OrderedConfigurableWordList {
         super(owner);
     }
      
-    public String getHumanStringValue(QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         StringBuffer sb = new StringBuffer();
         Iterator<ConfigurableWord> iterWords = getWords().iterator();
         while (iterWords.hasNext()) {

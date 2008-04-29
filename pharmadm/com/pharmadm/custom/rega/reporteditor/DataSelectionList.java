@@ -163,7 +163,7 @@ public class DataSelectionList implements SelectionList {
     }
     
     // %$ KVB : It is essential that this method returns column names in the same order the columns are collected in getSelectedColumns !
-    public List getSelectedColumnNames(QueryOutputReportSeeder context) {
+    public List getSelectedColumnNames(OutputReportSeeder context) {
         ArrayList selectedColumns = new ArrayList();
         Iterator iter = getSelections().iterator();
         while (iter.hasNext()) {
@@ -285,7 +285,7 @@ public class DataSelectionList implements SelectionList {
         selectionChangeListeners.add(listener);
     }
     
-    protected void removeSelectionChangeListener(SelectionChangeListener listener) {
+    public void removeSelectionChangeListener(SelectionChangeListener listener) {
         selectionChangeListeners.remove(listener);
     }
 }

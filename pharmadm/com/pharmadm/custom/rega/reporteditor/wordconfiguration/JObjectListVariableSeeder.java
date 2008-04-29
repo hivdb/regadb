@@ -17,7 +17,7 @@ import java.util.List;
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 public class JObjectListVariableSeeder extends javax.swing.JComboBox implements WordConfigurer {
     
     private ObjectListVariable var;
-    private QueryOutputReportSeeder controller;
+    private OutputReportSeeder controller;
     
     /** 
      * <p>
@@ -38,7 +38,7 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
      * @param controller The controller in charge of configuration
      * </p>
      */
-    public JObjectListVariableSeeder(ObjectListVariable input, QueryOutputReportSeeder controller) {
+    public JObjectListVariableSeeder(ObjectListVariable input, OutputReportSeeder controller) {
         super(controller.getAvailableOutputVariables(input.getVariableType()).toArray(new OutputVariable[0]));
         this.var = input;
         this.controller = controller;
@@ -66,5 +66,4 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
 		this.controller = confy.controller;
 		this.var = confy.var;
 	}
-   
 }

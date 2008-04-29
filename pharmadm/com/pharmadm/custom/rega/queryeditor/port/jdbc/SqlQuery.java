@@ -26,8 +26,7 @@ import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.SubstringConstant;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
+import com.pharmadm.custom.rega.queryeditor.port.*;
 
 public class SqlQuery implements QueryVisitor {
 

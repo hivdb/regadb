@@ -52,11 +52,11 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
   ///////////////////////////////////////
   // attributes
 
-    public OutputVariable(VariableType type, String objectName) {
+    public OutputVariable(VariableType type, String objectName, String formalName, String description) {
         super(type);
         this.expression= new OutputExpression();
-        this.formalName = AWCPrototypeCatalog.getInstance().getVariableName(objectName); 
-        this.description = AWCPrototypeCatalog.getInstance().getObjectDescription(objectName);
+        this.formalName = formalName; 
+        this.description = description;
         this.relation = null;
     }
 

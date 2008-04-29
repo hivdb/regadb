@@ -179,7 +179,7 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
         }
     }
     
-    public String getHumanStringValue(com.pharmadm.custom.rega.reporteditor.QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         if (consistsOfSingleObjectListVariable()) {
             // this is a hack for user-friendliness; it is not supposed to be
             // problematic/confusing as long as ObjectListVariables remain invisible 

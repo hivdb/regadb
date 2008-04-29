@@ -9,11 +9,12 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.port;
 
 import java.util.*;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
+import com.pharmadm.custom.rega.queryeditor.Field;
+import com.pharmadm.custom.rega.queryeditor.Table;
 
 /**
  * <p>
@@ -24,15 +25,6 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
  */
 public class DatabaseTableCatalog {
 
-   ///////////////////////////////////////
-   // associations
-
-/**
- * <p>
- * 
- * </p>
- */
-    
 	// all tables
     private HashMap<String, Table> tables;
     

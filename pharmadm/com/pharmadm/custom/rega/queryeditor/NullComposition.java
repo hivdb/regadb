@@ -2,7 +2,6 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.List;
 
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 public class NullComposition implements CompositionBehaviour {
 

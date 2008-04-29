@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.persist;
 
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Encoder;

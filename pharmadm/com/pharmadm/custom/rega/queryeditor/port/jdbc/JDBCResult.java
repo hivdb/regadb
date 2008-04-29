@@ -4,10 +4,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import com.pharmadm.custom.rega.queryeditor.port.*;
 
-import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
-public class JDBCResult implements QueryResult{
+public class JDBCResult implements QueryResult {
 	private ResultSet rs;
 	
 	public JDBCResult(ResultSet result) {

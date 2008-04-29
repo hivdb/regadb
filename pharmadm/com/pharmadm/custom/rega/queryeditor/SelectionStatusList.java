@@ -166,7 +166,7 @@ public class SelectionStatusList implements SelectionList, Serializable {
     }
     
     // do not use this with selectList == this.selections
-    private void addOrCopyVariableTo(OutputVariable ovar, Collection selectList) {
+    private void addOrCopyVariableTo(OutputVariable ovar, Collection<Selection> selectList) {
         Selection selection = find(ovar);
         if (selection == null) {
             selection = (ovar.consistsOfSingleFromVariable() ? (Selection)(new TableSelection(ovar, true)) : (Selection)(new OutputSelection(ovar, true)));

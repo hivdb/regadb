@@ -17,7 +17,6 @@ import com.pharmadm.custom.rega.queryeditor.AWCWord;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
-import com.pharmadm.custom.rega.queryeditor.InputVariableController;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;

@@ -12,6 +12,7 @@
  */
 package com.pharmadm.custom.rega.reporteditor;
 
+
 /**
  *
  * @author  kristof
@@ -19,5 +20,5 @@ package com.pharmadm.custom.rega.reporteditor;
 public interface DataGroupWord extends com.pharmadm.custom.rega.queryeditor.ConfigurableWord {
     
     // this method required because some DataGroupWords (i.c. ObjectListVariables) can depend on a context
-    public String getHumanStringValue(QueryOutputReportSeeder context);
+    public String getHumanStringValue(OutputReportSeeder context);
 }

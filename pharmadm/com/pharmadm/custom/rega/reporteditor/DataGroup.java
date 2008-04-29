@@ -182,7 +182,7 @@ public class DataGroup implements com.pharmadm.custom.rega.queryeditor.WordListO
         return getVisualizationList().getHumanStringValue();
     }
     
-    public String getHumanStringValue(QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         return getVisualizationList().getHumanStringValue(context);
     }
     

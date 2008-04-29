@@ -136,7 +136,26 @@ public class Query implements Serializable {
      * </p>
      */
     public boolean isValid() {
-        return getRootClause().isValid();
+        return getRootClause().isValid() ;
+    }
+    
+    public boolean hasFromVariables() {
+    	return countFromVariables(getRootClause()) > 0;
+    }
+    
+    private int countFromVariables(WhereClause clause) {
+    	int count = 0;
+    	Iterator<WhereClause> it = clause.iterateChildren();
+    	while (it.hasNext()) {
+    		WhereClause child = it.next();
+    		if (child.isAtomic()) {
+    			count+= ((AtomicWhereClause)child).getFromVariables().size();
+    		}
+    		else {
+    			count += countFromVariables(child);
+    		}
+    	}
+    	return count;
     }
     
     public void updateSelectList() {

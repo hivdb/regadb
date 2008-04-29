@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
-import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
-import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
+import com.pharmadm.custom.rega.queryeditor.port.*;
+
 
 public class JDBCConnector implements  DatabaseConnector{
 	private Connection con;

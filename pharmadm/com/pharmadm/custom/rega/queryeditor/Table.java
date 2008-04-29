@@ -13,6 +13,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 /**
  * <p>
  * A simplified representation of a database table.
@@ -87,7 +89,7 @@ public class Table implements Comparable<Table> {
     }
     
     public String getDescription() {
-    	return AWCPrototypeCatalog.getInstance().getObjectDescription(getName());
+    	return DatabaseManager.getInstance().getAWCCatalog().getObjectDescription(getName());
     }
     
     public String getComment() {

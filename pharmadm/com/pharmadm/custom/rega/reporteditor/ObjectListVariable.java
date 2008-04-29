@@ -109,7 +109,7 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
         return clone;
     }
 
-    public String getHumanStringValue(QueryOutputReportSeeder context) {
+    public String getHumanStringValue(OutputReportSeeder context) {
         if (context == null) {
             return getHumanStringValue();
         } else {

@@ -14,9 +14,13 @@ package com.pharmadm.custom.rega.reporteditor.wordconfiguration;
 
 import java.util.List;
 
-import com.pharmadm.custom.rega.reporteditor.*;
-import com.pharmadm.custom.rega.queryeditor.*;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
+import com.pharmadm.custom.rega.reporteditor.DataInputVariable;
+import com.pharmadm.custom.rega.reporteditor.DataInputVariableController;
+import com.pharmadm.custom.rega.reporteditor.DataOutputVariable;
+import com.pharmadm.custom.rega.reporteditor.OutputReportSeeder;
+
 
 /**
  *
@@ -38,7 +42,7 @@ public class JDataInputVariableConfigurer extends javax.swing.JComboBox implemen
      * @param controller The controller in charge of configuration
      * </p>
      */
-    public JDataInputVariableConfigurer(DataInputVariable input, DataInputVariableController controller, final QueryOutputReportSeeder seedController) {
+    public JDataInputVariableConfigurer(DataInputVariable input, DataInputVariableController controller, final OutputReportSeeder seedController) {
         super(controller.getCompatibleOutputVariables(input).toArray(new DataOutputVariable[0]));
         this.var = input;
         this.controller = controller;

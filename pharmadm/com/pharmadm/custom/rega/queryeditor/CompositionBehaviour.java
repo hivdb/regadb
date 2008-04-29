@@ -3,7 +3,6 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.List;
 
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 public interface CompositionBehaviour extends Serializable {
 	/**

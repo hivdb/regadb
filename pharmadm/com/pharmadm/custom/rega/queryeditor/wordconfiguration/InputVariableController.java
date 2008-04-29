@@ -10,7 +10,10 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 
 /**
  *

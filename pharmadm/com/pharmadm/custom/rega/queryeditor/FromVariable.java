@@ -69,7 +69,7 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
     	if (!locked) {
     		acquireSeqId();
     	}
-        return AWCPrototypeCatalog.getInstance().getTableAlias(tableName) + seqId;
+        return DatabaseManager.getInstance().getAWCCatalog().getTableAlias(tableName) + seqId;
     }
     
     public String getFromClauseStringValue(QueryVisitor visitor) {

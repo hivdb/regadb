@@ -17,7 +17,6 @@ import java.util.List;
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *

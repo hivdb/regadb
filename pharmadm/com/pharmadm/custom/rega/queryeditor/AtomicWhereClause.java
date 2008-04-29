@@ -112,7 +112,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
     	return groups;
     }
     
-    protected void addGroup(String group) {
+    public void addGroup(String group) {
     	groups.add(group);
     }
    
@@ -146,7 +146,8 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
     public Collection<FromVariable> getFromVariables() {
         return fromVariables;
     }
-    protected void addFromVariable(FromVariable fromVariable) {
+    
+    public void addFromVariable(FromVariable fromVariable) {
     	if (!this.fromVariables.contains(fromVariable)) {
     		this.fromVariables.add(fromVariable);
     	}
