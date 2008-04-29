@@ -5,9 +5,9 @@ import java.util.List;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
+import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  * a composed AWC panel can combine AWCs with the same composition type

@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 
 /**
@@ -23,27 +23,38 @@ public class AWCEditorPanel extends WLOEditorPanel {
         super(controller);
         editors = new ArrayList<AtomicWhereClauseEditor>();
         editors.add(controller);
-        indexConfigurer = configList.get(0);
+        indexConfigurer = null;
     }
     
     /** Applies changes made to all visualisation components in the componentList to the corresponding AWCWords */
     public void applyEditings() {
     	// reassign configurers of the first clause to the active clause
-    	AtomicWhereClauseEditor newEditor = editors.get(indexConfigurer.getSelectedIndex());
-    	List<WordConfigurer> newConfigList = getConfigurers(newEditor);
-    	for (int i = 0 ; i < configList.size() ; i++) {
-    		if (!configList.get(i).equals(indexConfigurer)) {
-    			newConfigList.get(i).reAssign(configList.get(i));
-    			configList.set(i, newConfigList.get(i));
-    		}
-    	}
+    	AtomicWhereClauseEditor newEditor = getSelectedEditor();
     	
+    	if (indexConfigurer != null) {
+	    	List<WordConfigurer> newConfigList = getConfigurers(newEditor);
+	    	for (int i = 0 ; i < configList.size() ; i++) {
+	    		if (!configList.get(i).equals(indexConfigurer)) {
+	    			newConfigList.get(i).reAssign(configList.get(i));
+	    			configList.set(i, newConfigList.get(i));
+	    		}
+	    	}
+    	}
     	super.applyEditings();
+    }
+    
+    private AtomicWhereClauseEditor getSelectedEditor() {
+    	if (indexConfigurer == null) {
+    		return editors.get(0);
+    	}
+    	else {
+    		return editors.get(indexConfigurer.getSelectedIndex());
+    	}
     }
     
     
     public AtomicWhereClause getClause() {
-        return editors.get(indexConfigurer.getSelectedIndex()).getAtomicWhereClause();
+        return getSelectedEditor().getAtomicWhereClause();
     }
     
     public AtomicWhereClauseEditor getWhereClauseEditor() {
@@ -76,6 +87,10 @@ public class AWCEditorPanel extends WLOEditorPanel {
     }
     
     public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor) {
+    	if (indexConfigurer == null) {
+    		System.err.println("Trying to compose a clause before the composing word has been initialized.");
+    		System.exit(1);
+    	}
 		indexConfigurer.add(additions);
         editors.add(editor);
     }

@@ -19,10 +19,10 @@ import javax.swing.*;
 import com.pharmadm.custom.rega.queryeditor.ComposedSelection;
 import com.pharmadm.custom.rega.queryeditor.OutputSelection;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.queryeditor.gui.QueryEditorTree;
 
 /**
  *
@@ -30,10 +30,10 @@ import com.pharmadm.custom.rega.queryeditor.TableSelection;
  */
 public class SelectPanel extends javax.swing.JPanel {
     
-    private QueryEditor controller;
+    private QueryEditorTree controller;
     
     /** Creates new form SelectPanel */
-    public SelectPanel(QueryEditor controller) {
+    public SelectPanel(QueryEditorTree controller) {
         this.controller = controller;
         initComponents();
         initSelectListComponents();
@@ -69,9 +69,9 @@ public class SelectPanel extends javax.swing.JPanel {
     }
     
     private void makeSelectListComponents() {
-        Iterator outputs = controller.getQuery().getSelectList().getSelections().iterator();
+        Iterator<Selection> outputs = controller.getQuery().getSelectList().getSelections().iterator();
         while (outputs.hasNext()) {
-            Selection selection = (Selection)outputs.next();
+            Selection selection = outputs.next();
             OutputVariable ovar = (OutputVariable)selection.getObject();
             if (selection instanceof ComposedSelection) {
                 java.awt.GridBagConstraints gridBagConstraints = new GridBagConstraints();

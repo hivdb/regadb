@@ -5,9 +5,9 @@ import java.awt.Component;
 import java.awt.event.MouseListener;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *

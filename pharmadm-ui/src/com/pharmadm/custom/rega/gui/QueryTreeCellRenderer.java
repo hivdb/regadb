@@ -15,7 +15,7 @@ package com.pharmadm.custom.rega.gui;
 import java.awt.Color;
 
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
-import com.pharmadm.custom.rega.queryeditor.WhereClauseTreeNode;
+import com.pharmadm.custom.rega.queryeditor.gui.WhereClauseTreeNode;
 
 /**
  *

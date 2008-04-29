@@ -23,22 +23,21 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
-import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionException;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
-import com.pharmadm.custom.rega.queryeditor.QueryResultTableModel;
+import com.pharmadm.custom.rega.queryeditor.gui.QueryEditorTree;
+import com.pharmadm.custom.rega.queryeditor.gui.WhereClauseTreeNode;
+import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultTableModel;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.Query;
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
-import com.pharmadm.custom.rega.queryeditor.WhereClauseTreeNode;
 import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultJTable;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.util.gui.mdi.DocumentLoader;
@@ -57,7 +56,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     private volatile boolean running = false;
     private ExecuteQueryRunnable runningExecution;
     
-    private QueryEditor editorModel;
+    private QueryEditorTree editorModel;
     private List<WhereClause> cursorClauses = null;
     private File currentQueryFile = null;
     
@@ -83,7 +82,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     });
     
     /** Creates new form QueryEditorFrame */
-    public QueryEditorFrame(QueryEditor editorModel) {
+    public QueryEditorFrame(QueryEditorTree editorModel) {
         this.editorModel = editorModel;
         cursorClauses = new ArrayList<WhereClause>();
         initComponents();
@@ -104,7 +103,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         });
     }
     
-    public QueryEditor getEditorModel() {
+    public QueryEditorTree getEditorModel() {
         return editorModel;
     }
     
@@ -677,8 +676,6 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                     }
                 } catch (java.io.FileNotFoundException fnfe) {
                     fnfe.printStackTrace();
-                } catch (java.io.IOException ioe) {
-                    QueryEditorApp.getInstance().showException(ioe, "Could not resolve canonical pathname of " + fc2.getSelectedFile().getName());
                 }
             }
         } catch (Exception e) {
@@ -758,8 +755,12 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private Query getQueryAndInformUserOnError() {
         Query query = editorModel.getQuery();
-        if (!query.getRootClause().isValid()) {
+        if (!query.isValid()) {
             JOptionPane.showMessageDialog(this, "The query is not valid.\nPlease assign a valid value to all parameters.", "Invalid query", JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
+        if (!query.hasFromVariables()) {
+            JOptionPane.showMessageDialog(this, "The query is not valid.\nPlease select at leat one database object.", "Invalid query", JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
         if (!query.getSelectList().isAnythingSelected()) {
@@ -781,16 +782,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     }
     
     private void modifyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyMenuItemActionPerformed
-        try {
-            WhereClauseTreeNode currentNode = getSelectedNodes().get(0);
-            WhereClause currentClause = (WhereClause)currentNode.getUserObject();
-            if (currentClause.isAtomic()) {
-                editAtomicClause((AtomicWhereClause)currentClause);
-                editorModel.nodeChanged(currentNode);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	editCurrentClause();        	
     }//GEN-LAST:event_modifyMenuItemActionPerformed
     
     private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
@@ -945,7 +937,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         try {
             WhereClause parentClause = getLastSelectedNonAtomicClause();
             if (parentClause.acceptsAdditionalChild()) {
-                Collection<AtomicWhereClause> prototypeList = parentClause.getAvailableAtomicClauses(AWCPrototypeCatalog.getInstance());
+                Collection<AtomicWhereClause> prototypeList = parentClause.getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog());
                 AtomicClauseSelectionDialog selectionDialog = new AtomicClauseSelectionDialog(this, this, prototypeList, true);
                 selectionDialog.setVisible(true);
                 WhereClause newClause = selectionDialog.getSelectedClause();
@@ -1102,13 +1094,8 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             int y = evt.getPoint().y;
             final TreePath tp = queryTree.getPathForLocation(x,y);
             if (tp != null) {
-                WhereClauseTreeNode currentNode = (WhereClauseTreeNode)tp.getLastPathComponent();
-                WhereClause currentClause = (WhereClause)currentNode.getUserObject();
                 if ((evt.getClickCount() > 1) && (evt.getModifiers() & java.awt.event.InputEvent.BUTTON1_MASK) != 0) {
-                    if (currentClause.isAtomic()) {
-                        editAtomicClause((AtomicWhereClause)currentClause);
-                        editorModel.nodeChanged(currentNode);
-                    }
+                    editCurrentClause();                
                 }
             }
         }
@@ -1127,9 +1114,29 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         }
     }
     
-    private void editAtomicClause(AtomicWhereClause currentClause) {
-        AtomicWhereClauseEditor atomEditor = new AtomicWhereClauseEditor(this, currentClause);
-        new AtomicClauseEditorDialog(this, atomEditor , true).setVisible(true);
+    private void editCurrentClause() {
+        WhereClauseTreeNode currentNode = getSelectedNodes().get(0);
+        WhereClause currentClause = (WhereClause)currentNode.getUserObject();
+        if (currentClause.isAtomic()) {
+            WhereClause newClause = editAtomicClause((AtomicWhereClause)currentClause);
+            if (newClause != null) {
+	            try {
+					editorModel.replaceChild(currentClause.getParent(), currentClause, newClause);
+				} catch (IllegalWhereClauseCompositionException e) {
+					e.printStackTrace();
+				}
+            }
+        }
+    }
+    
+    private AtomicWhereClause editAtomicClause(AtomicWhereClause currentClause) {
+        ComposedAWCSelectorPanel atomPanel = new ComposedAWCSelectorPanel(this, currentClause);
+        for (AtomicWhereClause clause : DatabaseManager.getInstance().getAWCCatalog().getSimilarClauses(currentClause)) {
+        	atomPanel.addAtomicWhereClause(clause);
+        }
+        AtomicClauseEditorDialog dialog = new AtomicClauseEditorDialog(this, atomPanel , true);
+        dialog.setVisible(true);
+        return dialog.getSelectedClause();
     }
     
     private void updateEditMode(List<WhereClauseTreeNode> selection) {
@@ -1188,7 +1195,6 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private boolean containsRootClause(List<WhereClauseTreeNode> selection) {
     	boolean root = false;
-    	WhereClauseTreeNode parentNode = (WhereClauseTreeNode) selection.get(0).getParent();
     	for (WhereClauseTreeNode node : selection) {
     		WhereClause clause = (WhereClause) node.getUserObject();
     		if (clause.getParent() == null) {

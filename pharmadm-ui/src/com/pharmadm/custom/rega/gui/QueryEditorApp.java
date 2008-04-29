@@ -13,18 +13,14 @@
 package com.pharmadm.custom.rega.gui;
 import javax.swing.*;
 import com.pharmadm.util.work.WorkManager;
-import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.FrontEnd;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.Query;
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
+import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
+import com.pharmadm.custom.rega.queryeditor.gui.QueryEditorTree;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
-import com.pharmadm.custom.rega.queryeditor.port.jdbc.JDBCConnector;
-import com.pharmadm.custom.rega.queryeditor.port.jdbc.SqlQuery;
 import com.pharmadm.util.settings.RegaSettings;
 import com.pharmadm.util.thread.ThreadManager;
 import com.pharmadm.util.thread.WorkManagerThreadManagerAdapter;
@@ -46,7 +42,6 @@ public class QueryEditorApp implements FrontEnd{
     private String databaseURL = "jdbc:postgresql://localhost:5432/regadb";
     private String databaseUser = "admin";
     private String databasePassword = "admin";
-    private QueryVisitor defaultQueryLanguage = new HibernateQuery();
     
     
     /** Creates a new instance of QueryEditorApp */
@@ -117,16 +112,15 @@ public class QueryEditorApp implements FrontEnd{
         if (e != null) {
             e.printStackTrace(new java.io.PrintWriter(writer));
         }
-        JOptionPane.showMessageDialog(mainFrame, title+":\n"+writer.toString(), title, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mainFrame, title+":\n"+e.getMessage(), title, JOptionPane.ERROR_MESSAGE);
     }
     
     public boolean tryDefaultDBLogin() {
         try {
-        	QueryVisitor visitor = new HibernateQuery();
-        	DatabaseConnector con = new HibernateConnector("admin", "admin");
 //        	DatabaseConnector con = new JDBCConnector(null, "jdbc:postgresql://localhost:5432/regadb", "freek", "freek");
 //        	QueryVisitor visitor = new SqlQuery();
-            DatabaseManager.initInstance(visitor, con);
+            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector("admin", "admin"));
+            DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
         } catch (Exception e) {
         	e.printStackTrace();
             return false;
@@ -167,9 +161,7 @@ public class QueryEditorApp implements FrontEnd{
             System.exit(1);
         }
         
-        
-        AWCPrototypeCatalog.getInstance(true);
-        QueryEditor editor = new QueryEditor(new Query());
+        QueryEditorTree editor = new QueryEditorTree(new Query());
         QueryEditorFrame queryEditorFrame = new QueryEditorFrame(editor);
         getInstance().mainFrame = queryEditorFrame;
         queryEditorFrame.setVisible(true);

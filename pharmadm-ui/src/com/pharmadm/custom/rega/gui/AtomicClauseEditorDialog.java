@@ -13,7 +13,7 @@
 package com.pharmadm.custom.rega.gui;
 
 
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 
 /**
  *
@@ -21,11 +21,18 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseE
  */
 public class AtomicClauseEditorDialog extends javax.swing.JDialog {
     
+	private AtomicWhereClause selectedClause;
+    private AWCSelectorPanel editPanel;
+	
+	public AtomicWhereClause getSelectedClause() {
+		return selectedClause;
+	}
+	
     /** Creates new form AtomicClauseEditorDialog */
-    public AtomicClauseEditorDialog(java.awt.Frame parent, AtomicWhereClauseEditor editor, boolean modal) {
+    public AtomicClauseEditorDialog(java.awt.Frame parent, AWCSelectorPanel panel, boolean modal) {
         super(parent, modal);
         initComponents();
-        initEditorComponents(editor);
+        initEditorComponents(panel);
         getRootPane().setDefaultButton(okButton);
         pack();
     }
@@ -77,21 +84,27 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
         editPanel.freeResources();
     }//GEN-LAST:event_formWindowClosed
     
-    private void initEditorComponents(AtomicWhereClauseEditor editor) {
-        editPanel = new AWCEditorPanel(editor);
+    private void initEditorComponents(AWCSelectorPanel panel) {
+        editPanel = panel;
+        editPanel.getRadioButtons().get(0).setVisible(false);
+        editPanel.getRadioButtons().get(0).setSelected(true);
         getContentPane().add(editPanel, java.awt.BorderLayout.CENTER);
     }
     
     
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // Add your handling code here:
+    	editPanel.freeResources();
         setVisible(false);
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
     
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         // Add your handling code here:
-        editPanel.applyEditings();
+		AWCEditorPanel selectedEditPanel = editPanel.getSelectedClause();
+		selectedEditPanel.applyEditings();
+		selectedClause = selectedEditPanel.getClause();
+        editPanel.freeResources();
         setVisible(false);
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
@@ -107,5 +120,4 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
-    private AWCEditorPanel editPanel;
 }

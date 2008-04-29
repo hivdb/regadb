@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/pharmadm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/pharmadm-num"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
