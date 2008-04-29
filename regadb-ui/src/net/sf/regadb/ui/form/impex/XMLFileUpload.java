@@ -50,21 +50,21 @@ public class XMLFileUpload extends WFileUpload {
 						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(xmlFile)));
 						
 						br.readLine();
-						String line = br.readLine();
+						String line = br.readLine().trim();
 						
 						if ( line == null ) {
 							status = UploadStatus.FAILED;
 							ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
-						} else if (line.equals("<patients>")) {
+						} else if (line.contains("<patients>")) {
+							status = UploadStatus.SUCCEEDED;
 							instance.importPatients(new InputSource(new FileReader(xmlFile)), dataset_);
-						} else if (line.equals("<viralIsolates>")) {
+						} else if (line.contains("<viralIsolates>")) {
+							status = UploadStatus.SUCCEEDED;
 							instance.importViralIsolates(new InputSource(new FileReader(xmlFile)), dataset_);
 						} else {
 							status = UploadStatus.FAILED;
 							ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
 						}
-						
-						status = UploadStatus.SUCCEEDED;
 					} catch (Exception e) {
 						status = UploadStatus.FAILED;
 						e.printStackTrace(ps);
