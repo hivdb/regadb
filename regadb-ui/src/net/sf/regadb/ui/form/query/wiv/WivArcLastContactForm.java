@@ -4,8 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.util.date.DateUtils;
@@ -16,11 +22,10 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     
     public WivArcLastContactForm(){
         super(tr("menu.query.wiv.arc.lastContact"),tr("form.query.wiv.label.arc.lastContact"),tr("file.query.wiv.arc.lastContact"));
-        setQuery("select p, pav, pav2 from PatientImpl as p inner join p.patientAttributeValues pav inner join p.patientAttributeValues pav2 " +
-                "where pav.attribute.name = 'PatCode' " +
-                "and pav2.attribute.name = 'Last contact' " +
-                "and pav2.value >= :var_start_date " +
-                "and pav2.value <= :var_end_date ");
+        setQuery("select pav.value, max(tr.testDate) from PatientAttributeValue pav, TestResult tr " +
+                "where pav.patient = tr.patient and pav.attribute.name = 'PatCode' " +
+                "and tr.test.description = '"+ StandardObjects.getContactTest().getDescription() +"' " +
+                "and :var_start_date < :var_end_date group by pav.value");
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }
@@ -35,36 +40,40 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     }
     
     @Override
-    protected File postProcess(File csvFile) {
-        File outFile = new File(csvFile.getAbsolutePath()+".processed.csv");
-        
+    @SuppressWarnings("unchecked")
+    protected boolean process(File csvFile) {
         ArrayList<String> row;
-
-        Table in = readTable(csvFile);
-
         Table out = new Table();
         
-        int CPatCode = in.findColumn("PatientAttributeValue.value");
-        int CLastContact = in.findColumn(CPatCode+1,"PatientAttributeValue.value");
+        Transaction t = createTransaction();
+        Query q = createQuery(t);
         
-        for(int i=1; i<in.numRows(); ++i){
+        List<Object[]> list = q.list();
+        
+        for(Object[] o : list){
+        	String patcode = (String)o[0];
+        	Date d = (Date)o[1];
+        	
             row = new ArrayList<String>();
             
-            row.add(in.valueAt(CPatCode, i));
-            row.add(getFormattedDate(getDate(in.valueAt(CLastContact, i))));
+            row.add(patcode);
+            row.add(getFormattedDate(d));
             row.add(TypeOfInformationCode.LAST_CONTACT_DATE.getCode()+"");
             row.add("");
 
             out.addRow(row);
         }
         
+        t.commit();
+        
         try{
-            out.exportAsCsv(new FileOutputStream(outFile),';',false);
+            out.exportAsCsv(new FileOutputStream(csvFile),';',false);
         }
         catch(Exception e){
             e.printStackTrace();
+            return false;
         }
         
-        return outFile;
+        return true;
     }
 }

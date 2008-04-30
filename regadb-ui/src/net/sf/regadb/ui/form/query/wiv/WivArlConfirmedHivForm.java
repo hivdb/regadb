@@ -24,7 +24,7 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
     
     @Override
     protected boolean process(File csvFile){
-    	Transaction t = RegaDBMain.getApp().createTransaction();
+    	Transaction t = createTransaction();
     	
         Date sdate = getStartDate();
         Date edate = getEndDate();
@@ -46,6 +46,7 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
         }
         catch(Exception e){
             e.printStackTrace();
+            return false;
         }
         
         return true;

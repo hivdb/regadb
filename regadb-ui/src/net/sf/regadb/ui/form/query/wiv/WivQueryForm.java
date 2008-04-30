@@ -347,13 +347,15 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     };
     
     protected enum TestCode{
-        VL,T4;
+        VL,T4,T4PERCENT;
         
         public int getCode(){
             if(this == VL)
                 return 1;
             if(this == T4)
                 return 2;
+            if(this == T4PERCENT)
+            	return 3;
             return -1;
         }
     };
@@ -664,5 +666,9 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     			return pav;
     	}
     	return null;
+    }
+    
+    protected Transaction createTransaction(){
+    	return RegaDBMain.getApp().createTransaction();
     }
 }

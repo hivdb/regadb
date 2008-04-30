@@ -37,12 +37,12 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
     @SuppressWarnings("unchecked")
     @Override
     protected boolean process(File csvFile){
-        Transaction t = RegaDBMain.getApp().createTransaction();
+        Transaction t = createTransaction();
         Query q = createQuery(t);
         List<Object[]> res = q.list();
 
         Calendar cal = Calendar.getInstance();
-        String date = cal.get(Calendar.YEAR) +"0401";
+        String date = getFormattedDate(getEndDate());//cal.get(Calendar.YEAR) +"0401";
         String patcode;
 
         Table out = new Table();
@@ -59,12 +59,30 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 
                 addTherapy(out,tp,patcode,date);
             }
+            
+            q = t.createQuery("select pav "+
+            		"from PatientAttributeValue pav "+
+            		"where pav.patient not in (" +
+            			"select tp.patient from Therapy tp where " +
+            				" ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null )" +
+            			") " +
+            		"and pav.attribute.name = 'PatCode'");
+            q.setDate("var_start_date", getStartDate());
+            q.setDate("var_end_date", getEndDate());
+            List<PatientAttributeValue> pavs = q.list();
+            
+            for(PatientAttributeValue pav : pavs){
+            	addEmptyTherapy(out,pav,date);
+            }
+            
             out.exportAsCsv(new FileOutputStream(csvFile), ';', false);
         }
         catch(Exception e){
+        	t.commit();
             e.printStackTrace();
+            return false;
         }
-
+        t.commit();
         return true;
     }
 
@@ -75,14 +93,15 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 
     private void addTherapy(Table table, Therapy tp, String patcode, String date){
         HashSet<String> atcs = new HashSet<String>();
-        ArrayList<String> row;
 
         for(TherapyGeneric tg : tp.getTherapyGenerics()){
             atcs.add(tg.getId().getDrugGeneric().getAtcCode());
         }
         for(TherapyCommercial tc : tp.getTherapyCommercials()){
             for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
-                atcs.add(dg.getAtcCode());
+            	String ss[] = dg.getAtcCode().split("[+]");
+            	for(String s : ss)
+            		atcs.add(s);
             }
         }
         for(String s : atcs){
@@ -90,16 +109,26 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
             if(atc == null || atc.length() == 0)
                 atc = "9999";
 
-            row = new ArrayList<String>();
-            row.add(getCentreName());
-            row.add(OriginCode.ARC.getCode()+"");
-            row.add(patcode);
-            row.add(date);
-            row.add(TypeOfInformationCode.THERAPY.getCode()+"");
-            row.add(atc);
-            row.add("");
-
-            table.addRow(row);
+            addRow(table, patcode, date, atc);
         }
     }
+    
+    private void addEmptyTherapy(Table table, PatientAttributeValue pav, String date){
+    	addRow(table,pav.getValue(),date,"0000");
+    }
+    
+    private void addRow(Table table, String patcode, String date, String atc){
+        ArrayList<String> row = new ArrayList<String>();
+
+        row.add(getCentreName());
+        row.add(OriginCode.ARC.getCode()+"");
+        row.add(patcode);
+        row.add(date);
+        row.add(TypeOfInformationCode.THERAPY.getCode()+"");
+        row.add(atc);
+        row.add("");
+
+        table.addRow(row);
+    }
+    
 }
