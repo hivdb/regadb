@@ -28,7 +28,7 @@ public class StandardObjects {
     private static TestType viralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (log10)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static TestType cd4PercentageTestType = new TestType(numberValueType, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
-    private static TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
+    private static TestType cd8TestType = new TestType(numberValueType, patientObject, "CD8 Count", new TreeSet<TestNominalValue>());
     private static TestType cd8PercentageTestType = new TestType(numberValueType, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType hivSeroStatusTestType;
     private static TestType followUpTestType = new TestType(dateValueType, patientObject, "Follow up",new TreeSet<TestNominalValue>());
@@ -40,6 +40,10 @@ public class StandardObjects {
     private static Test genericCD8PercentageTest = new Test(cd8PercentageTestType, "CD8 Count % (generic)");
     private static Test genericHivSeroStatusTest;
     private static Test followUpTest = new Test(followUpTestType, "Follow up");
+    
+    private static TestType contactTestType = new TestType(dateValueType,patientObject,"Contact",new TreeSet<TestNominalValue>());
+    private static Test contactTest = new Test(contactTestType, "General contact");
+    
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
     private static String clinicalFileNumberAttribute = "Clinical File Number";
@@ -173,5 +177,12 @@ public class StandardObjects {
     }
     public static Test getFollowUpTest(){
         return followUpTest;
+    }
+    
+    public static TestType getContactTestType(){
+    	return contactTestType;
+    }
+    public static Test getContactTest(){
+    	return contactTest;
     }
 }
