@@ -77,6 +77,13 @@ public class ParseConfirmation {
                 return true;
             }
         }
+        
+        for(int i = 0; i<patcodesToIgnore.numRows(); i++) {
+            if(patcodesToIgnore.valueAt(0, i).trim().equals("19" + patCode.trim())) {
+                return true;
+            }
+        }
+        
         return false;
     }
     
