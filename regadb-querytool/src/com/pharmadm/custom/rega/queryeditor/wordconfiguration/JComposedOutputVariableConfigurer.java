@@ -25,25 +25,21 @@ public class JComposedOutputVariableConfigurer extends javax.swing.JComboBox imp
 		vars.add((JOutputVariableConfigurer) words.get(0));
 	}
 	
-	@Override
 	public void configureWord() {
 		JOutputVariableConfigurer confy = (JOutputVariableConfigurer) getSelectedItem();
 		confy.configureWord();
 		
 	}
 
-	@Override
 	public void freeResources() {
 		// no resources used
 	}
 
-	@Override
 	public ConfigurableWord getWord() {
 		JOutputVariableConfigurer confy = (JOutputVariableConfigurer) getSelectedItem();
 		return confy.getWord();
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JComposedOutputVariableConfigurer confy = (JComposedOutputVariableConfigurer) o;
 		this.vars = confy.vars;

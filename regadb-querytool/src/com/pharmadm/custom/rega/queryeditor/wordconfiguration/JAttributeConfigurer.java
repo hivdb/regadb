@@ -28,7 +28,6 @@ public class JAttributeConfigurer extends JPanel implements WordConfigurer {
 		this.add(constantPanels.get(ovar.getSelectedIndex()));
 		
 		this.ovar.addActionListener(new ActionListener(){
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				changeSelection(arg0);
 			}
@@ -41,19 +40,16 @@ public class JAttributeConfigurer extends JPanel implements WordConfigurer {
 		this.revalidate();
 	}
 	
-	@Override
 	public void add(List<WordConfigurer> words) {
 		ovar.add(words.subList(0, 1));
 		constantPanels.add(new JCombinedConfigurer(words.subList(1, words.size())));
 	}
 
-	@Override
 	public void configureWord() {
 		constantPanels.get(ovar.getSelectedIndex()).configureWord();
 		ovar.configureWord();
 	}
 
-	@Override
 	public void freeResources() {
 		ovar.freeResources();
 		for (WordConfigurer confy : constantPanels) {
@@ -61,17 +57,14 @@ public class JAttributeConfigurer extends JPanel implements WordConfigurer {
 		}
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return ovar.getSelectedIndex();
 	}
 
-	@Override
 	public ConfigurableWord getWord() {
 		return ovar.getWord();
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JAttributeConfigurer confy = (JAttributeConfigurer) o;
 		this.constantPanels = confy.constantPanels;

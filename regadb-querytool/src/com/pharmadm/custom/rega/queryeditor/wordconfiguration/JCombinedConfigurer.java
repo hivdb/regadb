@@ -31,35 +31,29 @@ public class JCombinedConfigurer extends JPanel implements WordConfigurer{
 	/**
 	 * not a composed configurer. does nothing
 	 */
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public void configureWord() {
 		for (WordConfigurer confy : words) {
 			confy.configureWord();
 		}
 	}
 
-	@Override
 	public void freeResources() {
 		for (WordConfigurer confy : words) {
 			confy.freeResources();
 		}
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return 0;
 	}
 
-	@Override
 	public ConfigurableWord getWord() {
 		return words.get(0).getWord();
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JCombinedConfigurer confy = (JCombinedConfigurer) o;
 		this.words = confy.words;
