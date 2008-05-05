@@ -728,7 +728,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     
     private void initSeeder() {
         this.seedController = new QueryOutputReportSeeder(reportBuilder, master.getEditorModel());
-        master.getEditorModel().addTreeModelListener(new MyTreeModelListener());
+        ((QueryEditorTree) master.getEditorModel()).addTreeModelListener(new MyTreeModelListener());
     }
     
     private void initReportFormatList() {
@@ -756,7 +756,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     
     
     private void linkToQuery(ReportFormat reportFormat) {
-        reportFormat.setUniqueNameContext(master.getEditorModel().getQuery().getUniqueNameContext());
+        reportFormat.setUniqueNameContext(master.getEditorModel().getEditor().getQuery().getUniqueNameContext());
     }
     
     private void showListPopupMenu(Point p) {
@@ -954,7 +954,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                         return;
                     }
                 }
-                Iterator prepWorksIter = seedController.getQuerier().getQuery().getPreparationWorks().iterator();
+                Iterator prepWorksIter = seedController.getQuerier().getEditor().getQuery().getPreparationWorks().iterator();
                 if (prepWorksIter.hasNext()) {
                     final String regularText = runButton.getText();
                     SwingUtilities.invokeLater(new Runnable() {

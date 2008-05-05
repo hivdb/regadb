@@ -51,7 +51,7 @@ public class SelectPanel extends javax.swing.JPanel {
     
     private void initSelectListComponents() {
         makeSelectListComponents();
-        controller.addSelectionListChangeListener(new SelectionListChangeListener() {
+        controller.getEditor().addSelectionListChangeListener(new SelectionListChangeListener() {
             public void listChanged() {
                 // maybe not the most efficient (or elegant) implementation
                 reInitSelectListComponents();
@@ -69,7 +69,7 @@ public class SelectPanel extends javax.swing.JPanel {
     }
     
     private void makeSelectListComponents() {
-        Iterator<Selection> outputs = controller.getQuery().getSelectList().getSelections().iterator();
+        Iterator<Selection> outputs = controller.getEditor().getQuery().getSelectList().getSelections().iterator();
         while (outputs.hasNext()) {
             Selection selection = outputs.next();
             OutputVariable ovar = (OutputVariable)selection.getObject();

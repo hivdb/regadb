@@ -47,18 +47,18 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
     private HashMap seedVariables = new HashMap();
     private HashMap seedObjectData = null;
     private ReportBuilder reporter;
-    private QueryEditor querier;
+    private QueryEditorComponent querier;
     private boolean seedsChosen = false; // determines whether output variables have been assigned to each object list variable
     private boolean seedsCalculated = false;
     private Collection seedsChangeListeners = new ArrayList();
     
     /** Creates a new instance of ObjectListBuilder */
-    public QueryOutputReportSeeder(ReportBuilder reporter, QueryEditor querier) {
+    public QueryOutputReportSeeder(ReportBuilder reporter, QueryEditorComponent querier) {
         this.reporter = reporter;
         this.querier = querier;
     }
     
-    public QueryEditor getQuerier() {
+    public QueryEditorComponent getQuerier() {
         return querier;
     }
     
@@ -68,7 +68,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
     
     /* collect all available table-representing outputvariables of the given type from the associated queryeditor */
     public Collection getAvailableOutputVariables(VariableType type) {
-        Collection allRes = querier.getQuery().getRootClause().getOutputVariablesAvailableForImport();
+        Collection allRes = querier.getEditor().getQuery().getRootClause().getOutputVariablesAvailableForImport();
         ArrayList res = new ArrayList();
         Iterator iter = allRes.iterator();
         while (iter.hasNext()) {
@@ -202,7 +202,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
         private void buildObjectLists(List objectListVariables) {
             if (seedsChosen) {
                 try {
-                    Query query = querier.getQuery();
+                    Query query = querier.getEditor().getQuery();
                     String queryString = getObjectListSelectClause(objectListVariables)
                     + "\nFROM " + query.getRootClause().acceptFromClause(DatabaseManager.getInstance().getQueryBuilder())
                     + "\nWHERE " + query.getRootClause().acceptWhereClause(DatabaseManager.getInstance().getQueryBuilder());

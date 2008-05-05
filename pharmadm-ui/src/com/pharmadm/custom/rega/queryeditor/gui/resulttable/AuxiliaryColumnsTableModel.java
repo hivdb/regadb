@@ -38,7 +38,7 @@ public class AuxiliaryColumnsTableModel extends AbstractTableModel implements Au
     AuxiliaryColumnsTableModel(TableModel baseModel, AuxiliaryColumnProvider auxiliaryColumnProvider) {
         this.baseModel = baseModel;
         this.auxiliaryColumnProvider = auxiliaryColumnProvider;
-        List baseCols = new ArrayList();
+        List<Integer> baseCols = new ArrayList<Integer>();
         for (int i = 0; i < baseModel.getColumnCount(); i++) {
             if (auxiliaryColumnProvider.isAugmentedColumn(baseModel, i)) {
                 baseCols.add(new Integer(i));

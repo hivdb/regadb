@@ -13,7 +13,6 @@
 package com.pharmadm.custom.rega.queryeditor.gui.resulttable;
 
 import java.util.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -29,7 +28,7 @@ public class MergedTableModel implements TableModel {
     private final TableModel secondModel;
     private final boolean[] useColumnOfFirstModel;
     private final int[] colIndexToBackendIndex;
-    private final List listeners = new ArrayList();
+    private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
     
     /**
      * Creates a new MergedTableModel, using the column distribution as specified by useColumnOfFirstModel.

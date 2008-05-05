@@ -20,49 +20,31 @@ import javax.swing.tree.*;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.*;
 import com.pharmadm.custom.rega.queryeditor.persist.*;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.savable.*;
+import com.pharmadm.custom.rega.savable.DirtinessListener;
+import com.pharmadm.custom.rega.savable.Savable;
 
 /**
  * The controller ('Controller' pattern) for editing a Query.
  *
  */
-public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
+public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryEditorComponent {
     
-    private Query query;
-    private boolean dirty = false;
-    private Collection<DirtinessListener> dirtinessListeners = new ArrayList<DirtinessListener>();
-    private Collection<SelectionListChangeListener> listChangeListeners = new ArrayList<SelectionListChangeListener>();
-
-    private final SelectionChangeListener selectionListener = new SelectionChangeListener() {
-        public void selectionChanged() {
-            setDirty(true);
-        }
-    };
-    
+	private QueryEditor editor;
+	
     public QueryEditorTree(Query query) {
         super(new WhereClauseTreeNode(query.getRootClause()), true);
-        this.query = query;
-        query.getSelectList().addSelectionChangeListener(selectionListener);
+        this.editor = new QueryEditor(query, this);
     }
     
-    ///////////////////////////////////////
-    // access methods for associations
-    
-    public Query getQuery() {
-        return query;
+    public QueryEditor getEditor() {
+    	return editor;
     }
     
     private void setQuery(Query query) {
-        if (this.query != null) {
-            this.query.getSelectList().removeSelectionChangeListener(selectionListener);
-        }
-        this.query = query;
         setRoot(new WhereClauseTreeNode(query.getRootClause()));
         Object[] rootPath = {getRoot()};
         fireTreeStructureChanged(this, rootPath, null, null);
-        updateSelectionList();
-        query.getSelectList().addSelectionChangeListener(selectionListener);
+        getEditor().setQuery(query);
     }
     
     ///////////////////////////////////////
@@ -104,11 +86,9 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
      * </p>
      */
     public void addChild(WhereClause parent, WhereClause child) throws IllegalWhereClauseCompositionException {
-        parent.addChild(child, getQuery().getUniqueNameContext());
         WhereClauseTreeNode parentNode = getNode(parent);
         insertNodeInto(new WhereClauseTreeNode(child), parentNode, parentNode.getChildCount());
-        updateSelectionList();
-        setDirty(true);
+        getEditor().addChild(parent, child);
     }
     
     /**
@@ -126,105 +106,22 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
      * </p>
      */
     public void removeChild(WhereClause parent, WhereClause child) {
-        parent.removeChild(child);
         WhereClauseTreeNode childNode = getNode(child);
         if (childNode != null) {
         	removeNodeFromParent(childNode);
         }
-        updateSelectionList();
-        setDirty(true);
+        getEditor().removeChild(parent, child);
     }
     
     public void replaceChild(WhereClause parent, WhereClause oldChild, WhereClause newChild) throws IllegalWhereClauseCompositionException  {
-        parent.replaceChild(oldChild, newChild, getQuery().getUniqueNameContext());
         WhereClauseTreeNode parentNode = getNode(parent);
         WhereClauseTreeNode childNode = getNode(oldChild);
         int i = getIndexOfChild(parentNode, childNode);
         removeNodeFromParent(childNode);
         insertNodeInto(new WhereClauseTreeNode(newChild), parentNode, i);
-        updateSelectionList();
-        setDirty(true);
+        getEditor().replaceChild(parent, oldChild, newChild);
     }
     
-    private void updateSelectionList() {
-        getQuery().getSelectList().update();
-        notifySelectionListChangeListeners();
-    }
-    
-    /**
-     * <p>
-     * Reports whether an additional child can be added to the given parent
-     * (Composed)WhereClause.
-     * </p>
-     * <p>
-     *
-     * @return true iff an additional child can be added to the parent
-     * (Composed)WhereClause
-     * </p>
-     * <p>
-     * @param clause the parent to add a child to
-     * </p>
-     */
-    public boolean acceptsAdditionalChild(WhereClause clause) {
-        return clause.acceptsAdditionalChild();
-    }
-    
-    /**
-     * <p>
-     * Iterates through all immediate children of the given WhereClause. If the
-     * WhereClause is atomic, returns an empty Iterator. Never returns null.
-     * </p>
-     * <p>
-     *
-     * @return an Iterator through all immediate children of the given
-     * WhereClause
-     * </p>
-     * <p>
-     * @param clause the parent WhereClause from which the children are
-     * requested
-     * </p>
-     */
-    public Iterator<WhereClause> iterateChildren(WhereClause clause) {
-        return clause.iterateChildren();
-    }
-    
-    /**
-     * <p>
-     * Iterates through all immediate atomic children of the given parent
-     * WhereClause. If there are no atomic children, then an empty Iterator is
-     * returned. Never returns null.
-     * </p>
-     * <p>
-     *
-     * @return an Iterator through all immediate atomic children of the given
-     * WhereClause
-     * </p>
-     * <p>
-     * @param clause the parent of which the atomic children are requested
-     * </p>
-     */
-    public Iterator<WhereClause> iterateAtomicChildren(WhereClause clause) {
-        return clause.iterateAtomicChildren();
-    }
-    
-    /**
-     * <p>
-     * Calculates whether the given WhereClause is valid, i.e. wether all
-     * constants are set and all input variables are bound, for the given
-     * WhereClause and for all of its descendants.
-     * </p>
-     * <p>
-     *
-     * @return whether the given WhereClause and all of its descendants are
-     * valid.
-     * </p>
-     * <p>
-     * @param clause the WhereClause that is to be determined to be valid
-     * </p>
-     */
-    public boolean isValid(WhereClause clause) {
-        return clause.isValid();
-    }
     
     /**
      * Wraps the given clause in a surrounding AND node.
@@ -238,25 +135,7 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
     	wrapInClause(clauses, new AndClause());
     }
     
-    /**
-     * <p>
-     * Evaluates whether wrapping the given clause in a surrounding OR node
-     * would make one or more input variables unbound.
-     * </p>
-     * <p>
-     *
-     * @return true iff the argument clause can be wrapped in a surrounding OR
-     * node and the result has no more unbound variables than the current query.
-     * </p>
-     * <p>
-     * @param clause the clause that would be wrapped in a surrounding OR
-     * </p>
-     */
-    public boolean isWrapInOrValid(WhereClause clause) {
-        // your code here
-        return false;
-    } // end isWrapInOrValid
-    
+
     /**
      * Wraps the given clause in a surrounding OR node.
      * Does nothing if the given clause is the root clause.
@@ -267,6 +146,18 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
      */
     public void wrapOr(List<WhereClause> clauses) {
     	wrapInClause(clauses, new InclusiveOrClause());
+    }
+    
+    /**
+     * Wraps the given clause in a surrounding NOT node.
+     * Does nothing if the given clause is the root clause.
+     *
+     * @param clause the clause that will be wrapped in a surrounding NOT
+     *
+     * @pre clause !=null
+     */
+    public void wrapNot(List<WhereClause> clauses) {
+    	wrapInClause(clauses, new NotClause());
     }
     
     private void wrapInClause(List<WhereClause> clauses, WhereClause wrapperClause) {
@@ -286,37 +177,7 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
             System.err.println("Wrap AND failed: " + iwcce.getMessage());
         }
     }
-    
-    /**
-     * <p>
-     * Evaluates whether wrapping the given clause in a surrounding NOT node
-     * would make one or more input variables unbound.
-     * </p>
-     * <p>
-     *
-     * @return true iff the argument clause can be wrapped in a surrounding NOT
-     * node and the result has no more unbound variables than the current query.
-     * </p>
-     * <p>
-     * @param clause the clause that would be wrapped in a surrounding NOT
-     * </p>
-     */
-    public boolean isWrapInNotValid(WhereClause clause) {
-        // your code here
-        return false;
-    } // end isWrapInNotValid
-    
-    /**
-     * Wraps the given clause in a surrounding NOT node.
-     * Does nothing if the given clause is the root clause.
-     *
-     * @param clause the clause that will be wrapped in a surrounding NOT
-     *
-     * @pre clause !=null
-     */
-    public void wrapNot(List<WhereClause> clauses) {
-    	wrapInClause(clauses, new NotClause());
-    }
+
     
     /**
      * Evaluates whether the given clause can be unwrapped from its surrounding
@@ -379,10 +240,9 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
      * from.
      * </p>
      */
-    
     public void createNewQuery() {
         setQuery(new Query());
-        setDirty(false);
+        getEditor().setDirty(false);
     }
     
     /* baseTable concept probably not needed
@@ -392,53 +252,6 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
         setAWCPrototypeCatalog(table.getAWCPrototypeCatalog());
     }
      */
-    
-    /**
-     * <p>
-     * Calculates whether the current Query is valid, i.e. whether all
-     * parameters are set and all input variables are bound.
-     * </p>
-     * <p>
-     *
-     * @return whether the current Query is valid, i.e. whether all parameters
-     * are set and all input variables are bound.
-     * </p>
-     */
-    public boolean isValid() {
-        return getQuery().isValid();
-    }
-    
-    /**
-     * <p>
-     * Gets the root clause of the query, wich usually (but not necessarily)
-     * is a ComposedWhereClause.
-     * </p>
-     * <p>
-     *
-     * @return The root clause of the current query.
-     * </p>
-     */
-    public WhereClause getRootClause() {
-        return getQuery().getRootClause();
-    }
-    
-    /**
-     * <p>
-     * Calculates a collection of clauses that can be added to the given node.
-     * If the given clause is atomic, then no clauses can be added and the
-     * collection will be empty.
-     * </p>
-     * <p>
-     *
-     * @return a collection of clauses that can be added to the given node.
-     * </p>
-     * <p>
-     * @param The clause to which the new clauses could be added.
-     * </p>
-     */
-    public Collection<AtomicWhereClause> getAvailableClauses(WhereClause clause) {
-        return clause.getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog());
-    }
     
     // various classes we will want to encode, require specific Persistence Delegates
     private void installPersistenceDelegates(java.beans.XMLEncoder encoder) {
@@ -502,41 +315,19 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
     
     public WhereClause loadSubquery(File file) throws java.io.FileNotFoundException {
         WhereClause clause = (WhereClause)loadObject(file);
-        getQuery().getUniqueNameContext().assignUniqueNamesToAll(clause);
+        getEditor().getQuery().getUniqueNameContext().assignUniqueNamesToAll(clause);
         return clause;
     }
     
     public void saveXMLQuery(File file) throws java.io.FileNotFoundException {
-    	saveObject(query, file);
-        setDirty(false);
+    	saveObject(getEditor().getQuery(), file);
+        getEditor().setDirty(false);
     }
     
     public void loadXMLQuery(File file) throws java.io.FileNotFoundException {
     	setQuery((Query) loadObject(file));
-        setDirty(false);
-    }
-    
-    public void addDirtinessListener(DirtinessListener listener) {
-        dirtinessListeners.add(listener);
-    }
-    
-    public void setDirty(boolean dirty) {
-        if (this.dirty != dirty) {
-            this.dirty = dirty;
-            Iterator<DirtinessListener> dLIter = dirtinessListeners.iterator();
-            DirtinessEvent de = new DirtinessEvent(this);
-            while (dLIter.hasNext()) {
-                ((DirtinessListener)dLIter.next()).dirtinessChanged(de);
-            }
-        }
-    }
-    
-    /**
-     * Whether the report format contains unsaved information.
-     */
-    public boolean isDirty() {
-        return dirty;
-    }
+        getEditor().setDirty(false);
+    }	 
     
     public void load(File file) throws IOException {
         loadXMLQuery(file);
@@ -545,18 +336,14 @@ public class QueryEditorTree extends DefaultTreeModel implements QueryEditor {
     public void save(File file) throws IOException {
         saveXMLQuery(file);
     }
-    
-    private void notifySelectionListChangeListeners() {
-        Iterator<SelectionListChangeListener> iter = listChangeListeners.iterator();
-        while (iter.hasNext()) {
-            SelectionListChangeListener listener = (SelectionListChangeListener)iter.next();
-            listener.listChanged();
-        }
-    }
-    
-    public void addSelectionListChangeListener(SelectionListChangeListener listener) {
-        listChangeListeners.add(listener);
-    }
+
+	public void addDirtinessListener(DirtinessListener listener) {
+		getEditor().addDirtinessListener(listener);
+	}
+
+	public boolean isDirty() {
+		return getEditor().isDirty();
+	}
 }
 
 
