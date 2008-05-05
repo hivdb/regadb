@@ -67,7 +67,7 @@ public class InclusiveOrClause extends ComposedWhereClause implements Serializab
         return "OR (" + getChildren().size() + ")";
     }
     
-    protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         InclusiveOrClause clone = new InclusiveOrClause();
         Iterator iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {

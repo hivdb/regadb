@@ -47,7 +47,7 @@ public class WorkManager {
     private static boolean debug = false;
     
     // The list implementation must allow null.
-    private LinkedList<Work> llist = new LinkedList();
+    private LinkedList<Work> llist = new LinkedList<Work>();
     
     // the current number of runing threads
     private int nbThreads = 0;
@@ -267,7 +267,7 @@ public class WorkManager {
      */
     // This may NOT be synchonized!  Otherwise, all subseqent calls to addWork would block.
     public void executeAllAndWait(Collection<? extends Work> works) {
-        List<WorkWaitWrapper> wrapperList = new ArrayList();
+        List<WorkWaitWrapper> wrapperList = new ArrayList<WorkWaitWrapper>();
         boolean inWorkPerformer = (Thread.currentThread() instanceof WorkPerformer);
         for (Work work : works) {
             wrapperList.add(new WorkWaitWrapper(work));

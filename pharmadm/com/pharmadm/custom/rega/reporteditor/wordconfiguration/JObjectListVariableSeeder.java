@@ -56,11 +56,9 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JObjectListVariableSeeder confy = (JObjectListVariableSeeder) o;
 		this.controller = confy.controller;

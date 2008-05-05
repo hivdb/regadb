@@ -28,12 +28,12 @@ import com.pharmadm.custom.rega.reporteditor.*;
  */
 public class UniqueNameContext implements Serializable {
     
-    private Map formalNameToNumberMap;
+    private Map<String, Long> formalNameToNumberMap;
     
-    public Map getFormalNameToNumberMap() {
+    public Map<String, Long> getFormalNameToNumberMap() {
         return formalNameToNumberMap;
     }
-    public void setFormalNameToNumberMap(Map formalNameToNumberMap) {
+    public void setFormalNameToNumberMap(Map<String, Long> formalNameToNumberMap) {
         this.formalNameToNumberMap = formalNameToNumberMap;
     }
     
@@ -62,7 +62,7 @@ public class UniqueNameContext implements Serializable {
         Iterator iterAtomic = new AtomicWhereClauseIterator(whereClause);
         while (iterAtomic.hasNext()) {
             AtomicWhereClause anAtomicWC = (AtomicWhereClause)iterAtomic.next();
-            Iterator inputs = anAtomicWC.getInputVariables().iterator();
+            Iterator<InputVariable> inputs = anAtomicWC.getInputVariables().iterator();
             while (inputs.hasNext()) {
                 OutputVariable anOutputVar = ((InputVariable)inputs.next()).getOutputVariable();
                 anOutputVar.setUniqueName(createUniqueName(anOutputVar.getFormalName()));
@@ -127,7 +127,7 @@ public class UniqueNameContext implements Serializable {
      */
     public String createUniqueName(String formalName) {
         if (formalNameToNumberMap == null) {
-            formalNameToNumberMap = new HashMap();
+            formalNameToNumberMap = new HashMap<String, Long>();
         }
         Long nextNumberLong = (Long)formalNameToNumberMap.get(formalName);
         long nextNumber;

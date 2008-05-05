@@ -59,7 +59,6 @@ public class JOutputVariableConfigurer extends javax.swing.JLabel implements Wor
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 	
@@ -70,12 +69,10 @@ public class JOutputVariableConfigurer extends javax.swing.JLabel implements Wor
 		return var.getName(RelationDisplay.SHOW, DescriptionDisplay.SHOW, UniqueNameDisplay.HIDE);
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return 0;
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		// does nothing. nothing to configure
 	}

@@ -69,7 +69,7 @@ public class NotClause extends ComposedWhereClause implements Serializable {
         return "NOT (" + getChildren().size() + ")";
     }
     
-    protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         NotClause clone = new NotClause();
         Iterator iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {

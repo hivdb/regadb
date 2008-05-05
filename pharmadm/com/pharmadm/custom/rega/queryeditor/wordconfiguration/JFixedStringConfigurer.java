@@ -51,16 +51,13 @@ public class JFixedStringConfigurer extends javax.swing.JLabel implements WordCo
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return 0;
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}

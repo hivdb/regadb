@@ -94,7 +94,7 @@ public class OrderedConfigurableWordList implements Cloneable, Serializable {
      * @pre : the owner of the list has just been cloned as well, and this owner clone
      * must become the owner of the clone we are making here
      */
-    public OrderedConfigurableWordList cloneInContext(Map originalToCloneMap, WordListOwner cloneOwner) throws CloneNotSupportedException {
+    public OrderedConfigurableWordList cloneInContext(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap, WordListOwner cloneOwner) throws CloneNotSupportedException {
         OrderedConfigurableWordList clone = (OrderedConfigurableWordList)super.clone();
         clone.setOwner(cloneOwner);
         Iterator<ConfigurableWord> origWordIterator = getWords().iterator();

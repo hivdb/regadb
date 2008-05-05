@@ -221,7 +221,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
     /**
      * Create a deep clone of this AtomicWhereClause (step 1).
      */
-    protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         AtomicWhereClause clone = new AtomicWhereClause();
         Iterator<FromVariable> iterFromVariables = getFromVariables().iterator();
         while (iterFromVariables.hasNext()) {
@@ -271,7 +271,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
     /**
      * Create a deep clone of this AtomicWhereClause (step 2).
      */
-    protected void cloneLinks(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected void cloneLinks(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         // now let inputclones point to correct outputclones
         Iterator<InputVariable> iterInputVariables = getInputVariables().iterator();
         while (iterInputVariables.hasNext()) {

@@ -17,8 +17,6 @@ import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
-//import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
-
 /**
  * <p>
  * An AndClause constrains the rows to be selected to rows satisfying the
@@ -70,7 +68,7 @@ public class AndClause extends ComposedWhereClause implements Serializable {
         return "AND (" + getChildren().size() + ")";
     }
     
-    protected Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         AndClause clone = new AndClause();
         Iterator<WhereClause> iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {

@@ -218,7 +218,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
      * the OutputExpression may contain AWCWords for which a clone has already been made (these are
      * stored in the originalToCloneMap); in that case the existing clones must be used i.o. new ones 
      */
-    protected OutputVariable cloneInContext(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected OutputVariable cloneInContext(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         OutputVariable clone = (OutputVariable)super.clone();
         clone.setExpression((OutputExpression)getExpression().cloneInContext(originalToCloneMap, null));
         return clone;

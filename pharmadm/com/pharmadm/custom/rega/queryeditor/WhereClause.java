@@ -254,13 +254,13 @@ public abstract class WhereClause implements Cloneable, Serializable {
     protected abstract Collection<OutputVariable> getExportedOutputVariables();
     
     public Object clone() throws CloneNotSupportedException {
-        Map originalToCloneMap = new HashMap();
+        Map<ConfigurableWord, ConfigurableWord> originalToCloneMap = new HashMap<ConfigurableWord, ConfigurableWord>();
         Object clone = cloneBasics(originalToCloneMap);
         ((WhereClause)clone).cloneLinks(originalToCloneMap);
         return clone;
     }
     
-    protected abstract Object cloneBasics(Map originalToCloneMap) throws CloneNotSupportedException;
-    protected abstract void cloneLinks(Map originalToCloneMap) throws CloneNotSupportedException;
+    protected abstract Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException;
+    protected abstract void cloneLinks(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException;
     
 } // end WhereClause

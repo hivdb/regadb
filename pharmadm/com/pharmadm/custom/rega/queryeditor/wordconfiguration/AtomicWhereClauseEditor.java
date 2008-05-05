@@ -19,7 +19,7 @@ import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
+import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 
@@ -45,7 +45,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
     ///////////////////////////////////////
     // access methods for associations
     
-    public QueryEditor getQueryEditor() {
+    public QueryEditorComponent getQueryEditor() {
     	return context.getEditorModel();
     }
     
@@ -224,9 +224,9 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
     } // end getVisualizationList
     
     private void notifyQueryEditorDirty() {
-    	QueryEditor editor = getQueryEditor();
+    	QueryEditorComponent editor = getQueryEditor();
         if (editor != null) {
-            editor.setDirty(true);
+            editor.getEditor().setDirty(true);
         }
     }
 }

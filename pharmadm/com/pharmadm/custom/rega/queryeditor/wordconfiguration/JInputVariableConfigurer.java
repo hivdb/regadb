@@ -54,11 +54,9 @@ public class JInputVariableConfigurer extends javax.swing.JComboBox implements W
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JInputVariableConfigurer confy = (JInputVariableConfigurer) o;
 		confy.controller = this.controller;

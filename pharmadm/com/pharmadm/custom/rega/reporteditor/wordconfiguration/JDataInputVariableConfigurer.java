@@ -71,11 +71,9 @@ public class JDataInputVariableConfigurer extends javax.swing.JComboBox implemen
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JDataInputVariableConfigurer confy = (JDataInputVariableConfigurer) o;
 		this.controller = confy.controller;

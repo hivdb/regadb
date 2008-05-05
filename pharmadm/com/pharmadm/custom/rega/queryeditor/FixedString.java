@@ -12,7 +12,6 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
-import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;

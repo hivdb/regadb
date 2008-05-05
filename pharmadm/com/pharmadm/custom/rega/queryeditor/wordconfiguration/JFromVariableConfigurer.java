@@ -50,16 +50,13 @@ public class JFromVariableConfigurer extends javax.swing.JLabel implements WordC
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return 0;
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}

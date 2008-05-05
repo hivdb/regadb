@@ -168,7 +168,7 @@ public abstract class ComposedWhereClause extends WhereClause implements Seriali
         }
     }
     
-    protected void cloneLinks(Map originalToCloneMap) throws CloneNotSupportedException {
+    protected void cloneLinks(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         Iterator iter = iterateChildren();
         while (iter.hasNext()) {
             ((WhereClause)iter.next()).cloneLinks(originalToCloneMap);

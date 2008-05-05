@@ -12,6 +12,8 @@
  */
 package com.pharmadm.custom.rega.reporteditor;
 
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+
 /**
  *
  * @author  kristof

@@ -60,16 +60,13 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
         // this class uses no database resources
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public int getSelectedIndex() {
 		return 0;
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JConstantConfigurer confy = (JConstantConfigurer) o;
 		this.controller = confy.controller;

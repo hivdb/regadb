@@ -140,11 +140,9 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         }
     }
 
-	@Override
 	public void add(List<WordConfigurer> words) {
 	}
 
-	@Override
 	public void reAssign(Object o) {
 		JConstantChoiceConfigurer confy = (JConstantChoiceConfigurer) o;
 		this.controller = confy.controller;
