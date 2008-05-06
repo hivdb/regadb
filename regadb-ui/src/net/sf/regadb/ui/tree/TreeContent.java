@@ -27,8 +27,8 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
-import net.sf.regadb.ui.form.impex.ExportForm;
-import net.sf.regadb.ui.form.impex.ImportForm;
+import net.sf.regadb.ui.form.impex.ImportFormRunning;
+import net.sf.regadb.ui.form.impex.ImportFormAdd;
 import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
@@ -195,7 +195,9 @@ public class TreeContent
     public ActionItem updateFromCentralServer;
     public ActionItem updateFromCentralServerUpdate;
     public ActionItem updateFromCentralServerUpdateView;
-    public ActionItem importPatientsViralIsolates;
+    public ActionItem importXML;
+    public ActionItem importXMLadd;
+    public ActionItem importXMLrun;
 //    public ActionItem exportPatientsViralIsolates;
     
     public ActionItem attributesSettings;
@@ -1128,13 +1130,22 @@ public class TreeContent
                 }
             });
             
-            importPatientsViralIsolates = new ActionItem(rootItem.tr("menu.impex.import"), administratorMain, new ITreeAction()
+            importXML = new ActionItem(rootItem.tr("menu.impex.import"), administratorMain);
+            importXMLrun = new ActionItem(rootItem.tr("menu.impex.import.run"), importXML, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new ImportForm(WResource.tr("form.impex.import.title"), InteractionState.Viewing));
+                    RegaDBMain.getApp().getFormContainer().setForm(new ImportFormRunning(WResource.tr("form.impex.import.title"), InteractionState.Viewing));
                 }
             });
+            importXMLadd = new ActionItem(rootItem.tr("menu.impex.import.add"), importXML, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ImportFormAdd(WResource.tr("form.impex.import.title"), InteractionState.Adding));
+                }
+            });
+            
 //            exportPatientsViralIsolates = new ActionItem(rootItem.tr("menu.impex.export"), administratorMain, new ITreeAction()
 //            {
 //                public void performAction(TreeMenuNode node) 

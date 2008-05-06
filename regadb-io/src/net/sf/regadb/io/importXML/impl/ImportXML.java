@@ -36,13 +36,14 @@ public class ImportXML {
 
     private PrintStream out = System.err;
     
-    public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException,
-            DisabledUserException {
-        instance = new ImportFromXML();
-
-        login = Login.authenticate(user, password);
+    public ImportXML(Login l) throws WrongUidException, WrongPasswordException, DisabledUserException {
+    	instance = new ImportFromXML();
+    	login = l;    	
     }
-
+    public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException, DisabledUserException {
+    	this(Login.authenticate(user, password));
+    }
+    
     /**
      * 
      */
