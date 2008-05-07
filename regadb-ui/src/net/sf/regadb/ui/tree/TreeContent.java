@@ -27,8 +27,9 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
-import net.sf.regadb.ui.form.impex.ImportFormRunning;
+import net.sf.regadb.ui.form.impex.ExportForm;
 import net.sf.regadb.ui.form.impex.ImportFormAdd;
+import net.sf.regadb.ui.form.impex.ImportFormRunning;
 import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
@@ -198,7 +199,7 @@ public class TreeContent
     public ActionItem importXML;
     public ActionItem importXMLadd;
     public ActionItem importXMLrun;
-//    public ActionItem exportPatientsViralIsolates;
+    public ActionItem exportXML;
     
     public ActionItem attributesSettings;
     public ActionItem attributes;
@@ -1146,13 +1147,13 @@ public class TreeContent
                 }
             });
             
-//            exportPatientsViralIsolates = new ActionItem(rootItem.tr("menu.impex.export"), administratorMain, new ITreeAction()
-//            {
-//                public void performAction(TreeMenuNode node) 
-//                {
-//                    RegaDBMain.getApp().getFormContainer().setForm(new ExportForm(WResource.tr("form.impex.export.title"), InteractionState.Viewing));
-//                }
-//            });
+            exportXML = new ActionItem(rootItem.tr("menu.impex.export"), administratorMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ExportForm(WResource.tr("form.impex.export.title"), InteractionState.Viewing));
+                }
+            });
             
             log = new ActionItem(rootItem.tr("menu.log"),administratorMain);
             logSelect = new ActionItem(rootItem.tr("menu.log.select"), log, new ITreeAction()

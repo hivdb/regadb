@@ -35,9 +35,8 @@ public class ImportFormAdd extends FormWidget {
 		addFileTable.setStyleClass("spacyTable");
 		add.addWidget(addFileTable);
 
-		new WLabel(tr("form.impex.import.select"), addFileTable.elementAt(0, 0));
-		new WLabel(tr("form.impex.import.dataset"), addFileTable
-				.elementAt(1, 0));
+		new WLabel(tr("form.impex.import.select"), addFileTable.elementAt(0, 0)).setStyleClass("form-label");
+		new WLabel(tr("form.impex.import.dataset"), addFileTable.elementAt(1, 0)).setStyleClass("form-label");
 		datasets = new WComboBox(addFileTable.elementAt(1, 1));
 		
 		wfu = new WFileUpload(addFileTable.elementAt(0, 2));

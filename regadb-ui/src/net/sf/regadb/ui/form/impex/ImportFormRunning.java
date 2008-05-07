@@ -29,8 +29,7 @@ public class ImportFormRunning extends FormWidget {
 	}
 	
 	private void init() {
-		WGroupBox progress = new WGroupBox(tr("form.impex.import.progress"),
-				this);
+		WGroupBox progress = new WGroupBox(tr("form.impex.import.progress"), this);
 		
 		progressTable = new WTable();
 		progressTable.setStyleClass("spacyTable");
@@ -76,20 +75,13 @@ public class ImportFormRunning extends FormWidget {
 			
 			progressControlTable.elementAt(0, 0).clear();
 			
-			if (processList.size() == 0) {
-				cmdClearChecked.setHidden(true);
-				new WLabel(tr("form.impex.import.progress.none"), progressControlTable.elementAt(0, 0));
-			} else {
-				cmdClearChecked.setHidden(false);
-				
-				String headers[] = { "form.impex.import.progress.header.user",
-						"form.impex.import.progress.header.file",
-						"form.impex.import.progress.header.dataset",
-						"form.impex.import.progress.header.status" };
-				
-				for(String head : headers) {
-					new WLabel(WResource.tr(head), progressTable.elementAt(row, col++)).setStyleClass("table-header-bold");
-				}
+			String headers[] = { "form.impex.import.progress.header.user",
+					"form.impex.import.progress.header.file",
+					"form.impex.import.progress.header.dataset",
+					"form.impex.import.progress.header.status" };
+			
+			for(String head : headers) {
+				new WLabel(WResource.tr(head), progressTable.elementAt(row, col++)).setStyleClass("table-header-bold");
 			}
 			
 			for (ProcessXMLImport importXml : processList) {
@@ -106,12 +98,9 @@ public class ImportFormRunning extends FormWidget {
 							progressTable.elementAt(row, 4));
 					anch.setStyleClass("link");
 				}
-
-				if (!importXml.getStatusName().key().equals(
-						"form.impex.import.progress.status.processing")) {
-					importXml.setCheckbox(new WCheckBox(
-							new WMessage(" ", true), progressTable.elementAt(
-									row, 5)));
+				
+				if ( !importXml.getStatusName().key().equals("form.impex.import.progress.status.processing") ) {
+					importXml.setCheckbox( new WCheckBox( new WMessage(" ", true), progressTable.elementAt(row, 5) ) );
 				}
 			}
 		}
