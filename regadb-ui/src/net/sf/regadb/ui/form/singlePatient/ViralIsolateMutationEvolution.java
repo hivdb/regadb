@@ -63,19 +63,23 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             sampleId.setText(lt(vis[i].getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis[i].getSampleDate())));
             viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
             viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(aaseqs.size());
+            viralIsolatesTable_.elementAt(rowCounter, 0).setStyleClass("table-cell-center");
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis[i])) {
                 protein = new WText();
                 protein.setText(lt(aaseq.getProtein().getAbbreviation()));
                 viralIsolatesTable_.putElementAt(rowCounter, 1, protein);
+                viralIsolatesTable_.elementAt(rowCounter, 1).setStyleClass("table-cell-center");
                 
                 region = new WText();
                 region.setText(lt(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos()));
                 viralIsolatesTable_.putElementAt(rowCounter, 2, region);
+                viralIsolatesTable_.elementAt(rowCounter, 2).setStyleClass("table-cell-center");
                 
                 mutations = new WText();
                 mutations.setText(lt(MutationHelper.getWildtypeMutationList(aaseq)));
                 viralIsolatesTable_.putElementAt(rowCounter, 3, mutations);
+                //viralIsolatesTable_.elementAt(rowCounter, 3).setStyleClass("table-cell-center");
                 
                 changes = new WText();
                 String changesS = "";
