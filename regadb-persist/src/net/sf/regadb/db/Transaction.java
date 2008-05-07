@@ -1340,6 +1340,19 @@ public class Transaction {
         
         return q.list();
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<ViralIsolate> getViralIsolatesSortedOnDate(Patient p) {
+        String queryString = 
+            " select vi " +
+            " from ViralIsolate as vi " +
+            " where vi.patient.id = " + p.getPatientIi() +
+            " order by vi.sampleDate";
+        
+        Query q = session.createQuery(queryString);
+        
+        return q.list();
+    }
 
     public void flush() 
     {
