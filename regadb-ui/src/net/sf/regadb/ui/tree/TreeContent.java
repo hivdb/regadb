@@ -787,7 +787,15 @@ public class TreeContent
             }
         });
         
-        event = new ActionItem(RootItem.tr("menu.event"), rootItem);
+        event = new ActionItem(RootItem.tr("menu.event"), rootItem)
+    	// Ticket #62
+        {
+            @Override
+            public boolean isEnabled()
+            {
+                return RegaDBMain.getApp().getLogin()!=null;
+            }
+        };
         
         eventSelect = new ActionItem(RootItem.tr("menu.event.select"), event, new ITreeAction()
         {
