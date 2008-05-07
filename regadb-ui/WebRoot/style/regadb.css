@@ -249,3 +249,7 @@
 *.link {
 	color: blue;
 }
+
+*.vi-mutation-evolution-table td {
+	padding: 3px;
+}

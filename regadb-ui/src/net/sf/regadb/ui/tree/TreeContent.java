@@ -47,6 +47,7 @@ import net.sf.regadb.ui.form.singlePatient.PatientEventForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateMutationEvolution;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.form.testTestTypes.ResistanceInterpretationTemplateForm;
 import net.sf.regadb.ui.form.testTestTypes.TestForm;
@@ -123,6 +124,8 @@ public class TreeContent
     public ViralIsolateSelectedItem viralIsolateSelected;
     public ActionItem viralIsolateView;
     public ActionItem viralIsolateEdit;
+    public ActionItem viralIsolateEvolution;
+    public ActionItem viralIsolateMutationEvolution;
     
     public ActionItem custom;
     public ContactItem contact;
@@ -423,6 +426,15 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), viralIsolateSelected.getSelectedItem()));
+                        }
+                    });
+                    viralIsolateEvolution = new ActionItem(RootItem.tr("menu.singlePatient.viralIsolates.evolution"), viralIsolates);
+                    viralIsolateMutationEvolution = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateMutationEvolution(WWidget.tr("form.viralIsolate.evolution.mutation"), 
+                                    RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
                         }
                     });
     		
