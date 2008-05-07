@@ -5,5 +5,7 @@
 	<classpathentry kind="src" path="/pharmadm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/pharmadm-num"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
+	<classpathentry kind="lib" path="lib/xpp3_min-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
