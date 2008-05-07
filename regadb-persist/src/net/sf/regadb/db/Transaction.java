@@ -389,7 +389,7 @@ public class Transaction {
                 "join dataset.datasetAccesses access " +
                 "where dataset = :dataset " +
                 "and access.permissions >= 1 " +
-                "and access.settingsUser.uid = :uid " +
+                "and access.id.settingsUser.uid = :uid " +
                 "group by patient");
         q.setParameter("dataset", dataset);
         q.setParameter("uid", login.getUid());
