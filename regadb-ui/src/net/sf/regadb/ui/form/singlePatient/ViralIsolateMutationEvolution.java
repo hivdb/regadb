@@ -9,7 +9,9 @@ import net.sf.regadb.analysis.functions.MutationHelper;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -45,8 +47,9 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             viralIsolatesTable_.putElementAt(0, viralIsolatesTable_.numColumns(), new TableHeader(tr(header)));
         }
         
-        ViralIsolate[] vis = new ViralIsolate[patient_.getViralIsolates().size()];
-        vis = patient_.getViralIsolates().toArray(vis);
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        List<ViralIsolate> vis = t.getViralIsolatesSortedOnDate(patient_);
         
         int rowCounter = 1;
         WText sampleId;
@@ -56,16 +59,16 @@ public class ViralIsolateMutationEvolution extends FormWidget {
         WText changes;
         
         List<AaSequence> aaseqs;
-        for(int i = 0; i<vis.length; i++) {
-            aaseqs = getAaSeqsForViralIsolateSortedByProtein(vis[i]);
+        for(int i = 0; i<vis.size(); i++) {
+            aaseqs = getAaSeqsForViralIsolateSortedByProtein(vis.get(i));
             
             sampleId = new WText();
-            sampleId.setText(lt(vis[i].getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis[i].getSampleDate())));
+            sampleId.setText(lt(vis.get(i).getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis.get(i).getSampleDate())));
             viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
             viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(aaseqs.size());
             viralIsolatesTable_.elementAt(rowCounter, 0).setStyleClass("table-cell-center");
             
-            for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis[i])) {
+            for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();
                 protein.setText(lt(aaseq.getProtein().getAbbreviation()));
                 viralIsolatesTable_.putElementAt(rowCounter, 1, protein);
@@ -84,7 +87,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
                 changes = new WText();
                 String changesS = "";
                 if(i-1>=0) {
-                    changesS = diff(aaseq, vis[i-1]);
+                    changesS = diff(aaseq, vis.get(i-1));
                 }
                 changes.setText(lt(changesS));
                 viralIsolatesTable_.putElementAt(rowCounter, 4, changes);
