@@ -11,17 +11,25 @@
  */
 package com.pharmadm.custom.rega.queryeditor.gui;
 
-import java.util.*;
 import java.beans.DefaultPersistenceDelegate;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Enumeration;
+import java.util.List;
 
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.*;
 import com.pharmadm.custom.rega.queryeditor.persist.*;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.custom.rega.savable.Savable;
+import com.thoughtworks.xstream.XStream;
 
 /**
  * The controller ('Controller' pattern) for editing a Query.
@@ -284,33 +292,51 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     }
     
     private void saveObject(Object object, File file) throws java.io.FileNotFoundException {
-//      java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
-//      installPersistenceDelegates(encoder);
-//      encoder.writeObject(object);
-//      encoder.close();
-		try {
-			ObjectOutputStream objstream = new ObjectOutputStream(new FileOutputStream(file));
-	        objstream.writeObject(object);
-	        objstream.close();    	
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//    	/* FREEK METHOD */
+//		java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
+//		installPersistenceDelegates(encoder);
+//		encoder.writeObject(object);
+//		encoder.close();
+    	
+//    	/* VIRO METHOD */
+//		try {
+//			ObjectOutputStream objstream = new ObjectOutputStream(new FileOutputStream(file));
+//	        objstream.writeObject(object);
+//	        objstream.close();    	
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+    	
+//    	/* DIET METHOD */
+    	PrintStream ps = new PrintStream(new FileOutputStream(file));
+    	ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		ps.print(new XStream().toXML(object));
+		ps.close();
     }
     
     private Object loadObject(File file) throws java.io.FileNotFoundException {
     	Object object = null;
-		try {
-	        ObjectInputStream objstream = new ObjectInputStream(new FileInputStream(file));
-	        object = objstream.readObject();
-	        objstream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-//      java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
-//      object = decoder.readObject();
-		return object;
+    	
+//    	/* FREEK METHODE */
+//		try {
+//	        ObjectInputStream objstream = new ObjectInputStream(new FileInputStream(file));
+//	        object = objstream.readObject();
+//	        objstream.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+    	
+//    	/* VIRO METHODE */
+//    	java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
+//    	object = decoder.readObject();
+		
+//    	/* DIET METHODE */
+    	XStream xs = new XStream();
+    	object = xs.fromXML(new FileInputStream(file));
+    	
+    	return object;
     }
     
     public WhereClause loadSubquery(File file) throws java.io.FileNotFoundException {
