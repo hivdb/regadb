@@ -3,22 +3,25 @@ package net.sf.regadb.csv;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
 public class CsvCombine {
     public static void main(String [] args) {
+        combine(args[0], args[1], System.out, ',');
+    }
+    
+    public static void combine(String file1, String file2, OutputStream os, char delimiter) {
         /*
          * Open two csv files, and merge them columnwise.
          */
-        String file1 = args[0];
-        String file2 = args[1];
 
         Table table1;
         Table table2;
         try {
-            table1 = new Table(new BufferedInputStream(new FileInputStream(file1)), false, ';');
-            table2 = new Table(new BufferedInputStream(new FileInputStream(file2)), false, ';');
+            table1 = new Table(new BufferedInputStream(new FileInputStream(file1)), false, delimiter);
+            table2 = new Table(new BufferedInputStream(new FileInputStream(file2)), false, delimiter);
 
             table1.append(table2);
             
@@ -47,7 +50,7 @@ public class CsvCombine {
                 }
             }
 
-            finalTable.exportAsCsv(System.out, ';', false);
+            finalTable.exportAsCsv(os, delimiter, false);
             System.out.flush();
         } catch (FileNotFoundException e) {
             System.err.println("Could not open file");
