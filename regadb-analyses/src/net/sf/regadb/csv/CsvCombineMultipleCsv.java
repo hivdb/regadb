@@ -1,22 +1,30 @@
 package net.sf.regadb.csv;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
 public class CsvCombineMultipleCsv {
     public static void main(String [] args) {
+        if(args.length<2) {
+            System.err.println("Usage: CsvCombineMultipleCsv directory outputfile");
+            System.exit(0);
+        }
+        
         File dir = new File(args[0]);
         String outputFile = args[1];
         
-        ByteOutputStream bos = new ByteOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         
         File[] filesInDir = dir.listFiles();
         CsvCombine.combine(filesInDir[0].getAbsolutePath(), filesInDir[1].getAbsolutePath(), bos, ';');
-        bos.close();
+        try {
+            bos.close();
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
         
         try {
             FileUtils.writeStringToFile(new File(outputFile), bos.toString());
@@ -26,10 +34,14 @@ public class CsvCombineMultipleCsv {
         
         for(int i = 2; i<filesInDir.length; i++) {
             if(filesInDir[i].isFile() && filesInDir[i].getAbsolutePath().endsWith(".csv")) {
-                bos = new ByteOutputStream();
+                bos = new ByteArrayOutputStream();
                 System.err.println(filesInDir[i].getAbsolutePath());
                 CsvCombine.combine(filesInDir[i].getAbsolutePath(), outputFile, bos, ';');
-                bos.close();
+                try {
+                    bos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 new File(outputFile).delete();
                 try {
                     FileUtils.writeStringToFile(new File(outputFile), bos.toString());
