@@ -48,6 +48,7 @@ import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.PatientEventForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateCumulatedResistance;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateMutationEvolution;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateResistanceEvolutionForm;
@@ -130,6 +131,7 @@ public class TreeContent
     public ActionItem viralIsolateEvolution;
     public ActionItem viralIsolateMutationEvolution;
     public ActionItem viralIsolateResistanceEvolution;
+    public ActionItem viralIsolateCumulatedResistance;
     
     public ActionItem custom;
     public ContactItem contact;
@@ -449,6 +451,14 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateResistanceEvolutionForm(WWidget.tr("form.viralIsolate.evolution.resistance"), 
+                                    RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
+                        }
+                    });
+                    viralIsolateCumulatedResistance = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
+                    {
+                        public void performAction(TreeMenuNode node)
+                        {
+                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
                                     RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
                         }
                     });
