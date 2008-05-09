@@ -150,15 +150,15 @@ public class PatientChart
         
         for(UserAttribute ua : us.getUserAttributes())
         {
-            if("chart.width".equals(ua.getName()) && ua.getValue()!=null)
+            if("chart.width".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
             {
                 IMAGE_WIDTH = Integer.parseInt(ua.getValue());
             }
-            else if("chart.height".equals(ua.getName()) && ua.getValue()!=null)
+            else if("chart.height".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
             {
                 CHART_HEIGHT = Integer.parseInt(ua.getValue());
             }
-            else if("chart.mutation".equals(ua.getName()) && ua.getValue()!=null)
+            else if("chart.mutation".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
             {
                 positionAlgorithm_ = ua.getValue();
                 positionMap_ = createPositionMap(ua.getData());
