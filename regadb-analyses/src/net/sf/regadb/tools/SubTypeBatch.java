@@ -39,10 +39,10 @@ public class SubTypeBatch {
 		}
 		for(int i =1; i<inputTable.numRows(); i++) {
 			NtSequence ntseq = new NtSequence();
-			ntseq.setLabel("label");
-			ntseq.setNucleotides(inputTable.valueAt(0, i));
+			ntseq.setLabel(inputTable.valueAt(0, i));
+			ntseq.setNucleotides(inputTable.valueAt(1, i));
 			TestResult tr = IOAssistImportHandler.ntSeqAnalysis(ntseq, subtype);
-			System.out.println(inputTable.valueAt(0, i) + "," + inputTable.valueAt(1, i) + "," + tr.getValue());
+			System.out.println(inputTable.valueAt(0, i) + "," + tr.getValue());
 		}
 	}
 }
