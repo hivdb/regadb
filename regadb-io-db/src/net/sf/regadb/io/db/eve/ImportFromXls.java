@@ -155,16 +155,19 @@ public class ImportFromXls {
 				System.err.println("Fasta not found for " + localString);
 			} else {
 				fasta = Utils.clearNucleotides(fasta);
+				
+				ViralIsolate vi = getViralIsolate(p, getDate(row));
+				
 				NtSequence nts = new NtSequence();
 				nts.setNucleotides(fasta);
+				nts.setLabel("sequence" + (vi.getNtSequences().size() + 1));
 				
-				ViralIsolate vi = new ViralIsolate();
 				vi.setSampleDate(getDate(row));
 				vi.getNtSequences().add(nts);
 				vi.setSampleId(new Integer(++sampleID).toString());
-				p.getViralIsolates().add(vi);
 				
 				viralisolates.put(sampleID + "", vi);
+				p.getViralIsolates().add(vi);
 			}
 		}
 		return fasta;
@@ -208,13 +211,31 @@ public class ImportFromXls {
 		}
 	}
 	
-	private void readHeader(Sheet s) {
+	private static void readHeader(Sheet s) {
 		headers = new HashMap<String, Integer>();
 		Cell[] row = s.getRow(0);
 		for(int i=0; i<row.length; i++) {
 			Cell c = row[i];
 			headers.put(c.getContents(), i);
 		}
+	}
+	
+	private static ViralIsolate getViralIsolate(Patient p, Date d) {
+		ViralIsolate vi = null;
+		
+		for(ViralIsolate vii : p.getViralIsolates() ) {
+			if ( vii.getSampleDate().equals(d) ) {
+				vi = vii;
+				break;
+			}
+		}
+		
+		if ( vi == null ) {
+			vi = new ViralIsolate();
+			vi.setSampleDate(d);
+		}
+		
+		return vi;
 	}
 	
 	private static String getQuestionN(int row) { return getCell(row, "QuestionN"); }
