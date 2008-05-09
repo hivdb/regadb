@@ -71,7 +71,7 @@ public class ImportFormRunning extends FormWidget {
 		if ( progressTable != null ) {
 			progressTable.clear();
 			
-			int row = 0, col = 0;
+			int row = 0;
 			
 			progressControlTable.elementAt(0, 0).clear();
 			
@@ -81,7 +81,7 @@ public class ImportFormRunning extends FormWidget {
 					"form.impex.import.progress.header.status" };
 			
 			for(String head : headers) {
-				new WLabel(WResource.tr(head), progressTable.elementAt(row, col++)).setStyleClass("table-header-bold");
+				new WLabel(WResource.tr(head), progressTable.elementAt(row, progressTable.numColumns())).setStyleClass("table-header-bold");
 			}
 			
 			for (ProcessXMLImport importXml : processList) {
@@ -92,11 +92,9 @@ public class ImportFormRunning extends FormWidget {
 				new WLabel(importXml.getStatusName(), progressTable.elementAt(row, 3));
 				
 				if (importXml.getLogFile() != null) {
-					WAnchor anch = new WAnchor(new WFileResource("text/txt",
-							importXml.getLogFile().getAbsolutePath()),
+					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
 							WResource.tr("form.impex.import.progress.logfile"),
-							progressTable.elementAt(row, 4));
-					anch.setStyleClass("link");
+							progressTable.elementAt(row, 4)).setStyleClass("link");
 				}
 				
 				if ( !importXml.getStatusName().key().equals("form.impex.import.progress.status.processing") ) {

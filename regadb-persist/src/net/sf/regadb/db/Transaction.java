@@ -108,7 +108,14 @@ public class Transaction {
     	
     	return q;
     }
-
+    
+    public List<NtSequence> getSequences()
+    {
+    	Query q = session.createQuery("from NtSequence");
+        
+        return (List<NtSequence>)q.list();
+    }
+    
     public NtSequence getSequence(int id)
     {
         Query q = session.createQuery("from NtSequence where id = :id");
@@ -117,7 +124,20 @@ public class Transaction {
         
         return (NtSequence)q.uniqueResult();
     }
-
+    
+    public List<ViralIsolate> getViralIsolates()
+    {
+    	Query q = session.createQuery("from ViralIsolate");
+        
+        return q.list();
+    }
+    
+    public Long getViralIsolateCount()
+    {
+    	Query q = session.createQuery("select count(viral_isolate_ii) from ViralIsolate as viralIsolate");
+        return (Long)q.uniqueResult();
+    }
+    
     public ViralIsolate getViralIsolate(Dataset dataset, String sampleId) {
         // TODO: check dataset access permissions before doing the query
 

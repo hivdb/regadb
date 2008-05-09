@@ -24,6 +24,8 @@ import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
@@ -205,6 +207,9 @@ public class TreeContent
     public ActionItem importXMLadd;
     public ActionItem importXMLrun;
     public ActionItem exportXML;
+    public ActionItem batchTest;
+    public ActionItem batchTestAdd;
+    public ActionItem batchTestRunning;
     
     public ActionItem attributesSettings;
     public ActionItem attributes;
@@ -1182,6 +1187,22 @@ public class TreeContent
                 public void performAction(TreeMenuNode node) 
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new ExportForm(WResource.tr("form.impex.export.title"), InteractionState.Viewing));
+                }
+            });
+            
+            batchTest = new ActionItem(rootItem.tr("menu.batchtest"), administratorMain);
+            
+            batchTestAdd = new ActionItem(rootItem.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
+                }
+            });
+            
+            batchTestRunning = new ActionItem(rootItem.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
                 }
             });
             
