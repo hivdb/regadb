@@ -14,6 +14,7 @@ public class RegaDBWindow extends WTable
 	public RegaDBWindow()
 	{
 		super();
+		this.setStyleClass("root");
 		
 		loadI18nResources();
 		
@@ -25,6 +26,8 @@ public class RegaDBWindow extends WTable
 		WTable contentTable = new WTable(this.elementAt(1, 0));
 		tree_ = new Tree(contentTable.elementAt(0, 0));
 		container_ = new FormContainer(contentTable.elementAt(0, 1));
+		contentTable.elementAt(0, 1).setStyleClass("formcontent");
+
 	}
 	
 	private void loadI18nResources()

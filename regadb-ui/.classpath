@@ -9,5 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/wts-client-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
+	<classpathentry kind="src" path="/pharmadm"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

@@ -259,3 +259,274 @@
 *.vi-mutation-evolution-table td {
 	padding: 3px;
 }
+
+
+
+.root {
+	width: 95%;	
+}
+
+
+/* fields general */
+
+.querytoolform {
+	width:95%;	
+	width:700px;
+}
+
+.querytoolform fieldset legend {
+	border-top: 1px solid rgb(64, 64, 64);
+	border-left: 1px solid rgb(64, 64, 64);
+	border-right: 1px solid rgb(64, 64, 64);
+	background-color: rgb(215, 215, 215);
+	margin-top:-1.4em;
+	margin-left:-1px;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+	line-height:1.2em;
+}
+
+.querytoolform fieldset {
+	display:block;
+	margin-top:2em;
+	border: 1px solid rgb(64, 64, 64);
+	padding:0.2em 0px 0px 0px;
+	background-color: rgb(215, 215, 215);
+}
+
+.querytoolform fieldset .toolbar {
+	margin-left:0.2em;
+}
+
+.querytoolform fieldset .content {
+	background-color: #fff;
+	padding: 0.5em;
+	border-top: 1px solid rgb(102, 102, 102);
+}
+
+
+/* trivia */
+
+.querytoolform .warning {
+	color: #666;
+}
+
+
+/* selection field */
+
+.querytoolform .selectionfield .content, .querytoolform .resultfield .content {
+	text-align:center !important;	
+}
+
+.querytoolform .selectionfield .content .selectionitem {
+	padding:0.1em;
+	background-color: rgb(235, 235, 235);
+	margin-top:0.4em;
+	margin-bottom:0.4em;
+	text-align:left;
+	border:1px solid rgb(180, 180, 180);
+}
+
+.querytoolform .selectionfield .content .selectionitem .label {
+	font-weight:bold;
+}
+
+.querytoolform .selectionfield .content .tableselectionitem div {
+	background-color: rgb(255, 255, 255);
+}
+
+/* query tree */
+
+.querytoolform .querytreefield .content {
+	padding-top: 0px;
+	padding-right: 0px;	
+}
+
+.querytoolform .querytreefield .content .tree {
+	width:100%;
+}
+
+.querytoolform .querytreefield .content .tree .treeitempanel {
+	float:right;
+}
+.querytoolform .querytreefield .content .tree input.check{
+	float:right;
+	display:block;
+	margin-top:0.5em;
+}
+
+.querytoolform .querytreefield .content .tree .treenodelabel{
+	display:block;
+	float:left;
+	line-height:1.5em;
+}
+
+.querytoolform .querytreefield .content .tree .treenodechildcount{
+	display:block;
+	float:left;
+	font-weight:bold;
+	line-height:1.5em;
+}
+
+.querytoolform .querytreefield .content .tree .atomictreenode {
+	width:100%;
+	border-top: 1px solid rgb(235,235,235);
+	padding:0.05em 0em 0.05em 0.25em;
+}
+
+.querytoolform .querytreefield .content .tree .composedtreenode {
+	width:100%;
+	padding:0.1em 0em 0.1em 0.25em;
+	background-color: rgb(235, 235, 235);
+	vertical-align:bottom;
+}
+
+.querytoolform .querytreefield .content .tree .composedtreenode .treenodelabel{
+	font-weight:bold;
+}
+
+
+/* results */
+
+.querytoolform .resultfield .content label {
+	display: block;
+	width: 8em;
+	text-align:right;
+}
+
+.querytoolform .resultfield .content td > label:after {
+	content: ' :';	
+	padding-right:0.2em;
+}
+
+
+/* button panels */
+
+.querytoolform .buttonpanel {
+	padding: 0.15em;	
+}
+
+.querytoolform .flatbuttonpanel button {
+	margin-left:-1px;
+	margin-right:0px;
+	background-color:transparent;
+	border:1px solid rgb(180, 180, 180);
+	padding:0px 6px;
+}
+
+.querytoolform .flatbuttonpanel button:hover {
+	background-color:rgb(196, 196, 196);
+}
+
+.querytoolform .flatbuttonpanel button:disabled {
+	opacity:0.3;
+	filter:alpha(opacity=30);
+    color:#000;
+	padding:0px 6px;
+	background-color:transparent;
+}
+
+.querytoolform .defaultbuttonpanel button {
+	margin-left:4px;
+	margin-right:4px;
+}
+
+/* dialogs */
+
+.querytoolform .dialog {
+	border: 1px solid rgb(64, 64, 64);
+	background-color: rgb(235, 235, 235);
+	margin:0.3em;
+}
+
+.querytoolform .dialog .dialogtitle{
+	text-align:center !important;
+	font-weight:bold;
+	background-color: rgb(128, 128, 255);
+	padding:0.15em;
+	border-bottom: 1px solid rgb(102, 102, 102);
+}
+
+.querytoolform .dialog .dialogcontent{
+	padding:0.3em;
+}
+
+.querytoolform .dialog .dialogcontent .buttonpanel{
+	text-align:right !important;
+}
+
+
+/* selector panels */
+
+.querytoolform .selectorpanel {
+	margin:0.5em 0.25em;
+}
+
+.querytoolform .selectorpanel .tabbedpane{
+	width: 100%;
+}
+
+.querytoolform .selectorpanel .tabstack {
+	border: 1px solid rgb(102, 102, 102);
+	background-color: rgb(225, 225, 225);
+}
+
+.querytoolform .selectorpanel .tab {
+	border-top: 1px solid rgb(140, 140, 140);
+	background-color: rgb(235, 235, 235);
+	margin: 0.2em 0px 0px;
+	padding-bottom:0.5em;
+}
+
+.querytoolform .selectorpanel .tabmenu .item, .querytoolform .selectorpanel .tabmenu .itemselected {
+	background-color: rgb(215, 215, 215);
+	border-top: 1px solid rgb(102, 102, 102);
+	border-left: 1px solid rgb(102, 102, 102);
+	border-right: 1px solid rgb(102, 102, 102);
+	padding: 0.1em 0.5em;
+	line-height:1.2em;
+	text-decoration:none !important;
+}
+
+.querytoolform .selectorpanel .tabmenu .item span {
+	color:#000;
+	text-decoration:none !important;
+}
+	
+	
+.querytoolform .selectorpanel .tabmenu .itemselected span{
+	color:#000;
+	font-weight: bold;
+	text-decoration:none !important;
+}
+
+.querytoolform .selectorpanel .tabmenu .itemselected {
+	padding: 0.2em 0.5em;
+	line-height:1.4em;
+	background-color: rgb(225, 225, 225);
+}
+
+.querytoolform .selectorpanel .tabmenu {
+	vertical-align: bottom;
+}
+
+/* configurers */
+
+.querytoolform .constantconfigurer {
+	width:10em;
+	margin:0px 0.3em;
+}
+
+.querytoolform .constantchoiceconfigurer {
+	margin:0px 0.3em;
+	max-width:12em;
+}
+
+.querytoolform .inputvariableconfigurer {
+	margin:0px 0.3em;
+}
+
+.querytoolform .composedoutputvariableconfigurer {
+	margin:0px 0.3em;
+}
+
