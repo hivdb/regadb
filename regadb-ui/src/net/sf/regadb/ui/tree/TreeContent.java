@@ -478,12 +478,6 @@ public class TreeContent
     			        });
     	                
     	                PatientEventAdd patientEventAdd2 = new PatientEventAdd(patientEvent);
-//    	                patientEventAdd = new ActionItem(WResource.tr("menu.singlePatient.event.add"), patientEvent, new ITreeAction()
-//    	                {
-//    						public void performAction(TreeMenuNode node) {
-//    							RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Adding, WWidget.tr("menu.singlePatient.event.add"), null));
-//    						}
-//    	                });
     	                
     	                patientEventSelected = new PatientEventSelectedItem(patientEvent);
     	                
