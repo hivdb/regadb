@@ -43,6 +43,10 @@
 	font-weight: bold;
 }
 
+fieldset {
+	padding: .7em;
+}
+
 *.form-field-textfield-edit-valid
 {
 	
