@@ -14,6 +14,7 @@ package com.pharmadm.custom.rega.reporteditor.gui;
 
 import java.util.*;
 
+import com.pharmadm.custom.rega.gui.configurers.JVisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConstantController;
@@ -162,7 +163,7 @@ public class DataGroupEditor implements ConfigurationController, ConstantControl
  * </p>
  */
     public String getConstantValueString(Constant cst) {        
-        return cst.getHumanStringValue();
+        return cst.getHumanStringValue().toString();
     } // end getConstantValueString        
 
 /**
@@ -222,7 +223,7 @@ public class DataGroupEditor implements ConfigurationController, ConstantControl
  * @return a List with all AWCWords needed for visualization
  * </p>
  */
-    public List getVisualizationList() {        
+    public List<ConfigurableWord> getVisualizationList() {        
         return getDataGroup().getVisualizationList().getWords();
     } // end getVisualizationList        
 

@@ -18,6 +18,7 @@ import java.util.*;
 import javax.swing.*;
 
 import com.pharmadm.custom.rega.reporteditor.*;
+import com.pharmadm.custom.rega.gui.configurers.JVisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
 
 /**
@@ -53,9 +54,7 @@ public class DataGroupSelectionDialog extends javax.swing.JDialog {
 
         setTitle("Select Data Group to Add");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {}
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
@@ -87,10 +86,6 @@ public class DataGroupSelectionDialog extends javax.swing.JDialog {
         pack();
     }//GEN-END:initComponents
     
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        freeResources();
-    }//GEN-LAST:event_formWindowClosed
-    
     private void initListComponents(DataGroup contextGroup, Collection dataGroupList, QueryOutputReportSeeder seedController) {
         editPanel = new ScrollableEditPanel();
         editPanel.setLayout(new java.awt.GridBagLayout());
@@ -112,7 +107,7 @@ public class DataGroupSelectionDialog extends javax.swing.JDialog {
             DataGroupEditor editor = new DataGroupEditor();
             editor.setDataGroup(group);
             editor.setContextGroup(contextGroup);
-            editor.setVisualizationComponentFactory(new VisualizationComponentFactory(editor, seedController));
+            editor.setVisualizationComponentFactory(new JVisualizationComponentFactory(editor, seedController));
             javax.swing.JRadioButton jRadioButton = new javax.swing.JRadioButton();
             DataGroupSelectorPanel selectorPanel = new DataGroupSelectorPanel(jRadioButton, editor);
             selectorList.add(selectorPanel);
@@ -181,15 +176,6 @@ public class DataGroupSelectionDialog extends javax.swing.JDialog {
         }
         selectedGroup = null;
     }
-    
-    private void freeResources() {
-        Iterator iter = selectorList.iterator();
-        while(iter.hasNext()) {
-            DataGroupSelectorPanel selector = (DataGroupSelectorPanel)iter.next();
-            selector.freeResources();
-        }
-    }
-    
     
     private void cancelSelection() {
         selectedGroup = null;

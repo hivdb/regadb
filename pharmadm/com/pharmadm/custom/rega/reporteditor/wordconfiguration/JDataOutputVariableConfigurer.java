@@ -17,6 +17,7 @@ import java.util.List;
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -49,10 +50,7 @@ public class JDataOutputVariableConfigurer extends javax.swing.JLabel implements
     /** does nothing, output variables can not be configured */
     public void configureWord() {
     }
-    
-    public void freeResources() {
-        // this class uses no database resources
-    }
+
 
 	public void add(List<WordConfigurer> words) {
 	}

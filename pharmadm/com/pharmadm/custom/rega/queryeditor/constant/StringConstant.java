@@ -23,7 +23,9 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  */
 public class StringConstant extends Constant implements Serializable{
     
-	public StringConstant(){}
+	public StringConstant(){
+		setValue("");
+	}
 	
     private static final Format STRING_FORMAT = new StringFormat();
 
@@ -47,7 +49,7 @@ public class StringConstant extends Constant implements Serializable{
     /**
      * A Format that accepts anything.  Any String gets parsed into a String.
      */
-    private static class StringFormat extends Format {
+    public static class StringFormat extends Format {
         
         // FIXME -- what to do with the pos ??
         public StringBuffer format(Object obj, StringBuffer toAppendTo, java.text.FieldPosition pos) {

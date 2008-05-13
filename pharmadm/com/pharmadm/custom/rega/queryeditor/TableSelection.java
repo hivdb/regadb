@@ -78,4 +78,12 @@ public class TableSelection extends ComposedSelection implements Serializable{
         }
         setSubSelections(fieldSelections);
     }
+    
+    public Object Clone(Object o) throws CloneNotSupportedException {
+    	TableSelection sel = (TableSelection) o;
+    	TableSelection clone = (TableSelection) super.clone();
+    	
+    	
+    	return clone;
+    }
 }

@@ -1,16 +1,16 @@
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 
 import java.awt.Component;
 import java.awt.event.MouseListener;
 import java.util.*;
 
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
- *
+ * Panel containing a list of word configurers
  * @author  kristof
  */
 public class WLOEditorPanel extends javax.swing.JPanel {
@@ -35,7 +35,7 @@ public class WLOEditorPanel extends javax.swing.JPanel {
         return factory.createComponents(controller.getVisualizationList());
     }
     
-    protected void initConfigurers() {
+    public void initConfigurers() {
     	this.removeAll();
     	for (WordConfigurer confy : configList) {
             try {
@@ -81,13 +81,5 @@ public class WLOEditorPanel extends javax.swing.JPanel {
     		}
     	}
     	super.addMouseListener(listener);
-    }
-    
-    public void freeResources() {
-        Iterator<WordConfigurer> iter = configList.iterator();
-        while (iter.hasNext()) {
-            WordConfigurer confy = (WordConfigurer)iter.next();
-            confy.freeResources();
-        }
     }
 }

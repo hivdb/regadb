@@ -10,10 +10,9 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+package com.pharmadm.custom.rega.gui.configurers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
@@ -22,6 +21,8 @@ import javax.swing.JFormattedTextField;
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.SuggestedValuesOption;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConstantController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -69,10 +70,6 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         }
     }
     
-    public void freeResources() {
-        ((JDBCComboBoxModel)getModel()).close();
-    }
-
     public void addFocusListener(java.awt.event.FocusListener listener) {
         if (textField == null) {
             return;
@@ -135,13 +132,7 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         		this.selectedItem = values.get(0);
         	}
         }
-        
-        public void close() {
-        }
     }
-
-	public void add(List<WordConfigurer> words) {
-	}
 
 	public void reAssign(Object o) {
 		JConstantChoiceConfigurer confy = (JConstantChoiceConfigurer) o;

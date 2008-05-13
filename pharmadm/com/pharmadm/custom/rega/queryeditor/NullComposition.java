@@ -2,8 +2,11 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.util.List;
 
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class NullComposition implements CompositionBehaviour {
+
+public class NullComposition extends CompositionBehaviour {
 
 	/**
 	 * the null behaviour never composes clauses
@@ -29,7 +32,7 @@ public class NullComposition implements CompositionBehaviour {
 	/**
 	 * composition never happens
 	 */
-	public WordConfigurer getWordConfigurer(List<WordConfigurer> configurers) {
+	public ComposedWordConfigurer getWordConfigurer(List<WordConfigurer> configurers) {
 		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+package com.pharmadm.custom.rega.gui.configurers;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class JAttributeConfigurer extends JPanel implements WordConfigurer {
+public class JAttributeConfigurer extends JPanel implements ComposedWordConfigurer {
 
 	private JComposedOutputVariableConfigurer ovar;
 	private List<JCombinedConfigurer> constantPanels;
@@ -48,13 +49,6 @@ public class JAttributeConfigurer extends JPanel implements WordConfigurer {
 	public void configureWord() {
 		constantPanels.get(ovar.getSelectedIndex()).configureWord();
 		ovar.configureWord();
-	}
-
-	public void freeResources() {
-		ovar.freeResources();
-		for (WordConfigurer confy : constantPanels) {
-			confy.freeResources();
-		}
 	}
 
 	public int getSelectedIndex() {

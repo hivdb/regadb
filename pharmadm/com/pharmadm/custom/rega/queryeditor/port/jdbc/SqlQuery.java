@@ -104,19 +104,31 @@ public class SqlQuery implements QueryVisitor {
 	}
 
 	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
-        return "\'%" + constant.getValue().toString() + "\'";
+		String str = constant.getValue().toString();
+		str = str.replace('*', '%');
+		str = str.replace('?', '_');
+        return "\'%" + str + "\'";
 	}
 
 	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
-        return "\'" + constant.getValue().toString() + "%\'";
+		String str = constant.getValue().toString();
+		str = str.replace('*', '%');
+		str = str.replace('?', '_');
+        return "\'" + str + "%\'";
 	}
 
 	public String visitWhereClauseStringConstant(StringConstant constant) {
-		return "\'" + constant.getValue().toString() + "\'";
+		String str = constant.getValue().toString();
+		str = str.replace('*', '%');
+		str = str.replace('?', '_');
+		return "\'" + str + "\'";
 	}
 
 	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
-        return "\'%" + constant.getValue().toString() + "%\'";
+		String str = constant.getValue().toString();
+		str = str.replace('*', '%');
+		str = str.replace('?', '_');
+        return "\'%" + str + "%\'";
 	}
 
 	public String visitWhereClauseConstant(Constant constant) {

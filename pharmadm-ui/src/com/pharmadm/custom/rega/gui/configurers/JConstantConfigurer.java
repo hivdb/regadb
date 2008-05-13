@@ -10,12 +10,13 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+package com.pharmadm.custom.rega.gui.configurers;
 
-import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConstantController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -42,7 +43,7 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
         this.constant = constant;
         this.controller = controller;
         this.setColumns(10);
-        this.setValue(constant.getValue());
+        this.setValue(constant.getHumanValue());
     }
     
     public ConfigurableWord getWord() {
@@ -51,21 +52,12 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
     
     
     public void configureWord() {
+    	System.err.println("text:" + getText());
         if (! controller.setConstantValueString(constant, getText())) {
             System.err.println("Warning : word configuration failed !");
         }
     }
-    
-    public void freeResources() {
-        // this class uses no database resources
-    }
 
-	public void add(List<WordConfigurer> words) {
-	}
-
-	public int getSelectedIndex() {
-		return 0;
-	}
 
 	public void reAssign(Object o) {
 		JConstantConfigurer confy = (JConstantConfigurer) o;

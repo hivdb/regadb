@@ -1,10 +1,14 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public interface CompositionBehaviour extends Serializable {
+
+public abstract class CompositionBehaviour implements Serializable {
 	/**
 	 * returns true if the given clause can be composed with the signature clause
 	 * @param signatureClause reference clause
@@ -12,26 +16,50 @@ public interface CompositionBehaviour extends Serializable {
 	 *        signature clause
 	 * @return
 	 */
-	public boolean canCompose(AtomicWhereClause signatureClause, AtomicWhereClause clause);
+	public abstract boolean canCompose(AtomicWhereClause signatureClause, AtomicWhereClause clause);
 	
 	/**
 	 * returns true if the given clause matches this behaviour
 	 * @return
 	 */
-	public boolean matches(AtomicWhereClause clause);
+	public abstract boolean matches(AtomicWhereClause clause);
 	
 	/**
 	 * returns the list of words that should be turned into a single configurer
 	 * @param clause
 	 * @return
 	 */
-	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause);
+	public abstract List<ConfigurableWord> getComposableWords(AtomicWhereClause clause);
 	
+
 	/**
-	 * returns the configurer that will replace the configurers used for the words
-	 * returned by getComposableWords
-	 * @param configurers
-	 * @return
+	 * replace the configurers corresponding to the given list of words
+	 * in the given list of configurers by the given composed configurer
+	 * @param configurers list of configurers wherein the replacing should happen
+	 * @param words list of words in the given list of configurers the must be replaced
+	 * @param configurer the new configurer
+	 * @return true on success
 	 */
-	public WordConfigurer getWordConfigurer(List<WordConfigurer> configurers);
-}
+    public static final boolean replaceByComposedWord(List<WordConfigurer> configurers, List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
+    	List<ConfigurableWord> oldWords = new ArrayList<ConfigurableWord>();
+    	oldWords.addAll(words);
+    	int i = 0;
+    	boolean firstWordFound = false;
+    	while (i < configurers.size() && oldWords.size() > 0) {
+			if (configurers.get(i).getWord().equals(oldWords.get(0))) {
+				if (!firstWordFound) {
+	    			configurers.set(i, configurer);
+	    			firstWordFound = true;
+	    			i++;
+				}
+				else {
+					configurers.remove(i);
+				}
+				oldWords.remove(0);
+			}
+			else {
+				i++;
+			}
+    	}
+    	return firstWordFound && oldWords.isEmpty();
+    }}

@@ -231,14 +231,6 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
             clone.fromVariables.add(fromVarClone);
         }
         
-        Iterator<Constant> iterConstants = getConstants().iterator();
-        while (iterConstants.hasNext()) {
-            Constant constant = (Constant)iterConstants.next();
-            Constant constantClone = (Constant)constant.clone();
-            originalToCloneMap.put(constant, constantClone);
-            clone.constants.add(constantClone);
-        }
-        
         // leave inputVariables assigned to original outputvariables for now
         // (set them later to correct outputvars when the outputvar's clones are ready.)
         Iterator<InputVariable> iterInputVariables = getInputVariables().iterator();
@@ -249,13 +241,21 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
             clone.inputVariables.add(inputVarClone);
         }
         
+        Iterator<Constant> iterConstants = getConstants().iterator();
+        while (iterConstants.hasNext()) {
+            Constant constant = (Constant)iterConstants.next();
+            Constant constantClone = (Constant) constant.cloneInContext(originalToCloneMap);
+            originalToCloneMap.put(constant, constantClone);
+            clone.constants.add(constantClone);
+        }
+        
         Iterator<OutputVariable> iterOutputVariables = getOutputVariables().iterator();
         while (iterOutputVariables.hasNext()) {
             OutputVariable outputVar = (OutputVariable)iterOutputVariables.next();
             OutputVariable outputVarClone = (OutputVariable)outputVar.cloneInContext(originalToCloneMap);
             originalToCloneMap.put(outputVar, outputVarClone);
             clone.outputVariables.add(outputVarClone);
-        }
+        }        
         WhereClauseComposer hibClauseCompClone = (WhereClauseComposer)getWhereClauseComposer().cloneInContext(originalToCloneMap, clone);
         clone.setWhereClauseComposer(hibClauseCompClone);
         
@@ -289,6 +289,24 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
             // This can not be avoided in general as output variables have to be unique.
             inputVar.setOutputVariable(outputVarClone == null ? outputVar : outputVarClone);
         }
+        
+//        Iterator<OutputVariable> iterOutputVariables = getOutputVariables().iterator();
+//        while (iterOutputVariables.hasNext()) {
+//            OutputVariable outputVar = iterOutputVariables.next();
+//            OutputVariable outputVarClone = (OutputVariable)originalToCloneMap.get(outputVar);
+//            outputVarClone.getExpression().cloneInContext(originalToCloneMap, outputVarClone.getExpression().getOwner());
+//            
+//            // If no outputVarClone is in the map, it means the outputVariable was external to
+//            // the current clone operation. What we should do then is debatable. Here we choose
+//            // to retain the link to the existing output variable. Alternatively, we could
+//            // clear the link. Observe that a link to a clone of the output variable would not
+//            // make any sense.
+//            // A nice consequence of this choice is that cut-paste of the same clause does not
+//            // break any input links of the clause. It does, however, break output links.
+//            // This can not be avoided in general as output variables have to be unique.
+//            inputVar.setOutputVariable(outputVarClone == null ? outputVar : outputVarClone);
+//        }
+        
     }
     
     public Collection<AtomicWhereClause> getAvailableAtomicClauses(AWCPrototypeCatalog catalog) {

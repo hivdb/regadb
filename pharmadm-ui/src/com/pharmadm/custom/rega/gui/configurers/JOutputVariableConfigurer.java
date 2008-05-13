@@ -10,21 +10,20 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+package com.pharmadm.custom.rega.gui.configurers;
 
-
-import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.OutputVariableConfigurer;
 
 /**
  *
  * @author  kristof
  */
-public class JOutputVariableConfigurer extends javax.swing.JLabel implements WordConfigurer {
+public class JOutputVariableConfigurer extends javax.swing.JLabel implements OutputVariableConfigurer {
     
     private OutputVariable var;
     
@@ -54,23 +53,13 @@ public class JOutputVariableConfigurer extends javax.swing.JLabel implements Wor
     /** does nothing, output variables can not be configured */
     public void configureWord() {
     }
-    
-    public void freeResources() {
-        // this class uses no database resources
-    }
 
-	public void add(List<WordConfigurer> words) {
-	}
-	
+
 	/**
 	 * for display in output variable dropdown
 	 */
 	public String toString() {
 		return var.getName(RelationDisplay.SHOW, DescriptionDisplay.SHOW, UniqueNameDisplay.HIDE);
-	}
-
-	public int getSelectedIndex() {
-		return 0;
 	}
 
 	public void reAssign(Object o) {

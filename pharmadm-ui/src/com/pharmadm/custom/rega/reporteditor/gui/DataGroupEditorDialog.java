@@ -12,10 +12,6 @@
  */
 package com.pharmadm.custom.rega.reporteditor.gui;
 
-import java.util.*;
-import javax.swing.*;
-import com.pharmadm.custom.rega.reporteditor.*;
-
 /**
  *
  * @author  kristof
@@ -46,9 +42,7 @@ public class DataGroupEditorDialog extends javax.swing.JDialog {
 
         setTitle("Edit Data Group");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {}
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
@@ -76,10 +70,6 @@ public class DataGroupEditorDialog extends javax.swing.JDialog {
 
         pack();
     }//GEN-END:initComponents
-    
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        editPanel.freeResources();
-    }//GEN-LAST:event_formWindowClosed
     
     private void initEditorComponents(DataGroupEditor editor) {
         editPanel = new DGEditorPanel(editor);

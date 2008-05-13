@@ -68,7 +68,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
     
     /* collect all available table-representing outputvariables of the given type from the associated queryeditor */
     public Collection getAvailableOutputVariables(VariableType type) {
-        Collection allRes = querier.getEditor().getQuery().getRootClause().getOutputVariablesAvailableForImport();
+        Collection allRes = querier.getQueryEditor().getQuery().getRootClause().getOutputVariablesAvailableForImport();
         ArrayList res = new ArrayList();
         Iterator iter = allRes.iterator();
         while (iter.hasNext()) {
@@ -202,7 +202,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
         private void buildObjectLists(List objectListVariables) {
             if (seedsChosen) {
                 try {
-                    Query query = querier.getEditor().getQuery();
+                    Query query = querier.getQueryEditor().getQuery();
                     String queryString = getObjectListSelectClause(objectListVariables)
                     + "\nFROM " + query.getRootClause().acceptFromClause(DatabaseManager.getInstance().getQueryBuilder())
                     + "\nWHERE " + query.getRootClause().acceptWhereClause(DatabaseManager.getInstance().getQueryBuilder());

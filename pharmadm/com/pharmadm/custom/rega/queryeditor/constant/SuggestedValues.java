@@ -35,10 +35,9 @@ public class SuggestedValues implements Serializable {
 	}
 	
 	public ArrayList<SuggestedValuesOption> getSuggestedValues() {
-		ArrayList<SuggestedValuesOption> result = new ArrayList<SuggestedValuesOption>();
+		ArrayList<SuggestedValuesOption>result = new ArrayList<SuggestedValuesOption>();
 		result.addAll(options);
 
-		
 		if (query != null) {
 			try {
 				QueryResult rs = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query);
@@ -51,6 +50,10 @@ public class SuggestedValues implements Serializable {
 			}
     	}
     	return result;
+	}
+	
+	public boolean isEmpty() {
+		return (options.isEmpty() && query == null);
 	}
 	
 	public void setMandatory(Boolean mandatory) {

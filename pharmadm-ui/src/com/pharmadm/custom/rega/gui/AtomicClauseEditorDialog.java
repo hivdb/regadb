@@ -13,6 +13,8 @@
 package com.pharmadm.custom.rega.gui;
 
 
+import com.pharmadm.custom.rega.gui.awceditor.AWCEditorPanel;
+import com.pharmadm.custom.rega.gui.awceditor.AWCSelectorPanel;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 
 /**
@@ -49,9 +51,7 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
 
         setTitle("Edit Query Component");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {}
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
@@ -80,10 +80,6 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
         pack();
     }//GEN-END:initComponents
     
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        editPanel.freeResources();
-    }//GEN-LAST:event_formWindowClosed
-    
     private void initEditorComponents(AWCSelectorPanel panel) {
         editPanel = panel;
         editPanel.getRadioButtons().get(0).setVisible(false);
@@ -94,7 +90,6 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
     
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // Add your handling code here:
-    	editPanel.freeResources();
         setVisible(false);
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
@@ -104,7 +99,6 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
 		AWCEditorPanel selectedEditPanel = editPanel.getSelectedClause();
 		selectedEditPanel.applyEditings();
 		selectedClause = selectedEditPanel.getClause();
-        editPanel.freeResources();
         setVisible(false);
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed

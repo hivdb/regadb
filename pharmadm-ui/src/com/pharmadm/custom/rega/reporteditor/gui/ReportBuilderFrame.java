@@ -25,6 +25,7 @@ import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.gui.BusyTableModel;
 import com.pharmadm.custom.rega.gui.FileExtensionFilter;
 import com.pharmadm.custom.rega.gui.JTableExporter;
+import com.pharmadm.custom.rega.gui.configurers.JVisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.gui.*;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
@@ -756,7 +757,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     
     
     private void linkToQuery(ReportFormat reportFormat) {
-        reportFormat.setUniqueNameContext(master.getEditorModel().getEditor().getQuery().getUniqueNameContext());
+        reportFormat.setUniqueNameContext(master.getEditorModel().getQueryEditor().getQuery().getUniqueNameContext());
     }
     
     private void showListPopupMenu(Point p) {
@@ -802,7 +803,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
     private void editDataGroup(DataGroup currentGroup) {
         DataGroupEditor groupEditor = new DataGroupEditor();
         groupEditor.setDataGroup(currentGroup);
-        groupEditor.setVisualizationComponentFactory(new VisualizationComponentFactory(groupEditor, seedController));
+        groupEditor.setVisualizationComponentFactory(new JVisualizationComponentFactory(groupEditor, seedController));
         new DataGroupEditorDialog(this, groupEditor , true).show();
     }
     
@@ -954,7 +955,7 @@ public class ReportBuilderFrame extends javax.swing.JFrame {
                         return;
                     }
                 }
-                Iterator prepWorksIter = seedController.getQuerier().getEditor().getQuery().getPreparationWorks().iterator();
+                Iterator prepWorksIter = seedController.getQuerier().getQueryEditor().getQuery().getPreparationWorks().iterator();
                 if (prepWorksIter.hasNext()) {
                     final String regularText = runButton.getText();
                     SwingUtilities.invokeLater(new Runnable() {

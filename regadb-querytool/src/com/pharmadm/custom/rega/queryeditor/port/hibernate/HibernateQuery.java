@@ -33,18 +33,18 @@ public class HibernateQuery extends SqlQuery {
                 } 
                 
                 String extraFromClause = child.acceptFromClause(this);
+                if (clause.getChildCount() > 1) sb.append("(");
                 if (extraFromClause != null && (extraFromClause.length() > 0)) {
-                    sb.append("(EXISTS (SELECT 1 FROM ");
+                    sb.append("EXISTS (SELECT 1 FROM ");
                     sb.append(extraFromClause);
                     sb.append(" WHERE (");
                     sb.append(extraWhereClause);
-                    sb.append(")))");
+                    sb.append("))");
                 }
                 else {
-                    sb.append("(");
                     sb.append(extraWhereClause);
-                    sb.append(")");
                 }
+                if (clause.getChildCount() > 1) sb.append(")");
             }
         }
         return sb.toString();
@@ -55,24 +55,27 @@ public class HibernateQuery extends SqlQuery {
         if (iterChildren.hasNext()) {
             WhereClause child = iterChildren.next();
             String extraWhereClause = child.acceptWhereClause(this);
-            StringBuffer sb = new StringBuffer(" NOT ");
             String childFromClause = child.acceptFromClause(this);
             if (childFromClause != null && (childFromClause.length() > 0)) {
+	            StringBuffer sb = new StringBuffer(" NOT ");
                 sb.append("EXISTS (SELECT 1 FROM ");
             	sb.append(childFromClause);
-                sb.append(" WHERE (");
-                sb.append(child.acceptWhereClause(this));
-                sb.append("))");
-            }
-            else {
-                sb.append("(");
-                sb.append(extraWhereClause);
+                if (extraWhereClause != null && extraWhereClause.length() > 0) {
+	                sb.append(" WHERE ");
+	                sb.append(child.acceptWhereClause(this));
+            	}
                 sb.append(")");
+                return sb.toString();
             }
-            return sb.toString();
-        } else {
-            return "1=1";  // always true
+            else if (extraWhereClause != null && extraWhereClause.length() > 0) {
+	            StringBuffer sb = new StringBuffer(" NOT ");
+//                sb.append("(");
+                sb.append(extraWhereClause);
+//                sb.append(")");
+	            return sb.toString();
+            }
         }
+        return "1=1";  // always true
 	}
 
 }

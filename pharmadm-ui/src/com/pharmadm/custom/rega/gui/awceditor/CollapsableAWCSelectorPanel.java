@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -107,11 +107,4 @@ public class CollapsableAWCSelectorPanel extends AWCSelectorPanel{
     	}
     	return buttons;
     }
-
-	@Override
-	public void freeResources() {
-    	for (AWCSelectorPanel panel : selectorPanels) {
-    		panel.freeResources();
-    	}
-	}
 }

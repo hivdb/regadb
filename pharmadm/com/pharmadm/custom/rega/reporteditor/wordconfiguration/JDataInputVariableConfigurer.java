@@ -15,7 +15,7 @@ package com.pharmadm.custom.rega.reporteditor.wordconfiguration;
 import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 import com.pharmadm.custom.rega.reporteditor.DataInputVariable;
 import com.pharmadm.custom.rega.reporteditor.DataInputVariableController;
 import com.pharmadm.custom.rega.reporteditor.DataOutputVariable;
@@ -66,10 +66,6 @@ public class JDataInputVariableConfigurer extends javax.swing.JComboBox implemen
     public void configureWord() {
         controller.assignOutputVariable(var, (DataOutputVariable)getSelectedItem());
     }    
-     
-    public void freeResources() {
-        // this class uses no database resources
-    }
 
 	public void add(List<WordConfigurer> words) {
 	}

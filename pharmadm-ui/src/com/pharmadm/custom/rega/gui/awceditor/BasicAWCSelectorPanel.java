@@ -10,7 +10,7 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -26,7 +26,7 @@ import javax.swing.JRadioButton;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
 
 /**
  * A basic AWC Selector panel can hold only one AWC and no subpanels
@@ -42,11 +42,11 @@ public class BasicAWCSelectorPanel extends AWCSelectorPanel {
     public BasicAWCSelectorPanel(QueryContext context, AtomicWhereClause clause) {
 		this.radioButton = new JRadioButton();
 		this.context = context;
-		this.editPanel = new AWCEditorPanel(new AtomicWhereClauseEditor(context, clause));
+		this.editPanel = new AWCEditorPanel(new JAtomicWhereClauseEditor(context, clause));
 		initMoreComponents();
     }
     
-    protected AWCEditorPanel getEditorPanel() {
+    protected ComposedAWCEditorPanel getEditorPanel() {
         return editPanel;
     }
 
@@ -77,11 +77,6 @@ public class BasicAWCSelectorPanel extends AWCSelectorPanel {
     public boolean isSelected() {
         return radioButton.isSelected();
     }
-    
-	@Override
-    public void freeResources() {
-        editPanel.freeResources();
-    }	
     
 	/**
 	 * can not add additional clauses to this panel

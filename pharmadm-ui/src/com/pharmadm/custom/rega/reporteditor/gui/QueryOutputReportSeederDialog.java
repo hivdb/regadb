@@ -18,7 +18,7 @@ import java.util.*;
 import javax.swing.*;
 
 import com.pharmadm.custom.rega.reporteditor.*;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
+import com.pharmadm.custom.rega.gui.configurers.JVisualizationComponentFactory;
 
 /**
  *

@@ -1,12 +1,12 @@
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 import java.util.List;
 
+import com.pharmadm.custom.rega.gui.configurers.JComposedVisualizationComponentFactory;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
 
 /**
@@ -16,7 +16,7 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationCompo
  */
 public class ComposedAWCSelectorPanel extends BasicAWCSelectorPanel{
 
-    private WordConfigurer composedWordConfigurer;
+    private ComposedWordConfigurer composedWordConfigurer;
 	
 	public ComposedAWCSelectorPanel(QueryContext context, AtomicWhereClause clause) {
 		super(context, clause);
@@ -36,12 +36,12 @@ public class ComposedAWCSelectorPanel extends BasicAWCSelectorPanel{
 			VisualizationComponentFactory factory = editPanel.getEditor().getVisualizationComponentFactory();
 			if (composedWordConfigurer == null) {
 				List<ConfigurableWord> words = clause1.getCompositionBehaviour().getComposableWords(clause1);
-				composedWordConfigurer = clause1.getCompositionBehaviour().getWordConfigurer(factory.createComponents(words));
+				composedWordConfigurer = new JComposedVisualizationComponentFactory().createWord(clause1.getCompositionBehaviour(), factory.createComponents(words));
 				getEditorPanel().createComposedWord(words, composedWordConfigurer);
 			}
 
 			List<ConfigurableWord> words2 = clause2.getCompositionBehaviour().getComposableWords(clause2);
-			getEditorPanel().composeWord(factory.createComponents(words2), new AtomicWhereClauseEditor(context, clause2));
+			getEditorPanel().composeWord(factory.createComponents(words2), new JAtomicWhereClauseEditor(context, clause2));
 			return true;
 		}
 		return false;

@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
+package com.pharmadm.custom.rega.gui.configurers;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -8,7 +8,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  * Wrapper for a list of configurers
@@ -28,26 +28,10 @@ public class JCombinedConfigurer extends JPanel implements WordConfigurer{
 		}
 	}
 
-	/**
-	 * not a composed configurer. does nothing
-	 */
-	public void add(List<WordConfigurer> words) {
-	}
-
 	public void configureWord() {
 		for (WordConfigurer confy : words) {
 			confy.configureWord();
 		}
-	}
-
-	public void freeResources() {
-		for (WordConfigurer confy : words) {
-			confy.freeResources();
-		}
-	}
-
-	public int getSelectedIndex() {
-		return 0;
 	}
 
 	public ConfigurableWord getWord() {

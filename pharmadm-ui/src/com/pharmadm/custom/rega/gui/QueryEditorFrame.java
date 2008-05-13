@@ -23,6 +23,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
+import com.pharmadm.custom.rega.gui.awceditor.ComposedAWCSelectorPanel;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionException;
@@ -178,7 +179,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private boolean isOkToLooseQuery() {
         boolean okToLooseQuery = false;
-        okToLooseQuery = okToLooseQuery || (editorModel.getEditor().getRootClause().getChildCount() == 0);
+        okToLooseQuery = okToLooseQuery || (editorModel.getQueryEditor().getRootClause().getChildCount() == 0);
         okToLooseQuery = okToLooseQuery || (!editorModel.isDirty());
         okToLooseQuery = okToLooseQuery || (JOptionPane.showConfirmDialog(this, "Warning : your current query will be lost. Proceed anyway?", "Are you sure ?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
         return okToLooseQuery;
@@ -755,7 +756,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     }
     
     private Query getQueryAndInformUserOnError() {
-        Query query = editorModel.getEditor().getQuery();
+        Query query = editorModel.getQueryEditor().getQuery();
         if (!query.isValid()) {
             JOptionPane.showMessageDialog(this, "The query is not valid.\nPlease assign a valid value to all parameters.", "Invalid query", JOptionPane.INFORMATION_MESSAGE);
             return null;
@@ -1020,7 +1021,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         queryTree.setCellRenderer(new QueryTreeCellRenderer());
         
         List<WhereClauseTreeNode> selection = new ArrayList<WhereClauseTreeNode>();
-        selection.add(new WhereClauseTreeNode(editorModel.getEditor().getRootClause()));
+        selection.add(new WhereClauseTreeNode(editorModel.getQueryEditor().getRootClause()));
         updateEditMode(selection);
         editorModel.addTreeModelListener(new MyTreeModelListener());
         installSelectPanel();
@@ -1212,7 +1213,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         boolean okToLooseData = false;
-        okToLooseData = okToLooseData || (editorModel.getEditor().getRootClause().getChildCount() == 0);
+        okToLooseData = okToLooseData || (editorModel.getQueryEditor().getRootClause().getChildCount() == 0);
         okToLooseData = okToLooseData || (!editorModel.isDirty());
         if (!okToLooseData) {
             final String optionDiscard = "Discard";

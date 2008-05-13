@@ -44,6 +44,10 @@ public class DateConstant extends Constant implements Serializable{
         super.setValue(new java.sql.Date(new Date().getTime()));
     }
     
+    public Object getHumanValue() {
+    	return getValue();
+    }
+    
     public DateConstant(String dateString) {
         Date date;
         try {
@@ -70,5 +74,4 @@ public class DateConstant extends Constant implements Serializable{
 	public String getValueTypeString() {
 		return "Date";
 	}
-    
 }

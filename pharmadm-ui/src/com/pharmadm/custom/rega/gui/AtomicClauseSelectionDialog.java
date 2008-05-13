@@ -16,6 +16,9 @@ import java.awt.Dimension;
 import java.util.*;
 import javax.swing.*;
 
+import com.pharmadm.custom.rega.gui.awceditor.AWCEditorPanel;
+import com.pharmadm.custom.rega.gui.awceditor.AWCSelectorPanel;
+import com.pharmadm.custom.rega.gui.awceditor.CollapsablePanelAWCSelectorPanel;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 
@@ -49,9 +52,8 @@ public class AtomicClauseSelectionDialog extends JDialog {
 
         setTitle("Select Query Component to Add");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {}
+
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
@@ -81,10 +83,6 @@ public class AtomicClauseSelectionDialog extends JDialog {
         setPreferredSize(new Dimension(640,560));
         pack();
     }//GEN-END:initComponents
-    
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        freeResources();
-    }//GEN-LAST:event_formWindowClosed
     
     private void initListComponents(Collection<AtomicWhereClause> clauseList) {
         for (AtomicWhereClause clause : clauseList) {
@@ -129,12 +127,7 @@ public class AtomicClauseSelectionDialog extends JDialog {
         }
     }
     
-    private void freeResources() {
-    	selectorPanel.freeResources();
-    }
-    
     private void cancelSelection() {
-    	selectorPanel.freeResources();
         selectedClause = null;
     }
     

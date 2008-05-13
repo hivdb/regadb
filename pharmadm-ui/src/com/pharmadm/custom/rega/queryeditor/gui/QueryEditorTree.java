@@ -12,12 +12,10 @@
 package com.pharmadm.custom.rega.queryeditor.gui;
 
 import java.beans.DefaultPersistenceDelegate;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.List;
@@ -44,7 +42,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
         this.editor = new QueryEditor(query, this);
     }
     
-    public QueryEditor getEditor() {
+    public QueryEditor getQueryEditor() {
     	return editor;
     }
     
@@ -52,7 +50,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
         setRoot(new WhereClauseTreeNode(query.getRootClause()));
         Object[] rootPath = {getRoot()};
         fireTreeStructureChanged(this, rootPath, null, null);
-        getEditor().setQuery(query);
+        getQueryEditor().setQuery(query);
     }
     
     ///////////////////////////////////////
@@ -96,7 +94,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     public void addChild(WhereClause parent, WhereClause child) throws IllegalWhereClauseCompositionException {
         WhereClauseTreeNode parentNode = getNode(parent);
         insertNodeInto(new WhereClauseTreeNode(child), parentNode, parentNode.getChildCount());
-        getEditor().addChild(parent, child);
+        getQueryEditor().addChild(parent, child);
     }
     
     /**
@@ -118,7 +116,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
         if (childNode != null) {
         	removeNodeFromParent(childNode);
         }
-        getEditor().removeChild(parent, child);
+        getQueryEditor().removeChild(parent, child);
     }
     
     public void replaceChild(WhereClause parent, WhereClause oldChild, WhereClause newChild) throws IllegalWhereClauseCompositionException  {
@@ -127,7 +125,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
         int i = getIndexOfChild(parentNode, childNode);
         removeNodeFromParent(childNode);
         insertNodeInto(new WhereClauseTreeNode(newChild), parentNode, i);
-        getEditor().replaceChild(parent, oldChild, newChild);
+        getQueryEditor().replaceChild(parent, oldChild, newChild);
     }
     
     
@@ -250,7 +248,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
      */
     public void createNewQuery() {
         setQuery(new Query());
-        getEditor().setDirty(false);
+        getQueryEditor().setDirty(false);
     }
     
     /* baseTable concept probably not needed
@@ -341,18 +339,18 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     
     public WhereClause loadSubquery(File file) throws java.io.FileNotFoundException {
         WhereClause clause = (WhereClause)loadObject(file);
-        getEditor().getQuery().getUniqueNameContext().assignUniqueNamesToAll(clause);
+        getQueryEditor().getQuery().getUniqueNameContext().assignUniqueNamesToAll(clause);
         return clause;
     }
     
     public void saveXMLQuery(File file) throws java.io.FileNotFoundException {
-    	saveObject(getEditor().getQuery(), file);
-        getEditor().setDirty(false);
+    	saveObject(getQueryEditor().getQuery(), file);
+        getQueryEditor().setDirty(false);
     }
     
     public void loadXMLQuery(File file) throws java.io.FileNotFoundException {
     	setQuery((Query) loadObject(file));
-        getEditor().setDirty(false);
+        getQueryEditor().setDirty(false);
     }	 
     
     public void load(File file) throws IOException {
@@ -364,11 +362,11 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     }
 
 	public void addDirtinessListener(DirtinessListener listener) {
-		getEditor().addDirtinessListener(listener);
+		getQueryEditor().addDirtinessListener(listener);
 	}
 
 	public boolean isDirty() {
-		return getEditor().isDirty();
+		return getQueryEditor().isDirty();
 	}
 }
 

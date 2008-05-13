@@ -16,8 +16,6 @@ import java.text.Format;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.AWCWord;
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
@@ -82,7 +80,6 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
 
     
     public Constant() {
-    	
     }
     
     /**
@@ -143,13 +140,24 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         }
     }
     
+    public Object getHumanValue() {
+    	return (getValue() == null ?"":getValue());
+    }
+    
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
     
     /* Implementing ValueSpecifier */
     public ValueSpecifier cloneInContext(java.util.Map originalToCloneMap) throws CloneNotSupportedException {
-        return (ValueSpecifier)originalToCloneMap.get(this);
+    	Constant clone = (Constant) originalToCloneMap.get(this);
+        if (clone == null) {
+        	clone = (Constant) this.clone();
+        	clone.value = value;
+        	clone.suggestedValues = suggestedValues;
+        	clone.valueChangeListeners = valueChangeListeners;
+        }
+        return (ValueSpecifier) clone;
     }
     
     public ArrayList<SuggestedValuesOption> getSuggestedValuesList() {

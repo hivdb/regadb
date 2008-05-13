@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -60,13 +60,6 @@ public class CollapsablePanelAWCSelectorPanel extends AWCSelectorPanel{
         gridBagConstraints.weightx = 1;
         gridBagConstraints.weighty = 1;
         add(panel ,gridBagConstraints);
-	}
-
-	@Override
-	public void freeResources() {
-		for (AWCSelectorPanel panel : panels.values()) {
-			panel.freeResources();
-		}
 	}
 
 	@Override

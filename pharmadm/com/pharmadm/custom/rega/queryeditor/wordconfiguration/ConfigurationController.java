@@ -14,6 +14,8 @@ package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
 import java.util.List;
 
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+
 /**
  *
  * @author  kristof
@@ -21,6 +23,6 @@ import java.util.List;
 public interface ConfigurationController {
  
     public VisualizationComponentFactory getVisualizationComponentFactory();
-    public List getVisualizationList(); 
+    public List<ConfigurableWord> getVisualizationList(); 
  
 }

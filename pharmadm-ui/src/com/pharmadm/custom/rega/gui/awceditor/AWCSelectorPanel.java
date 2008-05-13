@@ -1,4 +1,4 @@
-package com.pharmadm.custom.rega.gui;
+package com.pharmadm.custom.rega.gui.awceditor;
 
 import java.util.List;
 import javax.swing.JPanel;
@@ -6,6 +6,12 @@ import javax.swing.JRadioButton;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 
+/**
+ * Panel containing one or more {@link AWCEditorPanel}s and/or other AWCSelectorPanels
+ * providing the means to select one of the {@link AWCEditorPanel}s
+ * @author fromba0
+ *
+ */
 public abstract class AWCSelectorPanel extends JPanel {
     public AWCSelectorPanel() {}
     
@@ -22,11 +28,6 @@ public abstract class AWCSelectorPanel extends JPanel {
      */
     public abstract boolean isSelected();
     
-    /**
-     * release all db resources used by this selector panel
-     */
-    public abstract void freeResources();
-
     /**
      * adds the given atomic where clause to this selector panel
      * @param clause

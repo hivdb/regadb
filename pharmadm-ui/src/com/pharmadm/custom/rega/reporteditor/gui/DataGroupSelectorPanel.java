@@ -92,10 +92,6 @@ public class DataGroupSelectorPanel extends javax.swing.JPanel {
         return radioButton;
     }
     
-    public void freeResources() {
-        getEditorPanel().freeResources();
-    }
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     private DGEditorPanel editPanel;

@@ -17,7 +17,7 @@ import java.util.List;
 import com.pharmadm.custom.rega.reporteditor.*;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.WordConfigurer;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -51,10 +51,7 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
     public void configureWord() {
         controller.assign(var, (OutputVariable)getSelectedItem());        
     }
-    
-    public void freeResources() {
-        // this class uses no database resources
-    }
+
 
 	public void add(List<WordConfigurer> words) {
 	}

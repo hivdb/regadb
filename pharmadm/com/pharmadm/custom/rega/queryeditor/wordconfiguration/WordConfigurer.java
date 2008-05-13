@@ -10,9 +10,11 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor;
+package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
 import java.util.List;
+
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 
 
 /**
@@ -37,24 +39,6 @@ public interface WordConfigurer {
     public void configureWord();
     
     /**
-     * Frees any open database resources.
-     */
-    public void freeResources();
-    
-    /**
-     * adds the given words to this configurer
-     * @param words
-     */
-    public void add(List<WordConfigurer> words);
-    
-    /**
-     * gets the index of the selected word
-     * @return
-     */
-    public int getSelectedIndex();
-    
-    /**
      * assign this configurer to a different configuration controller
      */
-    public void reAssign(Object o);
-}
+    public void reAssign(Object o);}

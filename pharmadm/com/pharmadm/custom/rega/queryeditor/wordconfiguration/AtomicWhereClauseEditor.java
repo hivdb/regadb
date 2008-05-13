@@ -1,19 +1,10 @@
-
-/** Java class "AtomicWhereClauseEditor.java" generated from Poseidon for UML.
- *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
- *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
- */
-/*
- * (C) Copyright 2000-2007 PharmaDM n.v. All rights reserved.
- * 
- * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
- * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
- */
 package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import com.pharmadm.custom.rega.queryeditor.AWCWord;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
@@ -27,7 +18,9 @@ import com.pharmadm.custom.rega.queryeditor.constant.Constant;
  * The controller ('Controller' pattern) for editing an AtomicWhereClause.
  *
  */
-public class AtomicWhereClauseEditor implements ConfigurationController, ConstantController, InputVariableController {
+public abstract class AtomicWhereClauseEditor implements
+		ConfigurationController, ConstantController, InputVariableController {
+
     
     ///////////////////////////////////////
     // associations
@@ -37,7 +30,6 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
     private VisualizationComponentFactory visualizationComponentFactory;
     
     public AtomicWhereClauseEditor(QueryContext context, AtomicWhereClause clause) {
-    	visualizationComponentFactory = new VisualizationComponentFactory(this);
     	this.context = context;
     	atomicWhereClause = clause;
     }
@@ -153,7 +145,7 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * </p>
      */
     public String getConstantValueString(Constant cst) {
-        return cst.getHumanStringValue();
+        return cst.getHumanStringValue().toString();
     } // end getConstantValueString
     
     /**
@@ -213,20 +205,14 @@ public class AtomicWhereClauseEditor implements ConfigurationController, Constan
      * @return a List with all AWCWords needed for visualization
      * </p>
      */
-    public List<AWCWord> getVisualizationList() {
-    	
-    	List<AWCWord> words = new ArrayList<AWCWord>();
-    	List<ConfigurableWord> confWords = getAtomicWhereClause().getVisualizationClauseList().getWords();
-    	for (ConfigurableWord word : confWords) {
-    		words.add((AWCWord) word);
-    	}
-        return words;
+    public List<ConfigurableWord> getVisualizationList() {
+    	return  getAtomicWhereClause().getVisualizationClauseList().getWords();
     } // end getVisualizationList
     
     private void notifyQueryEditorDirty() {
     	QueryEditorComponent editor = getQueryEditor();
         if (editor != null) {
-            editor.getEditor().setDirty(true);
+            editor.getQueryEditor().setDirty(true);
         }
-    }
+    }	
 }

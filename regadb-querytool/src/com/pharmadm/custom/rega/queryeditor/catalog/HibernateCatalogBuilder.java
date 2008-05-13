@@ -1524,6 +1524,25 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 //        addAtomicWhereClause(aClause);
 //        return aClause;
 //    }
+    
+    private AtomicWhereClause addMutationClause() {
+        AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(catalog.getObjectDescription("net.sf.regadb.db.AaSequence"));
+      
+        InputVariable ivar1 = new InputVariable(new VariableType("net.sf.regadb.db.AaSequence"));
+        Constant constant = new MutationConstant(ivar1);
+
+        aVisList.addInputVariable(ivar1);
+        aVisList.addFixedString(new FixedString("has mutation combination"));
+        aVisList.addConstant(constant);
+      
+        aComposer.addConstant(constant);
+
+        catalog. addAtomicWhereClause(aClause);
+        return aClause;
+    }
 	
     /**
      * set all variable names, table descriptions and table aliases
@@ -1787,6 +1806,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // amino acid sequence
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "firstAaPos",  false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "lastAaPos", false);
+        addMutationClause();
         
         // link aa sequence - patient
         addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);

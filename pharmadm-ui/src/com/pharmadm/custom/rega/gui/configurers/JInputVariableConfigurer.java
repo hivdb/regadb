@@ -10,11 +10,11 @@
  * This file is licensed under the terms of the GNU General Public License (GPL) version 2.
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
-package com.pharmadm.custom.rega.queryeditor.wordconfiguration;
-
-import java.util.List;
+package com.pharmadm.custom.rega.gui.configurers;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.InputVariableController;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 /**
  *
@@ -49,13 +49,6 @@ public class JInputVariableConfigurer extends javax.swing.JComboBox implements W
     public void configureWord() {
         this.controller.assignOutputVariable(var, (OutputVariable)getSelectedItem());
     }    
-     
-    public void freeResources() {
-        // this class uses no database resources
-    }
-
-	public void add(List<WordConfigurer> words) {
-	}
 
 	public void reAssign(Object o) {
 		JInputVariableConfigurer confy = (JInputVariableConfigurer) o;

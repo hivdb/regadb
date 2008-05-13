@@ -25,7 +25,9 @@ public class DoubleConstant extends Constant implements Serializable{
     
 	private static final Format DOUBLE_FORMAT = new DecimalFormat();
     
-	public DoubleConstant(){}
+	public DoubleConstant(){
+    	setValue(0);
+	}
 	
 	public DoubleConstant(SuggestedValues suggestedValues) {
 		super(suggestedValues);
@@ -43,5 +45,9 @@ public class DoubleConstant extends Constant implements Serializable{
 	public String getValueTypeString() {
 		return "Numeric";
 	}
-    
+	
+	public Object getHumanValue() {
+		return 0;
+	}
+	
 }
