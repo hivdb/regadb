@@ -84,38 +84,7 @@ public class ImportSequences {
             } else {
                     Date gtDate = Utils.parseBresciaSeqDate(sampleDate);
 
-                    Set<Integer> errorRows = new HashSet<Integer>();
-                    //really problematic
-                    //errorRows.add(598);
-                    //errorRows.add(599);
-                    
-                    errorRows.add(169);
-                    errorRows.add(199);
-                    errorRows.add(316);
-                    errorRows.add(355);
-                    errorRows.add(417);
-                    errorRows.add(477);
-                    errorRows.add(593);
-                    
-                    errorRows.add(689);
-                    errorRows.add(874);
-                    errorRows.add(903);
-                    errorRows.add(1019);
-                    errorRows.add(1215);
-                    errorRows.add(1391);
-                    errorRows.add(1601);
-                    errorRows.add(1697);
-                    errorRows.add(1699);
-                    errorRows.add(1775);
-                    errorRows.add(2109);
-                    errorRows.add(2129);
-                    errorRows.add(2365);
-                    errorRows.add(2757);
-                    errorRows.add(3044);
-                    errorRows.add(3045);
-                    errorRows.add(3110);
-
-                    if(!"".equals(seq) && errorRows.contains(i)) {
+                    if(!"".equals(seq)) {
                         if (gtDate != null) {
                             ViralIsolate vi = p.createViralIsolate();
                             vi.setSampleDate(gtDate);
@@ -124,9 +93,9 @@ public class ImportSequences {
                             
                             NtSequence ntseq = new NtSequence();
                             ntseq.setLabel("Sequence 1");
-                            ntseq.setNucleotides(parseNucleotides(seq, patientId));
+                            ntseq.setNucleotides(parseNucleotides(seq, patientId, true));
                             vi.getNtSequences().add(ntseq);
-                            
+
                             List<AaSequence> aaseqs = null;
                             try {
                                 aaseqs = aligner_.alignHiv(ntseq);
@@ -136,31 +105,35 @@ public class ImportSequences {
                             if(aaseqs!=null) {
                                 if(aaseqs.size()==0) {
                                     System.err.println("ALIGN: ERROR align (no results) row" + i);
-                                    System.err.println("ALIGN: nucleotides -> " + seq);
+                                    System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
                                 } else {
                                     System.err.print("ALIGN: Row " + i + " -> ");
                                     for(AaSequence aaseq : aaseqs) {
                                         System.err.print(aaseq.getProtein().getAbbreviation() + " ");
                                     }
                                     System.err.println();
+                                    if(aaseqs.size()<2) {
+                                        System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
+                                    }
                                 }
                             } else {
                                 System.err.println("ALIGN: ERROR align row " + i);
+                                System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
                             }
                         } else {
-                            ConsoleLogger.getInstance().logWarning(
+                            ConsoleLogger.getInstance().logError(
                                     "Invalid date specified in the viral isolate file ("
                                             + i + " -> " + sampleDate + ").");
                         }
                     } else {
-                        emptyCounter++;
+                        ConsoleLogger.getInstance().logError("Empty seq");
                     }
                 }
             }
         
         System.err.println("EmptyCounter=" + emptyCounter);
     }
-    
+
     public int indexOf(String colName, Sheet s) {
         for(Cell c : s.getRow(0)) {
             if(colName.equals(c.getContents())) {
@@ -170,7 +143,7 @@ public class ImportSequences {
         return -1;
     }
     
-    private String parseNucleotides(String nucleotides, String patientID)
+    private String parseNucleotides(String nucleotides, String patientID, boolean cleanNts)
     {
         int index = -1;
         
@@ -182,7 +155,10 @@ public class ImportSequences {
         
         if(index != -1) {
             String tempSeq = nucleotides.substring(index+2, nucleotides.length());      
-            nucleotides = Utils.clearNucleotides(tempSeq);
+            if(cleanNts)
+                nucleotides = Utils.clearNucleotides(tempSeq);
+            else
+                nucleotides = tempSeq;
         }
         else {
             ConsoleLogger.getInstance().logWarning("Could not determine sequence for patient "+patientID+" from string "+nucleotides);
@@ -193,7 +169,7 @@ public class ImportSequences {
     
     public static void main(String [] args) {
         ImportSequences is = new ImportSequences(new HashMap<String, Patient>(), 
-                new File("/home/plibin0/import/brescia/seqs.xls"));
+                new File(args[0]));
         is.run();
     }
 }
