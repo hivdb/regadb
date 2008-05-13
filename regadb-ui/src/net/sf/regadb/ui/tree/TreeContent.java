@@ -84,6 +84,7 @@ import net.sf.regadb.ui.tree.items.query.QueryItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.ui.tree.items.singlePatient.MeasurementSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientAddItem;
+import net.sf.regadb.ui.tree.items.singlePatient.PatientEventAdd;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientEventSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
@@ -476,12 +477,13 @@ public class TreeContent
     			        	}
     			        });
     	                
-    	                patientEventAdd = new ActionItem(WResource.tr("menu.singlePatient.event.add"), patientEvent, new ITreeAction()
-    	                {
-    						public void performAction(TreeMenuNode node) {
-    							RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Adding, WWidget.tr("menu.singlePatient.event.add"), null));
-    						}
-    	                });
+    	                PatientEventAdd patientEventAdd2 = new PatientEventAdd(patientEvent);
+//    	                patientEventAdd = new ActionItem(WResource.tr("menu.singlePatient.event.add"), patientEvent, new ITreeAction()
+//    	                {
+//    						public void performAction(TreeMenuNode node) {
+//    							RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Adding, WWidget.tr("menu.singlePatient.event.add"), null));
+//    						}
+//    	                });
     	                
     	                patientEventSelected = new PatientEventSelectedItem(patientEvent);
     	                
