@@ -512,21 +512,19 @@
 
 /* configurers */
 
+.querytoolform .constantconfigurer, .querytoolform .constantchoiceconfigurer,
+	 .querytoolform .inputvariableconfigurer, .querytoolform .composedoutputvariableconfigurer,
+	 .querytoolform .fixedstringconfigurer, .querytoolform .outputvariableconfigurer,
+	 .querytoolform .fromvariableconfigurer {
+	margin:0px 0.3em 0px 0px;
+}
+
 .querytoolform .constantconfigurer {
 	width:10em;
-	margin:0px 0.3em;
 }
 
 .querytoolform .constantchoiceconfigurer {
-	margin:0px 0.3em;
 	max-width:12em;
 }
 
-.querytoolform .inputvariableconfigurer {
-	margin:0px 0.3em;
-}
-
-.querytoolform .composedoutputvariableconfigurer {
-	margin:0px 0.3em;
-}
 
