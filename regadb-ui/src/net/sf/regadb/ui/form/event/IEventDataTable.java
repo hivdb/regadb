@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class IEventDataTable implements IDataTable<Event> {
 	private static String [] _colNames = {"dataTable.event.column.name", "dataTable.event.column.valuetype"};
-	private static String[] filterVarNames_ = {"event.name", "event.valuetype"};
+	private static String[] filterVarNames_ = {"event.name", "event.valueType"};
 	private static boolean [] sortable_ = {true, true};
 	
 	private IFilter[] filters_ = new IFilter[2];
