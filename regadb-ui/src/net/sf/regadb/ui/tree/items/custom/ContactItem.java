@@ -22,7 +22,7 @@ public class ContactItem extends ActionItem {
     static {
         contactTests.add(StandardObjects.getGenericCD4Test());
         contactTests.add(StandardObjects.getGenericCD8Test());
-        contactTests.add(StandardObjects.getGenericViralLoadTest());
+        contactTests.add(StandardObjects.getGenericHiv1ViralLoadTest());
     }
     
     public ContactItem(ActionItem root) {
