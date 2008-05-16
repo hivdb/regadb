@@ -177,7 +177,7 @@ public class ParseConfirmation {
             }
             
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
-                setTest(StandardObjects.getGenericViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
+                setTest(StandardObjects.getGenericHiv1ViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
             
             String nation = getValue(i, "NATION", sheet, colMapping);
             	handleWIVCountry("NATION", nation, p);

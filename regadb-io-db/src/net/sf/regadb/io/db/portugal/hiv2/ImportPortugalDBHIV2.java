@@ -539,7 +539,7 @@ public class ImportPortugalDBHIV2
     
     private void putViralLoad(Patient p, String viralLoad, String log, Date date, String sampleId)
     {
-        TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+        TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
         try
         {
             double vl = Double.parseDouble(viralLoad);

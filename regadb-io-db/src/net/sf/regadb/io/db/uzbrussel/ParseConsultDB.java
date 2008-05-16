@@ -239,14 +239,14 @@ public class ParseConsultDB {
             String val = parseViralLoad(value);
             if(val==null)
             	return null;
-            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+            TestResult tr = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
             tr.setValue(val);
             return tr;
         } else if(type.equals("VLLOGlog10") || type.equals("H2VLLlog10") || type.equals("VLLOG") || type.equals("H2VLL")) {
             String val = parseViralLoad(value);
             if(val==null)
             	return null;
-            TestResult tr = p.createTestResult(StandardObjects.getGenericViralLoadLog10Test());
+            TestResult tr = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadLog10Test());
             tr.setValue(val);
             return tr;
         } else if(type.equals("BHIVC")) {

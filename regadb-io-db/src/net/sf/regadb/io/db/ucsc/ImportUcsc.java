@@ -348,7 +348,7 @@ public class ImportUcsc
     		//CD4
     		if(method.equals("CD4 (?L)"))
     		{
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (µL)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (ï¿½L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(result.replace(',', '.'));
@@ -368,7 +368,7 @@ public class ImportUcsc
     		//CD8
     		if(method.equals("CD8 (?L)"))
     		{
-	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (µL)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (ï¿½L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
 	                TestResult t = p.createTestResult(cd8Test);
 	                t.setValue(result.replace(',', '.'));
@@ -391,7 +391,7 @@ public class ImportUcsc
 	    		{
 	    			 try
 	    			 {
-			    		 TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+			    		 TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
 
 			    		 String value = null;
 			    		 
