@@ -9,6 +9,7 @@ import net.sf.witty.wt.i8n.WMessage;
 
 public class WhereClauseNode extends QueryTreeNode{
 	
+	
 	public WhereClauseNode(WhereClause clause, QueryEditorGroupBox editor) {
 		super(clause, editor);
 		init();
