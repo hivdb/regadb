@@ -3,13 +3,14 @@ package net.sf.regadb.ui.form.query.querytool.buttons;
 import java.util.ArrayList;
 
 
-import net.sf.regadb.ui.form.query.querytool.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 
 import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
+import com.pharmadm.custom.rega.queryeditor.ComposedWhereClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
@@ -32,12 +33,7 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 		WPushButton addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
 		addClauseButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.addNode();
-//				try {
-//					WhereClause o =  (WhereClause) clauses[clauses.length-1];
-//					node.addNode((WhereClause) o.clone() );
-//				}
-//				catch (CloneNotSupportedException e) {}
+				node.selectNewNode();
 			}
 		});
 		addButton(addClauseButton_);
@@ -67,5 +63,22 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 		});
 		addButton(addNotButton_);
 		
+//		addNotButton_.setEnabled(canAddChild());
+//		addOrButton_.setEnabled(canAddChild());
+//		addAndButton_.setEnabled(canAddChild());
+//		addClauseButton_.setEnabled(canAddChild());
+	}
+	
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		
+		for (WPushButton button : buttons) {
+			button.setEnabled(enabled && canAddChild());
+		}
+		
+	}
+	
+	private boolean canAddChild() {
+		return (!node.getClause().getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog()).isEmpty() && ((ComposedWhereClause) node.getClause()).acceptsAdditionalChild());
 	}
 }

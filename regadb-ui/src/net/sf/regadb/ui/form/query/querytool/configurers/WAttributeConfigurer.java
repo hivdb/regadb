@@ -6,7 +6,6 @@ import java.util.List;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
@@ -16,16 +15,18 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 
 	private WComposedOutputVariableConfigurer ovar;
 	private List<WCombinedConfigurer> constantPanels;
-	private WTable contentTable;
+	private WContainerWidget contentTable;
 	
 	public WAttributeConfigurer(WComposedOutputVariableConfigurer ovar, WCombinedConfigurer constantPanel) {
 		this.ovar = ovar;
+		this.setInline(true);
 		this.constantPanels = new ArrayList<WCombinedConfigurer>();
 		constantPanels.add(constantPanel);
 		
-		contentTable = new WTable(this);
-		contentTable.putElementAt(0,0,ovar);
-		contentTable.putElementAt(0,1, constantPanels.get(ovar.getSelectedIndex()));
+		this.addWidget(ovar);
+		contentTable = new WContainerWidget(this);
+		contentTable.setInline(true);
+		contentTable.addWidget(constantPanels.get(ovar.getSelectedIndex()));
 		
 		ovar.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
@@ -35,8 +36,11 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 	}
 	
 	private void changeSelection() {
-		contentTable.removeCell(0, 1);
-		contentTable.putElementAt(0, 1, constantPanels.get(ovar.getSelectedIndex()));
+		int index = ovar.getSelectedIndex();
+		if (index >= 0 && index < constantPanels.size()) {
+			contentTable.removeWidget(contentTable.children().get(0));
+			contentTable.addWidget(constantPanels.get(index));
+		}
 	}
 	
 	public void add(List<WordConfigurer> words) {
@@ -61,6 +65,10 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 		WAttributeConfigurer confy = (WAttributeConfigurer) o;
 		this.constantPanels = confy.constantPanels;
 		this.ovar = confy.ovar;
+	}
+
+	public void setSelectedIndex(int index) {
+		ovar.setSelectedIndex(index);
 	}
 	
 

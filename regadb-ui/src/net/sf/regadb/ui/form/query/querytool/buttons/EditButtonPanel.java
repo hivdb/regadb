@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import net.sf.regadb.ui.form.query.querytool.QueryEditorGroupBox;
-import net.sf.regadb.ui.form.query.querytool.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorGroupBox;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -46,23 +46,28 @@ public class EditButtonPanel extends ButtonPanel {
 		wrapOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapor"));
 		wrapNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapnot"));
 		
-		
 		copyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				cursorClauses = new ArrayList<WhereClause>();
 				for (QueryTreeNode node : selection) {
 					cursorClauses.add(node.getClause());
 				}
+				update();
 			}
 		});
 		
 		pasteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				WhereClause parentClause = selection.get(0).getClause();
+				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getQueryTree() :selection.get(0));
+				WhereClause parentClause = pasteNode.getClause();
+				if (parentClause.isAtomic()) {
+					pasteNode = pasteNode.getParentNode();
+					parentClause = parentClause.getParent();
+				}
                 try {
 	                for (WhereClause clause : cursorClauses) {
 	                    if (parentClause.acceptsAdditionalChild()) {
-								selection.get(0).addNode((WhereClause) clause.clone());
+								pasteNode.addNode((WhereClause) clause.clone());
 	                    }
 	                }
 				} catch (CloneNotSupportedException e) {
@@ -73,7 +78,10 @@ public class EditButtonPanel extends ButtonPanel {
 		
 		deleteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				selection.get(0).getParentNode().removeAll(selection);
+				for (QueryTreeNode node : selection) {
+					node.getParentNode().removeNode(node);
+				}
+				selection.clear();
 			}
 		});
 		
@@ -87,17 +95,31 @@ public class EditButtonPanel extends ButtonPanel {
 			}
 		});
 		
+		unwrapButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
+			public void notify(WMouseEvent a) {
+				QueryTreeNode parent = selection.get(0).getParentNode();
+				QueryTreeNode gp = parent.getParentNode();
+				for (QueryTreeNode node : selection) {
+					parent.removeNode(node);
+					gp.addNode(node.getClause());
+				}
+			}
+		});
+		
 		addButton(cutButton_);
 		addButton(copyButton_);
 		addButton(pasteButton_);
 		addSeparator();
 		addButton(deleteButton_);
-		addSeparator();
-		addButton(unwrapButton_);
-		addSeparator();
-		addButton(wrapAndButton_);
-		addButton(wrapOrButton_);
-		addButton(wrapNotButton_);
+		
+// not yet implemented
+// WT errors 
+//		addSeparator();
+//		addButton(unwrapButton_);
+//		addSeparator();
+//		addButton(wrapAndButton_);
+//		addButton(wrapOrButton_);
+//		addButton(wrapNotButton_);
 		
 	}
 	
@@ -118,12 +140,12 @@ public class EditButtonPanel extends ButtonPanel {
         unwrapButton_.setEnabled(haveSameParent && firstHasGrandParent() && enabled);
         
         copyButton_.setEnabled(haveSameParent && enabled);
-        cutButton_.setEnabled(haveSameParent && enabled);
-        pasteButton_.setEnabled((! isFirstAtomic()) && (cursorClauses.size() > 0) && selection.size() == 1 && enabled);
-        deleteButton_.setEnabled(!containsRoot && selection.size() > 0 && enabled);		
+        cutButton_.setEnabled(haveSameParent && enabled && selection.size() == 1);
+        pasteButton_.setEnabled(cursorClauses.size() > 0 && selection.size() <= 1 && enabled);
+        deleteButton_.setEnabled(!containsRoot && selection.size() > 0 && enabled && selection.size() == 1);		
 	}
 
-	public void updateSelection() {
+	public void update() {
 		selection = owner.getQueryTree().getSelection();
 		System.err.println(selection.size());
 		checkButtons(enabled);

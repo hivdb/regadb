@@ -9,7 +9,7 @@ import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class ButtonPanel extends WContainerWidget{
-	private List<WPushButton> buttons;
+	protected List<WPushButton> buttons;
 	
 	public enum Style {
 		Flat,
@@ -32,7 +32,16 @@ public class ButtonPanel extends WContainerWidget{
 	}
 	
 	public void addSeparator() {
-		this.addWidget(new WText(new WMessage(" ", true)));
+		WText txt = new WText(new WMessage("", true)); 
+		this.addWidget(txt);
+		txt.setStyleClass("separator");
+	}
+	
+	/**
+	 * update state of the buttons
+	 */
+	public void update() {
+		
 	}
 	
 	public void setEnabled(boolean enabled) {

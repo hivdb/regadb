@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import net.sf.regadb.ui.form.query.querytool.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorPanel;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -30,13 +30,13 @@ public class ModifyClauseButtonPanel extends ButtonPanel {
 			public void notify(WMouseEvent a) {
 				editPanel.getSelectedClause().applyEditings();
 				node.replaceNode(editPanel.getSelectedClause().getClause());
-				node.showRegularContent();
+				node.showContent();
 			}
 		});
 		
 		cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.showRegularContent();
+				node.showContent();
 			}
 		});
 	}

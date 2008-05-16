@@ -73,7 +73,7 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     	table.putElementAt(0, 1, editPanel);
     	editPanel.clicked.addListener(new SignalListener<WMouseEvent>(){
 			public void notify(WMouseEvent a) {
-				radioButton.setChecked(!radioButton.isChecked());
+				radioButton.setChecked(true);
 			}
     	});
     }    

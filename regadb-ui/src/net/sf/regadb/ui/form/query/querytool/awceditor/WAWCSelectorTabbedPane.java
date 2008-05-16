@@ -34,6 +34,7 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
     		}
     		
     		panels.get(group).addAtomicWhereClause(clause);
+            tabs.showTab(0);
         }
         return true;
 	}
@@ -51,6 +52,7 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	private void addSelectorPanel(WAWCSelectorTab panel) {
 		panels.put(panel.getTitle(), panel);
         tabs.addTab(new WMessage(panel.getTitle(), true), panel);
+        tabs.showTab(0);
 	}
 
 	@Override
@@ -77,10 +79,10 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	@Override
 	public boolean isSelected() {
 		boolean selected = false;
-		for (WAWCSelectorPanel panel : panels.values()) {
-			selected = selected || panel.isSelected();
+		if (tabs.getSelectedTab() != null) {
+			WAWCSelectorPanel p = (WAWCSelectorPanel) tabs.getSelectedTab();
+			selected = p.isSelected();
 		}
 		return selected;
 	}
-
 }

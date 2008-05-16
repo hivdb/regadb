@@ -20,7 +20,6 @@ public class WComposedOutputVariableConfigurer extends WComboBox implements Comp
 		setStyleClass("composedoutputvariableconfigurer");
 		vars = new Vector<OutputVariableConfigurer>();
 		addItem((OutputVariableConfigurer) var);
-		vars.add((OutputVariableConfigurer) var);
 	}
 	
 	private void addItem(OutputVariableConfigurer confy) {
@@ -53,5 +52,9 @@ public class WComposedOutputVariableConfigurer extends WComboBox implements Comp
 
 	public int getSelectedIndex() {
 		return currentIndex();
+	}
+
+	public void setSelectedIndex(int index) {
+		setCurrentIndex(index);
 	}
 }

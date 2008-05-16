@@ -30,7 +30,10 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
 	}
 	
 	public void initConfigurers() {
-		this.clear();
+		// clear() does not work
+		while (children().size() > 0) {
+			this.removeWidget(children().get(0));
+		}
 		
 		for (WordConfigurer confy : configurers) {
             try {
@@ -59,8 +62,8 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
     	editor.createComposedWord(words, configurer);
     }
     
-    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor) {
-    	this.editor.composeWord(additions, editor);
+    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
+    	this.editor.composeWord(additions, editor, makeSelected);
     }
 
 	public List<WordConfigurer> getConfigurers() {

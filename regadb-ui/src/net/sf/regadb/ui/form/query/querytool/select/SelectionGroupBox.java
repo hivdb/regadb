@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.select;
 
 import java.util.List;
 
@@ -39,7 +39,9 @@ public class SelectionGroupBox extends WGroupBox{
 	}
 	
 	private void updateSelection() {
-		rootSelectorPanel.clear();
+		while(rootSelectorPanel.children().size() > 0) {
+			rootSelectorPanel.removeWidget(rootSelectorPanel.children().get(0));
+		}
 		
 		List<Selection> selections = editor.getQuery().getSelectList().getSelections();
 		for (Selection selection : selections) {

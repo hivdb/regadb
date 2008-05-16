@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import net.sf.regadb.ui.form.query.querytool.QueryTreeNode;
-import net.sf.regadb.ui.form.query.querytool.SelectClauseDialog;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCEditorPanel;
+import net.sf.regadb.ui.form.query.querytool.dialog.SelectClauseDialog;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -28,19 +28,31 @@ public class SelectClauseButtonPanel extends ButtonPanel {
 		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				WAWCEditorPanel panel = dialog.getSelectedClause();
-				panel.applyEditings();
-				owner.getParentNode().addNode(panel.getClause());
-				owner.showRegularContent();
-				owner.getParentNode().removeChildNode(owner);
+				if (panel == null) {
+					cancel();
+				}
+				else {
+					panel.applyEditings();
+					owner.getParentNode().addNode(panel.getClause());
+					removeDialog();
+				}
 			}
 		});
 		
 		cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				owner.showRegularContent();
-				owner.getParentNode().removeChildNode(owner);
+				cancel();
 			}
 		});
+	}
+	
+	private void cancel() {
+		removeDialog();
+	}
+	
+	private void removeDialog() {
+		owner.showContent();
+		owner.getParentNode().removeChildNode(owner);
 	}
 
 }

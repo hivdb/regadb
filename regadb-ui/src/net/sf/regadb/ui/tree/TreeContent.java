@@ -13,6 +13,7 @@ import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
@@ -164,7 +165,10 @@ public class TreeContent
     
     public QueryItem queryMain;
 
-    public ActionItem queryTool;
+    public QueryItem queryToolMain;
+//    public ActionItem queryToolSelect;
+    public ActionItem queryToolAdd;
+//    public ActionItem queryToolView;
     
     public QueryItem queryWiv;
     public ActionItem queryWivArlConfirmedHiv;
@@ -865,12 +869,6 @@ public class TreeContent
         
         queryMain = new QueryItem(rootItem);
         
-        queryTool = new ActionItem(WResource.tr("menu.query.querytool"), queryMain, new ITreeAction() {
-			public void performAction(TreeMenuNode node) {
-				RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm());
-			}
-        });
-        
         queryWiv = new QueryItem(WResource.tr("menu.query.wiv"),queryMain);
 
             queryWivArlConfirmedHiv = new ActionItem(WResource.tr("menu.query.wiv.arl.confirmedHiv"), queryWiv, new ITreeAction()
@@ -930,6 +928,26 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new WivArcDeathsForm());
                 }
             });
+            
+            queryToolMain = new QueryItem(WResource.tr("menu.query.querytool"), queryMain);
+
+//          queryToolSelect = new ActionItem(WResource.tr("menu.query.querytool.select"), queryToolMain, new ITreeAction() {
+//  			public void performAction(TreeMenuNode node) {
+//  				RegaDBMain.getApp().getFormContainer().setForm(new SelectQueryToolQueryForm());
+//  			}
+//          });
+          
+            queryToolAdd = new ActionItem(WResource.tr("menu.query.querytool.add"), queryToolMain, new ITreeAction() {
+                public void performAction(TreeMenuNode node) {
+                    RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WResource.tr("form.query.querytool.add"), InteractionState.Adding));
+                }
+            });        
+          
+//          queryToolView = new ActionItem(WResource.tr("menu.query.querytool.view"), queryTool, new ITreeAction() {
+//  			public void performAction(TreeMenuNode node) {
+//  				RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WResource.tr("form.query.querytool.add"), InteractionState.Viewing));
+//  			}
+//          });            
 
         queryDefinitionMain = new QueryDefinitionItem(queryMain);
         queryDefinitionSelect = new ActionItem(WResource.tr("menu.query.definition.select"), queryDefinitionMain, new ITreeAction()

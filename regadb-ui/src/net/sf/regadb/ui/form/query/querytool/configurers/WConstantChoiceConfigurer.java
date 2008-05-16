@@ -27,6 +27,13 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
         	this.addItem(new WMessage(option.getOption().toString(), true));
         }
         this.setCurrentItem(new WMessage(constant.getHumanStringValue(), true));
+        
+        // last item gets selected when setCurrentItem can't find the given item
+        // set it back to zero if that happens
+    	if (!this.currentText().keyOrValue().equals(constant.getHumanStringValue())) {
+    		this.setCurrentIndex(0);
+    	}
+    	
     }
     
     public ConfigurableWord getWord() {

@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.tree;
 
 
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
@@ -16,11 +16,11 @@ public class WhereClauseNode extends QueryTreeNode{
 	
 	private void init() {
 		if (getClause().isAtomic()) {
-			labelArea().setStyleClass("atomictreenode");
+			addStyle("atomictreenode");
 			setButtonPanel(new AtomicClauseButtonPanel(this));
 		}
 		else {
-			labelArea().setStyleClass("composedtreenode");
+			addStyle("composedtreenode");
 			String label = getClause().toString();
 			label = label.substring(0, label.indexOf(' '));
 			this.label().setText(new WMessage(label.toLowerCase(), true));

@@ -3,39 +3,120 @@ package net.sf.regadb.ui.form.query.querytool;
 
 
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
+import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 
-
+import net.sf.regadb.ui.form.query.querytool.select.SelectionGroupBox;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorGroupBox;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TextArea;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WKeyEvent;
+import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class QueryToolForm extends FormWidget implements QueryContext{
 
 	private QueryEditorGroupBox queryGroup_;
-
+	private RunGroupBox runGroup_;
 	
-
+    private Label nameL;
+    private TextField nameTF;
+    private Label descriptionL;
+    private TextArea descriptionTA;
+    private Label creatorL;
+    private TextField creatorTF;
 	
-	public QueryToolForm() {
-		super(tr("menu.query.querytool"), InteractionState.Viewing);
-		setStyleClass("querytoolform");
-		init();
+	
+	/**
+	 * add a new Query
+	 */
+	public QueryToolForm(WMessage title, InteractionState istate) {
+		super(title, istate);
+		init(null);
 	}
 	
-	public void init() {
-		queryGroup_ = new QueryEditorGroupBox(new com.pharmadm.custom.rega.queryeditor.Query(), tr("form.query.querytool.group.query"), this);
+	public QueryToolForm(WMessage title, InteractionState istate, QueryEditor query) {
+		super(title, istate);
+		init(query);
+	}
+	
+    public WMessage leaveForm() {
+        if(isEditable() && queryGroup_.getQueryEditor().isDirty()) {
+            return tr("form.warning.stillEditing");
+        } else {
+            return null;
+        }
+    }	
+    
+    public RunGroupBox getExecuter() {
+    	return runGroup_;
+    }
+    
+	public void init(QueryEditor query) {
+		setStyleClass("querytoolform");
+		queryGroup_ = new QueryEditorGroupBox(tr("form.query.querytool.group.query"), this, query);
 		new SelectionGroupBox(queryGroup_.getQueryEditor(), tr("form.query.querytool.group.fields"), this);
-		new RunGroupBox(queryGroup_.getQueryEditor(), this);
+		runGroup_ = new RunGroupBox(queryGroup_.getQueryEditor(), this);
+		
+//		WGroupBox infogroup_ = new WGroupBox(tr("form.query.querytool.group.info"), this);
+//		WContainerWidget contentPanel = new WContainerWidget(infogroup_);
+//		contentPanel.setStyleClass("content");
+//		infogroup_.setStyleClass("infofield");
+//		
+//		WTable infoTable = new WTable(contentPanel);
+//		
+//    	nameL = new Label(tr("form.query.definition.label.name"));
+//    	nameTF = new TextField(getInteractionState(), this);
+//        nameTF.setMandatory(true);
+//        addLineToTable(infoTable, nameL, nameTF);
+//        infoTable.elementAt(0, 0).setStyleClass("labels");
+//        nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
+//			public void notify(WKeyEvent a) {
+//				queryGroup_.getQueryEditor().setDirty(true);
+//			}
+//        });
+//        
+//        descriptionL = new Label(tr("form.query.definition.label.description"));
+//        descriptionTA = new TextArea(getInteractionState(), this);
+//        descriptionTA.setMandatory(true);
+//        addLineToTable(infoTable, descriptionL, descriptionTA);
+//        descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
+//			public void notify(WKeyEvent a) {
+//				queryGroup_.getQueryEditor().setDirty(true);
+//			}
+//        });
+//		
+//        if(getInteractionState() == InteractionState.Viewing)
+//        {
+//        	creatorL = new Label(tr("form.query.definition.label.creator"));
+//            creatorTF = new TextField(getInteractionState(), this);
+//            addLineToTable(infoTable, creatorL, creatorTF);
+//        }	
+        
+        
+        
+		addControlButtons();
+		if (!isEditable()) {
+			queryGroup_.setEnabled(false);
+		}
 	}
 	
 	
 
 
 	public void cancel() {
-		// TODO Auto-generated method stub
-
+		if(getInteractionState() == InteractionState.Adding)
+		{
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryWiv);
+		}
 	}
 
 	public WMessage deleteObject() {
@@ -49,8 +130,10 @@ public class QueryToolForm extends FormWidget implements QueryContext{
 	}
 
 	public void saveData() {
-		// TODO Auto-generated method stub
-
+		if(getInteractionState() == InteractionState.Adding)
+		{
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryWiv);
+		}
 	}
 
 	public WhereClause getContextClause() {

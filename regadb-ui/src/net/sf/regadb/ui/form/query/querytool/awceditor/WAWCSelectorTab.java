@@ -80,4 +80,10 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
     	return buttons;
     }
 
+	public void show() {
+		super.show();
+		if (getRadioButtons().size() > 0) {
+			getRadioButtons().get(0).setChecked(true);
+		}
+	}
 }

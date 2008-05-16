@@ -33,7 +33,6 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
         
         for (OutputVariable ovar : outputVars) {
         	this.addItem(new WMessage(ovar.toString(), true));
-        	System.err.println(ovar.toString());
         }
         
         this.var = input;

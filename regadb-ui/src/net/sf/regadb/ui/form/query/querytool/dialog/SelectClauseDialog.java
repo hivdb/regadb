@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.dialog;
 
 import java.util.Collection;
 
@@ -10,6 +10,7 @@ import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCEditorPanel;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorPanel;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorTabbedPane;
 import net.sf.regadb.ui.form.query.querytool.buttons.SelectClauseButtonPanel;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.witty.wt.WButtonGroup;
 import net.sf.witty.wt.WRadioButton;
 import net.sf.witty.wt.i8n.WMessage;

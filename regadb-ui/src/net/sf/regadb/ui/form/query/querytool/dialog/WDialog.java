@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.dialog;
 
 import net.sf.regadb.ui.form.query.querytool.buttons.ButtonPanel;
 import net.sf.witty.wt.WContainerWidget;
@@ -31,7 +31,9 @@ public class WDialog extends WContainerWidget {
 	}
 	
 	public void setButtonPanel(ButtonPanel buttonPanel) {
-		buttonArea.clear();
+		while(buttonArea.children().size() > 0) {
+			buttonArea.removeWidget(buttonArea.children().get(0));
+		}
 		buttonArea.addWidget(buttonPanel);
 	}
 	

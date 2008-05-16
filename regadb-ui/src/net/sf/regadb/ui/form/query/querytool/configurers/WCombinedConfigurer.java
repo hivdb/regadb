@@ -15,6 +15,7 @@ public class WCombinedConfigurer extends WContainerWidget implements WordConfigu
 		super();
 		setStyleClass("combinedconfigurer");
 		this.words = words;
+		setInline(true);
 
 		for (WordConfigurer confy : words) {
 			addWidget((WWidget) confy);

@@ -20,11 +20,15 @@ public class WComposedAWCSelectorPanel extends WBasicAWCSelectorPanel {
 	
 	@Override
 	public boolean addAtomicWhereClause(AtomicWhereClause clause) {
-		AtomicWhereClause firstClause = editPanel.getClause();
-		return checkSignature(firstClause, clause);
+		return addAtomicWhereClause(clause, false);
 	}
 	
-	private boolean checkSignature(AtomicWhereClause clause1, AtomicWhereClause clause2) {
+	public boolean addAtomicWhereClause(AtomicWhereClause clause, boolean select) {
+		AtomicWhereClause firstClause = editPanel.getClause();
+		return checkSignature(firstClause, clause, select);
+	}
+	
+	private boolean checkSignature(AtomicWhereClause clause1, AtomicWhereClause clause2, boolean makeSelected) {
 		if (clause1.getCompositionBehaviour().getClass().equals(clause2.getCompositionBehaviour().getClass()) &&
 			clause1.getCompositionBehaviour().canCompose(clause1, clause2)) {
 
@@ -36,7 +40,7 @@ public class WComposedAWCSelectorPanel extends WBasicAWCSelectorPanel {
 			}
 
 			List<ConfigurableWord> words2 = clause2.getCompositionBehaviour().getComposableWords(clause2);
-			getEditorPanel().composeWord(factory.createComponents(words2), new WAtomicWhereClauseEditor(context, clause2));
+			getEditorPanel().composeWord(factory.createComponents(words2), new WAtomicWhereClauseEditor(context, clause2), makeSelected);
 			return true;
 		}
 		return false;

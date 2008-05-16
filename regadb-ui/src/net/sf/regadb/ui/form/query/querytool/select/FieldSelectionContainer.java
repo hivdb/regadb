@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.select;
 
 import com.pharmadm.custom.rega.queryeditor.Field;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;
