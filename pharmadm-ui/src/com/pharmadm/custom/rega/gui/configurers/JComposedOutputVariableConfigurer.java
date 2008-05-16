@@ -55,5 +55,7 @@ public class JComposedOutputVariableConfigurer extends javax.swing.JComboBox imp
 			comp.addMouseListener(listener);
     	}
 		super.addMouseListener(listener);
-    }	
+    }
+
+	public void setSelectedIndex() {}	
 }

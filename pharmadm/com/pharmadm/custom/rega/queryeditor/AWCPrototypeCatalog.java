@@ -297,23 +297,30 @@ public class AWCPrototypeCatalog {
     /**
      * returns a collection of all clauses that are in the same group and have the same
      * composition behavior as the given clause
+     * clauses that have a NullComposition only have 
      */
-    public Collection<AtomicWhereClause> getSimilarClauses(AtomicWhereClause clause) {
-        Collection<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
-		try {
-	    	for (AtomicWhereClause aClause : atomicWhereClauses) {
-	    		if (aClause.getGroups().containsAll(clause.getGroups()) && clause.getCompositionBehaviour().getClass().equals(aClause.getCompositionBehaviour().getClass()) ) {
-						result.add((AtomicWhereClause) aClause.clone());
-	    		}
-	    	}
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
+    public List<AtomicWhereClause> getSimilarClauses(AtomicWhereClause clause) {
+        List<AtomicWhereClause> result = new ArrayList<AtomicWhereClause>();
+        if (clause.getCompositionBehaviour() instanceof NullComposition) {
+        	result.add(clause);
+        }
+        else {
+			try {
+		    	for (AtomicWhereClause aClause : atomicWhereClauses) {
+		    		if (aClause.getGroups().containsAll(clause.getGroups()) &&
+		    			clause.getCompositionBehaviour().getClass().equals(aClause.getCompositionBehaviour().getClass())) {
+							result.add((AtomicWhereClause) aClause.clone());
+		    		}
+		    	}
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+        }
     	
     	return result;
     } 
     
     public OutputVariable createOutputVariable(String objectName) {
-    	return new OutputVariable(new VariableType(objectName), objectName, getVariableName(objectName), getObjectDescription(objectName));
+    	return new OutputVariable(new VariableType(objectName), getVariableName(objectName), getObjectDescription(objectName));
     }
 }

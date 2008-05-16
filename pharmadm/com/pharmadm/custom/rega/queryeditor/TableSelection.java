@@ -28,6 +28,8 @@ public class TableSelection extends ComposedSelection implements Serializable{
     
     private String tableName; // the Table accessed by the FromVariable that is the sole AWCWord in the Expression of this Selection's OutputVariable
     
+    
+    
     /** Creates a new instance of TableSelection */
     public TableSelection(OutputVariable ovar) {
         super(ovar);
@@ -37,6 +39,12 @@ public class TableSelection extends ComposedSelection implements Serializable{
         } else {
             System.err.println("TableSelection's OutputVariable does not refer to a single FromVariable. Something is terribly wrong !");
         }
+    }
+    
+    public TableSelection(OutputVariable ovar, String tableName) {
+    	super(ovar);
+    	this.tableName = tableName;
+        setSubSelections(new ArrayList<Selection>());
     }
     
     public TableSelection(OutputVariable ovar, boolean selected) {

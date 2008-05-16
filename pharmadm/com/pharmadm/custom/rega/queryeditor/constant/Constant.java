@@ -201,6 +201,11 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
             listener.valueChanged();
         }
     }
+    
+	public String getImmutableStringValue() {
+		return getValueTypeString();
+	}
+    
 } // end Constant
 
 

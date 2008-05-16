@@ -230,4 +230,8 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
         clone.properties = null; // just reset this, new properties will be made as needed
         return clone; 
     }
+
+	public String getImmutableStringValue() {
+		return formalName;
+	}
 } // end DataOutputVariable

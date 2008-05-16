@@ -119,7 +119,7 @@ public class QueryEditorApp implements FrontEnd{
         try {
 //        	DatabaseConnector con = new JDBCConnector(null, "jdbc:postgresql://localhost:5432/regadb", "freek", "freek");
 //        	QueryVisitor visitor = new SqlQuery();
-            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector("admin", "admin"));
+            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector("admin", "admin", false));
             DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
         } catch (Exception e) {
         	e.printStackTrace();

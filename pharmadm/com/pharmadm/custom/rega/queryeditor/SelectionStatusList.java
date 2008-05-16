@@ -73,17 +73,16 @@ public class SelectionStatusList implements SelectionList, Serializable {
                 String varName = var.getUniqueName();
                 if (selection instanceof TableSelection) {
                     Iterator<Selection> fieldIter = ((TableSelection)selection).getSubSelections().iterator();
-                    int selectedColumnCount = 0;
+                    if (DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                    	String name = var.getUniqueName();
+                    	selectedColumns.add(name);
+                    }
+                    
                     while (fieldIter.hasNext()) {
                         FieldSelection subSelection = (FieldSelection)fieldIter.next();
                         if (subSelection.isSelected()) {
                             selectedColumns.add(var.getFullColumnName((Field)(subSelection.getObject())));
-                            selectedColumnCount++;
                         }
-                    }
-                    if (selectedColumnCount == 0 && DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
-                    	String name = var.getUniqueName();
-                    	selectedColumns.add(name);
                     }
                 }
                 else { // selection instanceof OutputSelection

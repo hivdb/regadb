@@ -82,4 +82,6 @@ public class JAttributeConfigurer extends JPanel implements ComposedWordConfigur
 		ovar.addMouseListener(listener);
 		super.addMouseListener(listener);
     }
+
+	public void setSelectedIndex(int index) {}
 }

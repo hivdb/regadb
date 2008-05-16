@@ -41,7 +41,7 @@ public class ComposedAWCSelectorPanel extends BasicAWCSelectorPanel{
 			}
 
 			List<ConfigurableWord> words2 = clause2.getCompositionBehaviour().getComposableWords(clause2);
-			getEditorPanel().composeWord(factory.createComponents(words2), new JAtomicWhereClauseEditor(context, clause2));
+			getEditorPanel().composeWord(factory.createComponents(words2), new JAtomicWhereClauseEditor(context, clause2), false);
 			return true;
 		}
 		return false;

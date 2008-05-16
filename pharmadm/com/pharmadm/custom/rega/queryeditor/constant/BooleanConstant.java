@@ -68,6 +68,4 @@ public class BooleanConstant extends Constant implements Serializable {
 	public String getValueTypeString() {
 		return "Boolean";
 	}
-	
-	
 }

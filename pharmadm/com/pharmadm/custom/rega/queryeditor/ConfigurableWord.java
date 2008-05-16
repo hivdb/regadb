@@ -19,4 +19,11 @@ package com.pharmadm.custom.rega.queryeditor;
 public interface ConfigurableWord {
     
     public String getHumanStringValue();
+    
+    /**
+     * returns a string representing this word
+     * that stays the same regardless of its configuration
+     * @return
+     */
+    public String getImmutableStringValue();
 }

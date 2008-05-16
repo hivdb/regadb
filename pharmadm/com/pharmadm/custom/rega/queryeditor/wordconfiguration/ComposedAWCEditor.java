@@ -50,8 +50,8 @@ public class ComposedAWCEditor {
     	else {
     		return controllers.get(indexConfigurer.getSelectedIndex());
     	}
-    }	
-	
+    }
+    
     public void createComposedWord(List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
     	if (CompositionBehaviour.replaceByComposedWord(editPanel.getConfigurers(), words, configurer)) {
     		indexConfigurer = configurer;
@@ -59,12 +59,16 @@ public class ComposedAWCEditor {
     	}
     }
     
-    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor) {
+    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
     	if (indexConfigurer == null) {
     		System.err.println("Trying to compose a clause before the composing word has been initialized.");
     		System.exit(1);
     	}
 		indexConfigurer.add(additions);
         controllers.add(editor);
+
+        if (makeSelected) {
+        	indexConfigurer.setSelectedIndex(controllers.size()-1);
+        }
     }	
 }

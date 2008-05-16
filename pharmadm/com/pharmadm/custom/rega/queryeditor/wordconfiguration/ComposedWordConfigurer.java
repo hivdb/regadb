@@ -14,4 +14,9 @@ public interface ComposedWordConfigurer extends WordConfigurer {
      * @return
      */
     public int getSelectedIndex();
+    
+    /**
+     * sets the initially selected element
+     */
+    public void setSelectedIndex(int index);
 }

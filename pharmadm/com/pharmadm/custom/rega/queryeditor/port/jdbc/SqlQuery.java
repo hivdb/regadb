@@ -55,7 +55,11 @@ public class SqlQuery implements QueryVisitor {
             if (selection.isSelected()) {
                 OutputVariable ovar = (OutputVariable)selection.getObject();
                 if (selection instanceof TableSelection) {
-                	int selectedCount = 0;
+                    if (DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                    	buffy.append(ovar.acceptWhereClause(this));
+                        buffy.append(",\n\t");
+                    }
+
                     // %$ KVB : for the Hibernate version, we need to apply reflection on these fields
                     //          so that fields of class types are represented by an identifier
                     Iterator<Selection> fieldIter = ((TableSelection)selection).getSubSelections().iterator();
@@ -64,14 +68,9 @@ public class SqlQuery implements QueryVisitor {
                         if (subSelection.isSelected()) {
                             buffy.append(ovar.acceptWhereClauseFullName(this, (Field)(subSelection.getObject())));
                             buffy.append(",\n\t");
-                            selectedCount++;
                         }
                     }
                     
-                    if (selectedCount == 0 && DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
-                    	buffy.append(ovar.acceptWhereClause(this));
-                        buffy.append(",\n\t");
-                    }
                 }
                 else { // selection instanceof OutputSelection
                     buffy.append(ovar.getExpression().acceptWhereClause(this));

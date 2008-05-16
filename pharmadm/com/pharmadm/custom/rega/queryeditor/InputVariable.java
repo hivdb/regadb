@@ -102,6 +102,10 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+	public String getImmutableStringValue() {
+		return getVariableType().getName();
+	}
 } // end InputVariable
 
 

@@ -21,11 +21,13 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 
 public class HibernateConnector implements DatabaseConnector {
 
-	Login login;
+	private Login login;
+	private boolean tableSelectionAllowed;
 	
-	public HibernateConnector(String user, String pwd) {
+	public HibernateConnector(String user, String pwd, boolean tables) {
 		try {
 			login = Login.authenticate(user, pwd);
+			tableSelectionAllowed = tables;
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -161,6 +163,6 @@ public class HibernateConnector implements DatabaseConnector {
 	}
 
 	public boolean isTableSelectionAllowed() {
-		return true;
+		return tableSelectionAllowed;
 	}
 }

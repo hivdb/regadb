@@ -373,8 +373,15 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
 	public CompositionBehaviour getCompositionBehaviour() {
 		return compositionBehaviour;
 	}
-    
-    
+	
+	public String getHash(){
+		String hash = "";
+		for (ConfigurableWord word : getVisualizationClauseList().getWords()) {
+			hash += word.getImmutableStringValue() + " ";
+		}
+		System.err.println(hash);
+		return hash;
+	}	
 } // end AtomicWhereClause
 
 

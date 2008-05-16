@@ -96,6 +96,10 @@ public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier, Seri
         //context-independent
         return getHumanStringValue();
     }
+
+	public String getImmutableStringValue() {
+		return string;
+	}
 } // end FixedString
 
 

@@ -45,8 +45,8 @@ public class AWCEditorPanel extends WLOEditorPanel implements ComposedAWCEditorP
     	editor.createComposedWord(words, configurer);
     }
     
-    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor) {
-    	this.editor.composeWord(additions, editor);
+    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
+    	this.editor.composeWord(additions, editor, makeSelected);
     }
 
 	public List<WordConfigurer> getConfigurers() {

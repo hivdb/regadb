@@ -190,7 +190,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
     }
     
     private OutputVariable getBasicOutputVariable(String typeString, String propertyName) {
-        OutputVariable ovar = new OutputVariable(new VariableType(typeString), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
+        OutputVariable ovar = new OutputVariable(new VariableType(typeString), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
     	return ovar;
     }
     
@@ -490,7 +490,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                     aVisList.addFixedString(new FixedString(description));
                 }
                 FromVariable newFromVar = new FromVariable(foreignTableName);
-                OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), catalog.getVariableName(foreignTableName), catalog.getVariableName(foreignTableName),catalog.getVariableName(foreignTableName));
+                OutputVariable ovar = new OutputVariable(new VariableType(foreignTableName), catalog.getVariableName(foreignTableName),catalog.getVariableName(foreignTableName));
                 aVisList.addOutputVariable(ovar);
                 ovar.getExpression().addFromVariable(newFromVar);
                 
@@ -587,7 +587,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                     } else {
                         aVisList.addFixedString(new FixedString(description));
                     }
-                    OutputVariable ovar = new OutputVariable(new VariableType(newTableName), catalog.getVariableName(newTableName), catalog.getVariableName(newTableName), catalog.getVariableName(newTableName));
+                    OutputVariable ovar = new OutputVariable(new VariableType(newTableName), catalog.getVariableName(newTableName), catalog.getVariableName(newTableName));
                     aVisList.addOutputVariable(ovar);
                     ovar.getExpression().addFromVariable(newFromVar);
                 }
@@ -635,7 +635,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                         return null;
                     }
                     if (show) {
-                        OutputVariable ovar = new OutputVariable(varType, catalog.getVariableName(codeName), catalog.getVariableName(codeName), catalog.getVariableName(codeName));
+                        OutputVariable ovar = new OutputVariable(varType, catalog.getVariableName(codeName), catalog.getVariableName(codeName));
                         ovar.getExpression().addConstant(valueConstant);
                         aVisList.addOutputVariable(ovar);
                     }
@@ -694,7 +694,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                     }
                     OutputVariable ovar = null;
                     if (show) {
-	                    ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
+	                    ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
 	                    ovar.getExpression().addInputVariable(ivar);
 	                    ovar.getExpression().addFixedString(new FixedString("." + propertyName));
 	                    aVisList.addOutputVariable(ovar);
@@ -808,7 +808,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("Date"));
         Constant dateConstant = new DateConstant();
-        OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
+        OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
         ovar.getExpression().addConstant(dateConstant);
         aVisList.addOutputVariable(ovar);
         aVisList.addFixedString(new FixedString("is"));
@@ -853,7 +853,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             aVisList.addFixedString(new FixedString("Date "));
             InputVariable ivar = new InputVariable(new VariableType("Date"));
             
-            OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
+            OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
             ovar.getExpression().addInputVariable(ivar);
             ovar.getExpression().addFixedString(new FixedString(plus ? " + " : " - "));
             DoubleConstant timeConstant = new DoubleConstant();

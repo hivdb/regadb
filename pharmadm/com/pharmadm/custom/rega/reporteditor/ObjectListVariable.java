@@ -121,4 +121,8 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
             }
         }
     }
+
+	public String getImmutableStringValue() {
+		return variableType.getName();
+	}
 }

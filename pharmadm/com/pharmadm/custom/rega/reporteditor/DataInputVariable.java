@@ -121,6 +121,10 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
         DataOutputVariable ovar = getOutputVariable();
         return (((ovar = getOutputVariable()) == null) ? null : ovar.getHumanStringValue(context));
     }
+
+	public String getImmutableStringValue() {
+		return getVariableType().getName();
+	}
 } // end DataInputVariable
 
 

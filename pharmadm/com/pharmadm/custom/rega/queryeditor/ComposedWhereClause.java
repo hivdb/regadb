@@ -89,15 +89,17 @@ public abstract class ComposedWhereClause extends WhereClause implements Seriali
     }
     
     public void replaceChild(WhereClause oldClause, WhereClause newClause, UniqueNameContext namingContext) {
-        int pos = children.indexOf(oldClause);
-        if (pos >= 0) {
-            oldClause.setParent(null);
-            if (namingContext != null) {
-                namingContext.assignUniqueNamesToOutputs(newClause);
-            }
-            children.set(pos, newClause);
-            newClause.setParent(this);
-        }
+    	if (!oldClause.equals(newClause)) {
+	        int pos = children.indexOf(oldClause);
+	        if (pos >= 0) {
+	            oldClause.setParent(null);
+	            if (namingContext != null) {
+	                namingContext.assignUniqueNamesToOutputs(newClause);
+	            }
+	            children.set(pos, newClause);
+	            newClause.setParent(this);
+	        }
+    	}
     }
 
     public Iterator<WhereClause> iterateChildren() {

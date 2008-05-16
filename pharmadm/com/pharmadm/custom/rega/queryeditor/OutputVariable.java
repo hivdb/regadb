@@ -52,7 +52,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
   ///////////////////////////////////////
   // attributes
 
-    public OutputVariable(VariableType type, String objectName, String formalName, String description) {
+    public OutputVariable(VariableType type, String formalName, String description) {
         super(type);
         this.expression= new OutputExpression();
         this.formalName = formalName; 
@@ -275,5 +275,13 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
             return null;
         }
     }
+
+	public String getImmutableStringValue() {
+		String str = "(";
+		for (ConfigurableWord word : getExpression().getWords()) {
+			str += word.getImmutableStringValue() + " ";
+		}
+		return str.trim() + ")";
+	}
    
 } // end OutputVariable

@@ -720,7 +720,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
                 // add the output variable if the result should be selectable
                 if (show) {
                     // build an outputvariable from the foreign table property and assign it a nice name
-        	        OutputVariable ovar = new OutputVariable(new VariableType(constant.getValueTypeString()), foreignTableName + "." + foreignTableProperty, catalog.getVariableName(foreignTableName + "." + foreignTableProperty), catalog.getObjectDescription(foreignTableName + "." + foreignTableProperty));
+        	        OutputVariable ovar = new OutputVariable(new VariableType(constant.getValueTypeString()), catalog.getVariableName(foreignTableName + "." + foreignTableProperty), catalog.getObjectDescription(foreignTableName + "." + foreignTableProperty));
                     if (description != null) ovar.setRelation(description);
         	        // outputvariables are defined as an expression. Without this expression they are useless
         	        if (foreignTableName.equals(inputTableName)) {
@@ -1491,6 +1491,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         Constant cst = getNullComparisonOperator();
         InputVariable ivar = new InputVariable(new VariableType(variableType));
         
+        aVisList.addFixedString(new FixedString(catalog.getObjectDescription(variableType)));
         aVisList.addInputVariable(ivar);
         aVisList.addConstant(cst);
 

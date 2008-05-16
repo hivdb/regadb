@@ -96,4 +96,8 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
         FromVariable clone = (FromVariable)super.clone();
         return clone;
     }
+
+	public String getImmutableStringValue() {
+		return tableName;
+	}
 }
