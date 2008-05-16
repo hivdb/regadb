@@ -19,31 +19,31 @@ import net.sf.regadb.db.ValueType;
 
 public class StandardObjects {
     private static TestObject patientObject = new TestObject("Patient test", 0);
+    private static TestObject viralIsolateObject = new TestObject("Viral Isolate analysis", 4);
     private static ValueType numberValueType = new ValueType("number");
     private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
     private static ValueType nominalValueType = new ValueType("nominal value");
     private static ValueType stringValueType = new ValueType("string");
     private static ValueType dateValueType = new ValueType("date");
-    private static TestType viralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
-    private static TestType viralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "Viral Load (log10)", new TreeSet<TestNominalValue>());
+    private static TestType hiv1ViralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Hiv-1 Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
+    private static TestType hiv1ViralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "Hiv-1 Viral Load (log10)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static TestType cd4PercentageTestType = new TestType(numberValueType, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType cd8TestType = new TestType(numberValueType, patientObject, "CD8 Count", new TreeSet<TestNominalValue>());
     private static TestType cd8PercentageTestType = new TestType(numberValueType, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
-    private static TestType hivSeroStatusTestType;
+    private static TestType hiv1SeroStatusTestType;
     private static TestType followUpTestType = new TestType(dateValueType, patientObject, "Follow up",new TreeSet<TestNominalValue>());
-    private static Test genericViralLoadTest = new Test(viralLoadTestType, "Viral Load (generic)");
-    private static Test genericViralLoadLog10Test = new Test(viralLoadLog10TestType, "Viral Load log10 (generic)");
+    private static Test genericHiv1ViralLoadTest = new Test(hiv1ViralLoadTestType, "Hiv-1 Viral Load (generic)");
+    private static Test genericHiv1ViralLoadLog10Test = new Test(hiv1ViralLoadLog10TestType, "Hiv-1 Viral Load log10 (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
     private static Test genericCD4PercentageTest = new Test(cd4PercentageTestType, "CD4 Count % (generic)");
     private static Test genericCD8Test = new Test(cd8TestType, "CD8 Count (generic)");
     private static Test genericCD8PercentageTest = new Test(cd8PercentageTestType, "CD8 Count % (generic)");
-    private static Test genericHivSeroStatusTest;
+    private static Test genericHiv1SeroStatusTest;
     private static Test followUpTest = new Test(followUpTestType, "Follow up");
     
     private static TestType contactTestType = new TestType(dateValueType,patientObject,"Contact",new TreeSet<TestNominalValue>());
     private static Test contactTest = new Test(contactTestType, "General contact");
-    
     
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
     private static String clinicalFileNumberAttribute = "Clinical File Number";
@@ -51,11 +51,11 @@ public class StandardObjects {
     private static Test pregnancy;
 
     static {
-        hivSeroStatusTestType = new TestType(patientObject, "HIV Sero Status");
-        hivSeroStatusTestType.setValueType(nominalValueType);
-        hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Positive"));
-        hivSeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hivSeroStatusTestType, "Negative"));
-        genericHivSeroStatusTest = new Test(hivSeroStatusTestType, "HIV Sero Status (generic)");
+        hiv1SeroStatusTestType = new TestType(patientObject, "HIV-1 Sero Status");
+        hiv1SeroStatusTestType.setValueType(nominalValueType);
+        hiv1SeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hiv1SeroStatusTestType, "Positive"));
+        hiv1SeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hiv1SeroStatusTestType, "Negative"));
+        genericHiv1SeroStatusTest = new Test(hiv1SeroStatusTestType, "HIV-1 Sero Status (generic)");
         
         TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
         pregnancyType.setValueType(nominalValueType);
@@ -81,11 +81,11 @@ public class StandardObjects {
     public static Test getGenericCD4PercentageTest() {
         return genericCD4PercentageTest;
     }
-    public static Test getGenericViralLoadTest() {
-        return genericViralLoadTest;
+    public static Test getGenericHiv1ViralLoadTest() {
+        return genericHiv1ViralLoadTest;
     }
-    public static Test getGenericViralLoadLog10Test() {
-        return genericViralLoadLog10Test;
+    public static Test getGenericHiv1ViralLoadLog10Test() {
+        return genericHiv1ViralLoadLog10Test;
     }
     public static ValueType getLimitedNumberValueType() {
         return limitedNumberValueType;
@@ -96,11 +96,14 @@ public class StandardObjects {
     public static TestObject getPatientObject() {
         return patientObject;
     }
-    public static TestType getViralLoadTestType() {
-        return viralLoadTestType;
+    public static TestObject getViralIsolateObject() {
+        return viralIsolateObject;
     }
-    public static TestType getViralLoadLog10TestType() {
-        return viralLoadLog10TestType;
+    public static TestType getHiv1ViralLoadTestType() {
+        return hiv1ViralLoadTestType;
+    }
+    public static TestType getHiv1ViralLoadLog10TestType() {
+        return hiv1ViralLoadLog10TestType;
     }
     public static ValueType getNominalValueType() {
         return nominalValueType;
@@ -111,17 +114,17 @@ public class StandardObjects {
     public static String getClinicalFileNumber() {
         return clinicalFileNumberAttribute;
     }
-    public static boolean isViralLoad(TestType tt) {
-        return viralLoadTestType.getDescription().equals(tt.getDescription());
+    public static boolean isHiv1ViralLoad(TestType tt) {
+        return hiv1ViralLoadTestType.getDescription().equals(tt.getDescription());
     }
     public static boolean isCD4(TestType tt) {
         return cd4TestType.getDescription().equals(tt.getDescription());
     }
-    public static Test getGenericHivSeroStatusTest() {
-        return genericHivSeroStatusTest;
+    public static Test getGenericHiv1SeroStatusTest() {
+        return genericHiv1SeroStatusTest;
     }
-    public static TestType getHivSeroStatusTestType() {
-        return hivSeroStatusTestType;
+    public static TestType getHiv1SeroStatusTestType() {
+        return hiv1SeroStatusTestType;
     }
     public static Protein[] getProteins() {
         Protein[] proteins = new Protein[7];
