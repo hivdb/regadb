@@ -213,6 +213,12 @@ public class Jarbuilder
                 moduleDeps.remove(ptr);
             }
         }
+        
+        if(moduleDeps.size()!=0) {
+        	System.err.println("Could not buid all projects!!!");
+        	System.err.println("Make sure all projects are checked out/copied!!!!");
+        	System.exit(0);
+        }
     }
     
     private static void buildModule(String buildDir, String moduleName)
@@ -279,7 +285,7 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-") || m.startsWith("pharmadm"))
             {
                 if(!m.equals("wts-build"))
                 {
@@ -299,7 +305,7 @@ public class Jarbuilder
         {
             String dependency = md.substring(1);
             
-            if((dependency.startsWith("regadb") || dependency.startsWith("wts")) && dependency.indexOf('/')==-1)
+            if((dependency.startsWith("regadb") || dependency.startsWith("wts")) || dependency.startsWith("pharmadm") && dependency.indexOf('/')==-1)
             {
                 filteredDependencies.add(dependency);
             }
