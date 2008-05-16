@@ -82,7 +82,7 @@ public class ImportIrsicaixa {
         transmissionGroupTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "transmission_group.mapping");
         aidsDefiningIllnessTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "aids_defining_illness.mapping");
         
-        posSeroStatus_ = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
+        posSeroStatus_ = Utils.getNominalValue(StandardObjects.getHiv1SeroStatusTestType(), "Positive");
     }
     
     public void run() {
@@ -195,7 +195,7 @@ public class ImportIrsicaixa {
                 if(hivPosDate==null) {
                     logger_.logWarning("Could not parse firstHivPos date " + hivPosDate);
                 } else {
-                    TestResult t = p.createTestResult(StandardObjects.getGenericHivSeroStatusTest());
+                    TestResult t = p.createTestResult(StandardObjects.getGenericHiv1SeroStatusTest());
                     t.setTestNominalValue(posSeroStatus_);
                     t.setTestDate(hivPosDate);
                 }
@@ -348,7 +348,7 @@ public class ImportIrsicaixa {
         		if(method.length() > 0){
 	        		Test t = tests_.get(method);
 	        		if(t == null){
-	        			t = new Test(StandardObjects.getViralLoadTestType(),method);
+	        			t = new Test(StandardObjects.getHiv1ViralLoadTestType(),method);
 	        			tests_.put(method, t);
 	        		}
 	

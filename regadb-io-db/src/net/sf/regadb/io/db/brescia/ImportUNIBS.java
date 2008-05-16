@@ -129,7 +129,7 @@ public class ImportUNIBS
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		regadbEvents = Utils.prepareRegaDBEvents();
     		
-    		posSeroStatus = Utils.getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
+    		posSeroStatus = Utils.getNominalValue(StandardObjects.getHiv1SeroStatusTestType(), "Positive");
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData();
@@ -236,7 +236,7 @@ public class ImportUNIBS
             	
             	if(Utils.checkColumnValueForExistance("date of first positive HIV test", firstTest, i, patientId))
             	{
-            		TestResult t = p.createTestResult(StandardObjects.getGenericHivSeroStatusTest());
+            		TestResult t = p.createTestResult(StandardObjects.getGenericHiv1SeroStatusTest());
                     t.setTestNominalValue(posSeroStatus);
                     t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
             	}
@@ -333,7 +333,7 @@ public class ImportUNIBS
     		}
     		else
     		{
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (µL)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (ï¿½L)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(cd4Count);
@@ -375,7 +375,7 @@ public class ImportUNIBS
 		    		 
 		    		 if("".equals(VLTest))
 		    		 {
-		    			 testResult = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+		    			 testResult = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
 		    		 }
 		    		 else
 		    		 {
@@ -383,7 +383,7 @@ public class ImportUNIBS
 	                     
 	                     if(vlT==null) 
 	                     {
-	                         vlT = new Test(StandardObjects.getViralLoadTestType(), VLTest);
+	                         vlT = new Test(StandardObjects.getHiv1ViralLoadTestType(), VLTest);
 	                         uniqueVLTests.put(VLTest, vlT);
 	                     }
 		    			 

@@ -177,7 +177,7 @@ public class ImportFromXls {
 		processTestResult(p, getDate(row), StandardObjects.getGenericCD4Test(), getCD4(row));
 	}
 	private static  void processViralLoad(Patient p, int row) {
-		processTestResult(p, getDate(row), StandardObjects.getGenericViralLoadTest(), getRNA(row));
+		processTestResult(p, getDate(row), StandardObjects.getGenericHiv1ViralLoadTest(), getRNA(row));
 	}
 	private static  void processTestResult(Patient p, Date d, Test t, String result) {
 		if ( result != null && !result.equals("") ) {
