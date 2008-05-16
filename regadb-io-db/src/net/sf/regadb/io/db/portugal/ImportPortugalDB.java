@@ -17,9 +17,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.biojava.bio.symbol.IllegalSymbolException;
+
+import net.sf.regadb.align.Aligner;
+import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
@@ -27,6 +32,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -567,6 +573,14 @@ public class ImportPortugalDB {
     public void importSequences() throws FileNotFoundException {
         System.err.println("Importing sequences ...");
         
+        Map<String, Protein> proteinMap_ = new HashMap<String, Protein>();
+        
+        for(Protein p : StandardObjects.getProteins()) {
+            proteinMap_.put(p.getAbbreviation(), p);
+        }
+        
+        Aligner aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
+        
         HashMap<String, Integer> sampleMap = new HashMap<String, Integer>();
         for (int i = 1; i < sampleTable.numRows(); ++i) {
             sampleMap.put(sampleTable.valueAt(CSampleSampleID, i), new Integer(i));
@@ -611,7 +625,7 @@ public class ImportPortugalDB {
                 System.err.println("? " + seqSampleId + " " + seqFileSampleId);
             else {
                 int row = ((Integer) sampleMap.get(seqFinalSampleId)).intValue();
-                ++seq_found;
+                
 
                 String patientId = sampleTable.valueAt(CSamplePatientID, row);
 
@@ -624,16 +638,17 @@ public class ImportPortugalDB {
 
                 if(viralIsolateHM.get(seqFinalSampleId)==null)
                 {
-                ViralIsolate vi = p.createViralIsolate();
-                vi.setSampleDate(sampleDate);
-                vi.setSampleId(seqFinalSampleId);
-                
-                NtSequence nts = new NtSequence(vi);
-                vi.getNtSequences().add(nts);
-                nts.setNucleotides(fr.xna_);
-                nts.setLabel("Sequence 1");
-
-                viralIsolateHM.put(seqFinalSampleId, vi);
+                    ViralIsolate vi = p.createViralIsolate();
+                    vi.setSampleDate(sampleDate);
+                    vi.setSampleId(seqFinalSampleId);
+                    
+                    NtSequence nts = new NtSequence(vi);
+                    vi.getNtSequences().add(nts);
+                    nts.setNucleotides(fr.xna_);
+                    nts.setLabel("Sequence 1");
+    
+                    viralIsolateHM.put(seqFinalSampleId, vi);
+                    ++seq_found;
                 }
                 else
                 {

@@ -51,7 +51,7 @@ public class ExtraAttributes {
             }
         }
         for(String s : uniqueValues) {
-            System.err.println("\t" + s + " " + posCount + " " + negCount);
+            System.err.println("\t" + s + " + " + posCount + " - " + negCount);
         }
     }
     
