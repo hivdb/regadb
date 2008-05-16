@@ -42,7 +42,7 @@ public class IOAssist
             File outFile = new File(args[1]);
             FileWriter out = new FileWriter(outFile);
             out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <viralIsolates>");
-            imp.readViralIsolates(new InputSource(r), new IOAssistImportHandler(out));
+            imp.readViralIsolates(new InputSource(r), new IOAssistImportHandler(out, wtsUrl));
             out.write("</viralIsolates>");
             out.close();
         } 
