@@ -78,8 +78,8 @@ public class MergeLISFiles {
         
         temp = new HashSet<String>();
         
-        posSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Positive");
-        negSeroStatus_ = getNominalValue(StandardObjects.getHivSeroStatusTestType(), "Negative");
+        posSeroStatus_ = getNominalValue(StandardObjects.getHiv1SeroStatusTestType(), "Positive");
+        negSeroStatus_ = getNominalValue(StandardObjects.getHiv1SeroStatusTestType(), "Negative");
     }
     
     public TestNominalValue getNominalValue(TestType tt, String str){
@@ -224,7 +224,7 @@ public class MergeLISFiles {
     }
     
     private void storeViralLoad(String value, Date date, Patient p, String sampleId) {
-        TestResult t = p.createTestResult(StandardObjects.getGenericViralLoadTest());
+        TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
         t.setValue(value);
         t.setTestDate(date);
         t.setSampleId(sampleId);
