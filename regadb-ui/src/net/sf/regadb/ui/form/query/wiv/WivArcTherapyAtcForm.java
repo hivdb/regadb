@@ -14,7 +14,6 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.date.DateUtils;
 
 import org.hibernate.Query;
@@ -41,8 +40,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         Query q = createQuery(t);
         List<Object[]> res = q.list();
 
-        Calendar cal = Calendar.getInstance();
-        String date = getFormattedDate(getEndDate());//cal.get(Calendar.YEAR) +"0401";
+        String date = getFormattedDate(getEndDate());
         String patcode;
 
         Table out = new Table();

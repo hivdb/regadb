@@ -16,7 +16,7 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
         String query =  "select p, tr, pav "+
                         "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
                         "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-                        "and tr.test.testType.description = '"+ StandardObjects.getViralLoadTestType().getDescription() +"' "+
+                        "and tr.test.testType.description = '"+ StandardObjects.getHiv1ViralLoadTestType().getDescription() +"' "+
                         "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
         setQuery(query);
         

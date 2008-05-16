@@ -392,7 +392,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isViralLoad(r.getTest().getTestType()))
+			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				boolean clipped = isClipped(r);
@@ -477,7 +477,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isViralLoad(r.getTest().getTestType()))
+			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				if (v != 0)
@@ -660,7 +660,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
+			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
 			{
 				expandBounds(r.getTestDate());
 			}

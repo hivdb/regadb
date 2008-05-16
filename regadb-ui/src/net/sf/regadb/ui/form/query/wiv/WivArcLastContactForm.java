@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.forms.fields.DateField;

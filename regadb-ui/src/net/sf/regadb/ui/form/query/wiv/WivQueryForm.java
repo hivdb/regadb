@@ -417,7 +417,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected int getTestTypeNumber(TestType tt){
-        if(StandardObjects.getViralLoadTestType().getDescription().equals(tt.getDescription()))
+        if(StandardObjects.getHiv1ViralLoadTestType().getDescription().equals(tt.getDescription()))
             return 1;
         
         if(StandardObjects.getCd4TestType().getDescription().equals(tt.getDescription()))
@@ -546,7 +546,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
 
     protected String getFormattedViralLoadResult(TestResult tr){
-    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getViralLoadTestType().getDescription()))
+    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getHiv1ViralLoadTestType().getDescription()))
     		return getFormattedViralLoadLog10(tr.getValue());
     	else
     		return getFormattedDecimal(tr.getValue(),2);
@@ -615,7 +615,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
             	
 	            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
-	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getViralLoadTestType(),StandardObjects.getViralLoadLog10TestType()});
+	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
 	            if(tr != null){
 	            	row[position.get("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
 	                row[position.get("TestResult.testDate")] = getFormattedDate(tr.getTestDate());

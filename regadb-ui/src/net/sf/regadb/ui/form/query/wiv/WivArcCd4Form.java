@@ -7,16 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Query;
-
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.ui.form.query.wiv.WivQueryForm.TestCode;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.date.DateUtils;
+
+import org.hibernate.Query;
 
 public class WivArcCd4Form extends WivIntervalQueryForm {
     

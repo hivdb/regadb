@@ -10,7 +10,6 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.util.WivObjects;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
