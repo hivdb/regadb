@@ -148,6 +148,7 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 		panel.setStyleClass("content");
 		
 		queryRoot = new WContainerWidget(panel);
+		queryRoot.setStyleClass("treeroot");
 		
 		
 		warnings = new WContainerWidget(panel);

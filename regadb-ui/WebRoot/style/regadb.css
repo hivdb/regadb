@@ -285,6 +285,10 @@ fieldset {
 	background-color: rgb(215, 215, 215);
 	margin-top:-1.4em;
 	margin-left:-1px;
+	position:relative;
+	top:-0.35em;
+	left:0px;
+	zoom:1;
 	font-weight: bold;
 	padding: 0.1em 0.5em;
 	line-height:1.2em;
@@ -383,10 +387,13 @@ fieldset {
 	padding: 0px;
 }
 
-.querytoolform .querytreefield .content .tree {
-	width:100%;
+.querytoolform .querytreefield .content .treeroot {
 	margin-left:0.5em;
 	margin-bottom:1em;
+}
+
+.querytoolform .querytreefield .content .tree {
+	width:100%;
 }
 
 .querytoolform .querytreefield .warnings {
