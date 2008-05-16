@@ -70,7 +70,7 @@ public class GenerateReport
         replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient));
         
-        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericViralLoadTest(), dateTolerance);
+        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericHiv1ViralLoadTest(), dateTolerance);
         if(viralLoad!=null)
             replace("$VIRAL_LOAD RNA", viralLoad.getValue());
         else

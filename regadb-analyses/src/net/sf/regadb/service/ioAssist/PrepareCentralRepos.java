@@ -4,10 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Analysis;
@@ -20,16 +18,8 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.exportXML.ExportToXML;
-import net.sf.regadb.io.importXML.ImportException;
-import net.sf.regadb.io.importXML.ImportFromXML;
-import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 
@@ -38,8 +28,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class PrepareCentralRepos
 {
@@ -81,9 +69,9 @@ public class PrepareCentralRepos
         
         export = new ExportToXML();
         //Tests
-        Test vl = createGenericViralLoad();
+        Test vl = createGenericHiv1ViralLoad();
         export.writeTopTest(vl, tests);
-        Test vlLog10 = createGenericViralLoadLog10();
+        Test vlLog10 = createGenericHiv1ViralLoadLog10();
         export.writeTopTest(vlLog10, tests);
         Test cd4 = createGenericCD4();
         export.writeTopTest(cd4, tests);
@@ -218,20 +206,20 @@ public class PrepareCentralRepos
         return resistanceTest;
     }
     
-    private static Test createGenericViralLoad()
+    private static Test createGenericHiv1ViralLoad()
     {
-        TestType vlType = new TestType(new TestObject("Patient test", 0), "Viral Load (copies/ml)");
+        TestType vlType = new TestType(new TestObject("Patient test", 0), "Hiv-1 Viral Load (copies/ml)");
         vlType.setValueType(limitedNumber);
-        Test vlTest = new Test(vlType, "Viral Load (generic)");
+        Test vlTest = new Test(vlType, "Hiv-1 Viral Load (generic)");
         
         return vlTest;
     }
     
-    private static Test createGenericViralLoadLog10()
+    private static Test createGenericHiv1ViralLoadLog10()
     {
-        TestType vlType = new TestType(new TestObject("Patient test", 0), "Viral Load (log10)");
+        TestType vlType = new TestType(new TestObject("Patient test", 0), "Hiv-1 Viral Load (log10)");
         vlType.setValueType(limitedNumber);
-        Test vlTest = new Test(vlType, "Viral Load log10 (generic)");
+        Test vlTest = new Test(vlType, "Hiv-1 Viral Load log10 (generic)");
         
         return vlTest;
     }
