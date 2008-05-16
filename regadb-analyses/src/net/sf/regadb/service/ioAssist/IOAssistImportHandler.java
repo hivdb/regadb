@@ -120,7 +120,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     private void align(final NtSequence ntseq) {
         try {
             aaSeqs_ = aligner_.alignHiv(ntseq);
-        } catch (IllegalSymbolException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
