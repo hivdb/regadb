@@ -75,7 +75,7 @@ public class ParseTests extends Parser {
                         Test t = tests.get(vlSysNo);
                         
                         if(t == null)
-                            t = StandardObjects.getGenericViralLoadTest();
+                            t = StandardObjects.getGenericHiv1ViralLoadTest();
                         
                         createTestResult(p,t,d,getFormattedValue(unitNo, vl),sampleNo);
                     }
@@ -118,7 +118,7 @@ public class ParseTests extends Parser {
         for(int i=1;i<brands.numRows();++i){
             String no = brands.valueAt(CVLSysNo, i);
             String name = brands.valueAt(CVLName, i);
-            Test t = new Test(StandardObjects.getViralLoadTestType(),name);
+            Test t = new Test(StandardObjects.getHiv1ViralLoadTestType(),name);
             res.put(no, t);
         }
         
