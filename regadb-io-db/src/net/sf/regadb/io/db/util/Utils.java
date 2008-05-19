@@ -661,6 +661,11 @@ public class Utils {
              if(mapping==null) {
                  ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was available.");
              }
+             else
+             {
+            	 ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in mapping file");
+             }
+             
              return mapping;
          }
          else {
