@@ -639,22 +639,24 @@ public class ImportUNIBS
     	
     	if(medicinsList == null)
     	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found.");
-			
-    		return;
+    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found...Storing anyway!");
     	}
 
     	if(startDate != null && endDate != null)
     	{
     		if(startDate.equals(endDate))
     		{
-    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": Dates are equal...Ignoring.");
+    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": Dates are equal...Ignoring!");
+    		
+    			//Do not store here...
+    			return;
     		}
     		
 	    	if(startDate.after(endDate))
 	    	{
 	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": End date is in the past.");
 	    			
+	    		//Do not store here...
 	    		return;
 	    	}
     	}
@@ -666,14 +668,17 @@ public class ImportUNIBS
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
     	
-    	for (int i = 0; i < medicinsList.size(); i++) 
+    	if(medicinsList != null)
     	{
-    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
-    		                                        1.0, 
-    		                                        false,
-    		                                        false, 
-    		                                        (long)Frequency.DAYS.getSeconds());
-    		t.getTherapyGenerics().add(tg);
+	    	for (int i = 0; i < medicinsList.size(); i++) 
+	    	{
+	    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
+	    		                                        1.0, 
+	    		                                        false,
+	    		                                        false, 
+	    		                                        (long)Frequency.DAYS.getSeconds());
+	    		t.getTherapyGenerics().add(tg);
+	    	}
     	}
     	
     	if(motivation != null && !motivation.equals(""))
