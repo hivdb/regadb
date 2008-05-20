@@ -30,7 +30,7 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
         
         // last item gets selected when setCurrentItem can't find the given item
         // set it back to zero if that happens
-    	if (!this.currentText().keyOrValue().equals(constant.getHumanStringValue())) {
+    	if (values.size() > 0 && !this.currentText().keyOrValue().equals(constant.getHumanStringValue() )) {
     		this.setCurrentIndex(0);
     	}
     	
