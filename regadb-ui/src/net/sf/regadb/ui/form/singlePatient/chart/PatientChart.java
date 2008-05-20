@@ -369,7 +369,7 @@ public class PatientChart
 
 	private double getNumberValue(TestResult result)
 	{
-		if (result.getTest().getTestType().getValueType().getValueTypeIi().intValue() == 2)
+		if (hasLimitedNumberValue(result))
 			return Double.parseDouble(result.getValue().substring(1));
 		else
 			return Double.parseDouble(result.getValue());
@@ -377,10 +377,14 @@ public class PatientChart
 
 	private boolean isClipped(TestResult result)
 	{
-		if (result.getTest().getTestType().getValueType().getValueTypeIi() == 2)
+		if (hasLimitedNumberValue(result))
 			return result.getValue().charAt(0) != '=';
 		else
 			return false;
+	}
+	
+	private boolean hasLimitedNumberValue(TestResult tr) {
+		return tr.getTest().getTestType().getValueType().getDescription().equals(StandardObjects.getLimitedNumberValueType().getDescription());
 	}
 
 	private void drawValues(Graphics2D vg)
