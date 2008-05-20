@@ -136,6 +136,8 @@ public class ImportSequences
                                 System.err.println("ALIGN: ERROR align row " + i);
                                 System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
                             }
+                            
+                            ConsoleLogger.getInstance().logInfo("Successful");
                         } 
                         else 
                         {
@@ -148,11 +150,8 @@ public class ImportSequences
                     {
                         ConsoleLogger.getInstance().logWarning("Empty seq for patient "+patientId+"");
                     }
-                    
-                    ConsoleLogger.getInstance().logInfo("Successful");
                 }
             }
-        
         
         ConsoleLogger.getInstance().logInfo(""+counter+" sequence(s) aligned");
         
