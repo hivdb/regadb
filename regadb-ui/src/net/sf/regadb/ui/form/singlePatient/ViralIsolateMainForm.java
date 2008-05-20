@@ -37,6 +37,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.core.utils.WVerticalAlignment;
 
@@ -82,6 +83,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     private TextField typeTF;
 	private Label subTypeL;
 	private TextField subTypeTF;
+	private WText fastaLabel_;
     
     private static final String defaultSequenceLabel_ = "Sequence ";
 
@@ -146,6 +148,9 @@ public class ViralIsolateMainForm extends WContainerWidget
             autoFix_ = new WCheckBox(tr("formfield.ntfield.checkbox.autofixSequence"), buttonTable.elementAt(1, 0));
             uploadFasta_ = new WPushButton(tr("formfield.ntfield.button.uploadFastaFile"), buttonTable.elementAt(2, 0));
             ntFileTable.elementAt(0, 1).setVerticalAlignment(WVerticalAlignment.AlignBottom);
+            fastaLabel_ = new WText(buttonTable.elementAt(2, 1));
+            fastaLabel_.setStyleClass("viral-isolate-fasta-label");
+            
             upload_.decorationStyle().font().setSize(WFontSize.Smaller);
             
             uploadFasta_.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -186,12 +191,14 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                           ntTF.setText(read.xna_);
 	                           seqComboBox.disable();
 	                           addButton.disable();
+	                           fastaLabel_.setText(lt("["+read.fastaHeader_+"]"));
 	                       }
 	                       else
 	                       {
 	                           ntTF.setText(read.xna_);
 	                           seqComboBox.disable();
 	                           addButton.disable();
+	                           fastaLabel_.setText(lt("["+read.fastaHeader_+"]"));
 	                       }
                        }
                    }
@@ -268,6 +275,7 @@ public class ViralIsolateMainForm extends WContainerWidget
                         
                         seqComboBox.enable();
                         addButton.enable();
+                        fastaLabel_.setText(lt(""));
                     }
                 });
         

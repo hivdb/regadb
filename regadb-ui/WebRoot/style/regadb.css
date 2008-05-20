@@ -698,4 +698,7 @@ fieldset {
 	max-width:14em;
 }
 
+*.viral-isolate-fasta-label {
+	color: blue;
+}
 
