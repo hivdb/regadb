@@ -111,7 +111,9 @@ public class Utils {
                 day = Integer.parseInt(dayString);
             
             //Be careful, the calendar starts with january = 0
-            cal.set(year, month-1, day);
+            //Be even more careful if the month is already 0
+            if(month!=0)
+            	cal.set(year, month-1, day);
             
             return new Date(cal.getTimeInMillis());
         } else {
