@@ -203,7 +203,7 @@ public class QueryToolRunnable implements Runnable {
 			line = "";
 		}
 		
-		if (!line.isEmpty()) {
+		if (line.length() != 0) {
 			line= line.substring(0, line.length()-1) + "\n";			
 		}
 		return line;
@@ -238,7 +238,7 @@ public class QueryToolRunnable implements Runnable {
         		indexLine += columnNames.get(i) + ";";
         	}
         }   
-        if (! indexLine.isEmpty()) {
+        if (indexLine.length() != 0) {
         	indexLine = indexLine.substring(0, indexLine.length()-1);       	
         }
         return indexLine + "\n";
