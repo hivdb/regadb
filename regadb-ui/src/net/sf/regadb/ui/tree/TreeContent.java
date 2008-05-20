@@ -16,6 +16,7 @@ import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
