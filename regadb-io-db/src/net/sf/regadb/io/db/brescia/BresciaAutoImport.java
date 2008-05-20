@@ -6,8 +6,8 @@ import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
 
 public class BresciaAutoImport {
     public static void main(String [] args) {
-        if(args.length!=3) {
-            System.err.println("Usage: BresciaAutoImport outputDirectory database.mdb mappingBasePath");
+        if(args.length!=4) {
+            System.err.println("Usage: BresciaAutoImport outputDirectory database.mdb mappingBasePath sequenceExcelFile");
             System.exit(0);
         }
 
@@ -43,6 +43,6 @@ public class BresciaAutoImport {
         a2c.createCsv(new File(args[1]), tempDir);
         
         ImportUNIBS imp = new  ImportUNIBS();
-        imp.getData(tempDir, args[2]);
+        imp.getData(tempDir, args[2], args[3]);
     }
 }

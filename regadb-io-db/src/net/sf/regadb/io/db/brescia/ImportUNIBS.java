@@ -43,7 +43,6 @@ public class ImportUNIBS
 	private Table bMarkersTable;
 	private Table adeTable;
 	private Table hivTherapyTable;
-	private Table sequencesTable;
 	
 	//Translation mapping tables
 	private Table countryMappingTable;
@@ -77,7 +76,7 @@ public class ImportUNIBS
     	{
     		ImportUNIBS imp = new  ImportUNIBS();
         
-    		imp.getData(new File(args[0]), args[1]);
+    		imp.getData(new File(args[0]), args[1], args[2]);
     	}
     	catch(Exception e)
     	{
@@ -85,7 +84,7 @@ public class ImportUNIBS
     	}
     }
     
-    public void getData(File workingDirectory, String mappingBasePath)
+    public void getData(File workingDirectory, String mappingBasePath, String excelFile)
     {
     	//Just for testing purposes...otherwise remove
 		ConsoleLogger.getInstance().setInfoEnabled(true);
@@ -108,8 +107,6 @@ public class ImportUNIBS
     		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "5_TARV.csv");
     		
     		adeTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "6_ADEs.csv");
-    		
-    		sequencesTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + "8_Sequenze.csv");
     		
     		//Filling translation mapping tables
     		ConsoleLogger.getInstance().logInfo("Initializing mapping tables...");
@@ -149,9 +146,10 @@ public class ImportUNIBS
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
     		ConsoleLogger.getInstance().logInfo("Successful");
-    		//ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
-    		//TODO
-    		//HashMap<String, ViralIsolate> viralisolates = handleSequences();
+    		ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
+    		ImportSequences sequenceImport = new ImportSequences(patientMap, new File(excelFile));
+    		sequenceImport.run();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_patients.xml");

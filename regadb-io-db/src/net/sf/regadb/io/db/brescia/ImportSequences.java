@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import jxl.Cell;
 import jxl.Sheet;
@@ -24,13 +22,10 @@ import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
-import org.biojava.bio.BioError;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
-public class ImportSequences {
+public class ImportSequences 
+{
     private Map<String, Patient> patientMap_;
     private File sequenceExcellFile_;
     private Aligner aligner_;
@@ -70,22 +65,29 @@ public class ImportSequences {
         
         int emptyCounter = 0;
         
-        for (int i = 1; i < s.getRows(); i++) {
+        for (int i = 1; i < s.getRows(); i++) 
+        {
             String patientId = s.getCell(CpatientId, i).getContents().trim();
             String sampleDate = s.getCell(CsampleDate, i).getContents().trim();
             String seq = s.getCell(Csequence, i).getContents().trim();
             
             Patient p = patientMap_.get(patientId);
-            p = new Patient();
             
-            if (p == null) {
+            if (p == null) 
+            {
                 ConsoleLogger.getInstance().logWarning(
                         "No sequence patient with id " + patientId + " found.");
-            } else {
+            } 
+            else 
+            {
                     Date gtDate = Utils.parseBresciaSeqDate(sampleDate);
 
-                    if(!"".equals(seq)) {
-                        if (gtDate != null) {
+                    if(!"".equals(seq)) 
+                    {
+                        if (gtDate != null) 
+                        {
+                        	ConsoleLogger.getInstance().logInfo("Aligning sequence for patient "+patientId+"");
+                        	
                             ViralIsolate vi = p.createViralIsolate();
                             vi.setSampleDate(gtDate);
                             vi.setSampleId(counter+"");
@@ -97,39 +99,60 @@ public class ImportSequences {
                             vi.getNtSequences().add(ntseq);
 
                             List<AaSequence> aaseqs = null;
-                            try {
+                            try 
+                            {
                                 aaseqs = aligner_.alignHiv(ntseq);
-                            } catch (IllegalSymbolException e) {
+                            } 
+                            catch (IllegalSymbolException e) 
+                            {
                                 e.printStackTrace();
                             }
-                            if(aaseqs!=null) {
-                                if(aaseqs.size()==0) {
+                            if(aaseqs!=null) 
+                            {
+                                if(aaseqs.size()==0) 
+                                {
                                     System.err.println("ALIGN: ERROR align (no results) row" + i);
                                     System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
-                                } else {
+                                } 
+                                else 
+                                {
                                     System.err.print("ALIGN: Row " + i + " -> ");
-                                    for(AaSequence aaseq : aaseqs) {
+                                    
+                                    for(AaSequence aaseq : aaseqs) 
+                                    {
                                         System.err.print(aaseq.getProtein().getAbbreviation() + " ");
                                     }
+                                    
                                     System.err.println();
-                                    if(aaseqs.size()<2) {
+                                    
+                                    if(aaseqs.size()<2) 
+                                    {
                                         System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
                                     }
                                 }
-                            } else {
+                            } 
+                            else 
+                            {
                                 System.err.println("ALIGN: ERROR align row " + i);
                                 System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
                             }
-                        } else {
+                        } 
+                        else 
+                        {
                             ConsoleLogger.getInstance().logError(
                                     "Invalid date specified in the viral isolate file ("
                                             + i + " -> " + sampleDate + ").");
                         }
-                    } else {
-                        ConsoleLogger.getInstance().logError("Empty seq");
+                    } 
+                    else 
+                    {
+                        ConsoleLogger.getInstance().logWarning("Empty seq for patient "+patientId+"");
                     }
                 }
             }
+        
+        
+        ConsoleLogger.getInstance().logInfo(""+counter+" sequence(s) aligned");
         
         System.err.println("EmptyCounter=" + emptyCounter);
     }
