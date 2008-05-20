@@ -7,13 +7,13 @@ import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
-import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
@@ -35,9 +35,9 @@ import net.sf.regadb.ui.form.impex.ImportFormAdd;
 import net.sf.regadb.ui.form.impex.ImportFormRunning;
 import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
-import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionRunForm;
+import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcCd4Form;
 import net.sf.regadb.ui.form.query.wiv.WivArcDeathsForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcLastContactForm;
@@ -961,7 +961,7 @@ public class TreeContent
         {
             public void performAction(TreeMenuNode node) 
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.add"), InteractionState.Adding, new QueryDefinition()));
+                RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.add"), InteractionState.Adding, new QueryDefinition(StandardObjects.getHqlQueryQueryType())));
             }
         });
         queryDefinitionSelected = new QueryDefinitionSelectedItem(queryDefinitionMain);

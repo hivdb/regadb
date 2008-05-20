@@ -21,6 +21,8 @@ public class QueryDefinition implements java.io.Serializable {
 
     private String query;
 
+    private int queryTypeIi;
+
     private Set<QueryDefinitionParameter> queryDefinitionParameters = new HashSet<QueryDefinitionParameter>(
             0);
 
@@ -33,15 +35,21 @@ public class QueryDefinition implements java.io.Serializable {
     public QueryDefinition() {
     }
 
+    /** minimal constructor */
+    public QueryDefinition(int queryTypeIi) {
+        this.queryTypeIi = queryTypeIi;
+    }
+
     /** full constructor */
     public QueryDefinition(SettingsUser settingsUser, String name,
-            String description, String query,
+            String description, String query, int queryTypeIi,
             Set<QueryDefinitionParameter> queryDefinitionParameters,
             Set<QueryDefinitionRun> queryDefinitionRuns) {
         this.settingsUser = settingsUser;
         this.name = name;
         this.description = description;
         this.query = query;
+        this.queryTypeIi = queryTypeIi;
         this.queryDefinitionParameters = queryDefinitionParameters;
         this.queryDefinitionRuns = queryDefinitionRuns;
     }
@@ -85,6 +93,14 @@ public class QueryDefinition implements java.io.Serializable {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public int getQueryTypeIi() {
+        return this.queryTypeIi;
+    }
+
+    public void setQueryTypeIi(int queryTypeIi) {
+        this.queryTypeIi = queryTypeIi;
     }
 
     public Set<QueryDefinitionParameter> getQueryDefinitionParameters() {

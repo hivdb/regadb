@@ -21,6 +21,9 @@
     <property name="query" type="string">
       <column name="query" />
     </property>
+    <property name="queryTypeIi" type="int">
+      <column name="query_type_ii" not-null="true" />
+    </property>
     <set name="queryDefinitionParameters" inverse="true" cascade="all">
       <key>
         <column name="query_definition_ii" />

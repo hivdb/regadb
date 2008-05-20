@@ -188,4 +188,12 @@ public class StandardObjects {
     public static Test getContactTest(){
     	return contactTest;
     }
+
+    public static int getHqlQueryQueryType(){
+        return 1;
+    }
+
+    public static int getQueryToolQueryType(){
+        return 2;
+    }
 }
