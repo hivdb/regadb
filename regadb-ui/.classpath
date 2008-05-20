@@ -11,5 +11,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/wts-client-java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
 	<classpathentry kind="src" path="/pharmadm"/>
+	<classpathentry kind="lib" path="/pharmadm-ui/lib/xstream-1.3.jar"/>
+	<classpathentry kind="lib" path="/pharmadm-ui/lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

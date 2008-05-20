@@ -4,14 +4,14 @@ import java.util.List;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 
-public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
+public abstract class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
 {
+	
     private static String [] _colNames = {"dataTable.queryDefinition.colName.name", "dataTable.queryDefinition.colName.description", "dataTable.queryDefinition.colName.uid"};
     
     private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description", "queryDefinition.settingsUser.uid"};
@@ -27,7 +27,7 @@ public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefiniti
 
     public List<QueryDefinition> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean ascending)
     {
-        return t.getQueryDefinitions(startIndex, amountOfRows, filterVarNames_[sortIndex], HibernateStringUtils.filterConstraintsQuery(this), ascending);
+        return t.getQueryDefinitions(startIndex, amountOfRows, filterVarNames_[sortIndex], HibernateStringUtils.filterConstraintsQuery(this), ascending, getQueryType());
     }
 
     public long getDataSetSize(Transaction t)
@@ -63,13 +63,9 @@ public class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefiniti
         filters_[2] = new StringFilter();
     }
 
-    public void selectAction(QueryDefinition selectedItem)
-    {
-    	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView.selectNode();
-    }
+    public abstract void selectAction(QueryDefinition selectedItem);
+    
+    public abstract int getQueryType();
 
     public boolean[] sortableFields()
     {

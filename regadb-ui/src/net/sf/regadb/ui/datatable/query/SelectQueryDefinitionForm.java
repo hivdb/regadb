@@ -18,7 +18,7 @@ public class SelectQueryDefinitionForm extends SelectForm
 
     public void init()
     {
-        dataTableI_ = new ISelectQueryDefinitionDataTable();
+        dataTableI_ = new SelectHqlQueryDefinitionDatatable();
         dataTable_ = new DataTable<QueryDefinition>(dataTableI_, 10);
         
         addWidget(dataTable_);

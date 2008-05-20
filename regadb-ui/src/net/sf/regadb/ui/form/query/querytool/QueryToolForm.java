@@ -5,8 +5,11 @@ package net.sf.regadb.ui.form.query.querytool;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.thoughtworks.xstream.XStream;
 
 import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.query.querytool.select.SelectionGroupBox;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorGroupBox;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -33,16 +36,16 @@ public class QueryToolForm extends FormWidget implements QueryContext{
     private TextArea descriptionTA;
     private Label creatorL;
     private TextField creatorTF;
+    
+    private QueryDefinition definition;
 	
-	
-	/**
-	 * add a new Query
-	 */
 	public QueryToolForm(WMessage title, InteractionState istate) {
 		super(title, istate);
-		init(null);
+		QueryDefinition query = new QueryDefinition(StandardObjects.getQueryToolQueryType());
+		init(query);
 	}
-	
+    
+    
 	public QueryToolForm(WMessage title, InteractionState istate, QueryDefinition query) {
 		super(title, istate);
 		init(query);
@@ -62,6 +65,7 @@ public class QueryToolForm extends FormWidget implements QueryContext{
     
 	public void init(QueryDefinition query) {
 		setStyleClass("querytoolform");
+		definition = query;
 		queryGroup_ = new QueryEditorGroupBox(tr("form.query.querytool.group.query"), this, query);
 		new SelectionGroupBox(queryGroup_.getQueryEditor(), tr("form.query.querytool.group.fields"), this);
 		runGroup_ = new RunGroupBox(queryGroup_.getQueryEditor(), this);
@@ -75,6 +79,7 @@ public class QueryToolForm extends FormWidget implements QueryContext{
 		
     	nameL = new Label(tr("form.query.definition.label.name"));
     	nameTF = new TextField(getInteractionState(), this);
+    	nameTF.setText(definition.getName());
         nameTF.setMandatory(true);
         addLineToTable(infoTable, nameL, nameTF);
         infoTable.elementAt(0, 0).setStyleClass("labels");
@@ -88,6 +93,7 @@ public class QueryToolForm extends FormWidget implements QueryContext{
         descriptionL = new Label(tr("form.query.definition.label.description"));
         descriptionTA = new TextArea(getInteractionState(), this);
         descriptionTA.setMandatory(true);
+        descriptionTA.setText(definition.getDescription());
         addLineToTable(infoTable, descriptionL, descriptionTA);
         descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
@@ -100,6 +106,7 @@ public class QueryToolForm extends FormWidget implements QueryContext{
         	creatorL = new Label(tr("form.query.definition.label.creator"));
             creatorTF = new TextField(getInteractionState(), this);
             addLineToTable(infoTable, creatorL, creatorTF);
+            creatorTF.setText(definition.getSettingsUser().getUid());
         }	
         
         
@@ -116,25 +123,42 @@ public class QueryToolForm extends FormWidget implements QueryContext{
 	public void cancel() {
 		if(getInteractionState() == InteractionState.Adding)
 		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryWiv);
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelect);
 		}
+		else
+		{
+			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
+		}
+		
 	}
 
 	public WMessage deleteObject() {
-		// TODO Auto-generated method stub
-		return null;
+		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+        t.delete(definition);
+        t.commit();
+        
+        return null;
 	}
 
 	public void redirectAfterDelete() {
-		// TODO Auto-generated method stub
-
+		RegaDBMain.getApp().getTree().getTreeContent().queryToolSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(null);
 	}
 
 	public void saveData() {
-		if(getInteractionState() == InteractionState.Adding)
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryWiv);
-		}
+		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+    	
+    	definition.setName(nameTF.getFormText());
+    	definition.setDescription(descriptionTA.getFormText());
+    	definition.setQuery(new XStream().toXML(this.getEditorModel().getQueryEditor().getQuery()));
+    	definition.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
+    	
+    	update(definition, t);
+    	
+    	t.commit();
+    	
+    	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(definition);
+		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
 	}
 
 	public WhereClause getContextClause() {

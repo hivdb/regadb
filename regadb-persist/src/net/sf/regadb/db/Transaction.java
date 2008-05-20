@@ -1134,11 +1134,11 @@ public class Transaction {
     }
     
     @SuppressWarnings("unchecked")
-    public List<QueryDefinition> getQueryDefinitions(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, boolean ascending)
+    public List<QueryDefinition> getQueryDefinitions(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, boolean ascending, int queryType)
     {
-        String queryString = "from QueryDefinition as queryDefinition ";
+        String queryString = "from QueryDefinition as queryDefinition where queryDefinition.queryTypeIi = " + queryType;
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 

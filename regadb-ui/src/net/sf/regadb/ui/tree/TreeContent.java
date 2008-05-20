@@ -14,9 +14,9 @@ import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
-import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
@@ -284,6 +284,10 @@ public class TreeContent
     public ActionItem logView;
     public ActionItem logDelete;
     public LogSelectedItem logSelectedItem;
+	public QueryDefinitionSelectedItem queryToolSelected;
+	public ActionItem queryToolSelectedView;
+	public ActionItem queryToolSelectedEdit;
+	public ActionItem queryToolSelectedDelete;
     
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
@@ -940,15 +944,61 @@ public class TreeContent
           
             queryToolAdd = new ActionItem(WResource.tr("menu.query.querytool.add"), queryToolMain, new ITreeAction() {
                 public void performAction(TreeMenuNode node) {
-                    RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WResource.tr("form.query.querytool.add"), InteractionState.Adding));
+                    RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WResource.tr("form.query.querytool.add"), InteractionState.Adding ));
                 }
-            });        
-          
-//          queryToolView = new ActionItem(WResource.tr("menu.query.querytool.view"), queryTool, new ITreeAction() {
-//  			public void performAction(TreeMenuNode node) {
-//  				RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WResource.tr("form.query.querytool.add"), InteractionState.Viewing));
-//  			}
-//          });            
+            }); 
+            
+            queryToolSelected = new QueryDefinitionSelectedItem(queryToolMain);
+            queryToolSelectedView = new ActionItem(WResource.tr("menu.query.querytool.selected.view"), queryToolSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WWidget.tr("form.query.querytool.selected.view"), InteractionState.Viewing, queryToolSelected.getSelectedItem()));
+                }
+            });
+            queryToolSelectedEdit = new ActionItem(WResource.tr("menu.query.querytool.selected.edit"), queryToolSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                	RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WWidget.tr("form.query.querytool.selected.edit"), InteractionState.Editing, queryToolSelected.getSelectedItem()));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                	if((RegaDBMain.getApp().getLogin() != null) && (queryToolSelected.getSelectedItem() != null))
+                	{
+                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
+                	}
+                	else
+                	{
+                		return false;
+                	}
+                	
+                }
+            };
+            queryToolSelectedDelete = new ActionItem(WResource.tr("menu.query.querytool.selected.delete"), queryToolSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new QueryToolForm(WWidget.tr("form.query.querytool.selected.delete"), InteractionState.Deleting, queryToolSelected.getSelectedItem()));
+                }
+            })
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                	if((RegaDBMain.getApp().getLogin() != null) && (queryToolSelected.getSelectedItem() != null))
+                	{
+                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
+                	}
+                	else
+                	{
+                		return false;
+                	}
+                }
+            };
 
         queryDefinitionMain = new QueryDefinitionItem(queryMain);
         queryDefinitionSelect = new ActionItem(WResource.tr("menu.query.definition.select"), queryDefinitionMain, new ITreeAction()

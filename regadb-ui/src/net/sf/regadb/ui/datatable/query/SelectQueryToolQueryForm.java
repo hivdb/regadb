@@ -14,7 +14,7 @@ public class SelectQueryToolQueryForm extends SelectForm {
 	}
 	
 	private void init() {
-        dataTableI_ = new ISelectQueryDefinitionDataTable();
+        dataTableI_ = new SelectQueryToolQueryDefinitionDatatable();
         dataTable_ = new DataTable<QueryDefinition>(dataTableI_, 10);
 
         addWidget(dataTable_);

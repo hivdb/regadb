@@ -2,9 +2,7 @@ package net.sf.regadb.ui.datatable.query;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.ui.framework.forms.SelectForm;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.WContainerWidget;
 
 public class SelectQueryDefinitionRunForm extends SelectForm
 {

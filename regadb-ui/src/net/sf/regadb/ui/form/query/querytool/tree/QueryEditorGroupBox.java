@@ -12,6 +12,7 @@ import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.custom.rega.savable.Savable;
+import com.thoughtworks.xstream.XStream;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
@@ -42,7 +43,7 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	public QueryEditorGroupBox(WMessage title, QueryToolForm parent, QueryDefinition def) {
 		super(title, parent);
 		init(parent);
-		initEditor((def==null?newQuery(): loadQuery(def)));
+		initEditor(loadQuery(def));
 	}
 	
 	/**
@@ -51,17 +52,14 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	 * @return
 	 */
 	private QueryEditor loadQuery(QueryDefinition def) {
-		return new QueryEditor(new Query(), this);
+		if (def.getQuery() == null) {
+			return new QueryEditor(new Query(), this);
+		}
+		else {
+	    	XStream xs = new XStream();
+	    	return new QueryEditor((Query) xs.fromXML(def.getQuery()), this);
+		}
 	}
-	
-	/**
-	 * return a new empty query editor
-	 * @return
-	 */
-	private QueryEditor newQuery() {
-		QueryEditor editor = new QueryEditor(new Query(), this);
-		return editor;
-	}	
 	
 	private void initEditor(QueryEditor editor) {
 		this.editor = editor;
