@@ -11,6 +11,10 @@ import org.apache.commons.io.FileUtils;
 
 public class GenerateWindowsInstaller {
     public static void main(String [] args) {
+    	if(args.length<1) {
+    		System.err.println("Provide a workspace as argument!");
+    		System.exit(0);
+    	}
         File buildDir = null;
         File reportDir = null;
         File bundleDir = null;
@@ -22,7 +26,7 @@ public class GenerateWindowsInstaller {
             e.printStackTrace();
         }
         Jarbuilder builder = new Jarbuilder();
-        builder.run(buildDir.getAbsolutePath(), reportDir.getAbsolutePath(), "/home/plibin0/myWorkspace", false);
+        builder.run(buildDir.getAbsolutePath(), reportDir.getAbsolutePath(), args[0], false);
         GenerateWindowsBundles.run(buildDir.getAbsolutePath(), bundleDir.getAbsolutePath());
         
         try {
