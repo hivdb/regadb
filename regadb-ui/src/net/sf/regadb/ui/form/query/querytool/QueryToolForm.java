@@ -78,6 +78,7 @@ public class QueryToolForm extends FormWidget implements QueryContext{
         nameTF.setMandatory(true);
         addLineToTable(infoTable, nameL, nameTF);
         infoTable.elementAt(0, 0).setStyleClass("labels");
+        infoTable.elementAt(0, 1).setStyleClass("inputs");
         nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
 				queryGroup_.getQueryEditor().setDirty(true);

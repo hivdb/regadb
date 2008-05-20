@@ -13,7 +13,7 @@
   	font-weight: bold;
   	font-size: 20px;
   	margin-left: 10px;
-  	margin-right: 5px;
+  	margin-right: 5px;  
 }
 
 *.filterTF-valid-input
@@ -301,6 +301,10 @@ fieldset {
 	border: 1px solid rgb(64, 64, 64);
 	padding:0.2em 0px 0px 0px;
 	background-color: rgb(215, 215, 215);
+	position:relative;
+	top:0px;
+	left:0px;
+	zoom:1;
 }
 
 .querytoolform fieldset .toolbar {
@@ -327,11 +331,11 @@ fieldset {
 }
 
 .querytoolform .infofield input, .querytoolform .infofield textarea {
-	width: 100%;	
+	width: 98%;	
 }
 
-.querytoolform .infofield table .labels{
-	width:1px;
+.querytoolform .infofield table td.inputs{
+	width:100%;
 }
 
 .querytoolform .infofield textarea {
@@ -425,11 +429,14 @@ fieldset {
 
 .querytoolform .tree .treenodecontent {
 	width:100%;	
+	display: block !important;
 	display:table !important;
 }
 
 .querytoolform .tree .treenodecontent td.checkbox {
 		width:1.5em;
+		vertical-align:middle;
+		margin:0px;
 }
 
 .querytoolform .querytreefield .content .tree .treenodelabel{
