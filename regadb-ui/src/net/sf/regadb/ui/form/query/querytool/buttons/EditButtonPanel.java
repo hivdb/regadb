@@ -123,8 +123,8 @@ public class EditButtonPanel extends ButtonPanel {
 		
 	}
 	
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
+	public void setEditable(boolean enabled) {
+		super.setEditable(enabled);
 		this.enabled = enabled;
 		checkButtons(enabled);
 	}

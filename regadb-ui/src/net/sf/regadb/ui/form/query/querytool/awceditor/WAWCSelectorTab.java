@@ -47,6 +47,7 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
         	}
         }
         WAWCSelectorPanel newPanel = new WComposedAWCSelectorPanel(context, clause);
+        newPanel.setStyleClass(newPanel.styleClass() + " " + (selectorPanels.size() % 2 == 0 ? "even":"odd"));
         return addSelectorPanel(newPanel);
 	}
 	

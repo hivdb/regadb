@@ -6,14 +6,14 @@ public class NewWhereClauseTreeNode extends QueryTreeNode{
 	
 	
 	
-	public NewWhereClauseTreeNode(QueryEditorGroupBox editor) {
-		super(null, editor);
+	public NewWhereClauseTreeNode(QueryEditorGroupBox editor, QueryTreeNode parent) {
+		super(null, editor, parent);
 		init();
 	}
 	
 	private void init() {
 		SelectClauseDialog dialog = new SelectClauseDialog(this);
-		addStyle("atomictreenode");
+		getStyleClasses().addStyle("atomictreenode");
 		showDialog(dialog);
 	}
 	

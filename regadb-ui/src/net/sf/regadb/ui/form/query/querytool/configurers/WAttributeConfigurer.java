@@ -69,6 +69,7 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 
 	public void setSelectedIndex(int index) {
 		ovar.setSelectedIndex(index);
+		changeSelection();
 	}
 	
 

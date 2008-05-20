@@ -316,7 +316,6 @@ fieldset {
 /* info field */
 
 .querytoolform .infofield {
-	display:none;	
 }
 
 .querytoolform .infofield table {
@@ -411,7 +410,7 @@ fieldset {
 }
 
 .querytoolform .querytreefield .warnings .runbutton {
-	width:5em !important;
+	width:6em !important;
 	text-align:right !important;
 }
 
@@ -422,6 +421,15 @@ fieldset {
 	float:right;
 	display:block;
 	margin-top:0.5em;
+}
+
+.querytoolform .tree .treenodecontent {
+	width:100%;	
+	display:table !important;
+}
+
+.querytoolform .tree .treenodecontent td.checkbox {
+		width:1.5em;
 }
 
 .querytoolform .querytreefield .content .tree .treenodelabel{
@@ -563,8 +571,16 @@ fieldset {
 
 /* selector panels */
 
+.newclausedialog .dialogcontent {
+	padding:0px !important;	
+}
+
 .querytoolform .selectorpanel {
 	margin:0.5em 0.25em;
+}
+
+.querytoolform .selectortabbedpane {
+	margin:0px 0px 0.5em;	
 }
 
 .querytoolform .selectorpanel .tabbedpane{
@@ -572,7 +588,7 @@ fieldset {
 }
 
 .querytoolform .selectorpanel .tabstack {
-	border: 1px solid rgb(102, 102, 102);
+	border-top: 1px solid rgb(102, 102, 102);
 	background-color: rgb(225, 225, 225);
 }
 
@@ -581,16 +597,22 @@ fieldset {
 	background-color: rgb(235, 235, 235);
 	margin: 0.2em 0px 0px;
 	padding-bottom:0.5em;
+	min-height:250px;
 }
 
 .querytoolform .selectorpanel .tabmenu .item, .querytoolform .selectorpanel .tabmenu .itemselected {
-	background-color: rgb(215, 215, 215);
 	border-top: 1px solid rgb(102, 102, 102);
 	border-left: 1px solid rgb(102, 102, 102);
 	border-right: 1px solid rgb(102, 102, 102);
-	padding: 0.1em 0.5em;
-	line-height:1.2em;
 	text-decoration:none !important;
+	display:block;
+	float:left;
+	margin-right:0.2em !important;
+	min-width:6em;
+	height:1.2em;
+	padding: 3px 0.3em;
+	line-height:1.2em;
+	margin-bottom:-1px !important;
 }
 
 .querytoolform .selectorpanel .tabmenu .item span {
@@ -601,18 +623,42 @@ fieldset {
 	
 .querytoolform .selectorpanel .tabmenu .itemselected span{
 	color:#000;
-	font-weight: bold;
 	text-decoration:none !important;
 }
 
 .querytoolform .selectorpanel .tabmenu .itemselected {
-	padding: 0.2em 0.5em;
-	line-height:1.4em;
-	background-color: rgb(225, 225, 225);
+	font-weight:normal;
+	background-color:rgb(225,225,225);
+	border-top: 4px solid rgb(102, 102, 102);
+	border-bottom:1px solid rgb(225,225,225);
+}
+
+.querytoolform .selectorpanel .tabmenu .item {
+	background-color:rgb(205,205,205);
+	margin-top:3px !important;
 }
 
 .querytoolform .selectorpanel .tabmenu {
 	vertical-align: bottom;
+	background-color:rgb(180,180,180);
+	width:100%;
+}
+
+.querytoolform .selectorpanel .tabmenu td {
+	padding-left:0.2em;
+	padding-top:0.2em;
+}
+
+.querytoolform .selectorradio {
+	margin:0.3em 1em 0.1em 0.5em;	
+}
+
+.querytoolform .selectortab .selectorpanel {
+	padding: 0.4em 0.5em;	
+	margin: 0px;
+}
+.querytoolform .selectortab .even {
+	background-color:rgb(225,225,225);	
 }
 
 /* configurers */
@@ -621,7 +667,19 @@ fieldset {
 	 .querytoolform .inputvariableconfigurer, .querytoolform .composedoutputvariableconfigurer,
 	 .querytoolform .fixedstringconfigurer, .querytoolform .outputvariableconfigurer,
 	 .querytoolform .fromvariableconfigurer {
-	margin:0px 0.3em 0px 0px;
+	 margin:0em 0.3em 0em 0em;
+	padding:0.1em 0px;
+
+}
+
+.editorpanel input, .editorpanel select, .editorpanel button {
+	border:1px solid rgb(180,180,180) !important;	
+	margin-top:0.1em !important;
+	margin-bottom:0.1em !important;
+	padding:0px !important;
+}
+
+.editorpanel span {
 }
 
 .querytoolform .constantconfigurer {
@@ -629,7 +687,7 @@ fieldset {
 }
 
 .querytoolform .constantchoiceconfigurer {
-	max-width:12em;
+	max-width:14em;
 }
 
 

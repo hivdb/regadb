@@ -23,7 +23,7 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
         this.controller = controller;
         this.constant = constant;
         this.values = constant.getSuggestedValuesList();
-        for (SuggestedValuesOption option : values) {
+        for (SuggestedValuesOption option: values) {
         	this.addItem(new WMessage(option.getOption().toString(), true));
         }
         this.setCurrentItem(new WMessage(constant.getHumanStringValue(), true));

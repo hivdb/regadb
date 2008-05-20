@@ -11,22 +11,22 @@ public class WhereClauseNode extends QueryTreeNode{
 	
 	
 	public WhereClauseNode(WhereClause clause, QueryEditorGroupBox editor) {
-		super(clause, editor);
+		super(clause, editor, null);
 		init();
 	}
 	
 	private void init() {
 		if (getClause().isAtomic()) {
-			addStyle("atomictreenode");
+			getStyleClasses().addStyle("atomictreenode");
 			setButtonPanel(new AtomicClauseButtonPanel(this));
 		}
 		else {
-			addStyle("composedtreenode");
+			getStyleClasses().addStyle("composedtreenode");
 			String label = getClause().toString();
 			label = label.substring(0, label.indexOf(' '));
 			this.label().setText(new WMessage(label.toLowerCase(), true));
 			
-			if (getQueryEditor().getQueryEditor().acceptsAdditionalChild(getClause())) {
+			if (getEditorModel().getQueryEditor().acceptsAdditionalChild(getClause())) {
 				setButtonPanel(new NonAtomicClauseButtonPanel(this));
 			}
 		}

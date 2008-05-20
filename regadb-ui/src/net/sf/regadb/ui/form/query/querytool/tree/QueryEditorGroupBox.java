@@ -9,13 +9,14 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
 import com.pharmadm.custom.rega.queryeditor.SelectionChangeListener;
 import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
+import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.custom.rega.savable.Savable;
 
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.querytool.buttons.ButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.buttons.EditButtonPanel;
-import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
@@ -28,98 +29,99 @@ import net.sf.witty.wt.i8n.WMessage;
 public class QueryEditorGroupBox extends WGroupBox implements QueryEditorComponent, Savable {
 	private QueryEditor editor = null;
 	
-	private QueryTreeNode queryContainer;
-	private WContainerWidget queryRoot;
-	private WContainerWidget warnings;
+	private WhereClause contextClause;
+	
+	private QueryTreeNode queryRootNode;
+	private WContainerWidget queryContainer;
 	private WText warningText;
 	private WPushButton runButton;
 	private QueryContext context; 
 	private ButtonPanel buttonPanel;
-	private boolean enabled;
+	private boolean editable;
 
-	public QueryEditorGroupBox(WMessage title, QueryToolForm parent, QueryEditor editor) {
+	public QueryEditorGroupBox(WMessage title, QueryToolForm parent, QueryDefinition def) {
 		super(title, parent);
 		init(parent);
-		prepareEditor((editor==null?newQuery(): editor));
+		initEditor((def==null?newQuery(): loadQuery(def)));
 	}
 	
-	private void prepareEditor(QueryEditor editor) {
+	/**
+	 * create a query editor from the given query definition
+	 * @param def
+	 * @return
+	 */
+	private QueryEditor loadQuery(QueryDefinition def) {
+		return new QueryEditor(new Query(), this);
+	}
+	
+	/**
+	 * return a new empty query editor
+	 * @return
+	 */
+	private QueryEditor newQuery() {
+		QueryEditor editor = new QueryEditor(new Query(), this);
+		return editor;
+	}	
+	
+	private void initEditor(QueryEditor editor) {
 		this.editor = editor;
-		layoutQuery();
-		updateSelection();
+		
+		queryRootNode = new WhereClauseNode(editor.getRootClause(), this);
+		queryRootNode.setStyleClass("tree");
+		queryContainer.addWidget(queryRootNode);		
 		
 		editor.addSelectionListChangeListener(new SelectionListChangeListener() {
 			public void listChanged() {
 				revalidate();
+				updateSelection();
 			}
 		});	
 		
 		editor.getQuery().getSelectList().addSelectionChangeListener(new SelectionChangeListener() {
 			public void selectionChanged() {
-				updateStatus();
+				updateStatusBar();
 			}
 		});
 		
 		editor.addSelectionListChangeListener(new SelectionListChangeListener() {
 			public void listChanged() {
-				updateStatus();
+				updateStatusBar();
 			}
 		});		
-		setEnabled(true);
-		updateStatus();
-	}
-	
-	public void requestNewQuery() {
-		if (editor != null && editor.isDirty()) {
-            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("msg.warning.newquery"));
-			cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>() {
-				public void notify(WMouseEvent a) {
-					cmb.hide();
-					prepareEditor(newQuery());
-				}
-			});
-			cmb.no.clicked.addListener(new SignalListener<WMouseEvent>() {
-				public void notify(WMouseEvent a) {
-					cmb.hide();
-				}
-			});
-		}
-		else {
-			prepareEditor(newQuery());
-		}
-	}
-	
-	private QueryEditor newQuery() {
-		QueryEditor editor = null;
-		if (editor == null) {
-			editor = new QueryEditor(new Query(), this);
-		}
-		else {
-			editor.setQuery(new Query());
-		}
-		return editor;
+		setEditable(true);
+		updateStatusBar();
 	}
 	
 	public QueryContext getQueryContext() {
 		return context;
 	}
 	
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-		updateEnabledState();
+	/**
+	 * enable or disable editing of the query
+	 * @param enabled
+	 */
+	public void setEditable(boolean enabled) {
+		this.editable = enabled;
+		updateControls();
 	}
 	
-	public boolean getEnabledState() {
-		return enabled;
+	public boolean isEditable() {
+		return editable;
 	}
 	
-	public void updateEnabledState() {
-		queryContainer.setEnabled(enabled);
+	/**
+	 * update controls to reflect editability
+	 */
+	public void updateControls() {
+		queryRootNode.setEditable(editable);
 		if (buttonPanel != null) {
-			buttonPanel.setEnabled(enabled);
+			buttonPanel.setEditable(editable);
 		}
 	}
 	
+	/**
+	 * update controls to reflect changes in selection
+	 */
 	public void updateSelection() {
 		if (buttonPanel != null) {
 			buttonPanel.update();
@@ -130,7 +132,7 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	 * validate the query and highlight errors
 	 */
 	public void revalidate() {
-		queryContainer.revalidate();
+		queryRootNode.revalidate();
 	}
 	
 	private void init(final QueryToolForm parent) {
@@ -147,11 +149,11 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 		WContainerWidget panel = new WContainerWidget(this);
 		panel.setStyleClass("content");
 		
-		queryRoot = new WContainerWidget(panel);
-		queryRoot.setStyleClass("treeroot");
+		queryContainer = new WContainerWidget(panel);
+		queryContainer.setStyleClass("treeroot");
 		
 		
-		warnings = new WContainerWidget(panel);
+		WContainerWidget warnings = new WContainerWidget(panel);
 		warnings.setStyleClass("warnings");
 
 		WTable table = new WTable(warnings);
@@ -167,22 +169,22 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 		table.elementAt(0, 1).setStyleClass("runbutton");
 	}
 	
-	public void updateStatus() {
+	private void updateStatusBar() {
 		Query query = editor.getQuery();
 		
 		boolean hasWarning = true;
 		
         if (!query.isValid()) {
-        	showError("form.query.querytool.message.unassigned");
+        	showMessage("form.query.querytool.message.unassigned", "error");
         }
         else if (!query.hasFromVariables()) {
-        	showWarning("form.query.querytool.message.noselection");
+        	showMessage("form.query.querytool.message.noselection", "warning");
         }
         else if (!query.getSelectList().isAnythingSelected()) {
-        	showError("form.query.querytool.message.emptyselection");
+        	showMessage("form.query.querytool.message.emptyselection", "error");
         }
         else {
-        	showInfo("form.query.querytool.message.ok");
+        	showMessage("form.query.querytool.message.ok", "info");
         	hasWarning = false;
         }
         
@@ -194,28 +196,15 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
         }
 	}
 	
-	private void showWarning(String message) {
+	/**
+	 * show the given warning message in the status bar
+	 * and assign it the given style class
+	 * @param message
+	 */
+	private void showMessage(String message, String cssClass) {
 		warningText.setText(tr(message));
-		warningText.setStyleClass("warning");
-	}	
-	
-	private void showError(String message) {
-		warningText.setText(tr(message));
-		warningText.setStyleClass("error");
-	}	
-	
-	private void showInfo(String message) {
-		warningText.setText(tr(message));
-		warningText.setStyleClass("info");
-	}	
-
-	private void layoutQuery() {
-		if (queryContainer != null) {
-			queryRoot.removeWidget(queryContainer);
-		}
-		queryContainer = new WhereClauseNode(editor.getRootClause(), this);
-		queryContainer.setStyleClass("tree");
-		queryRoot.addWidget(queryContainer);
+		warningText.setStyleClass(cssClass);
+		
 	}
 
 	public QueryEditor getQueryEditor() {
@@ -226,16 +215,31 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 		editor.addDirtinessListener(listener);
 	}
 
+	/**
+	 * return true if the contained query has unsaved changed
+	 */
 	public boolean isDirty() {
 		return editor.isDirty();
 	}
 	
+	/**
+	 * get the root tree item
+	 * @return
+	 */
 	public QueryTreeNode getQueryTree() {
-		return queryContainer;
+		return queryRootNode;
 	}
 
 	public void load(File file) throws IOException {}
 	public void save(File file) throws IOException {}
+
+	public WhereClause getContextClause() {
+		return contextClause;
+	}
+
+	public void setContextClause(WhereClause clause) {
+		contextClause = clause;
+	}
 }
 
 

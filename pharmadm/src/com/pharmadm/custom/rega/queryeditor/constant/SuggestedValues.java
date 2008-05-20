@@ -42,7 +42,9 @@ public class SuggestedValues implements Serializable {
 			try {
 				QueryResult rs = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query);
 	    		for (int i = 0 ; i < rs.size() ; i++) {
-	    			result.add(new SuggestedValuesOption(rs.get(i,0)));
+	    			if (rs.get(i, 0) != null) {
+	    				result.add(new SuggestedValuesOption(rs.get(i,0)));
+	    			}
 	    		}
 	    		rs.close();
 			} catch (SQLException e) {

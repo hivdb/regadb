@@ -23,6 +23,7 @@ import com.pharmadm.custom.rega.queryeditor.WhereClause;
  */
 public class WhereClauseTreeNode extends javax.swing.tree.DefaultMutableTreeNode {
     
+	
     /** Creates a new instance of WhereClauseTreeNode */
     public WhereClauseTreeNode(WhereClause clause) {
         super(clause);

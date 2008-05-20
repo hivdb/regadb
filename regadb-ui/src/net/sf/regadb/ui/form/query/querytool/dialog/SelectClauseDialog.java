@@ -23,12 +23,13 @@ public class SelectClauseDialog extends WDialog {
 		super(new WMessage("form.query.querytool.dialog.add"));
 		this.owner = owner;
 		setButtonPanel(new SelectClauseButtonPanel(owner, this));
+		setStyleClass(styleClass() + " newclausedialog");
 	}
 	
 	public void loadContent(WhereClause parentClause) {
 		WButtonGroup group = new WButtonGroup(getContentArea());
 		
-		rootSelector = new WAWCSelectorTabbedPane(owner.getQueryEditor().getQueryContext());
+		rootSelector = new WAWCSelectorTabbedPane(owner.getEditorModel().getQueryContext());
 		getContentArea().addWidget(rootSelector);
 		
         Collection<AtomicWhereClause> prototypeList = parentClause.getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog());

@@ -74,7 +74,7 @@ public abstract class AtomicWhereClauseEditor implements
      */
     public Collection<OutputVariable> getAvailableOutputVariables() {
     	WhereClause contextClause = getContextClause();
-        if (getContextClause() == null) {
+        if (contextClause == null) {
             return getAtomicWhereClause().getOutputVariablesAvailableForImport();
         }
         else {

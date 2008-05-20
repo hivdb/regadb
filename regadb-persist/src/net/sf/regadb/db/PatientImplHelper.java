@@ -21,7 +21,15 @@ public class PatientImplHelper {
     }
     
     public static boolean canAccessTestResult(TestResult testResultvar, Set<Dataset> datasets) {
-        return canAccesPI(testResultvar.getPatient(), datasets);
+    	if (testResultvar.getPatient() != null) {
+            return canAccesPI(testResultvar.getPatient(), datasets);
+    	}
+    	else if (testResultvar.getViralIsolate() != null) {
+    		return canAccessViralIsolate(testResultvar.getViralIsolate(), datasets);
+    	}
+    	else {
+    		return false;
+    	}
     }
 
     public static boolean canAccessTherapy(Therapy therapyvar, Set<Dataset> datasets) {

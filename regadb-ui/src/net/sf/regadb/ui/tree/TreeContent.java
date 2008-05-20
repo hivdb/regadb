@@ -166,9 +166,9 @@ public class TreeContent
     public QueryItem queryMain;
 
     public QueryItem queryToolMain;
-//    public ActionItem queryToolSelect;
+    public ActionItem queryToolSelect;
     public ActionItem queryToolAdd;
-//    public ActionItem queryToolView;
+    public ActionItem queryToolView;
     
     public QueryItem queryWiv;
     public ActionItem queryWivArlConfirmedHiv;
@@ -931,11 +931,11 @@ public class TreeContent
             
             queryToolMain = new QueryItem(WResource.tr("menu.query.querytool"), queryMain);
 
-//          queryToolSelect = new ActionItem(WResource.tr("menu.query.querytool.select"), queryToolMain, new ITreeAction() {
-//  			public void performAction(TreeMenuNode node) {
-//  				RegaDBMain.getApp().getFormContainer().setForm(new SelectQueryToolQueryForm());
-//  			}
-//          });
+          queryToolSelect = new ActionItem(WResource.tr("menu.query.querytool.select"), queryToolMain, new ITreeAction() {
+  			public void performAction(TreeMenuNode node) {
+  				RegaDBMain.getApp().getFormContainer().setForm(new SelectQueryToolQueryForm());
+  			}
+          });
           
             queryToolAdd = new ActionItem(WResource.tr("menu.query.querytool.add"), queryToolMain, new ITreeAction() {
                 public void performAction(TreeMenuNode node) {

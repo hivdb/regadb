@@ -44,7 +44,7 @@ public class ButtonPanel extends WContainerWidget{
 		
 	}
 	
-	public void setEnabled(boolean enabled) {
+	public void setEditable(boolean enabled) {
 		for (WPushButton button : buttons) {
 			if (enabled) {
 				button.enable();

@@ -69,12 +69,22 @@ public class InclusiveOrClause extends ComposedWhereClause implements Serializab
     
     protected Object cloneBasics(Map<ConfigurableWord, ConfigurableWord> originalToCloneMap) throws CloneNotSupportedException {
         InclusiveOrClause clone = new InclusiveOrClause();
-        Iterator iterChildren = iterateChildren();
+        Iterator<WhereClause> iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {
             WhereClause child = (WhereClause)iterChildren.next();
             clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null);
         }
         return clone;
+    }
+    
+    protected Collection<OutputVariable> getOutputVariablesAvailableForImport(WhereClause excludeChild) {
+        Collection<OutputVariable> result;
+        if (getParent() == null) {
+            result = new ArrayList<OutputVariable>();
+        } else {
+            result = getParent().getOutputVariablesAvailableForImport(this);
+        }
+        return result;
     }
     
 } // end InclusiveOrClause

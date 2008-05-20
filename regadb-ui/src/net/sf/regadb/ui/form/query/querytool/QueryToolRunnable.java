@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.exception.SQLGrammarException;
+import org.postgresql.util.PSQLException;
+
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
@@ -157,7 +160,11 @@ public class QueryToolRunnable implements Runnable {
 		} catch (IllegalStateException e) {
 			statusMsg = "form.query.querytool.label.status.failed.sqlerror";
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (SQLGrammarException e ) {
+			statusMsg = "form.query.querytool.label.status.failed.sqlerror";
+			e.printStackTrace();
+		}
+		catch (Exception e) {
 			statusMsg = null;
 			e.printStackTrace();
 		}

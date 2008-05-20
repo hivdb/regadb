@@ -24,8 +24,8 @@ public class AtomicClauseButtonPanel extends ButtonPanel {
 		addButton(modifyButton_);
 		modifyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.markAsContext();
-				WDialog editDialog = new ModifyClauseDialog(node, node.getQueryEditor().getQueryContext(), (AtomicWhereClause) node.getClause());
+				node.getEditorModel().setContextClause(node.getParentNode().getClause());
+				WDialog editDialog = new ModifyClauseDialog(node, node.getEditorModel().getQueryContext(), (AtomicWhereClause) node.getClause());
 				node.showDialog(editDialog);
 			}
 		});

@@ -69,8 +69,8 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 //		addClauseButton_.setEnabled(canAddChild());
 	}
 	
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
+	public void setEditable(boolean enabled) {
+		super.setEditable(enabled);
 		
 		for (WPushButton button : buttons) {
 			button.setEnabled(enabled && canAddChild());
