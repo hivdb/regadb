@@ -86,7 +86,7 @@ public class ImportSequences
                     {
                         if (gtDate != null) 
                         {
-                        	ConsoleLogger.getInstance().logInfo("Aligning sequence for patient "+patientId+"");
+                        	ConsoleLogger.getInstance().logInfo("Aligning sequence for patient "+patientId+"...");
                         	
                             ViralIsolate vi = p.createViralIsolate();
                             vi.setSampleDate(gtDate);
