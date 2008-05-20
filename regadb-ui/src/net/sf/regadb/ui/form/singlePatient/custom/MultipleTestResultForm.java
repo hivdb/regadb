@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
@@ -74,11 +75,9 @@ public class MultipleTestResultForm extends FormWidget {
         if(!(getInteractionState()==InteractionState.Adding)) {
             Transaction t = RegaDBMain.getApp().createTransaction();
             
-            List<TestResult> newestTestResults = new ArrayList<TestResult>();
             Date newestDate = null;
             for(Test test : tests_) {
                 TestResult tr = t.getNewestTestResult(test, RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
-                newestTestResults.add(tr);
                 if(tr!=null) {
                     if(newestDate==null) {
                         newestDate = tr.getTestDate();
@@ -88,18 +87,20 @@ public class MultipleTestResultForm extends FormWidget {
                 }
             }
             
-            dateTF_.setDate(newestDate);
-            
-            for(int i = 0; i<tests_.size(); i++) {
-                FormField f = formFields_.get(i);
-                TestResult tr = newestTestResults.get(i);
-                if(tr!=null && tr.getTestDate().equals(newestDate)) {
-                    if(f instanceof ComboBox) {
-                        ((ComboBox)f).selectItem(tr.getTestNominalValue().getValue());
-                    } else {
-                        f.setText(tr.getValue());
-                    }
-                }
+            if(newestDate!=null) {
+	            dateTF_.setDate(newestDate);
+	            
+	            for(int i=0; i<tests_.size(); i++) {
+	                FormField f = formFields_.get(i);
+	                TestResult tr = t.getNewestTestResult(tests_.get(i), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
+	                if(tr!=null && DateUtils.compareDates(tr.getTestDate(), (newestDate))==0) {
+	                    if(f instanceof ComboBox) {
+	                        ((ComboBox)f).selectItem(tr.getTestNominalValue().getValue());
+	                    } else {
+	                        f.setText(tr.getValue());
+	                    }
+	                }
+	            }
             }
         }
     }
@@ -131,7 +132,7 @@ public class MultipleTestResultForm extends FormWidget {
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue());
                 }
             } else {
-                if(f.text()!=null) {
+                if(f.text()!=null && !f.text().trim().equals("")) {
                     tr = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().createTestResult(tests_.get(i));
                     tr.setValue(f.text());
                 }
