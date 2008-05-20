@@ -33,6 +33,7 @@ import net.sf.witty.wt.i8n.WMessage;
 public class TherapyForm extends FormWidget
 {
 	private Therapy therapy_;
+	private Therapy previousTherapy_ = null;
 	
 	//general group
     private WGroupBox generalGroup_;
@@ -60,6 +61,10 @@ public class TherapyForm extends FormWidget
 	{
 		super(formName, interactionState);
 		therapy_ = therapy;
+		
+		if(interactionState==InteractionState.Adding && therapy != null){
+		    setPreviousTherapy(therapy);
+		}
 		
 		init();
 		
@@ -105,7 +110,7 @@ public class TherapyForm extends FormWidget
         
 		if(getInteractionState()==InteractionState.Adding)
 		{
-		    Therapy loadTherapy = therapy_;
+		    Therapy loadTherapy = getPreviousTherapy();
 		    
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
             t.attach(p);
@@ -114,8 +119,10 @@ public class TherapyForm extends FormWidget
             
             if(loadTherapy != null){   //copy this therapy into the new one
                 copyTherapy(loadTherapy, therapy_);
+                if(loadTherapy.getStopDate()!=null){
+                    therapy_.setStartDate(loadTherapy.getStopDate());
+                }
             }
-            
         }
         else
         {
@@ -152,7 +159,15 @@ public class TherapyForm extends FormWidget
         iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, therapy_);
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
 	}
-	
+
+   public Therapy getPreviousTherapy(){
+        return previousTherapy_;
+    }
+    
+    public void setPreviousTherapy(Therapy t){
+        previousTherapy_ = t;
+    }
+
 	private void copyTherapy(Therapy from, Therapy to){
 	    for(TherapyCommercial tc : from.getTherapyCommercials()){
             TherapyCommercial newtc = new TherapyCommercial(
@@ -286,6 +301,14 @@ public class TherapyForm extends FormWidget
             drugGenericList_.saveData();
             
             update(therapy_, t);
+            
+            Therapy prevTherapy = getPreviousTherapy(); 
+            if(prevTherapy != null){
+                prevTherapy.setStopDate(therapy_.getStartDate());
+                t.attach(prevTherapy);
+                t.update(prevTherapy);
+            }
+            
             t.commit();
             
             RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(therapy_);
