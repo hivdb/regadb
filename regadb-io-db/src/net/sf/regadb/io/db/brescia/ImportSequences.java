@@ -148,6 +148,8 @@ public class ImportSequences
                     {
                         ConsoleLogger.getInstance().logWarning("Empty seq for patient "+patientId+"");
                     }
+                    
+                    ConsoleLogger.getInstance().logInfo("Successful");
                 }
             }
         
