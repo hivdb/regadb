@@ -133,16 +133,22 @@ public class ImportUNIBS
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
     		handleViralData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating 4a marker data...");
     		handleAMarkerData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating 4b marker data...");
     		handleBMarkerData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating ADE data...");
     		handleEvent();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		//ConsoleLogger.getInstance().logInfo("Migrating viral isolates...");
     		//TODO
     		//HashMap<String, ViralIsolate> viralisolates = handleSequences();
@@ -176,7 +182,7 @@ public class ImportUNIBS
     	
     	int CdeathPatientID = Utils.findColumn(this.deathTable, "ID_Coorte");
      	int CdeathDate = Utils.findColumn(this.deathTable, "DataDecesso");
-     	int CdeathReason = Utils.findColumn(this.deathTable, "MotivoDecesso");
+     	int CdeathReason = Utils.findColumn(this.deathTable, "CausaDec");
     	
     	NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
                  new String[] { "male", "female" } );
