@@ -436,6 +436,7 @@ fieldset {
 	display:block;
 	float:left;
 	line-height:1.5em;
+	padding-left:0.3em;
 }
 
 .querytoolform .querytreefield .content .tree .treenodechildcount{
@@ -448,12 +449,12 @@ fieldset {
 .querytoolform .querytreefield .content .tree .atomictreenode {
 	width:100%;
 	border-top: 1px solid rgb(235,235,235);
-	padding:0.05em 0em 0.05em 0.25em;
+	padding:0.05em 0em 0.05em 0m;
 }
 
 .querytoolform .querytreefield .content .tree .composedtreenode {
 	width:100%;
-	padding:0.1em 0em 0.1em 0.25em;
+	padding:0.1em 0em 0.1em 0em;
 	background-color: rgb(235, 235, 235);
 	vertical-align:bottom;
 }
