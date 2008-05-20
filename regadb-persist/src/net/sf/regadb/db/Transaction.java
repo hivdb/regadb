@@ -1342,6 +1342,15 @@ public class Transaction {
         
         return (ViralIsolate)q.uniqueResult();
     }
+    
+    public List<ViralIsolate> getViralIsolate(String sampleId) 
+    {
+        Query q = session.createQuery("from ViralIsolate as vi where vi.sampleId = :sampleId");
+        
+        q.setParameter("sampleId", sampleId);
+        
+        return q.list();
+    }
 
     @SuppressWarnings("unchecked")
     public List<DrugClass> getDrugClassesSortedOnResistanceRanking() 

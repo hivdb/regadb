@@ -9,12 +9,16 @@ package net.sf.regadb.io.importXML.impl;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.List;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -172,6 +176,47 @@ public class ImportXML {
 
         out.println(instance.getLog());
         out.println("Read: " + importHandler.isolatesRead + " isolates");
+    }
+    
+    public void importSubtypeTests(InputSource is, String datasetName) throws SAXException, IOException {
+        Transaction t = login.createTransaction();
+        instance.loadDatabaseObjects(t);
+
+        Dataset dataset = loadOrCreateDataset(t, datasetName);
+        
+        t.commit();
+        
+        instance.readViralIsolates(is, new ImportHandler<ViralIsolate>() {
+            public void importObject(ViralIsolate object) {
+                Transaction innerT = login.createTransaction();
+                Test subTypeTest = innerT.getTest("Rega HIV-1 Subtype Tool");
+                List<ViralIsolate> dbVis = innerT.getViralIsolate(object.getSampleId());
+                if(dbVis.size()>1) {
+                    System.err.println("duplicate sample id; quitting");
+                    System.exit(0);
+                } else {
+                    ViralIsolate dbVi = dbVis.get(0);
+                    for(NtSequence ntseq : object.getNtSequences()) {
+                        for(NtSequence dbNtseq : dbVi.getNtSequences()) {
+                            if(ntseq.getLabel().equals(dbNtseq.getLabel())) {
+                             for(TestResult tr : ntseq.getTestResults()) {
+                                 dbNtseq.getTestResults().add(tr);
+                                 tr.setNtSequence(dbNtseq);
+                                 tr.setTest(subTypeTest);
+                                 System.err.println("import subtype: "  + tr.getValue());
+                                 break;
+                             }
+                            }
+                        }
+                    }
+                    innerT.save(dbVi);
+                    innerT.commit();
+                }
+            }
+        });
+
+        out.println(instance.getLog());
+        out.println("Ready importing subtypes");
     }
     
     public void setPrintStream(PrintStream ps) {

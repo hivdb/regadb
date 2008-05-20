@@ -44,6 +44,12 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	<jar jarfile="${dist}/${proj.name}-subtypes-xmlimport.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.io.importXML.impl.ImportSubtypeTests"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
