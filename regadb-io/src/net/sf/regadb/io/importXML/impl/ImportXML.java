@@ -56,6 +56,7 @@ public class ImportXML {
 
         if (dataset == null) {
             dataset = new Dataset(t.getSettingsUser(), name, new Date());
+            dataset.setRevision(1);
 
             /*
              * Should not be possible like this ?
