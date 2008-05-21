@@ -13,6 +13,7 @@ import net.sf.witty.wt.validation.WValidatorState;
 public abstract class FormField extends WContainerWidget implements IFormField
 {
     private WText _fieldView;
+    private boolean _unique=false;
     
     public void initViewWidget()
     {
@@ -43,11 +44,17 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public boolean validate()
     {
+        boolean valid=true;
+
         if(getFormWidget().validator()!=null)
         {
-            return getFormWidget().validator().validate(getFormText(), null) == WValidatorState.Valid;
+            valid = getFormWidget().validator().validate(getFormText(), null) == WValidatorState.Valid;
         }
-        return true;
+        
+        if(isUnique()){
+            valid = checkUniqueness();
+        }
+        return valid;
     }
     
     public void setValidator(WValidator validator)
@@ -111,5 +118,17 @@ public abstract class FormField extends WContainerWidget implements IFormField
         if(se!=null)
             getFormWidget().enterPressed.addListener(se);
         }
+    }
+    
+    public boolean isUnique(){
+        return _unique;
+    }
+    
+    public void setUnique(boolean unique){
+        _unique = unique;
+    }
+    
+    public boolean checkUniqueness(){
+        return false;
     }
 }
