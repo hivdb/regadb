@@ -43,6 +43,18 @@ public abstract class QueryTreeNode extends WTreeNode {
 		return styleClasses;
 	}
 	
+	protected void doCollapse() {
+		if (editor.isEditable()) {
+			super.doCollapse();
+		}
+	}
+	
+	protected void undoDoExpand() {
+		if (editor.isEditable()) {
+			super.undoDoExpand();
+		}
+	}
+	
 	private void init() {
 		labelArea().removeWidget(label());
 		labelArea().removeWidget(childCountLabel_);
@@ -80,7 +92,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	}
 	
 	private void setChecked(boolean checked) {
-		if (object == null || object.getParent() == null) {
+		if (object == null || object.getParent() == null || !editor.isEditable()) {
 			return;
 		}
 		
@@ -140,11 +152,12 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	public void showDialog(WDialog dialog) {
 		hideDialog();
-		hideContent();
+		getParentNode().expand();
 		
 		getEditorModel().setContextClause(getParentNode().getClause());
 		editDialog = dialog;
 		labelArea().addWidget(dialog);
+		hideContent();
 	}
 	
 	

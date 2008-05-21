@@ -1,9 +1,11 @@
 package net.sf.regadb.ui.form.query.querytool.awceditor;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WKeyEvent;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WRadioButton;
 import net.sf.witty.wt.WTable;
@@ -11,6 +13,7 @@ import net.sf.witty.wt.WTable;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
+import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 
 public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 
@@ -74,6 +77,13 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     	editPanel.clicked.addListener(new SignalListener<WMouseEvent>(){
 			public void notify(WMouseEvent a) {
 				radioButton.setChecked(true);
+			}
+    	});
+    	editPanel.keyPressed.addListener(new SignalListener<WKeyEvent>() {
+			public void notify(WKeyEvent a) {
+				if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
+					radioButton.setChecked(true);
+				}
 			}
     	});
     }    

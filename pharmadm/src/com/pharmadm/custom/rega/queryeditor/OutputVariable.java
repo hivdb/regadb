@@ -277,7 +277,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     }
 
 	public String getImmutableStringValue() {
-		String str = "(";
+		String str = "(" + getFormalName() + ":";
 		for (ConfigurableWord word : getExpression().getWords()) {
 			str += word.getImmutableStringValue() + " ";
 		}

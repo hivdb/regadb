@@ -14,7 +14,6 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     public WConstantConfigurer(Constant constant, ConstantController controller) {
     	super(constant.getHumanStringValue());
     	this.setStyleClass("constantconfigurer");
-//    	System.err.println("load:" + constant.getHumanValue());
     	this.constant = constant;
     	this.controller = controller;
     }
