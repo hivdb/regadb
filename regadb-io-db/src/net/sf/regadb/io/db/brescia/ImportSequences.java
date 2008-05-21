@@ -86,7 +86,7 @@ public class ImportSequences
                     {
                         if (gtDate != null) 
                         {
-                        	ConsoleLogger.getInstance().logInfo("Aligning sequence for patient "+patientId+"...");
+                        	ConsoleLogger.getInstance().logInfo("Aligning sequence "+i+" for patient "+patientId+"...");
                         	
                             ViralIsolate vi = p.createViralIsolate();
                             vi.setSampleDate(gtDate);
@@ -141,7 +141,7 @@ public class ImportSequences
                         } 
                         else 
                         {
-                            ConsoleLogger.getInstance().logError(
+                            ConsoleLogger.getInstance().logWarning(
                                     "Invalid date specified in the viral isolate file ("
                                             + i + " -> " + sampleDate + ").");
                         }
