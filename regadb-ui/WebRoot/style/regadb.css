@@ -425,7 +425,7 @@ fieldset {
 
 .querytoolform .querytreefield .content .tree .treeitempanel {
 	float:right;
-	text-align:right;
+	text-align:right !important;
 }
 
 .querytoolform .querytreefield .content .tree input.check{
@@ -480,7 +480,7 @@ fieldset {
 }
 
 .composedtreenode .treenodecontent .buttonpanel {
-	width:13.5em;	
+	width:14em;	
 }
 
 .querytoolform .querytreefield .content .tree .composedtreenode {
