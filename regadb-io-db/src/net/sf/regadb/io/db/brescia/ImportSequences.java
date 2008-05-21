@@ -149,6 +149,8 @@ public class ImportSequences
                     else 
                     {
                         ConsoleLogger.getInstance().logWarning("Empty seq for patient "+patientId+"");
+                        
+                        emptyCounter++;
                     }
                 }
             }
