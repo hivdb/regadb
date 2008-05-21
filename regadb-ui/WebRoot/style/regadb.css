@@ -427,10 +427,15 @@ fieldset {
 	margin-top:0.5em;
 }
 
+.querytoolform .tree .disabledtreenodecontent {
+	width:100%;	
+	display: none;
+}
+
 .querytoolform .tree .treenodecontent {
 	width:100%;	
-	display: block !important;
-	display:table !important;
+	display: block;
+	display:table;
 }
 
 .querytoolform .tree .treenodecontent td.checkbox {

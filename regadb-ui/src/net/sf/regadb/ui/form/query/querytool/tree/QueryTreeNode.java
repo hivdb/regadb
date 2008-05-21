@@ -159,8 +159,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	
 	private void hideContent() {
 		editor.setEditable(false);
-		contentTable.hide();
-		contentTable.setStyleClass("esfbweu");
+		contentTable.setStyleClass("disabledtreenodecontent");
 	}
 	
 	/**
