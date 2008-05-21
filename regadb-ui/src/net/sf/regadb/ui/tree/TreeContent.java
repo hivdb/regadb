@@ -450,7 +450,16 @@ public class TreeContent
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), viralIsolateSelected.getSelectedItem()));
                         }
                     });
-                    viralIsolateEvolution = new ActionItem(RootItem.tr("menu.singlePatient.viralIsolates.evolution"), viralIsolates);
+                    viralIsolateEvolution = new ActionItem(RootItem.tr("menu.singlePatient.viralIsolates.evolution"), viralIsolates) {
+						@Override
+						public boolean isEnabled() {
+							if(!super.isEnabled()) {
+								return false;
+							} else {
+								return RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getViralIsolates().size()>1;
+							}
+						}
+                    };
                     viralIsolateMutationEvolution = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
                     {
                         public void performAction(TreeMenuNode node)
@@ -474,7 +483,16 @@ public class TreeContent
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
                                     RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
                         }
-                    });
+                    }){
+                        @Override
+                        public boolean isEnabled() {
+							if(!super.isEnabled()) {
+								return false;
+							} else {
+								return RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getViralIsolates().size()>1;
+							}
+						}
+                    };
     		
                     patientEvent = new ActionItem(WResource.tr("menu.singlePatient.event"), patientSelected);
                     
