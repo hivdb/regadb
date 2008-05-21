@@ -25,16 +25,16 @@ public class StandardObjects {
     private static ValueType nominalValueType = new ValueType("nominal value");
     private static ValueType stringValueType = new ValueType("string");
     private static ValueType dateValueType = new ValueType("date");
-    private static TestType hiv1ViralLoadTestType = new TestType(limitedNumberValueType, patientObject, "Hiv-1 Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
-    private static TestType hiv1ViralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "Hiv-1 Viral Load (log10)", new TreeSet<TestNominalValue>());
+    private static TestType hiv1ViralLoadTestType = new TestType(limitedNumberValueType, patientObject, "HIV-1 Viral Load (copies/ml)", new TreeSet<TestNominalValue>());
+    private static TestType hiv1ViralLoadLog10TestType = new TestType(limitedNumberValueType, patientObject, "HIV-1 Viral Load (log10)", new TreeSet<TestNominalValue>());
     private static TestType cd4TestType = new TestType(numberValueType, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
     private static TestType cd4PercentageTestType = new TestType(numberValueType, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType cd8TestType = new TestType(numberValueType, patientObject, "CD8 Count", new TreeSet<TestNominalValue>());
     private static TestType cd8PercentageTestType = new TestType(numberValueType, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
     private static TestType hiv1SeroStatusTestType;
     private static TestType followUpTestType = new TestType(dateValueType, patientObject, "Follow up",new TreeSet<TestNominalValue>());
-    private static Test genericHiv1ViralLoadTest = new Test(hiv1ViralLoadTestType, "Hiv-1 Viral Load (generic)");
-    private static Test genericHiv1ViralLoadLog10Test = new Test(hiv1ViralLoadLog10TestType, "Hiv-1 Viral Load log10 (generic)");
+    private static Test genericHiv1ViralLoadTest = new Test(hiv1ViralLoadTestType, "HIV-1 Viral Load (generic)");
+    private static Test genericHiv1ViralLoadLog10Test = new Test(hiv1ViralLoadLog10TestType, "HIV-1 Viral Load log10 (generic)");
     private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
     private static Test genericCD4PercentageTest = new Test(cd4PercentageTestType, "CD4 Count % (generic)");
     private static Test genericCD8Test = new Test(cd8TestType, "CD8 Count (generic)");
@@ -49,6 +49,9 @@ public class StandardObjects {
     private static String clinicalFileNumberAttribute = "Clinical File Number";
     
     private static Test pregnancy;
+    
+    private static TestType hiv1SeroconversionTestType;
+    private static Test hiv1SeroconversionTest;
 
     static {
         hiv1SeroStatusTestType = new TestType(patientObject, "HIV-1 Sero Status");
@@ -57,6 +60,12 @@ public class StandardObjects {
         hiv1SeroStatusTestType.getTestNominalValues().add(new TestNominalValue(hiv1SeroStatusTestType, "Negative"));
         genericHiv1SeroStatusTest = new Test(hiv1SeroStatusTestType, "HIV-1 Sero Status (generic)");
         
+        hiv1SeroconversionTestType = new TestType(patientObject, "HIV-1 Seroconversion");
+        hiv1SeroconversionTestType.setValueType(nominalValueType);
+        hiv1SeroconversionTestType.getTestNominalValues().add(new TestNominalValue(hiv1SeroconversionTestType, "Positive"));
+        hiv1SeroconversionTestType.getTestNominalValues().add(new TestNominalValue(hiv1SeroconversionTestType, "Negative"));
+        hiv1SeroconversionTest = new Test(hiv1SeroconversionTestType, "HIV-1 Seroconversion");
+
         TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
         pregnancyType.setValueType(nominalValueType);
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
@@ -125,6 +134,12 @@ public class StandardObjects {
     }
     public static TestType getHiv1SeroStatusTestType() {
         return hiv1SeroStatusTestType;
+    }
+    public static Test getHiv1SeroconversionTest() {
+        return hiv1SeroconversionTest;
+    }
+    public static TestType getHiv1SeroconversionTestType() {
+        return hiv1SeroconversionTestType;
     }
     public static Protein[] getProteins() {
         Protein[] proteins = new Protein[7];

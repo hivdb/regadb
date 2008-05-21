@@ -83,11 +83,14 @@ public class PrepareCentralRepos
         export.writeTopTest(cd8pc, tests);
         Test pregnancy = StandardObjects.getPregnancyTest();
         export.writeTopTest(pregnancy, tests);
-        Test seroconvertion = createSeroconvertionTest();
-        export.writeTopTest(seroconvertion, tests);
+        Test seroconversion = createSeroconversionTest();
+        export.writeTopTest(seroconversion, tests);
         
         Test followUp = createFollowUpTest();
         export.writeTopTest(followUp, tests);
+        
+        Test hiv1Serconversion = createHiv1SeroconversionTest();
+        export.writeTopTest(hiv1Serconversion, tests);
         
         //Resistance tests
         Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
@@ -208,18 +211,18 @@ public class PrepareCentralRepos
     
     private static Test createGenericHiv1ViralLoad()
     {
-        TestType vlType = new TestType(new TestObject("Patient test", 0), "Hiv-1 Viral Load (copies/ml)");
+        TestType vlType = new TestType(new TestObject("Patient test", 0), "HIV-1 Viral Load (copies/ml)");
         vlType.setValueType(limitedNumber);
-        Test vlTest = new Test(vlType, "Hiv-1 Viral Load (generic)");
+        Test vlTest = new Test(vlType, "HIV-1 Viral Load (generic)");
         
         return vlTest;
     }
     
     private static Test createGenericHiv1ViralLoadLog10()
     {
-        TestType vlType = new TestType(new TestObject("Patient test", 0), "Hiv-1 Viral Load (log10)");
+        TestType vlType = new TestType(new TestObject("Patient test", 0), "HIV-1 Viral Load (log10)");
         vlType.setValueType(limitedNumber);
-        Test vlTest = new Test(vlType, "Hiv-1 Viral Load log10 (generic)");
+        Test vlTest = new Test(vlType, "HIV-1 Viral Load log10 (generic)");
         
         return vlTest;
     }
@@ -260,16 +263,28 @@ public class PrepareCentralRepos
         return cd8Test;
     }
     
-    private static Test createSeroconvertionTest()
+    private static Test createSeroconversionTest()
     {
-        TestType seroconvertionType = new TestType(new TestObject("Patient test", 0), "Seroconvertion");
-        seroconvertionType.setValueType(nominalValue);
-        seroconvertionType.getTestNominalValues().add(new TestNominalValue(seroconvertionType, "Positive"));
-        seroconvertionType.getTestNominalValues().add(new TestNominalValue(seroconvertionType, "Negative"));
+        TestType seroconversionType = new TestType(new TestObject("Patient test", 0), "Seroconversion");
+        seroconversionType.setValueType(nominalValue);
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Positive"));
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
         
-        Test seroconvertion = new Test(seroconvertionType, "Seroconvertion");
+        Test seroconversion = new Test(seroconversionType, "Seroconversion");
         
-        return seroconvertion;
+        return seroconversion;
+    }
+    
+    private static Test createHiv1SeroconversionTest()
+    {
+        TestType seroconversionType = new TestType(new TestObject("Patient test", 0), "HIV-1 Seroconversion");
+        seroconversionType.setValueType(nominalValue);
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Positive"));
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
+        
+        Test seroconversion = new Test(seroconversionType, "HIV-1 Seroconversion");
+        
+        return seroconversion;
     }
     
     private static Test createFollowUpTest()
