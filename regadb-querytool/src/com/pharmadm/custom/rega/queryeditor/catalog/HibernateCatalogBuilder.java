@@ -1535,6 +1535,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         InputVariable ivar1 = new InputVariable(new VariableType("net.sf.regadb.db.AaSequence"));
         Constant constant = new MutationConstant(ivar1);
 
+        aVisList.addFixedString(new FixedString(catalog.getObjectDescription("net.sf.regadb.db.AaSequence")));
         aVisList.addInputVariable(ivar1);
         aVisList.addFixedString(new FixedString("has mutation combination"));
         aVisList.addConstant(constant);
@@ -1614,14 +1615,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addNames("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder", "resistance table order", null);
 
         // therapy commercial
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial", "commercialDrugTreatment", "treatment with a commercial drug", "commTherapy");
+        catalog.addNames("net.sf.regadb.db.TherapyCommercial", "commercialDrugTreatment", "treatment with commercial drugs", "commTherapy");
         catalog.addNames("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "DailyDosage", "daily dosage", null);
         catalog.addNames("net.sf.regadb.db.TherapyCommercial.frequency", "Frequency", "administration frequency", null);
         catalog.addNames("net.sf.regadb.db.TherapyCommercial.placebo", "Placebo", "placebo", null);
         catalog.addNames("net.sf.regadb.db.TherapyCommercial.blind", "Blind", "blind", null);
         
         // therapy generic
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric", "genericDrugTreatment", "treatment with a generic drug", "genTherapy");
+        catalog.addNames("net.sf.regadb.db.TherapyGeneric", "genericDrugTreatment", "treatment with generic drugs", "genTherapy");
         catalog.addNames("net.sf.regadb.db.TherapyGeneric.dayDosageMg", "DailyDosage", "daily dosage in mg", null);
         catalog.addNames("net.sf.regadb.db.TherapyGeneric.frequency", "Frequency", "administration frequency", null);
         catalog.addNames("net.sf.regadb.db.TherapyGeneric.placebo", "Placebo", "placebo", null);
@@ -1773,7 +1774,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "blind");
         
         
-        // link therapyGeneric - DrugCommercial
+        // link therapyGeneric - DrugGeneric
         addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in a",  "consists of the", false);
         
         // link therapyGeneric - therapy
@@ -1923,7 +1924,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType", "net.sf.regadb.db.TestType", null, "net.sf.regadb.db.TestType", null, "description", true);
 
    		// link test - test result
-        addRelationClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "has a",  "comes from the", false);
+        addRelationClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "has a",  "comes from a", false);
    		
         // link test - test object
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType.testObject", "net.sf.regadb.db.TestObject", null, "net.sf.regadb.db.TestObject", null, "description", true);

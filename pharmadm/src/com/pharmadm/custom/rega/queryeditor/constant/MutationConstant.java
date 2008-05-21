@@ -16,6 +16,7 @@ public class MutationConstant extends Constant {
 	
 	public MutationConstant(InputVariable ivar) {
 		MUTATION_FORMAT = new MutationFormat(ivar);
+		humanStringValue = "";
 	}
 	
     public Object parseValue(Object s) throws java.text.ParseException {
@@ -121,6 +122,10 @@ public class MutationConstant extends Constant {
         				break;
         			}
         		}
+        		if (number.length() == 0) {
+        			number = "0";
+        		}
+        		
         		value = option.substring(number.length()).trim();        		
         		Constant valueConstant = new StringConstant();
         		valueConstant.setValue(value);

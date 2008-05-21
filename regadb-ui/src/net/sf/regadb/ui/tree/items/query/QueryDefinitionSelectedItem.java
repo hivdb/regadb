@@ -6,9 +6,9 @@ import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public class QueryDefinitionSelectedItem extends GenericSelectedItem<QueryDefinition>
 {
-    public QueryDefinitionSelectedItem(WTreeNode parent)
+    public QueryDefinitionSelectedItem(String text, WTreeNode parent)
     {
-        super(parent, "menu.query.definition.selectedItem", "{queryDefinitionSelectedItem}");
+        super(parent, text, "{queryDefinitionSelectedItem}");
     }
 
     @Override

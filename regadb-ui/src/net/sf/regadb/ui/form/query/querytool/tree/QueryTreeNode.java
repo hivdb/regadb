@@ -24,8 +24,6 @@ public abstract class QueryTreeNode extends WTreeNode {
 	private ButtonPanel buttonPanel;
 	private WDialog editDialog;
 	private WTable contentTable;
-	private boolean haltPropagate;
-	
 	
 	private CssClasses styleClasses;
 	
@@ -60,7 +58,6 @@ public abstract class QueryTreeNode extends WTreeNode {
 		
 		checkBox.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				haltPropagate = true;
 				setChecked(checkBox.isChecked());
 			}
 		});
@@ -74,20 +71,15 @@ public abstract class QueryTreeNode extends WTreeNode {
 		}
 		expand();
 		
-		
-		labelArea().clicked.addListener(new SignalListener<WMouseEvent>() {
+		contentTable.elementAt(0, 0).clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				if (!haltPropagate) {
 					setChecked(!checkBox.isChecked());
-				}
-				haltPropagate = false;
 			}
 		});
 	}
 	
 	private void setChecked(boolean checked) {
-		// can't select root node
-		if (object == null || hasDialog() || object.getParent() == null) {
+		if (object == null || object.getParent() == null) {
 			return;
 		}
 		
@@ -121,11 +113,6 @@ public abstract class QueryTreeNode extends WTreeNode {
 		}
 		contentTable.putElementAt(0, 1, panel);
 		buttonPanel = panel;
-		buttonPanel.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				haltPropagate = true;
-			}
-		});
 	}
 	
 	/**
@@ -157,11 +144,6 @@ public abstract class QueryTreeNode extends WTreeNode {
 		getEditorModel().setContextClause(getParentNode().getClause());
 		editDialog = dialog;
 		labelArea().addWidget(dialog);
-		editDialog.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				haltPropagate = true;
-			}
-		});
 	}
 	
 	

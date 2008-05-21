@@ -966,7 +966,7 @@ public class TreeContent
                 }
             }); 
             
-            queryToolSelected = new QueryDefinitionSelectedItem(queryToolMain);
+            queryToolSelected = new QueryDefinitionSelectedItem("menu.query.querytool.selectedItem", queryToolMain);
             queryToolSelectedView = new ActionItem(WResource.tr("menu.query.querytool.selected.view"), queryToolSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
@@ -1033,7 +1033,7 @@ public class TreeContent
                 RegaDBMain.getApp().getFormContainer().setForm(new QueryDefinitionForm(WWidget.tr("form.query.definition.add"), InteractionState.Adding, new QueryDefinition(StandardObjects.getHqlQueryQueryType())));
             }
         });
-        queryDefinitionSelected = new QueryDefinitionSelectedItem(queryDefinitionMain);
+        queryDefinitionSelected = new QueryDefinitionSelectedItem("menu.query.definition.selectedItem", queryDefinitionMain);
         queryDefinitionSelectedView = new ActionItem(WResource.tr("menu.query.definition.selected.view"), queryDefinitionSelected, new ITreeAction()
         {
             public void performAction(TreeMenuNode node)

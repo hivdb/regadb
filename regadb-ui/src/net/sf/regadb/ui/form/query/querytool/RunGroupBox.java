@@ -53,7 +53,6 @@ public class RunGroupBox extends WGroupBox {
 		}
 		
 		if (!runningQueries.isEmpty()) {
-//			new WLabel(tr("form.query.querytool.label.results"), runStatus);
 			this.show();
 		}
 		else {
