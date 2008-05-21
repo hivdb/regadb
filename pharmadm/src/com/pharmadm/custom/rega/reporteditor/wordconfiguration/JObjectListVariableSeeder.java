@@ -61,4 +61,8 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
 		this.controller = confy.controller;
 		this.var = confy.var;
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

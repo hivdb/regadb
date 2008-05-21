@@ -28,4 +28,8 @@ public class WFixedStringConfigurer extends WText implements WordConfigurer {
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

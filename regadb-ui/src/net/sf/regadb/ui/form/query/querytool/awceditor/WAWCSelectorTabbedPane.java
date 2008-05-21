@@ -85,4 +85,14 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 		}
 		return selected;
 	}
+
+	@Override
+	public boolean isUseless() {
+		for (WAWCSelectorPanel panel: panels.values()) {
+			if (!panel.isUseless()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

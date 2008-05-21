@@ -13,7 +13,6 @@ import net.sf.witty.wt.WTable;
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 
 public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 
@@ -28,6 +27,9 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 		this.editPanel = new WAWCEditorPanel(new WAtomicWhereClauseEditor(context, clause));
 		this.setStyleClass("selectorpanel");
 		initMoreComponents();
+		if (isUseless()) {
+			radioButton.disable();
+		}
     }
     
     protected ComposedAWCEditorPanel getEditorPanel() {
@@ -86,5 +88,10 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 				}
 			}
     	});
-    }    
+    }
+
+	@Override
+	public boolean isUseless() {
+		return editPanel.isUseless();
+	}    
 }

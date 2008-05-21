@@ -54,4 +54,8 @@ public class WOutputVariableConfigurer extends WText implements OutputVariableCo
 	public void reAssign(Object o) {
 		// does nothing. nothing to configure
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

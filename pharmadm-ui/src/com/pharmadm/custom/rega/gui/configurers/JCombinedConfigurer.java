@@ -58,4 +58,8 @@ public class JCombinedConfigurer extends JPanel implements WordConfigurer{
     	}
 		super.addMouseListener(listener);
     }
+
+	public boolean isUseless() {
+		return false;
+	}
 }

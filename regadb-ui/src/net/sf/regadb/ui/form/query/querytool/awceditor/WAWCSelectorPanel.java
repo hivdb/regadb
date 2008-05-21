@@ -42,4 +42,10 @@ public abstract class WAWCSelectorPanel extends WContainerWidget {
      * @return
      */
     public abstract WAWCEditorPanel getSelectedClause();
+    
+    /**
+     * return true if all clauses in this panel are useless
+     * @return
+     */
+    public abstract boolean isUseless();
 }

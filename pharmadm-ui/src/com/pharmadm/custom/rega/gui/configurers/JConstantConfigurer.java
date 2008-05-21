@@ -67,6 +67,10 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
 		this.setText(confy.getText());
 		
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
     
     /* %$ this variant bypasses the controller for efficiency/complexity reasons
     public void configureWord() { 

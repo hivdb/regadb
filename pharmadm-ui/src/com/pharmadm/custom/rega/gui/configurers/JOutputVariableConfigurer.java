@@ -65,5 +65,9 @@ public class JOutputVariableConfigurer extends javax.swing.JLabel implements Out
 	public void reAssign(Object o) {
 		// does nothing. nothing to configure
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
     
 }

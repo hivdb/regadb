@@ -30,10 +30,13 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
         
         // last item gets selected when setCurrentItem can't find the given item
         // set it back to zero if that happens
-    	if (values.size() > 0 && !this.currentText().keyOrValue().equals(constant.getHumanStringValue() )) {
+    	if (!isUseless() && !this.currentText().keyOrValue().equals(constant.getHumanStringValue() )) {
     		this.setCurrentIndex(0);
     	}
-    	
+
+    	if (isUseless()) {
+    		this.disable();
+    	}
     }
     
     public ConfigurableWord getWord() {
@@ -53,5 +56,9 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
 		this.constant = confy.constant;
 		this.values = confy.values;
 		this.setCurrentIndex(confy.currentIndex());
+	}
+
+	public boolean isUseless() {
+		return values.size() == 0;
 	}
 }

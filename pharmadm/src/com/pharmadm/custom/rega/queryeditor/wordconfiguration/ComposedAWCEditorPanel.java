@@ -13,4 +13,10 @@ public interface ComposedAWCEditorPanel {
     public abstract void createComposedWord(List<ConfigurableWord> words, ComposedWordConfigurer configurer);    
     public abstract void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected);
     public ConfigurationController getEditor();
+    
+    /**
+     * return true if it is useless to select this clause
+     * @return
+     */
+    public abstract boolean isUseless();
 }

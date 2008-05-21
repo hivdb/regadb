@@ -72,4 +72,8 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
 	
     public ConfigurationController getEditor() {
         return controller;
-    }}
+    }
+
+	public boolean isUseless() {
+		return editor.isUseless();
+	}}

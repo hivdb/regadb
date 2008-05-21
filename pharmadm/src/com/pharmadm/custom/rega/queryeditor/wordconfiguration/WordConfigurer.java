@@ -41,4 +41,11 @@ public interface WordConfigurer {
     /**
      * assign this configurer to a different configuration controller
      */
-    public void reAssign(Object o);}
+    public void reAssign(Object o);
+    
+    /**
+     * return false when it is pointless to have clauses with this configurer
+     * @return
+     */
+    public boolean isUseless();
+}

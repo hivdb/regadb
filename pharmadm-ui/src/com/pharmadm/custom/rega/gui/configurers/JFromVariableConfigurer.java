@@ -49,5 +49,9 @@ public class JFromVariableConfigurer extends javax.swing.JLabel implements WordC
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
     
 }

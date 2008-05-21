@@ -75,4 +75,8 @@ public class JDataInputVariableConfigurer extends javax.swing.JComboBox implemen
 		this.controller = confy.controller;
 		this.var = confy.var;
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

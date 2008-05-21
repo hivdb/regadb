@@ -61,5 +61,9 @@ public class JObjectListVariableConfigurer extends javax.swing.JLabel implements
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
     
 }

@@ -141,4 +141,8 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
 		this.textField = confy.textField;
 		this.setSelectedIndex(confy.getSelectedIndex());
 	}
+
+	public boolean isUseless() {
+		return getModel().getSize() == 0;
+	}
 }

@@ -84,4 +84,8 @@ public class JAttributeConfigurer extends JPanel implements ComposedWordConfigur
     }
 
 	public void setSelectedIndex(int index) {}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

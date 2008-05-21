@@ -87,4 +87,14 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
 			getRadioButtons().get(0).setChecked(true);
 		}
 	}
+
+	@Override
+	public boolean isUseless() {
+		for (WAWCSelectorPanel panel: selectorPanels) {
+			if (!panel.isUseless()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

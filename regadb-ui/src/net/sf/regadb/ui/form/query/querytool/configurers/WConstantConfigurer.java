@@ -37,4 +37,8 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
 		this.constant = confy.constant;
 		this.setText(confy.text());
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

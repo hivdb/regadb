@@ -67,4 +67,8 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
 		confy.outputVars = this.outputVars;
 		this.setCurrentIndex(confy.currentIndex());
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

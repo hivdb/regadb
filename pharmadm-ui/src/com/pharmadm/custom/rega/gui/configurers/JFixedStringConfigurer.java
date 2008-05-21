@@ -50,5 +50,9 @@ public class JFixedStringConfigurer extends javax.swing.JLabel implements WordCo
 	public void reAssign(Object o) {
 		// does nothing. no configuration required
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
     
 }

@@ -57,4 +57,8 @@ public class WComposedOutputVariableConfigurer extends WComboBox implements Comp
 	public void setSelectedIndex(int index) {
 		setCurrentIndex(index);
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

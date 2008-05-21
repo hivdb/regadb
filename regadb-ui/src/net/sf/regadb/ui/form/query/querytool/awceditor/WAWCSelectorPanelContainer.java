@@ -54,4 +54,14 @@ public class WAWCSelectorPanelContainer extends WAWCSelectorPanel {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean isUseless() {
+		for (WAWCSelectorPanel panel: panels) {
+			if (!panel.isUseless()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

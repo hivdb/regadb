@@ -71,4 +71,24 @@ public class ComposedAWCEditor {
         	indexConfigurer.setSelectedIndex(controllers.size()-1);
         }
     }	
+    
+    /**
+     * returns true if all composed clauses are useless
+     * @return
+     */
+    public boolean isUseless() {
+    	if (indexConfigurer == null) {
+    		for (WordConfigurer confy : editPanel.getConfigurers()) {
+    			if (confy.isUseless()) {
+    				return true;
+    			}
+    		}   
+    		return false;
+    	}
+    	else {
+    		// composed clause
+    		// let the index configurer decide
+    		return indexConfigurer.isUseless();
+    	}
+    }
 }

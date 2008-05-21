@@ -52,4 +52,8 @@ public class AWCEditorPanel extends WLOEditorPanel implements ComposedAWCEditorP
 	public List<WordConfigurer> getConfigurers() {
 		return configList;
 	}
+
+	public boolean isUseless() {
+		return editor.isUseless();
+	}
 }

@@ -71,6 +71,10 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 		ovar.setSelectedIndex(index);
 		changeSelection();
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 	
 
 

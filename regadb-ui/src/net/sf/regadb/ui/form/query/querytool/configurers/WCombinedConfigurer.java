@@ -36,4 +36,8 @@ public class WCombinedConfigurer extends WContainerWidget implements WordConfigu
 		WCombinedConfigurer confy = (WCombinedConfigurer) o;
 		this.words = confy.words;
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }

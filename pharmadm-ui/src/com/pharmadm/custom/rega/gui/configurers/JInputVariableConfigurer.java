@@ -56,4 +56,8 @@ public class JInputVariableConfigurer extends javax.swing.JComboBox implements W
 		confy.var = this.var;
 		this.setSelectedIndex(confy.getSelectedIndex());
 	}
+
+	public boolean isUseless() {
+		return false;
+	}
 }
