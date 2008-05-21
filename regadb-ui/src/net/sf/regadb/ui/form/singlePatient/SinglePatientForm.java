@@ -82,8 +82,14 @@ public class SinglePatientForm extends FormWidget
         sourceDatasetCB.setMandatory(true);
         addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
-        idTF = new TextField(getInteractionState(), this);
+        idTF = new TextField(getInteractionState(), this){
+                public boolean checkUniqueness(){
+                    return checkPatientId(getFormText());
+                }
+            
+            };
         idTF.setMandatory(true);
+        idTF.setUnique(true);
         addLineToTable(generalGroupTable_, idL, idTF);
         firstNameL = new Label(tr("form.singlePatient.editView.firstName"));
         firstNameTF = new TextField(getInteractionState(), this);
@@ -114,6 +120,19 @@ public class SinglePatientForm extends FormWidget
         fillData(patient_);
         
         addControlButtons();
+    }
+    
+    private boolean checkPatientId(String id){
+        boolean unique=true;
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
+        Patient p = t.getPatient(sourceDatasetCB.currentValue(), id);
+        if(p != null && !p.getPatientIi().equals(patient_.getPatientIi())){
+            unique = false;
+        }
+        
+        t.commit();
+        return unique;
     }
     
     private void exportXML(String fileName, Patient pt) {
