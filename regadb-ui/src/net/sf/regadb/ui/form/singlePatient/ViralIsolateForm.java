@@ -15,6 +15,9 @@ import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
+import net.sf.witty.wt.SignalListener;
+import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WStackedWidget;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.core.utils.WLength;
@@ -206,5 +209,36 @@ public class ViralIsolateForm extends FormWidget
         if(proteinForm_!=null && proteinForm_.refreshAlignmentsTimer_!=null)
             proteinForm_.refreshAlignmentsTimer_.stop();
         return super.leaveForm();
+    }
+    
+    @Override
+    public void confirmAction()
+    {
+        if(!_mainForm.checkSampleId()){
+            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.confirm.duplicate.viralIsolate.sampleId"));
+            cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                public void notify(WMouseEvent a) 
+                {
+                    cmb.hide();
+                    doConfirm();
+                }
+            });
+            cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
+                    {
+                public void notify(WMouseEvent a) 
+                {
+                    cmb.hide();
+                }
+            });
+
+        }
+        else{
+            doConfirm();
+        }
+    }
+    
+    public void doConfirm(){
+        super.confirmAction();
     }
 }

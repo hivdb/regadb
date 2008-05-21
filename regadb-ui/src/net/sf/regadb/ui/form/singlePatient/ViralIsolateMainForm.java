@@ -11,6 +11,7 @@ import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
@@ -105,7 +106,11 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleDateTF.setMandatory(true);
 		viralIsolateForm_.addLineToTable(generalGroupTable_, sampleDateL, sampleDateTF);
 		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
-		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_){
+		    public boolean checkUniqueness(){
+		        return checkSampleId(getFormText());
+		    }
+		};
 		sampleIdTF.setMandatory(true);
 		viralIsolateForm_.addLineToTable(generalGroupTable_, sampleIdL, sampleIdTF);
 
@@ -532,5 +537,27 @@ public class ViralIsolateMainForm extends WContainerWidget
                             addButton.disable();
                         }
                     });
+    }
+    
+    public boolean checkSampleId(){
+        return checkSampleId(sampleIdTF.getFormText());
+    }
+    
+    public boolean checkSampleId(String id){
+        boolean unique=true;
+
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        Integer ii = viralIsolateForm_.getViralIsolate().getViralIsolateIi();
+        
+        for(Dataset ds : RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getDatasets()){
+            ViralIsolate vi = t.getViralIsolate(ds, id);
+            if(vi != null && !vi.getViralIsolateIi().equals(ii)){
+                unique = false;
+                break;
+            }
+        }
+        
+        t.commit();
+        return unique;
     }
 }
