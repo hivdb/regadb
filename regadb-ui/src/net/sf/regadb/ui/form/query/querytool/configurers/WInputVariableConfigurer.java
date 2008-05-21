@@ -44,7 +44,15 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
     }    
     
     public void configureWord() {
-        this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
+    	// only configure the inputvariable when there are available outputvariables
+    	// this check is needed because the user may have removed all outputvariables 
+    	// compatible with our inputvariable (making the clause this inputvariable belongs to
+    	// invalid)
+    	// if the user then tries to modify the clause we should leave this
+    	// inputvariable unconfigured
+    	if (this.currentIndex() >= 0 && this.currentIndex() < outputVars.length) {
+    		this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
+    	}
     }    
 
 	public void reAssign(Object o) {

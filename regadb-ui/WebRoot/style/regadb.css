@@ -363,6 +363,11 @@ fieldset {
 
 /* selection field */
 
+.querytoolform .resultfieldempty {
+	display:none;
+}
+
+
 .querytoolform .selectionfield .content, .querytoolform .resultfield .content {
 	text-align:center !important;	
 }
@@ -420,7 +425,9 @@ fieldset {
 
 .querytoolform .querytreefield .content .tree .treeitempanel {
 	float:right;
+	text-align:right;
 }
+
 .querytoolform .querytreefield .content .tree input.check{
 	float:right;
 	display:block;
@@ -436,6 +443,10 @@ fieldset {
 	width:100%;	
 	display: block;
 	display:table;
+}
+
+.querytoolform .tree .treenodecontent .labelcontent {
+	width:100%;
 }
 
 .querytoolform .tree .treenodecontent td.checkbox {
@@ -462,6 +473,14 @@ fieldset {
 	width:100%;
 	border-top: 1px solid rgb(235,235,235);
 	padding:0.05em 0em 0.05em 0m;
+}
+
+.atomictreenode .treenodecontent .buttonpanel {
+	width:3.75em;	
+}
+
+.composedtreenode .treenodecontent .buttonpanel {
+	width:13.5em;	
 }
 
 .querytoolform .querytreefield .content .tree .composedtreenode {

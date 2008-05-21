@@ -53,10 +53,10 @@ public class RunGroupBox extends WGroupBox {
 		}
 		
 		if (!runningQueries.isEmpty()) {
-			this.show();
+			this.setStyleClass("resultfield");
 		}
 		else {
-			this.hide();
+			this.setStyleClass("resultfieldempty");
 		}
 		
 		boolean done = true;

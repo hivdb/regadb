@@ -50,6 +50,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		contentTable.putElementAt(0, 0, label());
 		contentTable.putElementAt(0, 0, childCountLabel_);
 		contentTable.setStyleClass("treenodecontent");
+		contentTable.elementAt(0, 0).setStyleClass("labelcontent");
 		
 		checkBox = new WCheckBox();
 		checkBox.setStyleClass("check");
@@ -86,7 +87,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		if (checkBox.isChecked() != checked) {
 			checkBox.setChecked(checked);
 		}
-		if (checked) {
+		if (checkBox.isChecked()) {
 			styleClasses.addStyle("selectedclause");
 		}
 		else {
@@ -172,35 +173,6 @@ public abstract class QueryTreeNode extends WTreeNode {
 		editor.setEditable(true);
 		getEditorModel().setContextClause(null);
 	}
-	
-	/**
-	 * finds the node that has a dialog open 
-	 * in this node or its children
-	 * @return
-	 */
-//	public WhereClause getContextClause() {
-//		if (isContext) {
-//			System.err.println("context requested");
-//			if (getClause() != null) {
-//				System.err.println(getClause());
-//				if (getClause() instanceof AtomicWhereClause) {
-//					System.err.println(((AtomicWhereClause) getClause()).getVisualizationClauseList().toString());
-//				}
-//			}
-//			System.err.println("p:" + getParentNode().getClause());
-//			return  getParentNode().getClause();
-//		}
-//		else {
-//			WhereClause clause = null;
-//			List<WTreeNode> children = childNodes();
-//			int i = 0;
-//			while (clause == null && i < children.size()) {
-//				clause = ((QueryTreeNode) children.get(i)).getContextClause();
-//				i++;
-//			}
-//			return clause;
-//		}
-//	}	
 	
 	/**
 	 * returns true if this node has a dialog open
