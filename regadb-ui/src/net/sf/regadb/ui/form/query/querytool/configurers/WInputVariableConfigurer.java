@@ -50,7 +50,7 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
     	// invalid)
     	// if the user then tries to modify the clause we should leave this
     	// inputvariable unconfigured
-    	if (this.currentIndex() >= 0 && this.currentIndex() < outputVars.length) {
+    	if (!isUseless()) {
     		this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
     	}
     	else if (var.getOutputVariable() == null) {
@@ -69,6 +69,6 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
 	}
 
 	public boolean isUseless() {
-		return false;
+		return this.count() == 0;
 	}
 }

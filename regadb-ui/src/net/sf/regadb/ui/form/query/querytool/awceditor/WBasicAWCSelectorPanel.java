@@ -76,18 +76,20 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 		radioButton.setStyleClass("selectorradio");
     	table.putElementAt(0, 0, radioButton);
     	table.putElementAt(0, 1, editPanel);
-    	editPanel.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
-				radioButton.setChecked(true);
-			}
-    	});
-    	editPanel.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
-				if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
+    	if (!isUseless()) {
+	    	editPanel.clicked.addListener(new SignalListener<WMouseEvent>(){
+				public void notify(WMouseEvent a) {
 					radioButton.setChecked(true);
 				}
-			}
-    	});
+	    	});
+	    	editPanel.keyPressed.addListener(new SignalListener<WKeyEvent>() {
+				public void notify(WKeyEvent a) {
+					if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
+						radioButton.setChecked(true);
+					}
+				}
+	    	});
+    	}
     }
 
 	@Override

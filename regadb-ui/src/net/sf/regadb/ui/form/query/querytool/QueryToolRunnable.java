@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.exception.SQLGrammarException;
-import org.postgresql.util.PSQLException;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;

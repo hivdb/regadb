@@ -133,6 +133,9 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	public void revalidate() {
 		if (object != null && !object.isValid()) {
+			if (object.isAtomic() && !label().text().keyOrValue().equals(object.toString())) {
+				label().setText(lt(object.toString()));
+			}
 			styleClasses.addStyle("invalidclause");
 		}
 		else {

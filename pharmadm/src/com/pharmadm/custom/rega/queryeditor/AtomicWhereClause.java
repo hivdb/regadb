@@ -319,6 +319,10 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
         while (iterInputVars.hasNext()) {
             InputVariable ivar = (InputVariable)iterInputVars.next();
             valid &=  ((ivar.getOutputVariable() != null) && getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable()));
+            if ( (ivar.getOutputVariable() == null) ||
+            		(ivar.getOutputVariable() != null && !getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable())) ) {
+            	ivar.setOutputVariable(new OutputVariable(ivar.getVariableType(), "[undefined]", ivar.getHumanStringValue()));
+            }
         }
         Iterator<Constant> iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {

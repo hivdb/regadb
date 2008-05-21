@@ -38,5 +38,8 @@ public class FieldSelectionContainer extends WContainerWidget {
 	
 	private void toggleFieldChecked() {
         ((SelectionStatusList)tableSelection.getController()).setSelected((OutputVariable)tableSelection.getObject(), (Field) selection.getObject(), checkBox.isChecked());
+        
+        
+        
 	}
 }
