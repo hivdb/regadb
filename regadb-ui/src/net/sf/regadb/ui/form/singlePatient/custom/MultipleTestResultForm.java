@@ -15,8 +15,11 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
+import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.WGroupBox;
@@ -29,6 +32,8 @@ public class MultipleTestResultForm extends FormWidget {
     private WTable generalGroupTable_;
     private Label dateL_;
     private DateField dateTF_;
+    private Label sampleIdL_;
+    private TextField sampleIdTF_;
     private List<FormField> formFields_ = new ArrayList<FormField>();
     
     private List<Test> tests_;
@@ -50,6 +55,10 @@ public class MultipleTestResultForm extends FormWidget {
         dateTF_ = new DateField(getInteractionState(), this);
         dateTF_.setMandatory(true);
         addLineToTable(generalGroupTable_, dateL_, dateTF_);
+        sampleIdL_ = new Label(tr("form.multipleTestResults.sampleId"));
+        sampleIdTF_ = new TextField(getInteractionState(), this, FieldType.ALFANUMERIC);
+        addLineToTable(generalGroupTable_, sampleIdL_, sampleIdTF_);
+        
         for(Test t : tests_) {
             Label l = new Label(lt(t.getDescription()));
             FormField testResultField;
@@ -93,6 +102,7 @@ public class MultipleTestResultForm extends FormWidget {
 	            for(int i=0; i<tests_.size(); i++) {
 	                FormField f = formFields_.get(i);
 	                TestResult tr = t.getNewestTestResult(tests_.get(i), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
+	                sampleIdTF_.setText(tr.getSampleId());
 	                if(tr!=null && DateUtils.compareDates(tr.getTestDate(), (newestDate))==0) {
 	                    if(f instanceof ComboBox) {
 	                        ((ComboBox)f).selectItem(tr.getTestNominalValue().getValue());
@@ -123,6 +133,25 @@ public class MultipleTestResultForm extends FormWidget {
     @Override
     public void saveData() {
         Transaction t = RegaDBMain.getApp().createTransaction();
+        boolean duplicateSampleId = false;
+        if(!sampleIdTF_.getFormText().equals("")) {
+        	for(TestResult tr : RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getTestResults()) {
+        		if(sampleIdTF_.getFormText().equals(tr.getSampleId())) {
+        			for(Test test : tests_) {
+        				if(tr.getTest().getDescription().equals(test.getDescription())) {
+        					duplicateSampleId = true;
+        					break;
+        				}
+        			}
+        		}
+        		if(duplicateSampleId)
+        			break;
+        	}
+        }
+        
+        if(duplicateSampleId)
+        	MessageBox.showWarningMessage(tr("form.multipleTestResults.duplicateSampleIdWarning"));
+        
         for(int i = 0; i<tests_.size(); i++) {
             TestResult tr = null;
             FormField f = formFields_.get(i);
@@ -139,6 +168,9 @@ public class MultipleTestResultForm extends FormWidget {
             }
             if(tr!=null) {
                 tr.setTestDate(dateTF_.getDate());
+                if(!sampleIdTF_.getFormText().equals("")) {
+                	tr.setSampleId(sampleIdTF_.getFormText());
+                }
                 t.save(tr);
             }
         }
