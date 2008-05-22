@@ -6,6 +6,8 @@ package net.sf.regadb.io.db.portugal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -269,7 +271,18 @@ public class ImportPortugalDB {
         }
         System.err.println("Done fixing attribute table " + a.getName());
     }
-
+    
+    class DrugS {
+    	public DrugS(String drug, String sample, String therapyId) {
+    		this.drug = drug;
+    		this.sample = sample;
+    		this.therapyId = therapyId;
+    	}
+    	public String drug;
+    	public String sample;
+    	public String therapyId;
+    }
+    
     private void importTherapy() throws NumberFormatException {
         System.err.println("Importing therapy ...");
         int therapy = 0;
@@ -303,7 +316,7 @@ public class ImportPortugalDB {
         Date lastStartDate = null;
         Date lastCollectionDate = null;
 
-        Set<String> previousDrugs = null;
+        List<DrugS> previousDrugs = null;
         Date previousEndDate = null;
         Date previousStartDate = null;
         
@@ -333,12 +346,12 @@ public class ImportPortugalDB {
 
             int d = 0;
             
-            Set<String> drugs = new TreeSet<String>();
+            List<DrugS> drugs = new ArrayList<DrugS>();
             
             for (; (d = therapeuticMedicinsTable.findInColumn(CTherapeuticMedicinsTableIdTherapeutics, Id_Therapeutics, d + 1)) != -1; ) {
                 String drug = therapeuticMedicinsTable.valueAt(CTherapeuticMedicinsTableIdMedicins, d);
                 //System.err.print(" " + drug);
-                drugs.add(drug);
+                drugs.add(new DrugS(drug, sampleId, Id_Therapeutics));
             }
             //System.err.println();
             
@@ -354,8 +367,7 @@ public class ImportPortugalDB {
                     c.setTime(previousStartDate);
                     c.add(Calendar.DAY_OF_YEAR, -1);
                     
-                    storeTherapy(medicinsMap, previousEndDate, c.getTime(), lastPatientId, previousDrugs,
-                                 "previous therapies (dates unknown)");
+                    storeUnknowDateTherapy(medicinsMap, lastPatientId, previousDrugs);
                     ++therapy;
                     ++datesunknown;
                 }
@@ -405,14 +417,14 @@ public class ImportPortugalDB {
                             // must be before last start date
                             endDate = lastStartDate;
                     
-                    storeTherapy(medicinsMap, endDate, startDate, patientId, drugs, null);
+                    storeTherapy(medicinsMap, endDate, startDate, patientId, makeSet(drugs), null);
                     ++therapy;
                 }
             }
             
             if (previousEndDate != null) {
                 if (previousDrugs == null)
-                    previousDrugs = new TreeSet<String>();
+                    previousDrugs = new ArrayList<DrugS>();
 
                 // include in regimen if the regimen is not for certain after this 'previous regimen'
                 if (startDate == null || startDate.before(previousEndDate)) {
@@ -435,6 +447,14 @@ public class ImportPortugalDB {
         
         System.err.println( " n = " + therapy + " (with unknown dates: " + datesunknown + ")");
     }
+    
+    private Set<String> makeSet(List<DrugS> drugs) {
+    	Set<String> s = new TreeSet<String>();
+    	for(DrugS d : drugs) {
+    		s.add(d.drug);
+    	}
+    	return s;
+    }
 
     private void storeTherapy(Map<String, DrugGeneric> medicinsMap, Date endDate, Date startDate,
             		          String patientId, Set<String> drugs, String comment) {        
@@ -456,6 +476,43 @@ public class ImportPortugalDB {
         for (String drug : drugs) {
            TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(drug)),false,false);
             t.getTherapyGenerics().add(tg);
+        }
+    }
+    
+    static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+    
+    private void storeUnknowDateTherapy(Map<String, DrugGeneric> medicinsMap, String patientId, List<DrugS> drugs) {
+        Patient p = patientMap.get(patientId);
+        if (p == null)
+            return;
+        
+        Map<String, Therapy> ts = new HashMap<String, Therapy>();
+        
+        int day = 1;
+        for(DrugS d : drugs) {
+        	Therapy t = ts.get(d.sample+"+"+d.therapyId);
+        	if(t==null) {
+        		try {
+					t = p.createTherapy(DATE_FORMAT.parse(day+"-1-1000"));
+					t.setStopDate(DATE_FORMAT.parse((day+1)+"-1-1000"));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				t.setComment("unknown date (s: "+ d.sample +" t: "+ d.therapyId +")");
+				ts.put(d.sample+"+"+d.therapyId, t);
+        		day++;
+        	}
+        		boolean alreadyIn = false;
+        		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+        			if(tg.getId().getDrugGeneric().getGenericId().equals(medicinsMap.get(d.drug).getGenericId())) {
+        				alreadyIn = true;
+        				break;
+        			}
+        		}
+        		if(!alreadyIn) {
+	                TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, medicinsMap.get(d.drug)),false,false);
+	                t.getTherapyGenerics().add(tg);
+        		}
         }
     }
 
@@ -502,9 +559,9 @@ public class ImportPortugalDB {
               ++cd4;
           }
           
-          handlePosNegTest(seroconvertion, StandardObjects.getGenericHiv1SeroStatusTest(), p,
-                  Utils.getNominalValue(StandardObjects.getGenericHiv1SeroStatusTest().getTestType(), "Positive"),
-                  Utils.getNominalValue(StandardObjects.getGenericHiv1SeroStatusTest().getTestType(), "Negative"),
+          handlePosNegTest(seroconvertion, StandardObjects.getHiv1SeroconversionTest(), p,
+                  Utils.getNominalValue(StandardObjects.getHiv1SeroconversionTest().getTestType(), "Positive"),
+                  Utils.getNominalValue(StandardObjects.getHiv1SeroconversionTest().getTestType(), "Negative"),
                   Utils.createDate(collectionYear, collectionMonth, null),
                   sampleId);
           
@@ -569,7 +626,7 @@ public class ImportPortugalDB {
 
                     patient = new Patient();
                     patient.setPatientId(patientId);
-                    patient.setBirthDate(Utils.createDate(yearBirth, "", null));
+                    patient.setBirthDate(Utils.createDate(yearBirth, "1", null));
                     
 //                    if(sampleTable.valueAt(CSampleIdProtocol, row).contains("S")){
 //                        patient.addPatientToDataset(spreadDataset);
