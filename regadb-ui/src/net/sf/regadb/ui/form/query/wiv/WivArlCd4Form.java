@@ -14,7 +14,7 @@ public class WivArlCd4Form extends WivIntervalQueryForm {
     public WivArlCd4Form(){
         super(tr("menu.query.wiv.arl.cd4"),tr("form.query.wiv.label.arl.cd4"),tr("file.query.wiv.arl.cd4"));
         
-        String query =  "select p, tr, pav "+
+        String query =  "select tr, pav "+
                         "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
                         "where pav.patient = p and pav.attribute.name = 'PatCode' "+
                         "and tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
