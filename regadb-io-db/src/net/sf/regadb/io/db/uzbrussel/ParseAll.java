@@ -11,11 +11,27 @@ import net.sf.regadb.io.db.util.Utils;
 
 public class ParseAll {
     public static void main(String [] args) {
-    	exec(	"/home/plibin0/import/jette/import/cd/080415/",
-    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
-    			"www-proxy",
-    			"3128",
-    			"/home/plibin0/Desktop/" + File.separatorChar + "patients.xml");
+    	if(args.length >= 3){
+    		String baseDir = args[0];
+    		String mappingDir = args[1];
+    		String regadbXmlFile = args[2];
+    		String proxyHost=null;
+    		String proxyPort=null;
+    		
+    		if(args.length >= 5){
+    			proxyHost = args[3];
+    			proxyPort = args[4];
+    		}
+    		
+    		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile);
+    	}
+    	else{
+	    	exec(	"/home/plibin0/import/jette/import/cd/080321/",
+	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
+	    			"www-proxy",
+	    			"3128",
+	    			"/home/plibin0/Desktop/" + File.separatorChar + "patients.xml");
+    	}
     }
     
     public static void exec(String baseDir, String mappingDir, String proxyHost, String proxyPort, String regadbXmlFile) {

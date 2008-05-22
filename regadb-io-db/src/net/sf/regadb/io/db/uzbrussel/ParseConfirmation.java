@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
@@ -31,6 +33,7 @@ import net.sf.regadb.io.util.WivObjects;
 public class ParseConfirmation {
     private static DateFormat dateFormatter1 = new SimpleDateFormat("yyyyMMdd");
     private static DateFormat dateFormatter2 = new SimpleDateFormat("yyMMdd");
+    private static DateFormat yearFormat = new SimpleDateFormat("yyyy");
     
     private String basePath_;
     private ParseIds parseIds_;
@@ -42,6 +45,7 @@ public class ParseConfirmation {
             new String[] { "male", "female" } );
     
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
+    private Attribute commentAttribute = new Attribute(StandardObjects.getStringValueType(),regadbAttributeGroup_,"Comment",new TreeSet<AttributeNominalValue>());
     
     public ParseConfirmation(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
         basePath_ = basePath;
@@ -116,11 +120,12 @@ public class ParseConfirmation {
                }
             }
             if(p!=null) {
-            String ref_labo = getValue(i, "REF_LABO", sheet, colMapping);
+            
             String date_test = getValue(i, "DATE_TEST", sheet, colMapping);
             Date testDate = null;
             try {
-				testDate = df.parse(date_test);
+                testDate = df.parse(date_test);
+                storeDateAttribute("DATE_TEST", date_test, p, df);
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -176,6 +181,14 @@ public class ParseConfirmation {
                 }
             }
             
+            String comment = getValue(i, "OPMERKING", sheet, colMapping);
+            if(comment != null && comment.length() > 0){
+                (p.createPatientAttributeValue(commentAttribute)).setValue(comment);
+            }
+            
+            String ref_labo = getValue(i, "REF_LABO", sheet, colMapping);
+                handleWIVStringAttribute("REF_LABO", ref_labo, p);
+
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
                 setTest(StandardObjects.getGenericHiv1ViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
             
@@ -193,7 +206,7 @@ public class ParseConfirmation {
             
             String arrival_b = getValue(i, "ARRIVAL_B", sheet, colMapping);
                 if(arrival_b!=null)
-                    handleWIVNumericAttribute("ARRIVAL_B", arrival_b, p, 4);
+                    storeDateAttribute("ARRIVAL_B", arrival_b, p, yearFormat);
             
             String sexcontact = getValue(i, "SEXCONTACT", sheet, colMapping);
                 handleWIVNominalAttribute("SEXCONTACT", sexcontact, p);
@@ -208,7 +221,7 @@ public class ParseConfirmation {
                 handleWIVNominalAttribute("BLOODBORNE", bloodborne, p);
                 
             String yeartransf = getValue(i, "YEARTRANSF", sheet, colMapping);
-                handleWIVNumericAttribute("YEARTRANSF", yeartransf, p, 4);
+                storeDateAttribute("YEARTRANSF", yeartransf, p, yearFormat);
                 
             String trancountr = getValue(i, "TRANCOUNTR", sheet, colMapping);
             	handleWIVCountry("TRANCOUNTR", trancountr, p);
@@ -220,7 +233,7 @@ public class ParseConfirmation {
                 handleWIVNominalAttribute("PROFRISK", profrisk, p);
             
             String probyear = getValue(i, "PROBYEAR", sheet, colMapping);
-                handleWIVNumericAttribute("PROBYEAR", probyear, p, 4);
+                storeDateAttribute("PROBYEAR", probyear, p, yearFormat);
             
             String probcountr = getValue(i, "PROBCOUNTR", sheet, colMapping);
             	handleWIVCountry("PROBCOUNTR", probcountr, p);
@@ -306,6 +319,12 @@ public class ParseConfirmation {
         
         if(WivObjects.createCountryPANV(attributeName, value.toUpperCase(), p)==null) {
         	ConsoleLogger.getInstance().logError("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+        }
+    }
+    
+    public void handleWIVStringAttribute(String attributeName, String value, Patient p) {
+        if(value != null && !"".equals(value) && !value.toUpperCase().equals("U")) {
+            handleWIVAttribute(attributeName, value, p);
         }
     }
     
