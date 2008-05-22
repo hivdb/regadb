@@ -24,8 +24,8 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
         String query =  "select p.birthDate, tr, pav "+
 	        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
 	        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-	        "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' or "+
-	        "tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
+	        "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
+	        "or tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
 	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
 
         setQuery(query);
@@ -59,6 +59,10 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
         		testCode = TestCode.T4PERCENT.getCode();
         		if(!tr.getTest().getTestType().getDescription().equals(StandardObjects.getCd4PercentageTestType().getDescription()))
         			continue;
+        	}
+        	else{
+                if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getCd4PercentageTestType().getDescription()))
+                    continue;
         	}
         	
         	String value = tr.getValue();

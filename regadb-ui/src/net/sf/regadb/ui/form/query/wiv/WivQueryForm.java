@@ -73,6 +73,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     private String filename_;
     
     private SimpleDateFormat sdf_ = new SimpleDateFormat("yyyy-MM-dd");
+    private DecimalFormat decimalFormat = new DecimalFormat("##########.00");
+
     
     private HashMap<String,IFormField> parameters_ = new HashMap<String,IFormField>();
     
@@ -444,9 +446,9 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected String getFormattedDecimal(double value, int maxFractionDigits){
-        DecimalFormat df = new DecimalFormat("##########.00");
-        df.setMaximumFractionDigits(maxFractionDigits);
-        String s = df.format(value).replace(".", ",");
+        
+        decimalFormat.setMaximumFractionDigits(maxFractionDigits);
+        String s = decimalFormat.format(value).replace(".", ",");
         return s;
     }
     
@@ -485,7 +487,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 
     
     protected String getFormattedString(PatientAttributeValue pav){
-        String s = null;
+        String s = pav.getValue();
         String attr = pav.getAttribute().getName();
         
         if(ValueTypes.getValueType(pav.getAttribute().getValueType()) == ValueTypes.NOMINAL_VALUE){
@@ -502,16 +504,15 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         }
         
         if(ValueTypes.getValueType(pav.getAttribute().getValueType()) == ValueTypes.DATE){
-        	Date date = DateUtils.parseDate(pav.getValue());
-        	if(attr.equals("ARRIVAL_B") || attr.equals("YEARTRANSF") || attr.equals("PROBYEAR"))
+        	Date date = DateUtils.parseDate(s);
+        	if(attr.equals("ARRIVAL_B") || attr.equals("YEARTRANSF") || attr.equals("PROBYEAR")){
+        	    if(s != null && s.length() == 4)   //for wrong imports!
+        	        return s;
         		return getFormattedDate(date, "yyyy");
+        	}
         	
        		return getFormattedDate(date);
         }
-        
-        if(attr.equals("PatCode"))
-            return pav.getValue();
-        
 
         return s;
     }
@@ -546,10 +547,25 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
 
     protected String getFormattedViralLoadResult(TestResult tr){
-    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getHiv1ViralLoadTestType().getDescription()))
-    		return getFormattedViralLoadLog10(tr.getValue());
-    	else
-    		return getFormattedDecimal(tr.getValue(),2);
+        String s;
+        String value = tr.getValue();
+        
+    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getHiv1ViralLoadTestType().getDescription())){
+    		s = getFormattedViralLoadLog10(value);
+    	}
+    	else{
+    		s = getFormattedDecimal(value,2);
+    	}
+    	
+    	String prefix[] = {"<",">"};
+    	for(String c : prefix){
+    	    if(value.startsWith(c)){
+    	        s = c + s;
+    	        break;
+    	    }
+    	}
+    	
+    	return s;
     }
     
     protected String getFormattedViralLoadLog10(String value){
@@ -560,38 +576,42 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     protected Table getArlEpidemiologyTable(List<Patient> patients){
     	Map<String, Integer> position = new HashMap<String, Integer>();
         List<Integer> length = new ArrayList<Integer>();
+        ArrayList<String> header = new ArrayList<String>();
         int i=0;
-        length.add(13); position.put("PatCode", i++);
-        length.add(10); position.put("REF_LABO", i++);
-        length.add(8);  position.put("TestResult.testDate", i++);
-        length.add(8);  position.put("Patient.birthDate", i++);
-        length.add(1);  position.put("Gender", i++);
-        length.add(1);  position.put("HivType.TestResult.value", i++);
-        length.add(0);  position.put("VL.TestResult.value", i++);
-        length.add(3);  position.put("NATION", i++);
-        length.add(3);  position.put("COUNTRY", i++);
-        length.add(2);  position.put("RESID_B", i++);
-        length.add(3);  position.put("ORIGIN", i++);
-        length.add(4);  position.put("ARRIVAL_B", i++);
-        length.add(1);  position.put("SEXCONTACT", i++);
-        length.add(4);  position.put("SEXPARTNER", i++);
-        length.add(3);  position.put("NATPARTNER", i++);
-        length.add(1);  position.put("BLOODBORNE", i++);
-        length.add(4);  position.put("YEARTRANSF", i++);
-        length.add(3);  position.put("TRANCOUNTR", i++);
-        length.add(1);  position.put("CHILD", i++);
-        length.add(1);  position.put("PROFRISK", i++);
-        length.add(4);  position.put("PROBYEAR", i++);
-        length.add(3);  position.put("PROBCOUNTR", i++);
-        length.add(4);  position.put("CD4.TestResult.value", i++);
-        length.add(1);  position.put("STAD_CLIN", i++);
-        length.add(1);  position.put("REASONTEST", i++);
-        length.add(8);  position.put("FORM_OUT", i++);
-        length.add(8);  position.put("FORM_IN", i++);
-        length.add(3);  position.put("LABO", i);
+        length.add(13); position.put("PatCode", i++);                   header.add("PAT_CODE");
+        length.add(10); position.put("REF_LABO", i++);                  header.add("REF_LABO");
+        length.add(8);  position.put("DATE_TEST", i++);                 header.add("DATE_TEST");
+        length.add(8);  position.put("Patient.birthDate", i++);         header.add("BIRTH_DATE");
+        length.add(1);  position.put("Gender", i++);                    header.add("SEX");
+        length.add(1);  position.put("HivType.TestResult.value", i++);  header.add("HIVTYPE");
+        length.add(0);  position.put("VL.TestResult.value", i++);       header.add("VIRLOAD");
+        length.add(3);  position.put("NATION", i++);                    header.add("NATION");
+        length.add(3);  position.put("COUNTRY", i++);                   header.add("COUNTRY");
+        length.add(2);  position.put("RESID_B", i++);                   header.add("RESID_B");
+        length.add(3);  position.put("ORIGIN", i++);                    header.add("ORIGIN");
+        length.add(4);  position.put("ARRIVAL_B", i++);                 header.add("ARRIVAL_B");
+        length.add(1);  position.put("SEXCONTACT", i++);                header.add("SEXCONTACT");
+        length.add(4);  position.put("SEXPARTNER", i++);                header.add("SEXPARTNER");
+        length.add(3);  position.put("NATPARTNER", i++);                header.add("NATPARTNER");
+        length.add(1);  position.put("BLOODBORNE", i++);                header.add("BLOODBORNE");
+        length.add(4);  position.put("YEARTRANSF", i++);                header.add("YEARTRANSF");
+        length.add(3);  position.put("TRANCOUNTR", i++);                header.add("TRANCOUNTR");
+        length.add(1);  position.put("CHILD", i++);                     header.add("CHILD");
+        length.add(1);  position.put("PROFRISK", i++);                  header.add("PROFRISK");
+        length.add(4);  position.put("PROBYEAR", i++);                  header.add("PROBYEAR");
+        length.add(3);  position.put("PROBCOUNTR", i++);                header.add("PROBCOUNTR");
+        length.add(4);  position.put("CD4.TestResult.value", i++);      header.add("LYMPHO");
+        length.add(1);  position.put("STAD_CLIN", i++);                 header.add("STAD_CLIN");
+        length.add(1);  position.put("REASONTEST", i++);                header.add("REASONTEST");
+        length.add(8);  position.put("FORM_OUT", i++);                  header.add("FORM_OUT");
+        length.add(8);  position.put("FORM_IN", i++);                   header.add("FORM_IN");
+        length.add(3);  position.put("LABO", i++);                        header.add("LABO");
+        length.add(0);  position.put("Comment", i);                     header.add("OPMERKING");
         
         Table res = new Table();
         String [] row;
+        
+        res.addRow(header);
         
         for(Patient p : patients){
             
@@ -612,13 +632,11 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
                 else
                     continue;
                 
-            	
 	            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
 	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
 	            if(tr != null){
 	            	row[position.get("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
-	                row[position.get("TestResult.testDate")] = getFormattedDate(tr.getTestDate());
 	            }
 	            
 	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
@@ -628,7 +646,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 	            else
 	            	row[position.get("CD4.TestResult.value")] = "U";
 	            
-	
+	            row[position.get("LABO")] = getCentreName();
 	            
 	            for(PatientAttributeValue pav : p.getPatientAttributeValues()){
 	                Integer pos = position.get(pav.getAttribute().getName());
@@ -652,7 +670,6 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 	            }
 	
 	            ArrayList<String> lRow = new ArrayList<String>(Arrays.asList(row));
-	            lRow.add("");
 	            res.addRow(lRow);
 	        }
         }
