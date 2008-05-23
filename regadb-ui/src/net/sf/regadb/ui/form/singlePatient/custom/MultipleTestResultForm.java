@@ -105,8 +105,9 @@ public class MultipleTestResultForm extends FormWidget {
 	            for(int i=0; i<tests_.size(); i++) {
 	                FormField f = formFields_.get(i);
 	                TestResult tr = t.getNewestTestResult(tests_.get(i), RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem());
-	                sampleIdTF_.setText(tr.getSampleId());
+	                
 	                if(tr!=null && DateUtils.compareDates(tr.getTestDate(), (newestDate))==0) {
+	                	sampleIdTF_.setText(tr.getSampleId());
 	                    if(f instanceof ComboBox) {
 	                        ((ComboBox)f).selectItem(tr.getTestNominalValue().getValue());
 	                    } else {
