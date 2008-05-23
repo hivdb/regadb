@@ -40,6 +40,8 @@ public class WivObjects {
         
         createAttribute("REF_LABO",str);
         
+        createAttribute("DATE_TEST",dat);
+        
         a = createAttribute("NATION",nom);
         createAttributeNominalValues(a, countryCodes);
 
