@@ -10,6 +10,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -94,6 +96,7 @@ public class ImportPortugalDB {
     private int CTherapeuticsIdSampleEndMonth;
     private int CTherapeuticsIdSampleEndYear;
     private int CTherapeuticsPatientId;
+    private int CTherapeuticsTherapyOrder;
 
     private int CMedicinsIdMedicins;
     private int CMedicinsMedicinCode;
@@ -113,7 +116,7 @@ public class ImportPortugalDB {
     private File patientXmlFile;
     private File sequenceXmlFile;
     
-    private String mappingBasePath = "/home/simbre1/workspace2/regadb-io-db/src/net/sf/regadb/io/db/portugal/mapping/";
+    private String mappingBasePath = "/home/plibin0/lisbon_workspace/regadb-io-db/src/net/sf/regadb/io/db/portugal/mapping/";
     
     private Test genericTherapyFailure;
     private TestNominalValue therapyFailurePos;
@@ -136,6 +139,8 @@ public class ImportPortugalDB {
             				String transmissionGroupFName, String sequenceDirName,
             				String patientXmlFile, String sequenceXmlFile)
             throws FileNotFoundException {
+		//System.setProperty("http.proxyHost", "172.20.201.15");
+		//System.setProperty("http.proxyPort", "8080");
         
 //        spreadDataset = new Dataset();
 //        spreadDataset.setDescription("SPREAD");
@@ -226,6 +231,7 @@ public class ImportPortugalDB {
         this.CTherapeuticsPatientId = Utils.findColumn(therapeuticsTable, "PatientID");
         this.CTherapeuticsYearCollection = Utils.findColumn(therapeuticsTable, "YearCollection");
         this.CTherapeuticsMonthCollection = Utils.findColumn(therapeuticsTable, "MonthCollection");
+        this.CTherapeuticsTherapyOrder = Utils.findColumn(therapeuticsTable, "Therapy");
 
         this.CMedicinsIdMedicins = Utils.findColumn(medicinsTable, "Id_Medicins");
         this.CMedicinsMedicinCode = Utils.findColumn(medicinsTable, "MedicinCode");
@@ -332,6 +338,7 @@ public class ImportPortugalDB {
             String patientId = therapeuticsTable.valueAt(CTherapeuticsPatientId, row);
             String collectionYear = therapeuticsTable.valueAt(CTherapeuticsYearCollection, row);
             String collectionMonth = therapeuticsTable.valueAt(CTherapeuticsMonthCollection, row);
+            String order = therapeuticsTable.valueAt(CTherapeuticsTherapyOrder, row);
             
             Date collectionDate = Utils.createDate(collectionYear, collectionMonth, null);
 
@@ -351,7 +358,7 @@ public class ImportPortugalDB {
             for (; (d = therapeuticMedicinsTable.findInColumn(CTherapeuticMedicinsTableIdTherapeutics, Id_Therapeutics, d + 1)) != -1; ) {
                 String drug = therapeuticMedicinsTable.valueAt(CTherapeuticMedicinsTableIdMedicins, d);
                 //System.err.print(" " + drug);
-                drugs.add(new DrugS(drug, sampleId, Id_Therapeutics));
+                drugs.add(new DrugS(drug, sampleId, order));
             }
             //System.err.println();
             
@@ -489,7 +496,30 @@ public class ImportPortugalDB {
         Map<String, Therapy> ts = new HashMap<String, Therapy>();
         
         int day = 1;
+        
+        //only use last sampleId!!!
+        List<DrugS> lastSampleIdDrugs = new ArrayList<DrugS>();
+        int lastSampleId = Integer.MIN_VALUE;
         for(DrugS d : drugs) {
+        	int sampleId = Integer.parseInt(getSampleId(d.sample));
+        	if(sampleId>lastSampleId) {
+        		lastSampleId = sampleId;
+        	}
+        }
+        for(DrugS d : drugs) { 
+        	int sampleId = Integer.parseInt(getSampleId(d.sample));
+        	if(sampleId==lastSampleId) {
+        		lastSampleIdDrugs.add(d);
+        	}
+        }
+        Collections.sort(lastSampleIdDrugs, new Comparator<DrugS>() {
+			public int compare(DrugS arg0, DrugS arg1) {
+				return arg1.therapyId.compareTo(arg0.therapyId);
+			}
+        });
+        //only use last sampleId!!!
+        
+        for(DrugS d : lastSampleIdDrugs) {
         	Therapy t = ts.get(d.sample+"+"+d.therapyId);
         	if(t==null) {
         		try {
@@ -498,7 +528,8 @@ public class ImportPortugalDB {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				t.setComment("unknown date (s: "+ d.sample +" t: "+ d.therapyId +")");
+				String sampleId = getSampleId(d.sample);
+				t.setComment("therapy with unknown date (sample=" + (sampleId==null?"":sampleId) + ")");
 				ts.put(d.sample+"+"+d.therapyId, t);
         		day++;
         	}
@@ -514,6 +545,19 @@ public class ImportPortugalDB {
 	                t.getTherapyGenerics().add(tg);
         		}
         }
+    }
+    
+    private String getSampleId(String id_sample) {
+        for (int i = 1; i < sampleTable.numRows(); ++i) {
+            int row = sampleIndex.row(i);
+
+            String idSample = sampleTable.valueAt(CSampleId_Sample, row);
+            if(idSample.equals(id_sample)) {
+            	return sampleTable.valueAt(CSampleSampleID, row);
+            }
+        }
+        
+        return null;
     }
 
     private void importViralLoad_CD4() {
