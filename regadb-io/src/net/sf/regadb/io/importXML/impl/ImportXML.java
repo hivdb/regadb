@@ -65,7 +65,7 @@ public class ImportXML {
                     .add(
                             new DatasetAccess(new DatasetAccessId(t
                                     .getSettingsUser(), dataset),
-                                    Privileges.READWRITE.getValue(), "nobody"));
+                                    Privileges.READWRITE.getValue(), t.getSettingsUser().getUid()));
             t.save(dataset);
         }
 

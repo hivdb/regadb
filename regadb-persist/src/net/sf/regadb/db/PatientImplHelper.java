@@ -27,6 +27,9 @@ public class PatientImplHelper {
     	else if (testResultvar.getViralIsolate() != null) {
     		return canAccessViralIsolate(testResultvar.getViralIsolate(), datasets);
     	}
+    	else if (testResultvar.getNtSequence() != null) {
+    		return canAccessViralIsolate(testResultvar.getNtSequence().getViralIsolate(), datasets);
+    	}
     	else {
     		return false;
     	}
