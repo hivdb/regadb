@@ -1,0 +1,38 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Preparing files..." >> $monitor_file
+
+nt_sequence_file="$1/inputs/nt_sequence"
+species_file="$1/inputs/species"
+
+type_file="$1/outputs/type"
+subtype_file="$1/outputs/subtype"
+subtype_data_file="$1/outputs/subtype_data"
+
+echo "Starting subtype calculation..." >> $monitor_file
+
+species=`cat $species_file`
+
+if [ $species == hbv ]; then tool="rega.genotype.hbv.HBVTool"; fi
+if [ $species == hcv ]; then tool="rega.genotype.hbv.HCVTool"; fi
+if [ $species == hhv8 ]; then tool="rega.genotype.hhv8.HHV8Tool"; fi
+if [ $species == hiv ]; then tool="rega.genotype.hiv.HIVTool"; fi
+if [ $species == hpv ]; then tool="rega.genotype.hpv.HPVTool"; fi
+if [ $species == htlv ]; then tool="rega.genotype.htlv.HTLVTool"; fi
+if [ $species == phylo ]; then tool="rega.genotype.phylo.PhyloTool"; fi
+
+
+/soft/project/rega-genotype/batch-genotype.sh $tool $nt_sequence_file "$1/outputs/" >> $monitor_file 2>> $monitor_file                     
+
+cp $1/outputs/result.xml subtype_data_file >> $monitor_file 2>> $monitor_file
+
+python /soft/wts/services/regadb-subtype/parse_subtype.py $1/outputs/result.xml $subtype_file >> $monitor_file 2>> $monitor_file
+
+echo "Calculation ended" >> $monitor_file
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"
