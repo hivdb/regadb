@@ -1,5 +1,3 @@
-#!/bin/sh
-
 monitor_file="$1/.monitor"
 running_file="$1/.running"
 
