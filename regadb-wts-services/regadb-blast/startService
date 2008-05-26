@@ -1,0 +1,45 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+
+echo "Setting files" >> monitor_file
+ 
+nt_sequence_file="$1/inputs/nt_sequence"
+species_file="$1/outputs/species"
+
+blastdb_path="/soft/wts/services/regadb-blast/db/"
+
+#get most recently created directory
+db_file=`ls $blastdb_path*/ -d --sort time | head -n 1`
+db_file=$db_file"all.fasta"
+
+echo "Blasting started" >> $monitor_file
+blastall -p blastn -d $db_file -i $nt_sequence_file -o $running_file
+echo "Blasting ended" >> $monitor_file
+
+#get the line where the results are
+linenumber=`grep "Sequences producing significant alignments:" -n $running_file | cut -d : -f 1`
+(( linenumber+=2 ))
+line=`( head -n $linenumber $running_file | tail -n 1 )`
+
+#split the result line in a word-array
+line2=($line)
+
+#the last 2 words are value and score, everything before that is part of the name
+n=${#line2[@]}
+nv=$(( n-1 ))
+ns=$(( n-2 ))
+
+value=${line2[ $nv ]}
+score=${line2[ $ns ]}
+name=`echo $line | cut -f 1-$ns -d ' '`
+
+echo $name >> $species_file
+echo $value >> $species_file
+echo $score >> $species_file
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"
