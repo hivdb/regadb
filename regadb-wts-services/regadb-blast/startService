@@ -4,7 +4,7 @@ monitor_file="$1/.monitor"
 running_file="$1/.running"
 
 
-echo "Setting files" >> monitor_file
+echo "Setting files" >> $monitor_file
  
 nt_sequence_file="$1/inputs/nt_sequence"
 species_file="$1/outputs/species"
