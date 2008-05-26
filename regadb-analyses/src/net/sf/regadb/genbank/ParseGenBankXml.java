@@ -92,7 +92,8 @@ public class ParseGenBankXml {
         File proteinF = null;
         try {
             proteinF = File.createTempFile("protein-genbank", ".xml");
-            System.err.println(proteinF.getAbsolutePath());
+            if(join)
+                System.err.println(protein_id);
             efetchGenbankXmlFile(protein_id, "protein", proteinF);
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -105,8 +106,8 @@ public class ParseGenBankXml {
             Element root = doc.getRootElement();
             List<Element> seqFeatures = new ArrayList<Element>(); 
             findElementRecursively(root, "Seq-feat", seqFeatures);
-            if(!join)
-                System.err.println(protein_id + "  " + seqFeatures.size());
+            //if(!join)
+              //  System.err.println(protein_id + "  " + seqFeatures.size());
         }
         catch(Exception e) {
             e.printStackTrace();
