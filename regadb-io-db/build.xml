@@ -44,6 +44,12 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+ 	<jar jarfile="${dist}/${proj.name}-pt-fix-months.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.FixMonths"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
