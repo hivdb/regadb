@@ -355,10 +355,10 @@ public class Utils {
             for (String patientSampleId:patientMap.keySet()) {
                 Patient p = patientMap.get(patientSampleId);
                 if(p.getViralIsolates().size()>0) {
-                    Element viralIsolateE = new Element("viralIsolates-el");
-                    root.addContent(viralIsolateE);
-        
                     for(ViralIsolate vi : p.getViralIsolates()) {
+                        Element viralIsolateE = new Element("viralIsolates-el");
+                        root.addContent(viralIsolateE);
+                        
                         l.writeViralIsolate(vi, viralIsolateE);
                     }
                 }
