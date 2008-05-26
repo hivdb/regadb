@@ -99,7 +99,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         List<DrugGeneric> genericDrugs = t.getGenericDrugs();
         for(DrugGeneric dg: genericDrugs)
         {
-            combo.addItem(new DataComboMessage<DrugGeneric>(dg, dg.getGenericName()));
+            combo.addItem(new DataComboMessage<DrugGeneric>(dg, getGenericDrugRepresentation(dg)));
         }
         combo.sort();
         
@@ -117,7 +117,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         {
             tf.setText(tg.getDayDosageMg()+"");
         }
-        combo.selectItem(tg.getId().getDrugGeneric().getGenericName());
+        combo.selectItem(getGenericDrugRepresentation(tg.getId().getDrugGeneric()));
         
         cb_placebo.setChecked(tg.isPlacebo());
         cb_blind.setChecked(tg.isBlind());
@@ -145,7 +145,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         List<DrugGeneric> genericDrugs = t.getGenericDrugs();
         for(DrugGeneric dg: genericDrugs)
         {
-            combo.addItem(new DataComboMessage<DrugGeneric>(dg, dg.getGenericName()));
+            combo.addItem(new DataComboMessage<DrugGeneric>(dg, getGenericDrugRepresentation(dg)));
         }
         combo.sort();
         t.commit();
@@ -227,5 +227,9 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
             tf.setText(java.lang.Math.round(f.getX()) +"");
             combo_freq.selectItem(f.toString());
         }
+    }
+    
+    private String getGenericDrugRepresentation(DrugGeneric dg) {
+    	return dg.getGenericName() + " ("+dg.getGenericId()+")";
     }
 }
