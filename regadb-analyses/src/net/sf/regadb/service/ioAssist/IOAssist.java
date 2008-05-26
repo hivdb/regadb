@@ -15,7 +15,7 @@ public class IOAssist
 {
     public static void main(String [] args)
     {
-        if(args.length<3) {
+        if(args.length<2) {
             System.err.println("IOAssist usage: IOAssist inputfile outputfile [proxyurl:proxyport] [--wtsUrl url]");
             System.exit(0);
         }
