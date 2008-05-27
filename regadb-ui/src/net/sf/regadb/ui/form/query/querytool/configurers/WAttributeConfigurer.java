@@ -5,7 +5,10 @@ import java.util.List;
 
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WInteractWidget;
+import net.sf.witty.wt.WKeyEvent;
 import net.sf.witty.wt.WMouseEvent;
+import net.sf.witty.wt.WWidget;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
@@ -13,26 +16,33 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 public class WAttributeConfigurer extends WContainerWidget implements ComposedWordConfigurer {
 
-	private WComposedOutputVariableConfigurer ovar;
+	private ComposedWordConfigurer ovar;
 	private List<WCombinedConfigurer> constantPanels;
 	private WContainerWidget contentTable;
 	
-	public WAttributeConfigurer(WComposedOutputVariableConfigurer ovar, WCombinedConfigurer constantPanel) {
+	public WAttributeConfigurer(ComposedWordConfigurer ovar, WCombinedConfigurer constantPanel) {
 		this.ovar = ovar;
 		this.setInline(true);
 		this.constantPanels = new ArrayList<WCombinedConfigurer>();
 		constantPanels.add(constantPanel);
 		
-		this.addWidget(ovar);
+		this.addWidget((WWidget) ovar);
 		contentTable = new WContainerWidget(this);
 		contentTable.setInline(true);
 		contentTable.addWidget(constantPanels.get(ovar.getSelectedIndex()));
 		
-		ovar.clicked.addListener(new SignalListener<WMouseEvent>() {
+		((WInteractWidget) ovar).clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				changeSelection();
 			}
 		});
+		
+		((WInteractWidget) ovar).keyWentUp.addListener(new SignalListener<WKeyEvent>() {
+			public void notify(WKeyEvent a) {
+				changeSelection();
+			}
+		});
+		
 	}
 	
 	private void changeSelection() {

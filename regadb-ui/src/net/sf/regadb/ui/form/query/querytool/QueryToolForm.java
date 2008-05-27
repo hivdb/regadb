@@ -15,27 +15,15 @@ import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorGroupBox;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.fields.Label;
-import net.sf.regadb.ui.framework.forms.fields.TextArea;
-import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class QueryToolForm extends FormWidget implements QueryContext{
 
 	private QueryEditorGroupBox queryGroup_;
 	private RunGroupBox runGroup_;
+	private InfoContainer infoContainer;
+	private WTabbedPane tabs;
 	
-    private Label nameL;
-    private TextField nameTF;
-    private Label descriptionL;
-    private TextArea descriptionTA;
-    private Label creatorL;
-    private TextField creatorTF;
     
     private QueryDefinition definition;
 	
@@ -66,55 +54,31 @@ public class QueryToolForm extends FormWidget implements QueryContext{
 	public void init(QueryDefinition query) {
 		setStyleClass("querytoolform");
 		definition = query;
-		queryGroup_ = new QueryEditorGroupBox(tr("form.query.querytool.group.query"), this, query);
-		new SelectionGroupBox(queryGroup_.getQueryEditor(), tr("form.query.querytool.group.fields"), this);
+		
+		infoContainer = new InfoContainer(query, this);
+		queryGroup_ = new QueryEditorGroupBox(this, query);
+		
+        tabs = new WTabbedPane();
+        tabs.setParent(this);
+        tabs.addTab(tr("form.query.querytool.group.query"), queryGroup_);
+        tabs.addTab(tr("form.query.querytool.group.fields"), new SelectionGroupBox(queryGroup_.getQueryEditor()));
+        tabs.addTab(tr("form.query.querytool.group.info"), infoContainer);
+        
 		runGroup_ = new RunGroupBox(queryGroup_.getQueryEditor(), this);
-		
-		WGroupBox infogroup_ = new WGroupBox(tr("form.query.querytool.group.info"), this);
-		WContainerWidget contentPanel = new WContainerWidget(infogroup_);
-		contentPanel.setStyleClass("content");
-		infogroup_.setStyleClass("infofield");
-		
-		WTable infoTable = new WTable(contentPanel);
-		
-    	nameL = new Label(tr("form.query.definition.label.name"));
-    	nameTF = new TextField(getInteractionState(), this);
-    	nameTF.setText(definition.getName());
-        nameTF.setMandatory(true);
-        addLineToTable(infoTable, nameL, nameTF);
-        infoTable.elementAt(0, 0).setStyleClass("labels");
-        infoTable.elementAt(0, 1).setStyleClass("inputs");
-        nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
-				queryGroup_.getQueryEditor().setDirty(true);
-			}
-        });
-        
-        descriptionL = new Label(tr("form.query.definition.label.description"));
-        descriptionTA = new TextArea(getInteractionState(), this);
-        descriptionTA.setMandatory(true);
-        descriptionTA.setText(definition.getDescription());
-        addLineToTable(infoTable, descriptionL, descriptionTA);
-        descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
-				queryGroup_.getQueryEditor().setDirty(true);
-			}
-        });
-		
-        if(getInteractionState() == InteractionState.Viewing)
-        {
-        	creatorL = new Label(tr("form.query.definition.label.creator"));
-            creatorTF = new TextField(getInteractionState(), this);
-            addLineToTable(infoTable, creatorL, creatorTF);
-            creatorTF.setText(definition.getSettingsUser().getUid());
-        }	
-        
         
         
 		addControlButtons();
 		if (!isEditable()) {
 			queryGroup_.setEditable(false);
 		}
+	}
+	
+	public void confirmAction() {
+		super.confirmAction();
+        if(!infoContainer.isValid()) {
+        	tabs.showTab(infoContainer);
+        }
+		
 	}
 	
 	
@@ -148,8 +112,8 @@ public class QueryToolForm extends FormWidget implements QueryContext{
 	public void saveData() {
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
     	
-    	definition.setName(nameTF.getFormText());
-    	definition.setDescription(descriptionTA.getFormText());
+    	definition.setName(infoContainer.getName());
+    	definition.setDescription(infoContainer.getDescription());
     	definition.setQuery(new XStream().toXML(this.getEditorModel().getQueryEditor().getQuery()));
     	definition.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
     	

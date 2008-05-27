@@ -307,9 +307,6 @@ fieldset {
 	zoom:1;
 }
 
-.querytoolform fieldset .toolbar {
-	margin-left:0.2em;
-}
 
 .querytoolform fieldset .content {
 	background-color: #fff;
@@ -317,9 +314,20 @@ fieldset {
 	border-top: 1px solid rgb(102, 102, 102);
 }
 
+
+/* toolbars */
+.querytoolform .toolbar {
+	padding-left:0.2em;
+	background-color:rgb(225,225,225);
+	border-bottom:1px solid rgb(140,140,140);
+	margin-top:-1px;
+}
+
+
 /* info field */
 
 .querytoolform .infofield {
+	padding: 0.5em !important;	
 }
 
 .querytoolform .infofield table {
@@ -362,6 +370,10 @@ fieldset {
 
 
 /* selection field */
+
+.querytoolform .selectionfield {
+	padding: 0.5em !important;	
+}
 
 .querytoolform .resultfieldempty {
 	display:none;
@@ -480,7 +492,7 @@ fieldset {
 }
 
 .composedtreenode .treenodecontent .buttonpanel {
-	width:14em;	
+	width:15em;	
 }
 
 .querytoolform .querytreefield .content .tree .composedtreenode {
@@ -607,78 +619,20 @@ fieldset {
 	padding:0px !important;	
 }
 
+.querytoolform .selectorpanel .tabmenu {
+	background-color:rgb(180,180,180);
+}
+
+.querytoolform .selectorpanel .tabmenu .itemselected {
+	font-weight:normal !important;	
+}
+
 .querytoolform .selectorpanel {
 	margin:0.5em 0.25em;
 }
 
 .querytoolform .selectortabbedpane {
 	margin:0px 0px 0.5em;	
-}
-
-.querytoolform .selectorpanel .tabbedpane{
-	width: 100%;
-}
-
-.querytoolform .selectorpanel .tabstack {
-	border-top: 1px solid rgb(102, 102, 102);
-	background-color: rgb(225, 225, 225);
-}
-
-.querytoolform .selectorpanel .tab {
-	border-top: 1px solid rgb(140, 140, 140);
-	background-color: rgb(235, 235, 235);
-	margin: 0.2em 0px 0px;
-	padding-bottom:0.5em;
-	min-height:250px;
-}
-
-.querytoolform .selectorpanel .tabmenu .item, .querytoolform .selectorpanel .tabmenu .itemselected {
-	border-top: 1px solid rgb(102, 102, 102);
-	border-left: 1px solid rgb(102, 102, 102);
-	border-right: 1px solid rgb(102, 102, 102);
-	text-decoration:none !important;
-	display:block;
-	float:left;
-	margin-right:0.2em !important;
-	min-width:6em;
-	height:1.2em;
-	padding: 3px 0.3em;
-	line-height:1.2em;
-	margin-bottom:-1px !important;
-}
-
-.querytoolform .selectorpanel .tabmenu .item span {
-	color:#000;
-	text-decoration:none !important;
-}
-	
-	
-.querytoolform .selectorpanel .tabmenu .itemselected span{
-	color:#000;
-	text-decoration:none !important;
-}
-
-.querytoolform .selectorpanel .tabmenu .itemselected {
-	font-weight:normal;
-	background-color:rgb(225,225,225);
-	border-top: 4px solid rgb(102, 102, 102);
-	border-bottom:1px solid rgb(225,225,225);
-}
-
-.querytoolform .selectorpanel .tabmenu .item {
-	background-color:rgb(205,205,205);
-	margin-top:3px !important;
-}
-
-.querytoolform .selectorpanel .tabmenu {
-	vertical-align: bottom;
-	background-color:rgb(180,180,180);
-	width:100%;
-}
-
-.querytoolform .selectorpanel .tabmenu td {
-	padding-left:0.2em;
-	padding-top:0.2em;
 }
 
 .querytoolform .selectorradio {
@@ -692,6 +646,76 @@ fieldset {
 .querytoolform .selectortab .even {
 	background-color:rgb(225,225,225);	
 }
+
+/* tabbed panes */
+
+.querytoolform .tabbedpane{
+	width: 100%;
+}
+
+.querytoolform .tabstack {
+	border: 1px solid rgb(102, 102, 102);
+	background-color: rgb(225, 225, 225);
+}
+
+.querytoolform .dialog .tabstack {
+	border-left: 0px solid rgb(102, 102, 102);
+	border-right: 0px solid rgb(102, 102, 102);
+	border-bottom: 0px solid rgb(102, 102, 102);
+}
+
+.querytoolform .tab {
+	border-top: 1px solid rgb(140, 140, 140);
+	margin: 0.2em 0px 0px;
+	background-color: rgb(255, 255, 255);
+}
+
+.querytoolform .dialog .tab {
+	padding-bottom:0.5em;
+	background-color: rgb(235, 235, 235);
+}
+
+.querytoolform .tabmenu span {
+	text-decoration:none !important;
+	color: #000 !important;
+}
+
+.querytoolform .tabmenu .item, .querytoolform .tabmenu .itemselected {
+	border-top: 1px solid rgb(102, 102, 102);
+	border-left: 1px solid rgb(102, 102, 102);
+	border-right: 1px solid rgb(102, 102, 102);
+	display:block;
+	float:left;
+	margin-right:0.2em !important;
+	min-width:6em;
+	height:1.2em;
+	padding: 3px 0.3em;
+	line-height:1.2em;
+	margin-bottom:-1px !important;
+}
+
+.querytoolform .tabmenu .item {
+	background-color:rgb(205,205,205);
+	margin-top:3px !important;
+}
+
+.querytoolform .tabmenu .itemselected {
+	font-weight:bold;
+	background-color:rgb(225,225,225);
+	border-top: 4px solid rgb(102, 102, 102);
+	border-bottom:1px solid rgb(225,225,225);
+}
+
+.querytoolform .tabmenu {
+	vertical-align: bottom;
+	width:100%;
+}
+
+.querytoolform .tabmenu td {
+	padding-left:0.2em;
+	padding-top:0.2em;
+}
+
 
 /* configurers */
 
@@ -718,7 +742,7 @@ fieldset {
 }
 
 .querytoolform .constantchoiceconfigurer {
-	max-width:14em;
+	max-width:20em;
 }
 
 *.viral-isolate-fasta-label {

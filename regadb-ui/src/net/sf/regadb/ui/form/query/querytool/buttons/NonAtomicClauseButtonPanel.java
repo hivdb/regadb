@@ -8,12 +8,13 @@ import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 
-import com.pharmadm.custom.rega.queryeditor.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.ComposedWhereClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 public class NonAtomicClauseButtonPanel extends ButtonPanel {
@@ -42,7 +43,7 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 		WPushButton addAndButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addand"));
 		addAndButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.addNode(new AndClause());
+				node.addNode(new AndClause(), AssignMode.all);
 			}
 		});
 		addButton(addAndButton_);
@@ -50,7 +51,7 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 		WPushButton addOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addor"));
 		addOrButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.addNode(new InclusiveOrClause());
+				node.addNode(new InclusiveOrClause(), AssignMode.all);
 			}
 		});
 		addButton(addOrButton_);
@@ -58,7 +59,7 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 		WPushButton addNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addnot"));
 		addNotButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				node.addNode(new NotClause());
+				node.addNode(new NotClause(), AssignMode.all);
 			}
 		});
 		addButton(addNotButton_);

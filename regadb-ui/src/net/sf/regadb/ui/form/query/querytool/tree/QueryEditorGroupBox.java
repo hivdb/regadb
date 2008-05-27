@@ -2,6 +2,7 @@ package net.sf.regadb.ui.form.query.querytool.tree;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
@@ -20,14 +21,12 @@ import net.sf.regadb.ui.form.query.querytool.buttons.ButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.buttons.EditButtonPanel;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
 
-public class QueryEditorGroupBox extends WGroupBox implements QueryEditorComponent, Savable {
+public class QueryEditorGroupBox extends WContainerWidget implements QueryEditorComponent, Savable {
 	private QueryEditor editor = null;
 	
 	private WhereClause contextClause;
@@ -39,9 +38,10 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	private QueryContext context; 
 	private ButtonPanel buttonPanel;
 	private boolean editable;
+	private boolean validate;
 
-	public QueryEditorGroupBox(WMessage title, QueryToolForm parent, QueryDefinition def) {
-		super(title, parent);
+	public QueryEditorGroupBox(QueryToolForm parent, QueryDefinition def) {
+		super();
 		init(parent);
 		initEditor(loadQuery(def));
 	}
@@ -81,17 +81,17 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 			}
 		});
 		
-		editor.addSelectionListChangeListener(new SelectionListChangeListener() {
-			public void listChanged() {
-				updateStatusBar();
-			}
-		});		
 		setEditable(true);
 		updateStatusBar();
 	}
 	
 	public QueryContext getQueryContext() {
 		return context;
+	}
+	
+	public void setValidation(boolean enabled) {
+		validate = enabled;
+		revalidate();
 	}
 	
 	/**
@@ -130,12 +130,16 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	 * validate the query and highlight errors
 	 */
 	public void revalidate() {
-		queryRootNode.revalidate();
+		if (validate) {
+			queryRootNode.revalidate();
+			updateStatusBar();
+		}
 	}
 	
 	private void init(final QueryToolForm parent) {
 		this.context = parent;
 		this.setStyleClass("querytreefield");
+		validate = true;
 		
 		if (parent.isEditable()) {
 			buttonPanel = new EditButtonPanel(this);
@@ -188,6 +192,12 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
         
         if (!hasWarning) {
         	runButton.enable();
+//        	try {
+//				warningText.setText(lt(query.getQueryString()));
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
         }
         else {
         	runButton.disable();
@@ -202,7 +212,6 @@ public class QueryEditorGroupBox extends WGroupBox implements QueryEditorCompone
 	private void showMessage(String message, String cssClass) {
 		warningText.setText(tr(message));
 		warningText.setStyleClass(cssClass);
-		
 	}
 
 	public QueryEditor getQueryEditor() {

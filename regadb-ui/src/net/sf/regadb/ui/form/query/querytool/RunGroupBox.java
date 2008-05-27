@@ -71,7 +71,7 @@ public class RunGroupBox extends WGroupBox {
 			table.putElementAt(0, 0, lbl);
 
 			if (qt.isDone()) {
-				final WAnchor link = new WAnchor(qt.getDownloadLink(), tr("form.query.querytool.link.result"));
+				final WAnchor link = new WAnchor(qt.getDownloadLink(), qt.getStatusText());
 				table.putElementAt(0, 1, link);
 			}
 			else {

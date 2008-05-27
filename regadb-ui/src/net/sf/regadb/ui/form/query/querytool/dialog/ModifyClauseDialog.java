@@ -29,7 +29,6 @@ public class ModifyClauseDialog extends WDialog {
         	}
         	
         	if (clause.getVisualizationClauseList().getHumanStringValue().equals(similarClause.getVisualizationClauseList().getHumanStringValue())) {
-        		System.err.println("equal found");
         	}
         }
         atomPanel.getRadioButtons().get(0).hide();

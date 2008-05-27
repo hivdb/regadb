@@ -44,7 +44,7 @@ public class WConstantChoiceConfigurer extends WComboBox implements WordConfigur
     }
     
     public void configureWord() {
-        if (! controller.setConstantValueString(constant, values.get(currentIndex()).getValue())) {
+        if (! controller.setConstantValueString(constant, values.get(currentIndex()))) {
             System.err.println("Warning : word configuration failed !");
         }
     }

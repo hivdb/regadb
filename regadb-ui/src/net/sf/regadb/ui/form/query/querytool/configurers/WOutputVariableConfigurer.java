@@ -30,8 +30,8 @@ public class WOutputVariableConfigurer extends WText implements OutputVariableCo
     	 * for display as single output variable
     	 */
         super(new WMessage(var.getName(RelationDisplay.SHOW,
-        		DescriptionDisplay.SHOW_WHEN_ASSIGNED,
-        		UniqueNameDisplay.SHOW), true));
+        		DescriptionDisplay.SHOW,
+        		UniqueNameDisplay.SHOW_WHEN_ASSIGNED), true));
         this.setStyleClass("outputvariableconfigurer");
         this.var = var;
     }

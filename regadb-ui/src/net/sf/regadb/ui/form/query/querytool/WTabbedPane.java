@@ -20,11 +20,13 @@ public class WTabbedPane extends WContainerWidget {
 	private int selectedIndex;
 	
 	private List<WContainerWidget> tabItems;
+	private List<WMessage> titles;
 	
 	
 	public WTabbedPane() {
 		super();
 		tabItems = new ArrayList<WContainerWidget>();
+		titles = new ArrayList<WMessage>();
 		WTable table = new WTable(this);
 		table.setStyleClass("tabbedpane");
 		
@@ -56,13 +58,23 @@ public class WTabbedPane extends WContainerWidget {
 		});
 		
 		tabs.addItem(wmi);
+		titles.add(name);
 		tabItems.add(contents);
 	}
 	
 	public void showTab(int index) {
-		if (index < tabItems.size()) {
+		if (index >= 0 && index < tabItems.size()) {
+			tabs.select(index);
 			tabItems.get(index).show();
 		}
+	}
+	
+	public void showTab(WMessage msg) {
+		showTab(titles.indexOf(msg));
+	}
+	
+	public void showTab(WContainerWidget tab) {
+		showTab(tabItems.indexOf(tab));
 	}
 	
 	public WContainerWidget getSelectedTab() {

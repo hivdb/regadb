@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCEditorPanel;
 import net.sf.regadb.ui.form.query.querytool.dialog.SelectClauseDialog;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
@@ -33,7 +35,7 @@ public class SelectClauseButtonPanel extends ButtonPanel {
 				}
 				else {
 					panel.applyEditings();
-					owner.getParentNode().addNode(panel.getClause());
+					owner.getParentNode().addNode(panel.getClause(), AssignMode.output);
 					removeDialog();
 				}
 			}

@@ -10,17 +10,16 @@ import com.pharmadm.custom.rega.queryeditor.SimpleSelection;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
 
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
 
-public class SelectionGroupBox extends WGroupBox{
+public class SelectionGroupBox extends WContainerWidget{
 	private QueryEditor editor;
 	
 	private WContainerWidget rootSelectorPanel;
 	
-	public SelectionGroupBox(QueryEditor editor, WMessage title,  WContainerWidget parent) {
-		super(title, parent);
+	public SelectionGroupBox(QueryEditor editor) {
+		super();
 		this.editor = editor;
 		init();
 		updateSelection();

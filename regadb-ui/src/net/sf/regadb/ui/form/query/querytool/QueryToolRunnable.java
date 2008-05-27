@@ -22,6 +22,9 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -67,7 +70,7 @@ public class QueryToolRunnable implements Runnable {
 			return new WMessage("form.query.querytool.label.status.running");			
 		}
 		else if (status == Status.finished) {
-			return new WMessage("form.query.querytool.label.status.finished");			
+			return new WMessage(new WMessage("form.query.querytool.link.result").value() + " " + statusMsg, true);			
 		}
 		else if (status == Status.failed) {
 			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + (statusMsg == null?"":": " + new WMessage(statusMsg).value() ), true);			
@@ -139,11 +142,17 @@ public class QueryToolRunnable implements Runnable {
 	          
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
+	            int lines = 0;
             	for (Object o : result) {
-        			os.write(getLine(o, selections, userDatasets, csvExport).getBytes());
+            		String line = getLine(o, selections, userDatasets, csvExport);
+            		if (line != "") {
+            			os.write(getLine(o, selections, userDatasets, csvExport).getBytes());
+            			lines++;
+            		}
             	}
 	            
 	            os.close();
+	            statusMsg = "(" + lines + ")";
 	            success = true;
             }
         }
@@ -180,7 +189,7 @@ public class QueryToolRunnable implements Runnable {
 		boolean nullLine = true;
 		
 		String line = "";
-		Object[] array = getObjectArray(o, selections);
+		Object[] array = getObjectArray(o, selections.size());
 		
 		for (int j = 0 ; j < array.length ; j++) {
 			if (selections.get(j) instanceof TableSelection) {
@@ -208,10 +217,10 @@ public class QueryToolRunnable implements Runnable {
 		return line;
     }
     
-    private Object[] getObjectArray(Object o, List<Selection> selections) {
+    private Object[] getObjectArray(Object o, int size) {
   		Object[] array;
   		
-  		if (selections.size() == 1) {
+  		if (size == 1) {
   			array = new Object[1];
   			array[0] = o;
   		}
@@ -323,7 +332,9 @@ public class QueryToolRunnable implements Runnable {
 		ConfigurableWord firstWord = ovar.getExpression().getWords().get(0);
 		TableSelection outputTable = null;
 		if (firstWord instanceof FromVariable) {
-			outputTable = new TableSelection(ovar, ((FromVariable) firstWord).getTableName());
+			OutputVariable newOvar = new OutputVariable(ovar.getVariableType(), ovar.getFormalName(), ovar.getName(RelationDisplay.HIDE, DescriptionDisplay.SHOW, UniqueNameDisplay.HIDE));
+			newOvar.getExpression().addFromVariable((FromVariable) firstWord);
+			outputTable = new TableSelection(newOvar, ((FromVariable) firstWord).getTableName());
 			outputTable.setSelected(true);
 		}
 		else if (firstWord instanceof InputVariable) {

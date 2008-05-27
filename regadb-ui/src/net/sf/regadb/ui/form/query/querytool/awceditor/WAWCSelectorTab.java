@@ -3,8 +3,6 @@ package net.sf.regadb.ui.form.query.querytool.awceditor;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
-
 import net.sf.witty.wt.WRadioButton;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;

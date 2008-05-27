@@ -12,15 +12,18 @@ public class WhereClauseNode extends QueryTreeNode{
 	
 	public WhereClauseNode(WhereClause clause, QueryEditorGroupBox editor) {
 		super(clause, editor, null);
-		init();
 	}
 	
-	private void init() {
+	protected void createContentTable() {
+		super.createContentTable();
+		
 		if (getClause().isAtomic()) {
+			getStyleClasses().removeStyle("composedtreenode");
 			getStyleClasses().addStyle("atomictreenode");
 			setButtonPanel(new AtomicClauseButtonPanel(this));
 		}
 		else {
+			getStyleClasses().removeStyle("atomictreenode");
 			getStyleClasses().addStyle("composedtreenode");
 			String label = getClause().toString();
 			label = label.substring(0, label.indexOf(' '));

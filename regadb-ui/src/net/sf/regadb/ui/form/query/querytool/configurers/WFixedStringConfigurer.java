@@ -32,4 +32,8 @@ public class WFixedStringConfigurer extends WText implements WordConfigurer {
 	public boolean isUseless() {
 		return false;
 	}
+	
+	public String toString() {
+		return string.getString();
+	}
 }

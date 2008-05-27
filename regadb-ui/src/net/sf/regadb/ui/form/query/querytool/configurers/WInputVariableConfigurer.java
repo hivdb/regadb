@@ -35,6 +35,10 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
         	this.addItem(new WMessage(ovar.toString(), true));
         }
         
+        if (isUseless()) {
+        	setEnabled(false);
+        }
+        
         this.var = input;
         this.controller = controller;
     }
