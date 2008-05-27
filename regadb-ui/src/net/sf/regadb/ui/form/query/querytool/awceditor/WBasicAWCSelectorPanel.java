@@ -30,7 +30,7 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 		if (isUseless()) {
 			radioButton.disable();
 		}
-    }
+	}
     
     protected ComposedAWCEditorPanel getEditorPanel() {
         return editPanel;

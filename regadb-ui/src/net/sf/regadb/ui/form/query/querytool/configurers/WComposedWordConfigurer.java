@@ -58,7 +58,7 @@ public class WComposedWordConfigurer extends WComboBox implements ComposedWordCo
 	}
 
 	public boolean isUseless() {
-		return false;
+		return getSelectedItem().isUseless();
 	}
 
 }

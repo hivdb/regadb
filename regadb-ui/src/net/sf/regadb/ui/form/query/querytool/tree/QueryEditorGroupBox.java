@@ -2,7 +2,6 @@ package net.sf.regadb.ui.form.query.querytool.tree;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;

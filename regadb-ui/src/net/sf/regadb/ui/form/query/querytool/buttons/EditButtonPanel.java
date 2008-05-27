@@ -64,25 +64,11 @@ public class EditButtonPanel extends ButtonPanel {
 		
 		pasteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				owner.getQueryEditor().getQuery().getUniqueNameContext().startTransaction();
 				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getQueryTree() :selection.get(0));
-				WhereClause parentClause = pasteNode.getClause();
-				if (parentClause.isAtomic()) {
+				if (pasteNode.getClause().isAtomic()) {
 					pasteNode = pasteNode.getParentNode();
-					parentClause = parentClause.getParent();
 				}
-                try {
-	                for (WhereClause clause : cursorClauses) {
-	                    if (parentClause.acceptsAdditionalChild()) {
-	                    		WhereClause copy = (WhereClause) clause.clone();
-								pasteNode.addNode(copy, pasted ? AssignMode.all: AssignMode.none);
-	                    }
-	                }
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-				}
-				pasted = true;
-				owner.getQueryEditor().getQuery().getUniqueNameContext().endTransaction();
+				paste(pasteNode);
 			}
 		});
 		
@@ -164,6 +150,22 @@ public class EditButtonPanel extends ButtonPanel {
 		
 	}
 	
+	private void paste(QueryTreeNode targetNode) {
+		owner.getQueryEditor().getQuery().getUniqueNameContext().startTransaction();
+        try {
+            for (WhereClause clause : cursorClauses) {
+                if (targetNode.getClause().acceptsAdditionalChild()) {
+                		WhereClause copy = (WhereClause) clause.clone();
+						targetNode.addNode(copy, pasted ? AssignMode.all: AssignMode.none);
+                }
+            }
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		pasted = true;
+		owner.getQueryEditor().getQuery().getUniqueNameContext().endTransaction();		
+	}
+	
 	private void wrapIn(WhereClause wrapper) {
 		owner.setValidation(false);
 		List<QueryTreeNode> newSelection = new ArrayList<QueryTreeNode>();
@@ -204,7 +206,7 @@ public class EditButtonPanel extends ButtonPanel {
         
         copyButton_.setEnabled(haveSameParent && enabled);
         cutButton_.setEnabled(haveSameParent && enabled);
-        pasteButton_.setEnabled(cursorClauses.size() > 0 && selection.size() <= 1 && enabled);
+        pasteButton_.setEnabled(cursorClauses.size() > 0 && enabled);
         deleteButton_.setEnabled(!containsRoot && selection.size() > 0 && enabled);		
 	}
 

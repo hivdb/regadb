@@ -42,7 +42,6 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 				changeSelection();
 			}
 		});
-		
 	}
 	
 	private void changeSelection() {
@@ -83,9 +82,6 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 	}
 
 	public boolean isUseless() {
-		return false;
+		return (ovar.isUseless() || constantPanels.get(ovar.getSelectedIndex()).isUseless());
 	}
-	
-
-
 }

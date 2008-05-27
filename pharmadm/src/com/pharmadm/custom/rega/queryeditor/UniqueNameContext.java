@@ -102,9 +102,6 @@ public class UniqueNameContext implements Serializable {
     			OutputVariable ovar = transactionVarMap.get(anInputVar.getOutputVariable().getUniqueName());
     			anInputVar.setOutputVariable(ovar);
     		}
-    		else {
-        		anInputVar.getOutputVariable().setUniqueName(createUniqueName(anInputVar.getOutputVariable().getFormalName()));
-    		}
     	}
     	else {
     		anInputVar.getOutputVariable().setUniqueName(createUniqueName(anInputVar.getOutputVariable().getFormalName()));

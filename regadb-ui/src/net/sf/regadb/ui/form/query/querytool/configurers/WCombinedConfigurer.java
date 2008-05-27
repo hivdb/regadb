@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 import java.util.List;
 
 import net.sf.witty.wt.WContainerWidget;
+import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WWidget;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
@@ -17,8 +18,12 @@ public class WCombinedConfigurer extends WContainerWidget implements WordConfigu
 		this.words = words;
 		setInline(true);
 
+		boolean useless = isUseless();
 		for (WordConfigurer confy : words) {
 			addWidget((WWidget) confy);
+			if (useless && confy instanceof WFormWidget) {
+				((WFormWidget) confy).disable();
+			}
 		}
 	}
 
@@ -38,6 +43,11 @@ public class WCombinedConfigurer extends WContainerWidget implements WordConfigu
 	}
 
 	public boolean isUseless() {
+		for (WordConfigurer confy : words) {
+			if (confy.isUseless()) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

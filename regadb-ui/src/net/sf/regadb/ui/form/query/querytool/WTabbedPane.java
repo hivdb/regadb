@@ -39,12 +39,6 @@ public class WTabbedPane extends WContainerWidget {
 		table.putElementAt(0, 0, tabs);
 	}
 	
-	/**
-	 * 
-	 * @param name
-	 * @param contents
-	 * @pre contents should be a WWidget
-	 */
 	public void addTab(WMessage name, final WContainerWidget contents) {
 		WWidget widget = (WWidget) contents;
 		widget.setStyleClass(widget.styleClass() + " tab");

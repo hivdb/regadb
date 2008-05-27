@@ -12,6 +12,7 @@ import net.sf.witty.wt.WPushButton;
 public class SelectClauseButtonPanel extends ButtonPanel {
 	private QueryTreeNode owner;
 	private SelectClauseDialog dialog;
+	private WPushButton cancelButton;
 	
 	public SelectClauseButtonPanel(QueryTreeNode owner, SelectClauseDialog dialog) {
 		super(Style.Default);
@@ -24,13 +25,13 @@ public class SelectClauseButtonPanel extends ButtonPanel {
 		WPushButton okButton = new WPushButton(tr("form.general.button.ok"));
 		addButton(okButton);
 
-		WPushButton cancelButton = new WPushButton(tr("form.general.button.cancel"));
+		cancelButton = new WPushButton(tr("form.general.button.cancel"));
 		addButton(cancelButton);
 
 		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				WAWCEditorPanel panel = dialog.getSelectedClause();
-				if (panel == null) {
+				if (panel == null || panel.isUseless()) {
 					cancel();
 				}
 				else {
@@ -47,6 +48,14 @@ public class SelectClauseButtonPanel extends ButtonPanel {
 			}
 		});
 	}
+	
+	public void setEditable(boolean editable) {
+		super.setEditable(editable);
+		cancelButton.setEnabled(true);
+		
+	}
+	
+	
 	
 	private void cancel() {
 		removeDialog();

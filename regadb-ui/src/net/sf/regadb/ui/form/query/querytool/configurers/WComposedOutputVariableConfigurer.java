@@ -59,6 +59,6 @@ public class WComposedOutputVariableConfigurer extends WComboBox implements Comp
 	}
 
 	public boolean isUseless() {
-		return false;
+		return getSelectedItem().isUseless();
 	}
 }

@@ -36,5 +36,4 @@ public class WDialog extends WContainerWidget {
 		}
 		buttonArea.addWidget(buttonPanel);
 	}
-	
 }
