@@ -13,46 +13,15 @@ import java.util.regex.Pattern;
 public class PreprocCpp {
     public static void main(String [] args) {
         PreprocCpp preproc = new PreprocCpp();
-        
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/EscapeOStream.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/DomElement.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/DomElement.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRequest.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WtException.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebSession.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/TimeUtil.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/web/WebRenderer.h"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WResource"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WResource.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WWidget"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WWidget.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WLength"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WLength.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WBorder"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WBorder.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WValidator"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WValidator.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WWebWidget"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WWebWidget.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WContainerWidget"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WContainerWidget.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStringUtil"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WJavaScript"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WJavaScript.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WString"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WColor"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WColor.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WEvent"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WEvent.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStatelessSlot"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WStatelessSlot.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WInteractWidget.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssDecorationStyle"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssDecorationStyle.C"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssStyleSheet"));
-        preproc.performChangesOnFile(new File("/home/plibin0/tmp/wt/java_tag/wt/src/wt/WCssStyleSheet.C"));
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
+    }
+    
+    public void performChangesOnFilesInDir(String dir) {
+    	File dirF = new File(dir);
+    	for(File f : dirF.listFiles()) {
+    		performChangesOnFile(f);
+    	}
     }
     
     public void performChangesOnFile(File f) {
