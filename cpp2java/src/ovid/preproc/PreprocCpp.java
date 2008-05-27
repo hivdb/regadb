@@ -67,43 +67,43 @@ public class PreprocCpp {
         sb = handleIncludes(sb);
         System.err.println("\t handle usings");
         sb = handleUsings(sb);
-        System.err.println("\t handle boost");
-        sb = handleBoost(sb);
-        System.err.println("\t handle iterators");
-        sb = handleIterators(sb);
+        //System.err.println("\t handle boost");
+        //sb = handleBoost(sb);
+        //System.err.println("\t handle iterators");
+        //sb = handleIterators(sb);
         
-        System.err.println("\t handle wstring and wchar");
-        handleWStringWChar(sb);
+        //System.err.println("\t handle wstring and wchar");
+        //handleWStringWChar(sb);
 
-        System.err.println("\t handle sizeInBytes, this should be done BEFORE the slots");
+        //System.err.println("\t handle sizeInBytes, this should be done BEFORE the slots");
         //handleSizeInBytes(sb);
         
         
-        System.err.println("\t handle public/privates slots");
-        handleSlots(sb);
-        
-        System.err.println("\t handle JSignal");
-        sb = handleJSignal(sb);
-
-        if(sb.toString().contains("bitset")) {
-            System.err.println("\t handle bitset declaration");
-            sb  = handleBitsetDeclaration(sb);
-        }
-        
-        System.err.println("\t handle string literals");
-        String [] operators = {"return", "=", "<<", "?", ":", "("};
-        sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
-        
-        sb = locateStringLiterals(sb, new StringLiteralContinuingOnNewLine());
-        
-        ArrayList<Integer> stringStartIndices = new ArrayList<Integer>();
-        ArrayList<Integer> stringEndIndices = new ArrayList<Integer>();
-        sb = locateStringLiterals(sb, new StringLiteralPositionRecorder(stringStartIndices, stringEndIndices));
-        
-        System.err.println("\t handle enums and structs");
-        sb = handleEnumsAndStructs(sb, f);
-        
-        writeFile(f, sb);
+//        System.err.println("\t handle public/privates slots");
+//        handleSlots(sb);
+//        
+//        System.err.println("\t handle JSignal");
+//        sb = handleJSignal(sb);
+//
+//        if(sb.toString().contains("bitset")) {
+//            System.err.println("\t handle bitset declaration");
+//            sb  = handleBitsetDeclaration(sb);
+//        }
+//        
+//        System.err.println("\t handle string literals");
+//        String [] operators = {"return", "=", "<<", "?", ":", "("};
+//        sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
+//        
+//        sb = locateStringLiterals(sb, new StringLiteralContinuingOnNewLine());
+//        
+//        ArrayList<Integer> stringStartIndices = new ArrayList<Integer>();
+//        ArrayList<Integer> stringEndIndices = new ArrayList<Integer>();
+//        sb = locateStringLiterals(sb, new StringLiteralPositionRecorder(stringStartIndices, stringEndIndices));
+//        
+//        System.err.println("\t handle enums and structs");
+//        sb = handleEnumsAndStructs(sb, f);
+//        
+//        writeFile(f, sb);
     }
     
     private void handleSizeInBytes(StringBuffer sb) {
@@ -266,8 +266,6 @@ public class PreprocCpp {
             } else if(textToReplace.contains("set")) {
                 textToReplaceWith = "#include <myset.h>";
             } else if(textToReplace.contains("WDllDefs")) {
-                textToReplaceWith = "";
-            } else if(textToReplace.contains("boost")) {
                 textToReplaceWith = "";
             }
             
