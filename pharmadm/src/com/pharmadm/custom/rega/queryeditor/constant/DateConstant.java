@@ -14,8 +14,10 @@ package com.pharmadm.custom.rega.queryeditor.constant;
 import java.util.Date;
 import java.io.Serializable;
 import java.text.Format;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
+import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 /**
@@ -25,53 +27,49 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  */
 public class DateConstant extends Constant implements Serializable{
 
-	
-	public DateConstant(SuggestedValues suggestedValues) {
-		super(suggestedValues);
-	}
-    private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
-    public Class getValueType() {
-        return Date.class;
-    }
-    
-    // formats are not threadsafe!
-    public Format getFormat() {
-        return DATE_FORMAT;
+    public DateConstant() {
+    	super();
     }
 
-    public DateConstant() {
-        super.setValue(new java.sql.Date(new Date().getTime()));
-    }
-    
-    public Object getHumanValue() {
-    	return getValue();
-    }
-    
     public DateConstant(String dateString) {
+    	super();
         Date date;
         try {
-            date = ((SimpleDateFormat)DATE_FORMAT).parse(dateString);
+            date = DATE_FORMAT.parse(dateString);
         } catch (java.text.ParseException pe) {
             date = new Date();
         }
         super.setValue(new java.sql.Date(date.getTime()));
     }
     
+    // formats are not threadsafe!
+    public Format getFormat() {
+        return DATE_FORMAT;
+    }    
+    
     public String acceptWhereClause(QueryVisitor visitor) {
         return visitor.visitWhereClauseDateConstant(this);
     }
     
-    public Object clone() throws CloneNotSupportedException {
-        Constant clone = (Constant)super.clone();
-        if (getValue() != null) {
-            clone.setValue(((Date)getValue()).clone());
-        }
-        return clone;
-    }
-
 	@Override
 	public String getValueTypeString() {
-		return "Date";
+		return ValueType.Date.toString();
+	}
+
+	@Override
+	public Object getdefaultValue() {
+		return new java.sql.Date(new Date().getTime());
+	}
+
+	@Override
+	protected String parseObject(Object o) {
+		ParsePosition pos = new ParsePosition(0);
+		Object result = DATE_FORMAT.parseObject(o.toString(),pos);
+		if (result == null || pos.getIndex()< o.toString().length()) {
+			return null;
+		}
+		return o.toString();
 	}
 }

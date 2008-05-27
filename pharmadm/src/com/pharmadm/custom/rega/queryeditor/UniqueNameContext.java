@@ -28,7 +28,15 @@ import com.pharmadm.custom.rega.reporteditor.*;
  */
 public class UniqueNameContext implements Serializable {
     
+	public enum AssignMode {
+		none,
+		output,
+		all
+	}
+	
     private Map<String, Long> formalNameToNumberMap;
+    private Map<String, String> transactionNameMap;
+    private Map<String, OutputVariable> transactionVarMap;
     
     public Map<String, Long> getFormalNameToNumberMap() {
         return formalNameToNumberMap;
@@ -41,19 +49,37 @@ public class UniqueNameContext implements Serializable {
     public UniqueNameContext() {
     }
     
+    public void startTransaction() {
+    	transactionNameMap = new HashMap<String, String>();
+    	transactionVarMap = new HashMap<String, OutputVariable>();
+    }
+
+    public void endTransaction() {
+    	transactionNameMap = null;
+    	transactionVarMap = null;
+    }
+    
     public void assignUniqueNamesToAll(WhereClause whereClause) {
         assignUniqueNamesToOutputs(whereClause);
         assignUniqueNamesToInputs(whereClause);
+    }
+    
+    public void assignUniqueNames(WhereClause clause, AssignMode mode) {
+    	if (mode == AssignMode.all) {
+    		assignUniqueNamesToAll(clause);
+    	}
+    	else if (mode == AssignMode.output) {
+    		assignUniqueNamesToOutputs(clause);
+    	}
     }
     
     public void assignUniqueNamesToOutputs(WhereClause whereClause) {
         Iterator iterAtomic = new AtomicWhereClauseIterator(whereClause);
         while (iterAtomic.hasNext()) {
             AtomicWhereClause anAtomicWC = (AtomicWhereClause)iterAtomic.next();
-            Iterator outputs = anAtomicWC.getExportedOutputVariables().iterator();
+            Iterator<OutputVariable> outputs = anAtomicWC.getExportedOutputVariables().iterator();
             while (outputs.hasNext()) {
-                OutputVariable anOutputVar = (OutputVariable)outputs.next();
-                anOutputVar.setUniqueName(createUniqueName(anOutputVar.getFormalName()));
+            	assignUniqueNameToOutputVariable(outputs.next());
             }
         }
     }
@@ -64,10 +90,42 @@ public class UniqueNameContext implements Serializable {
             AtomicWhereClause anAtomicWC = (AtomicWhereClause)iterAtomic.next();
             Iterator<InputVariable> inputs = anAtomicWC.getInputVariables().iterator();
             while (inputs.hasNext()) {
-                OutputVariable anOutputVar = ((InputVariable)inputs.next()).getOutputVariable();
-                anOutputVar.setUniqueName(createUniqueName(anOutputVar.getFormalName()));
+            	assignUniqueNameToInputVariable(inputs.next());
             }
         }
+    }
+    
+    private void assignUniqueNameToInputVariable(InputVariable anInputVar) {
+    	
+    	if (transactionNameMap != null) {
+    		if (transactionNameMap.containsKey(anInputVar.getOutputVariable().getUniqueName())) {
+    			OutputVariable ovar = transactionVarMap.get(anInputVar.getOutputVariable().getUniqueName());
+    			anInputVar.setOutputVariable(ovar);
+    		}
+    		else {
+        		anInputVar.getOutputVariable().setUniqueName(createUniqueName(anInputVar.getOutputVariable().getFormalName()));
+    		}
+    	}
+    	else {
+    		anInputVar.getOutputVariable().setUniqueName(createUniqueName(anInputVar.getOutputVariable().getFormalName()));
+    	}
+    }
+    
+    private void assignUniqueNameToOutputVariable(OutputVariable anOutputVar) {
+    	if (transactionNameMap != null) {
+    		if (transactionNameMap.containsKey(anOutputVar.getUniqueName())) {
+    			anOutputVar.setUniqueName(transactionNameMap.get(anOutputVar.getUniqueName()));
+    		}
+    		else {
+    	    	String uniqueName = createUniqueName(anOutputVar.getFormalName());
+        		transactionNameMap.put(anOutputVar.getUniqueName(), uniqueName);
+        		transactionVarMap.put(anOutputVar.getUniqueName(), anOutputVar);
+    	        anOutputVar.setUniqueName(uniqueName);
+    		}
+    	}
+    	else {
+    		anOutputVar.setUniqueName(createUniqueName(anOutputVar.getFormalName()));
+    	}
     }
     
     public void assignUniqueNamesToAll(ReportFormat reportFormat) {

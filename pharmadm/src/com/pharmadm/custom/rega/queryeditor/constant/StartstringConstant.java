@@ -23,13 +23,6 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * @author  kdg
  */
 public class StartstringConstant extends StringConstant implements Serializable{
-    public StartstringConstant(){}
-	
-	public StartstringConstant(SuggestedValues suggestedValues) {
-		super(suggestedValues);
-	}
-	
-	
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseStartstringConstant(this);
     }

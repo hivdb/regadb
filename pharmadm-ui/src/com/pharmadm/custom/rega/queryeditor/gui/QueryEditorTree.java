@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 import com.pharmadm.custom.rega.queryeditor.constant.*;
 import com.pharmadm.custom.rega.queryeditor.persist.*;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
@@ -91,10 +92,10 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
      * @param child the WhereClause to add to the parent.
      * </p>
      */
-    public void addChild(WhereClause parent, WhereClause child) throws IllegalWhereClauseCompositionException {
+    public void addChild(WhereClause parent, WhereClause child, AssignMode mode) throws IllegalWhereClauseCompositionException {
         WhereClauseTreeNode parentNode = getNode(parent);
+        getQueryEditor().addChild(parent, child, mode);
         insertNodeInto(new WhereClauseTreeNode(child), parentNode, parentNode.getChildCount());
-        getQueryEditor().addChild(parent, child);
     }
     
     /**
@@ -175,7 +176,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
 
             	for (WhereClause clause: clauses) {
                     removeChild(parentClause, clause);
-                    addChild(newClause, clause);
+                    addChild(newClause, clause, AssignMode.none);
             	}
             }
 
@@ -226,7 +227,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     	        if (grandparent.acceptsAdditionalChild()) {
 	    	        removeChild(parent, clause);
 	    	        try {
-						addChild(grandparent, clause);
+						addChild(grandparent, clause, AssignMode.none);
 					} catch (IllegalWhereClauseCompositionException e) {
 						e.printStackTrace();
 					}

@@ -74,7 +74,7 @@ public class NotClause extends ComposedWhereClause implements Serializable {
         Iterator iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {
             WhereClause child = (WhereClause)iterChildren.next();
-            clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null);
+            clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null, null);
         }
         return clone;
     }

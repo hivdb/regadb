@@ -6,6 +6,7 @@ import java.util.*;
 import com.pharmadm.custom.rega.awccomposition.*;
 import com.pharmadm.custom.rega.queryeditor.port.*;
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
 import com.pharmadm.custom.rega.queryeditor.constant.*;
 
 import net.sf.regadb.db.Attribute;
@@ -55,7 +56,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	boolean caseSensitive = true;		// default comparison is case sensitive
     	String property = "value";			// regular value is always found in the value property
     	String description = null;	        // no description of relation
-    	String realVariableType = "String"; // all values are stored as strings
+    	String realVariableType = ValueType.String.toString(); // all values are stored as strings
     	
     	String inputTable = inputTableName;		  // use input table as starting point
     	String foreingTableName = inputTableName; // start with foreign table and id table same as input table
@@ -124,10 +125,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	 */
 	private void addTypeRestrictionToNominalValueClause(List<AtomicWhereClause> clauses, String idTableToCustomPropertiesTable, String propertyName, String customPropertiesTableNameProperty, String valueType) {
 		for (AtomicWhereClause clause : clauses) {
-			if (clause.getConstants().size() > 0) {
-				clause.setCompositionBehaviour(new CustomAttributeComposition());
-			}
-			
 			//// add extra condition to where clause
 			//
 			
@@ -389,7 +386,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		constant.setSuggestedValuesMandatory(true);
     	}
 		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, invertLink, description));
-		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getNumberComparisonOperator(), valueType, invertLink, description));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getNumberComparisonOperator(suggestedValuesQuery != null), valueType, invertLink, description));
     	return list;
 	}
     
@@ -417,7 +414,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
     	}
 		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
-		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, "Numeric", invertLink, null, show);
+		return addNumberPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, ValueType.Numeric.toString(), invertLink, null, show);
 	}
 	
 	private List<AtomicWhereClause> addNumberPropertyComparisonClauses(String inputTableName, String inputTableToIdTable, String foreignTableName, String foreignTableToIdTable, String idTableName, String idTableKey, String foreignTableProperty, boolean dropdown) {
@@ -442,7 +439,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 		List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
     	boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
     	boolean caseSensitive = true;
-    	String valueType = "Boolean";
+    	String valueType = ValueType.Boolean.toString();
     	Constant constant = new BooleanConstant();
 		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, invertLink, null));
 		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getBooleanComparisonOperator(), valueType, invertLink, null));
@@ -486,7 +483,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		constant.setSuggestedValuesMandatory(true);
     	}
 		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, invertLink, description));
-		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getDateComparisonOperator(), valueType, invertLink, description));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getDateComparisonOperator(suggestedValuesQuery != null), valueType, invertLink, description));
     	
     	return list;
 	}
@@ -517,7 +514,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
     	}
 		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
-		return addDatePropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, "Date", invertLink, null, show);
+		return addDatePropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, true, ValueType.Date.toString(), invertLink, null, show);
 	}
 	
 	/**
@@ -576,7 +573,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		constant.setSuggestedValuesMandatory(true);
     	}
 		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, null, valueType, invertLink, description));
-		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getStringComparisonOperator(), valueType, invertLink, description));
+		list.add(addPropertyComparisonClause(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, show, caseSensitive, constant, getStringComparisonOperator(suggestedValuesQuery != null), valueType, invertLink, description));
     	
     	return list;
 	}
@@ -629,7 +626,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		suggestedValuesQuery = "SELECT DISTINCT obj." + foreignTableProperty + " FROM " + foreignTableName + " obj";
     	}
 		boolean show = foreignTableName != inputTableName || foreignTableProperty.indexOf('.') >= 0;
-		return addStringPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, false, "String", invertLink, null, show);
+		return addStringPropertyComparisonClauses(inputTableName, inputTableToIdTable, foreignTableName, foreignTableToIdTable, idTableName, idTableKey, foreignTableProperty, suggestedValuesQuery, false, ValueType.String.toString(), invertLink,null, show);
 	}
 	    
 	 /**
@@ -670,19 +667,19 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		return null;
     	}
     	if (catalog.getField(foreignTableName, foreignTableProperty) == null) {
-    		System.err.println("Can't create propert comparison clause. Property " + foreignTableProperty + " of table " + foreignTableName + " does not exist");
+    		System.err.println("Can't create property comparison clause. Property " + foreignTableProperty + " of table " + foreignTableName + " does not exist");
     		return null;
     	}
     	
     	// find the data type of the property
     	// this method can resolve properties of ids
     	// returns null if the property is not found
-    	String typeString = catalog.getDataTypeOfProperty(foreignTableName, foreignTableProperty);   	
-    	if (typeString != null) {
+    	ValueType type = catalog.getDataTypeOfProperty(foreignTableName, foreignTableProperty);   	
+    	if (type != null) {
             Constant constant = propertyConstant;
             
             // check if the type reported by the database is the same as specified in the catalog
-            if (typeString.equals(valueType)) {
+            if (type.toString().equals(valueType)) {
 	            AtomicWhereClause aClause = new AtomicWhereClause();
 	            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
                 VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
@@ -721,7 +718,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
                 if (show) {
                     // build an outputvariable from the foreign table property and assign it a nice name
         	        OutputVariable ovar = new OutputVariable(new VariableType(constant.getValueTypeString()), catalog.getVariableName(foreignTableName + "." + foreignTableProperty), catalog.getObjectDescription(foreignTableName + "." + foreignTableProperty));
-                    if (description != null) ovar.setRelation(description);
+                    if (description != null) {
+                    	ovar.setRelation(description);
+                    }
         	        // outputvariables are defined as an expression. Without this expression they are useless
         	        if (foreignTableName.equals(inputTableName)) {
         	        	ovar.getExpression().addInputVariable(ivar);
@@ -740,11 +739,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
                 		aVisList.addFixedString(new FixedString(catalog.getObjectDescription(foreignTableName + "." + foreignTableProperty)));
                 	}
                 }
+
                 
-                // only show the input control for the constant if when needed 
+                // only show the input control for the constant when needed 
                 if (!fetchAsVariable) {
 	                aVisList.addConstant(comparisonOperator);
 	                aVisList.addConstant(constant);
+	                
+                	aClause.setCompositionBehaviour(new PropertySetComposition());	                	
                 }
                 else {
             		aClause.setCompositionBehaviour(new PropertyFetchComposition());
@@ -798,11 +800,11 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		return false;
     	}
     	if (catalog.getTable(foreignTableName) == null) {
-    		System.err.println("Can't create association clause. Table " + inputTableName + " does not exist");
+    		System.err.println("Can't create association clause. Table " + foreignTableName + " does not exist");
     		return false;
     	}
     	if (catalog.getTable(idTableName) == null) {
-    		System.err.println("Can't create association clause. Table " + inputTableName + " does not exist");
+    		System.err.println("Can't create association clause. Table " + idTableName + " does not exist");
     		return false;
     	}    	
     	if (idTableKey != null && catalog.getField(idTableName, idTableKey) == null) {
@@ -875,7 +877,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     private List<AtomicWhereClause> addNumberClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
     	list.add(addNumericVariableDeclarationClause());
-    	list.add(addNullClause("Number"));
+    	list.add(addNullClause(ValueType.Numeric.toString()));
     	list.add(addNumericVariableToConstantComparisonClause());
     	list.add(addNumericVariableToVariableComparisonClause());
 		list.add(addNumericVariableIntervalClause());
@@ -890,7 +892,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     private List<AtomicWhereClause> addStringClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
     	list.add(addStringVariableDeclarationClause());
-    	list.add(addNullClause("String"));
+    	list.add(addNullClause(ValueType.String.toString()));
     	list.add(addStringVariableToConstantComparisonClause());
     	list.add(addStringVariableToVariableComparisonClause());
     	list.add(addStringVariableIntervalClause());
@@ -904,7 +906,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> addBooleanClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(addNullClause("Boolean"));
+    	list.add(addNullClause(ValueType.Boolean.toString()));
     	list.add(addBooleanVariableToConstantComparisonClause());
     	list.add(addBooleanVariableToVariableComparisonClause());
     	return list;
@@ -917,7 +919,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     private List<AtomicWhereClause> addDateClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
     	list.add(addDateVariableDeclarationClause());
-    	list.add(addNullClause("Date"));
+    	list.add(addNullClause(ValueType.Date.toString()));
     	list.add(addDateVariableToConstantComparisonClause());
     	list.add(addDateVariableToVariableComparisonClause());
     	list.add(addDateVariableIntervalClause());
@@ -964,17 +966,21 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     
     /**
      * Get a constant with the possible comparison operations for date values: (=, <>, <, >)
+     * @param property the property to fetch the date comparator of
+     * @param exact true when comparison may only be exact
      * @return a constant with the possible comparison operations for date values
      */
-    private OperatorConstant getDateComparisonOperator() {
+    private OperatorConstant getDateComparisonOperator(boolean exact) {
     	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
-       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is before"));
-    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
+       	constant.addSuggestedValue(new SuggestedValuesOption("="," is on"));
+    	constant.addSuggestedValue(new SuggestedValuesOption("<>", " is not on"));
+    	if (!exact) {
+	       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is before"));
+	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
+    	}
     	constant.setSuggestedValuesMandatory(true);
     	return constant;
-    }
+    }    
     
     /**
      * Get a constant with the possible comparison operations for boolean values: (=, <>)
@@ -992,12 +998,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * Get a constant with the possible comparison operations for string values: (like, not like)
      * @return a constant with the possible comparison operations for string values
      */
-    private OperatorConstant getStringComparisonOperator() {
+    private OperatorConstant getStringComparisonOperator(boolean exact) {
     	OperatorConstant constant = new OperatorConstant();
        	constant.addSuggestedValue(new SuggestedValuesOption("LIKE", "is"));
     	constant.addSuggestedValue(new SuggestedValuesOption("NOT LIKE", "is not"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<", "comes before"));
-    	constant.addSuggestedValue(new SuggestedValuesOption(">", "comes after"));
+    	if (!exact) {
+	    	constant.addSuggestedValue(new SuggestedValuesOption("<", "comes before"));
+	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "comes after"));
+    	}
     	constant.setSuggestedValuesMandatory(true);
     	return constant;
     }
@@ -1006,12 +1014,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * Get a constant with the possible comparison operations for numeric values: (=, <>, <, >)
      * @return a constant with the possible comparison operations for numeric values
      */
-    private OperatorConstant getNumberComparisonOperator() {
+    private OperatorConstant getNumberComparisonOperator(boolean exact) {
     	OperatorConstant constant = new OperatorConstant();
        	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
     	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
-       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is smaller than"));
-    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is greater than"));
+    	if (!exact) {
+	       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is smaller than"));
+	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is greater than"));
+    	}
     	constant.setSuggestedValuesMandatory(true);
     	return constant;
     }
@@ -1071,7 +1081,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addNumericVariableIntervalClause() {
-    	return addVariableIntervalClause("Numeric", new DoubleConstant(), new DoubleConstant(), getIntervalComparisonOperator(), "Number", true);
+    	return addVariableIntervalClause(ValueType.Numeric.toString(), new DoubleConstant(), new DoubleConstant(), getIntervalComparisonOperator(), "Number", true);
     }
     
     /**
@@ -1079,7 +1089,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addDateVariableIntervalClause() {
-    	return addVariableIntervalClause("Date", new DateConstant("1900-01-01"), new DateConstant(), getIntervalComparisonOperator(), "Date", true);
+    	return addVariableIntervalClause(ValueType.Date.toString(), new DateConstant("1900-01-01"), new DateConstant(), getIntervalComparisonOperator(), "Date", true);
     }
     
     /**
@@ -1087,7 +1097,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addStringVariableIntervalClause() {
-    	return addVariableIntervalClause("Date", new StringConstant(), new StringConstant(), getIntervalComparisonOperator(), "Date", false);
+    	return addVariableIntervalClause(ValueType.String.toString(), new StringConstant(), new StringConstant(), getIntervalComparisonOperator(), "String", false);
     }
 
     /**
@@ -1141,7 +1151,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addNumericVariableDeclarationClause() {
-    	return addVariableDeclarationClause("Numeric", new DoubleConstant());
+    	return addVariableDeclarationClause(ValueType.Numeric.toString(), new DoubleConstant());
     }
     
     /**
@@ -1149,7 +1159,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addStringVariableDeclarationClause() {
-    	return addVariableDeclarationClause("String", new StringConstant());
+    	return addVariableDeclarationClause(ValueType.String.toString(), new StringConstant());
     }
 
 
@@ -1158,7 +1168,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addDateVariableDeclarationClause() {
-    	return addVariableDeclarationClause("Date", new DateConstant());
+    	return addVariableDeclarationClause(ValueType.Date.toString(), new DateConstant());
     }
     
     /**
@@ -1190,7 +1200,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-        aClause.addGroup(catalog.getObjectDescription("New Variable"));
+        aClause.addGroup("New Variable");
         
         OutputVariable ovar = catalog.createOutputVariable(variableType);
 
@@ -1220,7 +1230,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addNumericVariableToConstantComparisonClause() {
-    	return addVariableToConstantComparisonClause("Numeric", new DoubleConstant(), "Number", getNumberComparisonOperator(), true);
+    	return addVariableToConstantComparisonClause(ValueType.Numeric.toString(), new DoubleConstant(), "Number", getNumberComparisonOperator(false), true);
     }
     
     /**
@@ -1228,7 +1238,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addStringVariableToConstantComparisonClause() {
-    	return addVariableToConstantComparisonClause("String", new StringConstant(), "String", getStringComparisonOperator(), false);
+    	return addVariableToConstantComparisonClause(ValueType.String.toString(), new StringConstant(), "String", getStringComparisonOperator(false), false);
     }
     
     /**
@@ -1236,7 +1246,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addBooleanVariableToConstantComparisonClause() {
-    	return addVariableToConstantComparisonClause("Boolean", new BooleanConstant(), "Boolean", getBooleanComparisonOperator(), true);
+    	return addVariableToConstantComparisonClause(ValueType.Boolean.toString(), new BooleanConstant(), "Boolean", getBooleanComparisonOperator(), true);
     }
     
     /**
@@ -1244,7 +1254,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addDateVariableToConstantComparisonClause() {
-    	return addVariableToConstantComparisonClause("Date", new DateConstant(), "Date", getDateComparisonOperator(), true);
+    	return addVariableToConstantComparisonClause(ValueType.Date.toString(), new DateConstant(), "Date", getDateComparisonOperator(false), true);
     }
     
     /**
@@ -1288,7 +1298,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addNumericVariableToVariableComparisonClause() {
-    	return addVariableToVariableComparisonClause("Numeric", "Number", getNumberComparisonOperator(), true);
+    	return addVariableToVariableComparisonClause(ValueType.Numeric.toString(), getNumberComparisonOperator(false), true);
     }
     
     /**
@@ -1296,7 +1306,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addStringVariableToVariableComparisonClause() {
-    	return addVariableToVariableComparisonClause("String", "String", getStringComparisonOperator(), false);
+    	return addVariableToVariableComparisonClause(ValueType.String.toString(), getStringComparisonOperator(false), false);
     }
 
     /**
@@ -1304,7 +1314,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addBooleanVariableToVariableComparisonClause() {
-    	return addVariableToVariableComparisonClause("Boolean", "Boolean", getBooleanComparisonOperator(), true);
+    	return addVariableToVariableComparisonClause(ValueType.Boolean.toString(), getBooleanComparisonOperator(), true);
     }
 
     /**
@@ -1312,7 +1322,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addDateVariableToVariableComparisonClause() {
-    	return addVariableToVariableComparisonClause("Date", "Date", getDateComparisonOperator(), true);
+    	return addVariableToVariableComparisonClause(ValueType.Date.toString(), getDateComparisonOperator(false), true);
     }
 
     /**
@@ -1321,7 +1331,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been added
      */
     private AtomicWhereClause addObjectVariableToVariableComparisonClause(String objectName) {
-    	return addVariableToVariableComparisonClause(objectName, catalog.getObjectDescription(objectName), getObjectComparisonOperator(), true);
+    	return addVariableToVariableComparisonClause(objectName, getObjectComparisonOperator(), true);
     }
     
     /**
@@ -1336,7 +1346,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      *                      false for case insensitive comparison
      * @return the clause that has been added
      */
-    private AtomicWhereClause addVariableToVariableComparisonClause(String variableType, String description, OperatorConstant comparisonOperator, boolean caseSensitive) {
+    private AtomicWhereClause addVariableToVariableComparisonClause(String variableType, OperatorConstant comparisonOperator, boolean caseSensitive) {
         if (new VariableType(variableType).isTable() && catalog.getTable(variableType) == null) {
         	System.err.println("Persistent object not found : " + variableType);
         	return null;
@@ -1350,7 +1360,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         InputVariable ivar1 = new InputVariable(new VariableType(variableType));
         InputVariable ivar2 = new InputVariable(new VariableType(variableType));
 
-        aVisList.addFixedString(new FixedString(description));
+        aVisList.addFixedString(new FixedString(catalog.getObjectDescription(variableType)));
         aVisList.addInputVariable(ivar1);
         aVisList.addConstant(comparisonOperator);
         aVisList.addInputVariable(ivar2);
@@ -1388,8 +1398,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> addNumericCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(addVariableCalculationClause("Numeric", new DoubleConstant(), null, getNumberCalculationOperator(), ""));
-    	list.add(addVariableCalculationClause("Numeric", null, "Numeric", getNumberCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause(ValueType.Numeric.toString(), new DoubleConstant(), null, getNumberCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause(ValueType.Numeric.toString(), null, ValueType.Numeric.toString(), getNumberCalculationOperator(), ""));
     	return list;
     }
     
@@ -1399,8 +1409,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> addStringCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(addVariableCalculationClause("String", new StringConstant(), null, getStringCalculationOperator(), ""));
-    	list.add(addVariableCalculationClause("String", null, "String", getStringCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause(ValueType.String.toString(), new StringConstant(), null, getStringCalculationOperator(), ""));
+    	list.add(addVariableCalculationClause(ValueType.String.toString(), null, ValueType.String.toString(), getStringCalculationOperator(), ""));
     	return list;
     }
 
@@ -1410,8 +1420,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> addDateCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(addVariableCalculationClause("Date", new DoubleConstant(), null, getDateCalculationOperator(), "days"));
-    	list.add(addVariableCalculationClause("Date", null, "Numeric", getDateCalculationOperator(), "days"));
+    	list.add(addVariableCalculationClause(ValueType.Date.toString(), new DoubleConstant(), null, getDateCalculationOperator(), "days"));
+    	list.add(addVariableCalculationClause(ValueType.Date.toString(), null, ValueType.Numeric.toString(), getDateCalculationOperator(), "days"));
     	return list;
     }
     
@@ -1503,6 +1513,47 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         return aClause;
     }
     
+    private AtomicWhereClause addCollectionSizeClause(String inputTableName, String inputTableProperty) {
+        if (new VariableType(inputTableName).isTable() && catalog.getTable(inputTableName) == null) {
+        	System.err.println("Persistent object not found : " + inputTableName);
+        	return null;
+        }
+
+    	AtomicWhereClause aClause = new AtomicWhereClause();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        aClause.addGroup(catalog.getObjectDescription(inputTableName));
+        aClause.setCompositionBehaviour(new CollectionCountComposition());
+
+        InputVariable ivar1 = new InputVariable(new VariableType(inputTableName));
+        OutputVariable ovar =  catalog.createOutputVariable(ValueType.Numeric.toString());
+        ovar.setFormalName(catalog.getObject(inputTableName + "." + inputTableProperty).getSqlAlias());
+        ovar.setDescription(catalog.getObject(inputTableName + "." + inputTableProperty).getDescription());
+        
+        ovar.getExpression().addInputVariable(ivar1);
+        ovar.getExpression().addFixedString(new FixedString("." + inputTableProperty + ".size"));
+        
+        Constant constant = getNumberComparisonOperator(false);
+        Constant amount = new DoubleConstant();
+        
+        aVisList.addFixedString(new FixedString(catalog.getObjectDescription(inputTableName)));
+        aVisList.addInputVariable(ivar1);
+        aVisList.addFixedString(new FixedString("'s number of"));
+        aVisList.addOutputVariable(ovar);
+        aVisList.addConstant(constant);
+        aVisList.addConstant(amount);
+        
+        aComposer.addOutputVariable(ovar);
+        aComposer.addFixedString(new FixedString(" "));
+        aComposer.addConstant(constant);
+        aComposer.addFixedString(new FixedString(" "));
+        aComposer.addConstant(amount);
+        
+        catalog.addAtomicWhereClause(aClause);
+        return aClause;
+    	
+    }
+    
 //    private AtomicWhereClause addCountClause(String variableType) {
 //        AtomicWhereClause aClause = new AtomicWhereClause();
 //        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
@@ -1510,7 +1561,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 //        aClause.addGroup("Number");
 //        
 //        InputVariable ivar1 = new InputVariable(new VariableType(variableType));
-//        OutputVariable ovar = new OutputVariable(new VariableType("Numeric"), "Numeric");
+//        OutputVariable ovar = new OutputVariable(new VariableType(ValueType.Numeric.toString()), ValueType.Numeric.toString());
 //        ovar.getExpression().addFixedString(new FixedString("count (distinct "));
 //        ovar.getExpression().addInputVariable(ivar1);
 //        ovar.getExpression().addFixedString(new FixedString(")"));
@@ -1526,18 +1577,18 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 //        return aClause;
 //    }
     
-    private AtomicWhereClause addMutationClause() {
+    private AtomicWhereClause addMutationClause(String referencePath, String mutationPath, String description) {
         AtomicWhereClause aClause = new AtomicWhereClause();
         VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aClause.addGroup(catalog.getObjectDescription("net.sf.regadb.db.AaSequence"));
       
         InputVariable ivar1 = new InputVariable(new VariableType("net.sf.regadb.db.AaSequence"));
-        Constant constant = new MutationConstant(ivar1);
+        Constant constant = new MutationConstant(ivar1, referencePath, mutationPath);
 
         aVisList.addFixedString(new FixedString(catalog.getObjectDescription("net.sf.regadb.db.AaSequence")));
         aVisList.addInputVariable(ivar1);
-        aVisList.addFixedString(new FixedString("has mutation combination"));
+        aVisList.addFixedString(new FixedString(description));
         aVisList.addConstant(constant);
       
         aComposer.addConstant(constant);
@@ -1551,122 +1602,165 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private void addVariableNames() {
     	// primitive types
-    	catalog.addNames("Numeric", "number", "number", "number");
-    	catalog.addNames("String", "string", "string", "string");
-    	catalog.addNames("Boolean", "boolean", "boolean", "boolean");
-    	catalog.addNames("Date", "date", "date", "date");
+    	catalog.addObject(new DbObject(ValueType.Numeric.toString(), "number", "number", "number"));
+    	catalog.addObject(new DbObject(ValueType.Boolean.toString(), "boolean", "boolean", "boolean"));
+    	catalog.addObject(new DbObject(ValueType.Date.toString(), "date", "date", "date"));
+    	catalog.addObject(new DbObject(ValueType.String.toString(), "string", "string", "string"));
     	
-        // patients 
-        catalog.addNames("net.sf.regadb.db.PatientImpl", "patient", "patient", "patient");
-        catalog.addNames("net.sf.regadb.db.PatientImpl.patientId", "PatientId", "id", null);
-        catalog.addNames("net.sf.regadb.db.PatientImpl.birthDate", "BirthDate", "birth date", null);
-        catalog.addNames("net.sf.regadb.db.PatientImpl.deathDate", "DeathDate", "death date", null);
-        catalog.addNames("net.sf.regadb.db.PatientImpl.lastName", "LastName", "last name", null);
-        catalog.addNames("net.sf.regadb.db.PatientImpl.firstName", "FirstName", "first name", null);
-        catalog.addNames("net.sf.regadb.db.AttributeNominalValue.value", "Attribute", "custom attribute", null);
-        catalog.addNames("net.sf.regadb.db.PatientAttributeValue.value", "Attribute", "custom attribute", null);
+    	// attributes
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientAttributeValue", "attribute", "pav", "attribute"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientAttributeValue.value", "attribute", "attribute", "attribute"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AttributeNominalValue", "attribute", "anv", "attribute"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AttributeNominalValue.value", "attribute", "attribute", "attribute"));
+    	
+    	// patients 
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl", "patient", "patient", "patient"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.patientIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.patientId", "id", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.lastName", "name", null, "name"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.firstName", "surname", null, "surname"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.birthDate", "birth_date", null, "birth date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.deathDate", "death_date", null, "death date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.patientDatasets", "dataset_count", "datasetCount", "datasets"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.testResults", "test_result_count", "testresultCount", "test results"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.viralIsolates", "viral_isolate_count", "viCount", "viral isolates"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientImpl.therapies", "therapy_count", "therapyCount", "therapies"));
         
         // therapy
-        catalog.addNames("net.sf.regadb.db.Therapy", "therapy", "therapy", "therapy");
-        catalog.addNames("net.sf.regadb.db.Therapy.startDate", "StartDate", "start date", null);
-        catalog.addNames("net.sf.regadb.db.Therapy.stopDate", "StopDate", "stop date", null);
-        catalog.addNames("net.sf.regadb.db.Therapy.comment", "Comment", "comment", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy", "therapy", "therapy", "therapy"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.therapyIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.startDate", "start_date", "startDate", "start date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.stopDate", "stop_date", "stopDate", "stop date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.comment", "comment", "comment", "comment"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.therapyCommercials", "commercial_treatment_count", "commTherapyCount", "treatments with commercial drugs"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Therapy.therapyGenerics", "generic_treatment_count", "genTherapyCount", "treatments with generic drugs"));
 
         // viral isolate
-        catalog.addNames("net.sf.regadb.db.ViralIsolate", "viralIsolate","viral isolate", "vi");
-        catalog.addNames("net.sf.regadb.db.ViralIsolate.sampleDate", "SampleDate", "sample date", null);
-        catalog.addNames("net.sf.regadb.db.ViralIsolate.sampleId", "SampleId", "id", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate", "viral_isolate","vi", "viral isolate"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate.viralIsolateIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate.sampleDate", "sample_date", null, "sample date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate.sampleId", "id", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate.testResults", "test_result_count", "testresultCount", "test results"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.ViralIsolate.ntSequences", "nt_sequence_count", "ntSeqCount", "nucleotide sequences"));
         
         // nt sequence
-        catalog.addNames("net.sf.regadb.db.NtSequence", "ntSequence", "nucleotide sequence", "ntSeq");
-        catalog.addNames("net.sf.regadb.db.NtSequence.sequenceDate", "SequenceDate", "sequence date", null);
-        catalog.addNames("net.sf.regadb.db.NtSequence.label", "Value", "value", null);
-        catalog.addNames("net.sf.regadb.db.NtSequence.nucleotides", "Nucleotides", "nucleotides", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence", "nt_sequence", "ntSeq", "nucleotide sequence"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.ntSequenceIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.sequenceDate", "sequence_date", null, "sequence date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.label", "sequence_label", null, "sequence label"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.nucleotides", "nucleotides", null, "nucleotides"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.testResults", "test_result_count", "testresultCount", "test results"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.NtSequence.aaSequences", "aa_sequence_count", "aaSeqCount", "amino acid sequences"));
         
         // protein
-        catalog.addNames("net.sf.regadb.db.Protein", "protein", "protein", "protein");
-        catalog.addNames("net.sf.regadb.db.Protein.abbreviation", "ProteinAbbreviation", "abbreviation", null);
-        catalog.addNames("net.sf.regadb.db.Protein.fullName", "ProteinName", "name", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.Protein", "protein", "protein", "protein"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Protein.proteinIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Protein.abbreviation", "abbreviation", null, "abbreviation"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Protein.fullName", "name", null, "name"));
 
         // aa sequence
-        catalog.addNames("net.sf.regadb.db.AaSequence", "aaSequence", "amino acid sequence", "aaSeq");
-        catalog.addNames("net.sf.regadb.db.AaSequence.firstAaPos", "AaPosition", "first amino acid position", null);
-        catalog.addNames("net.sf.regadb.db.AaSequence.lastAaPos", "AaPosition", "last amino acid position", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence", "aa_sequence", "aaSeq", "amino acid sequence"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence.aaSequenceIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence.firstAaPos", "aa_position", null, "first amino acid position"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence.lastAaPos", "aa_position", null, "last amino acid position"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence.aaMutations", "aa_mutation_count", "aaMutCount", "amino acid mutations"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaSequence.aaInsertions", "aa_insertion_count", "aaInsCount", "amino acid insertions"));
 
         // aa mutation
-        catalog.addNames("net.sf.regadb.db.AaMutation", "aaMutation", "amino acid mutation", "aaMut");
-        catalog.addNames("net.sf.regadb.db.AaMutation.aaReference", "AaStr", "amino acid reference string", null);
-        catalog.addNames("net.sf.regadb.db.AaMutation.aaMutation", "AaStr", "amino acid mutation string", null);
-        catalog.addNames("net.sf.regadb.db.AaMutation.ntReferenceCodon", "NtStr", "nucleotide reference string", null);
-        catalog.addNames("net.sf.regadb.db.AaMutation.ntMutationCodon", "NtStr", "nulceotide mutation string", null);
-        catalog.addNames("net.sf.regadb.db.AaMutation.id.mutationPosition", "MutationPosition", "mutation position", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation", "aa_mutation", "aaMut", "amino acid mutation"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation.aaReference", "reference_str", null, "non-synonymous mutation reference string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation.aaMutation", "mutation_str", null, "non-synonymous mutation mutation string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation.ntReferenceCodon", "reference_str", null, "synonymous mutation reference string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation.ntMutationCodon", "mutation_str", null, "synonymous mutation mutation string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaMutation.id.mutationPosition", "mutation_position", null, "mutation position"));
         
         // aa insertion
-        catalog.addNames("net.sf.regadb.db.AaInsertion", "aaInsertion", "amino acid insertion", "aaIns");
-        catalog.addNames("net.sf.regadb.db.AaInsertion.aaInsertion", "AaStr", "amino acid insertion string", null);
-        catalog.addNames("net.sf.regadb.db.AaInsertion.ntInsertionCodon", "NtStr", "nucleotide insertion string", null);
-        catalog.addNames("net.sf.regadb.db.AaInsertion.id.insertionPosition", "InsertionPosition", "insertion position", null);
-        catalog.addNames("net.sf.regadb.db.AaInsertion.id.insertionOrder", "InsertionOrder", "insertion order", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaInsertion", "aa_insertion", "aaIns", "amino acid insertion"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaInsertion.aaInsertion", "insertion_str", null, "non-synonymous insertion string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaInsertion.ntInsertionCodon", "insertion_str", null, "synonymous insertion string"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaInsertion.id.insertionPosition", "insertion_position", null, "insertion position"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.AaInsertion.id.insertionOrder", "insertion_order", null, "insertion order"));
         
         // drug class
-        catalog.addNames("net.sf.regadb.db.DrugClass", "drugClass", "drug class", "drugClass");
-        catalog.addNames("net.sf.regadb.db.DrugClass.classId", "DrugClassId", "id", null);
-        catalog.addNames("net.sf.regadb.db.DrugClass.className", "DrugClassName", "name", null);
-        catalog.addNames("net.sf.regadb.db.DrugClass.resistanceTableOrder", "ResitanceTableOrder", "resistance table order", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass", "drug_class", "drugClass", "drug class"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass.drugClassIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass.classId", "id", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass.className", "class_name", null, "name"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass.resistanceTableOrder", "resitance_table_order", null, "resistance table order"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugClass.drugGenerics", "generic_drug_count", "genDrugCount", "generic drugs"));
 
         // therapy commercial
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial", "commercialDrugTreatment", "treatment with commercial drugs", "commTherapy");
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "DailyDosage", "daily dosage", null);
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial.frequency", "Frequency", "administration frequency", null);
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial.placebo", "Placebo", "placebo", null);
-        catalog.addNames("net.sf.regadb.db.TherapyCommercial.blind", "Blind", "blind", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyCommercial", "commercial_treatment", "commTherapy", "treatment with commercial drugs"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyCommercial.dayDosageUnits", "dosage", null, "daily dosage"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyCommercial.frequency", "frequency", null, "administration frequency"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyCommercial.placebo", "placebo", null, "placebo"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyCommercial.blind", "plind", null, "blind"));
         
         // therapy generic
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric", "genericDrugTreatment", "treatment with generic drugs", "genTherapy");
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric.dayDosageMg", "DailyDosage", "daily dosage in mg", null);
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric.frequency", "Frequency", "administration frequency", null);
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric.placebo", "Placebo", "placebo", null);
-        catalog.addNames("net.sf.regadb.db.TherapyGeneric.blind", "Blind", "blind", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyGeneric", "generic_treatment", "genTherapy", "treatment with generic drugs"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyGeneric.dayDosageMg", "dosage", null, "daily dosage in mg"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyGeneric.frequency", "frequency", null, "administration frequency"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyGeneric.placebo", "placebo", null, "placebo"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyGeneric.blind", "blind", null, "blind"));
         
         // events
-        catalog.addNames("net.sf.regadb.db.PatientEventValue", "event", "event", "event");
-        catalog.addNames("net.sf.regadb.db.PatientEventValue.startDate", "StartDate", "start date", null);
-        catalog.addNames("net.sf.regadb.db.PatientEventValue.endDate", "EndDate", "end date", null);
-        catalog.addNames("net.sf.regadb.db.PatientEventValue.value", "Event", "event", null);
-        catalog.addNames("net.sf.regadb.db.EventNominalValue.value", "Event", "event", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientEventValue", "event", "event", "event"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientEventValue.patientEventValueIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientEventValue.startDate", "start_date", null, "start date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientEventValue.endDate", "end_date", null, "end date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.PatientEventValue.value", "event", null, "event"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.EventNominalValue", "event", "event", "event"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.EventNominalValue.value", "event", null, "event"));
         
         // drug generic
-        catalog.addNames("net.sf.regadb.db.DrugGeneric", "genericDrug", "generic drug", "genDrug");
-        catalog.addNames("net.sf.regadb.db.DrugGeneric.genericId", "GenericDrugId", "id", null);
-        catalog.addNames("net.sf.regadb.db.DrugGeneric.atcCode", "AtcCode", "atc code", null);
-        catalog.addNames("net.sf.regadb.db.DrugGeneric.resistanceTableOrder", "ResistanceTableOrder", "resistance table order", null);
-        catalog.addNames("net.sf.regadb.db.DrugGeneric.genericName", "GenericName", "name", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric", "generic_drug", "genDrug", "generic drug"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.genericIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.genericId", "id", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.atcCode", "atc_code", null, "atc code"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.resistanceTableOrder", "resistance_table_order", null, "resistance table order"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.genericName", "drug_name", null, "name"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugGeneric.drugCommercials", "commercial_drug_count", "commDrugCount", "commercial drugs"));
         
         // drug commercial
-        catalog.addNames("net.sf.regadb.db.DrugCommercial", "commercialDrug", "commercial drug", "commDrug");
-        catalog.addNames("net.sf.regadb.db.DrugCommercial.name", "CommercialName", "name", null);
-        catalog.addNames("net.sf.regadb.db.DrugCommercial.atcCode", "AtcCode", "atc code", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugCommercial", "commercial_drug", "commDrug", "commercial drug"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugCommercial.commercialIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugCommercial.name", "drug_name", null, "name"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugCommercial.atcCode", "atc_code", null, "atc code"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.DrugCommercial.drugGenerics", "generic_drug_count", "genDrugCount", "generic drugs"));
         
         // dataset
-        catalog.addNames("net.sf.regadb.db.Dataset", "dataset", "dataset", "dataset");
-        catalog.addNames("net.sf.regadb.db.Dataset.description", "DatasetName", "dataset name", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.Dataset", "dataset", "dataset", "dataset"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Dataset.description", "dataset_Name", "datasetName", "dataset name"));
         
         // test result
-        catalog.addNames("net.sf.regadb.db.TestResult", "testResult", "test result", "result");
-        catalog.addNames("net.sf.regadb.db.TestResult.sampleId", "SampleId", "id", null);
-        catalog.addNames("net.sf.regadb.db.TestResult.testDate", "testDate", "test date", null);
-        catalog.addNames("net.sf.regadb.db.TestNominalValue.value", "TestResult", "test result", null);
-        catalog.addNames("net.sf.regadb.db.TestResult.value", "TestResult", "test result", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult", "testResult", "result", "test result"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult.testResultIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult.data", "data", null, "data"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult.sampleId", "SampleId", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult.testDate", "testDate", null, "test date"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestNominalValue.value", "TestResult", null, "test result"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestResult.value", "TestResult", null, "test result"));
         
         // test
-        catalog.addNames("net.sf.regadb.db.Test", "test", "test", "test");
-        catalog.addNames("net.sf.regadb.db.Test.Description", "Name", "name", null);
-        catalog.addNames("net.sf.regadb.db.TestType.description", "TestType", "test type", null);
-        catalog.addNames("net.sf.regadb.db.TestObject.description", "testObject", "test object", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.Test", "test", "test", "test"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Test.testIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.Test.description", "test_name", null, "test name"));
+        
+        // test type
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestType", "test_type", "testType", "test type"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestType.testTypeIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestType.description", "type_name", null, "name"));
+        
+        // test object
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestObject", "test_object", "testObject", "test object"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestObject.testObjectIi", "index", null, "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestObject.testObjectId", "id", null, "id"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TestObject.description", "object_name", null, "test object"));
 
         // therapy motivation
-        catalog.addNames("net.sf.regadb.db.TherapyMotivation", "motivation","motivation" , "motivation");
-        catalog.addNames("net.sf.regadb.db.TherapyMotivation.value", "Motivation", "motivation", null);
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyMotivation", "motivation","motivation" , "motivation"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyMotivation.therapyMotivationIi", "index",null , "index"));
+        catalog.addObject(new DbObject("net.sf.regadb.db.TherapyMotivation.value", "Motivation", null, "motivation"));
     }
     
     private void addAllTableClauses() {
@@ -1684,7 +1778,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addObjectClauses("net.sf.regadb.db.AaInsertion");
         addObjectClauses("net.sf.regadb.db.Protein");
         addObjectClauses("net.sf.regadb.db.TestResult");
-        addObjectClauses("net.sf.regadb.db.Test");
         addObjectClauses("net.sf.regadb.db.PatientEventValue");
     	
     	
@@ -1702,8 +1795,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         }
         catch(SQLException e) {}
         
-        // link patients - event
+        // patients - event
         addRelationClauses("net.sf.regadb.db.PatientEventValue", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from",  "has an", false);
+        // patients - therapy
+        addRelationClauses("net.sf.regadb.db.Therapy", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "was performed on a",  "has received", false);
+        // patient - viral isolate
+        addRelationClauses("net.sf.regadb.db.ViralIsolate", "patient", "net.sf.regadb.db.PatientImpl",  null, "net.sf.regadb.db.PatientImpl", null, "comes from",  "has a", false);
         
         
         ///////////////////////////////////////
@@ -1713,11 +1810,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "firstName", false);
    		addDatePropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "birthDate", false);
         addDatePropertyComparisonClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "deathDate", false);
-
-        // data set
         addStringPropertyComparisonClauses("net.sf.regadb.db.PatientImpl", "id.patient", "net.sf.regadb.db.Dataset", "id.dataset",  "net.sf.regadb.db.PatientDataset", null, "description", true, true);
-        
-        
+        addCollectionSizeClause("net.sf.regadb.db.PatientImpl", "patientDatasets");
+        addCollectionSizeClause("net.sf.regadb.db.PatientImpl", "therapies");
+        addCollectionSizeClause("net.sf.regadb.db.PatientImpl", "testResults");
+        addCollectionSizeClause("net.sf.regadb.db.PatientImpl", "viralIsolates");
+
         // patient custom attributes
         try {
         	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.Attribute");
@@ -1728,11 +1826,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         }
         catch(SQLException e) {}
 
-        // link patients - therapy
-        addRelationClauses("net.sf.regadb.db.Therapy", "patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "was performed on a",  "has received", false);
-        
-        // link patient - viral isolate
-        addRelationClauses("net.sf.regadb.db.ViralIsolate", "patient", "net.sf.regadb.db.PatientImpl",  null, "net.sf.regadb.db.PatientImpl", null, "comes from",  "has a", false);
         
         
 
@@ -1742,14 +1835,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addDatePropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "stopDate", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "net.sf.regadb.db.Therapy", null, "comment", false);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.Therapy", "therapyMotivation", "net.sf.regadb.db.TherapyMotivation", null, "net.sf.regadb.db.TherapyMotivation", null, "value", true);
+        addCollectionSizeClause("net.sf.regadb.db.Therapy", "therapyGenerics");
+        addCollectionSizeClause("net.sf.regadb.db.Therapy", "therapyCommercials");
    		
-   		addGenericDrugResolvedClause();   		
-   		
-        // link therapy - commercial drug
-        addRelationClauses("net.sf.regadb.db.DrugCommercial", "id.drugCommercial", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyCommercial", null, "is one of the drugs used in a",  "'s medication contains a", true);
-
-        // link therapy - generic drug
+        // therapy - generic drug
+        addGenericDrugResolvedClause();   		
         addRelationClauses("net.sf.regadb.db.DrugGeneric", "id.drugGeneric", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyGeneric", null, "is one of the drugs used in a",  "'s medication contains a", true);
+        // therapy - commercial drug
+        addRelationClauses("net.sf.regadb.db.DrugCommercial", "id.drugCommercial", "net.sf.regadb.db.Therapy", "id.therapy" , "net.sf.regadb.db.TherapyCommercial", null, "is one of the drugs used in a",  "'s medication contains a", true);
         
 
         ///////////////////////////////////////
@@ -1759,10 +1852,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "placebo");
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyCommercial", null, "net.sf.regadb.db.TherapyCommercial", null,  "net.sf.regadb.db.TherapyCommercial", null, "blind");
         
-        // link therapyCommercial - DrugCommercial
+        // therapyCommercial - DrugCommercial
         addRelationClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.TherapyCommercial", "id.drugCommercial", "net.sf.regadb.db.DrugCommercial", null, "is used in a",  "consists of the", false);
-        
-        // link therapyComercial - therapy
+        //  therapyComercial - therapy
         addRelationClauses("net.sf.regadb.db.TherapyCommercial", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is a part of",  "has a", false);
         
         
@@ -1773,11 +1865,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "placebo");
    		addBooleanPropertyComparisonClauses("net.sf.regadb.db.TherapyGeneric", null, "net.sf.regadb.db.TherapyGeneric", null,  "net.sf.regadb.db.TherapyGeneric", null, "blind");
         
-        
-        // link therapyGeneric - DrugGeneric
+        // therapyGeneric - DrugGeneric
         addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TherapyGeneric", "id.drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "is used in a",  "consists of the", false);
-        
-        // link therapyGeneric - therapy
+        // therapyGeneric - therapy
         addRelationClauses("net.sf.regadb.db.TherapyGeneric", "id.therapy", "net.sf.regadb.db.Therapy", null , "net.sf.regadb.db.Therapy", null, "is a part of",  "has a", false);
 
         
@@ -1785,8 +1875,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // viral isolates
         addStringPropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleId", false);
         addDatePropertyComparisonClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "sampleDate", false);
+        addCollectionSizeClause("net.sf.regadb.db.ViralIsolate", "ntSequences");
+        addCollectionSizeClause("net.sf.regadb.db.ViralIsolate", "testResults");
         
-        // link viral isolate  - nt sequence
+        // viral isolate  - nt sequence
         addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from a",  "has a", false);
  
         
@@ -1795,11 +1887,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addDatePropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "sequenceDate",false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "label", false);
         addStringPropertyComparisonClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "nucleotides", false);
+        addCollectionSizeClause("net.sf.regadb.db.NtSequence", "aaSequences");
+        addCollectionSizeClause("net.sf.regadb.db.NtSequence", "testResults");
         
-        // link nt sequence - patient
+        // nt sequence - patient
         addRelationClauses("net.sf.regadb.db.NtSequence", "viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
-
-        // link nt sequence - aa sequence
+        //  nt sequence - aa sequence
         addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence", "net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.NtSequence", null, "comes from a",  "has a", false);
 
         
@@ -1808,21 +1901,20 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // amino acid sequence
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "firstAaPos",  false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "lastAaPos", false);
-        addMutationClause();
+        addMutationClause("ntReferenceCodon", "ntMutationCodon", "has synonymous mutations");
+        addMutationClause("aaReference", "aaMutation", "has non-synonymous mutations");
+        addCollectionSizeClause("net.sf.regadb.db.AaSequence", "aaMutations");
+        addCollectionSizeClause("net.sf.regadb.db.AaSequence", "aaInsertions");
         
-        // link aa sequence - patient
+        // aa sequence - patient
         addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
-        
-        // link aa sequence - viral isolate
+        // aa sequence - viral isolate
         addRelationClauses("net.sf.regadb.db.AaSequence", "ntSequence.viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.ViralIsolate", null, "comes from a",  "has a", false);
-
-        // link aa sequence - aa mutation
+        // aa sequence - aa mutation
         addRelationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the",  "has an", false);
-        
-        // link aa sequence - aa insertion
+        // aa sequence - aa insertion
         addRelationClauses("net.sf.regadb.db.AaInsertion", "id.aaSequence", "net.sf.regadb.db.AaSequence", null, "net.sf.regadb.db.AaSequence", null, "comes from the",  "has an", false);
-        
-        // link aa sequence - protein
+        // aa sequence - protein
         addRelationClauses("net.sf.regadb.db.Protein", null, "net.sf.regadb.db.AaSequence", "protein", "net.sf.regadb.db.Protein", null, "is present in the",  "has a", false);
 
         
@@ -1842,7 +1934,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addStringPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "ntMutationCodon",  false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation", null, "net.sf.regadb.db.AaMutation",  null , "id.mutationPosition",  false);
         
-        // link aa mutation - patient
+        // aa mutation - patient
         addRelationClauses("net.sf.regadb.db.AaMutation", "id.aaSequence.ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
         
 
@@ -1853,7 +1945,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null ,"id.insertionPosition", false);
         addNumberPropertyComparisonClauses("net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null, "net.sf.regadb.db.AaInsertion", null ,"id.insertionOrder",  false);
         
-        // link aa insertion - patient
+        // aa insertion - patient
         addRelationClauses("net.sf.regadb.db.AaInsertion", "id.aaSequence.ntSequence.viralIsolate.patient", "net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.PatientImpl", null, "comes from a",  "has a", false);
 
         
@@ -1863,8 +1955,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "genericName", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "atcCode", true);
    		addNumberPropertyComparisonClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.DrugGeneric", null, "resistanceTableOrder", true);
+        addCollectionSizeClause("net.sf.regadb.db.DrugGeneric", "drugCommercials");
 
-        // link generic drug - drug class
+        // generic drug - drug class
         addRelationClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugGeneric", "drugClass", "net.sf.regadb.db.DrugClass", null, "has a",  "belongs to the", false);
    		
         
@@ -1873,8 +1966,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // commercial drug
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "name", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "net.sf.regadb.db.DrugCommercial", null, "atcCode", true);
+        addCollectionSizeClause("net.sf.regadb.db.DrugCommercial", "drugGenerics");
         
-        // link commercial - generic
+        // commercial - generic
    		addCollectionRelationClause("net.sf.regadb.db.DrugGeneric", "net.sf.regadb.db.DrugCommercial", "drugGenerics", "is a component of a");
    		addCollectionRelationClause("net.sf.regadb.db.DrugCommercial", "net.sf.regadb.db.DrugGeneric", "drugCommercials", "has a component");
    		
@@ -1885,6 +1979,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "className", true);
    		addStringPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "classId", false);
    		addNumberPropertyComparisonClauses("net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "net.sf.regadb.db.DrugClass", null, "resistanceTableOrder", false);
+        addCollectionSizeClause("net.sf.regadb.db.DrugClass", "drugGenerics");
    		
    		
    		
@@ -1892,18 +1987,20 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // test result
    		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "sampleId",  false);
    		addDatePropertyComparisonClauses("net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "net.sf.regadb.db.TestResult", null, "testDate", false);
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "description",  true);
 
-        // link test result -  patients
-        addRelationClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.TestResult", "patient", "net.sf.regadb.db.PatientImpl", null, "has a",  "comes from a test on", false);
-   		
-        // link test result -  generic drug
-        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TestResult", "drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "has a",  "comes from a test on", false);
-
-        // link test result -  viral isolate
-        addRelationClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.TestResult", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "has a",  "comes from a test on", false);
-
-        // link test result -  nucleotide sequence
-        addRelationClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.TestResult", "ntSequence", "net.sf.regadb.db.NtSequence", null, "has a",  "comes from a test on", false);
+        // test - test object
+   		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", "test.testType.testObject", "net.sf.regadb.db.TestObject", null, "net.sf.regadb.db.TestObject", null, "description", true);
+        // test result - test type
+//   		addStringPropertyComparisonClauses("net.sf.regadb.db.TestResult", "test.testType", "net.sf.regadb.db.TestType", null, "net.sf.regadb.db.TestType", null, "description", true);
+        // test result -  patients
+        addRelationClauses("net.sf.regadb.db.PatientImpl", null, "net.sf.regadb.db.TestResult", "patient", "net.sf.regadb.db.PatientImpl", null, "has a",  "is a result from a", false);
+        // test result -  generic drug
+        addRelationClauses("net.sf.regadb.db.DrugGeneric", null, "net.sf.regadb.db.TestResult", "drugGeneric", "net.sf.regadb.db.DrugGeneric", null, "has a",  "is a result from a", false);
+        // test result -  viral isolate
+        addRelationClauses("net.sf.regadb.db.ViralIsolate", null, "net.sf.regadb.db.TestResult", "viralIsolate", "net.sf.regadb.db.ViralIsolate", null, "has a",  "is a result from a", false);
+        // test result -  nucleotide sequence
+        addRelationClauses("net.sf.regadb.db.NtSequence", null, "net.sf.regadb.db.TestResult", "ntSequence", "net.sf.regadb.db.NtSequence", null, "has a",  "is a result from a", false);
         
         // test result value
         try {
@@ -1914,19 +2011,5 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         	}
         }
         catch(SQLException e) {}
-        
-        
-        ///////////////////////////////////////
-        // test
-   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "net.sf.regadb.db.Test", null, "description",  true);
-        
-        // link test - test type
-   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType", "net.sf.regadb.db.TestType", null, "net.sf.regadb.db.TestType", null, "description", true);
-
-   		// link test - test result
-        addRelationClauses("net.sf.regadb.db.Test", null, "net.sf.regadb.db.TestResult", "test", "net.sf.regadb.db.Test", null, "has a",  "comes from a", false);
-   		
-        // link test - test object
-   		addStringPropertyComparisonClauses("net.sf.regadb.db.Test", "testType.testObject", "net.sf.regadb.db.TestObject", null, "net.sf.regadb.db.TestObject", null, "description", true);
     }
 }

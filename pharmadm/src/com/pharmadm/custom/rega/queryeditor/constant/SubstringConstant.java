@@ -23,12 +23,6 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * @author  kdg
  */
 public class SubstringConstant extends StringConstant implements Serializable{
-    public SubstringConstant(){}
-	
-	public SubstringConstant(SuggestedValues suggestedValues) {
-		super(suggestedValues);
-	}
-	
     public String acceptWhereClause(QueryVisitor visitor) {
     	return visitor.visitWhereClauseSubstringConstant(this);
     }

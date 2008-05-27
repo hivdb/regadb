@@ -73,7 +73,7 @@ public class AndClause extends ComposedWhereClause implements Serializable {
         Iterator<WhereClause> iterChildren = iterateChildren();
         while (iterChildren.hasNext()) {
             WhereClause child = iterChildren.next();
-            clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null);
+            clone.addChild((WhereClause)child.cloneBasics(originalToCloneMap), null, null);
         }
         return clone;
     }

@@ -8,38 +8,37 @@ import javax.swing.DefaultComboBoxModel;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.OutputVariableConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class JComposedOutputVariableConfigurer extends javax.swing.JComboBox implements ComposedWordConfigurer {
+public class JComposedWordConfigurer extends javax.swing.JComboBox implements ComposedWordConfigurer {
 
-	private Vector<OutputVariableConfigurer> vars;
+	private Vector<WordConfigurer> vars;
 	
-	public JComposedOutputVariableConfigurer(WordConfigurer var) {
-		vars = new Vector<OutputVariableConfigurer>();
-		vars.add((OutputVariableConfigurer) var);
+	public JComposedWordConfigurer(WordConfigurer var) {
+		vars = new Vector<WordConfigurer>();
+		vars.add(var);
 		setModel(new DefaultComboBoxModel(vars));
 		setSelectedIndex(0);
 		setEditable(false);
 	}
 	
 	public void add(List<WordConfigurer> words) {
-		vars.add((OutputVariableConfigurer) words.get(0));
+		vars.add(words.get(0));
 	}
 	
 	public void configureWord() {
-		OutputVariableConfigurer confy = (OutputVariableConfigurer) getSelectedItem();
+		WordConfigurer confy = (WordConfigurer) getSelectedItem();
 		confy.configureWord();
 		
 	}
 
 	public ConfigurableWord getWord() {
-		OutputVariableConfigurer confy = (OutputVariableConfigurer) getSelectedItem();
+		WordConfigurer confy = (WordConfigurer) getSelectedItem();
 		return confy.getWord();
 	}
 
 	public void reAssign(Object o) {
-		JComposedOutputVariableConfigurer confy = (JComposedOutputVariableConfigurer) o;
+		JComposedWordConfigurer confy = (JComposedWordConfigurer) o;
 		this.vars = confy.vars;
 	}
 	

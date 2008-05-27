@@ -15,6 +15,8 @@ import java.util.*;
 import java.io.Serializable;
 import java.sql.SQLException;
 
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
@@ -187,7 +189,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
         Iterator<Constant> iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {
             Constant c = (Constant)iterConsts.next();
-            c.setValue(null);
+            c.reset();
         }
     } // end reset
     
@@ -318,11 +320,9 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
         Iterator<InputVariable> iterInputVars = getInputVariables().iterator();
         while (iterInputVars.hasNext()) {
             InputVariable ivar = (InputVariable)iterInputVars.next();
-            valid &=  ((ivar.getOutputVariable() != null) && getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable()));
-            if ( (ivar.getOutputVariable() == null) ||
-            		(ivar.getOutputVariable() != null && !getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable())) ) {
-            	ivar.setOutputVariable(new OutputVariable(ivar.getVariableType(), "[undefined]", ivar.getHumanStringValue()));
-            }
+            boolean validIvar = ((ivar.getOutputVariable() != null) && getOutputVariablesAvailableForImport().contains(ivar.getOutputVariable()));
+            valid &= validIvar;
+            ivar.setvalid(validIvar);
         }
         Iterator<Constant> iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {
@@ -341,7 +341,7 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
     }
     
     // trivial implementation of the composed WhereClause methods
-    public void addChild(WhereClause child, UniqueNameContext namingContext) throws IllegalWhereClauseCompositionException {
+    public void addChild(WhereClause child, UniqueNameContext namingContext, AssignMode mode) throws IllegalWhereClauseCompositionException {
         throw new IllegalWhereClauseCompositionException();
     }
     
@@ -383,7 +383,6 @@ public class AtomicWhereClause extends WhereClause implements WordListOwner, Ser
 		for (ConfigurableWord word : getVisualizationClauseList().getWords()) {
 			hash += word.getImmutableStringValue() + " ";
 		}
-		System.err.println(hash);
 		return hash;
 	}	
 } // end AtomicWhereClause

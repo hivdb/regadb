@@ -170,13 +170,11 @@ public abstract class AtomicWhereClauseEditor implements
      * </p>
      */
     public boolean setConstantValueString(Constant cst, Object value) {
-        try {
-            cst.parseValue(value);
-            notifyQueryEditorDirty();
-            return true;
-        } catch (java.text.ParseException pe) {
-            return false;
+    	boolean success = cst.parseValue(value);
+        if (success) {
+        	notifyQueryEditorDirty();
         }
+        return success;
     } // end setConstantValueString
     
     /**

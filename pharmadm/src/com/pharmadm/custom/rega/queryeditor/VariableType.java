@@ -28,6 +28,13 @@ import java.io.Serializable;
  */
 public class VariableType implements Serializable{
     
+	public enum ValueType  {
+		String,
+		Numeric,
+		Date,
+		Boolean
+	}
+	
     private static boolean typeStringEquivalent(String type1, String type2) {
         if ((type1 == null) || (type2 == null)) {
             return (type1 == type2);
@@ -98,21 +105,43 @@ public class VariableType implements Serializable{
      * return the Class associated with this VariableType
      */
     public Class getValueType() {
-        if (name.equalsIgnoreCase("Date")) {
-            return java.util.Date.class;
-        } else if (name.equalsIgnoreCase("String")) {
-            return java.lang.String.class;
-        } else {
+    	if (isTable()) {
             try {
-                return Class.forName("com.pharmadm.custom.rega.domainclasses." + name);
+                return Class.forName(name);
             } catch (Exception e) {
                 return null;
             }
-        }
+    	}
+    	else {
+            if (name.equalsIgnoreCase("Date")) {
+                return java.util.Date.class;
+            } 
+            else if (name.equalsIgnoreCase("String")) {
+                return java.lang.String.class;
+            }
+            else if (name.equalsIgnoreCase("Boolean")) {
+                return java.lang.Boolean.class;
+            } 
+            else if (name.equalsIgnoreCase("Numeric")) {
+                return java.lang.Number.class;
+            }
+            return null;
+        } 
+    }
+    
+    public static String getValueTypeString(ValueType type) {
+    	return type.toString();
     }
     
     public boolean isTable() {
-    	return !(name.equals("String") || name.equals("Date") || name.equals("Numeric") || name.equals("Boolean"));
+    	try {
+    		ValueType.valueOf(name);
+    	}
+    	catch (IllegalArgumentException e) {
+    		return true;
+    	}
+    	return false;
+//    	return !(name.equals("String") || name.equals("Date") || name.equals("Numeric") || name.equals("Boolean"));
     }
     
 } // end VariableType

@@ -16,10 +16,10 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
 public class JAttributeConfigurer extends JPanel implements ComposedWordConfigurer {
 
-	private JComposedOutputVariableConfigurer ovar;
+	private JComposedWordConfigurer ovar;
 	private List<JCombinedConfigurer> constantPanels;
 	
-	public JAttributeConfigurer(JComposedOutputVariableConfigurer ovar, JCombinedConfigurer constantPanel) {
+	public JAttributeConfigurer(JComposedWordConfigurer ovar, JCombinedConfigurer constantPanel) {
 		this.ovar = ovar;
 		this.constantPanels = new ArrayList<JCombinedConfigurer>();
 		constantPanels.add(constantPanel);

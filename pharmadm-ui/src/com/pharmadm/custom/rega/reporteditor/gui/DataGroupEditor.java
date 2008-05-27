@@ -188,13 +188,7 @@ public class DataGroupEditor implements ConfigurationController, ConstantControl
  * </p>
  */
     public boolean setConstantValueString(Constant cst, Object value) {   
-        try {
-            Object o = cst.parseValue(value);
-            return true;
-        } catch (java.text.ParseException pe) {
-            //pe.printStackTrace();
-            return false;
-        }
+       	return cst.parseValue(value);
     } // end setConstantValueString        
 
 /**

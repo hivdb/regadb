@@ -42,7 +42,7 @@ public class JOutputVariableConfigurer extends javax.swing.JLabel implements Out
     	/**
     	 * for display as single output variable
     	 */
-        super(var.getName(RelationDisplay.SHOW, DescriptionDisplay.SHOW_WHEN_ASSIGNED, UniqueNameDisplay.SHOW));
+        super(var.getName(RelationDisplay.SHOW, DescriptionDisplay.SHOW, UniqueNameDisplay.SHOW_WHEN_ASSIGNED));
         this.var = var;
     }
     

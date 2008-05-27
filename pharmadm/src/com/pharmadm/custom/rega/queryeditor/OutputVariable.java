@@ -139,6 +139,10 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     }
     
     public void setUniqueName(String uniqueName) {
+    	if (uniqueName != null) {
+    		System.err.println("new unique name assigned: " + this.uniqueName + " -> " + uniqueName);
+    	}
+    	System.err.println(uniqueName);
         this.uniqueName = uniqueName;
     }
     
@@ -170,7 +174,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     			uName == UniqueNameDisplay.SHOW_WHEN_ASSIGNED && uniqueName != null) {
         		name += getUniqueName();
     	}
-    	return name;
+    	return name.trim();
     }
     
    ///////////////////////////////////////
@@ -229,10 +233,39 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
         return ((wordList.size() == 1) && (wordList.get(0) instanceof FromVariable));
     }
     
+    /**
+     * returns the first from variable in this output variable
+     * if the first word is not a fromvariable return null
+     * @return
+     */
+    public FromVariable getFirstFromVariable() {
+    	if (getExpression().getWords().size() > 0) {
+    		if (getExpression().getWords().get(0) instanceof FromVariable) {
+    			return (FromVariable) getExpression().getWords().get(0);
+    		}
+    		else if (getExpression().getWords().get(0) instanceof OutputVariable) {
+    			return ((OutputVariable) getExpression().getWords().get(0)).getFirstFromVariable();
+    		}
+    		else if (getExpression().getWords().get(0) instanceof InputVariable) {
+    			InputVariable ivar = (InputVariable) getExpression().getWords().get(0);
+    			if (ivar.getOutputVariable() != null) {
+    				return ivar.getOutputVariable().getFirstFromVariable();
+    			}
+    			else {
+    				return null;
+    			}
+    		}
+    		else {
+    			return null;
+    		}
+    	}
+    	return null;
+    }
+    
     /* return the full column name uniquely identifying this field in a result set */ 
     public String getFullColumnName(Field field) {
         if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTableName().equals(field.getTable().getName()))) {
-            return getUniqueName() + "." + field.getName();
+            return getUniqueName() + "." + field.getDescription();
         } else { 
             System.err.println("Error : trying to get a field from a variable that does not know it");
             return null;
@@ -282,6 +315,14 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
 			str += word.getImmutableStringValue() + " ";
 		}
 		return str.trim() + ")";
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof OutputVariable) {
+			OutputVariable ovar = (OutputVariable) o;
+			return ovar.getVariableType().getName().equals(getVariableType().getName()) && ovar.getUniqueName().equals(getUniqueName());
+		}
+		return false;
 	}
    
 } // end OutputVariable

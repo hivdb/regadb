@@ -12,11 +12,11 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.io.Serializable;
-import java.text.Format;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.AWCWord;
 import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
+import com.pharmadm.custom.rega.queryeditor.VariableType;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
@@ -45,78 +45,87 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     ///////////////////////////////////////
     // attributes
     
+	/**
+	 * raw value specified by the user
+	 */
+    private Object value;
     
     /**
-     * <p>
-     * Represents the value of the Constant as specified by the user. Might be
-     * null.
-     * </p>
-     *
+     * list of suggested values
      */
-    private Object value = null;
-    private SuggestedValues suggestedValues = new SuggestedValues();
+    private SuggestedValues suggestedValues;
     
     // Yes, I *know* ! Mind your own business :-)
     private ArrayList<ValueChangeListener> valueChangeListeners = new ArrayList<ValueChangeListener>();
     
+    public Constant() {
+    	this(new SuggestedValues());
+    }    
     
-    ///////////////////////////////////////
-    // associations
-    
-    
-    ///////////////////////////////////////
-    // access methods for associations
-    
-    public abstract Format getFormat();
-    public abstract String getValueTypeString();
-    
-    ///////////////////////////////////////
-    // operations
-    
-    
+    /**
+     * a new constant with a given list of predefined values
+     * @param suggestedValues
+     */
     public Constant(SuggestedValues suggestedValues) {
+    	value = null;
     	this.suggestedValues = suggestedValues;
     }
 
-    
-    public Constant() {
-    }
+    public abstract String getValueTypeString();
+    /**
+     * gets the default value for this constant
+     * this value may not be null
+     * @return
+     */
+    public abstract Object getdefaultValue();
     
     /**
-     * <p>
-     * Does ...
-     * </p><p>
-     *
-     * @return a Object with ...
-     * </p><p>
-     * @param s ...
-     * </p>
+     * parse the given object into a string representation of the object
+     * @param o
+     * @return null on failure
      */
-    public Object parseValue(Object s) throws java.text.ParseException {
-        Object value = getFormat().parseObject(s.toString());
-        setValue(value);
-        return value;
+    protected abstract String parseObject(Object o);
+    
+
+    /**
+     * tries and set the value of this constant to the given object
+     * returns true on success, false when the value is invalid
+     * @param o
+     * @return
+     */
+    public boolean parseValue(Object o) {
+    	String str = parseObject(o);
+    	if (str != null) {
+    		this.value = o;
+    		return true;
+    	}
+    	return false;
     } 
     
-    public void setSuggestedValues(SuggestedValues values) {
-    	this.suggestedValues = values;
+    /**
+     * returns true when the given object is a valid value for this
+     * constant
+     * @param o
+     * @return
+     */
+    public boolean validateValue(Object o) {
+    	return parseObject(o) != null;
     }
     
-    public SuggestedValues getSuggestedValues() {
-    	return suggestedValues;
-    }
-    
-    
-    /* Implementing ValueSpecifier */
-    public abstract Class getValueType();
-    
-    /* Implementing ValueSpecifier */
     public Object getValue(DataRow dataRow) {
-        return value;
+        return getValue();
     }
     
     public Object getValue() {
         return value;
+    }
+    
+    /**
+     * reset this constant to its default value
+     */
+    public void reset() {
+    	value = getdefaultValue();
+    	notifyValueChangeListeners();
     }
     
     /*
@@ -124,29 +133,40 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      */
     public void setValue(Object newVal) {
         value = newVal;
+        assignDefaultWhenNull();
         notifyValueChangeListeners();
     }
     
+    public String getHumanStringValue() {
+    	assignDefaultWhenNull();
+    	return parseObject(getValue());
+    }
+    
+    private void assignDefaultWhenNull() {
+    	if (value == null) {
+    		value = getdefaultValue();
+    	}
+    }
+    
+    public String getHumanStringValue(OutputReportSeeder context) {
+        return getHumanStringValue();
+    }  
+    
+    
     public String acceptWhereClause(QueryVisitor visitor) {
         return visitor.visitWhereClauseConstant(this);
-    }
+    }    
     
-    public String getHumanStringValue() {
-        try {
-            return getFormat().format(value);
-        } catch (IllegalArgumentException iae) {
-        	iae.printStackTrace();
-            return null;
-        }
-    }
-    
-    public Object getHumanValue() {
-    	return (getValue() == null ?"":getValue());
-    }
+    /**
+     * returns the class of the values of this constant
+     */
+    public Class getValueType() {
+    	return new VariableType(getValueTypeString()).getValueType();
+    } 
     
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
-    }
+    }    
     
     /* Implementing ValueSpecifier */
     public ValueSpecifier cloneInContext(java.util.Map originalToCloneMap) throws CloneNotSupportedException {
@@ -158,16 +178,38 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         	clone.valueChangeListeners = valueChangeListeners;
         }
         return (ValueSpecifier) clone;
+    }  
+    
+    public void setSuggestedValues(SuggestedValues values) {
+    	this.suggestedValues = values;
     }
     
+    public SuggestedValues getSuggestedValues() {
+    	return suggestedValues;
+    }    
+    
+    /**
+     * return the full list of suggested values
+     * this includes both values retrieved from the DB
+     * as values manually set
+     * @return
+     */
     public ArrayList<SuggestedValuesOption> getSuggestedValuesList() {
     	return suggestedValues.getSuggestedValues();
     }
     
+    /**
+     * sets a query to retrieve suggested values from the DB
+     * @param query
+     */
     public void setSuggestedValuesQuery(String query) {
     	suggestedValues.setQuery(query);
     }
     
+    /**
+     * add an option to the list of suggested values
+     * @param option
+     */
     public void addSuggestedValue(SuggestedValuesOption option) {
     	suggestedValues.addOption(option);
     }
@@ -185,11 +227,6 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
         suggestedValues.setMandatory(true);
     }
     
-    public String getHumanStringValue(OutputReportSeeder context) {
-        // context-independent
-        return getHumanStringValue();
-    }    
-      
     public void addValueChangeListener(ValueChangeListener listener) {
         valueChangeListeners.add(listener);
     }
@@ -205,7 +242,6 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
 	public String getImmutableStringValue() {
 		return getValueTypeString();
 	}
-    
 } // end Constant
 
 

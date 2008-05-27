@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
@@ -85,8 +86,8 @@ public class QueryEditor{
      * @param child the WhereClause to add to the parent.
      * </p>
      */
-    public void addChild(WhereClause parent, WhereClause child) throws IllegalWhereClauseCompositionException {
-        parent.addChild(child, getQuery().getUniqueNameContext());
+    public void addChild(WhereClause parent, WhereClause child, AssignMode mode) throws IllegalWhereClauseCompositionException {
+        parent.addChild(child, getQuery().getUniqueNameContext(), mode);
         updateSelectionList();
         setDirty(true);
     }

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.util.work.Work;
 
@@ -132,7 +134,7 @@ public abstract class WhereClause implements Cloneable, Serializable {
      * !acceptsAdditionalChild()
      * </p>
      */
-    public abstract void addChild(WhereClause child, UniqueNameContext namingContext) throws IllegalWhereClauseCompositionException;
+    public abstract void addChild(WhereClause child, UniqueNameContext namingContext, AssignMode mode) throws IllegalWhereClauseCompositionException;
     
     /**
      * <p>

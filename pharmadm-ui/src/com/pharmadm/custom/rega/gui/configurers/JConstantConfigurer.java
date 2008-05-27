@@ -22,7 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
  *
  * @author  kristof
  */
-public class JConstantConfigurer extends javax.swing.JFormattedTextField implements WordConfigurer {
+public class JConstantConfigurer extends javax.swing.JTextField implements WordConfigurer {
     
     private Constant constant;
     private ConstantController controller;
@@ -39,11 +39,11 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
      * </p>
      */
     public JConstantConfigurer(Constant constant, ConstantController controller) {
-        super(constant.getFormat());
+        super();
         this.constant = constant;
         this.controller = controller;
         this.setColumns(10);
-        this.setValue(constant.getHumanValue());
+        this.setText(constant.getHumanStringValue());
     }
     
     public ConfigurableWord getWord() {
@@ -63,7 +63,6 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
 		JConstantConfigurer confy = (JConstantConfigurer) o;
 		this.controller = confy.controller;
 		this.constant = confy.constant;
-		this.setValue(confy.getValue());
 		this.setText(confy.getText());
 		
 	}
@@ -71,10 +70,4 @@ public class JConstantConfigurer extends javax.swing.JFormattedTextField impleme
 	public boolean isUseless() {
 		return false;
 	}
-    
-    /* %$ this variant bypasses the controller for efficiency/complexity reasons
-    public void configureWord() { 
-        constant.setValue(this.getValue());
-    }
-     */
 }

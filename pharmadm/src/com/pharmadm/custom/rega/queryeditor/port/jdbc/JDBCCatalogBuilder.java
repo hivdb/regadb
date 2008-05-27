@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.constant.*;
 import com.pharmadm.custom.rega.queryeditor.port.*;
 
@@ -205,15 +207,15 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
 	        Constant valueConstant = null;
 	        if (AWCPrototypeCatalog.isStringType(dataType)) {
 	            valueConstant = new StringConstant();
-	            variableType = "String";
+	            variableType = ValueType.String.toString();
 	        }
 	        else if (AWCPrototypeCatalog.isDateType(dataType)) {
 	            valueConstant = new DateConstant();
-	            variableType = "Date";
+	            variableType = ValueType.Date.toString();
 	        }
 	        else if (AWCPrototypeCatalog.isNumericType(dataType)) {
 	            valueConstant = new DoubleConstant();
-	            variableType = "Numeric";
+	            variableType = ValueType.Numeric.toString();
 	        }
 	        else {
                 System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
@@ -623,13 +625,13 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                     Constant valueConstant = null;
                     if (dataType == 12) {
                         valueConstant = new StringConstant();
-                        varType = new VariableType("String");
+                        varType = new VariableType(ValueType.String.toString());
                     } else if ((dataType >= 91) && (dataType <= 93)) {
                         valueConstant = new DateConstant();
-                        varType = new VariableType("Date");
+                        varType = new VariableType(ValueType.Date.toString());
                     } else if (((8 >= dataType) && (dataType >=1)) || dataType == 1111) {
                         valueConstant = new DoubleConstant();
-                        varType = new VariableType("Numeric");
+                        varType = new VariableType(ValueType.Numeric.toString());
                     } else {
                         System.err.println("Unknown data type found for " + codeTableName + "." + propertyName + ": " + dataType);
                         return null;
@@ -694,7 +696,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
                     }
                     OutputVariable ovar = null;
                     if (show) {
-	                    ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
+	                    ovar = new OutputVariable(new VariableType(ValueType.Date.toString()), catalog.getVariableName(propertyName), catalog.getVariableName(propertyName));
 	                    ovar.getExpression().addInputVariable(ivar);
 	                    ovar.getExpression().addFixedString(new FixedString("." + propertyName));
 	                    aVisList.addOutputVariable(ovar);
@@ -752,7 +754,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
-            InputVariable ivar = new InputVariable(new VariableType("Date"));
+            InputVariable ivar = new InputVariable(new VariableType(ValueType.Date.toString()));
             aVisList.addInputVariable(ivar);
             aVisList.addFixedString(new FixedString(before ? "is before" : "is after"));
             Constant valueConstant = new DateConstant();
@@ -776,7 +778,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
-            InputVariable ivar = new InputVariable(new VariableType("Date"));
+            InputVariable ivar = new InputVariable(new VariableType(ValueType.Date.toString()));
             aVisList.addInputVariable(ivar);
             aVisList.addFixedString(new FixedString("is between"));
             Constant valueConstant1 = new DateConstant("1900-01-01");
@@ -808,7 +810,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aVisList.addFixedString(new FixedString("Date"));
         Constant dateConstant = new DateConstant();
-        OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
+        OutputVariable ovar = new OutputVariable(new VariableType(ValueType.Date.toString()), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
         ovar.getExpression().addConstant(dateConstant);
         aVisList.addOutputVariable(ovar);
         aVisList.addFixedString(new FixedString("is"));
@@ -828,8 +830,8 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date"));
-            InputVariable ivar1 = new InputVariable(new VariableType("Date"));
-            InputVariable ivar2 = new InputVariable(new VariableType("Date"));
+            InputVariable ivar1 = new InputVariable(new VariableType(ValueType.Date.toString()));
+            InputVariable ivar2 = new InputVariable(new VariableType(ValueType.Date.toString()));
             aVisList.addInputVariable(ivar1);
             aVisList.addFixedString(new FixedString("is before"));
             aVisList.addInputVariable(ivar2);
@@ -851,9 +853,9 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Date "));
-            InputVariable ivar = new InputVariable(new VariableType("Date"));
+            InputVariable ivar = new InputVariable(new VariableType(ValueType.Date.toString()));
             
-            OutputVariable ovar = new OutputVariable(new VariableType("Date"), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
+            OutputVariable ovar = new OutputVariable(new VariableType(ValueType.Date.toString()), catalog.getVariableName("Date"), catalog.getVariableName("Date"));
             ovar.getExpression().addInputVariable(ivar);
             ovar.getExpression().addFixedString(new FixedString(plus ? " + " : " - "));
             DoubleConstant timeConstant = new DoubleConstant();
@@ -882,7 +884,7 @@ public class JDBCCatalogBuilder implements CatalogBuilder {
             VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
             aVisList.addFixedString(new FixedString("Value"));
-            InputVariable ivar = new InputVariable(new VariableType("Numeric"));
+            InputVariable ivar = new InputVariable(new VariableType(ValueType.Numeric.toString()));
             aVisList.addInputVariable(ivar);
             aVisList.addFixedString(new FixedString(below ? " < " : " > "));
             Constant valueConstant = new DoubleConstant();

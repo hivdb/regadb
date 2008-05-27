@@ -168,7 +168,7 @@ public class DataGroup implements com.pharmadm.custom.rega.queryeditor.WordListO
         Iterator iterConsts = getConstants().iterator();
         while (iterConsts.hasNext()) {
             Constant c = (Constant)iterConsts.next();
-            c.setValue(null);
+            c.reset();
         }
     } // end reset
     

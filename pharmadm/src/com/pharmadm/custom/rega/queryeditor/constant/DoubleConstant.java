@@ -14,6 +14,9 @@ package com.pharmadm.custom.rega.queryeditor.constant;
 import java.io.Serializable;
 import java.text.Format;
 import java.text.DecimalFormat;
+import java.text.ParsePosition;
+
+import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
 
 
 /**
@@ -25,29 +28,27 @@ public class DoubleConstant extends Constant implements Serializable{
     
 	private static final Format DOUBLE_FORMAT = new DecimalFormat();
     
-	public DoubleConstant(){
-    	setValue(0);
-	}
-	
-	public DoubleConstant(SuggestedValues suggestedValues) {
-		super(suggestedValues);
-	}
-	
-    public Class getValueType() {
-        return Number.class;
-    }
-    
     public Format getFormat() {
         return DOUBLE_FORMAT;
     }
 
 	@Override
 	public String getValueTypeString() {
-		return "Numeric";
+		return ValueType.Numeric.toString();
 	}
-	
-	public Object getHumanValue() {
+
+	@Override
+	public Object getdefaultValue() {
 		return 0;
 	}
-	
+
+	@Override
+	protected String parseObject(Object o) {
+		ParsePosition pos = new ParsePosition(0);
+		Object result = DOUBLE_FORMAT.parseObject(o.toString(),pos);
+		if (result == null || pos.getIndex()< o.toString().length()) {
+			return null;
+		}
+		return o.toString();
+	}
 }

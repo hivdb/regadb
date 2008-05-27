@@ -30,6 +30,7 @@ import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionExcepti
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 import com.pharmadm.custom.rega.queryeditor.gui.QueryEditorTree;
 import com.pharmadm.custom.rega.queryeditor.gui.WhereClauseTreeNode;
 import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultTableModel;
@@ -60,6 +61,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
     
     private QueryEditorTree editorModel;
     private List<WhereClause> cursorClauses = null;
+    private boolean hasPasted;
     private File currentQueryFile = null;
     
     
@@ -673,7 +675,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                         WhereClause newClause = editorModel.loadSubquery(fc2.getSelectedFile());
                         if (newClause != null) {
                             newClause = (WhereClause)newClause.clone();
-                            editorModel.addChild(parentClause, newClause);
+                            editorModel.addChild(parentClause, newClause, AssignMode.all);
                         }
                     }
                 } catch (java.io.FileNotFoundException fnfe) {
@@ -890,12 +892,13 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 WhereClause parentClause = getLastSelectedNonAtomicClause();
                 for (WhereClause clause : cursorClauses) {
                     if (parentClause.acceptsAdditionalChild()) {
-                        editorModel.addChild(parentClause, (WhereClause) clause.clone());
+                        editorModel.addChild(parentClause, (WhereClause) clause.clone(), (hasPasted?AssignMode.all:AssignMode.none));
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            hasPasted = true;
         }
     }//GEN-LAST:event_pasteMenuItemActionPerformed
     
@@ -904,6 +907,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             List<WhereClauseTreeNode> selection = getSelectedNodes();
             cursorClauses = getClauses(selection);
             updateEditMode(selection);
+            hasPasted = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -917,6 +921,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             for (WhereClause clause : cursorClauses) {
                 editorModel.removeChild(clause.getParent(), clause);
             }
+            hasPasted = false;
             updateEditMode(selection);
         } catch (Exception e) {
             e.printStackTrace();
@@ -944,7 +949,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 selectionDialog.setVisible(true);
                 WhereClause newClause = selectionDialog.getSelectedClause();
                 if (newClause != null) {
-                    editorModel.addChild(parentClause, newClause);
+                    editorModel.addChild(parentClause, newClause, AssignMode.output);
                     //treeModel.insertNodeInto(new WhereClauseTreeNode(newClause), parentNode, parentNode.getChildCount());
                 }
             }
@@ -958,7 +963,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             WhereClause parentClause = getLastSelectedNonAtomicClause();
             if (parentClause.acceptsAdditionalChild()) {
                 WhereClause newClause = new NotClause();
-                editorModel.addChild(parentClause, newClause);
+                editorModel.addChild(parentClause, newClause, AssignMode.all);
                 //treeModel.insertNodeInto(new WhereClauseTreeNode(newClause), parentNode, parentNode.getChildCount());
             }
         } catch (Exception e) {
@@ -971,7 +976,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             WhereClause parentClause = getLastSelectedNonAtomicClause();
             if (parentClause.acceptsAdditionalChild()) {
                 WhereClause newClause = new InclusiveOrClause();
-                editorModel.addChild(parentClause, newClause);
+                editorModel.addChild(parentClause, newClause, AssignMode.all);
                 //treeModel.insertNodeInto(new WhereClauseTreeNode(newClause), parentNode, parentNode.getChildCount());
             }
         } catch (Exception e) {
@@ -985,7 +990,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
         	
             if (parentClause.acceptsAdditionalChild()) {
                 WhereClause newClause = new AndClause();
-                editorModel.addChild(parentClause, newClause);
+                editorModel.addChild(parentClause, newClause, AssignMode.all);
             }
         } catch (Exception e) {
             e.printStackTrace();

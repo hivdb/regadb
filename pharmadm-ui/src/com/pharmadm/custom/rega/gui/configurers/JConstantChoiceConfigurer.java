@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 import javax.swing.ComboBoxModel;
-import javax.swing.JFormattedTextField;
 
 import com.pharmadm.custom.rega.queryeditor.*;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
@@ -32,7 +31,6 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     
     private Constant constant;
     private ConstantController controller;
-    private JFormattedTextField textField;
     
     /**
      * <p>
@@ -49,11 +47,8 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     public JConstantChoiceConfigurer(Constant constant, ConstantController controller) {
         this.controller = controller;
         this.constant = constant;
-        textField = new JFormattedTextField(constant.getFormat());
-        textField.setValue(constant.getValue());
-        setModel(new JDBCComboBoxModel(textField));
-        setEditor(new FormattedComboBoxEditor(textField));
-        setEditable(constant.areSuggestedValuesMandatory());
+        setModel(new JDBCComboBoxModel(constant));
+        setEditable(!constant.areSuggestedValuesMandatory());
     }
     
     public ConfigurableWord getWord() {
@@ -61,28 +56,20 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
     }
     
     public void configureWord() {
-        Object valueToSet = null;
-        if (getSelectedItem() != null) {
-            valueToSet = ((JDBCComboBoxModel)getModel()).getSelectedValue();
-        }
-        if (! controller.setConstantValueString(constant, valueToSet)) {
+        if (! controller.setConstantValueString(constant, getSelectedItem())) {
             System.err.println("Warning : word configuration failed !");
         }
     }
     
     public void addFocusListener(java.awt.event.FocusListener listener) {
-        if (textField == null) {
-            return;
-        }
-        textField.addFocusListener(listener);
     }
     
     private class JDBCComboBoxModel implements ComboBoxModel {
         private ArrayList<SuggestedValuesOption> values;
         private SuggestedValuesOption selectedItem;
-        public JDBCComboBoxModel(JFormattedTextField textField) {
+        public JDBCComboBoxModel(Constant constant) {
             values = constant.getSuggestedValuesList();
-        	setSelectedItem(textField.getValue());
+        	setSelectedItem(constant.getValue());
         }
         
         public void addListDataListener(javax.swing.event.ListDataListener l) {
@@ -92,17 +79,13 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         public Object getElementAt(int index) {
             Object value = null;
             if (values != null) {
-                value = values.get(index).getOption();
+                value = values.get(index);
             }
             return value;
         }
         
         public Object getSelectedItem() {
-            return selectedItem.getOption();
-        }
-        
-        public Object getSelectedValue() {
-        	return selectedItem.getValue();
+            return selectedItem;
         }
         
         public int getSize() {
@@ -114,22 +97,12 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         }
         
         public void setSelectedItem(Object anItem) {
-    		boolean found = false;
-
-    		if (anItem != null) {
-    			int i = 0;
-    			while (!found && i < values.size()) {
-    				SuggestedValuesOption option = values.get(i);
-        			if (option.getOption().equals(anItem) || option.getValue().equals(anItem)) {
-        				this.selectedItem = option;
-        				found = true;
-        			}
-        			i++;
-        		}
+        	int index = values.indexOf(anItem);
+        	if (index >=0) {
+        		selectedItem = values.get(index);
         	}
-            	
-            if (!found && values.size() > 0){
-        		this.selectedItem = values.get(0);
+        	else {
+        		selectedItem = values.get(0);
         	}
         }
     }
@@ -138,7 +111,6 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
 		JConstantChoiceConfigurer confy = (JConstantChoiceConfigurer) o;
 		this.controller = confy.controller;
 		this.constant = confy.constant;
-		this.textField = confy.textField;
 		this.setSelectedIndex(confy.getSelectedIndex());
 	}
 

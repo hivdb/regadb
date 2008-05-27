@@ -15,6 +15,8 @@ import java.util.*;
 import java.io.Serializable;
 import java.sql.SQLException;
 
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 //import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
@@ -72,10 +74,10 @@ public abstract class ComposedWhereClause extends WhereClause implements Seriali
         return children.size();
     }
     
-    public void addChild(WhereClause whereClause, UniqueNameContext namingContext) {
+    public void addChild(WhereClause whereClause, UniqueNameContext namingContext, AssignMode mode) {
         if (! children.contains(whereClause)) {
             if (namingContext != null) {
-                namingContext.assignUniqueNamesToOutputs(whereClause);
+            	namingContext.assignUniqueNames(whereClause, mode);
             }
             children.add(whereClause);
             whereClause.setParent(this);

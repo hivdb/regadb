@@ -38,6 +38,6 @@ public class SuggestedValuesOption implements Serializable{
 	}
 	
 	public String toString() {
-		return option.toString() + "," + value.toString();
+		return option.toString();
 	}
 }

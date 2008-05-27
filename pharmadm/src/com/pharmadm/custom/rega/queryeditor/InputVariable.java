@@ -45,6 +45,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
      * </p>
      */
     public OutputVariable outputVariable;
+    private boolean valid = true;
     
     /* For xml-encoding purposes only */
     public InputVariable() {
@@ -61,6 +62,10 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     }
     public void setOutputVariable(OutputVariable outputVariable) {
         this.outputVariable = outputVariable;
+    }
+    
+    public void setvalid(boolean valid) {
+    	this.valid = valid;
     }
     
     
@@ -93,7 +98,17 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     }
  
     public String getHumanStringValue() {
-    	return (outputVariable == null) ? this.getVariableType().getName() : outputVariable.getName(RelationDisplay.HIDE, DescriptionDisplay.HIDE, UniqueNameDisplay.SHOW);
+    	if (valid) {
+    		if (outputVariable == null) {
+    			return this.getVariableType().getName();
+    		}
+    		else {
+    			return outputVariable.getName(RelationDisplay.HIDE, DescriptionDisplay.HIDE, UniqueNameDisplay.SHOW);
+    		}
+    	}
+    	else {
+    		return "[undefined]";
+    	}
     }    
  
     /**

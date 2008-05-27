@@ -54,5 +54,9 @@ public class JFixedStringConfigurer extends javax.swing.JLabel implements WordCo
 	public boolean isUseless() {
 		return false;
 	}
+	
+	public String toString() {
+		return string.getHumanStringValue();
+	}
     
 }

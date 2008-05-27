@@ -94,6 +94,7 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
     
     protected Object clone() throws CloneNotSupportedException {
         FromVariable clone = (FromVariable)super.clone();
+        unlock();
         return clone;
     }
 
