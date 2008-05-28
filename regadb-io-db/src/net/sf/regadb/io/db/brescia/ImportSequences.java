@@ -98,45 +98,6 @@ public class ImportSequences
                             ntseq.setNucleotides(parseNucleotides(seq, patientId, true));
                             vi.getNtSequences().add(ntseq);
 
-                            List<AaSequence> aaseqs = null;
-                            try 
-                            {
-                                aaseqs = aligner_.alignHiv(ntseq);
-                            } 
-                            catch (IllegalSymbolException e) 
-                            {
-                                e.printStackTrace();
-                            }
-                            if(aaseqs!=null) 
-                            {
-                                if(aaseqs.size()==0) 
-                                {
-                                    System.err.println("ALIGN: ERROR align (no results) row" + i);
-                                    System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
-                                } 
-                                else 
-                                {
-                                    System.err.print("ALIGN: Row " + i + " -> ");
-                                    
-                                    for(AaSequence aaseq : aaseqs) 
-                                    {
-                                        System.err.print(aaseq.getProtein().getAbbreviation() + " ");
-                                    }
-                                    
-                                    System.err.println();
-                                    
-                                    if(aaseqs.size()<2) 
-                                    {
-                                        System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
-                                    }
-                                }
-                            } 
-                            else 
-                            {
-                                System.err.println("ALIGN: ERROR align row " + i);
-                                System.err.println("ERROR_ALLIGN,"+patientId+","+sampleDate+","+seq);
-                            }
-                            
                             ConsoleLogger.getInstance().logInfo("Successful");
                         } 
                         else 

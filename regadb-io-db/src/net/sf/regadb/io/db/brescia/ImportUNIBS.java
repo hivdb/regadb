@@ -153,8 +153,7 @@ public class ImportUNIBS
     		
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_patients.xml");
-    		//TODO
-    		//Utils.exportNTXML(viralisolates, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_ntseq.xml");
+    		Utils.exportNTXMLFromPatients(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_viralIsolates.xml");
     		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)
