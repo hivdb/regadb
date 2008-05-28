@@ -95,6 +95,9 @@ public class ProcessXMLImport extends Thread {
 		return wc_ == null ? false : wc_.isChecked();
 	}
 	
+	public UploadStatus getStatus(){
+		return status;
+	}
 	public WMessage getStatusName() {
 		String key = "form.impex.import.progress.status.";
 		if ( status == UploadStatus.PROCESSING ) key += "processing";

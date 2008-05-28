@@ -7,6 +7,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WAnchor;
 import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLabel;
@@ -14,6 +15,7 @@ import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WResource;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTimer;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -21,10 +23,20 @@ public class ImportFormRunning extends FormWidget {
 	private static WTable progressTable, progressControlTable;
 	private static WPushButton cmdClearChecked;
 	private static ArrayList<ProcessXMLImport> processList = new ArrayList<ProcessXMLImport>();
+	private static WTimer t = new WTimer();
 	
 	public ImportFormRunning(WMessage formName, InteractionState interactionState) {
 		super(formName, interactionState);
+		
 		init();
+		
+		t.setInterval(1000);
+		t.timeout.addListener(new SignalListener<WEmptyEvent>() {
+			public void notify(WEmptyEvent a) {
+				refreshprogressTable();
+			}
+		});
+
 		refreshprogressTable();
 	}
 	
@@ -84,6 +96,7 @@ public class ImportFormRunning extends FormWidget {
 				new WLabel(WResource.tr(head), progressTable.elementAt(row, progressTable.numColumns())).setStyleClass("table-header-bold");
 			}
 			
+			int running = 0;
 			for (ProcessXMLImport importXml : processList) {
 				row++;
 				new WLabel(new WMessage(importXml.getUid(), true), progressTable.elementAt(row, 0));
@@ -100,6 +113,17 @@ public class ImportFormRunning extends FormWidget {
 				if ( !importXml.getStatusName().key().equals("form.impex.import.progress.status.processing") ) {
 					importXml.setCheckbox( new WCheckBox( new WMessage(" ", true), progressTable.elementAt(row, 5) ) );
 				}
+				
+				if ( importXml.getStatus() == UploadStatus.PROCESSING ) {
+					running++;
+				}
+			}
+			
+			// Auto refresh progress table
+			if ( running > 0 ) {
+				if ( !t.isActive() ) t.start();
+			} else {
+				if ( t.isActive() ) t.stop();
 			}
 		}
 	}
