@@ -13,16 +13,15 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.NtSequenceAnalysis;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class BatchTestRunningTest extends Thread {
 	private Test test;
-	private WCheckBox checkBox;
+	private boolean clear, cancel;
 	private BatchTestStatus status;
 	private Transaction trans_;
 	private Login login_;
-	private boolean cancel = false;
+	private boolean cancelled = false;
 	private int percent;
 	private File logFile;
 	
@@ -75,7 +74,7 @@ public class BatchTestRunningTest extends Thread {
 					NtSequence seq = seqs.get(i);
 					new NtSequenceAnalysis(seq, test, login_.getUid()).launch(login_);
 					
-					if ( cancel ) {
+					if ( cancelled ) {
 						status = BatchTestStatus.CANCELED;
 						return;
 					}
@@ -98,19 +97,25 @@ public class BatchTestRunningTest extends Thread {
 	
 	public void cancel() {
 		status = BatchTestStatus.CANCELING;
-		cancel = true;
+		cancelled = true;
 	}
 	
 	public WMessage testName() {
 		return new WMessage(test.getDescription(), true);
 	}
 	
-	public void setCheckBox(WCheckBox wc) {
-		checkBox = wc;
+	public void setClearChecked(boolean c) {
+		clear = c;
+	}
+	public void setCancelChecked(boolean c) {
+		cancel = c;
 	}
 	
-	public boolean isChecked() {
-		return (checkBox == null) ? false : checkBox.isChecked();
+	public boolean clearIsChecked() {
+		return clear;
+	}
+	public boolean cancelIsChecked() {
+		return cancel;
 	}
 	
 	public boolean isTest(Test t) {

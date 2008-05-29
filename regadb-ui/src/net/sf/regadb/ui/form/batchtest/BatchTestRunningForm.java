@@ -7,21 +7,30 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLabel;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WResource;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WTimer;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class BatchTestRunningForm extends FormWidget {
 	private static ArrayList<BatchTestRunningTest> runningList = new ArrayList<BatchTestRunningTest>();
 	private static WTable table;
 	private static WPushButton cmdClear, cmdCancel;
+	private static WTimer t = new WTimer();
 	
 	public BatchTestRunningForm(WMessage formName, InteractionState interactionState) {
 		super(formName, interactionState);
+		t.setInterval(1000);
+		t.timeout.addListener(new SignalListener<WEmptyEvent>() {
+			public void notify(WEmptyEvent a) {
+				refreshRunning();
+			}
+		});
 		init();
 		refreshRunning();
 	}
@@ -65,7 +74,9 @@ public class BatchTestRunningForm extends FormWidget {
 		}
 		
 		int row = 0;
-		for(BatchTestRunningTest run : runningList) {
+		int needRefreshCount = 0;
+		
+		for(final BatchTestRunningTest run : runningList) {
 			row++;
 			table.putElementAt(row, 0, new WLabel( run.testName() ));
 			table.putElementAt(row, 1, new WLabel( run.getStatusMessage() ));
@@ -73,8 +84,17 @@ public class BatchTestRunningForm extends FormWidget {
 			
 			if ( run.getStatus() != BatchTestStatus.CANCELING ) {
 				int col = ( run.isRunning() ) ? 5 : 4;  
-				WCheckBox ck = new WCheckBox(new WMessage(" ", true), table.elementAt(row, col));
-				run.setCheckBox(ck);
+				final WCheckBox ck = new WCheckBox(new WMessage(" ", true), table.elementAt(row, col));
+				ck.clicked.addListener(new SignalListener<WMouseEvent>() {
+					public void notify(WMouseEvent a) {
+						if ( run.isRunning() )
+							run.setCancelChecked(ck.isChecked());
+						else
+							run.setClearChecked(ck.isChecked());
+					}
+				});
+				ck.setChecked(run.isRunning()?run.cancelIsChecked():run.clearIsChecked());
+				
 				table.elementAt(row, col).setStyleClass("table-cell-center");
 			}
 			
@@ -83,6 +103,16 @@ public class BatchTestRunningForm extends FormWidget {
 //						WResource.tr("form.batchtest.running.log"),
 //						table.elementAt(row, 3)).setStyleClass("link");
 //			}
+			
+			if ( run.isRunning() || run.getStatus() == BatchTestStatus.CANCELING ) {
+				needRefreshCount++;
+			}
+		}
+		
+		if ( needRefreshCount == 0 ) {
+			if ( t.isActive() ) t.stop();
+		} else {
+			if ( !t.isActive() ) t.start();
 		}
 		
 		row++;
@@ -117,9 +147,9 @@ public class BatchTestRunningForm extends FormWidget {
 		for( int i=0; i<runningList.size(); i++ ) {
 			BatchTestRunningTest run = runningList.get(i);
 			
-			if ( run.isChecked() && cancelRuns && run.isRunning() ) {
+			if ( run.cancelIsChecked() && cancelRuns && run.isRunning() ) {
 				run.cancel();
-			} else if ( run.isChecked() && !cancelRuns && !run.isRunning() ) {
+			} else if ( run.clearIsChecked() && !cancelRuns && !run.isRunning() ) {
 				if ( run.getLogFile() != null ) run.getLogFile().delete();
 				runningList.remove(i);
 				i--;
