@@ -10,7 +10,6 @@ import java.io.PrintStream;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.impl.ImportXML;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WFileUpload;
 import net.sf.witty.wt.WResource;
 import net.sf.witty.wt.i8n.WMessage;
@@ -22,7 +21,7 @@ public class ProcessXMLImport extends Thread {
 	private String dataset_;
 	private String clientFileName;
 	private File logFile;
-	private WCheckBox wc_;
+	private boolean checked = false;
 	private UploadStatus status = UploadStatus.PROCESSING;
 	private String uid;
 	private Login login_;
@@ -87,12 +86,11 @@ public class ProcessXMLImport extends Thread {
 		return uid;
 	}
 	
-	public void setCheckbox(WCheckBox wc) {
-		wc_ = wc;
+	public void setChecked(boolean c) {
+		checked = c;
 	}
-	
 	public boolean isChecked() {
-		return wc_ == null ? false : wc_.isChecked();
+		return checked;
 	}
 	
 	public UploadStatus getStatus(){

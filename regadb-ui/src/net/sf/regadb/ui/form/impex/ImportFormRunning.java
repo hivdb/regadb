@@ -97,7 +97,7 @@ public class ImportFormRunning extends FormWidget {
 			}
 			
 			int running = 0;
-			for (ProcessXMLImport importXml : processList) {
+			for (final ProcessXMLImport importXml : processList) {
 				row++;
 				new WLabel(new WMessage(importXml.getUid(), true), progressTable.elementAt(row, 0));
 				new WLabel(new WMessage(importXml.clientFileName(), true), progressTable.elementAt(row, 1));
@@ -111,7 +111,15 @@ public class ImportFormRunning extends FormWidget {
 				}
 				
 				if ( !importXml.getStatusName().key().equals("form.impex.import.progress.status.processing") ) {
-					importXml.setCheckbox( new WCheckBox( new WMessage(" ", true), progressTable.elementAt(row, 5) ) );
+					final WCheckBox chk = new WCheckBox( new WMessage(" ", true), progressTable.elementAt(row, 5) );
+					chk.clicked.addListener(new SignalListener<WMouseEvent>() {
+						public void notify(WMouseEvent a) {
+							importXml.setChecked(chk.isChecked());
+						}
+					});
+					chk.setChecked(importXml.isChecked());
+				} else {
+					importXml.setChecked(false);
 				}
 				
 				if ( importXml.getStatus() == UploadStatus.PROCESSING ) {
@@ -120,10 +128,10 @@ public class ImportFormRunning extends FormWidget {
 			}
 			
 			// Auto refresh progress table
-			if ( running > 0 ) {
-				if ( !t.isActive() ) t.start();
-			} else {
+			if ( running == 0 ) {
 				if ( t.isActive() ) t.stop();
+			} else {
+				if ( !t.isActive() ) t.start();
 			}
 		}
 	}
