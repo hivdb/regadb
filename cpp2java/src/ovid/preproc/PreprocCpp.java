@@ -15,6 +15,8 @@ public class PreprocCpp {
         PreprocCpp preproc = new PreprocCpp();
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
+        
+        preproc.removeExterns(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WString"));
     }
     
     public void performChangesOnFilesInDir(String dir) {
@@ -23,6 +25,29 @@ public class PreprocCpp {
     	    if(f.isFile())
     	        performChangesOnFile(f);
     	}
+    }
+    
+    public void removeExterns(File f) {
+    	System.err.println("Removing externs from file: " + f.getAbsolutePath());
+    	StringBuffer fileContent = readFileAsString(f.getAbsolutePath());
+    	
+        int pos = fileContent.indexOf("extern", 0);
+        int endpos;
+        
+        while(pos != -1) {
+            endpos = fileContent.indexOf("\n", pos);
+            String textToReplace = fileContent.substring(pos, endpos);
+            String textToReplaceWith = "";
+            
+            if(textToReplaceWith != null) {
+                fileContent.replace(pos, endpos, textToReplaceWith);
+                pos = fileContent.indexOf("extern", pos + textToReplaceWith.length());
+            } else {
+                pos = fileContent.indexOf("extern", endpos);
+            }
+        }
+        
+        writeFile(f, fileContent);
     }
     
     public void performChangesOnFile(File f) {
