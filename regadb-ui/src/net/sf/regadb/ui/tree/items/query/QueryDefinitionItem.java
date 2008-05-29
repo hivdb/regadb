@@ -13,11 +13,17 @@ public class QueryDefinitionItem extends TreeMenuNode
     }
     
     @Override
-    public ITreeAction getFormAction()
-    {
-        return null;
-    }
-
+	public ITreeAction getFormAction()
+	{
+		return new ITreeAction()
+		{
+			public void performAction(TreeMenuNode node)
+			{
+			    getChildren().get(0).prograSelectNode();
+			}
+		};
+	}
+    
     @Override
     public boolean isEnabled()
     {
