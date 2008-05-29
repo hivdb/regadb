@@ -20,7 +20,8 @@ public class PreprocCpp {
     public void performChangesOnFilesInDir(String dir) {
     	File dirF = new File(dir);
     	for(File f : dirF.listFiles()) {
-    		performChangesOnFile(f);
+    	    if(f.isFile())
+    	        performChangesOnFile(f);
     	}
     }
     
@@ -72,7 +73,7 @@ public class PreprocCpp {
 //        System.err.println("\t handle enums and structs");
 //        sb = handleEnumsAndStructs(sb, f);
 //        
-//        writeFile(f, sb);
+        writeFile(f, sb);
     }
     
     private void handleSizeInBytes(StringBuffer sb) {
@@ -236,7 +237,10 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <myset.h>";
             } else if(textToReplace.contains("WDllDefs")) {
                 textToReplaceWith = "";
+            } else if(textToReplace.contains("exception")) {
+                textToReplaceWith = "#include <myexception.h>";
             }
+
             
             if(textToReplaceWith != null) {
                 fileContent.replace(pos, endpos, textToReplaceWith);
