@@ -28,8 +28,8 @@ public class PreprocCpp {
     public void performChangesOnFile(File f) {
         System.err.println("Preprocess file: " + f.getAbsolutePath());
         
-        System.err.println("\t remove comments");
-        removeComments(f);
+        //System.err.println("\t remove comments");
+        //removeComments(f);
         
         StringBuffer sb = readFileAsString(f.getAbsolutePath());
         
