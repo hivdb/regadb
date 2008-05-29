@@ -218,8 +218,8 @@ public class AccountForm extends FormWidget
             
             if(attributeGroup_!=null)
             {
-                chartWidthTF.setText(getAttributeValue("chart.width", t));
-                chartHeightTF.setText(getAttributeValue("chart.height", t));
+                chartWidthTF.setText("" + su_.getChartWidth());
+                chartHeightTF.setText("" + su_.getChartHeight());
                 
                 for(Test test : t.getTests())
                 {
@@ -366,11 +366,12 @@ public class AccountForm extends FormWidget
                 }
             }
             
+            su_.setChartWidth( Integer.parseInt( chartWidthTF.getFormText() ) );
+            su_.setChartHeight( Integer.parseInt( chartHeightTF.getFormText() ) );
+            
             if(attributeGroup_!=null)
             {
                 t = login.createTransaction();
-                saveUserAttribute("number", "chart.height", chartHeightTF.text(), null, t);
-                saveUserAttribute("number", "chart.width", chartWidthTF.text(), null, t);
                 Test chartMutation = chartMutationCB.currentValue();
                 byte [] mutationDescription = null;
                 String value = null;
