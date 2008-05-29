@@ -23,6 +23,7 @@ public class PatientAddItem extends TreeMenuNode
 		{
 			public void performAction(TreeMenuNode node)
 			{
+				RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(null);
                 RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("form.singlePatient.add"), new Patient()));
 			}
 		};

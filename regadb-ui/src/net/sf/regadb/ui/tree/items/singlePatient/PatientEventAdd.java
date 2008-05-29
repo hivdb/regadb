@@ -15,6 +15,7 @@ public class PatientEventAdd extends ActionItem {
 		super(WResource.tr("menu.singlePatient.event.add"), root, new ITreeAction()
         {
 			public void performAction(TreeMenuNode node) {
+				RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.setSelectedItem(null);
 				RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Adding, WWidget.tr("menu.singlePatient.event.add"), null));
 			}
         });

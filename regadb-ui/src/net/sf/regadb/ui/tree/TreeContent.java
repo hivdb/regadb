@@ -335,6 +335,7 @@ public class TreeContent
     				{
 						public void performAction(TreeMenuNode node)
 						{
+							RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(null);
 							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
 						}
     				});
@@ -373,6 +374,7 @@ public class TreeContent
     				{
 						public void performAction(TreeMenuNode node)
 						{
+							RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(null);
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
 						}
     				});
@@ -425,6 +427,7 @@ public class TreeContent
                     {
                         public void performAction(TreeMenuNode node)
                         {
+                        	RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), null));
                         }
                     });
@@ -552,6 +555,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
+                	RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attribute.add"), null));
                 }
             });
@@ -590,6 +594,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
+                	RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
                 }
             });
@@ -637,8 +642,8 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
+                	RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("form.testSettings.testType.add"),null));
-                    
                 }
             });
            testTypeSelected = new TestTypeSelectedItem(testTypes);
@@ -677,8 +682,8 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
+                	RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("form.testSettings.test.add"),null));
-                    
                 }
             });
            testSelected = new TestSelectedItem(test);
@@ -767,8 +772,8 @@ public class TreeContent
         {
              public void performAction(TreeMenuNode node)
              {
+            	 RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(null);
                  RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Adding, WWidget.tr("form.datasetSettings.dataset.add"),null));
-                 
              }
          });
         datasetSelected = new DatasetSelectedItem(datasets);
@@ -860,6 +865,7 @@ public class TreeContent
         {
         	public void performAction(TreeMenuNode node)
         	{
+        		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(null);
         		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Adding, WWidget.tr("menu.event.add"), null));
         	}
         });
