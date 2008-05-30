@@ -21,7 +21,10 @@ public class DateUtils
     
     public static String getEuropeanFormat(Date date)
     {
-        return europeanDateFormat.format(date);
+    	if(date == null)
+    		return "";
+    	else
+    		return europeanDateFormat.format(date);
     }
     
     public static int compareDates(Date date1, Date date2)
