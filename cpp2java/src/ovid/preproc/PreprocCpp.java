@@ -62,6 +62,8 @@ public class PreprocCpp {
         sb = handleIncludes(sb);
         System.err.println("\t handle usings");
         sb = handleUsings(sb);
+        System.err.println("\t handle Void Template Arg");
+        handleVoidTemplateArg(sb);
         //System.err.println("\t handle boost");
         //sb = handleBoost(sb);
         //System.err.println("\t handle iterators");
@@ -99,6 +101,13 @@ public class PreprocCpp {
 //        sb = handleEnumsAndStructs(sb, f);
 //        
         writeFile(f, sb);
+    }
+    
+    private void handleVoidTemplateArg(StringBuffer sb) {
+        String [] toReplace = {"<void>"};
+        String [] toReplaceWith = {"<DummyClass>"};
+    
+        replaceStrings(toReplace, toReplaceWith, sb);
     }
     
     private void handleSizeInBytes(StringBuffer sb) {
