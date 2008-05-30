@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import net.sf.regadb.genome.HivGenome;
 import net.sf.regadb.util.http.HttpDownload;
 
 import org.jdom.Document;
@@ -29,6 +30,8 @@ public class ParseGenBankXml {
         
         SAXBuilder builder = new SAXBuilder();
 
+        GBOrganism organismGB = new GBOrganism();
+        
         try {
             Document doc = builder.build(organism);
             Element root = doc.getRootElement();
@@ -37,7 +40,7 @@ public class ParseGenBankXml {
             String refSeq = ref_seq_el.getValue().trim();
             
             List<Element> elList = new ArrayList<Element>();
-            findElementRecursively(root, "CDS", elList);
+            findElementRecursively(root, "CDS", elList);    
             
             for(Element e : elList) {
                 String location = null;
@@ -48,16 +51,36 @@ public class ParseGenBankXml {
                     if(eEl.getName().trim().equals("GBFeature_location")) {
                         location = eEl.getValue().trim();
                     } else if(eEl.getName().trim().equals("GBFeature_quals")) {
-                        note = getQualsValue(eEl, "note");
+                        note = getQualsValue(eEl, "gene");
                         protein_id = getQualsValue(eEl, "protein_id");
                     }
                 }
-                getOrfs(refSeq, location, note, protein_id);
+                
+                organismGB.orfs.addAll(getOrfs(refSeq, location, note, protein_id));
             }
         } catch (JDOMException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        
+        for(GBORF orf : organismGB.orfs) {
+        	System.err.println(orf.name);
+        	//System.err.println(orf.sequence);
+//        	if(orf.name.contains("pol ")) {
+//        		String gagseq = null;
+//        		for(GBORF orf2 : organismGB.orfs) {
+//        			if(orf2.name.contains("gag ")) {
+//        				gagseq = orf2.sequence;
+//        			}
+//        		}
+//        		String seq = HivGenome.getHxb2().getPol().getSequence().seqString();
+//        		System.err.println("koen:" + seq);
+//        		System.err.println("genbank:" + orf.sequence);
+//        		if(!orf.sequence.equals(seq)) {
+//        			System.err.println("SHIT");
+//        		}
+//        	}
         }
     }
     
@@ -82,38 +105,10 @@ public class ParseGenBankXml {
             GBORF orf = new GBORF();
             orf.name = name + " ORF " + (i+1);
             orf.sequence = genome.substring(Integer.parseInt(positions[0])-1, Integer.parseInt(positions[1]));
-            getProteins(protein_id, locations.size()>1);
+            orfs.add(orf);
         }
         
         return orfs;
-    }
-    
-    public static List<GBProteinPart> getProteins(String protein_id, boolean join) {
-        File proteinF = null;
-        try {
-            proteinF = File.createTempFile("protein-genbank", ".xml");
-            if(join)
-                System.err.println(protein_id);
-            efetchGenbankXmlFile(protein_id, "protein", proteinF);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        
-        SAXBuilder builder = new SAXBuilder();
-
-        try {
-            Document doc = builder.build(proteinF);
-            Element root = doc.getRootElement();
-            List<Element> seqFeatures = new ArrayList<Element>(); 
-            findElementRecursively(root, "Seq-feat", seqFeatures);
-            //if(!join)
-              //  System.err.println(protein_id + "  " + seqFeatures.size());
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-        
-        return null;
     }
     
     private static String getQualsValue(Element INSDFeature_quals_value, String name) {
