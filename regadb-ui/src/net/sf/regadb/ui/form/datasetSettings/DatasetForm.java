@@ -103,7 +103,8 @@ public class DatasetForm extends FormWidget
         dataset_.setCreationDate(new Date(System.currentTimeMillis()));
         dataset_.setSettingsUser(user_);
         
-        user_.getDatasetAccesses().add(new DatasetAccess(new DatasetAccessId(user_, dataset_), Privileges.READWRITE.getValue(),user_.getUid()));
+        if(getInteractionState()==InteractionState.Adding)
+        	user_.getDatasetAccesses().add(new DatasetAccess(new DatasetAccessId(user_, dataset_), Privileges.READWRITE.getValue(),user_.getUid()));
         
         update(dataset_, t);
         update(user_, t);
