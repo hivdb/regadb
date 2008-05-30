@@ -269,6 +269,8 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <mybitset.h>";
             } else if(textToReplace.contains("set")) {
                 textToReplaceWith = "#include <myset.h>";
+            } else if(textToReplace.contains("algorithm")) {
+                textToReplaceWith = "#include <algorithm.h>";
             } else if(textToReplace.contains("WDllDefs")) {
                 textToReplaceWith = "";
             } else if(textToReplace.contains("exception")) {
