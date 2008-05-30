@@ -5,6 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="lib" path="lib/simmetrics162.jar"/>
-	<classpathentry kind="lib" path="lib/jxl.jar"/>
+	<classpathentry kind="lib" path="/regadb-util/lib/jxl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
