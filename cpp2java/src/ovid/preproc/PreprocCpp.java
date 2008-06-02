@@ -271,7 +271,13 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <myset.h>";
             } else if(textToReplace.contains("algorithm")) {
                 textToReplaceWith = "#include <algorithm.h>";
+            } else if(textToReplace.contains("limits")) {
+                textToReplaceWith = "#include <mylimits.h>";
+            } else if(textToReplace.contains("fstream")) {
+                textToReplaceWith = "#include <myfstream.h>";
             } else if(textToReplace.contains("WDllDefs")) {
+                textToReplaceWith = "";
+            } else if(textToReplace.contains("stdlib")) {
                 textToReplaceWith = "";
             } else if(textToReplace.contains("exception")) {
                 textToReplaceWith = "#include <myexception.h>";
