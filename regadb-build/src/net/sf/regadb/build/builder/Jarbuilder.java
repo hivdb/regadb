@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -36,6 +37,8 @@ public class Jarbuilder
     private static String packageDir_;
     
     private static String localCheckoutDir_ = null;
+    
+    private static boolean testing_ = true;
 
     public static void main (String args[])
     {
@@ -49,6 +52,12 @@ public class Jarbuilder
                     localCheckoutArg = localCheckoutArg.substring(localCheckoutArg.indexOf("--localCheckout=")+"--localCheckout=".length(), localCheckoutArg.length());
                     localCheckoutDir_ = localCheckoutArg;
                 }
+            }
+            
+            if(args.length>3) {
+            	if(args[3].equals("--noTesting")) {
+            		testing_ = false;
+            	}
             }
             
             run(args[0], args[1], localCheckoutDir_, true);
@@ -217,6 +226,14 @@ public class Jarbuilder
         if(moduleDeps.size()!=0) {
         	System.err.println("Could not buid all projects!!!");
         	System.err.println("Make sure all projects are checked out/copied!!!!");
+        	System.err.print("Projects: ");
+        	for(Map.Entry<String, List<String>> e : moduleDeps.entrySet()) { 
+        		System.err.print(e.getKey() + "(");
+        		for(String dep : e.getValue()) {
+        			System.err.print(dep + " ");
+        		}
+        		System.err.print(")");
+        	}
         	System.exit(0);
         }
     }
@@ -419,14 +436,16 @@ public class Jarbuilder
     }
 
     private static void performTests() {
-    	System.out.println("Testing projects");
-        
-        JUnitRapport.startTesting();
-        JUnitTest.executeTests(libPool_);
-        JUnitRapport.endTesting(rapportDir_ + "testresult.xml");
-        
-        System.out.println("Generate testing report");
-        XsltTransformer.transform(rapportDir_ + "testresult.xml", rapportDir_ + "testresult.html", "testresult.xsl");
+    	if(testing_) {
+	    	System.out.println("Testing projects");
+	        
+	        JUnitRapport.startTesting();
+	        JUnitTest.executeTests(libPool_);
+	        JUnitRapport.endTesting(rapportDir_ + "testresult.xml");
+	        
+	        System.out.println("Generate testing report");
+	        XsltTransformer.transform(rapportDir_ + "testresult.xml", rapportDir_ + "testresult.html", "testresult.xsl");
+    	}
 	}
     
     private static void handleError(String moduleName, Exception e) {
