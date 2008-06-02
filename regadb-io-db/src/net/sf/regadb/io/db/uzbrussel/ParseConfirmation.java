@@ -7,7 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -39,6 +41,8 @@ public class ParseConfirmation {
     private ParseIds parseIds_;
     private Map<Integer, Patient> patients_;
     
+    private Map<Patient,Set<String>> patientAttributes_;
+    
     private Table patcodesToIgnore;
     
     private NominalAttribute genderNominal_ = new NominalAttribute("Gender", -1, new String[] { "M", "F" },
@@ -55,6 +59,8 @@ public class ParseConfirmation {
         genderNominal_.attribute.setAttributeGroup(regadbAttributeGroup_);
         
         patcodesToIgnore = Utils.readTable(basePath_+ File.separatorChar + "emd" + File.separatorChar + "patcodesToIgnore.csv");
+        
+        patientAttributes_ = new HashMap<Patient,Set<String>>();
     }
     
     public void exec() {
@@ -125,7 +131,7 @@ public class ParseConfirmation {
             Date testDate = null;
             try {
                 testDate = df.parse(date_test);
-                storeDateAttribute("DATE_TEST", date_test, p, df);
+                handleWivDateAttribute("DATE_TEST", date_test, p, df);
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -206,7 +212,7 @@ public class ParseConfirmation {
             
             String arrival_b = getValue(i, "ARRIVAL_B", sheet, colMapping);
                 if(arrival_b!=null)
-                    storeDateAttribute("ARRIVAL_B", arrival_b, p, yearFormat);
+                    handleWivDateAttribute("ARRIVAL_B", arrival_b, p, yearFormat);
             
             String sexcontact = getValue(i, "SEXCONTACT", sheet, colMapping);
                 handleWIVNominalAttribute("SEXCONTACT", sexcontact, p);
@@ -221,7 +227,7 @@ public class ParseConfirmation {
                 handleWIVNominalAttribute("BLOODBORNE", bloodborne, p);
                 
             String yeartransf = getValue(i, "YEARTRANSF", sheet, colMapping);
-                storeDateAttribute("YEARTRANSF", yeartransf, p, yearFormat);
+                handleWivDateAttribute("YEARTRANSF", yeartransf, p, yearFormat);
                 
             String trancountr = getValue(i, "TRANCOUNTR", sheet, colMapping);
             	handleWIVCountry("TRANCOUNTR", trancountr, p);
@@ -233,7 +239,7 @@ public class ParseConfirmation {
                 handleWIVNominalAttribute("PROFRISK", profrisk, p);
             
             String probyear = getValue(i, "PROBYEAR", sheet, colMapping);
-                storeDateAttribute("PROBYEAR", probyear, p, yearFormat);
+                handleWivDateAttribute("PROBYEAR", probyear, p, yearFormat);
             
             String probcountr = getValue(i, "PROBCOUNTR", sheet, colMapping);
             	handleWIVCountry("PROBCOUNTR", probcountr, p);
@@ -253,10 +259,10 @@ public class ParseConfirmation {
                 handleWIVNominalAttribute("REASONTEST", reasontest, p);
                 
             String form_out = getValue(i, "FORM_OUT", sheet, colMapping);
-                storeDateAttribute("FORM_OUT", form_out, p, df);
+                handleWivDateAttribute("FORM_OUT", form_out, p, df);
 
             String form_in = getValue(i, "FORM_IN", sheet, colMapping);
-                storeDateAttribute("FORM_IN", form_in, p, df);
+                handleWivDateAttribute("FORM_IN", form_in, p, df);
             
             //String labo = getValue(i, "LABO", sheet, colMapping);
             //String opmerking = getValue(i, "OPMERKING", sheet, colMapping);
@@ -264,12 +270,11 @@ public class ParseConfirmation {
         }
     }
     
-    public void storeDateAttribute(String attributeName, String value, Patient p, DateFormat df) {
+    public void handleWivDateAttribute(String attributeName, String value, Patient p, DateFormat df) {
         if(!"".equals(value)) {
             try {
                 Date d = df.parse(value);
-                PatientAttributeValue pav = p.createPatientAttributeValue(WivObjects.getAttribute(attributeName));
-                pav.setValue(d.getTime()+"");
+                handleWIVAttribute(attributeName, d.getTime()+"", p);
             } catch (ParseException e) {
                 ConsoleLogger.getInstance().logError("Cannot parse date " + attributeName + " value:" + value);
             }
@@ -317,8 +322,10 @@ public class ParseConfirmation {
         	System.err.println("---------------->" + attributeName + " - " + value);
         }
         
-        if(WivObjects.createCountryPANV(attributeName, value.toUpperCase(), p)==null) {
-        	ConsoleLogger.getInstance().logError("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+        if(patientPutAttribute(p, attributeName)){  //check duplicate
+            if(WivObjects.createCountryPANV(attributeName, value.toUpperCase(), p)==null) {
+            	ConsoleLogger.getInstance().logError("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+            }
         }
     }
     
@@ -349,14 +356,18 @@ public class ParseConfirmation {
         if(attributeNominalValue.contains("/")) {
             StringTokenizer st = new StringTokenizer(attributeNominalValue, "/");
             while(st.hasMoreElements()) {
-                handleWIVNominalAttribute(attributeName, st.nextToken(), p);
+                handleWIVNominalAttribute(attributeName, st.nextToken(), p,true);
             }
         } else {
-            handleWIVNominalAttribute(attributeName, attributeNominalValue, p);
+            handleWIVNominalAttribute(attributeName, attributeNominalValue, p,true);
         }
     }
     
     public void handleWIVNominalAttribute(String attributeName, String attributeNominalValue, Patient p) {
+        handleWIVNominalAttribute(attributeName, attributeNominalValue, p, false);
+    }
+    
+    public void handleWIVNominalAttribute(String attributeName, String attributeNominalValue, Patient p, boolean multiple) {
         if("".equals(attributeNominalValue)) {
             return;
         }
@@ -369,7 +380,16 @@ public class ParseConfirmation {
         }
     }
     
-    public void handleWIVAttribute(String attributeName, String value, Patient p) {
+    public void handleWIVAttribute(String attributeName, String value, Patient p){
+        handleWIVAttribute(attributeName, value, p, false);
+    }
+    
+    public void handleWIVAttribute(String attributeName, String value, Patient p, boolean multiple) {
+        if(!multiple){
+            if(!patientPutAttribute(p,attributeName))
+                return; //already exists
+        }
+        
         if(WivObjects.createPatientAttributeValue(attributeName, value, p)==null) {
             ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - value: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
         }
@@ -402,5 +422,20 @@ public class ParseConfirmation {
             }
         }
         return sheet.getCell(col, row).getContents().trim();
+    }
+    
+    public boolean patientHasAttribute(Patient p, String attributeName){
+        Set<String> set = patientAttributes_.get(p);
+        if(set == null) return false;
+        return set.contains(attributeName);
+    }
+    
+    public boolean patientPutAttribute(Patient p, String attributeName){
+        Set<String> set = patientAttributes_.get(p);
+        if(set == null){
+            set = new HashSet<String>();
+            patientAttributes_.put(p, set);
+        }
+        return set.add(attributeName);
     }
 }
