@@ -21,6 +21,7 @@ public class RegaDBSettings {
     private List<String> settings_ = new ArrayList<String>();
 
     private Map<String, String> settingsMap_ = new HashMap<String, String>();
+    private Map<String, String> defaultsMap_ = new HashMap<String, String>();
     
     private ArrayList<Pair<String, String>> proxyList_ = new ArrayList<Pair<String, String>>();
 
@@ -50,6 +51,11 @@ public class RegaDBSettings {
     public String getPropertyValue(String name)
     {
         return settingsMap_.get(name);
+    }
+    
+    public String getDefaultValue(String name)
+    {
+        return defaultsMap_.get(name);
     }
 
     public static RegaDBSettings getInstance()
@@ -144,6 +150,14 @@ public class RegaDBSettings {
                 if(ee.getAttributeValue("name").equals("http.proxy.port")) proxyPort = ee.getTextTrim();
             }
             proxyList_.add(new Pair<String, String>(proxyUrl,proxyPort));
+        }
+        
+        List defaults = root.getChildren("default");
+        Element dft;
+        for(Object o : defaults){
+            dft = ((Element) o);
+            name = dft.getAttributeValue("name");
+            defaultsMap_.put(name, dft.getTextTrim());
         }
         
     }
