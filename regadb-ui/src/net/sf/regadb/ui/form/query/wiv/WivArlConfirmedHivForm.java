@@ -22,7 +22,7 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
     }
     
     @Override
-    protected boolean process(File csvFile){
+    protected void process(File csvFile) throws Exception{
     	Transaction t = createTransaction();
     	
         Date sdate = getStartDate();
@@ -36,25 +36,16 @@ public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
         
         List<Patient> patients = t.getPatients("join patient.testResults as tr",hfc);
         
+        if(patients.size() < 1)
+            throw new EmptyResultException();
+
+        
         Table res = getArlEpidemiologyTable(patients);
         
         t.commit();
         
-        try{
-            res.exportAsCsv(new FileOutputStream(csvFile), ';', false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        
-        return true;
+        res.exportAsCsv(new FileOutputStream(csvFile), ';', false);
     }    
-
-    @Override
-    protected File postProcess(File csvFile) {
-        return csvFile;
-    }
     
     protected List<Patient> getPatients(Transaction t){
         return t.getPatients();

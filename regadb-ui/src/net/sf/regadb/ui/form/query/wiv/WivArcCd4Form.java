@@ -35,15 +35,16 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
     
     @Override
     @SuppressWarnings("unchecked")
-    protected boolean process(File csvFile) {
+    protected void process(File csvFile) throws Exception{
         
         Transaction t = createTransaction();
         Query q = createQuery(t);
         
         List<Object[]> list = (List<Object[]>)q.list();
+        if(list.size() < 1)
+            throw new EmptyResultException();
+        
         ArrayList<String> row;
-
-//        Table in = readTable(csvFile);
         Table out = new Table();
         
         for(Object[] o : list){
@@ -82,15 +83,6 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
         }
         
         t.commit();
-        
-        try{
-            out.exportAsCsv(new FileOutputStream(csvFile),';',false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        
-        return true;
+        out.exportAsCsv(new FileOutputStream(csvFile),';',false);
     }
 }

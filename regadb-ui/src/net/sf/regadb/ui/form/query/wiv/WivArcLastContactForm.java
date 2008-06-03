@@ -39,7 +39,7 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     
     @Override
     @SuppressWarnings("unchecked")
-    protected boolean process(File csvFile) {
+    protected void process(File csvFile) throws Exception{
         ArrayList<String> row;
         Table out = new Table();
         
@@ -47,6 +47,9 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         Query q = createQuery(t);
         
         List<Object[]> list = q.list();
+        
+        if(list.size() < 1)
+            throw new EmptyResultException();
         
         for(Object[] o : list){
         	String patcode = (String)o[0];
@@ -64,14 +67,6 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         
         t.commit();
         
-        try{
-            out.exportAsCsv(new FileOutputStream(csvFile),';',false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        
-        return true;
+        out.exportAsCsv(new FileOutputStream(csvFile),';',false);
     }
 }

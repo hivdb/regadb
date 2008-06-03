@@ -35,58 +35,48 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected boolean process(File csvFile){
+    protected void process(File csvFile) throws Exception{
         Transaction t = createTransaction();
         Query q = createQuery(t);
         List<Object[]> res = q.list();
+        
+        if(res.size() < 1)
+            throw new EmptyResultException();
 
         String date = getFormattedDate(getEndDate());
         String patcode;
 
         Table out = new Table();
 
-        try{
-            for(Object[] o : res){
-                Therapy tp = (Therapy)o[0];
-                PatientAttributeValue pav = (PatientAttributeValue)o[1];
+        for(Object[] o : res){
+            Therapy tp = (Therapy)o[0];
+            PatientAttributeValue pav = (PatientAttributeValue)o[1];
 
-                patcode = getPadding(13);
-                if(pav != null){
-                    patcode = pav.getValue();
-                }
-
-                addTherapy(out,tp,patcode,date);
+            patcode = getPadding(13);
+            if(pav != null){
+                patcode = pav.getValue();
             }
-            
-            q = t.createQuery("select pav "+
-            		"from PatientAttributeValue pav "+
-            		"where pav.patient not in (" +
-            			"select tp.patient from Therapy tp where " +
-            				" ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null )" +
-            			") " +
-            		"and pav.attribute.name = 'PatCode'");
-            q.setDate("var_start_date", getStartDate());
-            q.setDate("var_end_date", getEndDate());
-            List<PatientAttributeValue> pavs = q.list();
-            
-            for(PatientAttributeValue pav : pavs){
-            	addEmptyTherapy(out,pav,date);
-            }
-            
-            out.exportAsCsv(new FileOutputStream(csvFile), ';', false);
-        }
-        catch(Exception e){
-        	t.commit();
-            e.printStackTrace();
-            return false;
-        }
-        t.commit();
-        return true;
-    }
 
-    @Override
-    protected File postProcess(File csvFile) {
-        return csvFile;
+            addTherapy(out,tp,patcode,date);
+        }
+        
+        q = t.createQuery("select pav "+
+        		"from PatientAttributeValue pav "+
+        		"where pav.patient not in (" +
+        			"select tp.patient from Therapy tp where " +
+        				" ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null )" +
+        			") " +
+        		"and pav.attribute.name = 'PatCode'");
+        q.setDate("var_start_date", getStartDate());
+        q.setDate("var_end_date", getEndDate());
+        List<PatientAttributeValue> pavs = q.list();
+        
+        for(PatientAttributeValue pav : pavs){
+        	addEmptyTherapy(out,pav,date);
+        }
+            
+        out.exportAsCsv(new FileOutputStream(csvFile), ';', false);
+       	t.commit();
     }
 
     private void addTherapy(Table table, Therapy tp, String patcode, String date){

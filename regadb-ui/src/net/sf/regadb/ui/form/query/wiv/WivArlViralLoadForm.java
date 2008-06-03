@@ -24,14 +24,15 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
     }
 
     @Override
-    protected File postProcess(File csvFile) {
-        File outFile = new File(csvFile.getAbsolutePath()+".processed.csv");
-        
-        ArrayList<String> row;
+    protected File postProcess(File csvFile) throws Exception{
 
         Table in = readTable(csvFile);
+        if(in.numRows() < 2)
+            throw new EmptyResultException();
 
+        File outFile = new File(csvFile.getAbsolutePath()+".processed.csv");
         Table out = new Table();
+        ArrayList<String> row;
         
         int CValue = in.findColumn("TestResult.value");
         int CTestDate = in.findColumn("TestResult.testDate");
@@ -57,12 +58,7 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
             out.addRow(row);
         }
         
-        try{
-            out.exportAsCsv(new FileOutputStream(outFile),';',false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+        out.exportAsCsv(new FileOutputStream(outFile),';',false);
         
         return outFile;
     }

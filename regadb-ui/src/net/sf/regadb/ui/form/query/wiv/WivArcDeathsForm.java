@@ -21,14 +21,15 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
     }
 
     @Override
-    protected File postProcess(File csvFile) {
-        File outFile = new File(csvFile.getAbsolutePath()+".processed.csv");
-        
-        ArrayList<String> row;
+    protected File postProcess(File csvFile) throws Exception{
 
         Table in = readTable(csvFile);
+        if(in.numRows() < 2)
+            throw new EmptyResultException();
 
+        File outFile = new File(csvFile.getAbsolutePath()+".processed.csv");
         Table out = new Table();
+        ArrayList<String> row;
         
         int CDeathDate = in.findColumn("PatientImpl.deathDate");
         int CPatCode = in.findColumn("PatientAttributeValue.value");
@@ -48,13 +49,7 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
             out.addRow(row);
         }
         
-        try{
-            out.exportAsCsv(new FileOutputStream(outFile),';',false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        
+        out.exportAsCsv(new FileOutputStream(outFile),';',false);
         return outFile;
     }
 }

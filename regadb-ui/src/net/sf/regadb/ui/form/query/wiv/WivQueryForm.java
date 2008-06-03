@@ -3,7 +3,6 @@ package net.sf.regadb.ui.form.query.wiv;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -78,6 +77,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
     private HashMap<String,IFormField> parameters_ = new HashMap<String,IFormField>();
     
+    public class EmptyResultException extends Exception{
+        
+    }
+    
     public WivQueryForm(WMessage formName, WMessage description, WMessage filename){
         super(formName,InteractionState.Viewing);
         
@@ -123,16 +126,13 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         try{
             File csvFile =  getOutputFile();
             
-            if(process(csvFile)){
-                File output = postProcess(csvFile);
-                
-                setDownloadLink(output);
-                
-                status_.setText(tr("form.query.wiv.label.status.finished"));
-            }
-            else{
-                status_.setText(tr("form.query.wiv.label.status.failed"));
-            }
+            process(csvFile);
+            File output = postProcess(csvFile);
+            setDownloadLink(output);
+            status_.setText(tr("form.query.wiv.label.status.finished"));
+        }
+        catch(EmptyResultException e){
+            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
         }
         catch(Exception e){
             e.printStackTrace();
@@ -143,42 +143,41 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean process(File csvFile){
+    protected void process(File csvFile) throws Exception{
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Query q = createQuery(t);
         
         if(q != null){
-            try{
+            List<Object> result = q.list();
+            
+            if(result.size()>0) {
                 FileOutputStream os = new FileOutputStream(csvFile);
-    
-                ExportToCsv csvExport = new ExportToCsv();
-                List<Object> result = q.list();
                 
+                ExportToCsv csvExport = new ExportToCsv();
+
                 Set<Dataset> userDatasets = new HashSet<Dataset>();
                 for(DatasetAccess da : t.getSettingsUser().getDatasetAccesses()) {
                     userDatasets.add(da.getId().getDataset());
                 }
-                
-                if(result.size()>0) {
-                    if(q.getReturnTypes().length == 1)
-                    {
-                        os.write((getCsvHeaderSwitchNoComma(result.get(0), csvExport)+"\n").getBytes());
-                    }
-                    else
-                    {
-                        Object[] array = (Object[])result.get(0);
-                        
-                        for(int i = 0; i < array.length - 1; i++)
-                        {
-                            os.write((getCsvHeaderSwitchNoComma(array[i], csvExport)+",").getBytes());
-                        }
-        
-                        os.write((getCsvHeaderSwitchNoComma(array[array.length - 1], csvExport)+"\n").getBytes());
-                    }
+            
+                if(q.getReturnTypes().length == 1)
+                {
+                    os.write((getCsvHeaderSwitchNoComma(result.get(0), csvExport)+"\n").getBytes());
                 }
-                
+                else
+                {
+                    Object[] array = (Object[])result.get(0);
+                    
+                    for(int i = 0; i < array.length - 1; i++)
+                    {
+                        os.write((getCsvHeaderSwitchNoComma(array[i], csvExport)+",").getBytes());
+                    }
+    
+                    os.write((getCsvHeaderSwitchNoComma(array[array.length - 1], csvExport)+"\n").getBytes());
+                }
+            
                 for(Object o : result)
                 {
                     if(q.getReturnTypes().length == 1)
@@ -197,21 +196,19 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
                         os.write((getCsvLineSwitchNoComma(array[array.length - 1], csvExport, userDatasets)+"\n").getBytes());
                     }
                 }
-                
+            
                 os.close();
                 
-                t.commit();
-                return true;
             }
-            catch(IOException e){
-                e.printStackTrace();
+            else{
+                t.commit();
+                throw new EmptyResultException();
             }
         }
         t.commit();
-        return false;
     }
     
-    protected File postProcess(File csvFile){
+    protected File postProcess(File csvFile) throws Exception{
         return csvFile;
     }
     

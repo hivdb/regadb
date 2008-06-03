@@ -21,7 +21,7 @@ public class WivArlEpidemiologyForm extends WivIntervalQueryForm {
     }
 
     @Override
-    protected boolean process(File csvFile){
+    protected void process(File csvFile) throws Exception{
         Transaction t = createTransaction();
         
         Date sdate = getStartDate();
@@ -33,18 +33,13 @@ public class WivArlEpidemiologyForm extends WivIntervalQueryForm {
         hfc.addArgument("end_date",edate.getTime()+"");
         List<Patient> patients = t.getPatients("join patient.patientAttributeValues as pav",hfc);
         
+        if(patients.size() < 1)
+            throw new EmptyResultException();
+        
         Table res = getArlEpidemiologyTable(patients);
         
         t.commit();
         
-        try{
-            res.exportAsCsv(new FileOutputStream(csvFile), ';', false);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        
-        return true;
+        res.exportAsCsv(new FileOutputStream(csvFile), ';', false);
     }
 }
