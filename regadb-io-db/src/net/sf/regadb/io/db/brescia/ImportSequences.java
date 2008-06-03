@@ -86,7 +86,7 @@ public class ImportSequences
                     {
                         if (gtDate != null) 
                         {
-                        	ConsoleLogger.getInstance().logInfo("Aligning sequence "+i+" for patient "+patientId+"...");
+                        	//ConsoleLogger.getInstance().logInfo("Aligning sequence "+i+" for patient "+patientId+"...");
                         	
                             ViralIsolate vi = p.createViralIsolate();
                             vi.setSampleDate(gtDate);
@@ -96,9 +96,10 @@ public class ImportSequences
                             NtSequence ntseq = new NtSequence();
                             ntseq.setLabel("Sequence 1");
                             ntseq.setNucleotides(parseNucleotides(seq, patientId, true));
+                            
                             vi.getNtSequences().add(ntseq);
-
-                            ConsoleLogger.getInstance().logInfo("Successful");
+                            
+                            //ConsoleLogger.getInstance().logInfo("Successfully aligned!");
                         } 
                         else 
                         {
@@ -116,9 +117,8 @@ public class ImportSequences
                 }
             }
         
-        ConsoleLogger.getInstance().logInfo(""+counter+" sequence(s) aligned");
-        
-        System.err.println("EmptyCounter=" + emptyCounter);
+        ConsoleLogger.getInstance().logInfo(""+counter+" sequence(s) added");
+        ConsoleLogger.getInstance().logInfo(""+emptyCounter+" blank sequence(s) found");
     }
 
     public int indexOf(String colName, Sheet s) {
