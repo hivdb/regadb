@@ -53,7 +53,7 @@ public class ImportSequences {
 		try {
 			FileWriter fw = new FileWriter("/home/plibin0/import/pt/pt_regadb/hiv2/seqs/combinedSeqs.fasta");
 			for(File f : consensusFiles) {
-				String fasta = FileUtils.readFileToString(f);
+				String fasta = FileUtils.readFileToString(f, null);
 				String [] header = fasta.substring(fasta.indexOf('>'), fasta.indexOf("\n")).split(" ");
 				fw.write(">"+header[header.length-1]+"\n");
 				fw.write(fasta.substring(fasta.indexOf("\n")+1));
