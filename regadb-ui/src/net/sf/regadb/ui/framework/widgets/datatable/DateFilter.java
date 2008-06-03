@@ -25,22 +25,22 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public DateFilter()
 	{
-		tf1_ = new FilterTF(new WEuropeanDateValidator());
+		setDateField1(new FilterTF(new WEuropeanDateValidator()));
 		//tf1_.setInline(false);
-		tf2_ = new FilterTF(new WEuropeanDateValidator());
+		setDateField2(new FilterTF(new WEuropeanDateValidator()));
 		//tf2_.setInline(false);
-		tf2_.setEnabled(false);
-		combo_ = new FilterOperatorCombo(tf1_);
+		getDateField2().setEnabled(false);
+		combo_ = new FilterOperatorCombo(getDateField1());
 		combo_.setInline(false);
 		
 		addWidget(combo_);
 		WContainerWidget w1 = new WContainerWidget();
-		w1.addWidget(tf1_);
+		w1.addWidget(getDateField1());
 		w1.addWidget(calendarIcon1);
 		w1.setInline(false);
 		addWidget(w1);
 		WContainerWidget w2 = new WContainerWidget();
-		w2.addWidget(tf2_);
+		w2.addWidget(getDateField2());
 		w2.addWidget(calendarIcon2);
 		w2.setInline(false);
 		addWidget(w2);
@@ -55,10 +55,10 @@ public class DateFilter extends WContainerWidget implements IFilter
 				{
 					public void notify(WEmptyEvent a)
 					{
-						tf1_.setText("");
-						tf1_.setText("");
+						getDateField1().setText("");
+						getDateField1().setText("");
 						
-						tf2_.setEnabled(combo_.currentText().key().equals(between_));
+						getDateField2().setEnabled(combo_.currentText().key().equals(between_));
 					}
 				});
 	}
@@ -68,18 +68,34 @@ public class DateFilter extends WContainerWidget implements IFilter
 		return this;
 	}
 	
-	public Date getFirstDate()
+	public Object getFirstDate()
 	{
-		return DateUtils.parserEuropeanDate(tf1_.text());
+		return DateUtils.parserEuropeanDate(getDateField1().text());
 	}
 	
-	public Date getSecondDate()
+	public Object getSecondDate()
 	{
-		return DateUtils.parserEuropeanDate(tf2_.text());
+		return DateUtils.parserEuropeanDate(getDateField2().text());
 	}
 	
 	public WMessage getComboState()
 	{
 		return combo_.currentText();
 	}
+
+    protected void setDateField1(FilterTF tf1_) {
+        this.tf1_ = tf1_;
+    }
+
+    protected FilterTF getDateField1() {
+        return tf1_;
+    }
+
+    protected void setDateField2(FilterTF tf2_) {
+        this.tf2_ = tf2_;
+    }
+
+    protected FilterTF getDateField2() {
+        return tf2_;
+    }
 }

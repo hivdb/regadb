@@ -6,16 +6,15 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
-import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.FilterTools;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
+import net.sf.regadb.ui.framework.widgets.datatable.TimestampFilter;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WWidget;
 
 public class AttributeFilter extends WContainerWidget implements IFilter 
 {
@@ -57,6 +56,8 @@ public class AttributeFilter extends WContainerWidget implements IFilter
                 FilterTools.findDataTable(getAttributeCombo()).applyFilter();
             }
         });
+        
+        changeAttribute(getAttribute());
     }
     
     public IFilter getFilter(){
@@ -90,7 +91,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             ValueTypes vt = ValueTypes.getValueType(attribute_.getValueType());
                 
             if(vt == ValueTypes.DATE){
-                filter_ = new DateFilter();
+                filter_ = new TimestampFilter();
             }
             if(vt == ValueTypes.LIMITED_NUMBER || vt == ValueTypes.STRING){
                 filter_ = new StringFilter();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -16,9 +17,10 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttributeValue>>
 {
@@ -39,7 +41,7 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 
 	public void init(Transaction t)
 	{
-	    setAttributeFilter(new AttributeFilter(t,null));
+	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
 	    addColumn("dataTable.patient.colName.dataSet", new DatasetFilter(t), "dataset.description", true);
 	    addColumn("dataTable.patient.colName.patientId", new StringFilter(), "patient.patientId", true);
@@ -184,5 +186,23 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
     
     protected boolean nullAttribute(){
         return getAttributeFilter().getAttribute() == null;
+    }
+    
+    protected Attribute getDefaultAttribute(Transaction t){
+        Attribute a = null;
+        List<Attribute> l;
+        
+        String dftAttr = RegaDBSettings.getInstance().getDefaultValue("datatable.patient.attribute");
+        if(!"".equals(dftAttr)){
+            l = t.getAttributes(dftAttr);
+        }
+        else{
+            l = t.getAttributes();
+        }
+        
+        if(l.size() > 0)
+            a = l.get(0);
+        
+        return a;
     }
 }
