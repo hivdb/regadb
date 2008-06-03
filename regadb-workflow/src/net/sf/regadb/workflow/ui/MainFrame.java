@@ -1,6 +1,6 @@
 package net.sf.regadb.workflow.ui;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
+import net.sf.regadb.swing.i18n.I18n;
 import net.sf.regadb.workflow.jgraph.WorkFlow;
 
 import org.jgraph.graph.DefaultGraphModel;
@@ -22,10 +23,14 @@ public class MainFrame extends JFrame
     
     private List<Integer> untitledWorkflowIndexes_ = new ArrayList<Integer>();
     
+    static {
+    	I18n.setBundleURI("net.sf.regadb.workflow.i18n.regadb-workflow");	
+    }
+    
     public MainFrame()
     {
-        super(tr("mainFrame.title"));
-        
+    	super(tr("mainFrame.title"));
+     	
         menuBar_ = new MenuBar(this);
         setJMenuBar(menuBar_);
         

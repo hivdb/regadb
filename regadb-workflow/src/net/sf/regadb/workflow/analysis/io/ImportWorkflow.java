@@ -1,6 +1,5 @@
 package net.sf.regadb.workflow.analysis.io;
 
-import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
 
 import org.jdom.Element;

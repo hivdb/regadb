@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.commons.io.FileUtils;
-
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.AnalysisInput;
 import net.sf.regadb.workflow.analysis.ui.IAnalysisUI;
+
+import org.apache.commons.io.FileUtils;
 
 public class OutputFileAnalysis extends Analysis {
 

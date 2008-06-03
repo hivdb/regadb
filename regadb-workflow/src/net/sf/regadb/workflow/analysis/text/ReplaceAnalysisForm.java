@@ -1,7 +1,5 @@
 package net.sf.regadb.workflow.analysis.text;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -11,6 +9,8 @@ import javax.swing.border.TitledBorder;
 import net.sf.regadb.swing.layout.RiverLayout;
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.ui.BaseAnalysisForm;
+
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 public class ReplaceAnalysisForm extends BaseAnalysisForm {
     public static final String toReplace = "text.toReplace";

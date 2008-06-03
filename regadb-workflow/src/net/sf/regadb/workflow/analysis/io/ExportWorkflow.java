@@ -1,6 +1,5 @@
 package net.sf.regadb.workflow.analysis.io;
 
-import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

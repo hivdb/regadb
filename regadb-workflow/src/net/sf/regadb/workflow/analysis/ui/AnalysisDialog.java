@@ -1,7 +1,5 @@
 package net.sf.regadb.workflow.analysis.ui;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,6 +12,8 @@ import net.sf.regadb.swing.layout.RiverLayout;
 import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
 
 import org.jgraph.JGraph;
+
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 public class AnalysisDialog extends JDialog {
     public AnalysisDialog(JFrame mainFrame, final IAnalysisUI analysisUI, final WFAnalysisBox box, final JGraph graph) {

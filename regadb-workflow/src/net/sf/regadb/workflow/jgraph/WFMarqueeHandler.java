@@ -1,7 +1,5 @@
 package net.sf.regadb.workflow.jgraph;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -35,6 +33,8 @@ import org.jgraph.graph.DefaultPort;
 import org.jgraph.graph.GraphConstants;
 import org.jgraph.graph.Port;
 import org.jgraph.graph.PortView;
+
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 public class WFMarqueeHandler extends BasicMarqueeHandler {
 

@@ -1,8 +1,5 @@
 package net.sf.regadb.workflow.analysis.ui;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
-
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -14,6 +11,8 @@ import net.sf.regadb.swing.layout.RiverLayout;
 import net.sf.regadb.workflow.analysis.Analysis;
 import net.sf.regadb.workflow.analysis.AnalysisInput;
 import net.sf.regadb.workflow.analysis.AnalysisOutput;
+
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 public abstract class BaseAnalysisForm extends JPanel implements IAnalysisUI {
     private Analysis analysis;

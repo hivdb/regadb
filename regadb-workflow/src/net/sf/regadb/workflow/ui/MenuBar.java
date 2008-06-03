@@ -1,7 +1,5 @@
 package net.sf.regadb.workflow.ui;
 
-import static net.sf.regadb.workflow.i18n.I18n.tr;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +20,8 @@ import net.sf.regadb.workflow.jgraph.WFAnalysisBox;
 import net.sf.regadb.workflow.jgraph.WorkFlow;
 
 import org.jgraph.graph.CellView;
+
+import static net.sf.regadb.swing.i18n.I18n.tr;
 
 public class MenuBar extends JMenuBar
 {
