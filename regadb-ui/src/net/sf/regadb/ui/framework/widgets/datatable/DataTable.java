@@ -45,7 +45,7 @@ public class DataTable<DataType> extends WTable
     
     private ColumnHeader[] colHeaders_;
     
-    private int sortColIndex_ = 0;
+    private int sortColIndex_ = -1;
     
 	public DataTable(IDataTable<DataType> dataTableInterface, int amountOfPageRows)
 	{
@@ -77,6 +77,8 @@ public class DataTable<DataType> extends WTable
 		});
 		row++;
 		}
+		
+		
 			
         
         colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
@@ -87,32 +89,38 @@ public class DataTable<DataType> extends WTable
             colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
             if(dataTableInterface_.sortableFields()[columnIndex])
             {
-            colHeaders_[col].setSortNone();
-            final int colHeaderIndex = col;
-            colHeaders_[col].clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                        public void notify(WMouseEvent a) 
+                if(sortColIndex_ == -1)
+                    sortColIndex_ = columnIndex;
+                
+                colHeaders_[col].setSortNone();
+                final int colHeaderIndex = col;
+                colHeaders_[col].clicked.addListener(new SignalListener<WMouseEvent>()
                         {
-                            //a header is selected where sorting is already enabled
-                            if(colHeaderIndex==sortColIndex_)
-                            {
-                                colHeaders_[sortColIndex_].setSortOpposite();
-                            }
-                            else
-                            {
-                                colHeaders_[sortColIndex_].setSortNone();
-                                sortColIndex_ = colHeaderIndex;
-                                colHeaders_[sortColIndex_].setSortDesc();
-                            }
-                            Transaction trans = RegaDBMain.getApp().createTransaction();
-                            refreshData(trans, true);
-                            trans.commit();
+                    public void notify(WMouseEvent a) 
+                    {
+                        //a header is selected where sorting is already enabled
+                        if(colHeaderIndex==sortColIndex_)
+                        {
+                            colHeaders_[sortColIndex_].setSortOpposite();
                         }
-                   });
+                        else
+                        {
+                            colHeaders_[sortColIndex_].setSortNone();
+                            sortColIndex_ = colHeaderIndex;
+                            colHeaders_[sortColIndex_].setSortDesc();
+                        }
+                        Transaction trans = RegaDBMain.getApp().createTransaction();
+                        refreshData(trans, true);
+                        trans.commit();
+                    }
+                        });
             }
             columnIndex++;
 			col++;
 		}
+		if(sortColIndex_ == -1)
+		    sortColIndex_ = 0;
+		
 		row++;
 		col = 0;
         colHeaders_[col].setSortDesc();

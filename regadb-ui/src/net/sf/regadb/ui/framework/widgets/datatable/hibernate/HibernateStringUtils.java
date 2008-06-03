@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.widgets.datatable.hibernate;
 
+import net.sf.regadb.ui.datatable.patient.AttributeFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
@@ -23,6 +24,9 @@ public class HibernateStringUtils
 		{
 			if(dt.getFilters()[i]!=null)
 			{
+			    if(filters[i] instanceof AttributeFilter){
+			        filters[i] = ((AttributeFilter)filters[i]).getFilter();
+			    }
 				if (filters[i] instanceof StringFilter)
 				{
 					filter = HibernateFilterConstraintMapping.getStringFilterConstraint((StringFilter)filters[i], fieldNames[i], i);
