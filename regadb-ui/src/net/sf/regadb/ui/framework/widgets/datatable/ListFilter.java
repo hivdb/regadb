@@ -12,24 +12,37 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	private WComboBox combo_;
 	private Transaction transaction_;
 	
+	public ListFilter(){
+	    super();
+	}
+	
 	public ListFilter(Transaction transaction)
 	{
 		super();
 		
 		transaction_ = transaction;
 		
-		combo_ = new WComboBox(this);
-		combo_.addItem(tr("dataTable.filter.listFilter.noFilter"));
-		
-		setComboBox(combo_);
-		
-		combo_.changed.addListener(new SignalListener<WEmptyEvent>()
-				{
-					public void notify(WEmptyEvent a)
-					{
-						FilterTools.findDataTable(combo_).applyFilter();
-					}
-				});
+		init();
+	}
+	
+	public void setTransaction(Transaction transaction){
+	    transaction_ = transaction;
+	}
+	
+	public void init(){
+	    combo_ = new WComboBox(this);
+        
+        setComboBox(combo_);
+        combo_.sort();
+        combo_.insertItem(0, tr("dataTable.filter.listFilter.noFilter"));
+        
+        combo_.changed.addListener(new SignalListener<WEmptyEvent>()
+                {
+                    public void notify(WEmptyEvent a)
+                    {
+                        FilterTools.findDataTable(combo_).applyFilter();
+                    }
+                });
 	}
 
 	public WContainerWidget getFilterWidget()
