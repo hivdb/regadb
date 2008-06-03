@@ -3,9 +3,6 @@ package net.sf.regadb.install.initdb;
 import java.util.ArrayList;
 
 import net.sf.regadb.db.AnalysisType;
-import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeGroup;
-import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.QueryDefinitionParameterTypes;
@@ -27,6 +24,8 @@ import org.hibernate.cfg.Configuration;
 
 public class InitRegaDB 
 {
+	private SettingsUser su_;
+	
     public static void main(String [] args)
     {
         InitRegaDB init = new InitRegaDB();
@@ -101,6 +100,7 @@ public class InitRegaDB
 
     private void addAdminUser(Session session)
     {
+    	if(su_==null) {
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");
         admin.setLastName("install-admin");
@@ -108,6 +108,8 @@ public class InitRegaDB
         admin.setEnabled(true);
         admin.setPassword(Encrypt.encryptMD5("admin"));
         admin.setEmail("regadb-admin@uz.kuleuven.ac.be");
+        su_=admin;
+    	}
         
         /*SettingsUser test = new SettingsUser("test", 0, 0);
         test.setFirstName("test");
@@ -117,7 +119,7 @@ public class InitRegaDB
         test.setPassword(Encrypt.encryptMD5("test"));
         test.setEmail("test@uz.kuleuven.ac.be");*/
         
-        session.save(admin);
+        session.save(su_);
         //session.save(test);
     }
     
@@ -253,4 +255,12 @@ public class InitRegaDB
         
         session.save(gss);
     }
+
+	public SettingsUser getSu_() {
+		return su_;
+	}
+
+	public void setSu_(SettingsUser su_) {
+		this.su_ = su_;
+	}
 }
