@@ -36,7 +36,7 @@ public class Mappings {
             }
             
             for(int i = 1; i<mappingCsvTable.numRows(); i++) {
-                mappings.put(mappingCsvTable.valueAt(0, i), mappingCsvTable.valueAt(1, i));
+                mappings.put(mappingCsvTable.valueAt(0, i).toUpperCase(), mappingCsvTable.valueAt(1, i).toUpperCase());
             }
             
             mappings_.put(fileName, mappings);

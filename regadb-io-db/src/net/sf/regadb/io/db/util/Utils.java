@@ -206,7 +206,7 @@ public class Utils {
     	 else if(value.equals("1.5"))
     		 return true;
     	 else if(value.equals("0.0"))
-    		 return true;
+    		 return false;
     	 //For Rome only: A bug in their system according to Iuri's knowledge
     	 else if(value.equals("-1"))
     		 return true;
@@ -659,8 +659,10 @@ public class Utils {
      	}
          
          if(!foundDrug) {
-             String mapping = mappings.getMapping("generic_drugs.mapping", drug);
-             if(mapping==null) {
+             String mapping = mappings.getMapping("generic_drugs.mapping", drug.toUpperCase());
+            
+             if(mapping==null) 
+             {
                  ConsoleLogger.getInstance().logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was available.");
              }
              else
