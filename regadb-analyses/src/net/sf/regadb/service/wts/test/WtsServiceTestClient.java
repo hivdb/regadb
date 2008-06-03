@@ -18,7 +18,7 @@ public class WtsServiceTestClient extends TestCase{
     
     protected void setUp() throws Exception
     {
-        String url = "http://virolab.med.kuleuven.be/wts/services/";
+        String url = "http://regadb.med.kuleuven.be/wts/services/";
         String userName = "public";
         String password = "public";
         
@@ -40,7 +40,7 @@ public class WtsServiceTestClient extends TestCase{
         setPassword(password);
     }
     
-    public void testSubtype(){
+    public void testSubtype() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
         inputs.put("species", "hiv".getBytes());
@@ -51,7 +51,7 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-subtype", inputs, outputs);
     }
     
-    public void testBlast(){
+    public void testBlast() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
         
@@ -63,7 +63,7 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-blast", inputs, outputs);
     }
     
-    public void testHivType(){
+    public void testHivType() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
         
@@ -73,7 +73,7 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-hiv-type", inputs, outputs);
     }
 
-    public void testHivSubtype(){
+    public void testHivSubtype() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
         
@@ -83,7 +83,7 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-hiv-subtype", inputs, outputs);
     }
     
-    public void testHiv1Align(){
+    public void testHiv1Align() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequences", getHiv1MutSeq().getBytes());
         inputs.put("region", "RT".getBytes());
@@ -94,30 +94,35 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-align", inputs, outputs);
     }
 
-    public void testService(String serviceName, Map<String,byte[]> inputs, Map<String,IOutputValidator> outputs){
+    public void testService(String serviceName, Map<String,byte[]> inputs, Map<String,IOutputValidator> outputs) throws Exception{
+        int timeout = 1000 * 60 * 5; //5 minutes
+        testService(serviceName, inputs, outputs, timeout);
+    }
+
+    public void testService(String serviceName, Map<String,byte[]> inputs, Map<String,IOutputValidator> outputs, int timeout) throws Exception{
+        WtsClient wtsClient = new WtsClient(getUrl());
+        String challenge = wtsClient.getChallenge(getUserName());
+        String sessionTicket = wtsClient.login(getUserName(), challenge, getPassword(), serviceName);
         
-        try{
-            WtsClient wtsClient = new WtsClient(getUrl());
-            String challenge = wtsClient.getChallenge(getUserName());
-            String sessionTicket = wtsClient.login(getUserName(), challenge, getPassword(), serviceName);
-            
-            for(Map.Entry<String,byte[]> e : inputs.entrySet()){
-                wtsClient.upload(sessionTicket, serviceName, e.getKey(), e.getValue());
-            }
-            wtsClient.start(sessionTicket, serviceName);
-            
-            while(!wtsClient.monitorStatus(sessionTicket, serviceName).startsWith("ENDED")){
-                Thread.sleep(500);
-            }
-            
-            for(Map.Entry<String, IOutputValidator> e : outputs.entrySet()){
-                byte[] res = wtsClient.download(sessionTicket, serviceName, e.getKey());//,new File("/home/simbre1/"+ e.getKey()));
-                e.getValue().validate(res);
-            }
-            
+        for(Map.Entry<String,byte[]> e : inputs.entrySet()){
+            wtsClient.upload(sessionTicket, serviceName, e.getKey(), e.getValue());
         }
-        catch(Exception e){
-            e.printStackTrace();
+        wtsClient.start(sessionTicket, serviceName);
+        
+        int totalTime=0;
+        int sleep=500;
+        
+        while(!wtsClient.monitorStatus(sessionTicket, serviceName).startsWith("ENDED")){
+            if(totalTime >= timeout){
+                throw new TimeOutException();
+            }
+            Thread.sleep(sleep);
+            totalTime += sleep;
+        }
+        
+        for(Map.Entry<String, IOutputValidator> e : outputs.entrySet()){
+            byte[] res = wtsClient.download(sessionTicket, serviceName, e.getKey());
+            e.getValue().validate(res);
         }
     }
 
@@ -174,5 +179,9 @@ public class WtsServiceTestClient extends TestCase{
         public void validate(byte[] output){
             assertEquals(expected, new String(output).trim());
         }
+    }
+    
+    public class TimeOutException extends Exception{
+        
     }
 }
