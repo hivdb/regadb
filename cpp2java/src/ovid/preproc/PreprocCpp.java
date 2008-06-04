@@ -53,9 +53,6 @@ public class PreprocCpp {
     public void performChangesOnFile(File f) {
         System.err.println("Preprocess file: " + f.getAbsolutePath());
         
-        //System.err.println("\t remove comments");
-        //removeComments(f);
-        
         StringBuffer sb = readFileAsString(f.getAbsolutePath());
         
         System.err.println("\t handle includes");
@@ -64,43 +61,12 @@ public class PreprocCpp {
         sb = handleUsings(sb);
         System.err.println("\t handle Void Template Arg");
         handleVoidTemplateArg(sb);
-        //System.err.println("\t handle boost");
-        //sb = handleBoost(sb);
-        //System.err.println("\t handle iterators");
-        //sb = handleIterators(sb);
-        
-        //System.err.println("\t handle wstring and wchar");
-        //handleWStringWChar(sb);
-
-        //System.err.println("\t handle sizeInBytes, this should be done BEFORE the slots");
-        //handleSizeInBytes(sb);
-        
-        
-//        System.err.println("\t handle public/privates slots");
-//        handleSlots(sb);
-//        
-//        System.err.println("\t handle JSignal");
-//        sb = handleJSignal(sb);
-//
-//        if(sb.toString().contains("bitset")) {
-//            System.err.println("\t handle bitset declaration");
-//            sb  = handleBitsetDeclaration(sb);
-//        }
-//        
-//        System.err.println("\t handle string literals");
-//        String [] operators = {"return", "=", "<<", "?", ":", "("};
-//        sb = locateStringLiterals(sb, new StringLiteralReplaceStdString(operators));
-//        
-//        sb = locateStringLiterals(sb, new StringLiteralContinuingOnNewLine());
-//        
-//        ArrayList<Integer> stringStartIndices = new ArrayList<Integer>();
-//        ArrayList<Integer> stringEndIndices = new ArrayList<Integer>();
-//        sb = locateStringLiterals(sb, new StringLiteralPositionRecorder(stringStartIndices, stringEndIndices));
-//        
-//        System.err.println("\t handle enums and structs");
-//        sb = handleEnumsAndStructs(sb, f);
-//        
+     
         writeFile(f, sb);
+    }
+    
+    public void removeMethodContent() {
+    	
     }
     
     private void handleVoidTemplateArg(StringBuffer sb) {
