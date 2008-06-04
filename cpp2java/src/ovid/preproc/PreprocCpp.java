@@ -17,6 +17,19 @@ public class PreprocCpp {
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
         
         preproc.removeExterns(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WString"));
+        
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WCalendar.C"),
+        		"WCalendar::dateForCell",
+        		"{return date();}");
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WCalendar.C"),
+        		"WCalendar::renderMonth",
+        		"{}");
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WEnvironment.C"),
+        		"WEnvironment::libraryVersion",
+        		"{return std::string();}");
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WEnvironment.C"),
+        		"WEnvironment::libraryVersion(int",
+        		"{}");
     }
     
     public void performChangesOnFilesInDir(String dir) {
@@ -65,8 +78,16 @@ public class PreprocCpp {
         writeFile(f, sb);
     }
     
-    public void removeMethodContent() {
+    public void removeMethodContent(File f, String methodName, String replacement) {
+    	StringBuffer fileContent = readFileAsString(f.getAbsolutePath());
     	
+    	int methodNamePos = fileContent.indexOf(methodName);
+    	int firstBracket = fileContent.indexOf("{", methodNamePos);
+    	int matchBracket = findMatchingBracket(fileContent, firstBracket);
+    	
+    	fileContent.replace(firstBracket, matchBracket+1, replacement);
+    	
+    	writeFile(f, fileContent);
     }
     
     private void handleVoidTemplateArg(StringBuffer sb) {
