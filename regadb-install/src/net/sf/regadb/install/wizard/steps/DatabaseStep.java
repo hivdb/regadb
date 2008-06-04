@@ -40,7 +40,7 @@ public class DatabaseStep extends RegaDBWizardPage {
 				|| getTextFieldByName("psql_adminUser").getText().length() == 0
 				|| getTextFieldByName("db_databaseName").getText().length() == 0
 				|| getTextFieldByName("db_roleUser").getText().length() == 0
-// TODO				|| getTextFieldByName("db_rolePass").getText().length() == 0
+ 				|| getTextFieldByName("db_rolePass").getText().length() == 0
 				) {
 			
 			setProblem(tr("db_EnterDetails"));
@@ -67,7 +67,6 @@ public class DatabaseStep extends RegaDBWizardPage {
 			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
 		
-		boolean dbExists = true;
 		try {
 			Class.forName("org.postgresql.Driver");
 			String url = "jdbc:postgresql://" + getTextFieldByName("psql_url").getText() + "/" + getTextFieldByName("db_databaseName").getText();
@@ -77,8 +76,11 @@ public class DatabaseStep extends RegaDBWizardPage {
 			DriverManager.getConnection(url, props).close();
 		} catch ( SQLException e ) {
 			if ( e.getLocalizedMessage().contains("does not exist") ) {
-				dbExists = false;
-//				System.err.println(e.getLocalizedMessage());
+				setProblem(tr("db_databaseExists"));
+				return WizardPanelNavResult.REMAIN_ON_PAGE;
+			} else if ( e.getLocalizedMessage().contains("password authentication") ) {
+//				setProblem(tr("db_roleExists"));
+//				return WizardPanelNavResult.REMAIN_ON_PAGE;
 			} else {
 				setProblem(e.getLocalizedMessage());
 				return WizardPanelNavResult.REMAIN_ON_PAGE;
@@ -89,11 +91,6 @@ public class DatabaseStep extends RegaDBWizardPage {
 		}
 		
 		// TODO check if role exists
-		
-		if ( dbExists ) {
-			setProblem(tr("db_databaseExists"));
-			return WizardPanelNavResult.REMAIN_ON_PAGE;
-		}
 		
 		return WizardPanelNavResult.PROCEED;
 	}
