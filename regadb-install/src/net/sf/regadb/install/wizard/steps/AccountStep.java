@@ -27,7 +27,7 @@ public class AccountStep extends RegaDBWizardPage {
 	@SuppressWarnings("unchecked")
 	@Override
 	public WizardPanelNavResult allowNext(String stepName, Map settings, Wizard wizard) {
-		if ( user.getText().isEmpty() || pass1.getText().isEmpty() )
+		if ( user.getText().length() == 0 || pass1.getText().length() == 0 )
 			setProblem(tr("account_NoUsernamePassword"));
 		
 		if ( !pass1.getText().equals( pass2.getText() ) )

@@ -90,7 +90,7 @@ public class RegaDBInstallHandler implements WizardPage.WizardResultProducer {
 		for(int i=1; getValue("proxyurl" + i) != null; i++) {
 			String purl = getString("proxyurl" + i);
 			int pport = getInteger("proxyport" + i);
-			if ( !purl.isEmpty() && pport != 0 ) {
+			if ( purl.length() != 0 && pport != 0 ) {
 				Element proxy = new Element("proxy");
 				root.addContent(proxy);
 				

@@ -60,11 +60,11 @@ public class DatabaseStep extends RegaDBWizardPage {
 	@SuppressWarnings("unchecked")
 	@Override
 	public WizardPanelNavResult allowNext(String stepName, Map settings, Wizard wizard) {
-		if ( getTextFieldByName("psql_url").getText().isEmpty()
-				|| getTextFieldByName("psql_adminUser").getText().isEmpty()
-				|| getTextFieldByName("db_databaseName").getText().isEmpty()
-				|| getTextFieldByName("db_roleUser").getText().isEmpty()
-//				|| getTextFieldByName("db_rolePass").getText().isEmpty()
+		if ( getTextFieldByName("psql_url").getText().length() == 0
+				|| getTextFieldByName("psql_adminUser").getText().length() == 0
+				|| getTextFieldByName("db_databaseName").getText().length() == 0
+				|| getTextFieldByName("db_roleUser").getText().length() == 0
+//				|| getTextFieldByName("db_rolePass").getText().length() == 0
 				) {
 			
 			setProblem(tr("db_EnterDetails"));
