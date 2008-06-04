@@ -7,12 +7,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PreprocCpp {
+    private Map<String,Integer> templateClasses = new HashMap<String,Integer>();
+    
     public static void main(String [] args) {
         PreprocCpp preproc = new PreprocCpp();
+        
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
         
@@ -30,6 +35,10 @@ public class PreprocCpp {
         preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion(int",
         		"{}");
+    }
+    
+    public PreprocCpp(){
+        getTemplateClasses().put("WSignalMapper", 2);
     }
     
     public void performChangesOnFilesInDir(String dir) {
@@ -74,7 +83,9 @@ public class PreprocCpp {
         sb = handleUsings(sb);
         System.err.println("\t handle Void Template Arg");
         handleVoidTemplateArg(sb);
-     
+        System.err.println("\t handle Default Template Arg");
+        handleDefaultTemplateArg(sb);
+        
         writeFile(f, sb);
     }
     
@@ -131,6 +142,24 @@ public class PreprocCpp {
         String [] toReplaceWith = {"std::string", "char"};
     
         replaceStrings(toReplace, toReplaceWith, sb);
+    }
+    
+    public void handleDefaultTemplateArg(StringBuffer sb){
+        //TODO make it work with nested templates: WClass<WClass2<T,S>>
+        
+        for(Map.Entry<String, Integer> e : getTemplateClasses().entrySet()){
+            int a = sb.indexOf(e.getKey()+"<");
+            int b = sb.indexOf(">",a);
+            
+            String templates = sb.substring(a + e.getKey().length()+1, b);
+            String [] t = templates.split(",");
+            
+            for(int i = t.length; i < e.getValue(); ++i){
+                templates += ",NoClass";
+            }
+            
+            sb.replace(a + e.getKey().length()+1, b, templates);
+        }
     }
     
     public void removeComments(File f) {
@@ -403,5 +432,13 @@ public class PreprocCpp {
             e.printStackTrace();
         }
         return null;
+    }
+
+    void setTemplateClasses(Map<String,Integer> templateClasses) {
+        this.templateClasses = templateClasses;
+    }
+
+    Map<String,Integer> getTemplateClasses() {
+        return templateClasses;
     }
 }
