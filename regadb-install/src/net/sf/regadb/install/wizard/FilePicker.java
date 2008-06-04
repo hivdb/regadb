@@ -42,7 +42,7 @@ public class FilePicker extends JPanel {
 		add(txtFile);
 		
 		browse = new JButton("Browse");
-		txtFile.setPreferredSize(new Dimension(300, browse.getPreferredSize().height));
+		txtFile.setPreferredSize(new Dimension(350, browse.getPreferredSize().height));
 		
 		txtFile.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {

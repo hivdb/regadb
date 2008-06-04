@@ -12,11 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import net.sf.regadb.install.wizard.steps.AccountStep;
-import net.sf.regadb.install.wizard.steps.ConfigFileStep;
 import net.sf.regadb.install.wizard.steps.DatabaseStep;
-import net.sf.regadb.install.wizard.steps.ProxyStep;
-import net.sf.regadb.install.wizard.steps.DirectoryStep;
 import net.sf.regadb.install.wizard.steps.DeploymentStep;
+import net.sf.regadb.install.wizard.steps.DirectoryStep;
+import net.sf.regadb.install.wizard.steps.ProxyStep;
 import net.sf.regadb.swing.i18n.I18n;
 import net.sf.regadb.util.pair.Pair;
 
@@ -64,23 +63,20 @@ public class RegaDBInstallWizard extends JFrame {
 		
 		ok.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				I18n.setBundleURI("net.sf.regadb.install.wizard.I18n"
-//						+ "." + getKey((String)langs.getSelectedItem()) 
-						+ ".resource");
+				I18n.setBundleURI("net.sf.regadb.install.wizard.I18n.resource");
 				
 				setVisible(false);
 				
 				Wizard wiz = WizardPage.createWizard(
-						new WizardPage[] {
-								new ConfigFileStep(),
-								new ProxyStep(),
-								new DatabaseStep(),
-								new AccountStep(),
-								new DirectoryStep(),
-								new DeploymentStep(),
+						new Class[] {
+								DatabaseStep.class,
+								AccountStep.class,
+								DirectoryStep.class,
+								ProxyStep.class,
+								DeploymentStep.class,
 								}, new RegaDBInstallHandler());
 				
-				int width = 1000;
+				int width = 800;
 				WizardDisplayer.showWizard(wiz, new Rectangle(width, (int)(width / 1.61803399)));
 				
 				dispose();

@@ -6,11 +6,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
-import net.sf.regadb.install.wizard.ChangeListener;
-import net.sf.regadb.install.wizard.GlobalConf;
 import net.sf.regadb.install.wizard.RegaDBWizardPage;
 
 import org.netbeans.spi.wizard.Wizard;
@@ -34,27 +31,6 @@ public class DatabaseStep extends RegaDBWizardPage {
 		addLine(tr("db_RegaDBUsername"), "db_roleUser", "regadb_user");
 		addLine(tr("db_RegaDBPassword"), "db_rolePass");
 		addLine(tr("db_PassRetype"), "db_rolePassRetype");
-		
-		JCheckBox initData = new JCheckBox(tr("db_InitData"));
-		initData.setName("initData");
-		initData.setSelected(true);
-		getContainer().add(initData, getGridBag(0, lineNr++));
-		
-		GlobalConf.getInstance().addListener(new ChangeListener() {
-			public void changed() {
-				String url = getConf("hibernate.connection.url");
-				url = url.substring(url.indexOf("//") + 2);
-				
-				String dbName = url.substring(url.indexOf("/") + 1);
-				url = url.substring(0, url.indexOf("/"));
-				
-				getTextFieldByName("psql_url").setText(url);
-				getTextFieldByName("db_databaseName").setText(dbName);
-				getTextFieldByName("db_roleUser").setText(getConf("hibernate.connection.username"));
-				getTextFieldByName("db_rolePass").setText(getConf("hibernate.connection.password"));
-				getTextFieldByName("db_rolePassRetype").setText(getConf("hibernate.connection.password"));
-			}
-		});
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -64,10 +40,15 @@ public class DatabaseStep extends RegaDBWizardPage {
 				|| getTextFieldByName("psql_adminUser").getText().length() == 0
 				|| getTextFieldByName("db_databaseName").getText().length() == 0
 				|| getTextFieldByName("db_roleUser").getText().length() == 0
-//				|| getTextFieldByName("db_rolePass").getText().length() == 0
+// TODO				|| getTextFieldByName("db_rolePass").getText().length() == 0
 				) {
 			
 			setProblem(tr("db_EnterDetails"));
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
+		}
+		
+		if ( !getTextFieldByName("db_rolePass").getText().equals( getTextFieldByName("db_rolePassRetype").getText() ) ) {
+			setProblem(tr("account_PasswordMismatch"));
 			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
 		
@@ -97,6 +78,7 @@ public class DatabaseStep extends RegaDBWizardPage {
 		} catch ( SQLException e ) {
 			if ( e.getLocalizedMessage().contains("does not exist") ) {
 				dbExists = false;
+//				System.err.println(e.getLocalizedMessage());
 			} else {
 				setProblem(e.getLocalizedMessage());
 				return WizardPanelNavResult.REMAIN_ON_PAGE;
@@ -106,11 +88,17 @@ public class DatabaseStep extends RegaDBWizardPage {
 			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
 		
+		// TODO check if role exists
+		
 		if ( dbExists ) {
 			setProblem(tr("db_databaseExists"));
 			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
 		
-		return WizardPanelNavResult.PROCEED;		
+		return WizardPanelNavResult.PROCEED;
+	}
+	
+	public static String getDescription() {
+		return tr("stepDatabase");
 	}
 }

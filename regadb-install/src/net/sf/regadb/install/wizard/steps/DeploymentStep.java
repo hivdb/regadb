@@ -26,8 +26,7 @@ public class DeploymentStep extends RegaDBWizardPage {
 		deploy_DoWant.setSelected(true);
 		getContainer().add(deploy_DoWant, getGridBag(0, lineNr++));
 		
-		//TODO remove default value
-		deployPick = new FilePicker("deploydir", "/home/dluypa0/apache-tomcat-6.0.16");
+		deployPick = new FilePicker("deploydir");
 		deployPick.setDirectoryOnly(true);
 		getContainer().add(deployPick, getGridBag(0, lineNr++));
 	}
@@ -55,5 +54,9 @@ public class DeploymentStep extends RegaDBWizardPage {
 			}
 		}
 		return WizardPanelNavResult.PROCEED;
+	}
+	
+	public static String getDescription() {
+		return tr("stepDeployment");
 	}
 }

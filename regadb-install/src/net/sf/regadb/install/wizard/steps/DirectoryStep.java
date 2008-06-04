@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 
 import net.sf.regadb.install.wizard.ChangeListener;
 import net.sf.regadb.install.wizard.FilePicker;
-import net.sf.regadb.install.wizard.GlobalConf;
 import net.sf.regadb.install.wizard.RegaDBWizardPage;
 
 import org.netbeans.spi.wizard.Wizard;
@@ -40,6 +39,7 @@ public class DirectoryStep extends RegaDBWizardPage {
 				updateDirs();
 			}
 		});
+		
 		installDir.setDirectoryOnly(true);
 		simplePanel.add(installDir, getGridBag(0, 0));
 		
@@ -57,7 +57,7 @@ public class DirectoryStep extends RegaDBWizardPage {
 		getContainer().add(advPanel);
 		
 		advPanel.add(new JLabel(tr("directory_SettingsFile")), getGridBag(0, 0));
-		configPick = new FilePicker("configCreateFile", "/home/dluypa0/");
+		configPick = new FilePicker("directory_SettingsFile");
 		configPick.setDirectoryOnly(true);
 		advPanel.add(configPick, getGridBag(0, 1));
 		
@@ -74,49 +74,49 @@ public class DirectoryStep extends RegaDBWizardPage {
 		// Set default installation directories
 		
 		String defaultDir = "";
-		if( System.getProperty("os.name").toLowerCase().startsWith("windows") ) {
+		if( isWindows() ) {
         	defaultDir = "C:\\Program Files\\rega_institute\\regadb";
         } else {
+        	setAdvanced();
         	defaultDir = System.getProperty("user.home") + "/rega_institute/regadb";
+	       	configPick.getTextField().setText("/etc/rega_institute/regadb");
         }
-		installDir.getTextField().setText(defaultDir);
-		updateDirs();
-    	
-		// Set events
 		
-		GlobalConf.getInstance().addListener(new ChangeListener() {
-			public void changed() {
-				queryPick.getTextField().setText(getConf("regadb.query.resultDir"));
-				logPick.getTextField().setText(getConf("regadb.log.dir"));
-				toggleAdvanced(true);
-			}
-		});
+    	installDir.getTextField().setText(defaultDir);
+    	updateDirs();
+		
+		// Set events
 		
 		toggleAdvanced.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				toggleAdvanced();
+				setAdvanced(!isAdvanced());
 			}
 		});
 	}
 	
-	private void toggleAdvanced() {
-		simplePanel.setVisible(!simplePanel.isVisible());
-		advPanel.setVisible(advPanel.isVisible());
+	private void setAdvanced() {
+		setAdvanced(true);
 	}
-	
-	private void toggleAdvanced(boolean b) {
+	private void setAdvanced(boolean b) {
 		simplePanel.setVisible(!b);
 		advPanel.setVisible(b);
+	}
+	private boolean isAdvanced() {
+		return advPanel.isVisible();
 	}
 	
 	private void updateDirs() {
 		String defDir = installDir.getTextField().getText();
 		
-		configPick.getTextField().setText(defDir + File.separator + "conf");
+		if ( isWindows() ) configPick.getTextField().setText(defDir + File.separator + "conf");
 		queryPick.getTextField().setText(defDir + File.separator + "querydir");
 		logPick.getTextField().setText(defDir + File.separator + "logs");
 		
 		revalidate();
+	}
+	
+	private boolean isWindows() {
+		return System.getProperty("os.name").toLowerCase().startsWith("windows");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -136,6 +136,15 @@ public class DirectoryStep extends RegaDBWizardPage {
 			}
 		}
 		
+		if ( !configDir.canWrite() ) {
+			setProblem(tr("directory_ConfigUnwritable"));
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
+		}
+		
 		return WizardPanelNavResult.PROCEED;
+	}
+	
+	public static String getDescription() {
+		return tr("stepDirectory");
 	}
 }

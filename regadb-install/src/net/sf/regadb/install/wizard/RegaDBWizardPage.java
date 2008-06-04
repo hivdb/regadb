@@ -16,7 +16,7 @@ import net.sf.regadb.swing.i18n.I18n;
 
 import org.netbeans.spi.wizard.WizardPage;
 
-public class RegaDBWizardPage extends WizardPage {
+public abstract class RegaDBWizardPage extends WizardPage {
 	private static final long serialVersionUID = 119489037513872417L;
 	private JPanel body;
 	protected int lineNr = 0;
@@ -88,8 +88,5 @@ public class RegaDBWizardPage extends WizardPage {
 	
 	public static String tr(String key) {
 		return I18n.tr(key);
-	}
-	public static String getConf(String property) {
-		return GlobalConf.getInstance().getProperty(property);
 	}
 }
