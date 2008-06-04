@@ -20,6 +20,7 @@ public class PreprocCpp {
         
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Chart");
         
         preproc.removeExterns(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WString"));
         
