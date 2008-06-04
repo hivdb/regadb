@@ -64,7 +64,7 @@ public class Transaction {
         getTestNominalValueQuery = session.createQuery("from TestNominalValue as anv where testType = :type and value = :value");
         getTestTypeQuery = session.createQuery("from TestType as testType where testType.description = :description");
         getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name and attribute.attributeGroup.groupName = :groupName");
-        getAmbiguousAttributeQuery = session.createQuery("from Attribute attribute where lower(attribute.name) = lower(:name)");
+        getAmbiguousAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name");
         getPatientQuery = session.createQuery(
                         "select new net.sf.regadb.db.Patient(patient, max(access.permissions))" +
                         "from PatientImpl as patient " +
