@@ -355,8 +355,8 @@ public class PreprocCpp {
     
         
     public StringBuffer handleUsings(StringBuffer fileContent) {
-        String [] toReplace = {"using std::exit;"};
-        String [] toReplaceWith = {"#include <myexit.h>"};
+        String [] toReplace = {"using std::exit;", "using WAbstractItemModel::setData;", "using WAbstractItemModel::data;"};
+        String [] toReplaceWith = {"#include <myexit.h>", "//using WAbstractItemModel::setData;", "//using WAbstractItemModel::data;"};
     
         replaceStrings(toReplace, toReplaceWith, fileContent);
         
