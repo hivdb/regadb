@@ -76,7 +76,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
             row.add(getFormattedDate(tDate));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(testCode +"");
-            row.add(getFormattedDecimal(value,0));
+            row.add(getFormattedDecimal(value,0,0));
             row.add("");
             
             out.addRow(row);

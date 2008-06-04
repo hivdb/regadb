@@ -48,7 +48,7 @@ public class WivArlCd4Form extends WivIntervalQueryForm {
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(TestCode.T4.getCode()+"");
-            row.add(getFormattedDecimal(in.valueAt(CValue,i),0));
+            row.add(getFormattedDecimal(in.valueAt(CValue,i),0,0));
             row.add("");
             row.add("");
             row.add("");

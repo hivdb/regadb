@@ -430,21 +430,23 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
 
     protected String getFormattedDecimal(String value){
-        return getFormattedDecimal(value, 2);
+        return getFormattedDecimal(value, 2, -1);
     }
     
-    protected String getFormattedDecimal(String value, int maxFractionDigits){
+    protected String getFormattedDecimal(String value, int maxFractionDigits, int minFractionDigits){
         double d =  parseValue(value);
-        return getFormattedDecimal(d,maxFractionDigits);
+        return getFormattedDecimal(d,maxFractionDigits, minFractionDigits);
     }
     
     protected String getFormattedDecimal(double value){
-        return getFormattedDecimal(value,2);
+        return getFormattedDecimal(value,2,2);
     }
     
-    protected String getFormattedDecimal(double value, int maxFractionDigits){
-        
-        decimalFormat.setMaximumFractionDigits(maxFractionDigits);
+    protected String getFormattedDecimal(double value, int maxFractionDigits, int minFractionDigits){
+        if(maxFractionDigits > -1)
+            decimalFormat.setMaximumFractionDigits(maxFractionDigits);
+        if(minFractionDigits > -1)
+            decimalFormat.setMinimumFractionDigits(minFractionDigits);
         String s = decimalFormat.format(value).replace(".", ",");
         return s;
     }
@@ -544,30 +546,43 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     
 
     protected String getFormattedViralLoadResult(TestResult tr){
-        String s;
         String value = tr.getValue();
         
-    	if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getHiv1ViralLoadTestType().getDescription())){
-    		s = getFormattedViralLoadLog10(value);
-    	}
-    	else{
-    		s = getFormattedDecimal(value,2);
-    	}
-    	
-    	String prefix[] = {"<",">"};
-    	for(String c : prefix){
-    	    if(value.startsWith(c)){
-    	        s = c + s;
-    	        break;
-    	    }
-    	}
-    	
-    	return s;
+        boolean log10 = tr.getTest().getTestType().getDescription().equals(StandardObjects.getHiv1ViralLoadTestType().getDescription()); 
+        return getFormattedViralLoadResult(value,log10,false);
+    }
+    
+    protected String getFormattedViralLoadResult(String value, boolean log10, boolean toLog10){
+        String s;
+        char prefix = value.charAt(0);
+        
+        if(toLog10){
+            double vl = parseValue(value);
+            vl = java.lang.Math.log10(vl);
+            value = vl+"";
+        }
+        
+        if(log10){
+            s = getFormattedViralLoadLog10(value);
+        }
+        else{
+            s = getFormattedDecimal(value,2,2);
+        }
+
+        char prefixes[] = {'<','>'};
+        for(char c : prefixes){
+            if(prefix == c){
+                s = c + s;
+                break;
+            }
+        }
+
+        return s;
     }
     
     protected String getFormattedViralLoadLog10(String value){
         double d = java.lang.Math.log10(parseValue(value));
-        return getFormattedDecimal(d,2);
+        return getFormattedDecimal(d,2,2);
     }
     
     protected Table getArlEpidemiologyTable(List<Patient> patients){
@@ -577,7 +592,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         int i=0;
         length.add(13); position.put("PatCode", i++);                   header.add("PAT_CODE");
         length.add(10); position.put("REF_LABO", i++);                  header.add("REF_LABO");
-        length.add(8);  position.put("DATE_TEST", i++);                 header.add("DATE_TEST");
+        length.add(8);  position.put("HivConf.TestResult.value", i++);  header.add("DATE_TEST");
         length.add(8);  position.put("Patient.birthDate", i++);         header.add("BIRTH_DATE");
         length.add(1);  position.put("Gender", i++);                    header.add("SEX");
         length.add(1);  position.put("HivType.TestResult.value", i++);  header.add("HIVTYPE");
@@ -638,10 +653,15 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 	            
 	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
 	            if(tr != null){
-	            	row[position.get("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0);
+	            	row[position.get("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
 	            }
 	            else
 	            	row[position.get("CD4.TestResult.value")] = "U";
+	            
+	            tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
+                if(tr != null){
+                    row[position.get("HivConf.TestResult.value")] = getFormattedDate(tr.getTestDate());
+                }
 	            
 	            row[position.get("LABO")] = getCentreName();
 	            

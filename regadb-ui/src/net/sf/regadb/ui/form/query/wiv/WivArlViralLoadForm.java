@@ -41,16 +41,13 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
         for(int i=1; i<in.numRows(); ++i){
             row = new ArrayList<String>();
             
-            double vl = parseValue(in.valueAt(CValue,i));
-            vl = java.lang.Math.log10(vl);
-            
             row.add(getCentreName());
             row.add(OriginCode.ARL.getCode()+"");
             row.add(in.valueAt(CPatCode, i));
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(TestCode.VL.getCode()+"");
-            row.add(getFormattedDecimal(vl));
+            row.add(getFormattedViralLoadResult(in.valueAt(CValue,i),false,true));
             row.add("");
             row.add("");
             row.add("");
