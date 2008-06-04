@@ -193,7 +193,7 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
         List<Attribute> l;
         
         String dftAttr = RegaDBSettings.getInstance().getDefaultValue("datatable.patient.attribute");
-        if(!"".equals(dftAttr)){
+        if(dftAttr != null){
             l = t.getAttributes(dftAttr);
         }
         else{
