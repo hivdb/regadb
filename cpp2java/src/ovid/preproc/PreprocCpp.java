@@ -337,6 +337,8 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <myexception.h>";
             } else if(textToReplace.contains("stdexcept")) {
                 textToReplaceWith = "#include <stdexcept.h>";
+            } else if(textToReplace.contains("cmath")) {
+                textToReplaceWith = "#include <cmath.h>";
             }
 
             
