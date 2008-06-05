@@ -71,7 +71,6 @@ public class ImportUNIBS
     
     public static void main(String [] args) 
     {
-        
     	try
     	{
     		ImportUNIBS imp = new  ImportUNIBS();
@@ -551,6 +550,7 @@ public class ImportUNIBS
     {
     	int CPatientId = Utils.findColumn(this.hivTherapyTable, "ID_Coorte");
     	int CStartTherapy = Utils.findColumn(this.hivTherapyTable, "Start");
+    	int CIF = Utils.findColumn(this.hivTherapyTable, "IF");
     	int CStopTherapy = Utils.findColumn(this.hivTherapyTable, "End");
     	int CStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "MotivoSospensione");
   	
@@ -567,12 +567,13 @@ public class ImportUNIBS
     	{
 	    	String patientID = this.hivTherapyTable.valueAt(CPatientId, i);
 			String startTherapy = this.hivTherapyTable.valueAt(CStartTherapy, i);
+			String IF = this.hivTherapyTable.valueAt(CIF, i);
 			String stopTherapy = this.hivTherapyTable.valueAt(CStopTherapy, i);
 			String stopReasonTherapy = this.hivTherapyTable.valueAt(CStopReasonTherapy, i);
 			
 			if(!"".equals(patientID))
             {
-        		ArrayList<String> drugs = new ArrayList<String>();
+        		HashMap<String,String> drugs = new HashMap<String,String>();
         		Date startDate = null;
         		Date stopDate = null;
         		
@@ -589,11 +590,15 @@ public class ImportUNIBS
             		{
             			String drugName = this.hivTherapyTable.getColumn(j).get(0);
             			
-            			//ConsoleLogger.getInstance().logInfo("Found drug value ("+patientID+"): "+drugName);
-            			
-            			drugs.add(drugName.toUpperCase());
+            			drugs.put(drugName.toUpperCase(), drugValue);
             		} 
                 }
+        		
+        		if(Utils.checkColumnValueForEmptiness("unknown drug value", IF, i, patientID) && Utils.checkDrugValue(IF, i, patientID))
+        		{
+        			//IF is mapped to drug T20
+        			drugs.put("T20", IF);
+        		}
         		
         		ArrayList<DrugGeneric> genDrugs = evaluateDrugs(drugs);
         		
@@ -682,10 +687,14 @@ public class ImportUNIBS
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
     	
+    	String drugs = ""; 
+    	
     	if(medicinsList != null)
     	{
 	    	for (int i = 0; i < medicinsList.size(); i++) 
 	    	{
+	    		drugs += (String)medicinsList.get(i).getGenericId() + " "; 
+	    		
 	    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
 	    		                                        1.0, 
 	    		                                        false,
@@ -693,6 +702,8 @@ public class ImportUNIBS
 	    		                                        (long)Frequency.DAYS.getSeconds());
 	    		t.getTherapyGenerics().add(tg);
 	    	}
+	    	
+	    	ConsoleLogger.getInstance().logInfo(""+p.getPatientId()+" "+startDate.toLocaleString()+" "+drugs);
     	}
     	
     	if(motivation != null && !motivation.equals(""))
@@ -705,28 +716,25 @@ public class ImportUNIBS
     	}
     }
     
-    private ArrayList<DrugGeneric> evaluateDrugs(ArrayList<String> drugs)
+    private ArrayList<DrugGeneric> evaluateDrugs(HashMap<String,String> drugs)
     {
     	ArrayList<DrugGeneric> gDrugs = new ArrayList<DrugGeneric>();
     	
-    	for(int i = 0; i < drugs.size(); i++)
+    	for(String drug : drugs.keySet())
     	{
-    		String drug = drugs.get(i);
-    		
     		if(!"".equals(drug))
     		{
-    			DrugGeneric genDrug = getDrugMapping(drug);
-    				
-    			if(genDrug != null)
-    				gDrugs.add(genDrug);
+    			getDrugMapping(gDrugs, drug, drugs.get(drug));
     		}
     	}
     	
     	return gDrugs;
     }
     
-    private DrugGeneric getDrugMapping(String drug)
+    private void getDrugMapping(ArrayList<DrugGeneric> gDrugs, String drug, String value)
     {
+    	ConsoleLogger.getInstance().logInfo("Found drug "+drug+" with value "+value);
+    	
     	boolean foundDrug = false;
     	DrugGeneric genDrug = null;
     	
@@ -736,9 +744,9 @@ public class ImportUNIBS
         	
         	if(genDrug.getGenericId().equals(drug.toUpperCase()))
         	{
-        		//ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
-        		
         		foundDrug = true;
+        		
+        		gDrugs.add(genDrug);
         		
         		break;
         	}
@@ -756,14 +764,23 @@ public class ImportUNIBS
             		
             		if(genDrug.getGenericId().toUpperCase().equals(mapping))
                 	{
-            			//ConsoleLogger.getInstance().logInfo("Found drug "+mapping+" after Mapping in Rega list");
+            			gDrugs.add(genDrug);
             			
-            			return genDrug;
+            			if(drug.equals("LPV") && value.equals("1.5"))
+            			{
+            				for(int j = 0; j < regaDrugGenerics.size(); j++)
+                         	{
+                        		genDrug = regaDrugGenerics.get(j);
+                        		
+                        		if(genDrug.getGenericId().toUpperCase().equals("RTV"))
+                        		{
+                        			gDrugs.add(genDrug);
+                        		}
+                         	}
+            			}
                 	}
              	}
             }
         }
-
-        return genDrug; 
     }
 }
