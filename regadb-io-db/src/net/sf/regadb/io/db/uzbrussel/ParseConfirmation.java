@@ -131,7 +131,7 @@ public class ParseConfirmation {
             Date testDate = null;
             try {
                 testDate = df.parse(date_test);
-                handleWivDateAttribute("DATE_TEST", date_test, p, df);
+                //handleWivDateAttribute("DATE_TEST", date_test, p, df);
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
