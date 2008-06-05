@@ -594,7 +594,9 @@ public class ImportIrsicaixa {
     }
     
     public static void main(String [] args) {
-        ImportIrsicaixa imp = new ImportIrsicaixa(ConsoleLogger.getInstance(), "/home/simbre0/virolab", "/home/simbre0/virolab/mappings");
+        if(args.length < 2)
+            System.out.println("Usage: ImportIrsicaixa <csv path> <mappings path>");
+        ImportIrsicaixa imp = new ImportIrsicaixa(ConsoleLogger.getInstance(), args[0], args[1]);
         imp.run();
     }
 }
