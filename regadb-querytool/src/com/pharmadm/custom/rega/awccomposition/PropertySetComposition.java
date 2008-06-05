@@ -11,14 +11,18 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
 
-
+/**
+ * assign value to a property of a table
+ * @author fromba0
+ *
+ */
 public class PropertySetComposition extends CompositionBehaviour {
 
 	@Override
 	public boolean canCompose(AtomicWhereClause signatureClause,
 			AtomicWhereClause clause) {
 		return matches(signatureClause) && matches(clause) &&
-		signatureClause.getInputVariables().iterator().next().getVariableType().equals(clause.getInputVariables().iterator().next().getVariableType());
+		signatureClause.getInputVariables().iterator().next().getObject().isCompatible(clause.getInputVariables().iterator().next().getObject());
 	}
 
 	@Override
@@ -30,7 +34,7 @@ public class PropertySetComposition extends CompositionBehaviour {
 	public boolean matches(AtomicWhereClause clause) {
 		return clause.getVisualizationClauseList().getWords().size() == 6 &&
 				clause.getVisualizationClauseList().getWords().get(1) instanceof InputVariable &&
-				clause.getInputVariables().iterator().next().getVariableType().isTable() &&
+				clause.getInputVariables().iterator().next().getObject().isTable() &&
 				clause.getVisualizationClauseList().getWords().get(2) instanceof FixedString &&				
 				(clause.getVisualizationClauseList().getWords().get(3) instanceof FixedString || clause.getVisualizationClauseList().getWords().get(3) instanceof OutputVariable) &&				
 				clause.getVisualizationClauseList().getWords().get(4) instanceof OperatorConstant &&				

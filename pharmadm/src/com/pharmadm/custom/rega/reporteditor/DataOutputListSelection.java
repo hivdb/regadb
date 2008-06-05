@@ -24,11 +24,11 @@ public class DataOutputListSelection extends com.pharmadm.custom.rega.queryedito
     
     /** Creates a new instance of PropertySelection */
     public DataOutputListSelection(DataOutputVariable ovar) {
-        super(ovar);
+        super(ovar, ovar.getObject());
     }
     
     public DataOutputListSelection(DataOutputVariable ovar, boolean selected) {
-        super(ovar, selected);
+        super(ovar, ovar.getObject(), selected);
     }
     
     public Object getObject(Object objectSpec) {

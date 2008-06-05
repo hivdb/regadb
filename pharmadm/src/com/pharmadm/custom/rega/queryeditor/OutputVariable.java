@@ -14,6 +14,7 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
@@ -52,11 +53,9 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
   ///////////////////////////////////////
   // attributes
 
-    public OutputVariable(VariableType type, String formalName, String description) {
-        super(type);
+    public OutputVariable(DbObject object) {
+        super(object);
         this.expression= new OutputExpression();
-        this.formalName = formalName; 
-        this.description = description;
         this.relation = null;
     }
 
@@ -80,12 +79,6 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
  * </p>
  * 
  */
-    private String formalName;
-    
-/**
- * description of the object
- */
-    private String description; 
 
 /**
  * description of the relation this outputvariable represents
@@ -114,17 +107,17 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     private String uniqueName; 
 
     public String getFormalName() {
-    	return formalName;
+    	return getObject().getVariableName();
     }
     
-    /**
-     * sets a different base variable name for this output variable
-     * than the one found in the prototype catalog
-     * @param formalName
-     */
-    public void setFormalName(String formalName) {
-        this.formalName = formalName.replace(" ", "");
-    }
+//    /**
+//     * sets a different base variable name for this output variable
+//     * than the one found in the prototype catalog
+//     * @param formalName
+//     */
+//    public void setFormalName(String formalName) {
+//        this.formalName = formalName.replace(" ", "");
+//    }
     
     /**
      * returns the unique name of this output variable
@@ -150,15 +143,6 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     	this.relation = name;
     }
     
-    /**
-     * sets a custom description to be used instead of the one specified in
-     * the catalog
-     * @param name
-     */
-    public void setDescription(String name) {
-    	this.description = name;
-    }
-    
     public String getName(RelationDisplay relation, DescriptionDisplay description, UniqueNameDisplay uName) {
     	String name = "";
     	if (relation == RelationDisplay.SHOW && this.relation != null) {
@@ -167,7 +151,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     	if (description == DescriptionDisplay.SHOW ||
     		description == DescriptionDisplay.SHOW_WHEN_UNASSIGNED && uniqueName == null ||
     		description == DescriptionDisplay.SHOW_WHEN_ASSIGNED && uniqueName != null) {
-    		name += this.description + " ";
+    		name += getObject().getDescription() + " ";
     	}
     	if (uName == UniqueNameDisplay.SHOW ||
     			uName == UniqueNameDisplay.SHOW_WHEN_UNASSIGNED && uniqueName == null ||
@@ -264,7 +248,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     
     /* return the full column name uniquely identifying this field in a result set */ 
     public String getFullColumnName(Field field) {
-        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getTableName().equals(field.getTable().getName()))) {
+        if (consistsOfSingleFromVariable() && (((FromVariable)expression.getWords().get(0)).getObject().getTableName().equals(field.getTable().getName()))) {
             return getUniqueName() + "." + field.getDescription();
         } else { 
             System.err.println("Error : trying to get a field from a variable that does not know it");
@@ -274,7 +258,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     
     public Collection<String> getPrimaryKeyColumnNames() {
         if (consistsOfSingleFromVariable()) {
-            Table table = ((FromVariable)expression.getWords().get(0)).getTable();
+            Table table = ((FromVariable)expression.getWords().get(0)).getObject().getTable();
             Collection<String> res = new ArrayList<String>();
             Iterator<Field> iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
@@ -295,7 +279,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     
     public Collection<String> getPrimaryKeyWhereClauseNames() {
         if (consistsOfSingleFromVariable()) {
-            Table table = ((FromVariable)expression.getWords().get(0)).getTable();
+            Table table = ((FromVariable)expression.getWords().get(0)).getObject().getTable();
             Collection<String> res = new ArrayList<String>();
             Iterator<Field> iter = table.getPrimaryKeyFields().iterator();
             while (iter.hasNext()) {
@@ -320,7 +304,7 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
 	public boolean equals(Object o) {
 		if (o instanceof OutputVariable) {
 			OutputVariable ovar = (OutputVariable) o;
-			return ovar.getVariableType().getName().equals(getVariableType().getName()) && ovar.getUniqueName().equals(getUniqueName());
+			return ovar.getUniqueName().equals(getUniqueName());
 		}
 		return false;
 	}

@@ -2,12 +2,13 @@ package com.pharmadm.custom.rega.gui.configurers;
 
 import java.util.List;
 
-
-import com.pharmadm.custom.rega.awccomposition.CollectionCountComposition;
+import com.pharmadm.custom.rega.awccomposition.NamedTablePropertyComposition;
+import com.pharmadm.custom.rega.awccomposition.PrimitiveDeclarationComposition;
 import com.pharmadm.custom.rega.awccomposition.PropertyFetchComposition;
 import com.pharmadm.custom.rega.awccomposition.PropertySetComposition;
 import com.pharmadm.custom.rega.awccomposition.TableFetchComposition;
-import com.pharmadm.custom.rega.awccomposition.VariableDeclarationComposition;
+import com.pharmadm.custom.rega.awccomposition.NamedTableFetchComposition;
+import com.pharmadm.custom.rega.awccomposition.NewTableComposition;
 import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 import com.pharmadm.custom.rega.queryeditor.NullComposition;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedVisualizationComponentFactory;
@@ -24,13 +25,23 @@ public class JComposedVisualizationComponentFactory extends
 		if (behaviour instanceof NullComposition) {
 			return null;
 		}
+		else if (behaviour instanceof PrimitiveDeclarationComposition) {
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 3));
+			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			return new JAttributeConfigurer(string, constants);			
+		}
+		else if (behaviour instanceof NamedTablePropertyComposition) {
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 4));
+			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			return new JAttributeConfigurer(string, constants);			
+		}
 		else if (behaviour instanceof PropertySetComposition) {
 			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 3));
 			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
 			return new JAttributeConfigurer(string, constants);			
 		}
-		else if (behaviour instanceof CollectionCountComposition) {
-			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 3));
+		else if (behaviour instanceof NamedTableFetchComposition) {
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 4));
 			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
 			return new JAttributeConfigurer(string, constants);			
 		}
@@ -40,7 +51,7 @@ public class JComposedVisualizationComponentFactory extends
 		else if (behaviour instanceof TableFetchComposition) {
 			return new JComposedWordConfigurer(configurers.get(0));
 		}
-		else if (behaviour instanceof VariableDeclarationComposition) {
+		else if (behaviour instanceof NewTableComposition) {
 			return new JComposedWordConfigurer(configurers.get(0));
 		}
 		else {

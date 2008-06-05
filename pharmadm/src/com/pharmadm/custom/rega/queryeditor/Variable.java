@@ -13,6 +13,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 
 /**
  * <p>
@@ -29,30 +31,25 @@ public abstract class Variable implements Serializable {
     ///////////////////////////////////////
     // associations
     
-    /**
-     * <p>
-     *
-     * </p>
-     */
-    private VariableType variableType;
+
+    private DbObject object;
     
     /** For xml-encoding purposes only */
     public Variable() {
     }
     
-    public Variable(VariableType type) {
-        this.variableType = type;
+    public Variable(DbObject object) {
+        this.setObject(object);
     }
-    
-    ///////////////////////////////////////
-    // access methods for associations
-    
-    public VariableType getVariableType() {
-        return variableType;
-    }
-    public void setVariableType(VariableType variableType) {
-        this.variableType = variableType;
-    }
+
+	private void setObject(DbObject object) {
+		this.object = object;
+	}
+
+	public DbObject getObject() {
+		return object;
+	}
+
     
 } // end Variable
 

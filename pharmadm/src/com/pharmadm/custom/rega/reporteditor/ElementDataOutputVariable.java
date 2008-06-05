@@ -12,7 +12,8 @@
  */
 package com.pharmadm.custom.rega.reporteditor;
 
-import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 import java.util.*;
 
 /**
@@ -32,14 +33,18 @@ public class ElementDataOutputVariable extends DataOutputVariable {
     private int pos;
     
     /** Creates a new instance of ListDataOutputVariable */
-    public ElementDataOutputVariable(VariableType elementType, ListDataOutputVariable parent, int pos) {
-        super(elementType, parent.getFormalName() + "." + pos);
+    public ElementDataOutputVariable(DbObject object, ListDataOutputVariable parent, int pos) {
+        super(object);
         this.parent = parent;
         this.pos = pos;
     }
     
     /* For xml-encoding purposes */
     public ElementDataOutputVariable() {
+    }
+    
+    public String getFormalName() {
+    	return parent.getFormalName() + "." + pos;    	
     }
     
     public int getPos() {

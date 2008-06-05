@@ -38,6 +38,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     
 	private QueryEditor editor;
 	
+	
     public QueryEditorTree(Query query) {
         super(new WhereClauseTreeNode(query.getRootClause()), true);
         this.editor = new QueryEditor(query, this);
@@ -47,7 +48,7 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
     	return editor;
     }
     
-    private void setQuery(Query query) {
+    public void setQuery(Query query) {
         setRoot(new WhereClauseTreeNode(query.getRootClause()));
         Object[] rootPath = {getRoot()};
         fireTreeStructureChanged(this, rootPath, null, null);
@@ -354,12 +355,12 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
         getQueryEditor().setDirty(false);
     }	 
     
-    public void load(File file) throws IOException {
-        loadXMLQuery(file);
+    public void load(Object file) throws IOException {
+        loadXMLQuery((File) file);
     }
     
-    public void save(File file) throws IOException {
-        saveXMLQuery(file);
+    public void save(Object file) throws IOException {
+        saveXMLQuery((File) file);
     }
 
 	public void addDirtinessListener(DirtinessListener listener) {
@@ -368,6 +369,10 @@ public class QueryEditorTree extends DefaultTreeModel implements Savable, QueryE
 
 	public boolean isDirty() {
 		return getQueryEditor().isDirty();
+	}
+
+	public boolean isLoaded() {
+		return true;
 	}
 }
 

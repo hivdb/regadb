@@ -71,7 +71,7 @@ public class JDBCConnector implements  DatabaseConnector{
         return new JDBCResult(srs);
 	}
 
-	public List<String> getColumnNames(String tableName) {
+	public List<String> getPrimitiveColumnNames(String tableName) {
         List<String> result = new ArrayList<String>();
         try {
             DatabaseMetaData dmd = con.getMetaData();
@@ -88,6 +88,24 @@ public class JDBCConnector implements  DatabaseConnector{
         }
         return result;
 	}
+	
+	public List<String> getNonPrimitiveColumnNames(String tableName) {
+        List<String> result = new ArrayList<String>();
+        try {
+            DatabaseMetaData dmd = con.getMetaData();
+            ResultSet rs = dmd.getImportedKeys(null, null, tableName);
+            while (rs.next()) {
+                result.add(rs.getString("FKCOLUMN_NAME"));
+            }
+            rs.close();
+        }
+        catch (SQLException sqle) {
+        	System.err.println("error fetching column names for table " + tableName);
+            sqle.printStackTrace();
+            System.exit(1);
+        }
+        return result;
+	}	
 
 	public int getColumnType(String tableName, String columnName) {
         try {

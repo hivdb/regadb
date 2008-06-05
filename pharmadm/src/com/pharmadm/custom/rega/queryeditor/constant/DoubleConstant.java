@@ -16,7 +16,10 @@ import java.text.Format;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
 
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 
 
 /**
@@ -33,8 +36,8 @@ public class DoubleConstant extends Constant implements Serializable{
     }
 
 	@Override
-	public String getValueTypeString() {
-		return ValueType.Numeric.toString();
+	public DbObject getDbObject() {
+		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.Number.toString());
 	}
 
 	@Override

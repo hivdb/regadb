@@ -12,7 +12,6 @@
  */
 package com.pharmadm.custom.rega.reporteditor;
 
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 
 /**
  *
@@ -20,7 +19,7 @@ import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
  */
 public interface ValueSpecifier {
     
-    public Class getValueType();
+    public Class getValueTypeClass();
     
     public Object getValue(DataRow dataRow); 
     

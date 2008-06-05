@@ -17,7 +17,9 @@ import java.text.Format;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 /**
@@ -27,7 +29,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  */
 public class DateConstant extends Constant implements Serializable{
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
     
     public DateConstant() {
     	super();
@@ -54,13 +56,13 @@ public class DateConstant extends Constant implements Serializable{
     }
     
 	@Override
-	public String getValueTypeString() {
-		return ValueType.Date.toString();
+	public DbObject getDbObject() {
+		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.Date.toString());
 	}
 
 	@Override
 	public Object getdefaultValue() {
-		return new java.sql.Date(new Date().getTime());
+		return DATE_FORMAT.format(new java.sql.Date(new Date().getTime()));
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool;
+package net.sf.regadb.ui.form.query.querytool.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +15,26 @@ import net.sf.witty.wt.widgets.extra.WMenuItem;
 import net.sf.witty.wt.widgets.extra.WMenuLoadPolicy;
 import net.sf.witty.wt.widgets.extra.WMenuOrientation;
 
-public class WTabbedPane extends WContainerWidget {
+public class WTabbedPane extends WStyledContainerWidget implements StatusbarHolder {
 	private WMenu tabs;
-	private int selectedIndex;
 	
+	private int selectedIndex;
 	private List<WContainerWidget> tabItems;
-	private List<WMessage> titles;
+	private ArrayList<WMessage> titles;
+	private WStatusBar statusbar;
+	
+	private WTable table;
 	
 	
 	public WTabbedPane() {
-		super();
+		this(null);
+	}
+	
+	public WTabbedPane(WContainerWidget parent) {
+		super(parent);
 		tabItems = new ArrayList<WContainerWidget>();
 		titles = new ArrayList<WMessage>();
-		WTable table = new WTable(this);
+		table = new WTable(this);
 		table.setStyleClass("tabbedpane");
 		
 		WStackedWidget menuContents = new WStackedWidget();
@@ -39,11 +46,11 @@ public class WTabbedPane extends WContainerWidget {
 		table.putElementAt(0, 0, tabs);
 	}
 	
-	public void addTab(WMessage name, final WContainerWidget contents) {
+	public void addTab(WMessage title, final WContainerWidget contents) {
 		WWidget widget = (WWidget) contents;
 		widget.setStyleClass(widget.styleClass() + " tab");
 		
-		final WMenuItem wmi = new WMenuItem(name, widget, WMenuLoadPolicy.LazyLoading);
+		final WMenuItem wmi = new WTabMenuItem(title, widget, WMenuLoadPolicy.LazyLoading);
 		wmi.itemWidget().clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				contents.show();
@@ -52,7 +59,7 @@ public class WTabbedPane extends WContainerWidget {
 		});
 		
 		tabs.addItem(wmi);
-		titles.add(name);
+		titles.add(title);
 		tabItems.add(contents);
 	}
 	
@@ -63,8 +70,12 @@ public class WTabbedPane extends WContainerWidget {
 		}
 	}
 	
-	public void showTab(WMessage msg) {
-		showTab(titles.indexOf(msg));
+	public void showTab(WMessage title) {
+		for (int i = 0 ; i < titles.size() ; i++) {
+			if (title.keyOrValue().equals(titles.get(i).keyOrValue())) {
+				showTab(i);
+			}
+		}
 	}
 	
 	public void showTab(WContainerWidget tab) {
@@ -73,5 +84,21 @@ public class WTabbedPane extends WContainerWidget {
 	
 	public WContainerWidget getSelectedTab() {
 		return tabItems.get(selectedIndex);
+	}
+	
+	public int getSelectedTabIndex() {
+		return selectedIndex;
+	}
+	
+	public WContainerWidget getTab(int index) {
+		return tabItems.get(index);
+	}
+
+	public void setStatusBar(WStatusBar statusBar) {
+		if (statusbar != null) {
+			table.elementAt(1, 0).removeWidget(statusbar);
+		}
+		table.elementAt(1, 0).addWidget(statusBar);
+		statusbar = statusBar;
 	}
 }

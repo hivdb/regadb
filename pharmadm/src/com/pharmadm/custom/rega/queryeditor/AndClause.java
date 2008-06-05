@@ -31,7 +31,6 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  */
 public class AndClause extends ComposedWhereClause implements Serializable {
     
-    
     /** For xml-encoding purposes only */
     public AndClause() {
     }
@@ -54,14 +53,14 @@ public class AndClause extends ComposedWhereClause implements Serializable {
         return visitor.visitWhereClauseAndClause(this);
     }
     
-    protected Collection<OutputVariable> getExportedOutputVariables() {
-        Collection<OutputVariable> result = new ArrayList<OutputVariable>();
+    protected List<OutputVariable> getExportedOutputVariables() {
+    	List<OutputVariable> exportedOutputVariables = new ArrayList<OutputVariable>();
         Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {
             WhereClause aChild = iterCh.next();
-            result.addAll(aChild.getExportedOutputVariables());
+            exportedOutputVariables.addAll(aChild.getExportedOutputVariables());
         }
-        return result;
+		return exportedOutputVariables;
     }
     
     public String toString() {

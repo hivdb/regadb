@@ -3,33 +3,33 @@ package net.sf.regadb.ui.form.query.querytool.select;
 import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.ComposedSelection;
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.SimpleSelection;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
 
+import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
+import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
 
-public class SelectionGroupBox extends WContainerWidget{
-	private QueryEditor editor;
+public class SelectionListContainer extends WContainerWidget{
+	private QueryToolApp mainForm;
 	
 	private WContainerWidget rootSelectorPanel;
 	
-	public SelectionGroupBox(QueryEditor editor) {
+	public SelectionListContainer(QueryToolForm mainForm) {
 		super();
-		this.editor = editor;
+		this.mainForm = mainForm;
 		init();
-		updateSelection();
 	}
 	
 	private void init() {
 		this.setStyleClass("selectionfield");
 		rootSelectorPanel = new WContainerWidget(this);
 		rootSelectorPanel.setStyleClass("content");
-		editor.addSelectionListChangeListener(new SelectionListChangeListener() {
+		mainForm.getEditorModel().getQueryEditor().addSelectionListChangeListener(new SelectionListChangeListener() {
 			public void listChanged() {
 				updateSelection();
 			}
@@ -42,7 +42,7 @@ public class SelectionGroupBox extends WContainerWidget{
 			rootSelectorPanel.removeWidget(rootSelectorPanel.children().get(0));
 		}
 		
-		List<Selection> selections = editor.getQuery().getSelectList().getSelections();
+		List<Selection> selections = mainForm.getEditorModel().getQueryEditor().getQuery().getSelectList().getSelections();
 		for (Selection selection : selections) {
 			if (selection instanceof ComposedSelection) {
 				rootSelectorPanel.addWidget(new TableSelectionContainer((TableSelection) selection));
@@ -53,8 +53,15 @@ public class SelectionGroupBox extends WContainerWidget{
 		}
 		
 		if (selections.isEmpty()) {
-			WText warning = new WText(new WMessage("form.query.querytool.message.nofields"));
-			warning.setStyleClass("warning");
+			WText warning;
+			if (mainForm.getSavable().isLoaded()) {
+				warning = new WText(new WMessage("form.query.querytool.message.nofields"));
+				warning.setStyleClass("warning");
+			}
+			else {
+				warning = new WText(new WMessage("form.query.querytool.message.selectionunverifiable"));
+				warning.setStyleClass("warning");
+			}
 			rootSelectorPanel.addWidget(warning);
 		}
 	}	

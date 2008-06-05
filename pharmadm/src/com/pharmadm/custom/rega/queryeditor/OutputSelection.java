@@ -25,12 +25,12 @@ public class OutputSelection extends SimpleSelection implements Serializable {
     
     /** Creates a new instance of OutputSelection */
     public OutputSelection(OutputVariable ovar) {
-        super(ovar);
+        super(ovar, ovar.getObject());
     }
     
     /** Creates a new instance of OutputSelection */
     public OutputSelection(OutputVariable ovar, boolean selected) {
-        super(ovar, selected);
+        super(ovar, ovar.getObject(), selected);
     }
     
     public Object getObject(Object objectSpec) {

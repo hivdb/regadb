@@ -14,6 +14,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 /**
  *
  * @author  kristof
@@ -28,17 +30,24 @@ import java.io.Serializable;
  */
 public abstract class SimpleSelection implements Selection, Serializable {
     
+	private DbObject object;
     private Object objectSpec; // specification of the object - the distinction object/spec is important for xml-encoding/decoding
     private boolean selected = false;
     private SelectionList controller = null;
     
-    /** Creates a new instance of SimpleSelection */
-    public SimpleSelection(Object objectSpec) {
-        this.objectSpec = objectSpec;
+    public DbObject getDbObject() {
+    	return object;
     }
     
-    public SimpleSelection(Object objectSpec, boolean selected) {
+    /** Creates a new instance of SimpleSelection */
+    public SimpleSelection(Object objectSpec, DbObject object) {
         this.objectSpec = objectSpec;
+        this.object = object;
+    }
+    
+    public SimpleSelection(Object objectSpec, DbObject object, boolean selected) {
+        this.objectSpec = objectSpec;
+        this.object = object;
         this.selected = selected;
     }
     

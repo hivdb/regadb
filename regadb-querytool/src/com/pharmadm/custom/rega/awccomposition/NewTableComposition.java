@@ -7,7 +7,12 @@ import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 
-public class VariableDeclarationComposition extends CompositionBehaviour {
+/**
+ * new table variable
+ * @author fromba0
+ *
+ */
+public class NewTableComposition extends CompositionBehaviour {
 
 	public boolean canCompose(AtomicWhereClause signatureClause, AtomicWhereClause clause) {
 		return matches(signatureClause) && matches(clause);
@@ -17,7 +22,7 @@ public class VariableDeclarationComposition extends CompositionBehaviour {
 		return clause.getOutputVariables().size() == 1 && 
 		clause.getConstants().size() == 0 &&
 		clause.getInputVariables().size() == 0 &&
-		clause.getOutputVariables().iterator().next().getVariableType().isTable();	
+		clause.getOutputVariables().iterator().next().getObject().isTable();	
 	}
 
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {

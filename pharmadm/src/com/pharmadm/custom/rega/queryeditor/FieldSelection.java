@@ -14,7 +14,7 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 /**
  *
@@ -28,18 +28,12 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 public class FieldSelection extends SimpleSelection implements Serializable{
     
     /** Creates a new instance of FieldSelection */
-    public FieldSelection(Field field) {
-        super(new String[] {field.getName(), field.getTable().getName()});
+    public FieldSelection(DbObject obj) {
+        super(obj, obj);
     }
     
     public Object getObject(Object objectSpec) {
-        // the specification in this case is a String[2] array, containing the name
-        // of the field and the name of the table it belongs to; 
-        // in general, no new field or table should be created : rather, they should 
-        // be looked up in the (currently active) database table catalog
-        String[] spec = (String[])objectSpec;
-        Table table = DatabaseManager.getInstance().getTableCatalog().getTable(spec[1]);
-        Field field = table.getField(spec[0]);
-        return field;
+        DbObject spec = (DbObject)objectSpec;
+        return spec.getField();
     }
 }

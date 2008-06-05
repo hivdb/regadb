@@ -16,6 +16,7 @@ import java.io.Serializable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
@@ -51,8 +52,8 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     public InputVariable() {
     }
     
-    public InputVariable(VariableType type) {
-        super(type);
+    public InputVariable(DbObject object) {
+        super(object.getTableObject());
     }
     ///////////////////////////////////////
     // access methods for associations
@@ -90,7 +91,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
      * </p>
      */
     public boolean isCompatible(OutputVariable ov) {
-        return getVariableType().isCompatibleType(ov.getVariableType());
+        return getObject().isCompatible(ov.getObject());
     }
     
     public String acceptWhereClause(QueryVisitor visitor) {
@@ -100,7 +101,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     public String getHumanStringValue() {
     	if (valid) {
     		if (outputVariable == null) {
-    			return this.getVariableType().getName();
+    			return this.getObject().getDescription();
     		}
     		else {
     			return outputVariable.getName(RelationDisplay.HIDE, DescriptionDisplay.HIDE, UniqueNameDisplay.SHOW);
@@ -119,7 +120,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
     }
 
 	public String getImmutableStringValue() {
-		return getVariableType().getName();
+		return getObject().getTableName();
 	}
 } // end InputVariable
 

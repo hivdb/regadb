@@ -13,7 +13,7 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
@@ -29,7 +29,7 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
  * </p>
  *
  */
-public class FromVariable implements AWCWord, Cloneable, Serializable {
+public class FromVariable extends Variable implements AWCWord, Cloneable, Serializable {
     
     ///////////////////////////////////////
     // associations
@@ -40,36 +40,27 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
      * </p>
      */
 
-    private String tableName;
     private long seqId;
     private boolean locked;
     
-    public FromVariable(String tableName) {
-        this.tableName = tableName;
+    public FromVariable(DbObject obj) {
+    	super(obj.getTableObject());
         locked = false;
     }
     
     private void acquireSeqId() {
-    	seqId = getTable().acquireSeqId();
+    	seqId = getObject().getTable().acquireSeqId();
         locked = true;
     }
     
     ///////////////////////////////////////
     // access methods for associations
     
-    public Table getTable() {
-    		return DatabaseManager.getInstance().getTableCatalog().getTable(tableName);
-    }
-    
-    public String getTableName() {
-        return tableName;
-    }
-    
     public String getUniqueName() {
     	if (!locked) {
     		acquireSeqId();
     	}
-        return DatabaseManager.getInstance().getAWCCatalog().getTableAlias(tableName) + seqId;
+        return getObject().getSqlAlias() + seqId;
     }
     
     public String getFromClauseStringValue(QueryVisitor visitor) {
@@ -99,6 +90,6 @@ public class FromVariable implements AWCWord, Cloneable, Serializable {
     }
 
 	public String getImmutableStringValue() {
-		return tableName;
+		return getObject().getTableName();
 	}
 }

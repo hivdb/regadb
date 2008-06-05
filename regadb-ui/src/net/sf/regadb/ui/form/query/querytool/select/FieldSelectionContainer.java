@@ -25,8 +25,8 @@ public class FieldSelectionContainer extends WContainerWidget {
 	}
 	
 	private void init() {
-        Field field = (Field) selection.getObject();
-		checkBox = new WCheckBox(new WMessage(field.getDescription(), true), this);
+//        Field field = (Field) selection.getObject();
+		checkBox = new WCheckBox(new WMessage(selection.getDbObject().getDescription(), true), this);
 		checkBox.setChecked(selection.isSelected());
 		checkBox.changed.addListener(new SignalListener<WEmptyEvent>() {
 			public void notify(WEmptyEvent a) {

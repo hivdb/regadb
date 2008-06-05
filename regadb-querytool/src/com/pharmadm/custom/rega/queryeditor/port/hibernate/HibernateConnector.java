@@ -24,9 +24,9 @@ public class HibernateConnector implements DatabaseConnector {
 	private Login login;
 	private boolean tableSelectionAllowed;
 	
-	public HibernateConnector(String user, String pwd, boolean tables) {
+	public HibernateConnector(Login copiedLogin, boolean tables) {
 		try {
-			login = Login.authenticate(user, pwd);
+			login = copiedLogin;
 			tableSelectionAllowed = tables;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -47,7 +47,7 @@ public class HibernateConnector implements DatabaseConnector {
 		return result;
 	}
 
-	public List<String> getColumnNames(String tableName) {
+	public List<String> getPrimitiveColumnNames(String tableName) {
 		List<String> list= new ArrayList<String>();
 		ClassMetadata cmd = HibernateUtil.getSessionFactory().getClassMetadata(tableName);
 		
@@ -59,7 +59,7 @@ public class HibernateConnector implements DatabaseConnector {
 			for (int i = 0 ; i < cols.length ; i++) {
 				String name = cols[i];
 				Type t = cmd.getPropertyType(name);
-				if (isValidType(t) && i != cmd.getVersionProperty()) {
+				if (isprimitiveType(t) && i != cmd.getVersionProperty()) {
 					list.add(cols[i]);
 				}
 			}
@@ -71,12 +71,35 @@ public class HibernateConnector implements DatabaseConnector {
 		
 		return list;
 	}
+	
+	public List<String> getNonPrimitiveColumnNames(String tableName) {
+		List<String> list= new ArrayList<String>();
+		ClassMetadata cmd = HibernateUtil.getSessionFactory().getClassMetadata(tableName);
+		
+		if (cmd != null) {
+			// add normal properties
+			String[] cols = cmd.getPropertyNames();
+			for (int i = 0 ; i < cols.length ; i++) {
+				String name = cols[i];
+				Type t = cmd.getPropertyType(name);
+				if (!isprimitiveType(t) && i != cmd.getVersionProperty()) {
+					list.add(cols[i]);
+				}
+			}
+		}
+		else {
+			System.err.println("metadata for table " + tableName + " not found");
+			System.exit(1);
+		}
+		
+		return list;
+	}	
 
 	public int getColumnType(String tableName, String columnName) {
 		ClassMetadata cmd = HibernateUtil.getSessionFactory().getClassMetadata(tableName);
 		if (cmd != null) {
 			SessionFactoryImplementor sfi = (SessionFactoryImplementor) HibernateUtil.getSessionFactory();
-			if (getTableNames().contains(tableName) && getColumnNames(tableName).contains(columnName)) {
+			if (getTableNames().contains(tableName) && getPrimitiveColumnNames(tableName).contains(columnName)) {
 				Type t = cmd.getPropertyType(columnName);
 				if (t != null) {
 					int[] types = t.sqlTypes(sfi);
@@ -134,7 +157,7 @@ public class HibernateConnector implements DatabaseConnector {
 		return t.isComponentType();
 	}
 	
-	private boolean isValidType(Type t) {
+	private boolean isprimitiveType(Type t) {
 		return (!t.isAssociationType() && !t.isCollectionType() && !t.isComponentType());
 	}
 	
@@ -145,7 +168,7 @@ public class HibernateConnector implements DatabaseConnector {
 		Type[] types = ct.getSubtypes();
 		String names[] = ct.getPropertyNames();
 		for (int i = 0 ; i < names.length ; i++) {
-			if (isValidType(types[i])) {
+			if (isprimitiveType(types[i])) {
 				list.add("id." + names[i]);
 			}
 		}

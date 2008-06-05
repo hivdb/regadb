@@ -57,11 +57,11 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
     	if (!isUseless()) {
     		this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
     	}
-    	else if (var.getOutputVariable() == null) {
+//    	else if (var.getOutputVariable() == null) {
     		// if we have changed clauses the old outputvariable is lost
     		// replace it with an undefined variable
-    		this.controller.assignOutputVariable(var, new OutputVariable(var.getVariableType(), "[undefined]", var.getHumanStringValue()));
-    	}
+//    		this.controller.assignOutputVariable(var, new OutputVariable(var.getObject(), "[undefined]", var.getHumanStringValue()));
+//    	}
     }    
 
 	public void reAssign(Object o) {

@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import java.util.ArrayList;
 
 
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -12,28 +12,24 @@ import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.ComposedWhereClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
-import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
-import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
-public class NonAtomicClauseButtonPanel extends ButtonPanel {
+public class NonAtomicClauseButtonPanel extends WButtonPanel {
 	private QueryTreeNode node;
-	Object[] clauses;
+	private WPushButton addClauseButton_;
 	
 	public NonAtomicClauseButtonPanel(QueryTreeNode node) {
 		super(Style.Flat);
-		this.setStyleClass(this.styleClass() + " treeitempanel");
+		getStyleClasses().addStyle("treeitempanel");
 		this.node = node;
-		AWCPrototypeCatalog catalog = DatabaseManager.getInstance().getAWCCatalog();
-		clauses = catalog.getAWCPrototypes(new ArrayList<OutputVariable>()).toArray();
 		init();
 	}
 	
 	private void init() {
-		WPushButton addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
+		addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
 		addClauseButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				addClauseButton_.disable();
 				node.selectNewNode();
 			}
 		});
@@ -63,23 +59,21 @@ public class NonAtomicClauseButtonPanel extends ButtonPanel {
 			}
 		});
 		addButton(addNotButton_);
-		
-//		addNotButton_.setEnabled(canAddChild());
-//		addOrButton_.setEnabled(canAddChild());
-//		addAndButton_.setEnabled(canAddChild());
-//		addClauseButton_.setEnabled(canAddChild());
 	}
 	
-	public void setEditable(boolean enabled) {
-		super.setEditable(enabled);
+	public void setEnabled(boolean enabled) {
+		boolean addChild = canAddChild() && enabled;
 		
 		for (WPushButton button : buttons) {
-			button.setEnabled(enabled && canAddChild());
+			button.setEnabled(addChild);
 		}
 		
 	}
 	
 	private boolean canAddChild() {
-		return (!node.getClause().getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog()).isEmpty() && ((ComposedWhereClause) node.getClause()).acceptsAdditionalChild());
+		// this condition removed
+		// it can take an unruly amount of time if the query gets big
+		// !node.getClause().getAvailableAtomicClauses(DatabaseManager.getInstance().getAWCCatalog()).isEmpty()
+		return ((ComposedWhereClause) node.getClause()).acceptsAdditionalChild();
 	}
 }

@@ -1,9 +1,10 @@
 package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.io.Serializable;
-import java.text.Format;
 
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
@@ -14,8 +15,8 @@ public class OperatorConstant extends Constant implements Serializable {
     }
 
 	@Override
-	public String getValueTypeString() {
-		return ValueType.String.toString();
+	public DbObject getDbObject() {
+		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.String.toString());
 	}
 
 	@Override

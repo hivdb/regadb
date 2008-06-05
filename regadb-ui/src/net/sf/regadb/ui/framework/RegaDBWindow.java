@@ -20,6 +20,7 @@ public class RegaDBWindow extends WTable
 		
 		WApplication.instance().useStyleSheet("style/regadb.css");
 		WApplication.instance().useStyleSheet("style/calendar.css");
+		WApplication.instance().useStyleSheet("style/querytool.css");
 		
 		//! TODO make the edition configurable
 		header_ = new Header(this.elementAt(0, 0), Edition.Clinical);

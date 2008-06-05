@@ -39,7 +39,7 @@ public class JObjectListVariableSeeder extends javax.swing.JComboBox implements 
      * </p>
      */
     public JObjectListVariableSeeder(ObjectListVariable input, OutputReportSeeder controller) {
-        super(controller.getAvailableOutputVariables(input.getVariableType()).toArray(new OutputVariable[0]));
+        super(controller.getAvailableOutputVariables(input.getObject()).toArray(new OutputVariable[0]));
         this.var = input;
         this.controller = controller;
     }

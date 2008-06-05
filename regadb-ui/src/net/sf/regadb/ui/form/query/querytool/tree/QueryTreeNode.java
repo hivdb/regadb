@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionException;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 
-import net.sf.regadb.ui.form.query.querytool.CssClasses;
-import net.sf.regadb.ui.form.query.querytool.buttons.ButtonPanel;
-import net.sf.regadb.ui.form.query.querytool.dialog.WDialog;
+import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
+import net.sf.regadb.ui.form.query.querytool.widgets.CssClasses;
+import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WMouseEvent;
@@ -20,21 +22,26 @@ import net.sf.witty.wt.widgets.extra.WTreeNode;
 
 public abstract class QueryTreeNode extends WTreeNode {
 	private WhereClause object;
-	private QueryEditorGroupBox editor;
+	private QueryToolApp mainForm;
 	private WCheckBox checkBox;
-	private ButtonPanel buttonPanel;
+	private WButtonPanel buttonPanel;
 	private WDialog editDialog;
 	private WTable contentTable;
+	private String lastAddition;
 	
 	private CssClasses styleClasses;
 	
-	public QueryTreeNode(WhereClause clause, QueryEditorGroupBox editor, QueryTreeNode parent) {
+	public QueryTreeNode(WhereClause clause, QueryToolApp editor, QueryTreeNode parent) {
 		super(new WMessage("", true), null, parent);
 		setImagePack("pics/");
 		this.object = clause;
-		this.editor = editor;
+		this.mainForm = editor;
 		styleClasses = new CssClasses(this.labelArea());
 		init();
+	}
+	
+	public QueryToolApp getQueryApp() {
+		return mainForm;
 	}
 	
 	public CssClasses getStyleClasses() {
@@ -42,13 +49,13 @@ public abstract class QueryTreeNode extends WTreeNode {
 	}
 	
 	protected void doCollapse() {
-		if (editor.isEditable()) {
+		if (mainForm.isQueryEditable()) {
 			super.doCollapse();
 		}
 	}
 	
 	protected void undoDoExpand() {
-		if (editor.isEditable()) {
+		if (mainForm.isQueryEditable()) {
 			super.undoDoExpand();
 		}
 	}
@@ -62,7 +69,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		if (getClause() != null) {
 			Iterator<WhereClause> it = getClause().iterateChildren();
 			while (it.hasNext()) {
-				WTreeNode node = new WhereClauseNode(it.next(), getEditorModel());
+				WTreeNode node = new WhereClauseNode(it.next(), mainForm);
 				addChildNode(node);
 			}		
 		}
@@ -78,6 +85,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		if (contentTable != null) {
 			contentTable.elementAt(0, 0).removeWidget(label());
 			contentTable.elementAt(0, 0).removeWidget(childCountLabel_);
+			contentTable.elementAt(0, 2).removeWidget(checkBox);
 			if (hasButtonPanel()) {
 				contentTable.elementAt(0, 1).removeWidget(buttonPanel);
 				buttonPanel = null;
@@ -91,8 +99,10 @@ public abstract class QueryTreeNode extends WTreeNode {
 		contentTable.setStyleClass("treenodecontent");
 		contentTable.elementAt(0, 0).setStyleClass("labelcontent");
 		
-		checkBox = new WCheckBox();
-		checkBox.setStyleClass("check");
+		if (checkBox == null) {
+			checkBox = new WCheckBox();
+			checkBox.setStyleClass("check");
+		}
 		contentTable.putElementAt(0, 2, checkBox);
 		contentTable.elementAt(0, 2).setStyleClass("checkbox");
 		
@@ -110,7 +120,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	}
 	
 	public void setSelected(boolean checked) {
-		if (object == null || object.getParent() == null || !editor.isEditable()) {
+		if (object == null || object.getParent() == null || !mainForm.isQueryEditable()) {
 			return;
 		}
 		
@@ -123,22 +133,18 @@ public abstract class QueryTreeNode extends WTreeNode {
 		else {
 			styleClasses.removeStyle("selectedclause");
 		}
-		editor.updateSelection();
+		mainForm.updateControls();
 	}	
 	
 	public WhereClause getClause() {
 		return object;
 	}
 	
-	public QueryEditorGroupBox getEditorModel() {
-		return editor;
-	}
-	
 	public WDialog getDialog() {
 		return editDialog;
 	}
 	
-	public void setButtonPanel(ButtonPanel panel) {
+	public void setButtonPanel(WButtonPanel panel) {
 		if (hasButtonPanel()) {
 			contentTable.elementAt(0, 1).removeWidget(buttonPanel);
 		}
@@ -172,13 +178,13 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * @param dialog
 	 */
 	public void showDialog(WDialog dialog) {
+		hideContent();
 		hideDialog();
 		getParentNode().expand();
 		
-		getEditorModel().setContextClause(getParentNode().getClause());
+		mainForm.getQueryContext().setContextClause(getParentNode().getClause());
 		editDialog = dialog;
 		labelArea().addWidget(dialog);
-		hideContent();
 	}
 	
 	
@@ -193,7 +199,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	}
 	
 	private void hideContent() {
-		editor.setEditable(false);
+		mainForm.setQueryEditable(false);
 		contentTable.setStyleClass("disabledtreenodecontent");
 	}
 	
@@ -202,10 +208,10 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * shows the regular content
 	 */
 	public void showContent() {
-		hideDialog();
 		contentTable.setStyleClass("treenodecontent");
-		editor.setEditable(true);
-		getEditorModel().setContextClause(null);
+		mainForm.setQueryEditable(true);
+		hideDialog();
+		mainForm.getQueryContext().setContextClause(null);
 	}
 	
 	/**
@@ -220,7 +226,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		return buttonPanel != null;
 	}
 	
-	public ButtonPanel getButtonPanel() {
+	public WButtonPanel getButtonPanel() {
 		return buttonPanel;
 	}
 	
@@ -241,7 +247,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 			((QueryTreeNode) child).setEditable(editable);
 		}
 		if (hasButtonPanel()) {
-			getButtonPanel().setEditable(editable);
+			getButtonPanel().setEnabled(editable);
 		}
 		if (editable && getParentNode() != null) {
 			checkBox.enable();
@@ -265,6 +271,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 		return selection;
 	}
 	
+	
 	/**
 	 * adds a node to this node if possible
 	 * @param clause
@@ -273,12 +280,17 @@ public abstract class QueryTreeNode extends WTreeNode {
 		QueryTreeNode node = null;
 		if (getClause() != null && getClause().acceptsAdditionalChild()) {
 			try {
-				editor.getQueryEditor().addChild(getClause(), clause, mode);
-				node = new WhereClauseNode(clause, editor);
+				mainForm.getEditorModel().getQueryEditor().addChild(getClause(), clause, mode);
+				node = new WhereClauseNode(clause, mainForm);
 				addChildNode(node);
+				if (clause.isAtomic()) {
+					if (!((AtomicWhereClause) clause).getOutputVariables().isEmpty()) {
+						lastAddition = ((AtomicWhereClause) clause).getOutputVariables().get(0).getObject().getDescription();
+					}
+				}
 				
 				// update local enabled state
-				this.setEditable(editor.isEditable());
+				this.setEditable(mainForm.isQueryEditable());
 			} catch (IllegalWhereClauseCompositionException e) {
 				e.printStackTrace();
 			}
@@ -294,10 +306,10 @@ public abstract class QueryTreeNode extends WTreeNode {
 		if (childNodes().contains(node)) {
 			WhereClause clause = node.getClause();
 			this.removeChildNode(node);
-			editor.getQueryEditor().removeChild(getClause(), clause);
+			mainForm.getEditorModel().getQueryEditor().removeChild(getClause(), clause);
 
 			// we only need to update the enabled state for the element that contained the node to be removed
-			this.setEditable(editor.isEditable());
+			this.setEditable(mainForm.isQueryEditable());
 		}
 		else {
 			for (WTreeNode childNode : childNodes()) {
@@ -320,19 +332,19 @@ public abstract class QueryTreeNode extends WTreeNode {
 		}
 		
 		for (WhereClause clause : clauses) {
-			editor.getQueryEditor().removeChild(getClause(), clause);
+			mainForm.getEditorModel().getQueryEditor().removeChild(getClause(), clause);
 		}
 
 		// we only need to update the enabled state for the element that contained the node to be removed
-		this.setEditable(editor.isEditable());
+		this.setEditable(mainForm.isQueryEditable());
 	}
 	
 	/**
 	 * open a select simple clause dialog in this node
 	 */
 	public void selectNewNode() {
-		NewWhereClauseTreeNode node = new NewWhereClauseTreeNode(editor, this);
-		node.loadContent();
+		NewWhereClauseTreeNode node = new NewWhereClauseTreeNode(mainForm, this);
+		node.loadContent(lastAddition);
 	}
 	
 	/**
@@ -344,11 +356,16 @@ public abstract class QueryTreeNode extends WTreeNode {
 			try {
 				WhereClause oldClause = getClause();
 				object = newClause;
-				editor.getQueryEditor().replaceChild(oldClause.getParent(), oldClause, newClause);
+				mainForm.getEditorModel().getQueryEditor().replaceChild(oldClause.getParent(), oldClause, newClause);
 				createContentTable();
 				
+				if (newClause.isAtomic()) {
+					if (!((AtomicWhereClause) newClause).getOutputVariables().isEmpty()) {
+						lastAddition = ((AtomicWhereClause) newClause).getOutputVariables().get(0).getObject().getDescription();
+					}
+				}
 				// update local enabled state
-				this.setEditable(editor.isEditable());
+				this.setEditable(mainForm.isQueryEditable());
 			} catch (IllegalWhereClauseCompositionException e) {
 				e.printStackTrace();
 			}

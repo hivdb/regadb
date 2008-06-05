@@ -24,11 +24,11 @@ public class DataOutputSelection extends com.pharmadm.custom.rega.queryeditor.Si
     
     /** Creates a new instance of PropertySelection */
     public DataOutputSelection(DataOutputVariable ovar) {
-        super(ovar);
+        super(ovar, ovar.getObject());
     }
     
     public DataOutputSelection(DataOutputVariable ovar, boolean selected) {
-        super(ovar, selected);
+        super(ovar, ovar.getObject(), selected);
     }
     
     public Object getObject(Object objectSpec) {

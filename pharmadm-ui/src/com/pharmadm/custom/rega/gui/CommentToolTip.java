@@ -17,6 +17,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 /**
  *
  * @author  kdg
@@ -25,7 +27,7 @@ public class CommentToolTip extends JToolTip {
     
     public static final String NO_COMMENT_AVAILABLE = "No description available";
     
-    private final String title;
+    private final DbObject object;
     private final String comment;
     
     /**
@@ -33,12 +35,12 @@ public class CommentToolTip extends JToolTip {
      *
      * @pre comment != null
      */
-    public CommentToolTip(String title, String comment) {
-        this(title, comment, true);
+    public CommentToolTip(DbObject obj, String comment) {
+        this(obj, comment, true);
     }
     
-    private CommentToolTip(final String title, final String comment, final boolean honorNewWindowRequests) {
-        this.title = title;
+    private CommentToolTip(final DbObject obj, final String comment, final boolean honorNewWindowRequests) {
+        this.object = obj;
         this.comment = comment;
         if (comment.equals(NO_COMMENT_AVAILABLE)) {
             setLayout(new java.awt.BorderLayout());
@@ -63,19 +65,19 @@ public class CommentToolTip extends JToolTip {
         }
     }
     
-    public static void showWindowedComment(String title, String comment, Rectangle bounds) {
+    public static void showWindowedComment(DbObject obj, String comment, Rectangle bounds) {
         JFrame frame = new JFrame();
         Container contentPane = frame.getContentPane();
-        contentPane.add(new CommentToolTip(title, comment, false), BorderLayout.CENTER);
+        contentPane.add(new CommentToolTip(obj, comment, false), BorderLayout.CENTER);
         frame.setBounds(bounds);
-        frame.setTitle(title);
+        frame.setTitle(obj.getDescription());
         frame.setVisible(true);
     }
     
-    public static void showWindowedComment(String title, String comment, Point p) {
+    public static void showWindowedComment(DbObject obj, String comment, Point p) {
         JFrame frame = new JFrame();
         Container contentPane = frame.getContentPane();
-        CommentToolTip commentTT = new CommentToolTip(title, comment, false);
+        CommentToolTip commentTT = new CommentToolTip(obj, comment, false);
         contentPane.add( commentTT, BorderLayout.CENTER);
         Dimension preferedSize = commentTT.getPreferredSize();
         Rectangle bounds = new Rectangle(
@@ -86,7 +88,7 @@ public class CommentToolTip extends JToolTip {
                 );
         bounds.grow(3, 8); // Allow for some Window borders
         frame.setBounds(bounds);
-        frame.setTitle(title);
+        frame.setTitle(obj.getDescription());
         frame.setVisible(true);
     }
     
@@ -114,7 +116,7 @@ public class CommentToolTip extends JToolTip {
         jTextArea1.setText(comment);
         jPanel1.add(jTextArea1, java.awt.BorderLayout.CENTER);
 
-        titleLabel.setText(title);
+        titleLabel.setText(object.getDescription());
         titleLabel.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(0, 0, 5, 0)));
         jPanel1.add(titleLabel, java.awt.BorderLayout.NORTH);
 
@@ -136,7 +138,7 @@ public class CommentToolTip extends JToolTip {
         public void mouseClicked(MouseEvent e) {
             Rectangle bounds = CommentToolTip.this.getRootPane().getParent().getBounds();
             bounds.grow(3, 8); // Allow for some Window borders
-            showWindowedComment(title, comment, bounds);
+            showWindowedComment(object, comment, bounds);
         }
         
         public void mouseEntered(MouseEvent e) {

@@ -96,7 +96,7 @@ public class Property implements Valuable, Cloneable {
                 if (name.startsWith("getProperty")) {
                     Property prop = new Property(name.substring(11), ovar);
                     MethodSpecifier mspec = new MethodSpecifier();
-                    DataInputVariable dummyInput = new DataInputVariable(ovar.getVariableType());
+                    DataInputVariable dummyInput = new DataInputVariable(ovar.getObject());
                     dummyInput.setOutputVariable(ovar);
                     mspec.setCaller(dummyInput);
                     mspec.setName(name);

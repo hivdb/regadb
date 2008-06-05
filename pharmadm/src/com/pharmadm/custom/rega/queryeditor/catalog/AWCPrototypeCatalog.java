@@ -14,14 +14,9 @@ package com.pharmadm.custom.rega.queryeditor.catalog;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
-import com.pharmadm.custom.rega.queryeditor.Field;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.NullComposition;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
-import com.pharmadm.custom.rega.queryeditor.Table;
-import com.pharmadm.custom.rega.queryeditor.VariableType;
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 /**
  * <p>
@@ -42,109 +37,71 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  */
 public class AWCPrototypeCatalog {
     
-    private DatabaseManager manager;
     private Map<String, DbObject> objectNames = new HashMap<String, DbObject>();
-//    private Map<String, String> objectNameToVariableName = new HashMap<String, String>();
-//    private Map<String, String> tableNameToAlias = new HashMap<String, String>();
-//    private Map<String, String> objectNameToDescription = new HashMap<String, String>();
+    private Map<String, ObjectRelation> relations = new HashMap<String, ObjectRelation>();
     private List<AtomicWhereClause> atomicWhereClauses = new ArrayList<AtomicWhereClause>();
+	private Status status = Status.EMPTY;
+	private int size;
     
-    public AWCPrototypeCatalog(DatabaseManager manager) {
-    	this.manager = manager;
+    public enum Status {
+    	EMPTY,
+    	BUSY,
+    	DONE,
+    	FAILED;
+    }
+    
+    public void setStatus(Status st) {
+    	this.status = st;
+    }
+    
+    public Status getStatus() {
+    	return status;
     }
     
     /**
      * adds the given atomic where clause to the catalog
      * @param atomicWhereClause
      */
-    public void addAtomicWhereClause(AtomicWhereClause atomicWhereClause) {
-        this.atomicWhereClauses.add(atomicWhereClause);
+    public void add(AtomicWhereClause atomicWhereClause) {
+    	if (atomicWhereClause != null) {
+    		this.atomicWhereClauses.add(atomicWhereClause);
+    	}
+    }
+    
+    public void addAll(List<AtomicWhereClause> atomicWhereClauses) {
+    	for (AtomicWhereClause clause : atomicWhereClauses) {
+    		add(clause);
+    	}
+    }
+    
+    public void addRelation(ObjectRelation r) {
+    	relations.put(r.getInputTable().getTableName() + "." + r.getForeignTable().getTableName(), r);
+    }
+    
+    public ObjectRelation getRelation(String start, String end) {
+    	ObjectRelation r = relations.get(start + "." + end);
+    	if (r == null) {
+    		System.err.println("DB Relation " + start + "." + end + " not found");
+    	} 
+    	return r;
     }
 
     public void addObject(DbObject object) {
-    	objectNames.put(object.getObjectName(), object);
+    	objectNames.put(object.getTableName() + "." + object.getPropertyName(), object);
     }
     
-    @Deprecated
-    public void addVariableName(String objectName, String variableName) {
-    	DbObject object = new DbObject(objectName, variableName, null, null);
-    	addObject(object);
-    }
-    
-    public DbObject getObject(String objectName) {
-    	return objectNames.get(objectName);
-    }
-    
-    /**
-     * gets the plain english description for the persistent object with the given name
-     * if no plain english description has been set the simple class name of the object
-     * will be used
-     * @param objectName name of the persistent object
-     * @return a description for the given persistent object
-     */
-    public String getObjectDescription(String objectName) {
-    	return getObject(objectName).getDescription();
-    }
-    
-    /**
-     * adds a variable name, plain emglish description and hql alias for the given object
-     * @param objectName either the class name of a persistent object
-     *                   or the property of a persistent object
-     * @param variableName name for the variable
-     * @param alias alias for the given persistent object
-     *              null if this property does nut need an alias
-     * @param description description for the persistent object
-     */
-    public void addNames(String objectName, String variableName, String alias, String description) {
-    	DbObject object = new DbObject(objectName, variableName, alias, description);
-    	addObject(object);
-    }
-
-    
-    /**
-     * gets the variable name to the given object 
-     * if no variable name is specified, the first letter of the object or property name is used
-     * @param objectName either the class name of a persistent object
-     *                   or the property of a persistent object
-     */
-    public String getVariableName(String objectName) {
-    	return getObject(objectName).getVariableName();
-    }
-	    
-    /**
-     * gets the hql alias for the persistent object with the given name
-     * if no hql alias has been set the simple class name of the object
-     * will be used
-     * @param objectName name of the persistent object
-     * @return an alias for the given persistent object
-     */
-    public String getTableAlias(String objectName) {
-    	return getObject(objectName).getSqlAlias();
-    }
-    
-    /**
-     * returns the table with the given name
-     * @param tableName
-     * @return
-     */
-    public Table getTable(String tableName) {
-    	return manager.getTableCatalog().getTable(tableName);
-    }
-    
-    /**
-     * returns the field with the given name from the given table
-     * @param tableName
-     * @param fieldName
-     * @return
-     */
-    public Field getField(String tableName, String fieldName) {
-    	Table table = getTable(tableName);
-    	if (table != null) {
-    		return table.getField(fieldName);
+    public DbObject getObject(String tableName, String propertyName) {
+    	DbObject obj = objectNames.get(tableName + "." + propertyName);
+    	if (obj == null) {
+    		System.err.println("DB Object " + tableName + "." + propertyName + " not found");
     	}
-    	return null;
+    	return obj;
     }
-	    
+    
+    public DbObject getObject(String tableName) {
+    	return getObject(tableName, null);
+    }
+    
 	/**
 	 * returns true if the given sql data type number belongs to a string
 	 * @param dataType an sql data type number
@@ -180,44 +137,6 @@ public class AWCPrototypeCatalog {
     public static boolean isNumericType(int dataType) {
     	return (((8 >= dataType) && (dataType >=1)) || dataType == 1111 || dataType == -5);
     }   
-    
-	/**
-     * find the data type of the property with the given name of the given table
-     * this method can resolve properties of composite ids
-     * returns null if the property is not found
-	 * @param tableName table to check the property of
-	 * @param propertyName the property to check
-	 *                     this must be a property of the given table or of its composite id
-	 *                     If it is a property of the composite id, include
-	 *                     the id in the path, like so: id.property
-	 * @return the data type of the property
-	 * 		  String for strings
-	 *        Numeric for numbers
-	 *        Boolean for booleans
-	 *        Date for dates
-	 */
-    public ValueType getDataTypeOfProperty(String tableName, String propertyName) {
-    	ValueType valueType = null;
-    	
-    	int dataType = manager.getDatabaseConnector().getColumnType(tableName, propertyName);
-	    	
-        if (isStringType(dataType)) {
-        	valueType = ValueType.String;
-        }
-        else if (isDateType(dataType)) {
-        	valueType = ValueType.Date;
-        }
-        else if (isNumericType(dataType)) {
-        	valueType = ValueType.Numeric;
-        }
-        else if (isBooleanType(dataType)) {
-        	valueType = ValueType.Boolean;
-        }
-        else {
-            System.err.println("Unknown data type found for " + tableName + "." + propertyName + ": " + dataType);
-        }
-    	return valueType;
-    }
     
     /**
      * <p>
@@ -295,9 +214,16 @@ public class AWCPrototypeCatalog {
         }
     	
     	return result;
-    } 
+    }
     
-    public OutputVariable createOutputVariable(String objectName) {
-    	return new OutputVariable(new VariableType(objectName), getVariableName(objectName), getObjectDescription(objectName));
+    public void setTotalSize(int size) {
+    	this.size = size;
+    }
+    
+    public int getSizePercentage() {
+    	if (size == 0) {
+    		return 0;
+    	}
+    	return (int) Math.min(100, (double) atomicWhereClauses.size() * 100 / size);
     }
 }

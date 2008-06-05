@@ -2,7 +2,8 @@ package com.pharmadm.custom.rega.queryeditor.constant;
 
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.ValueSpecifier;
@@ -23,8 +24,8 @@ public class MutationConstant extends Constant {
 
 	
     
-	public String getValueTypeString() {
-		return ValueType.String.toString();
+	public DbObject getDbObject() {
+		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.String.toString());
 	}
 	
     public ValueSpecifier cloneInContext(java.util.Map originalToCloneMap) throws CloneNotSupportedException {
@@ -54,6 +55,8 @@ public class MutationConstant extends Constant {
 	private String validateMutationString(String str) {
 		QueryVisitor builder = DatabaseManager.getInstance().getQueryBuilder();       	
 		String query = "";
+		DbObject aaMut = DatabaseManager.getInstance().getAWCCatalog().getObject("AaMutation");
+
 
 		// remove pointless spacing
 		str = str.replace('\t', ' ');
@@ -101,7 +104,7 @@ public class MutationConstant extends Constant {
         		}
         		
         		boolean previousCondition = false;
-        		FromVariable fromVariable = new FromVariable("net.sf.regadb.db.AaMutation");
+        		FromVariable fromVariable = new FromVariable(aaMut);
         		query += ivar.acceptWhereClause(builder);
         		query += " in (\n\t\tSELECT\n\t\t\t";
         		query += fromVariable.acceptWhereClause(builder);

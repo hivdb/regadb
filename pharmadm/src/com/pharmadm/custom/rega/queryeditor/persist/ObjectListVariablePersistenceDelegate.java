@@ -23,6 +23,6 @@ import com.pharmadm.custom.rega.reporteditor.ObjectListVariable;
 public class ObjectListVariablePersistenceDelegate extends java.beans.DefaultPersistenceDelegate {
     
     protected Expression instantiate(Object oldInstance, Encoder out) {
-        return new Expression(oldInstance, oldInstance.getClass(), "new", new Object[]{((ObjectListVariable)oldInstance).getVariableType()});
+        return new Expression(oldInstance, oldInstance.getClass(), "new", new Object[]{((ObjectListVariable)oldInstance).getObject()});
     }
 }

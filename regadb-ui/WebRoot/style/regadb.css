@@ -264,305 +264,105 @@ fieldset {
 	padding: 3px;
 }
 
-
-
-.root {
-	width: 95%;	
+*.viral-isolate-fasta-label {
+	color: blue;
 }
 
 
-/* fields general */
 
-.querytoolform {
-	width:95%;	
-	width:700px;
+/* tabbed panes */
+
+.tabbedpane {
+	width: 100%;
 }
 
-.querytoolform fieldset legend {
-	border-top: 1px solid rgb(64, 64, 64);
-	border-left: 1px solid rgb(64, 64, 64);
-	border-right: 1px solid rgb(64, 64, 64);
-	background-color: rgb(215, 215, 215);
-	margin-top:-1.4em;
-	margin-left:-1px;
-	position:relative;
-	top:-0.35em;
-	left:0px;
-	zoom:1;
-	font-weight: bold;
-	padding: 0.1em 0.5em;
-	line-height:1.2em;
+.tabbedpane .tabstack {
+	border: 1px solid rgb(102, 102, 102);
+	background-color: rgb(225, 225, 225);
 }
 
-.querytoolform fieldset {
-	display:block;
-	margin-top:2em;
-	margin-bottom:0.5em;
-	border: 1px solid rgb(64, 64, 64);
-	padding:0.2em 0px 0px 0px;
-	background-color: rgb(215, 215, 215);
-	position:relative;
-	top:0px;
-	left:0px;
-	zoom:1;
+ .dialog .tabstack {
+	border-left: 0px solid rgb(102, 102, 102);
+	border-right: 0px solid rgb(102, 102, 102);
+	border-bottom: 0px solid rgb(102, 102, 102);
 }
 
-
-.querytoolform fieldset .content {
-	background-color: #fff;
-	padding: 0.5em;
-	border-top: 1px solid rgb(102, 102, 102);
-}
-
-
-/* toolbars */
-.querytoolform .toolbar {
-	padding-left:0.2em;
-	background-color:rgb(225,225,225);
-	border-bottom:1px solid rgb(140,140,140);
-	margin-top:-1px;
-}
-
-
-/* info field */
-
-.querytoolform .infofield {
-	padding: 0.5em !important;	
-}
-
-.querytoolform .infofield table {
-	width:100%;	
-}
-
-.querytoolform .infofield td {
-	padding-bottom:0.3em;
-}
-
-.querytoolform .infofield input, .querytoolform .infofield textarea {
-	width: 98%;	
-}
-
-.querytoolform .infofield table td.inputs{
-	width:100%;
-}
-
-.querytoolform .infofield textarea {
-	height:4em;	
-}
-
-
-/* trivia */
-
-.querytoolform .warning {
-	color: #555;
-	line-height:1.4em;
-}
-
-.querytoolform .info {
-	color: #00bb00;
-	line-height:1.4em;
-}
-
-.querytoolform .error {
-	color: #ee0000;
-	line-height:1.4em;
-}
-
-
-/* selection field */
-
-.querytoolform .selectionfield {
-	padding: 0.5em !important;	
-}
-
-.querytoolform .resultfieldempty {
-	display:none;
-}
-
-
-.querytoolform .selectionfield .content, .querytoolform .resultfield .content {
-	text-align:center !important;	
-}
-
-.querytoolform .selectionfield .content .selectionitem {
-	padding:0.1em;
-	background-color: rgb(235, 235, 235);
-	margin-top:0.4em;
-	margin-bottom:0.4em;
-	text-align:left;
-	border:1px solid rgb(180, 180, 180);
-}
-
-.querytoolform .selectionfield .content .selectionitem .label {
-	font-weight:bold;
-}
-
-.querytoolform .selectionfield .content .tableselectionitem div {
+.tabbedpane .tab {
+	border-top: 1px solid rgb(140, 140, 140);
+	margin: 0.2em 0px 0px;
+	padding-bottom:0.5em;
 	background-color: rgb(255, 255, 255);
 }
 
-/* query tree */
-
-.querytoolform .querytreefield .content {
-	padding: 0px;
-}
-
-.querytoolform .querytreefield .content .treeroot {
-	margin-left:0.5em;
-	margin-bottom:1em;
-}
-
-.querytoolform .querytreefield .content .tree {
-	width:100%;
-}
-
-.querytoolform .querytreefield .warnings {
-	background-color: rgb(235,235,235);	
-	border-top: 1px solid rgb(180,180,180);
-	padding: 0.1em 0.3em;
-}
-
-.querytoolform .querytreefield .warnings table {
-	width:100%;
-}
-
-.querytoolform .querytreefield .warnings .warning {
-	display:block;
-}
-
-.querytoolform .querytreefield .warnings .runbutton {
-	width:6em !important;
-	text-align:right !important;
-}
-
-.querytoolform .querytreefield .content .tree .treeitempanel {
-	float:right;
-	text-align:right !important;
-}
-
-.querytoolform .querytreefield .content .tree input.check{
-	float:right;
-	display:block;
-	margin-top:0.5em;
-}
-
-.querytoolform .tree .disabledtreenodecontent {
-	width:100%;	
-	display: none;
-}
-
-.querytoolform .tree .treenodecontent {
-	width:100%;	
-	display: block;
-	display:table;
-}
-
-.querytoolform .tree .treenodecontent .labelcontent {
-	width:100%;
-}
-
-.querytoolform .tree .treenodecontent td.checkbox {
-		width:1.5em;
-		vertical-align:middle;
-		margin:0px;
-}
-
-.querytoolform .querytreefield .content .tree .treenodelabel{
-	display:block;
-	float:left;
-	line-height:1.5em;
-	padding-left:0.3em;
-}
-
-.querytoolform .querytreefield .content .tree .treenodechildcount{
-	display:block;
-	float:left;
-	font-weight:bold;
-	line-height:1.5em;
-}
-
-.querytoolform .querytreefield .content .tree .atomictreenode {
-	width:100%;
-	border-top: 1px solid rgb(235,235,235);
-	padding:0.05em 0em 0.05em 0m;
-}
-
-.atomictreenode .treenodecontent .buttonpanel {
-	width:3.75em;	
-}
-
-.composedtreenode .treenodecontent .buttonpanel {
-	width:15em;	
-}
-
-.querytoolform .querytreefield .content .tree .composedtreenode {
-	width:100%;
-	padding:0.1em 0em 0.1em 0em;
+.dialog .tab {
 	background-color: rgb(235, 235, 235);
-	vertical-align:bottom;
 }
 
-.querytoolform .querytreefield .content .tree .selectedclause {
-	background-color:rgb(225,230,245);
+.tabbedpane .tabmenu span {
+	text-decoration:none !important;
+	color: #000 !important;
 }
 
-.querytoolform .querytreefield .content .tree .invalidclause {
-	color:#ee0000;
-}
-
-.querytoolform .querytreefield .content .tree .invalidclause .dialog {
-	color:#000000;
-}
-
-.querytoolform .querytreefield .content .tree .composedtreenode .treenodelabel{
-	font-weight:bold;
-}
-
-
-/* results */
-
-.querytoolform .resultfield .warnings {
-	text-align:center !important;
-}
-
-.querytoolform .resultfield .runquery {
-	text-align:center !important;
-}
-
-.querytoolform .resultfield .runresults {
-	text-align:left !important;
-}
-
-.querytoolform .resultfield .runresults label {
-	font-weight:bold;
-}
-
-.querytoolform .resultfield .runresults .runresult .label {
-	font-weight: bold;
+.tabbedpane .tabmenu .item, .tabbedpane .tabmenu .itemselected {
+	padding:0px;
+	margin:0px;
+	border:0px;
 	display:block;
-	width: 3em;
-	text-align:right;
-	padding-right:0.2em;
+	height:1.9em;
+	float:left;
 }
 
-.querytoolform .resultfield .runresult {
-	padding:0.5em 0px;
-	border-top:1px solid rgb(215, 215, 215);
+.tabbedpane .tabmenu .item span, .tabbedpane .tabmenu .itemselected span{
+	border-top: 1px solid rgb(102, 102, 102);
+	border-left: 1px solid rgb(102, 102, 102);
+	border-right: 1px solid rgb(102, 102, 102);
+	display:block;
+	margin-right:0.2em !important;
+	min-width:6em;
+	height:1.2em;
+	padding: 0.2em 0.3em;
+	line-height:1.2em;
+	margin-bottom:-1px !important;
+	position:relative;
+	bottom:0px;
+	left:0px;
+}
+
+.tabbedpane .tabmenu .item span {
+	background-color:rgb(205,205,205);
+	margin-top:0.25em !important;
+}
+
+.tabbedpane .tabmenu .itemselected span {
+	font-weight:bold;
+	background-color:rgb(225,225,225);
+	border-top: 0.3em solid rgb(102, 102, 102);
+	border-bottom:1px solid rgb(225,225,225);
+}
+
+.tabbedpane .tabmenu {
+	vertical-align: bottom;
+	width:100%;
+}
+
+.tabbedpane .tabmenu td {
+	padding-left:0.2em;
+	padding-top:0.2em;
 }
 
 
 
 /* button panels */
 
-.querytoolform .buttonpanel {
+.buttonpanel {
 	padding: 0.15em;	
 }
 
-.querytoolform .buttonpanel .separator {
+.buttonpanel .separator {
 	padding:0px 0.2em;
 }
 
-.querytoolform .flatbuttonpanel button {
+.flatbuttonpanel button {
 	margin-left:-1px;
 	margin-right:0px;
 	background-color:transparent;
@@ -570,12 +370,12 @@ fieldset {
 	padding:0px 3px;
 }
 
-.querytoolform .flatbuttonpanel button:hover {
+.flatbuttonpanel button:hover, .flatbuttonpanel button:focus {
 	border:1px solid rgb(180, 180, 180);
 	background-color:rgb(225, 225, 225);
 }
 
-.querytoolform .flatbuttonpanel button:disabled {
+.flatbuttonpanel button:disabled {
 	opacity:0.3;
 	filter:alpha(opacity=30);
     color:#000;
@@ -583,20 +383,22 @@ fieldset {
 	background-color:transparent;
 }
 
-.querytoolform .defaultbuttonpanel button {
+.defaultbuttonpanel button {
 	margin-left:4px;
 	margin-right:4px;
 }
 
-/* dialogs */
 
-.querytoolform .dialog {
+
+/* dialog windows */
+
+.dialog {
 	border: 1px solid rgb(64, 64, 64);
 	background-color: rgb(235, 235, 235);
 	margin:0.3em;
 }
 
-.querytoolform .dialog .dialogtitle{
+.dialog .dialogtitle{
 	text-align:center !important;
 	font-weight:bold;
 	background-color: rgb(128, 128, 255);
@@ -604,148 +406,85 @@ fieldset {
 	border-bottom: 1px solid rgb(102, 102, 102);
 }
 
-.querytoolform .dialog .dialogcontent{
+.dialog .dialogcontent{
 	padding:0.3em;
 }
 
-.querytoolform .dialog .dialogcontent .buttonpanel{
+.dialog .dialogcontent .buttonpanel{
 	text-align:right !important;
 }
 
-
-/* selector panels */
-
-.newclausedialog .dialogcontent {
-	padding:0px !important;	
+.unfocusArea {
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	background-color:#fff;	
+	opacity:0.5;
+	z-index:200
 }
 
-.querytoolform .selectorpanel .tabmenu {
-	background-color:rgb(180,180,180);
+.fixed {
+	position:fixed;
 }
 
-.querytoolform .selectorpanel .tabmenu .itemselected {
-	font-weight:normal !important;	
-}
-
-.querytoolform .selectorpanel {
-	margin:0.5em 0.25em;
-}
-
-.querytoolform .selectortabbedpane {
-	margin:0px 0px 0.5em;	
-}
-
-.querytoolform .selectorradio {
-	margin:0.3em 1em 0.1em 0.5em;	
-}
-
-.querytoolform .selectortab .selectorpanel {
-	padding: 0.4em 0.5em;	
-	margin: 0px;
-}
-.querytoolform .selectortab .even {
-	background-color:rgb(225,225,225);	
-}
-
-/* tabbed panes */
-
-.querytoolform .tabbedpane{
-	width: 100%;
-}
-
-.querytoolform .tabstack {
-	border: 1px solid rgb(102, 102, 102);
-	background-color: rgb(225, 225, 225);
-}
-
-.querytoolform .dialog .tabstack {
-	border-left: 0px solid rgb(102, 102, 102);
-	border-right: 0px solid rgb(102, 102, 102);
-	border-bottom: 0px solid rgb(102, 102, 102);
-}
-
-.querytoolform .tab {
-	border-top: 1px solid rgb(140, 140, 140);
-	margin: 0.2em 0px 0px;
-	background-color: rgb(255, 255, 255);
-}
-
-.querytoolform .dialog .tab {
-	padding-bottom:0.5em;
+.modalDialog {
+	position:relative;
+	top:0px;
+	left:0px;
+	z-index:201;	
+	border:1px solid #555;
 	background-color: rgb(235, 235, 235);
+	z-index:202;
 }
 
-.querytoolform .tabmenu span {
-	text-decoration:none !important;
-	color: #000 !important;
+
+
+
+/* status bar */
+
+.statusbar {
+	background-color: rgb(235,235,235);	
+	border-top: 1px solid rgb(180,180,180);
+	padding: 0.1em 0.3em;
+	font-size:95%;
 }
 
-.querytoolform .tabmenu .item, .querytoolform .tabmenu .itemselected {
-	border-top: 1px solid rgb(102, 102, 102);
-	border-left: 1px solid rgb(102, 102, 102);
-	border-right: 1px solid rgb(102, 102, 102);
-	display:block;
-	float:left;
-	margin-right:0.2em !important;
-	min-width:6em;
-	height:1.2em;
-	padding: 3px 0.3em;
-	line-height:1.2em;
-	margin-bottom:-1px !important;
-}
-
-.querytoolform .tabmenu .item {
-	background-color:rgb(205,205,205);
-	margin-top:3px !important;
-}
-
-.querytoolform .tabmenu .itemselected {
-	font-weight:bold;
-	background-color:rgb(225,225,225);
-	border-top: 4px solid rgb(102, 102, 102);
-	border-bottom:1px solid rgb(225,225,225);
-}
-
-.querytoolform .tabmenu {
-	vertical-align: bottom;
+.statusbar table {
 	width:100%;
 }
 
-.querytoolform .tabmenu td {
-	padding-left:0.2em;
-	padding-top:0.2em;
+.statusbar .warning {
+	display:block;
+}
+
+.statusbar .buttonpanel {
+	padding:0px;
+	float:right;
 }
 
 
-/* configurers */
 
-.querytoolform .constantconfigurer, .querytoolform .constantchoiceconfigurer,
-	 .querytoolform .inputvariableconfigurer, .querytoolform .composedoutputvariableconfigurer,
-	 .querytoolform .fixedstringconfigurer, .querytoolform .outputvariableconfigurer,
-	 .querytoolform .fromvariableconfigurer {
-	 margin:0em 0.3em 0em 0em;
-	padding:0.1em 0px;
 
+
+/* progress bar */
+
+.progressbar {
+	height:1.4em;
+	border:1px solid rgb(180,180,180);
 }
 
-.editorpanel input, .editorpanel select, .editorpanel button {
-	margin-top:0.1em !important;
-	margin-bottom:0.1em !important;
-	padding:0px !important;
+.progressbar div {
+	background-color:#6ec81e;
+	height:100%;
+	width:100%;	
 }
 
-.editorpanel span {
+.progresstext {
+	position:relative;
+	top:-1.3em;
+	left:0.5em;
+	display:block;
+	height:0px;
 }
-
-.querytoolform .constantconfigurer {
-	width:10em;
-}
-
-.querytoolform .constantchoiceconfigurer {
-	max-width:20em;
-}
-
-*.viral-isolate-fasta-label {
-	color: blue;
-}
-

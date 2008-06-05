@@ -65,7 +65,7 @@ public class FixedString implements AWCWord, DataGroupWord, ValueSpecifier, Seri
     }
     
     /* Implementing ValueSpecifier */
-    public Class getValueType() {
+    public Class getValueTypeClass() {
         return String.class;
     }
     

@@ -3,14 +3,20 @@ package net.sf.regadb.ui.form.query.querytool.tree;
 
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 
+import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
 import net.sf.regadb.ui.form.query.querytool.buttons.AtomicClauseButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.buttons.NonAtomicClauseButtonPanel;
 import net.sf.witty.wt.i8n.WMessage;
 
+/**
+ * tree node containing a WhereClause
+ * @author fromba0
+ *
+ */
 public class WhereClauseNode extends QueryTreeNode{
 	
 	
-	public WhereClauseNode(WhereClause clause, QueryEditorGroupBox editor) {
+	public WhereClauseNode(WhereClause clause, QueryToolApp editor) {
 		super(clause, editor, null);
 	}
 	
@@ -29,7 +35,7 @@ public class WhereClauseNode extends QueryTreeNode{
 			label = label.substring(0, label.indexOf(' '));
 			this.label().setText(new WMessage(label.toLowerCase(), true));
 			
-			if (getEditorModel().getQueryEditor().acceptsAdditionalChild(getClause())) {
+			if (getQueryApp().getEditorModel().getQueryEditor().acceptsAdditionalChild(getClause())) {
 				setButtonPanel(new NonAtomicClauseButtonPanel(this));
 			}
 		}

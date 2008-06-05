@@ -8,7 +8,9 @@ public interface DatabaseConnector {
 	public boolean isTableSelectionAllowed();
     public List<String> getTableNames();
     public List<String> getPrimaryKeys(String tableName);
-    public List<String> getColumnNames(String tableName);
+    public List<String> getPrimitiveColumnNames(String tableName);
+    public List<String> getNonPrimitiveColumnNames(String tableName);
+    
     
     /**
      * returns the sql datatype for the given column

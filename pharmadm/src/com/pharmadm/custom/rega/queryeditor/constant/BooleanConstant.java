@@ -2,7 +2,10 @@ package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.io.Serializable;
 
-import com.pharmadm.custom.rega.queryeditor.VariableType.ValueType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
 
 
 public class BooleanConstant extends Constant implements Serializable {
@@ -18,8 +21,8 @@ public class BooleanConstant extends Constant implements Serializable {
 	}
     
 	@Override
-	public String getValueTypeString() {
-		return ValueType.Boolean.toString();
+	public DbObject getDbObject() {
+		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.Boolean.toString());
 	}
 
 	@Override

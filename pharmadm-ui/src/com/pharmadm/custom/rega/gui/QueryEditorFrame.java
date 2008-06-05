@@ -1406,4 +1406,8 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
 		return getLastSelectedNonAtomicClause();
 	}
 
+	public void setContextClause(WhereClause clause) {
+		// TODO Auto-generated method stub
+	}
+
 }

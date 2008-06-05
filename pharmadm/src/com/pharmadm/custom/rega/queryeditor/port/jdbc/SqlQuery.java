@@ -57,10 +57,8 @@ public class SqlQuery implements QueryVisitor {
             if (selection.isSelected()) {
                 OutputVariable ovar = (OutputVariable)selection.getObject();
                 if (selection instanceof TableSelection) {
-//                    if (DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
                     	buffy.append(ovar.acceptWhereClause(this));
                         buffy.append(",\n\t");
-//                    }
 
                     // %$ KVB : for the Hibernate version, we need to apply reflection on these fields
                     //          so that fields of class types are represented by an identifier
@@ -136,21 +134,23 @@ public class SqlQuery implements QueryVisitor {
 		return constant.getValue().toString();
 	}
 
+	public String visitWhereClauseDateConstant(DateConstant constant) {
+		return "TO_DATE(\'" + constant.getHumanStringValue() + "\', 'DD-MM-YYYY')";
+	}
+	
 	public String visitWhereClauseConstant(OperatorConstant constant) {
 		SuggestedValuesOption option = (SuggestedValuesOption) constant.getValue();
 		return option.getValue().toString();
 	}
 	
-	public String visitWhereClauseDateConstant(DateConstant constant) {
-		return "TO_DATE(\'" + constant.getHumanStringValue() + "\', 'YYYY-MM-DD')";
-	}
+
 
 	public String visitWhereClauseFromVariable(FromVariable fromVar) {
 		return fromVar.getUniqueName();
 	}
 
 	public String visitWhereClauseFullNameOutputVariable(OutputVariable ovar, Field field) {
-        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getTableName().equals(field.getTable().getName()))) {
+        if (ovar.consistsOfSingleFromVariable() && (((FromVariable) ovar.getExpression().getWords().get(0)).getObject().getTableName().equals(field.getTable().getName()))) {
             return ((FromVariable)ovar.getExpression().getWords().get(0)).acceptWhereClause(this) + "." + field.getName();
         } 
         else { 
@@ -270,6 +270,6 @@ public class SqlQuery implements QueryVisitor {
 	}
 
 	public String visitFromClauseFromVariable(FromVariable fromVar) {
-        return fromVar.getTableName() + " " + fromVar.getUniqueName();
+        return fromVar.getObject().getTableName() + " " + fromVar.getUniqueName();
 	}
 }

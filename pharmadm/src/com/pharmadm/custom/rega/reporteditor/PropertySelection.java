@@ -24,7 +24,7 @@ public class PropertySelection extends com.pharmadm.custom.rega.queryeditor.Simp
     
     /** Creates a new instance of PropertySelection */
     public PropertySelection(Property property) {
-        super(new Object[]{property.getName(), property.getOutputVariable()});
+        super(new Object[]{property.getName(), property.getOutputVariable()}, property.getOutputVariable().getObject());
     }
     
     public PropertySelection(Property property, boolean selected) {

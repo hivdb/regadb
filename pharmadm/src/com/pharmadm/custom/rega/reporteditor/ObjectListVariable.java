@@ -15,7 +15,7 @@ package com.pharmadm.custom.rega.reporteditor;
 import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
-import com.pharmadm.custom.rega.queryeditor.VariableType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 /**
  *
@@ -46,15 +46,15 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
     // 
     // So it *might* be useful to generalize the two classes, but for now, we decided not to.
     
-    private VariableType variableType;
+    private DbObject variableType;
     
     private long seqId;
     private static long nextSeqId;
     private static Object seqIdLock = new Object();
     
     /** Creates a new instance of ObjectListVariable */
-    public ObjectListVariable(VariableType variableType) {
-        this.variableType = variableType;
+    public ObjectListVariable(DbObject obj) {
+        this.variableType = obj;
         acquireSeqId();
     }
     
@@ -65,7 +65,7 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
     }
    
     public boolean isCompatible(OutputVariable ov) {
-        return getVariableType().isCompatibleType(ov.getVariableType());
+        return variableType.isCompatible(ov.getObject());
     }
     
     public List getList(Report report) {
@@ -73,7 +73,7 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
     }
     
     public String getUniqueName() {
-        return getVariableType().getName()+seqId;
+        return getObject().getVariableName()+seqId;
     }
     
     /* Implementing DataGroupWord */
@@ -89,13 +89,13 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
         return getList(dataRow.getReport()).get(dataRow.getIndex());
     }    
     
-    public VariableType getVariableType() {
+    public DbObject getObject() {
         return variableType;
     }
     
     /* Implementing ValueSpecifier */
-    public Class getValueType() {
-        return variableType.getValueType();
+    public Class getValueTypeClass() {
+        return variableType.getValueTypeClass();
     }
     
     public ValueSpecifier cloneInContext(java.util.Map originalToCloneMap) {
@@ -123,6 +123,6 @@ public class ObjectListVariable implements Cloneable, DataGroupWord, ValueSpecif
     }
 
 	public String getImmutableStringValue() {
-		return variableType.getName();
+		return getObject().getVariableName();
 	}
 }

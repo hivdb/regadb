@@ -35,22 +35,33 @@ public class DatabaseTableCatalog {
 
     	
     	for (String tableName : tableNames) {
-    		List<String> fieldNames = connector.getColumnNames(tableName);
+    		List<String> fieldNames = connector.getPrimitiveColumnNames(tableName);
     		List<String> keys = connector.getPrimaryKeys(tableName);
     		HashMap<String,Field> fields = new HashMap<String,Field>();
     		
     		String tableComment = connector.getCommentForTable(tableName);
-    		Table table = new Table(tableName, tableComment);
+    		String simpleName = tableName.substring(tableName.lastIndexOf('.')+1);
+    		Table table = new Table(simpleName, tableComment);
     		for (String fieldName : fieldNames) {
     			String fieldComment = connector.getCommentForColumn(tableName, fieldName);
     			int dataType = connector.getColumnType(tableName, fieldName);
     			boolean isKey = keys.contains(fieldName);
-    			Field field = new Field(fieldName, table, fieldComment, isKey, dataType);
+    			Field field = new Field(fieldName, table, fieldComment, isKey, dataType, true);
     			fields.put(fieldName, field);
     			table.addField(field);
     		}
+    		
+    		fieldNames = connector.getNonPrimitiveColumnNames(tableName);
+    		for (String fieldName : fieldNames) {
+    			String fieldComment = "";
+    			int dataType = 0;
+    			boolean isKey = keys.contains(fieldName);
+    			Field field = new Field(fieldName, table, fieldComment, isKey, dataType, false);
+    			fields.put(fieldName, field);
+    			table.addField(field);
+    		}    		
 
-    		tables.put(tableName, table);
+    		tables.put(simpleName, table);
     	}
     }
     

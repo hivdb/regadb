@@ -16,7 +16,8 @@ import java.util.*;
 
 import com.pharmadm.custom.rega.queryeditor.AWCWord;
 import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
-import com.pharmadm.custom.rega.queryeditor.VariableType;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
@@ -71,7 +72,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     	this.suggestedValues = suggestedValues;
     }
 
-    public abstract String getValueTypeString();
+    public abstract DbObject getDbObject();
     /**
      * gets the default value for this constant
      * this value may not be null
@@ -160,8 +161,8 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     /**
      * returns the class of the values of this constant
      */
-    public Class getValueType() {
-    	return new VariableType(getValueTypeString()).getValueType();
+    public Class getValueTypeClass() {
+    	return getDbObject().getValueTypeClass();
     } 
     
     public Object clone() throws CloneNotSupportedException {
@@ -240,7 +241,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     }
     
 	public String getImmutableStringValue() {
-		return getValueTypeString();
+		return getDbObject().getDescription();
 	}
 } // end Constant
 

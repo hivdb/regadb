@@ -1,7 +1,8 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorGroupBox;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorTreeContainer;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
@@ -15,8 +16,8 @@ import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 
-public class EditButtonPanel extends ButtonPanel {
-	private QueryEditorGroupBox owner;
+public class EditButtonPanel extends WButtonPanel {
+	private QueryEditorTreeContainer owner;
 	private List<QueryTreeNode> selection;
 	private List<WhereClause> cursorClauses;
 	private boolean enabled;
@@ -32,7 +33,7 @@ public class EditButtonPanel extends ButtonPanel {
 	private WPushButton wrapNotButton_;
 	
 	
-	public EditButtonPanel(QueryEditorGroupBox owner) {
+	public EditButtonPanel(QueryEditorTreeContainer owner) {
 		super(Style.Flat);
 		this.owner = owner;
 		cursorClauses = new ArrayList<WhereClause>();
@@ -64,7 +65,7 @@ public class EditButtonPanel extends ButtonPanel {
 		
 		pasteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getQueryTree() :selection.get(0));
+				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getRootNode() :selection.get(0));
 				if (pasteNode.getClause().isAtomic()) {
 					pasteNode = pasteNode.getParentNode();
 				}
@@ -139,8 +140,6 @@ public class EditButtonPanel extends ButtonPanel {
 		addSeparator();
 		addButton(deleteButton_);
 		
-// not yet implemented
-// WT errors 
 		addSeparator();
 		addButton(unwrapButton_);
 		addSeparator();
@@ -175,8 +174,9 @@ public class EditButtonPanel extends ButtonPanel {
 		QueryTreeNode wrapperNode = selection.get(0).replaceNode(wrapper);
 		newSelection.add(wrapperNode.addNode(firstClause, AssignMode.none));
 		
-		while (selection.size() > 0) {
+		while (selection.size() > 0 && wrapperNode.getClause().acceptsAdditionalChild()) {
 			QueryTreeNode n = selection.get(0);
+			
 			parent.removeNode(n);
 			newSelection.add(wrapperNode.addNode(n.getClause(), AssignMode.none));
 		}
@@ -188,8 +188,7 @@ public class EditButtonPanel extends ButtonPanel {
 		owner.setValidation(true);
 	}
 	
-	public void setEditable(boolean enabled) {
-		super.setEditable(enabled);
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		checkButtons(enabled);
 	}
@@ -200,7 +199,7 @@ public class EditButtonPanel extends ButtonPanel {
         
         wrapAndButton_.setEnabled(haveSameParent && enabled);
         wrapOrButton_.setEnabled(haveSameParent && enabled);
-        wrapNotButton_.setEnabled(haveSameParent && enabled);
+        wrapNotButton_.setEnabled(haveSameParent && enabled && selection.size() == 1);
 
         unwrapButton_.setEnabled(haveSameParent && firstHasGrandParent() && enabled);
         
@@ -211,7 +210,7 @@ public class EditButtonPanel extends ButtonPanel {
 	}
 
 	public void update() {
-		selection = owner.getQueryTree().getSelection();
+		selection = owner.getSelection();
 		checkButtons(enabled);
 	}
 	

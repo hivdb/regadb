@@ -12,10 +12,7 @@
  */
 package com.pharmadm.custom.rega.reporteditor;
 
-import java.util.*;
-
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.InputVariable;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 /**
  * <p>
@@ -53,8 +50,8 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
     public DataInputVariable() {
     }
     
-    public DataInputVariable(com.pharmadm.custom.rega.queryeditor.VariableType type) {
-        super(type);
+    public DataInputVariable(DbObject type) {
+        super(type.getTableObject());
     }
     ///////////////////////////////////////
     // access methods for associations
@@ -87,7 +84,7 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
      * </p>
      */
     public boolean isCompatible(DataOutputVariable ov) {
-        return getVariableType().isCompatibleType(ov.getVariableType());
+        return getObject().isCompatible(ov.getObject());
     }
     
     public String getHumanStringValue() {
@@ -113,8 +110,8 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
     }
     
     /* implementing ValueSpecifier */
-    public Class getValueType() {
-        return getVariableType().getValueType();
+    public Class getValueTypeClass() {
+        return getObject().getValueTypeClass();
     }
     
     public String getHumanStringValue(OutputReportSeeder context) {
@@ -123,7 +120,7 @@ public class DataInputVariable extends com.pharmadm.custom.rega.queryeditor.Vari
     }
 
 	public String getImmutableStringValue() {
-		return getVariableType().getName();
+		return getObject().getTableName();
 	}
 } // end DataInputVariable
 

@@ -15,6 +15,7 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 /**
@@ -26,24 +27,18 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
  */
 public class TableSelection extends ComposedSelection implements Serializable{
     
-    private String tableName; // the Table accessed by the FromVariable that is the sole AWCWord in the Expression of this Selection's OutputVariable
-    
-    
-    
     /** Creates a new instance of TableSelection */
     public TableSelection(OutputVariable ovar) {
-        super(ovar);
+        super(ovar,  ((FromVariable) ovar.getExpression().getWords().get(0)).getObject() );
         if (ovar.consistsOfSingleFromVariable()) {
-            tableName = ((FromVariable)((OutputVariable)getObjectSpec()).getExpression().getWords().get(0)).getTableName();
             initFieldSelections();
         } else {
             System.err.println("TableSelection's OutputVariable does not refer to a single FromVariable. Something is terribly wrong !");
         }
     }
     
-    public TableSelection(OutputVariable ovar, String tableName) {
-    	super(ovar);
-    	this.tableName = tableName;
+    public TableSelection(OutputVariable ovar, DbObject object) {
+    	super(ovar, object);
         setSubSelections(new ArrayList<Selection>());
     }
     
@@ -57,14 +52,6 @@ public class TableSelection extends ComposedSelection implements Serializable{
         return (OutputVariable)objectSpec;
     }
     
-    public Table getTable() {
-        return DatabaseManager.getInstance().getTableCatalog().getTable(tableName);
-    }
-    
-    public String getTableName() {
-    	return tableName;
-    }
-    
     public String getVariableName() {
         return ((OutputVariable)getObject()).getUniqueName();
     }
@@ -75,10 +62,10 @@ public class TableSelection extends ComposedSelection implements Serializable{
     private void initFieldSelections() {
         ArrayList<Selection> fieldSelections = new ArrayList<Selection>();
         
-        Iterator<Field> fieldIter = getTable().getFields().iterator();
+        Iterator<Field> fieldIter = getDbObject().getTable().getPrimitiveFields().iterator();
         while (fieldIter.hasNext()) {
             Field field = (Field)fieldIter.next();
-            FieldSelection fieldSelection = new FieldSelection(field);
+            FieldSelection fieldSelection = new FieldSelection(DatabaseManager.getInstance().getAWCCatalog().getObject(getDbObject().getTableName(), field.getName()));
             if (field.isPrimaryKey()) {
                 fieldSelection.setSelected(true);
             }

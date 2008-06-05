@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
-import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
@@ -64,8 +63,7 @@ public class RegaDBApplication extends WApplication
     public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
     	login_ = Login.authenticate(uid, pwd);
-		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(uid, pwd, false));
-        DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
+		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(login_.copyLogin(), false));
     }
     
     public void logout()

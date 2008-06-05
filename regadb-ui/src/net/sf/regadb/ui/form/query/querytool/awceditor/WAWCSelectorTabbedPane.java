@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.regadb.ui.form.query.querytool.WTabbedPane;
+import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.witty.wt.WRadioButton;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -26,6 +26,10 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
         panels = new HashMap<String, WAWCSelectorPanel>(); 
 	}
 	
+	public void showTab(String tabName) {
+		tabs.showTab(lt(tabName));
+	}
+	
 	@Override
 	public boolean addAtomicWhereClause(AtomicWhereClause clause) {
         for (String group : clause.getGroups()) {
@@ -34,9 +38,23 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
     		}
     		
     		panels.get(group).addAtomicWhereClause(clause);
-            tabs.showTab(0);
         }
         return true;
+	}
+	
+	/**
+	 * adds all the given clauses to the given tab
+	 */
+	public boolean addAll(List<AtomicWhereClause> clauses, String tabName) {
+		WAWCSelectorPanel panel = panels.get(tabName);
+		if (panel != null) {
+			boolean ok = true;
+			for (AtomicWhereClause clause : clauses) {
+				ok = ok && panel.addAtomicWhereClause(clause);
+			}
+			return ok;
+		}
+		return false;
 	}
 
 	@Override
@@ -52,7 +70,6 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	private void addSelectorPanel(WAWCSelectorTab panel) {
 		panels.put(panel.getTitle(), panel);
         tabs.addTab(new WMessage(panel.getTitle(), true), panel);
-        tabs.showTab(0);
 	}
 
 	@Override
@@ -66,14 +83,11 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 
 	@Override
 	public WAWCEditorPanel getSelectedClause() {
-		WAWCEditorPanel selectedClause = null;
-		for (WAWCSelectorPanel panel : panels.values()) {
-			selectedClause = panel.getSelectedClause();
-			if (selectedClause != null) {
-				return selectedClause;
-			}
-		}
-		return selectedClause;
+		if (tabs.getSelectedTab() != null) {
+			WAWCSelectorPanel p = (WAWCSelectorPanel) tabs.getSelectedTab();
+			return p.getSelectedClause();
+		}		
+		return null;
 	}
 
 	@Override

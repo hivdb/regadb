@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
@@ -253,7 +254,7 @@ public abstract class WhereClause implements Cloneable, Serializable {
     /**
      * Collects all available output variables that are exported to WhereClauses elsewhere in the tree.
      */
-    protected abstract Collection<OutputVariable> getExportedOutputVariables();
+    protected abstract List<OutputVariable> getExportedOutputVariables();
     
     public Object clone() throws CloneNotSupportedException {
         Map<ConfigurableWord, ConfigurableWord> originalToCloneMap = new HashMap<ConfigurableWord, ConfigurableWord>();

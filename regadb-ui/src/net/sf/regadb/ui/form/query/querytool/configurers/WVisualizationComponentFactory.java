@@ -5,6 +5,7 @@ import com.pharmadm.custom.rega.queryeditor.FixedString;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConstantController;
@@ -36,7 +37,11 @@ public class WVisualizationComponentFactory extends
 		else if (word instanceof Constant) {
 			Constant constant = (Constant) word;
 			if (constant.getSuggestedValues().isEmpty()) {
-				return new WConstantConfigurer(constant, (ConstantController) getConfigurationController());
+				WordConfigurer confy = new WConstantConfigurer(constant, (ConstantController) getConfigurationController());
+				if (constant.getDbObject().getValueType() == ValueType.Date) {
+					confy =  new WDateConstantConfigurer(confy);
+				}
+				return confy;
 			}
 			else {
 				return new WConstantChoiceConfigurer(constant, (ConstantController) getConfigurationController());

@@ -15,6 +15,8 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 /**
  *
  * @author  kristof
@@ -29,15 +31,17 @@ import java.util.*;
  * </p>
  */
 public abstract class ComposedSelection implements Selection, Serializable {
-    
+    private DbObject dbObject;
+	
     private Object objectSpec;
     private boolean selected = false;
     private SelectionList controller = null;
     private Collection<Selection> subSelections;
     
     /** Creates a new instance of ComposedSelection */
-    public ComposedSelection(Object objectSpec) {
+    public ComposedSelection(Object objectSpec, DbObject object) {
         this.objectSpec = objectSpec;
+        this.dbObject = object;
     }
     
     /** Creates a new instance of ComposedSelection */
@@ -49,6 +53,10 @@ public abstract class ComposedSelection implements Selection, Serializable {
    
     public final Object getObject() {
         return getObject(objectSpec);
+    }
+    
+    public DbObject getDbObject() {
+    	return dbObject;
     }
     
     public abstract Object getObject(Object objectSpec);

@@ -26,7 +26,7 @@ public class POJOSelection extends com.pharmadm.custom.rega.queryeditor.Composed
     
     /** Creates a new instance of POJOSelection */
     public POJOSelection(DataOutputVariable ovar) {
-        super(ovar);
+        super(ovar, ovar.getObject());
         if (ovar.hasDomainClassType()) {
             initPropertySelections();
         } else {

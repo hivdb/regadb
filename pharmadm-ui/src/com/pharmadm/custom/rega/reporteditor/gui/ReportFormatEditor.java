@@ -239,12 +239,16 @@ public class ReportFormatEditor extends AbstractListModel implements Savable {
         selectionListChangeListeners.add(listener);
     }
     
-    public void load(File file) throws IOException {
-        loadReportFormat(file);
+    public void load(Object file) throws IOException {
+        loadReportFormat((File) file);
     }
     
-    public void save(File file) throws IOException {
-        saveReportFormat(file);
+    public void save(Object file) throws IOException {
+        saveReportFormat((File) file);
     }
+
+	public boolean isLoaded() {
+		return true;
+	}
     
 }

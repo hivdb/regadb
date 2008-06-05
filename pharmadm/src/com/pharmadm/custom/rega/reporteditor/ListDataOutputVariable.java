@@ -13,6 +13,7 @@
 package com.pharmadm.custom.rega.reporteditor;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
 
 import java.util.*;
@@ -35,12 +36,12 @@ public class ListDataOutputVariable extends DataOutputVariable {
     private ConstantValueChangeListener listener = null;
     
     /** Creates a new instance of ListDataOutputVariable linked to a maximum-size constant */
-    public ListDataOutputVariable(VariableType elementType, DoubleConstant sizeCst, String formalName) {
-        super(new VariableType("ArrayList"), formalName);
+    public ListDataOutputVariable(DbObject obj, DoubleConstant sizeCst, String formalName) {
+        super(new DbObject("ArrayList"));
         this.varList = new ArrayList();
         // zero element serves as a template, it has no actual value
         for (int i = 0; i <= ((Double)sizeCst.getValue()).intValue(); i++) {
-            varList.add(new ElementDataOutputVariable(elementType, this, i));
+            varList.add(new ElementDataOutputVariable(obj, this, i));
         }
         this.sizeConstant = sizeCst;
         this.listener = new ConstantValueChangeListener(this);
@@ -104,10 +105,6 @@ public class ListDataOutputVariable extends DataOutputVariable {
         return iter;
     }
     
-    public VariableType getElementType() {
-        return getElement().getVariableType();
-    }
-    
     public Class getElementValueType() {
         return getElement().getValueType();
     }
@@ -158,7 +155,7 @@ public class ListDataOutputVariable extends DataOutputVariable {
             }
         } else {
             for (int i = getSize() + 1; i <= newSize; i++) {
-                varList.add(new ElementDataOutputVariable(getElementType(), this, i));
+                varList.add(new ElementDataOutputVariable(getElement().getObject(), this, i));
             }
         }
     }

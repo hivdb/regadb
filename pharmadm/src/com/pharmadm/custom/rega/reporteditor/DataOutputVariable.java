@@ -14,8 +14,7 @@ package com.pharmadm.custom.rega.reporteditor;
 
 import java.util.*;
 
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
-import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 /**
  * <p>
@@ -51,32 +50,15 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
   ///////////////////////////////////////
   // attributes
 
-    public DataOutputVariable(com.pharmadm.custom.rega.queryeditor.VariableType type, String formalName) {
-        super(type);
-        this.formalName = formalName;
+    public DataOutputVariable(DbObject object) {
+        super(object);
+        getObject().getVariableName();
     }
 
     /** For xml-encoding purposes only */
     public DataOutputVariable() {
     }
     
-/**
- * <p>
- * Represents a non-unique name of the variable that has some meaning to
- * the user. For example, a DataOutputVariable of the tye 'Time' could be
- * referred to as variable 'T'. A formal name may not:<ul>
- * <li>be null
- * <li>have a zero length
- * <li>contain other characters than letters (small or caps), digits, dashes and underscores
- * <li>have a last character that is a digit or a dash
- * </ul>
- * </p>
- * <p>
- * The formal name is persistent.
- * </p>
- * 
- */
-    private String formalName; 
 
 /**
  * <p>
@@ -108,13 +90,10 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
     private List<Property> properties = null;
     
     public String getFormalName() {
-        return formalName;
+        return getObject().getVariableName();
     }
     
-    /** For xml-encoding purposes only */
-    public void setFormalName(String formalName) {
-        this.formalName = formalName;
-    }
+
     
     public String getUniqueName() {
         return uniqueName;
@@ -140,13 +119,13 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
     /* public for xml-encoding purposes only */
     public void setSpecifier(ValueSpecifier specifier) { 
         this.specifier = specifier;
-        if (specifier.getValueType() != getValueType()) {
+        if (specifier.getValueTypeClass() != getValueType()) {
             System.err.println("Warning : specifier value type is incompatible with variable value type.");
         }
     }
     
     public Class getValueType() {
-        return getVariableType().getValueType();
+        return getObject().getValueTypeClass();
     }
     
     public boolean hasDomainClassType() {
@@ -185,7 +164,7 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
             // problematic/confusing as long as ObjectListVariables remain invisible 
             return ((ObjectListVariable)specifier).getHumanStringValue(context);
         } else if ((getUniqueName() == null) || (getUniqueName().equals(""))) {
-            return formalName;
+            return getFormalName();
         } else {
             return getUniqueName();
         }
@@ -197,7 +176,7 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
             // problematic/confusing as long as ObjectListVariables remain invisible 
             return ((ObjectListVariable)specifier).getHumanStringValue();
         } else if ((uniqueName == null) || (uniqueName.equals(""))) {
-            return formalName;
+            return getFormalName();
         } else {
             return uniqueName;
         }
@@ -232,6 +211,6 @@ public class DataOutputVariable extends com.pharmadm.custom.rega.queryeditor.Var
     }
 
 	public String getImmutableStringValue() {
-		return formalName;
+		return getFormalName();
 	}
 } // end DataOutputVariable

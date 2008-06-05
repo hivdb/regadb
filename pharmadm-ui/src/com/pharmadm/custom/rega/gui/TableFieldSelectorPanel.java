@@ -23,6 +23,7 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 /**
  *
@@ -60,12 +61,12 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
     
     private void subCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
     	LargeToolTipCheckBox checkBox = ((LargeToolTipCheckBox)evt.getSource());
-        String fieldName = checkBox.getObjectName();
-        ((SelectionStatusList)tableSelection.getController()).setSelected((OutputVariable)tableSelection.getObject(), tableSelection.getTable().getField(fieldName), checkBox.isSelected());
+        DbObject obj = checkBox.getObject();
+        ((SelectionStatusList)tableSelection.getController()).setSelected((OutputVariable)tableSelection.getObject(), obj.getField(), checkBox.isSelected());
     }
     
     private void initTableCheckBox() {
-        tableCheckBox = new LargeToolTipCheckBox(tableSelection.getTableName(), tableSelection.getVariableName(), tableSelection.getTableName(), tableSelection.isSelected(), tableSelection.getTable().getComment());
+        tableCheckBox = new LargeToolTipCheckBox(tableSelection.getDbObject(), tableSelection.getVariableName(), tableSelection.isSelected());
         tableCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tableCheckBoxActionPerformed(evt);
@@ -90,7 +91,7 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
             Selection fieldSelection = (FieldSelection)fields.next();
             Field field = (Field)fieldSelection.getObject();
             boolean selected = fieldSelection.isSelected();
-            JCheckBox checkBox = new LargeToolTipCheckBox(tableSelection.getTableName() + '.' + field.getName(), field.getDescription(), field.getName(), selected, field.getComment());
+            JCheckBox checkBox = new LargeToolTipCheckBox(tableSelection.getDbObject(), field.getDescription(), selected);
             checkBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     subCheckBoxActionPerformed(evt);
@@ -151,28 +152,34 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
      * To allow access to the documentation, both a special tooltip and a popupmenu are used.
      */
     private static class LargeToolTipCheckBox extends JCheckBox {
-        
-        private final String title;
-        private final String toolTipText;
-        private final String objectName;
-        public LargeToolTipCheckBox(String title, String text, String objectName, boolean selected, String toolTipText) {
+        private final DbObject object;
+        public LargeToolTipCheckBox(DbObject obj, String text, boolean selected) {
             super(text, selected);
-            this.objectName = objectName;
-            if (toolTipText == null) {
-                toolTipText = CommentToolTip.NO_COMMENT_AVAILABLE;
-            }
-            this.title = title;
-            this.toolTipText = toolTipText;
-            setToolTipText(toolTipText);
+            this.object = obj;
+            setToolTipText(getTooltipText());
             addMouseListener(new MenuPopupMouseListener());
         }
         
-        public String getObjectName() {
-        	return objectName;
+        public DbObject getObject() {
+        	return object;
+        }
+        
+        private String getTooltipText() {
+        	String tooltip = null;
+        	if (object.isTable()) {
+        		tooltip = object.getTable().getComment();
+        	}
+        	else if (object.isField()) {
+        		tooltip = object.getField().getComment();
+        	}
+            if (tooltip == null) {
+            	tooltip = CommentToolTip.NO_COMMENT_AVAILABLE;
+            }
+            return tooltip;
         }
         
         public JToolTip createToolTip() {
-            CommentToolTip ctt = new CommentToolTip(title, toolTipText);
+            CommentToolTip ctt = new CommentToolTip(object, getTooltipText());
             return ctt;
         }
         
@@ -210,7 +217,7 @@ public class TableFieldSelectorPanel extends javax.swing.JPanel {
             }
             
             public void actionPerformed(ActionEvent e) {
-                CommentToolTip.showWindowedComment(title, toolTipText, location);
+                CommentToolTip.showWindowedComment(object, getTooltipText(), location);
             }
         }
     }

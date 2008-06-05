@@ -30,6 +30,7 @@ public class Field implements Comparable<Field>{
  * </p>
  */
     private boolean primaryKey;
+    private boolean primitive;
     private String name; 
     private final String comment;
     private Table table;
@@ -45,12 +46,13 @@ public class Field implements Comparable<Field>{
  * </p>
  */
     
-    public Field(String name, Table table, String comment, boolean primaryKey, int dataType) {
+    public Field(String name, Table table, String comment, boolean primaryKey, int dataType, boolean primitive) {
         this.name = name;
         this.primaryKey = primaryKey;
         this.table = table;
         this.comment = comment;
         this.dataType = dataType;
+        this.primitive = primitive;
         description = null;
     }
     
@@ -68,7 +70,7 @@ public class Field implements Comparable<Field>{
     
     public String getDescription() {
     	if (description == null) {
-            description = DatabaseManager.getInstance().getAWCCatalog().getObjectDescription(table.getName() + "." + name);
+            description = DatabaseManager.getInstance().getAWCCatalog().getObject(table.getName(),name).getDescription();
     	}
     	return description;
     }
@@ -93,6 +95,11 @@ public class Field implements Comparable<Field>{
 	public int compareTo(Field o) {
 		if (o == null) return -1;
 		return o.name.compareTo(name);
+	}
+
+
+	public boolean isPrimitive() {
+		return primitive;
 	}
 
 } // end Field

@@ -2,11 +2,9 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 
 import java.util.List;
 
-import com.pharmadm.custom.rega.awccomposition.CollectionCountComposition;
 import com.pharmadm.custom.rega.awccomposition.PropertyFetchComposition;
-import com.pharmadm.custom.rega.awccomposition.PropertySetComposition;
 import com.pharmadm.custom.rega.awccomposition.TableFetchComposition;
-import com.pharmadm.custom.rega.awccomposition.VariableDeclarationComposition;
+import com.pharmadm.custom.rega.awccomposition.NewTableComposition;
 import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 import com.pharmadm.custom.rega.queryeditor.NullComposition;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedVisualizationComponentFactory;
@@ -28,22 +26,19 @@ public class WComposedVisualizationComponentFactory extends
 		else if (behaviour instanceof TableFetchComposition) {
 			return new WComposedOutputVariableConfigurer(configurers.get(0));
 		}
-		else if (behaviour instanceof VariableDeclarationComposition) {
+		else if (behaviour instanceof NewTableComposition) {
 			return new WComposedOutputVariableConfigurer(configurers.get(0));
 		}
-		else if (behaviour instanceof PropertySetComposition) {
-			WCombinedConfigurer constants = new WCombinedConfigurer(configurers.subList(1, 3));
-			WComposedWordConfigurer string = new WComposedWordConfigurer(configurers.get(0));
-			return new WAttributeConfigurer(string, constants);			
-		}
-		else if (behaviour instanceof CollectionCountComposition) {
-			WCombinedConfigurer constants = new WCombinedConfigurer(configurers.subList(1, 3));
-			WComposedWordConfigurer string = new WComposedWordConfigurer(configurers.get(0));
-			return new WAttributeConfigurer(string, constants);			
-		}
 		else {
-			return null;
+			return getAttributeConfigurer(configurers);
 		}
+	}
+	
+	private WAttributeConfigurer getAttributeConfigurer(List<WordConfigurer> configurers) {
+		WCombinedConfigurer constants = new WCombinedConfigurer(configurers.subList(1, configurers.size()));
+		WComposedWordConfigurer string = new WComposedWordConfigurer(configurers.get(0));
+		return new WAttributeConfigurer(string, constants);			
+		
 	}
 
 }

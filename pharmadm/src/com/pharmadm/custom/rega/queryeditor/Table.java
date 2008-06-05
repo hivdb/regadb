@@ -67,6 +67,17 @@ public class Table implements Comparable<Table> {
         return result;
     }
     
+    public Collection<Field> getPrimitiveFields() {
+    	List<Field> result = new ArrayList<Field>();
+    	for (Field field : fields.values()) {
+    		if (field.isPrimitive()) {
+    			result.add(field);
+    		}
+    	}
+        Collections.sort(result);
+        return result;
+    }
+    
     public Collection<Field> getPrimaryKeyFields() {
         Collection<Field> res = new ArrayList<Field>();
         for (Field field: fields.values()) {
@@ -81,6 +92,10 @@ public class Table implements Comparable<Table> {
         return fields.get(name);
     }
     
+    public boolean hasField(String name) {
+    	return fields.containsKey(name);
+    }
+    
     ///////////////////////////////////////
     // operations
     
@@ -89,7 +104,7 @@ public class Table implements Comparable<Table> {
     }
     
     public String getDescription() {
-    	return DatabaseManager.getInstance().getAWCCatalog().getObjectDescription(getName());
+    	return DatabaseManager.getInstance().getAWCCatalog().getObject(getName()).getDescription();
     }
     
     public String getComment() {

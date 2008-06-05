@@ -16,6 +16,7 @@ import java.util.*;
 import java.sql.*;
 
 import com.pharmadm.custom.rega.queryeditor.*;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.reporteditor.DataGroup;
@@ -67,13 +68,13 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
     }
     
     /* collect all available table-representing outputvariables of the given type from the associated queryeditor */
-    public Collection getAvailableOutputVariables(VariableType type) {
+    public Collection getAvailableOutputVariables(DbObject type) {
         Collection allRes = querier.getQueryEditor().getQuery().getRootClause().getOutputVariablesAvailableForImport();
         ArrayList res = new ArrayList();
         Iterator iter = allRes.iterator();
         while (iter.hasNext()) {
             OutputVariable ovar = (OutputVariable)iter.next();
-            if (ovar.consistsOfSingleFromVariable() && ovar.getVariableType().isCompatibleType(type)) {
+            if (ovar.consistsOfSingleFromVariable() && ovar.getObject().isCompatible(type)) {
                 res.add(ovar);
             }
         }
@@ -89,8 +90,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
             Iterator variter = prototype.getObjectListVariables().iterator();
             while (variter.hasNext()) {
                 ObjectListVariable olvar = (ObjectListVariable)variter.next();
-                VariableType olvarType = olvar.getVariableType();
-                if (getAvailableOutputVariables(olvarType).size() == 0) {
+                if (getAvailableOutputVariables(olvar.getObject()).size() == 0) {
                     seedable = false;
                     break;
                 }
@@ -232,7 +232,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
                                     params[i] = resultSet.get(k, i + j).toString();
                                     paramTypes[i] = String.class; // %$ KVB : we assume only all-String-constructors for now
                                 }
-                                Class valueType = olvar.getValueType();
+                                Class valueType = olvar.getValueTypeClass();
                                 String className = valueType.getName();
                                 String methodName = "get" + className.substring(className.lastIndexOf(".") + 1);
                                 java.lang.reflect.Method constructMethod = valueType.getDeclaredMethod(methodName, paramTypes);

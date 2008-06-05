@@ -32,11 +32,10 @@ public class DatabaseManager {
     private DatabaseManager(QueryVisitor queryBuilder, DatabaseConnector conn) {
     	this.visitor = queryBuilder;
     	DbManager = conn;
-    	tableCatalog = new DatabaseTableCatalog(conn);
+    	catalog = new AWCPrototypeCatalog();
     }
     
     public void fillCatalog(CatalogBuilder catalogBuilder) {
-    	catalog = new AWCPrototypeCatalog(this);
 		catalogBuilder.fillCatalog(catalog);
     }
     
@@ -56,6 +55,9 @@ public class DatabaseManager {
     }
     
     public DatabaseTableCatalog getTableCatalog() {
+    	if (tableCatalog == null) {
+        	tableCatalog = new DatabaseTableCatalog(DbManager);
+    	}
         return tableCatalog;
     }
     

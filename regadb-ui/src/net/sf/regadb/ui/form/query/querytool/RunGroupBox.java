@@ -23,6 +23,7 @@ public class RunGroupBox extends WGroupBox {
 	private WContainerWidget runStatus;
 	private List<QueryToolRunnable> runningQueries;
 	private WTimer timer;
+	private WText warning;
 	
 	public RunGroupBox(QueryEditor editor, WContainerWidget parent) {
 		super(tr("form.query.querytool.group.run"), parent);
@@ -52,11 +53,13 @@ public class RunGroupBox extends WGroupBox {
 			runStatus.removeWidget(runStatus.children().get(0));
 		}
 		
-		if (!runningQueries.isEmpty()) {
-			this.setStyleClass("resultfield");
+		if (runningQueries.isEmpty() && warning == null) {
+			warning = new WText(tr("form.query.querytool.message.noresults"));
+			warning.setStyleClass("warning");
+			content.addWidget(warning);
 		}
-		else {
-			this.setStyleClass("resultfieldempty");
+		else if (!runningQueries.isEmpty() && warning != null) {
+			content.removeWidget(warning);
 		}
 		
 		boolean done = true;

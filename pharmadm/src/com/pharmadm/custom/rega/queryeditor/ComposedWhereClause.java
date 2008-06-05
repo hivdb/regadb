@@ -19,8 +19,6 @@ import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
-//import com.pharmadm.custom.rega.chem.search.MoleculeIndexingException;
-
 /**
  * <p>
  * A ComposedWhereClause's properties in terms of which rows it will select
@@ -122,6 +120,8 @@ public abstract class ComposedWhereClause extends WhereClause implements Seriali
     public boolean isAtomic() {
         return false;
     }
+    
+    
     
     public Iterator iterateAtomicChildren() {
         return new com.pharmadm.util.IteratorFilter(iterateChildren()) {

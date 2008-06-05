@@ -22,9 +22,6 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
-import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
-import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
-import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -196,7 +193,10 @@ public class QueryToolRunnable implements Runnable {
 				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets) != null);
 			}
 			else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
-				if (lastTableAccess) {
+				// if the first element is an outputselection selection list
+				// changes made earlier guarantee that it is a static value
+				// so it can be outputted regardless of access
+				if (lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection) {
 					line += array[j];
 					nullLine = false;
 				}
@@ -332,9 +332,9 @@ public class QueryToolRunnable implements Runnable {
 		ConfigurableWord firstWord = ovar.getExpression().getWords().get(0);
 		TableSelection outputTable = null;
 		if (firstWord instanceof FromVariable) {
-			OutputVariable newOvar = new OutputVariable(ovar.getVariableType(), ovar.getFormalName(), ovar.getName(RelationDisplay.HIDE, DescriptionDisplay.SHOW, UniqueNameDisplay.HIDE));
+			OutputVariable newOvar = new OutputVariable(ovar.getObject());
 			newOvar.getExpression().addFromVariable((FromVariable) firstWord);
-			outputTable = new TableSelection(newOvar, ((FromVariable) firstWord).getTableName());
+			outputTable = new TableSelection(newOvar, ((FromVariable) firstWord).getObject());
 			outputTable.setSelected(true);
 		}
 		else if (firstWord instanceof InputVariable) {

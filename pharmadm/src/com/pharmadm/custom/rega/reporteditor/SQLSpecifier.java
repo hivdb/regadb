@@ -48,7 +48,7 @@ public class SQLSpecifier extends OrderedDGWordList implements ValueSpecifier {
     }
     
     /* Implementing ValueSpecifier */
-    public Class getValueType() {
+    public Class getValueTypeClass() {
         return valueType;
     }
     

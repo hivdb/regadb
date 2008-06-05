@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.form.query.querytool.configurers;
 
-import net.sf.regadb.ui.form.query.querytool.CssClasses;
+import net.sf.regadb.ui.form.query.querytool.widgets.CssClasses;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WKeyEvent;
@@ -68,7 +68,6 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     
     
     public void configureWord() {
-    	System.err.println("text:" + this.text());
         if (! controller.setConstantValueString(constant, this.text())) {
             System.err.println("Warning : word configuration failed !");
         }

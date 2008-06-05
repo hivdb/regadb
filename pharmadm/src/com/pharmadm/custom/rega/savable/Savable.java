@@ -12,7 +12,6 @@
  */
 package com.pharmadm.custom.rega.savable;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -21,9 +20,15 @@ import java.io.IOException;
  */
 public interface Savable {
     
-    public void load(File file) throws IOException;
+    public void load(Object file) throws IOException;
     
-    public void save(File file) throws IOException;
+    public void save(Object file) throws IOException;
+    
+    /**
+     * returns true when the last load succeeded
+     * @return
+     */
+    public boolean isLoaded();
     
     public boolean isDirty();
     

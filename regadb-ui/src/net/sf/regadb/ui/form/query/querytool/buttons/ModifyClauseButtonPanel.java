@@ -2,12 +2,13 @@ package net.sf.regadb.ui.form.query.querytool.buttons;
 
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorPanel;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 
 
-public class ModifyClauseButtonPanel extends ButtonPanel {
+public class ModifyClauseButtonPanel extends WButtonPanel {
 	private QueryTreeNode node;
 	private WAWCSelectorPanel editPanel;
 	

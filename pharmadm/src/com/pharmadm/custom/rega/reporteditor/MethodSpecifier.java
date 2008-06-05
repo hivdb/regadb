@@ -69,7 +69,7 @@ public class MethodSpecifier implements ValueSpecifier, Cloneable {
     private Class[] getParameterTypes() {
         Class[] types = new Class[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            types[i] = parameters[i].getValueType();
+            types[i] = parameters[i].getValueTypeClass();
         }
         return types;
     }
@@ -78,7 +78,7 @@ public class MethodSpecifier implements ValueSpecifier, Cloneable {
         String res = "";
         Class[] types = new Class[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            types[i] = parameters[i].getValueType();
+            types[i] = parameters[i].getValueTypeClass();
             res += types[i].toString() + " -- ";
         }
         return res;
@@ -104,7 +104,7 @@ public class MethodSpecifier implements ValueSpecifier, Cloneable {
     
     private Method getMethod() {
         try {
-            Class callerType = caller.getValueType();
+            Class callerType = caller.getValueTypeClass();
             Method method = callerType.getMethod(name, getParameterTypes());
             return method;
         } catch (java.lang.NoSuchMethodException nsme) {
@@ -131,7 +131,7 @@ public class MethodSpecifier implements ValueSpecifier, Cloneable {
     }
     
     /* Implementing ValueSpecifier */
-    public Class getValueType() {
+    public Class getValueTypeClass() {
         return getMethod().getReturnType(); 
     }
     
