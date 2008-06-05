@@ -152,14 +152,17 @@ public class PreprocCpp {
             int a = sb.indexOf(e.getKey()+"<");
             int b = sb.indexOf(">",a);
             
-            String templates = sb.substring(a + e.getKey().length()+1, b);
-            String [] t = templates.split(",");
-            
-            for(int i = t.length; i < e.getValue(); ++i){
-                templates += ",NoClass";
+            if(a > -1 && b > -1){
+                a += e.getKey().length()+1;
+                String templates = sb.substring(a, b);
+                String [] t = templates.split(",");
+                
+                for(int i = t.length; i < e.getValue(); ++i){
+                    templates += ",NoClass";
+                }
+                
+                sb.replace(a, b, templates);
             }
-            
-            sb.replace(a + e.getKey().length()+1, b, templates);
         }
     }
     
