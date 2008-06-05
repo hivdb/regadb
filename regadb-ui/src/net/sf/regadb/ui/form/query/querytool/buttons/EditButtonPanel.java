@@ -174,8 +174,8 @@ public class EditButtonPanel extends WButtonPanel {
 		QueryTreeNode wrapperNode = selection.get(0).replaceNode(wrapper);
 		newSelection.add(wrapperNode.addNode(firstClause, AssignMode.none));
 		
-		while (selection.size() > 0 && wrapperNode.getClause().acceptsAdditionalChild()) {
-			QueryTreeNode n = selection.get(0);
+		while (selection.size() > 1 && wrapperNode.getClause().acceptsAdditionalChild()) {
+			QueryTreeNode n = selection.get(1);
 			
 			parent.removeNode(n);
 			newSelection.add(wrapperNode.addNode(n.getClause(), AssignMode.none));

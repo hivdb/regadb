@@ -67,6 +67,7 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 		if (index >= 0 && index < tabItems.size()) {
 			tabs.select(index);
 			tabItems.get(index).show();
+			selectedIndex = index;
 		}
 	}
 	

@@ -80,12 +80,14 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 	    	this.clicked.addListener(new SignalListener<WMouseEvent>(){
 				public void notify(WMouseEvent a) {
 					radioButton.setChecked(true);
+					radioButton.refresh();
 				}
 	    	});
 	    	this.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 				public void notify(WKeyEvent a) {
 					if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
 						radioButton.setChecked(true);
+						radioButton.refresh();
 					}
 				}
 	    	});

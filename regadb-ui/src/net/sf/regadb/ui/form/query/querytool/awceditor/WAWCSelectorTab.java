@@ -16,6 +16,7 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
 	private WButtonGroup group;
 	
 	private QueryContext context;
+	private boolean firstChecked = false;
 	
 	public WAWCSelectorTab(String title, QueryContext context) {
 		super();
@@ -52,8 +53,12 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
         WAWCSelectorPanel newPanel = new WComposedAWCSelectorPanel(context, clause);
         newPanel.setStyleClass(newPanel.styleClass() + " " + (selectorPanels.size() % 2 == 0 ? "even":"odd"));
         group.addButton(newPanel.getRadioButtons().get(0));
-        if (group.selectedButton() == null) {
-        	group.setSelectedButtonIndex(0);
+        if (!firstChecked) {
+        	newPanel.getRadioButtons().get(0).setChecked(true);
+        	firstChecked = true;
+        }
+        else {
+        	newPanel.getRadioButtons().get(0).setChecked(false);
         }
         return addSelectorPanel(newPanel);
 	}
@@ -69,6 +74,7 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
 
 	@Override
 	public WAWCEditorPanel getSelectedClause() {
+
 		WAWCEditorPanel selectedClause = null;
 		for (WAWCSelectorPanel panel : selectorPanels) {
 			selectedClause = panel.getSelectedClause();
