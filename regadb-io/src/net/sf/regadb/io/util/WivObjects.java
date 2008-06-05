@@ -441,7 +441,7 @@ public class WivObjects {
         l.add(getFormattedCountryCode("425","British Territories in the Antilles"));
         l.add(getFormattedCountryCode("313","Canary Islands"));
         l.add(getFormattedCountryCode("431","Dutch Antilles"));
-        l.add(getFormattedCountryCode("100","Europe (contient)"));
+        l.add(getFormattedCountryCode("100","Europe (continent)"));
         l.add(getFormattedCountryCode("504","Hawai"));
         l.add(getFormattedCountryCode("505","US Territories in Oceania"));
         l.add(getFormattedCountryCode("432","US Territories in the Antilles"));
