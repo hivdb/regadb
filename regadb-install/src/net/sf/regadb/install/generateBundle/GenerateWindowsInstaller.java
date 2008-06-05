@@ -3,9 +3,9 @@ package net.sf.regadb.install.generateBundle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import net.sf.regadb.build.builder.Jarbuilder;
+import net.sf.regadb.util.replace.ReplaceUtils;
 
 import org.apache.commons.io.FileUtils;
 
@@ -33,7 +33,7 @@ public class GenerateWindowsInstaller {
             File nsisFile = new File(buildDir.getAbsolutePath() + File.separatorChar + "regadb-nsis" + File.separatorChar + "Regadb.nsi");
             byte[] array = FileUtils.readFileToByteArray(nsisFile);
             String nsisFileContent = new String(array);
-            nsisFileContent = nsisFileContent.replaceAll("\\$FILE_SOURCE\\$", bundleDir.getAbsolutePath());
+            nsisFileContent = ReplaceUtils.replaceAll(nsisFileContent, "\\$FILE_SOURCE\\$", bundleDir.getAbsolutePath());
             FileUtils.writeByteArrayToFile(nsisFile, nsisFileContent.getBytes());
             
             System.err.println("start makensis");

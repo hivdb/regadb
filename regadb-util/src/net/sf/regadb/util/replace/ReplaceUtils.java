@@ -40,4 +40,16 @@ public class ReplaceUtils {
         ps.close();
         fos.close();
     }
+    
+    public static String replaceAll(String src, String toReplace, String toReplaceWith) {
+    	String toReturn = src;
+    	
+    	int index = toReturn.indexOf(toReplace);
+    	while(index!=-1) {
+    		toReturn = toReturn.replace(toReplace, toReplaceWith);
+    		index = toReturn.indexOf(toReplace);
+    	}
+    	
+    	return toReturn;
+    }
 }
