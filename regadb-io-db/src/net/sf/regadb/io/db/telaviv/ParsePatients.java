@@ -14,6 +14,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ParsePatients extends Parser{
 
@@ -35,6 +36,11 @@ public class ParsePatients extends Parser{
             return null;
 
 
+        AttributeGroup telavivGroup = new AttributeGroup("Tel Aviv");
+        Attribute immigrationDateAttr = new Attribute("Immigration date");
+        immigrationDateAttr.setAttributeGroup(telavivGroup);
+        immigrationDateAttr.setValueType(StandardObjects.getDateValueType());
+        
         Map<String,Patient> patients = new HashMap<String,Patient>();
         
         Table patTable = Utils.readTable(patientsFile.getAbsolutePath());
@@ -51,7 +57,9 @@ public class ParsePatients extends Parser{
         int CDrNo = patTable.findColumn("DrNo");
         int CNote = patTable.findColumn("Note");
         int CBirthDate = patTable.findColumn("BirthDate");
+        int CDeathDate = patTable.findColumn("YDeath");
         
+        int CImmigrationDate = patTable.findColumn("ImigrationDate");
         int CInfectionPlace = patTable.findColumn("InfectionPlace");
 
         logInfo("Retrieving standard RegaDB attributes");
@@ -70,7 +78,9 @@ public class ParsePatients extends Parser{
             String drNo = patTable.valueAt(CDrNo, i);
             String note = patTable.valueAt(CNote, i);
             String birthDate = patTable.valueAt(CBirthDate, i);
+            String deathDate = patTable.valueAt(CDeathDate, i);
             
+            String immigrationDate = patTable.valueAt(CImmigrationDate, i);
             String infectionPlace = patTable.valueAt(CInfectionPlace, i);
             
             if(check(id)){
@@ -85,6 +95,11 @@ public class ParsePatients extends Parser{
                 else
                     logWarn(p,"Invalid birth date",patientsFile,i,birthDate);
                 
+                if((d = getDate(deathDate)) != null)
+                	p.setDeathDate(d);
+                
+                if((d = getDate(immigrationDate)) != null)
+                	p.createPatientAttributeValue(immigrationDateAttr).setValue(d.getTime()+"");
 
                 if(Utils.checkColumnValueForEmptiness("gender", sexNo, i, id))
                 {

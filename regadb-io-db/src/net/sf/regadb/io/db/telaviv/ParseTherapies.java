@@ -23,8 +23,14 @@ import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.pair.Pair;
 
 public class ParseTherapies extends Parser{
+	private UniqueObjects<Pair<Integer,Therapy>> uniques = new UniqueObjects<Pair<Integer,Therapy>>(){
+		protected String getHashKey(Pair<Integer,Therapy> t){
+			return t.getValue().getStartDate().getTime()+"";
+		}
+	};
 
     public ParseTherapies(Logging logger, List<DateFormat> df){
         super(logger,df);
@@ -49,6 +55,7 @@ public class ParseTherapies extends Parser{
         int CTreatChange = therapiesTable.findColumn("TreatChange1");
         int CCoop = therapiesTable.findColumn("Coop1");
         int CNote = therapiesTable.findColumn("Note");
+        int CRow = therapiesTable.findColumn("Row");
         
         
         
@@ -59,34 +66,50 @@ public class ParseTherapies extends Parser{
             String treatChange = therapiesTable.valueAt(CTreatChange,i);
             String coop = therapiesTable.valueAt(CCoop, i);
             String note = therapiesTable.valueAt(CNote, i);
+            String row = therapiesTable.valueAt(CRow,i);
             
             Patient p = patients.get(id);
             
             if(p != null){
-                Date d;
-                d = getDate(trDate);
+                Date sd, ed;
+                sd = getDate(trDate);
+                ed = getDate(trDateStop);
                 
-                if(d != null){
-                    Therapy tp = p.createTherapy(d);
-                    
-                    if(check(trDateStop)){
-                        d = getDate(trDateStop);
-                        if(d != null){
-                            tp.setStopDate(d);
-                            
-                            if(check(treatChange)){
-                                TherapyMotivation tm = new TherapyMotivation(mapping.getMapping(motivationMapFile.getAbsolutePath(), treatChange));
-                                tp.setTherapyMotivation(tm);
-                            }
+                if(sd != null && sd.equals(ed)){
+                	logWarn(p,"Therapy start date equals stop date",therapiesFile,i,trDate);
+                }
+                else if(sd != null){
+	                Therapy tp = p.createTherapy(sd);
+
+                    if(ed != null){
+                        tp.setStopDate(ed);
+                        
+                        if(check(treatChange)){
+                            TherapyMotivation tm = new TherapyMotivation(mapping.getMapping(motivationMapFile.getAbsolutePath(), treatChange));
+                            tp.setTherapyMotivation(tm);
                         }
-                        else
-                            logWarn(p,"Invalid stop date",therapiesFile,i,trDateStop);
                     }
-                    
                     if(check(note))
                         tp.setComment(note);
-                    
+	                    
                     addDrugs(drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
+
+	                int irow = Integer.parseInt(row);
+	            	Pair<Integer,Therapy> pair2 = null, pair = new Pair<Integer,Therapy>(irow,tp);
+	                pair2 = uniques.exists(p, pair);
+	                
+	                if(pair2 != null){
+	                	logWarn(p,"duplicate therapy, keeping highest row number",therapiesFile,i,"rows: "+ pair.getKey() +", "+ pair2.getKey());
+	                	
+	                	if(pair.getKey() > pair2.getKey()){
+	                		p.getTherapies().remove(pair2.getValue());
+	                		uniques.remove(p, pair2);
+	                		uniques.add(p, pair);
+	                	}
+	                	else{
+	                		p.getTherapies().remove(pair.getValue());
+	                	}
+	                }
                 }
                 else{
                     logWarn(p,"Invalid start date",therapiesFile,i,trDate);

@@ -2,11 +2,12 @@ package net.sf.regadb.io.db.telaviv;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
@@ -15,8 +16,14 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.date.DateUtils;
 
 public class ParseTests extends Parser {
+	UniqueObjects<TestResult> uniques = new UniqueObjects<TestResult>(){
+		protected String getHashKey(TestResult t){
+			return t.getTest().getDescription() +":"+ t.getTestDate() +":"+ t.getValue();
+		}
+	};
 
     public ParseTests(Logging logger, List<DateFormat> df){
         super(logger,df);
@@ -102,7 +109,14 @@ public class ParseTests extends Parser {
         
         if(check(sampleId))
             tr.setSampleId(sampleId);
-        
+
+        TestResult tr2 = uniques.exists(p, tr); 
+        if(tr2 !=  null){
+        	p.getTestResults().remove(tr);
+        	logWarn(p,"Duplicate test result",tr.getTest().getDescription() +" "+ DateUtils.getEuropeanFormat(d));
+        	
+        	return tr2;
+        }
         return tr;
     }
     
