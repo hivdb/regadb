@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +87,8 @@ public class PreprocCpp {
         handleVoidTemplateArg(sb);
         System.err.println("\t handle Default Template Arg");
         handleDefaultTemplateArg(sb);
+        System.err.println("\t handle ImplementStateless");
+        handleImplementStateless(sb);
         
         writeFile(f, sb);
     }
@@ -147,23 +150,54 @@ public class PreprocCpp {
     
     public void handleDefaultTemplateArg(StringBuffer sb){
         //TODO make it work with nested templates: WClass<WClass2<T,S>>
-        
+
+        int a = 0;
+        int b = 0;
         for(Map.Entry<String, Integer> e : getTemplateClasses().entrySet()){
-            int a = sb.indexOf(e.getKey()+"<");
-            int b = sb.indexOf(">",a);
-            
-            if(a > -1 && b > -1){
-                a += e.getKey().length()+1;
-                String templates = sb.substring(a, b);
-                String [] t = templates.split(",");
+            while((a = sb.indexOf(e.getKey()+"<",b)) > -1){
+                b = sb.indexOf(">",a);
                 
-                for(int i = t.length; i < e.getValue(); ++i){
-                    templates += ",NoClass";
+                if(a > -1 && b > -1){
+                    a += e.getKey().length()+1;
+                    String templates = sb.substring(a, b);
+                    String [] t = templates.split(",");
+                    
+                    for(int i = t.length; i < e.getValue(); ++i){
+                        templates += ",NoClass";
+                    }
+                    
+                    sb.replace(a, b, templates);
                 }
-                
-                sb.replace(a, b, templates);
             }
         }
+    }
+    
+    public void handleImplementStateless(StringBuffer sb){
+        String fnct = "implementStateless";
+        
+        Pattern p = Pattern.compile("([^\\s]*)[\\s]*"+ fnct +"[\\s]*(\\([^;]*\\));");
+        Matcher m = p.matcher(sb);
+        
+        List<String> patterns = new ArrayList<String>();
+        List<String> replacements = new ArrayList<String>();
+        
+        while(m.find()){
+            String s = m.group();
+            
+            if(!s.startsWith("void")){
+                patterns.add(s);
+                
+                int a = s.indexOf(fnct);
+                a = s.indexOf('(',a);
+                
+                String r = s.substring(a).replace("\n","").replace("(", "(\"").replace(",", "\",\"").replace(")", "\")");
+                r = s.replace(s.substring(a), r);
+                
+                replacements.add(r);
+            }
+        }
+        
+        replaceStrings(patterns, replacements, sb);
     }
     
     public void removeComments(File f) {
@@ -414,6 +448,20 @@ public class PreprocCpp {
             }
         }
     }
+
+    public void replaceStrings(List<String> toReplace, List<String> toReplaceWith, StringBuffer fileContent) {
+        for(int i = 0; i < toReplace.size(); ++i) {
+            String p = toReplace.get(i);
+            String r = toReplaceWith.get(i);
+            
+            int pos = fileContent.indexOf(p, 0);
+            while(pos != -1) {
+                fileContent.replace(pos, pos+p.length(), r);
+                pos = fileContent.indexOf(p, pos+p.length());
+            }
+        }
+    }
+
     
     private static StringBuffer readFileAsString(String filePath) {
         StringBuffer fileData = new StringBuffer(1000);
