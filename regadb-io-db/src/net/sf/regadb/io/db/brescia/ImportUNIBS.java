@@ -663,7 +663,7 @@ public class ImportUNIBS
     		    		}
     		    		else
     		    		{
-    		    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": Dates are equal and drug \"UNK\" == 0...Ignoring!");
+    		    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": Dates are equal and drug \"UNK\" == 0...Ignoring!");
     		        		
     		    			return;
     		    		}
@@ -673,7 +673,7 @@ public class ImportUNIBS
     		
 	    	if(startDate.after(endDate))
 	    	{
-	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": End date is in the past.");
+	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": End date is in the past.");
 	    			
 	    		//Do not store here...
 	    		return;
@@ -703,7 +703,7 @@ public class ImportUNIBS
 	    		t.getTherapyGenerics().add(tg);
 	    	}
 	    	
-	    	ConsoleLogger.getInstance().logInfo(""+p.getPatientId()+" "+startDate.toLocaleString()+" "+drugs);
+	    	//ConsoleLogger.getInstance().logInfo(""+p.getPatientId()+" "+startDate.toLocaleString()+" "+drugs);
     	}
     	
     	if(motivation != null && !motivation.equals(""))
@@ -733,7 +733,7 @@ public class ImportUNIBS
     
     private void getDrugMapping(ArrayList<DrugGeneric> gDrugs, String drug, String value)
     {
-    	ConsoleLogger.getInstance().logInfo("Found drug "+drug+" with value "+value);
+    	//ConsoleLogger.getInstance().logInfo("Found drug "+drug+" with value "+value);
     	
     	boolean foundDrug = false;
     	DrugGeneric genDrug = null;
