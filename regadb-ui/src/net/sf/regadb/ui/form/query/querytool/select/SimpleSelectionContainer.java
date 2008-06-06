@@ -7,7 +7,7 @@ import com.pharmadm.custom.rega.queryeditor.SimpleSelection;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class SimpleSelectionContainer extends WContainerWidget {
@@ -27,8 +27,8 @@ public class SimpleSelectionContainer extends WContainerWidget {
 		OutputVariable ovar = (OutputVariable) selection.getObject();
 		checkBox = new WCheckBox(new WMessage(ovar.getUniqueName(), true), this);
 		checkBox.setChecked(selection.isSelected());
-		checkBox.changed.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		checkBox.clicked.addListener(new SignalListener<WMouseEvent>() {
+			public void notify(WMouseEvent a) {
 				toggleFieldChecked();
 			}
 		});		
