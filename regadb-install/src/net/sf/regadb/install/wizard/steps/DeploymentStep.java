@@ -40,17 +40,18 @@ public class DeploymentStep extends RegaDBWizardPage {
 				setProblem(tr("deploy_NotFound"));
 				return WizardPanelNavResult.REMAIN_ON_PAGE;
 			} else {
-				boolean webappsFound = false;
-				for( String f : ff.list() ) {
-					if ( f.equals("webapps") ) {
-						webappsFound = true;
-						break;
+				for( File f : ff.listFiles() ) {
+					if ( f.getName().equals("webapps") ) {
+						if ( !f.canWrite() ) {
+							setProblem(tr("directory_Unwritable").replaceAll("\\{DIR\\}", f.getAbsolutePath()));
+							return WizardPanelNavResult.REMAIN_ON_PAGE;
+						} else {
+							return WizardPanelNavResult.PROCEED;
+						}
 					}
 				}
-				if ( !webappsFound ) {
-					setProblem(tr("deploy_NoTomcat"));
-					return WizardPanelNavResult.REMAIN_ON_PAGE;
-				}
+				setProblem(tr("deploy_NoTomcat"));
+				return WizardPanelNavResult.REMAIN_ON_PAGE;
 			}
 		}
 		return WizardPanelNavResult.PROCEED;

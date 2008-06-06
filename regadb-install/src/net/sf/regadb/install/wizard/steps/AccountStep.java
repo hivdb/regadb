@@ -29,6 +29,7 @@ public class AccountStep extends RegaDBWizardPage {
 		if ( getTextFieldByName("account_Uid").getText().length() == 0 ||
 				getTextFieldByName("account_Pass").getText().length() == 0 ) {
 			setProblem(tr("account_NoUsernamePassword"));
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
 		
 		if ( !getTextFieldByName("account_Pass").getText().equals( getTextFieldByName("account_Pass2").getText() ) ) {

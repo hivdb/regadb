@@ -43,7 +43,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		
 		String jdbcUrl = "jdbc:postgresql://" + getString("psql_url") + "/";
 		
-		// Settings file aanmaken
+		// Create Settings File
 		
 		setProgress(tr("install_progress_settingsFile"));
 		
@@ -108,7 +108,8 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		out.setFormat(Format.getPrettyFormat());
 		
 		try {
-        	FileWriter writer = new FileWriter(
+			new File(getString("directory_SettingsFile")).mkdirs();
+			FileWriter writer = new FileWriter(
         			new File(getString("directory_SettingsFile") + File.separator + "global-conf.xml"));
         	out.output(doc, writer);
  	        writer.flush();
@@ -118,7 +119,12 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
         	return;
         }
 		
-		// Create database
+        // Create logdir and querydir
+        
+        new File(getString("querydir")).mkdirs();
+        new File(getString("logdir")).mkdirs();
+        
+		// Create Database
         
         setProgress(tr("install_progress_database"));
         
@@ -146,7 +152,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 			return;
 		}
 		
-		// Fill database
+		// Fill Database
 		
 		setProgress(tr("install_progress_table"));
 		
@@ -183,7 +189,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 			return;
 		}
 		
-		// InitDB runnen
+		// Run InitDB
 		
 		setProgress(tr("install_progress_init"));
 		
@@ -205,9 +211,11 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		init.setSu_(admin);
 		init.run(cfg);
 		
-		// TODO Updaten van repo's
+		// Updating repo's
 		
 		setProgress(tr("install_progress_repo"));
+		
+		//TODO Updaten van repo's
 		
 		// Install Tomcat
 		

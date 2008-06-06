@@ -52,7 +52,7 @@ public class FilePicker extends JPanel {
 		
 		browse.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
-				JFileChooser picker = new JFileChooser();
+				JFileChooser picker = new JFileChooser(new File(txtFile.getText()));
 				
 				if ( directoryOnly ) {
 					picker.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

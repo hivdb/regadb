@@ -45,12 +45,6 @@ public class RegaDBInstallWizard extends JFrame {
 		add(new JLabel("Select a language to continue installing RegaDB."));
 		
 		locales.add(new Pair<String, String>("en-us", "English"));
-//		locales.add(new Pair<String, String>("nl-be", "Nederlands"));
-//		locales.add(new Pair<String, String>("fr", "français"));
-//		locales.add(new Pair<String, String>("pt", "Português"));
-//		locales.add(new Pair<String, String>("ru", "Русский"));
-//		locales.add(new Pair<String, String>("ja", "日本語"));
-//		locales.add(new Pair<String, String>("zh-cn", "中國"));
 		
 		langs = new JComboBox();
 		for( Pair<String, String> p : locales ) {
@@ -76,7 +70,7 @@ public class RegaDBInstallWizard extends JFrame {
 								DeploymentStep.class,
 								}, new RegaDBInstallHandler());
 				
-				int width = 800;
+				int width = 900;
 				WizardDisplayer.showWizard(wiz, new Rectangle(width, (int)(width / 1.61803399)));
 				
 				dispose();

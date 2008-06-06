@@ -1,3 +1,4 @@
+
 package net.sf.regadb.install.wizard.steps;
 
 import java.awt.GridBagConstraints;
@@ -126,22 +127,47 @@ public class DirectoryStep extends RegaDBWizardPage {
 		File queryDir = new File( queryPick.getTextField().getText() );
 		File logDir = new File( logPick.getTextField().getText() );
 		
-		if ( !configDir.exists() || !queryDir.exists() || !logDir.exists() ) {
-			int opt = JOptionPane.showConfirmDialog(this, tr("filepick_okToCreate"), tr("filepick_okToCreateTitle"),
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		// Check dirs for writeability
+		
+		if ( !getFirstExistingDir(configDir).canWrite() ) {
+			setProblem( tr("directory_Unwritable").replaceAll("\\{DIR\\}", getFirstExistingDir(configDir).getAbsolutePath()) );
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
+		}
+		if ( !getFirstExistingDir(queryDir).canWrite() ) {
+			setProblem( tr("directory_Unwritable").replaceAll("\\{DIR\\}", getFirstExistingDir(configDir).getAbsolutePath()) );
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
+		}
+		if ( !getFirstExistingDir(logDir).canWrite() ) {
+			setProblem( tr("directory_Unwritable").replaceAll("\\{DIR\\}", getFirstExistingDir(configDir).getAbsolutePath()) );
+			return WizardPanelNavResult.REMAIN_ON_PAGE;
+		}
+		
+		String defaultConfDir = System.getProperty("os.name").toLowerCase().contains("windows") ?
+				"C:\\Program files\\rega_institute\\regadb":
+				"/etc/rega_institute/regadb";
+		
+		if ( !configDir.getAbsolutePath().equals(defaultConfDir) ) {
+			String msg = tr("directory_NonDefaultConfigDir");
+			int result = JOptionPane.showConfirmDialog(this, msg, "",
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			
-			if ( opt == JOptionPane.NO_OPTION ) {
-				setProblem(tr("filepick_enterValid"));
+			if ( result == JOptionPane.CANCEL_OPTION ) {
+				configPick.getTextField().setText(defaultConfDir);
 				return WizardPanelNavResult.REMAIN_ON_PAGE;
 			}
 		}
 		
-		if ( !configDir.canWrite() ) {
-			setProblem(tr("directory_ConfigUnwritable"));
-			return WizardPanelNavResult.REMAIN_ON_PAGE;
-		}
-		
 		return WizardPanelNavResult.PROCEED;
+	}
+	
+	//TODO may go to FileUtils
+	private static File getFirstExistingDir(File dir) {
+		if ( dir.exists() ) {
+			return dir;
+		} else {
+			String path = dir.getAbsolutePath();
+			return getFirstExistingDir( new File( path.substring(0, path.lastIndexOf( File.separator ) ) ) );
+		}
 	}
 	
 	public static String getDescription() {
