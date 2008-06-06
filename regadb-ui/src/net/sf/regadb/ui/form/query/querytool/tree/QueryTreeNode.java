@@ -15,8 +15,10 @@ import net.sf.regadb.ui.form.query.querytool.widgets.CssClasses;
 import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
+import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
@@ -347,6 +349,23 @@ public abstract class QueryTreeNode extends WTreeNode {
 		node.loadContent(lastAddition);
 	}
 	
+	
+	/**
+	 * removing a child from a treenode causes witty errors
+	 * if other updates happen in the tree during the same refresh
+	 * cause most likely somewhere in updateChildren
+	 * this is a workaround that removes the child without calling
+	 * updateChildren. 
+	 * However, it makes somes serious assumptions about the internal
+	 * state of the treenode and should bve used with caution
+	 * @param node
+	 */
+	public void removeChildNodeBugFix(WTreeNode node)
+	{
+		childNodes().remove(node);
+		((WContainerWidget) node.parent()).removeWidget(node);
+	}	
+	
 	/**
 	 * replace the clause in the current node by the given clause
 	 * @param newClause
@@ -355,6 +374,11 @@ public abstract class QueryTreeNode extends WTreeNode {
 		if (getClause() != null) {
 			try {
 				WhereClause oldClause = getClause();
+				if (!oldClause.isAtomic()) {
+					while (!this.childNodes().isEmpty()) {
+						this.removeChildNodeBugFix(this.childNodes().get(0));
+					}
+				}
 				object = newClause;
 				mainForm.getEditorModel().getQueryEditor().replaceChild(oldClause.getParent(), oldClause, newClause);
 				createContentTable();

@@ -9,7 +9,7 @@ import com.pharmadm.custom.rega.queryeditor.TableSelection;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class FieldSelectionContainer extends WContainerWidget {
@@ -28,8 +28,8 @@ public class FieldSelectionContainer extends WContainerWidget {
 //        Field field = (Field) selection.getObject();
 		checkBox = new WCheckBox(new WMessage(selection.getDbObject().getDescription(), true), this);
 		checkBox.setChecked(selection.isSelected());
-		checkBox.changed.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		checkBox.clicked.addListener(new SignalListener<WMouseEvent>() {
+			public void notify(WMouseEvent a) {
 				toggleFieldChecked();
 			}
 		});		

@@ -54,6 +54,7 @@ public class EditButtonPanel extends WButtonPanel {
 		
 		copyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				List<QueryTreeNode> selection = getSelection();
 				cursorClauses = new ArrayList<WhereClause>();
 				for (QueryTreeNode node : selection) {
 					cursorClauses.add(node.getClause());
@@ -65,6 +66,7 @@ public class EditButtonPanel extends WButtonPanel {
 		
 		pasteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				List<QueryTreeNode> selection = getSelection();
 				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getRootNode() :selection.get(0));
 				if (pasteNode.getClause().isAtomic()) {
 					pasteNode = pasteNode.getParentNode();
@@ -75,23 +77,23 @@ public class EditButtonPanel extends WButtonPanel {
 		
 		deleteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				for (QueryTreeNode node : selection) {
 					node.getParentNode().removeNode(node);
 				}
-				selection.clear();
 				owner.setValidation(true);
 			}
 		});
 		
 		cutButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				cursorClauses = new ArrayList<WhereClause>();
 				for (QueryTreeNode node : selection) {
 					cursorClauses.add(node.getClause());
 				}
-				selection.get(0).getParentNode().removeAll(selection);
 				owner.setValidation(true);
 				pasted = false;
 			}
@@ -99,6 +101,7 @@ public class EditButtonPanel extends WButtonPanel {
 		
 		unwrapButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
+				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				
 				List<QueryTreeNode> newSelection = new ArrayList<QueryTreeNode>();
@@ -166,19 +169,21 @@ public class EditButtonPanel extends WButtonPanel {
 	}
 	
 	private void wrapIn(WhereClause wrapper) {
+		List<QueryTreeNode> selection = getSelection();
 		owner.setValidation(false);
 		List<QueryTreeNode> newSelection = new ArrayList<QueryTreeNode>();
 		QueryTreeNode parent = selection.get(0).getParentNode();
-		WhereClause firstClause = selection.get(0).getClause();
-		
-		QueryTreeNode wrapperNode = selection.get(0).replaceNode(wrapper);
+
+		QueryTreeNode firstNode = selection.remove(0);
+		WhereClause firstClause = firstNode.getClause();
+		QueryTreeNode wrapperNode = firstNode.replaceNode(wrapper);
 		newSelection.add(wrapperNode.addNode(firstClause, AssignMode.none));
 		
-		while (selection.size() > 1 && wrapperNode.getClause().acceptsAdditionalChild()) {
-			QueryTreeNode n = selection.get(1);
-			
-			parent.removeNode(n);
-			newSelection.add(wrapperNode.addNode(n.getClause(), AssignMode.none));
+		while (selection.size() > 0 && wrapper.acceptsAdditionalChild()) {
+			QueryTreeNode node = selection.remove(0);
+			WhereClause clause = node.getClause();
+			parent.removeNode(node);
+			newSelection.add(wrapperNode.addNode(clause, AssignMode.none));
 		}
 		
 		for (QueryTreeNode node : newSelection) {
@@ -247,6 +252,18 @@ public class EditButtonPanel extends WButtonPanel {
 	    	}
     	}
     	return root;
-    }			
+    }
+    
+    /**
+     * gets a copy of the currently active selection
+     * edit operations should always work on a copy
+     * of the selection as the actual selection is subject
+     * to change
+     */
+    private List<QueryTreeNode> getSelection() {
+    	List<QueryTreeNode> result = new ArrayList<QueryTreeNode>();
+    	result.addAll(selection);
+    	return result;
+    }
 
 }
