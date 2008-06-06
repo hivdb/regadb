@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class QueryToolRunnable implements Runnable {
 	private String fileName;
 	private Status status;
 	private File csvFile;
-	private String statusMsg;
+	private WMessage statusMsg;
 	
 	private enum Status {
 		waiting,
@@ -67,10 +68,10 @@ public class QueryToolRunnable implements Runnable {
 			return new WMessage("form.query.querytool.label.status.running");			
 		}
 		else if (status == Status.finished) {
-			return new WMessage(new WMessage("form.query.querytool.link.result").value() + " " + statusMsg, true);			
+			return new WMessage(new WMessage("form.query.querytool.link.result").value() + " " + statusMsg.value(), true);			
 		}
 		else if (status == Status.failed) {
-			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + (statusMsg == null?"":": " + new WMessage(statusMsg).value() ), true);			
+			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + (statusMsg == null?"":": " + statusMsg.value() ), true);			
 		}
 		return new WMessage("form.query.querytool.label.status.initial");
 	}
@@ -116,15 +117,19 @@ public class QueryToolRunnable implements Runnable {
         Transaction t = login.createTransaction();
         
         try{
-    		// do the query with all tables we need fields of selected 
+        	// create a copy of the query editor so the user can work on
+        	// his query while this thread is running
+        	QueryEditor newEditor = (QueryEditor) editor.clone();
+
+        	// do the query with all tables we need fields of selected 
     		// so we can filter based on the objects
-    		SelectionStatusList oldList = editor.getQuery().getSelectList();
+    		SelectionStatusList oldList = newEditor.getQuery().getSelectList();
     		SelectionStatusList newList = createSelectionList(oldList);
-    		newList.setQuery(editor.getQuery());
-    		editor.getQuery().setSelectList(newList);
+    		newList.setQuery(newEditor.getQuery());
+    		newEditor.getQuery().setSelectList(newList);
     		List result = null;
-			result = getQueryResult(editor.getQuery(), t);
-    		editor.getQuery().setSelectList(oldList);
+			result = getQueryResult(newEditor.getQuery(), t);
+			newEditor.getQuery().setSelectList(oldList);
     		
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
@@ -149,26 +154,30 @@ public class QueryToolRunnable implements Runnable {
             	}
 	            
 	            os.close();
-	            statusMsg = "(" + lines + ")";
+	            statusMsg = new WMessage("(" + lines + ")", true);
 	            success = true;
             }
         }
         catch(IOException e){
-        	statusMsg = "form.query.querytool.label.status.failed.writeerror";
+        	statusMsg = new WMessage("form.query.querytool.label.status.failed.writeerror");
             e.printStackTrace();
         } catch (OutOfMemoryError e) {
-        	statusMsg = "form.query.querytool.label.status.failed.memoryerror";
+        	statusMsg = new WMessage("form.query.querytool.label.status.failed.memoryerror");
 			e.printStackTrace();
 		} catch (SQLException e) {
-        	statusMsg = "form.query.querytool.label.status.failed.sqlerror";
+        	statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
-			statusMsg = "form.query.querytool.label.status.failed.sqlerror";
+			statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
 			e.printStackTrace();
 		} catch (SQLGrammarException e ) {
-			statusMsg = "form.query.querytool.label.status.failed.sqlerror";
+			statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
 			e.printStackTrace();
 		}
+		catch (ClassCastException e ) {
+			statusMsg = new WMessage("form.query.querytool.label.status.failed.typeerror");
+			e.printStackTrace();
+		}		
 		catch (Exception e) {
 			statusMsg = null;
 			e.printStackTrace();
@@ -235,6 +244,11 @@ public class QueryToolRunnable implements Runnable {
 		String qstr = editor.getQuery().getQueryString();
 		System.err.println(qstr);
 		org.hibernate.Query q = t.createQuery(qstr);
+		HashMap<String, Object> preparedWordMap = query.getPreparedParameters();
+		for (String str : preparedWordMap.keySet()) {
+			q.setParameter(str, preparedWordMap.get(str));
+		}
+		
 		List result = q.list();
 		return result;
     }

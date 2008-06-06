@@ -17,9 +17,11 @@ import java.util.Iterator;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
+import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StringConstant;
@@ -28,6 +30,16 @@ import com.pharmadm.custom.rega.queryeditor.port.jdbc.SqlQuery;
 
 
 public class HibernateQuery extends SqlQuery {
+	private Query query;
+	
+	// make sure query building is thread safe as we keep
+	// state during building
+	public synchronized String visitQuery(Query query)  throws java.sql.SQLException {
+		this.query = query;
+		return super.visitQuery(query);
+	}
+
+	
 	public String visitWhereClauseInclusiveOrClause(InclusiveOrClause clause) throws SQLException{
         StringBuffer sb = new StringBuffer();
         Iterator<WhereClause> iterChildren = clause.iterateChildren();
@@ -88,44 +100,73 @@ public class HibernateQuery extends SqlQuery {
 	}	
 	
 	
-	
-	
+// uncomment this part to enable prepared queries
+// 
+// TODO
+// DoubleConstant does not differentiate between
+// integers and doubles. this causes problems when
+// a user enters a double for fields that require
+// an integer
 //	
+// TODO
+// a method for booleans is not yet implemented
+//	
+// TODO
+// HQL does not support prepared statements in the 
+// select part of the query. As this is the place
+// where users can do the most harm a workaround
+// should be implemented
+//	
+//	private String createKey(Object o) {
+//		return  ":" + query.createKey(o);
+//	}
 //	
 //	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
 //		String str = constant.getValue().toString();
 //		str = str.replace('*', '%');
 //		str = str.replace('?', '_');
-//        return "\'%" + str + "\'";
+//        return "%" + createKey(str);
 //	}
 //
 //	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
 //		String str = constant.getValue().toString();
 //		str = str.replace('*', '%');
 //		str = str.replace('?', '_');
-//        return "\'" + str + "%\'";
+//        return createKey(str) + "%";
 //	}
 //
 //	public String visitWhereClauseStringConstant(StringConstant constant) {
 //		String str = constant.getValue().toString();
 //		str = str.replace('*', '%');
 //		str = str.replace('?', '_');
-//		return "\'" + str + "\'";
+//		return createKey(str);
 //	}
 //
 //	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
 //		String str = constant.getValue().toString();
 //		str = str.replace('*', '%');
 //		str = str.replace('?', '_');
-//        return "\'%" + str + "%\'";
+//        return createKey("%" + str + "%");
 //	}
 //
+//	public String visitWhereClauseConstant(DoubleConstant constant) {
+//		Object val;
+//		try {
+//			val = Integer.parseInt(constant.getValue().toString());
+//		}
+//		catch (NumberFormatException e) {
+//			val = Double.parseDouble(constant.getValue().toString());
+//		}
+//		
+//		return createKey(val);
+//	}	
+//	
 //	public String visitWhereClauseConstant(Constant constant) {
-//		return constant.getValue().toString();
+//		return createKey(constant.getValue());
 //	}
 //
 //	public String visitWhereClauseDateConstant(DateConstant constant) {
-//		return "TO_DATE(\'" + constant.getHumanStringValue() + "\', 'DD-MM-YYYY')";
+//		return "TO_DATE(" + createKey(constant.getHumanStringValue()) + ", 'DD-MM-YYYY')";
 //	}
 }
 
