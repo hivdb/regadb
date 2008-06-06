@@ -72,6 +72,12 @@ public class DirectoryStep extends RegaDBWizardPage {
 		logPick.setDirectoryOnly(true);
 		advPanel.add(logPick, getGridBag(0, 5));
 		
+		JButton toggleSimple = new JButton(tr("directory_ToggleSimple"));
+		gbc = getGridBag(0, 6);
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.EAST;
+		advPanel.add(toggleSimple, gbc);
+		
 		// Set default installation directories
 		
 		String defaultDir = "";
@@ -88,6 +94,12 @@ public class DirectoryStep extends RegaDBWizardPage {
 		
 		// Set events
 		
+    	toggleSimple.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				setAdvanced(!isAdvanced());
+				updateDirs();
+			}
+		});
 		toggleAdvanced.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				setAdvanced(!isAdvanced());

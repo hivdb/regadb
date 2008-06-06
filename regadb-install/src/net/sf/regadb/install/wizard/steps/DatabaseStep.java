@@ -78,8 +78,8 @@ public class DatabaseStep extends RegaDBWizardPage {
 				Class.forName("org.postgresql.Driver");
 				String url = "jdbc:postgresql://" + getTextFieldByName("psql_url").getText() + "/" + getTextFieldByName("db_databaseName").getText();
 				Properties props = new Properties();
-				props.setProperty("user", getTextFieldByName("db_roleUser").getText());
-				props.setProperty("password", getTextFieldByName("db_rolePass").getText());
+				props.setProperty("user", getTextFieldByName("psql_adminUser").getText());
+				props.setProperty("password", getTextFieldByName("psql_adminPass").getText());
 				DriverManager.getConnection(url, props).close();
 			} catch ( SQLException e ) {
 				if ( e.getLocalizedMessage().contains("database \"" + getTextFieldByName("db_databaseName").getText() + "\" does not exist") ) {
@@ -97,6 +97,10 @@ public class DatabaseStep extends RegaDBWizardPage {
 			
 			// Check if user role exists
 			
+			// TODO this doesn't work on postgres on windows
+			// postgres on windows returns "password authentication failed" when role doesn't exist
+			// needs new method to detect user role existence
+			
 			exists = true;
 			try {
 				Class.forName("org.postgresql.Driver");
@@ -107,6 +111,9 @@ public class DatabaseStep extends RegaDBWizardPage {
 				DriverManager.getConnection(url, props).close();
 			} catch ( SQLException e ) {
 				if ( e.getLocalizedMessage().contains("role \"" + getTextFieldByName("db_roleUser").getText() + "\" does not exist") ) {
+					exists = false;
+				} else if ( e.getLocalizedMessage().contains("password authentication failed") &&
+						System.getProperty("os.name").toLowerCase().contains("windows") ) {
 					exists = false;
 				} else {
 					setProblem(e.getLocalizedMessage());
