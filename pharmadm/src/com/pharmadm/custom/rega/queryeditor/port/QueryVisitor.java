@@ -15,6 +15,7 @@ import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
@@ -90,6 +91,14 @@ public interface QueryVisitor {
 	 */
 	public String visitWhereClauseEndstringConstant(EndstringConstant constant);
 
+	/**
+	 * number constants
+	 * for the where clause of the query
+	 * @param constant
+	 * @return
+	 */
+	public String visitWhereClauseConstant(DoubleConstant constant);	
+	
 	/**
 	 * string representation of constants that are of an unsupported type
 	 * for the where clause of the query

@@ -44,11 +44,14 @@ import com.pharmadm.util.work.Work;
  *  uniqueNameContext
  * </p>
  */
-public class Query implements Serializable {
+public class Query implements Serializable, Cloneable {
     
     ///////////////////////////////////////
     // associations
     
+	private transient HashMap<String, Object>  preparedConstantMap = new HashMap<String, Object>();
+	
+	
     private WhereClause rootClause = new AndClause();
     private SelectionStatusList selectList = new SelectionStatusList(this);
     
@@ -121,6 +124,7 @@ public class Query implements Serializable {
     }
     
     public String accept(QueryVisitor visitor) throws java.sql.SQLException{
+    	preparedConstantMap.clear();
         return visitor.visitQuery(this);
    }    
     
@@ -161,6 +165,35 @@ public class Query implements Serializable {
     public void updateSelectList() {
         selectList.update();
     }
+    
+    /**
+     * turn the given string in a parameter for use in
+     * a prepared statement
+     * @param str
+     * @return the name of the parameter
+     */
+	public String createKey(Object o) {
+		String key = "const" + preparedConstantMap.size();
+		preparedConstantMap.put(key, o);
+		return key;
+	}
+	
+	/**
+	 * return all parameters for a 
+	 */
+	public HashMap<String, Object> getPreparedParameters() {
+		return preparedConstantMap;
+	}
+	
+	public Object clone() throws CloneNotSupportedException{
+		Query q = new Query();
+		q.setRootClause((WhereClause) rootClause.clone());
+		q.setSelectList(selectList);
+		q.setUniqueNameContext(uniqueNameContext);
+		q.preparedConstantMap = preparedConstantMap;
+		
+		return q;
+	}
 }
 
 

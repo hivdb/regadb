@@ -10,7 +10,7 @@ import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.custom.rega.savable.Savable;
 
-public class QueryEditor{
+public class QueryEditor implements Cloneable{
 	private Query query;
 	private boolean dirty;
 	private Savable savable;
@@ -53,6 +53,10 @@ public class QueryEditor{
         this.query = query;
         updateSelectionList();
         query.getSelectList().addSelectionChangeListener(selectionListener);
+    }
+    
+    public Savable getSavable() {
+    	return savable;
     }
     
     /**
@@ -294,6 +298,11 @@ public class QueryEditor{
         // your code here
         return false;
     } // end isWrapInOrValid
+    
+    public Object clone() throws CloneNotSupportedException{
+    	QueryEditor editor = new QueryEditor((Query) query.clone(), savable);
+    	return editor;
+    }
         
 }
 

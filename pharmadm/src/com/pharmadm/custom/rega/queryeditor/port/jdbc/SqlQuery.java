@@ -22,6 +22,7 @@ import com.pharmadm.custom.rega.queryeditor.TableSelection;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
+import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.EndstringConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.StartstringConstant;
@@ -133,6 +134,10 @@ public class SqlQuery implements QueryVisitor {
 	public String visitWhereClauseConstant(Constant constant) {
 		return constant.getValue().toString();
 	}
+	
+	public String visitWhereClauseConstant(DoubleConstant constant) {
+		return constant.getValue().toString();
+	}	
 
 	public String visitWhereClauseDateConstant(DateConstant constant) {
 		return "TO_DATE(\'" + constant.getHumanStringValue() + "\', 'DD-MM-YYYY')";

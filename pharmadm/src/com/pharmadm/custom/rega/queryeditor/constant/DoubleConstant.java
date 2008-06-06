@@ -19,6 +19,7 @@ import java.text.ParsePosition;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
 
@@ -44,6 +45,10 @@ public class DoubleConstant extends Constant implements Serializable{
 	public Object getdefaultValue() {
 		return 0;
 	}
+	
+    public String acceptWhereClause(QueryVisitor visitor) {
+        return visitor.visitWhereClauseConstant(this);
+    }  	
 
 	@Override
 	protected String parseObject(Object o) {
