@@ -339,8 +339,13 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <stdexcept.h>";
             } else if(textToReplace.contains("cmath")) {
                 textToReplaceWith = "#include <cmath.h>";
+            } else if(textToReplace.contains("cassert")) {
+                textToReplaceWith = "#include <cassert.h>";
+            } else if(textToReplace.contains("threadpool")) {
+                textToReplaceWith = "";
             }
-
+            
+            
             
             if(textToReplaceWith != null) {
                 fileContent.replace(pos, endpos, textToReplaceWith);
