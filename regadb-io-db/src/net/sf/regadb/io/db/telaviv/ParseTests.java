@@ -4,10 +4,8 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
@@ -19,9 +17,9 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
 
 public class ParseTests extends Parser {
-	UniqueObjects<TestResult> uniques = new UniqueObjects<TestResult>(){
-		protected String getHashKey(TestResult t){
-			return t.getTest().getDescription() +":"+ t.getTestDate() +":"+ t.getValue();
+	UniqueObjects<Patient,TestResult> uniques = new UniqueObjects<Patient,TestResult>(){
+		protected String getHashKey(Patient p, TestResult t){
+			return p.getPatientId() +":"+ t.getTest().getDescription() +":"+ t.getTestDate() +":"+ t.getValue();
 		}
 	};
 
@@ -57,7 +55,7 @@ public class ParseTests extends Parser {
         int CVLSysNo = testTable.findColumn("VLSysNo");
         int CCD4 = testTable.findColumn("CD4");
         int CCD4P = testTable.findColumn("CD4%");
-        int CResDate = testTable.findColumn("ResDate");
+//        int CResDate = testTable.findColumn("ResDate");
         int CUnitNo = testTable.findColumn("UnitNo");
         
         for(int i=1; i<testTable.numRows(); ++i){
@@ -68,7 +66,7 @@ public class ParseTests extends Parser {
             String vlSysNo = testTable.valueAt(CVLSysNo, i);
             String cd4 = testTable.valueAt(CCD4, i);
             String cd4p = testTable.valueAt(CCD4P, i);
-            String resDate = testTable.valueAt(CResDate, i);
+//            String resDate = testTable.valueAt(CResDate, i);
             String unitNo = testTable.valueAt(CUnitNo, i);
             
             Patient p = patients.get(id);

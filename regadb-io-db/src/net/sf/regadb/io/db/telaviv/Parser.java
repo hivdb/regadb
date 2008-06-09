@@ -15,7 +15,6 @@ public class Parser {
     private String name=null;
     
     private File currentFile=null;
-    private int currentLineNumber=0;
     
     public Parser(){
         
