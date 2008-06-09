@@ -3,14 +3,21 @@ package cpp2java.scripts;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class CreatePrettyBatchScript {
 	public static void main(String [] args ) {
 		String workDirectory = args[0];
 		String scriptDirectory = args[1];
 		
+		StringTokenizer st = new StringTokenizer(workDirectory, File.separatorChar+"");
+		String lastToken = "";
+		while(st.hasMoreTokens()) {
+			lastToken = st.nextToken();
+		}
+		
 		try {
-			FileWriter script = new FileWriter(scriptDirectory + File.separatorChar + "no_override_batch.sh");
+			FileWriter script = new FileWriter(scriptDirectory + File.separatorChar + lastToken + "_no_override_batch.sh");
 			
 			File dirF = new File(workDirectory);
 	    	for(File f : dirF.listFiles()) {
