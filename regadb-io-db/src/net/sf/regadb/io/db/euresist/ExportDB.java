@@ -133,4 +133,8 @@ public class ExportDB {
     public java.util.Date convert(java.sql.Date sqlDate){
         return new java.util.Date(sqlDate.getTime());
     }
+
+	public String getMappingPath() {
+		return mappingPath_;
+	}
 }
