@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="/regadb-io" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/regadb-analyses" combineaccessrules="false" kind="src"/>
-	<classpathentry path="lib/simmetrics162.jar" kind="lib"/>
-	<classpathentry path="lib/jxl.jar" kind="lib"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
+	<classpathentry kind="lib" path="lib/simmetrics162.jar"/>
+	<classpathentry kind="lib" path="lib/jxl.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
