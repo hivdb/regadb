@@ -22,6 +22,7 @@ public class PreprocCpp {
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Chart");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Ext");
         
         preproc.removeExterns(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WString"));
         
@@ -343,6 +344,10 @@ public class PreprocCpp {
                 textToReplaceWith = "#include <cassert.h>";
             } else if(textToReplace.contains("threadpool")) {
                 textToReplaceWith = "";
+            } else if(textToReplace.contains("ExtDllDefs")) {
+                textToReplaceWith = "";
+            } else if(textToReplace.contains("ostream")) {
+                textToReplaceWith = "#include <myostream.h>";
             }
             
             
