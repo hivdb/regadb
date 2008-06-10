@@ -7,7 +7,7 @@ public class MysqlDatabase extends GenericDatabase {
         super(database,user,password);
         
         setDriver("com.mysql.jdbc.Driver");
-        setUrl("jdbc:mysql://$HOST:$PORT/$DATABASE");
+        setUrl("jdbc:mysql://$HOST:$PORT/$DATABASE?zeroDateTimeBehavior=convertToNull");
 
         setPort("3306");
     }
