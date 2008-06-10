@@ -21,7 +21,7 @@ public class ExportDB {
     
     public void run(){
         try{
-            Map<Integer,Patient> patients = exportPatients();
+            Map<String,Patient> patients = exportPatients();
             
         }
         catch(Exception e){
@@ -29,16 +29,9 @@ public class ExportDB {
         }
     }
     
-    public Map<Integer,Patient> exportPatients() throws Exception{
+    public Map<String,Patient> exportPatients() throws Exception{
         ResultSet rs = getDb().executeQuery("SELECT * FROM Patients");
-        Map<Integer,Patient> patients = new HashMap<Integer,Patient>();
-        
-        while(rs.next()){
-            Patient p = new Patient();
-            patients.put(rs.getInt("patientID"), p);
-            
-            p.setPatientId(rs.getString("originalID"));
-        }
+        Map<String,Patient> patients = new HashMap<String,Patient>();
         
         return patients;
     }
