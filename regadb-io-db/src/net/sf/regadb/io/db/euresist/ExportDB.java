@@ -12,14 +12,20 @@ import net.sf.regadb.io.db.util.MysqlDatabase;
 
 public class ExportDB {
     private MysqlDatabase db;
+    private String mappingPath_;
     
     public static void main(String[] args){
-        ExportDB edb = new ExportDB(args[0], args[1], args[2]);
+        ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3]);
         edb.run();
     }
 
-    public ExportDB(String database, String user, String password){
+    public ExportDB(String database, String user, String password, String mappingPath){
         setDb(new MysqlDatabase(database, user, password));
+        
+        mappingPath_ = mappingPath;
+        
+        System.setProperty("http.proxyHost", "www-proxy");
+        System.setProperty("http.proxyPort", "3128");
     }
     
     public void run(){
