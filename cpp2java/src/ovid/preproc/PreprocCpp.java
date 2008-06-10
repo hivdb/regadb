@@ -24,8 +24,6 @@ public class PreprocCpp {
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Chart");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Ext");
         
-        preproc.removeExterns(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WString"));
-        
         preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WCalendar.C"),
         		"WCalendar::dateForCell",
         		"{return date();}");
@@ -42,6 +40,7 @@ public class PreprocCpp {
     
     public PreprocCpp(){
         getTemplateClasses().put("WSignalMapper", 2);
+        getTemplateClasses().put("JSignal", 6);
     }
     
     public void performChangesOnFilesInDir(String dir) {
@@ -161,10 +160,20 @@ public class PreprocCpp {
                 if(a > -1 && b > -1){
                     a += e.getKey().length()+1;
                     String templates = sb.substring(a, b);
-                    String [] t = templates.split(",");
                     
-                    for(int i = t.length; i < e.getValue(); ++i){
-                        templates += ",NoClass";
+                    int nTpl;
+                    if(templates.trim().length() == 0)
+                    	nTpl = 0;
+                    else{
+                    	String [] t = templates.split(",");
+                    	nTpl = t.length;
+                    }
+                    
+                    for(int i = nTpl; i < e.getValue(); ++i){
+                    	if(i == 0)
+                    		templates += "NoClass";
+                    	else
+                    		templates += ",NoClass";
                     }
                     
                     sb.replace(a, b, templates);
