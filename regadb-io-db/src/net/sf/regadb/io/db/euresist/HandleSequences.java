@@ -49,9 +49,4 @@ public class HandleSequences {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void main(String [] args) {
-		HandleSequences hs = new HandleSequences(new ExportDB("EuResist","root", "Eatnomeat001"));
-		hs.run(null);
-	}
 }
