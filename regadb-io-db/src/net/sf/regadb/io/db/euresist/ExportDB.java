@@ -25,7 +25,8 @@ public class ExportDB {
     public void run(){
         try{
             Map<String,Patient> patients = exportPatients();
-            
+            HandleSequences seqs = new HandleSequences(this);
+            seqs.run(patients);
         }
         catch(Exception e){
             e.printStackTrace();
