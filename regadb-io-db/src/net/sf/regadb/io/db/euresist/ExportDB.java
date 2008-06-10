@@ -40,7 +40,7 @@ public class ExportDB {
         this.db = db;
     }
 
-    protected MysqlDatabase getDb() {
+    public MysqlDatabase getDb() {
         return db;
     }
 }
