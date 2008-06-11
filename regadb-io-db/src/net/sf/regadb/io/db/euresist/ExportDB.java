@@ -55,6 +55,10 @@ public class ExportDB {
             HandleSequences seqs = new HandleSequences(this);
             seqs.run(patients);
             
+            logInfo("Exporting therapies");
+            HandleTherapies ht = new HandleTherapies(this);
+            ht.run(patients);
+            
             logInfo("Generating xml");
             Utils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml");
             

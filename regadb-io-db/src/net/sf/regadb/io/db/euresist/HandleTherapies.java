@@ -25,6 +25,9 @@ public class HandleTherapies {
 	private List<DrugGeneric> regaDrugGenerics = Utils.prepareRegaDrugGenerics();
 	private Mappings drugMapping_;
 	
+	//TODO
+	//stop reasons
+	
 	public HandleTherapies(ExportDB exportDb) {
 		exportDb_ = exportDb;
 		drugMapping_ = Mappings.getInstance(exportDb_.getMappingPath()+File.separatorChar);
@@ -58,6 +61,8 @@ public class HandleTherapies {
         					}
         				}
         			}
+        			if(medicineList.size()>0)
+        				storeTherapy(p, start, end, medicineList, rtvb_b);
         		} else {
                     ConsoleLogger.getInstance().logWarning(
                             "No patient with id " + patientID + " for therapy with id " + therapyID);
@@ -76,7 +81,10 @@ public class HandleTherapies {
 	    	for (int i = 0; i < medicinsList.size(); i++) {
 	    		DrugGeneric dg = medicinsList.get(i);
 	    		if(rtvb) {
-	    			
+	    			DrugGeneric boostedDrug = locateDrugGeneric(dg.getGenericId()+"/r","");
+	    			if(boostedDrug!=null) {
+	    				dg = boostedDrug;
+	    			}
 	    		}
 	    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, dg),
 	    		                                        1.0, 
@@ -128,10 +136,5 @@ public class HandleTherapies {
  		}
 		
 		return null;
-	}
-	
-	public static void main(String [] args) {
-		HandleTherapies ht = new HandleTherapies(new ExportDB(args[0], args[1], args[2], args[3]));
-		ht.run(null);
 	}
 }
