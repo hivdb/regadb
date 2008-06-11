@@ -10,13 +10,14 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.MysqlDatabase;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ExportDB {
     private MysqlDatabase db;
-    private String mappingPath_;
     
     private List<Attribute> regadbAttributes=null;
     private String mappingPath=null;
@@ -41,8 +42,13 @@ public class ExportDB {
             setMappings(Mappings.getInstance(getMappingPath()));
             
             Map<String,Patient> patients = exportPatients();
+
+            HandleTests tests = new HandleTests(this);
+            tests.run(patients);
+            
             HandleSequences seqs = new HandleSequences(this);
             seqs.run(patients);
+            
         }
         catch(Exception e){
             e.printStackTrace();
@@ -121,6 +127,18 @@ public class ExportDB {
         
         return map;
     }
+    
+    public Map<String,Test> createTestMap(TestType testType, String tableName, String mapColumn, String idColumn) throws Exception{
+        Map<String, Test> map = new HashMap<String,Test>();
+        ResultSet rs = getDb().executeQuery("SELECT * FROM "+ tableName);
+        
+        while(rs.next()){
+            map.put(rs.getString(idColumn), new Test(testType, rs.getString(mapColumn)));
+        }
+        
+        rs.close();
+        return map;
+    }
 
     public Map<String,AttributeNominalValue> createTransmissionGroupMap() throws Exception{
         return createMap("Transmission group", "transmission_group.mapping", "RiskGroups", "risk_name", "riskID");
@@ -162,7 +180,7 @@ public class ExportDB {
     }
     
     public java.util.Date convert(java.sql.Date sqlDate){
-        return new java.util.Date(sqlDate.getTime());
+        return (sqlDate == null? null : new java.util.Date(sqlDate.getTime()));
     }
 
     public void setRegadbAttributes(List<Attribute> regadbAttributes) {
