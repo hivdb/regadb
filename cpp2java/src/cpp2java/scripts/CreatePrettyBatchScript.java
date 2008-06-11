@@ -11,6 +11,10 @@ public class CreatePrettyBatchScript {
 		String scriptDirectory = args[1];
 		String ccparse = args[2];
 		
+		run(workDirectory, scriptDirectory, ccparse);
+	}
+	
+	public static void run(String workDirectory, String scriptDirectory, String ccparse) {
 		StringTokenizer st = new StringTokenizer(workDirectory, File.separatorChar+"");
 		String lastToken = "";
 		while(st.hasMoreTokens()) {
@@ -48,6 +52,5 @@ public class CreatePrettyBatchScript {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

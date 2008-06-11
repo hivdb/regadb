@@ -9,7 +9,10 @@ import java.io.IOException;
 public class CheckPrettyBatch {
 	public static void main(String [] args ) {
 		String workDirectory = args[0];
-		
+		run(workDirectory);
+	}
+	
+	public static void run(String workDirectory) {
 		File dirF = new File(workDirectory);
 		System.err.println("Name,Preproc,Pretty");
 		for(File f : dirF.listFiles()) {
