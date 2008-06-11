@@ -4,30 +4,37 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class CheckPrettyBatch {
 	public static void main(String [] args ) {
 		String workDirectory = args[0];
-		run(workDirectory);
+		String reportDir = args[1];
+		try {
+			run(workDirectory, reportDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void run(String workDirectory) {
+	public static void run(String workDirectory, String reportDir) throws IOException {
+		FileWriter prettyCheckOutput = new FileWriter(reportDir);
 		File dirF = new File(workDirectory);
-		System.err.println("Name,Preproc,Pretty");
+		prettyCheckOutput.write("Name,Preproc,Pretty\n");
 		for(File f : dirF.listFiles()) {
 		    if(f.isFile() && f.getAbsolutePath().endsWith(".C")) {
-		    	System.err.print(f.getName() + ",");
+		    	prettyCheckOutput.write(f.getName() + ",");
 		    	File preprocErrors = new File(f.getAbsolutePath()+".preproc");
 		    	StringBuffer preprocErrorsSB = readFileAsString(preprocErrors.getAbsolutePath());
 		    	if(preprocErrorsSB.indexOf("error:")==-1) {
-		    		System.err.print("OK,");
+		    		prettyCheckOutput.write("OK,");
 		    	} else {
-		    		System.err.print("ERROR,");
+		    		prettyCheckOutput.write("ERROR,");
 		    	}
 		    	
 		    	File prettyErrors = new File(f.getAbsolutePath()+".ii.pretty");
-		    	//System.err.println(prettyErrors.getAbsolutePath());
+		    	//prettyCheckOutput.writeln(prettyErrors.getAbsolutePath());
 		    	StringBuffer prettyErrorsSB = readFileAsString(prettyErrors.getAbsolutePath());
 		    	int typechecking = prettyErrorsSB.indexOf("typechecking results:");
 		    	if(typechecking!=-1) {
@@ -37,18 +44,19 @@ public class CheckPrettyBatch {
 		    		try {
 		    			int i = Integer.parseInt(errorNumbers.trim());
 		    			if(i==0) {
-		    				System.err.print("OK\n");
+		    				prettyCheckOutput.write("OK\n");
 		    			} else {
-		    				System.err.print("ERROR\n");
+		    				prettyCheckOutput.write("ERROR\n");
 		    			}
 		    		} catch(NumberFormatException nfe) {
-		    			System.err.print("ERROR\n");
+		    			prettyCheckOutput.write("ERROR\n");
 		    		}
 		    	} else {
-		    		System.err.print("ERROR\n");
+		    		prettyCheckOutput.write("ERROR\n");
 		    	}
 		    }
 		}
+		prettyCheckOutput.close();
 	}
 	
     private static StringBuffer readFileAsString(String filePath) {

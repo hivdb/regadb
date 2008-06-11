@@ -357,6 +357,8 @@ public class PreprocCpp {
                 textToReplaceWith = "";
             } else if(textToReplace.contains("ostream")) {
                 textToReplaceWith = "#include <myostream.h>";
+            } else if(textToReplace.contains("cfloat")) {
+                textToReplaceWith = "#include <cfloat.h>";
             }
             
             
