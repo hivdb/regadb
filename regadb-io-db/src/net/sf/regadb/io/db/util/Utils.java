@@ -759,6 +759,13 @@ public class Utils {
          return null;
      }
      
+     public static AttributeNominalValue getNominalValue(Attribute a, String value){
+         for(AttributeNominalValue anv : a.getAttributeNominalValues())
+             if(anv.getValue().equals(value))
+                 return anv;
+         return null;
+     }
+     
      public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, String value){
          PatientAttributeValue pav = createPatientAttributeValue(attribute);
          pav.setValue(value);
