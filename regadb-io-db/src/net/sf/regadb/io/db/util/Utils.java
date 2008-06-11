@@ -3,6 +3,7 @@ package net.sf.regadb.io.db.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -38,6 +39,7 @@ import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -283,34 +285,25 @@ public class Utils {
      
      public static void exportPatientsXML(Map<String, Patient> patientMap, String fileName) 
      {
-     	try
-     	{
- 	        ExportToXML l = new ExportToXML();
- 	        Element root = new Element("patients");
- 	        
- 	        for (String patientId:patientMap.keySet()) {
- 	            Element patient = new Element("patients-el");
- 	            root.addContent(patient);
- 	
+     	try {
+     		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+
+     		ExportToXML l = new ExportToXML();
+     
+            FileWriter out = new FileWriter(fileName);
+            out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <patients>");
+            for (String patientId:patientMap.keySet()) {
+            	Element patient = new Element("patients-el");
  	            Patient p = patientMap.get(patientId);
- 	            l.writePatient(p, patient);            
- 	        }
- 	        
- 	        Document n = new Document(root);
- 	        XMLOutputter outputter = new XMLOutputter();
- 	        outputter.setFormat(Format.getPrettyFormat());
- 	
- 	        java.io.FileWriter writer;
- 	        writer = new java.io.FileWriter(fileName);
- 	        outputter.output(n, writer);
- 	        writer.flush();
- 	        writer.close();
+ 	            l.writePatient(p, patient);
+ 	            out.write(outputter.outputString(patient)+'\n');
+            }
+            out.write("</patients>");
+            out.close();
+     	} catch (IOException ioe) {
+            ioe.printStackTrace();
+            ConsoleLogger.getInstance().logError("XML generation failed.");
      	}
-         catch (IOException e) 
-         {
-             e.printStackTrace();
-             ConsoleLogger.getInstance().logError("XML generation failed.");
-         }
      }
      
      public static void exportNTXML(Map<String, ViralIsolate> ntMap, String fileName) 
