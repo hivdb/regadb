@@ -1,5 +1,6 @@
 package net.sf.regadb.io.db.euresist;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -22,16 +23,18 @@ public class ExportDB {
     private List<Attribute> regadbAttributes=null;
     private String mappingPath=null;
     private Mappings mappings=null;
+    private String outputPath=null;
     
     public static void main(String[] args){
-        ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3]);
+        ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3], args[4]);
         edb.run();
     }
 
-    public ExportDB(String database, String user, String password, String mappingPath){
+    public ExportDB(String database, String user, String password, String mappingPath, String outputPath){
         setDb(new MysqlDatabase(database, user, password));
         
         setMappingPath(mappingPath);
+        setOutputPath(outputPath);
         
         System.setProperty("http.proxyHost", "www-proxy");
         System.setProperty("http.proxyPort", "3128");
@@ -41,14 +44,21 @@ public class ExportDB {
         try{
             setMappings(Mappings.getInstance(getMappingPath()));
             
+            logInfo("Exporting patients");
             Map<String,Patient> patients = exportPatients();
 
+            logInfo("Exporting tests");
             HandleTests tests = new HandleTests(this);
             tests.run(patients);
             
+            logInfo("Exporting sequences");
             HandleSequences seqs = new HandleSequences(this);
             seqs.run(patients);
             
+            logInfo("Generating xml");
+            Utils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml");
+            
+            logInfo("Done");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -205,5 +215,25 @@ public class ExportDB {
 
     public Mappings getMappings() {
         return mappings;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
+    }
+    
+    public void logInfo(String msg){
+        System.out.println(msg);
+    }
+    
+    public void logWarn(String msg){
+        System.out.println(msg);
+    }
+    
+    public void logError(String msg){
+        System.err.println(msg);
     }
 }
