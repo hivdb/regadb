@@ -23,7 +23,11 @@ public class Mappings {
         return m;
     }
     
-    public String getMapping(String fileName, String value) {
+    public String getMapping(String fileName, String value){
+        return getMapping(fileName,value,false);
+    }
+    
+    public String getMapping(String fileName, String value, boolean caseSensitive) {
         HashMap<String, String> mappings = mappings_.get(fileName);
         if(mappings == null) {
             mappings = new HashMap<String, String>();
@@ -36,7 +40,10 @@ public class Mappings {
             }
             
             for(int i = 1; i<mappingCsvTable.numRows(); i++) {
-                mappings.put(mappingCsvTable.valueAt(0, i).toUpperCase(), mappingCsvTable.valueAt(1, i).toUpperCase());
+                if(caseSensitive)
+                    mappings.put(mappingCsvTable.valueAt(0, i), mappingCsvTable.valueAt(1, i));
+                else
+                    mappings.put(mappingCsvTable.valueAt(0, i).toUpperCase(), mappingCsvTable.valueAt(1, i).toUpperCase());
             }
             
             mappings_.put(fileName, mappings);
