@@ -41,7 +41,8 @@ public class HandleTests {
         }
         rs.close();
         
-        Map<String,Test> testMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadTestType(), "Methods", "method", "methodID");
+        Map<String,Test> vlMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadTestType(), "Methods", "method", "methodID");
+        Map<String,Test> vlLogMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadLog10TestType(), "Methods", "method", "methodID");
         char prefix;
         
         rs = getEdb().getDb().executeQuery("SELECT * FROM ViralLoadIsolates");
@@ -61,11 +62,11 @@ public class HandleTests {
             if(rs.getBoolean("above_detection"))
                 prefix = '>';
             
-            tr = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
+            tr = p.createTestResult(vlMap.get(rs.getString("methodID")));
             tr.setTestDate(d);
             tr.setValue(prefix + rs.getString("viral_load"));
             
-            tr = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadLog10Test());
+            tr = p.createTestResult(vlLogMap.get(rs.getString("methodID")));
             tr.setTestDate(d);
             tr.setValue(prefix + rs.getString("viral_load_log"));
         }

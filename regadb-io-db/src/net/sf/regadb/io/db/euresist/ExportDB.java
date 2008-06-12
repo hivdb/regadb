@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
@@ -16,6 +17,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.MysqlDatabase;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ExportDB {
     private MysqlDatabase db;
@@ -80,19 +82,26 @@ public class ExportDB {
         
         setRegadbAttributes(Utils.prepareRegaDBAttributes());
         
-        Map<String,AttributeNominalValue> tgMap = createTransmissionGroupMap();
-        Map<String,AttributeNominalValue> genMap = createGenderMap();
-        Map<String,AttributeNominalValue> cooMap = createCoOMap();
-        Map<String,AttributeNominalValue> ethMap = createEthnicityMap();
-        Map<String,Dataset> dsMap = createDatasetMap();
+        AttributeGroup eurAttrGrp = new AttributeGroup("EuResist");
+        Attribute coiAttr = new Attribute();
+        coiAttr.setAttributeGroup(eurAttrGrp);
+        coiAttr.setValueType(StandardObjects.getNominalValueType());
+        coiAttr.setName("Country of infection");
         
-        //Map<String,AttributeNominalValue> coiMap = createCoIMap();
+        Map<String,AttributeNominalValue> tgMap =  createMap("Transmission group", "transmission_group.mapping", "RiskGroups", "risk_name", "riskID");
+        Map<String,AttributeNominalValue> genMap = createMap("Gender", "gender.mapping", "Genders", "name", "genderID");
+        Map<String,AttributeNominalValue> cooMap = createMap("Country of origin", "country_of_origin.mapping", "Countries", "iso_name_en", "countryID");
+        Map<String,AttributeNominalValue> goMap =  createMap("Geographic origin", "geographic_origin.mapping", "Countries", "iso_name_en", "countryID");
+        Map<String,AttributeNominalValue> ethMap = createMap("Ethnicity", "ethnicity.mapping", "EthnicGroups", "ethnic_group", "ethnicID");
+        Map<String,AttributeNominalValue> coiMap = copyCoO2CoI(cooMap,coiAttr);
         
+//        Map<String,Dataset> dsMap = createDatasetMap();
+
         while(rs.next()){
             Patient p = new Patient();
             patients.put(rs.getString("patientID"), p);
             
-            p.setPatientId(rs.getString("originalID"));
+            p.setPatientId(rs.getString("databaseID") +"_"+ rs.getString("originalID"));
             
             s = rs.getString("year_of_birth");
             if(check(s))
@@ -102,11 +111,12 @@ public class ExportDB {
             if(sDate != null)
                 p.setDeathDate(convert(sDate));
             
-            createAttributeNominalValue(p,tgMap,rs.getString("riskID"));
+            createAttributeNominalValue(p,tgMap, rs.getString("riskID"));
             createAttributeNominalValue(p,genMap,rs.getString("genderID"));
             createAttributeNominalValue(p,cooMap,rs.getString("country_of_originID"));
+            createAttributeNominalValue(p,goMap, rs.getString("country_of_originID"));
             createAttributeNominalValue(p,ethMap,rs.getString("ethnicID"));
-            //createAttributeNominalValue(p,coiMap,rs.getString("country_of_infectionID"));
+            createAttributeNominalValue(p,coiMap,rs.getString("country_of_infectionID"));
         }
         
         return patients;
@@ -130,7 +140,7 @@ public class ExportDB {
             ResultSet rs = getDb().executeQuery("SELECT * FROM "+ tableName);
             
             while(rs.next()){
-                s = mapping.getMapping(mapFile, rs.getString(mapColumn));
+                s = mapping.getMapping(mapFile, rs.getString(mapColumn), true);
                 map.put(rs.getString(idColumn), Utils.getNominalValue(attr, s));
             }
             
@@ -146,32 +156,38 @@ public class ExportDB {
         Map<String, Test> map = new HashMap<String,Test>();
         ResultSet rs = getDb().executeQuery("SELECT * FROM "+ tableName);
         
+        String suffix="";
+        if(testType.equals(StandardObjects.getHiv1ViralLoadLog10TestType()))
+            suffix = " log10";
+        
         while(rs.next()){
-            map.put(rs.getString(idColumn), new Test(testType, rs.getString(mapColumn)));
+            map.put(rs.getString(idColumn), new Test(testType, rs.getString(mapColumn)+suffix));
         }
         
         rs.close();
         return map;
     }
 
-    public Map<String,AttributeNominalValue> createTransmissionGroupMap() throws Exception{
-        return createMap("Transmission group", "transmission_group.mapping", "RiskGroups", "risk_name", "riskID");
-    }
-
-    public Map<String,AttributeNominalValue> createGenderMap() throws Exception{
-        return createMap("Gender", "gender.mapping", "Genders", "name", "genderID");
-    }
-    
-    public Map<String,AttributeNominalValue> createCoOMap() throws Exception{
-        return createMap("Country of origin", "country_of_origin.mapping", "Countries", "iso_name_en", "countryID");
-    }
-    
-    public Map<String,AttributeNominalValue> createEthnicityMap() throws Exception{
-        return createMap("Ethnicity", "ethnicity.mapping", "EthnicGroups", "ethnic_group", "ethnicID");
-    }
-    
-    public Map<String,AttributeNominalValue> createCoIMap(){
-        Map<String, AttributeNominalValue> map = new HashMap<String,AttributeNominalValue>();
+    public Map<String,AttributeNominalValue> copyCoO2CoI(Map<String,AttributeNominalValue> anvs, Attribute coi){
+        Map<String,AttributeNominalValue> map = new HashMap<String,AttributeNominalValue>();
+        Map<String,AttributeNominalValue> uniques = new HashMap<String,AttributeNominalValue>();
+        AttributeNominalValue anv,nanv;
+        
+        for(String id : anvs.keySet()){
+            anv = anvs.get(id);
+            
+            if(anv != null){
+                nanv = uniques.get(anv.getValue());
+                if(nanv == null){
+                    nanv = new AttributeNominalValue(coi,anv.getValue());
+                    coi.getAttributeNominalValues().add(nanv);
+                    uniques.put(anv.getValue(), nanv);
+                }
+            
+                map.put(id, nanv);
+            }
+        }
+        
         return map;
     }
     
