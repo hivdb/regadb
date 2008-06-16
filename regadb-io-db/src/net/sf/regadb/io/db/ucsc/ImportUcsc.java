@@ -16,6 +16,7 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -31,6 +32,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
+import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
 import net.sf.regadb.io.util.IOUtils;
@@ -43,18 +45,21 @@ public class ImportUcsc
 	private String analysisTableName = "t_analisi";
 	private String hivTherapyTableName = "t terapie anti hiv";
 	private String sequencesTableName = "t genotipo hiv";
+	private String adeTableName = "t eventi aids";
 	
 	//DB tables
 	private Table patientTable;
 	private Table analysisTable;
 	private Table hivTherapyTable;
 	private Table sequencesTable;
+	private Table adeTable;
 	
 	//Translation mapping tables
 	private Table countryTable;
 	private Table birthPlaceTable;
 	private Table riskGroupTable;
 	private Table stopTherapieDescTable;
+	private Table adeMappingTable;
 	
 	private HashMap<String, String> tableSelections = new HashMap<String, String>();
 	
@@ -67,6 +72,7 @@ public class ImportUcsc
 	private List<DrugGeneric> regaDrugGenerics;
     
 	private List<Attribute> regadbAttributes;
+	private List<Event> regadbEvents;
 	
 	private Mappings mappings;
 	
@@ -104,9 +110,14 @@ public class ImportUcsc
     		
     		ConsoleLogger.getInstance().logInfo("Creating CSV files...");
     		tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
-    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
+    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
+    				"t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR " +
+    				"t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' OR " +
+    				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' " +
+    				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
     		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
     		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
+    		tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
     		
     		AccessToCsv a2c = new AccessToCsv();
             a2c.createCsv(new File(databaseFile), workingDirectory, tableSelections);
@@ -117,6 +128,7 @@ public class ImportUcsc
     		analysisTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + analysisTableName + ".csv");
     		hivTherapyTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + hivTherapyTableName + ".csv");
     		sequencesTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + sequencesTableName + ".csv");
+    		adeTable = Utils.readTable(workingDirectory.getAbsolutePath() + File.separatorChar + adeTableName + ".csv");
     		
     		ConsoleLogger.getInstance().logInfo("Initializing mapping tables...");
     		//Filling translation mapping tables
@@ -124,27 +136,37 @@ public class ImportUcsc
     		birthPlaceTable = Utils.readTable(mappingBasePath + File.separatorChar + "birthplace.mapping");
     		riskGroupTable = Utils.readTable(mappingBasePath + File.separatorChar + "riskgroup.mapping");
     		stopTherapieDescTable = Utils.readTable(mappingBasePath + File.separatorChar + "stop_therapy_reason.mapping");
+    		adeMappingTable = Utils.readTable(mappingBasePath + File.separatorChar + "aids_defining_illness.mapping");
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving all necessary translations...");
     		stopTherapyTranslation = Utils.translationFileToHashMap(stopTherapieDescTable);
     		
-    		ConsoleLogger.getInstance().logInfo("Retrieving attributes and drugs...");
+    		ConsoleLogger.getInstance().logInfo("Retrieving attributes, drugs, and events...");
     		regadbAttributes = Utils.prepareRegaDBAttributes();
     		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
+    		regadbEvents = Utils.prepareRegaDBEvents();
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating CD data...");
     		handleCDData();
+    		ConsoleLogger.getInstance().logInfo("Successful");
+    		ConsoleLogger.getInstance().logInfo("Migrating ADE data...");
+    		handleEvent();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Migrating treatments...");
     		handleTherapies();
+    		ConsoleLogger.getInstance().logInfo("Successful");
     		ConsoleLogger.getInstance().logInfo("Processing sequences...");
     		handleSequences();
     		ConsoleLogger.getInstance().logInfo("Processed "+patientMap.size()+" patient(s).");
+    		ConsoleLogger.getInstance().logInfo("Successful");
+    		
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
     		IOUtils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml", ConsoleLogger.getInstance());
-    		IOUtils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml", ConsoleLogger.getInstance() );
+    		IOUtils.exportNTXMLFromPatients(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_viralIsolates.xml", ConsoleLogger.getInstance());
     		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)
@@ -211,6 +233,8 @@ public class ImportUcsc
             
             if(!"".equals(patientId))
             {
+            	patientId = patientId.toUpperCase();
+            	
             	Patient p = new Patient();
             	p.setPatientId(patientId);
             	
@@ -321,7 +345,7 @@ public class ImportUcsc
     	int CCC4PatientID = Utils.findColumn(this.analysisTable, "cartella_ucsc");
     	int CAnalysisDate = Utils.findColumn(this.analysisTable, "data_analisi");
     	int CMethod = Utils.findColumn(this.analysisTable, "desc_risultato");
-    	//int CLabor = Utils.findColumn(this.analysisTable, "desc_laboratorio");
+    	int CLabor = Utils.findColumn(this.analysisTable, "desc_laboratorio");
     	int CResult= Utils.findColumn(this.analysisTable, "risul_num");
     	
     	TestType cd4PercTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD4 Percentage", new TreeSet<TestNominalValue>());
@@ -338,13 +362,35 @@ public class ImportUcsc
     		String patientID = this.analysisTable.valueAt(CCC4PatientID, i);
     		String analysisDate = this.analysisTable.valueAt(CAnalysisDate, i);
     		String method = this.analysisTable.valueAt(CMethod, i);
-    		//String labor = this.analysisTable.valueAt(CLabor, i);
+    		String labor = this.analysisTable.valueAt(CLabor, i);
     		String result = this.analysisTable.valueAt(CResult, i);
+    		
+    		patientID = patientID.toUpperCase();
     		
     		Patient p = patientMap.get(patientID);
     		
     		if(p == null)
     			ConsoleLogger.getInstance().logWarning("No patient with id "+patientID+" found.");
+    		
+    		//CD3
+    		if(method.equals("CD3 (?L)"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		if(method.equals("CD3 (%)"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(cd4PercTest);
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
     			
     		//CD4
     		if(method.equals("CD4 (?L)"))
@@ -415,6 +461,48 @@ public class ImportUcsc
     	}
     }
     
+    private void handleEvent()
+    {
+        int CPatientId = Utils.findColumn(adeTable, "cartella UCSC");
+        int CStartDate = Utils.findColumn(adeTable, "data evento AIDS");
+        int CAde = Utils.findColumn(adeTable, "descrizione evento AIDS");
+        
+        NominalEvent aidsDefiningIllnessA = new NominalEvent("Aids defining illness", adeMappingTable, Utils.selectEvent("Aids defining illness", regadbEvents));
+        
+        for(int i = 1; i < adeTable.numRows(); i++) 
+        {
+            String patientId = adeTable.valueAt(CPatientId, i);
+            String startDate = adeTable.valueAt(CStartDate, i);
+            String ade = adeTable.valueAt(CAde, i);
+            
+            patientId = patientId.toUpperCase();
+            
+            Patient p = patientMap.get(patientId);
+    		
+    		if(p == null)
+    		{
+    			ConsoleLogger.getInstance().logWarning("No ade patient with id "+patientId+" found.");
+    		}
+    		else
+    		{
+    			//No end dates in table available
+    			Date endDate = null;
+    			
+    			if(Utils.checkColumnValueForEmptiness("date of ade", startDate, i, patientId))
+    			{
+    				if(Utils.checkColumnValueForExistance("ade", ade, i, patientId))
+    				{
+    					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseEnglishAccessDate(startDate), endDate, p);
+    				}
+    			}
+                else
+                {
+                	ConsoleLogger.getInstance().logWarning("Invalid start date specified ("+ i +").");
+                }
+            }
+        }
+    }
+    
     private void handleTherapies()
     {
     	int ChivPatientID = Utils.findColumn(this.hivTherapyTable, "cartella UCSC");
@@ -448,6 +536,8 @@ public class ImportUcsc
             
         	if(!"".equals(hivPatientID))
             {
+        		hivPatientID = hivPatientID.toUpperCase();
+        		
         		ArrayList<String> drugs = new ArrayList<String>();
         		Date startDate = null;
         		Date stopDate = null;
@@ -675,6 +765,8 @@ public class ImportUcsc
     	
     		 if(!"".equals(patientID))
              {
+    			 patientID = patientID.toUpperCase();
+    			 
     			 if(Utils.checkColumnValueForEmptiness("date of sequence analysis", sequenceDate, i, patientID))
     			 {
              		Date date = Utils.parseEnglishAccessDate(sequenceDate);
