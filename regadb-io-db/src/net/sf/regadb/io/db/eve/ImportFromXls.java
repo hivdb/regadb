@@ -28,6 +28,7 @@ import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ImportFromXls {
@@ -89,8 +90,8 @@ public class ImportFromXls {
     		}
     	}
     	
-    	Utils.exportPatientsXML(patientMap, basePath_ + File.separatorChar + "patients_eve.xml");
-    	Utils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "sequences_eve.xml");
+    	IOUtils.exportPatientsXML(patientMap, basePath_ + File.separatorChar + "patients_eve.xml", ConsoleLogger.getInstance());
+    	IOUtils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "sequences_eve.xml", ConsoleLogger.getInstance());
 	}
     
 	private void processTherapy(Patient p, Date startDate, Date stopDate, String drugs) {		

@@ -11,7 +11,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Logging;
-import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 
 public class ParseAll {
     
@@ -62,7 +62,7 @@ public class ParseAll {
         
         //pSeqs.run(      getFile(importDir,""));
         
-        Utils.exportPatientsXML(patients, outputDir + File.separatorChar + "patients.xml");
+        IOUtils.exportPatientsXML(patients, outputDir + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
         //Utils.exportNTXML(viralisolates, outputDir + File.separatorChar + "viralisolates.xml");
         
         logger.logWarning("Done.");

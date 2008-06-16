@@ -42,9 +42,11 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 
 /**
@@ -836,8 +838,8 @@ public class ImportPortugalDB {
     }
     
     public void exportToXml() {
-        Utils.exportPatientsXML(patientMap, patientXmlFile.getAbsolutePath());
-        Utils.exportNTXMLFromPatients(patientMap, sequenceXmlFile.getAbsolutePath());
+        IOUtils.exportPatientsXML(patientMap, patientXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap, sequenceXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
     }
     
  	public static void main(String[] args)

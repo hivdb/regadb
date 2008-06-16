@@ -34,6 +34,7 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.pair.Pair;
 
@@ -137,8 +138,8 @@ public class ImportIrsicaixa {
         	logger_.logWarning("New testtype: "+ t.getDescription());
         }
         
-        Utils.exportPatientsXML(patients, basePath_ + File.separatorChar + "patients.xml");
-        Utils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "viralisolates.xml");
+        IOUtils.exportPatientsXML(patients, basePath_ + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     }
     
     public HashMap<String, Patient> handleGeneralData() {

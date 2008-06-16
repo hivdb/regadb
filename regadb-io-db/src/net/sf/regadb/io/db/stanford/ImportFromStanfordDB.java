@@ -26,6 +26,7 @@ import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 
 public class ImportFromStanfordDB {
 	private static String mapPath = "/home/dluypa0/Projects/impex/regadb-io-db/src/net/sf/regadb/io/db/stanford/mappings";
@@ -65,8 +66,8 @@ public class ImportFromStanfordDB {
 			System.err.println( ioe.getLocalizedMessage() );
 		}
 		
-    	Utils.exportPatientsXML(patientMap, dataPath + File.separatorChar + "patients_stanford.xml");
-    	Utils.exportNTXML(viralisolates, dataPath + File.separatorChar + "viralisolates.xml");
+    	IOUtils.exportPatientsXML(patientMap, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
+    	IOUtils.exportNTXML(viralisolates, dataPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     	
     	System.out.println("done");
 	}

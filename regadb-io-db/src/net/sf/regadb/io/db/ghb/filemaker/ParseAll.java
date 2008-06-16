@@ -10,7 +10,8 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
 import net.sf.regadb.io.db.ghb.MergeLISFiles;
-import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.util.IOUtils;
 
 public class ParseAll {    
     public static void main(String [] args) {
@@ -100,7 +101,7 @@ public class ParseAll {
             }
         }
         
-        Utils.exportPatientsXML(eadPatients, outputPath + File.separatorChar + "patients.xml");
-        Utils.exportNTXMLFromPatients(eadPatients, outputPath + File.separatorChar + "viralisolates.xml");
+        IOUtils.exportPatientsXML(eadPatients, outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(eadPatients, outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     }
 }

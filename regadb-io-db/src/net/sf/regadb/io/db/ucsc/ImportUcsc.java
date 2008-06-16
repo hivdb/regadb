@@ -33,6 +33,7 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ImportUcsc 
@@ -142,8 +143,8 @@ public class ImportUcsc
     		handleSequences();
     		ConsoleLogger.getInstance().logInfo("Processed "+patientMap.size()+" patient(s).");
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
-    		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml");
-    		Utils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml");
+    		IOUtils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml", ConsoleLogger.getInstance());
+    		IOUtils.exportNTXML(viralIsolateHM, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_ntseq.xml", ConsoleLogger.getInstance() );
     		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)

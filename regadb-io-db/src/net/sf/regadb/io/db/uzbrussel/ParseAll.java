@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.util.IOUtils;
 
 public class ParseAll {
     public static void main(String [] args) {
@@ -56,6 +57,6 @@ public class ParseAll {
         ParseSeqs parseSeqs = new ParseSeqs(baseDir,parseIds, patients);
         parseSeqs.exec();
         
-        Utils.exportPatientsXMLI(patients, regadbXmlFile);
+        IOUtils.exportPatientsXMLI(patients, regadbXmlFile, ConsoleLogger.getInstance());
     }
 }

@@ -1,6 +1,8 @@
 package net.sf.regadb.io.db.util;
 
-public class ConsoleLogger implements Logging {
+import net.sf.regadb.io.util.ILogger;
+
+public class ConsoleLogger implements Logging, ILogger {
 
 	protected static ConsoleLogger _singleton;
 	

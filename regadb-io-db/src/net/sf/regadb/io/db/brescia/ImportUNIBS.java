@@ -29,6 +29,7 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.frequency.Frequency;
 
@@ -151,8 +152,8 @@ public class ImportUNIBS
     		ConsoleLogger.getInstance().logInfo("Successful");
     		
     		ConsoleLogger.getInstance().logInfo("Generating output xml file...");
-    		Utils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_patients.xml");
-    		Utils.exportNTXMLFromPatients(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_viralIsolates.xml");
+    		IOUtils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_patients.xml", ConsoleLogger.getInstance());
+    		IOUtils.exportNTXMLFromPatients(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "unibs_viralIsolates.xml", ConsoleLogger.getInstance());
     		ConsoleLogger.getInstance().logInfo("Export finished.");
     	}
     	catch(Exception e)

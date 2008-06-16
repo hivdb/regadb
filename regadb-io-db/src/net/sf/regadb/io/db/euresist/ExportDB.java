@@ -14,9 +14,11 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.MysqlDatabase;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ExportDB {
@@ -62,7 +64,7 @@ public class ExportDB {
             ht.run(patients);
             
             logInfo("Generating xml");
-            Utils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml");
+            IOUtils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
             
             logInfo("Done");
         }
