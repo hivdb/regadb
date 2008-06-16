@@ -92,6 +92,23 @@ public class PrepareCentralRepos
         Test hiv1Serconversion = createHiv1SeroconversionTest();
         export.writeTopTest(hiv1Serconversion, tests);
         
+        export.writeTopTest(StandardObjects.getGenericHCVAbTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHCVViralLoadTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBcAbTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBcAgTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBeAbTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBeAgTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBsAbTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHBsAgTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericCD3Test(), tests);
+        export.writeTopTest(StandardObjects.getGenericCD3PercentTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericCMVIgGTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericCMVIgMTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericToxoIgGTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericToxoIgMTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHAVIgGTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHAVIgMTest(), tests);
+        
         //Resistance tests
         Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
         export.writeTopTest(anrs_2006_07, tests);

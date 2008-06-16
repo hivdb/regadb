@@ -52,6 +52,29 @@ public class StandardObjects {
     
     private static TestType hiv1SeroconversionTestType;
     private static Test hiv1SeroconversionTest;
+    
+    private static Test genericHCVAbTest;
+    private static Test genericHCVViralLoadTest;
+    
+    private static Test genericHBcAbTest;
+    private static Test genericHBcAgTest;
+    private static Test genericHBeAbTest;
+    private static Test genericHBeAgTest;
+    private static Test genericHBsAbTest;
+    private static Test genericHBsAgTest;
+    
+    private static Test genericCD3Test;
+    private static Test genericCD3PercentTest;
+    
+    private static Test genericCMVIgGTest;
+    private static Test genericCMVIgMTest;
+    
+    private static Test genericToxoIgGTest;
+    private static Test genericToxoIgMTest;
+    
+    private static Test genericHAVIgGTest;
+    private static Test genericHAVIgMTest;
+    
 
     static {
         hiv1SeroStatusTestType = new TestType(patientObject, "HIV-1 Sero Status");
@@ -72,6 +95,29 @@ public class StandardObjects {
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
         
         pregnancy = new Test(pregnancyType, "Pregnancy");
+        
+        genericHCVAbTest 		= createGenericTest("HCVAb", getNumberValueType(), getPatientObject());
+        genericHCVViralLoadTest = createGenericTest("HCV Viral Load", getLimitedNumberValueType(), getPatientObject());
+        genericHBcAbTest 		= createGenericTest("HBcAb", getNumberValueType(), getPatientObject());
+        genericHBcAgTest 		= createGenericTest("HBcAg", getNumberValueType(), getPatientObject());
+        genericHBeAbTest 		= createGenericTest("HBeAb", getNumberValueType(), getPatientObject());
+        genericHBeAgTest 		= createGenericTest("HBeAg", getNumberValueType(), getPatientObject());
+        genericHBsAbTest 		= createGenericTest("HBsAb", getNumberValueType(), getPatientObject());
+        genericHBsAgTest 		= createGenericTest("HBsAg", getNumberValueType(), getPatientObject());
+        genericCD3Test 			= createGenericTest("CD3 Count (cells/ul)", getNumberValueType(), getPatientObject());
+        genericCD3PercentTest 	= createGenericTest("CD3 Count (%)", getNumberValueType(), getPatientObject());
+        genericCMVIgGTest 		= createGenericTest("CMV IgG", getNumberValueType(), getPatientObject());
+        genericCMVIgMTest 		= createGenericTest("CMV IgM", getNumberValueType(), getPatientObject());
+        genericToxoIgGTest 		= createGenericTest("Toxo IgG", getNumberValueType(), getPatientObject());
+        genericToxoIgMTest 		= createGenericTest("Toxo IgM", getNumberValueType(), getPatientObject());
+        genericHAVIgGTest 		= createGenericTest("HAV IgG", getNumberValueType(), getPatientObject());
+        genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), getPatientObject());
+    }
+    
+    private static Test createGenericTest(String name, ValueType valueType, TestObject testObject){
+        return new Test(new TestType(valueType, testObject,
+				name, new TreeSet<TestNominalValue>()),
+				name + " (generic)");
     }
     
     public static Test getPregnancyTest() {
@@ -211,4 +257,118 @@ public class StandardObjects {
     public static int getQueryToolQueryType(){
         return 2;
     }
+
+    
+    public static Test getGenericHCVAbTest(){
+    	return genericHCVAbTest;
+    }
+    public static TestType getHCVAbTestType(){
+    	return genericHCVAbTest.getTestType();
+    }
+
+    public static Test getGenericHCVViralLoadTest(){
+    	return genericHCVViralLoadTest;
+    }
+    public static TestType getHCVViralLoadTestType(){
+    	return genericHCVViralLoadTest.getTestType();
+    }
+
+    public static Test getGenericHBcAbTest(){
+    	return genericHBcAbTest;
+    }
+    public static TestType getHBcAbTestType(){
+    	return genericHBcAbTest.getTestType();
+    }
+
+    public static Test getGenericHBcAgTest(){
+    	return genericHBcAgTest;
+    }
+    public static TestType getHBcAgTestType(){
+    	return genericHBcAgTest.getTestType();
+    }
+
+    public static Test getGenericHBeAbTest(){
+    	return genericHBeAbTest;
+    }
+    public static TestType getHBeAbTestType(){
+    	return genericHBeAbTest.getTestType();
+    }
+
+    public static Test getGenericHBeAgTest(){
+    	return genericHBeAgTest;
+    }
+    public static TestType getHBeAgTestType(){
+    	return genericHBeAgTest.getTestType();
+    }
+
+    public static Test getGenericHBsAbTest(){
+    	return genericHBsAbTest;
+    }
+    public static TestType getHBsAbTestType(){
+    	return genericHBsAbTest.getTestType();
+    }
+
+    public static Test getGenericHBsAgTest(){
+    	return genericHBsAgTest;
+    }
+    public static TestType getHBsAgTestType(){
+    	return genericHBsAgTest.getTestType();
+    }
+
+    public static Test getGenericCD3Test(){
+    	return genericCD3Test;
+    }
+    public static TestType getCD3TestType(){
+    	return genericCD3Test.getTestType();
+    }
+
+    public static Test getGenericCD3PercentTest(){
+    	return genericCD3PercentTest;
+    }
+    public static TestType getCD3PercentTestType(){
+    	return genericCD3PercentTest.getTestType();
+    }
+
+    public static Test getGenericCMVIgGTest(){
+    	return genericCMVIgGTest;
+    }
+    public static TestType getCMVIgGTestType(){
+    	return genericCMVIgGTest.getTestType();
+    }
+
+    public static Test getGenericCMVIgMTest(){
+    	return genericCMVIgMTest;
+    }
+    public static TestType getCMVIgMTestType(){
+    	return genericCMVIgMTest.getTestType();
+    }
+
+    public static Test getGenericToxoIgGTest(){
+    	return genericToxoIgGTest;
+    }
+    public static TestType getToxoIgGTestType(){
+    	return genericToxoIgGTest.getTestType();
+    }
+
+    public static Test getGenericToxoIgMTest(){
+    	return genericToxoIgMTest;
+    }
+    public static TestType getToxoIgMTestType(){
+    	return genericToxoIgMTest.getTestType();
+    }
+
+    public static Test getGenericHAVIgGTest(){
+    	return genericHAVIgGTest;
+    }
+    public static TestType getHAVIgGTestType(){
+    	return genericHAVIgGTest.getTestType();
+    }
+
+    public static Test getGenericHAVIgMTest(){
+    	return genericHAVIgMTest;
+    }
+    public static TestType getHAVIgMTestType(){
+    	return genericHAVIgMTest.getTestType();
+    }
+
 }
