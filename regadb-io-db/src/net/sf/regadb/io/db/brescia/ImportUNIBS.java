@@ -357,11 +357,7 @@ public class ImportUNIBS
     		String rnaAnalysisDate = this.rnaTable.valueAt(CrnaAnalysisDate, i);;
     		String VLTest = this.rnaTable.valueAt(CVLTest, i);
     		String VLHIV = this.rnaTable.valueAt(CVLHIV, i);
-    		//TODO
-    		//cutoff can be missing
-    		//viral load <50 -> value=1 -> save as <50
-    		//no cutoff, val 1 -> <50
-    		///val=1, cutoff  is specifified -> use less than cutoff
+
     		String VLCutOff = this.rnaTable.valueAt(CVLCutOff, i);
     		
     		Patient p = patientMap.get(rnaPatientID);
