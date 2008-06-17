@@ -47,7 +47,7 @@ public class PrepareCentralRepos
         ExportToXML export = new ExportToXML();
         
         Element attributes = new Element("attributes");
-        
+        Element events = new Element("events");        
         Element tests = new Element("tests");
         
         //Attributes
@@ -66,6 +66,13 @@ public class PrepareCentralRepos
         
         File attributesFile = new File(outputDir +File.separatorChar+"attributes.xml");
         writeXMLFile(attributesFile, attributes);
+        
+        //Events
+        export = new ExportToXML();
+        export.writeTopEvent(StandardObjects.getAidsDefiningIllnessEvent(), events);
+        File eventsFile = new File(outputDir +File.separatorChar+"events.xml");
+        writeXMLFile(eventsFile, events);
+        
         
         export = new ExportToXML();
         //Tests
@@ -89,11 +96,13 @@ public class PrepareCentralRepos
         Test followUp = createFollowUpTest();
         export.writeTopTest(followUp, tests);
         
-        Test hiv1Serconversion = createHiv1SeroconversionTest();
-        export.writeTopTest(hiv1Serconversion, tests);
-        
-        export.writeTopTest(StandardObjects.getGenericHCVAbTest(), tests);
+        export.writeTopTest(StandardObjects.getHiv1SeroconversionTest(), tests);
+        export.writeTopTest(StandardObjects.getGenericHiv1SeroStatusTest(), tests);
+
+        export.writeTopTest(StandardObjects.getGenericHBVViralLoadTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHCVViralLoadTest(), tests);
+
+        export.writeTopTest(StandardObjects.getGenericHCVAbTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHBcAbTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHBcAgTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHBeAbTest(), tests);
@@ -288,18 +297,6 @@ public class PrepareCentralRepos
         seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
         
         Test seroconversion = new Test(seroconversionType, "Seroconversion");
-        
-        return seroconversion;
-    }
-    
-    private static Test createHiv1SeroconversionTest()
-    {
-        TestType seroconversionType = new TestType(new TestObject("Patient test", 0), "HIV-1 Seroconversion");
-        seroconversionType.setValueType(nominalValue);
-        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Positive"));
-        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
-        
-        Test seroconversion = new Test(seroconversionType, "HIV-1 Seroconversion");
         
         return seroconversion;
     }
