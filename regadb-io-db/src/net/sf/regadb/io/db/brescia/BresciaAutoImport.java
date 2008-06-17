@@ -2,7 +2,8 @@ package net.sf.regadb.io.db.brescia;
 
 import java.io.File;
 
-import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
+import net.sf.regadb.io.db.util.msaccess.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.msaccess.DBToCsv;
 
 public class BresciaAutoImport {
     public static void main(String [] args) {
@@ -39,8 +40,8 @@ public class BresciaAutoImport {
 	        tempDir.mkdir();
         }
             
-        AccessToCsv a2c = new AccessToCsv();
-        a2c.createCsv(new File(args[1]), tempDir);
+        DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(args[1])));
+        a2c.createCsv(tempDir);
         
         ImportUNIBS imp = new  ImportUNIBS();
         imp.getData(tempDir, args[2], args[3]);

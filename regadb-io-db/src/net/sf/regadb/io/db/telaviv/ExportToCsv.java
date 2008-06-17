@@ -7,33 +7,33 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.HashSet;
 
-import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
+import net.sf.regadb.io.db.util.msaccess.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.msaccess.DBToCsv;
+import net.sf.regadb.io.db.util.msaccess.IConnectionProvider;
 
-public class ExportToCsv extends AccessToCsv {
-    private HashSet<String> ignoreTables_ = new HashSet<String>();
+public class ExportToCsv extends DBToCsv {
+	private HashSet<String> ignoreTables_ = new HashSet<String>();
     
     public static void main(String[] args) {
         String input,output;
-        ExportToCsv a2c = new ExportToCsv();
         
-        if(args.length > 1){
+        if(args.length > 2){
             File inFile = new File(args[0]);
+            ExportToCsv a2c = new ExportToCsv(new AccessConnectionProvider(inFile));
             File ignoreFile = new File(args[1]);
             
             a2c.loadIgnoreTables(ignoreFile);
-            if(args.length > 2){
-                File outFile = new File(args[2]);
-                
-                a2c.createCsv(inFile,outFile);
-            }
-            else{
-                a2c.createCsv(inFile);
-            }
+            File outFile = new File(args[2]);
+            a2c.createCsv(outFile);
         }
         else{
-            System.out.println("Usage: ExportToCsv <database_input_file> <table_ignore_file> [<csv_output_path>]");
+            System.out.println("Usage: ExportToCsv <database_input_file> <table_ignore_file> <csv_output_path>");
         }
     }
+    
+    public ExportToCsv(IConnectionProvider connectionProvider) {
+		super(connectionProvider);
+	}
     
     protected boolean loadIgnoreTables(File ignore){
         if(ignore.exists()){

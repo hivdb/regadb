@@ -31,7 +31,8 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
+import net.sf.regadb.io.db.util.msaccess.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.msaccess.DBToCsv;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.frequency.Frequency;
@@ -120,8 +121,8 @@ public class ImportUcsc
     		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
     		tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
     		
-    		AccessToCsv a2c = new AccessToCsv();
-            a2c.createCsv(new File(databaseFile), workingDirectory, tableSelections);
+    		DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(databaseFile)));
+            a2c.createCsv(workingDirectory, tableSelections);
     		
     		ConsoleLogger.getInstance().logInfo("Reading CSV files...");
     		//Filling DB tables

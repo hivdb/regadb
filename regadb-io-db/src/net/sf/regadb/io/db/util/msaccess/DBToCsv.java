@@ -4,28 +4,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Properties;
 
 import net.sf.regadb.io.db.util.export.CsvExporter;
 import net.sf.regadb.io.db.util.export.SqlQueryExporter;
 
-public class AccessToCsv {
-	private String dbDriver_ = "sun.jdbc.odbc.JdbcOdbcDriver";
-	private String dbPrefix_ = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
-	private String dbSuffix_ = ";DriverID=22;READONLY=true}";
-	private String dbUsername_ = "";
-	private String dbPassword_ = "";
-	
+public class DBToCsv {
 	private SqlQueryExporter sqlQueryExporter_;
 	
 	private Connection conn_ = null;
+	
+	private IConnectionProvider connectionProvider_;
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		String input,output;
-		AccessToCsv a2c = new AccessToCsv();
+		DBToCsv a2c = new DBToCsv();
 		
 		if(args.length > 0){
 			input = args[0];
@@ -41,45 +35,20 @@ public class AccessToCsv {
 		else{
 			System.out.println("Usage: AccessToCsv <database_input_file> [<csv_output_path>]");
 		}
-	}
+	}*/
 			 
-	public AccessToCsv(){
+	public DBToCsv(IConnectionProvider connectionProvider){
+		connectionProvider_ = connectionProvider;
 		sqlQueryExporter_ = new SqlQueryExporter();
 		sqlQueryExporter_.setExporter(new CsvExporter());
 	}
-	
-	public Connection getConnection(File dbFile){
-		if(conn_ == null){
-			try{
-				Class.forName(dbDriver_);
-				Properties prop = new Properties();            
-				prop.put("charSet", "UTF-8");
-				prop.put("user", dbUsername_);
-				prop.put("password", dbPassword_);
-				String dbUrl = dbPrefix_ + dbFile.getAbsolutePath() + dbSuffix_;
-				conn_ = DriverManager.getConnection(dbUrl,prop);
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}			
-		}
-		return conn_;
-	}
-	
-	public void createCsv(File in){
-		createCsv(in,deriveOutputDirFrom(in));
-	}
-	
-	public File deriveOutputDirFrom(File f){
-		return f.getParentFile();
-	}
 
-	public void createCsv(File in, File out){
+	public void createCsv(File out){
 			
-		String pfx = getCsvPrefix(in);
+		String pfx = connectionProvider_.getCsvPrefix();
 		
 		try{
-			Connection con = getConnection(in);
+			Connection con = connectionProvider_.getConnection();
 			sqlQueryExporter_.setConnection(con);
 			
 			ResultSet rs;
@@ -98,12 +67,12 @@ public class AccessToCsv {
 		}
 	}
 	
-	public void createCsv(File in, File out, HashMap<String,String> tableSelections)
+	public void createCsv(File out, HashMap<String,String> tableSelections)
 	{
-		String pfx = getCsvPrefix(in);
+		String pfx = connectionProvider_.getCsvPrefix();
 		
 		try{
-			Connection con = getConnection(in);
+			Connection con = connectionProvider_.getConnection();
 			sqlQueryExporter_.setConnection(con);
 			
 			ResultSet rs;
