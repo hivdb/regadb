@@ -698,11 +698,22 @@ public class ImportUNIBS
     	
     	if(motivation != null && !motivation.equals(""))
     	{
-    		//TODO
-    	    //Needs improvement, requires the mapping of motivation
-    		TherapyMotivation therapyMotivation = new TherapyMotivation("Toxicity");
+    		 //Still needs improvement, requires the mapping of motivation
+    		TherapyMotivation therapyMotivation = null;
+    		
+    		if(motivation.equals("toxicity"))
+    			therapyMotivation = new TherapyMotivation("Toxicity");
+    		else if(motivation.equals("failure"))
+    			therapyMotivation = new TherapyMotivation("Treatment failure, other");
+    		else if(motivation.equals("unknown"))
+    			therapyMotivation = new TherapyMotivation("Unknown");
+    		else if(motivation.equals("non-adherence or patient’s decision"))
+    			therapyMotivation = new TherapyMotivation("Patient's choice");
+    		else
+    			therapyMotivation = new TherapyMotivation("Other");
     	
-    		t.setTherapyMotivation(therapyMotivation);
+    		if(therapyMotivation != null)
+    			t.setTherapyMotivation(therapyMotivation);
     	}
     }
     
