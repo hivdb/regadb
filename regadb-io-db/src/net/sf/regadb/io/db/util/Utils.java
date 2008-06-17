@@ -11,7 +11,6 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -38,8 +37,6 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
-import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -352,77 +349,39 @@ public class Utils {
      
      public static List<Event> prepareRegaDBEvents()
      {
-         //TODO retrieve event list with FileProvider
-         List<Event> list = new ArrayList<Event>();
+	 	RegaDBSettings.getInstance().initProxySettings();
          
-         Event e = new Event();
-         e.setValueType(StandardObjects.getNominalValueType());
-         e.setName("Aids defining illness");
+         FileProvider fp = new FileProvider();
+         List<Event> list = null;
+         File eventsFile = null;
+         try {
+             eventsFile = File.createTempFile("events", "xml");
+         } catch (IOException e1) {
+             e1.printStackTrace();
+         }
+         try 
+         {
+             fp.getFile("regadb-events", "events.xml", eventsFile);
+         }
+         catch (RemoteException e) 
+         {
+             e.printStackTrace();
+         }
+         final ImportFromXML imp = new ImportFromXML();
+         try 
+         {
+             imp.loadDatabaseObjects(null);
+             list = imp.readEvents(new InputSource(new FileReader(eventsFile)), null);
+         }
+         catch(SAXException saxe)
+         {
+             saxe.printStackTrace();
+         }
+         catch(IOException ioex)
+         {
+             ioex.printStackTrace();
+         }
          
-         e.getEventNominalValues().add(new EventNominalValue(e,"Bacillary angiomatosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis of bronchi, trachea, or lungs"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, esophageal"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, oropharyngeal (thrush)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis, vulvovaginal; persistent, frequent, or poorly responsive to therapy"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical cancer, invasive"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical dysplasia (moderate or severe)/cervical carcinoma in situ"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Coccidioidomycosis, disseminated or extrapulmonary"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Constitutional symptoms, such as fever (38.5 C) or diarrhea lasting greater than 1 month"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptococcosis, extrapulmonary"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptosporidiosis, chronic intestinal (greater than 1 month's duration)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cytomegalovirus disease (other than liver, spleen, or nodes)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cytomegalovirus retinitis (with loss of vision)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Encephalopathy, HIV-related"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Hairy leukoplakia, oral"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Herpes simplex: chronic ulcer(s) (greater than 1 month's duration); or bronchitis, pneumonitis, or esophagitis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Herpes zoster (shingles), involving at least two distinct episodes or more than one dermatome"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Histoplasmosis, disseminated or extrapulmonary"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Idiopathic thrombocytopenic purpura"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Isosporiasis, chronic intestinal (greater than 1 month's duration)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi's sarcoma"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Listeriosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, Burkitt's (or equivalent term)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, immunoblastic (or equivalent term)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, primary, of brain"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium avium complex or M. kansasii, disseminated or extrapulmonary"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium tuberculosis, any site (pulmonary or extrapulmonary)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Mycobacterium, other species or unidentified species, disseminated or extrapulmonary"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Pelvic inflammatory disease, particularly if complicated by tubo-ovarian abscess"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Peripheral neuropathy"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumocystis carinii pneumonia"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumonia, recurrent"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Progressive multifocal leukoencephalopathy"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Salmonella septicemia, recurrent"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Toxoplasmosis of brain"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Wasting syndrome due to HIV"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"AIDS dementia complex"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cervical carcinoma"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Deep candidosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated CMV infection"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Retinic CMV infection"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptococcal infection"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cryptosporidiosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Chronic HSV infection"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Isosporiasis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Visceral leishmaniosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Progressive Multifocal leukoencephalopathy"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (B cells)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (cerebral)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Non-Hodgkin lymphoma (immunoblastic)"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Non-tubercular mycobacteriosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Cerebral toxoplasmosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Recurrent bacterial pneumonias"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Pneumocystis carinii pneumonia"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi sarcoma"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated salmonellosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated strongyloidiasis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Extra-pulmunar tuberculosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Pulmunar tuberculosis"));
-         e.getEventNominalValues().add(new EventNominalValue(e,"Wasting sindrome"));
-
-         list.add(e);
-    
          return list;
      }
      
