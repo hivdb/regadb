@@ -14,6 +14,7 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.NtSequence;
@@ -24,6 +25,8 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
@@ -36,7 +39,6 @@ import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.util.pair.Pair;
 
 public class ImportIrsicaixa {
     private Logging logger_;
@@ -59,7 +61,7 @@ public class ImportIrsicaixa {
     
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
     
-    private HashMap<String,Pair<String,Double>> drugDosageMapping_;
+    private HashMap<String,TherapyDrug> drugDosageMapping_;
     
     private HashMap<String, Test> tests_ = new HashMap<String, Test>();
     private ArrayList<TestType> testTypes_ = new ArrayList<TestType>();
@@ -68,6 +70,7 @@ public class ImportIrsicaixa {
     private List<Event> regadbEvents_;
     
     private List<DrugGeneric> regaDrugGenerics;
+    private List<DrugCommercial> regaDrugCommercials;
     
     private TestNominalValue posSeroStatus_;
 
@@ -77,6 +80,10 @@ public class ImportIrsicaixa {
         basePath_ = basePath;
         mappings_ = Mappings.getInstance(mappingBasePath);
         
+        logger_.logInfo("Retrieving standard RegaDB generic drugs");
+        regaDrugGenerics = Utils.prepareRegaDrugGenerics();
+        logger_.logInfo("Retrieving standard RegaDB commercial drugs");
+        regaDrugCommercials = Utils.prepareRegaDrugCommercials();
         drugDosageMapping_ = buildDrugDosageMap(mappingBasePath + File.separatorChar + "generic_drugs.mapping");
 
         countryTable_ = Utils.readTable(mappingBasePath + File.separatorChar + "country_of_origin.mapping");
@@ -105,9 +112,6 @@ public class ImportIrsicaixa {
         
         logger_.logInfo("Retrieving standard RegaDB events");
         regadbEvents_ = Utils.prepareRegaDBEvents();
-        
-        logger_.logInfo("Retrieving standard RegaDB generic drugs");
-        regaDrugGenerics = Utils.prepareRegaDrugGenerics();
         
         logger_.logInfo("Handling general patient data");
         HashMap<String, Patient> patients = handleGeneralData();
@@ -291,25 +295,25 @@ public class ImportIrsicaixa {
                     Date endDate = Utils.parseMysqlDate(therapyTable_.valueAt(CEndDate, i));
                     
                     String drugs = therapyTable_.valueAt(CDrugs, i);
-                    HashMap<String,Double> drugsList = processDrugs(drugs);
+                    HashMap<TherapyDrug,Double> drugsList = processDrugs(drugs);
                     
                     Therapy t = p.createTherapy(startDate);
                     t.setStopDate(endDate);
 
-                    for (String sdrug : drugsList.keySet()){
-                    	Double dose = drugsList.get(sdrug);
+                    for (TherapyDrug td : drugsList.keySet()){
+                    	Double dose = drugsList.get(td);
                     	
-                    	if(sdrug != null && sdrug.length() > 0){
-	                    	TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, new DrugGeneric(null, sdrug ,null)),false,false);
-	                    	if(dose != null && dose != 0){
-	                    		tg.setDayDosageMg(dose);
-	                    		logger_.logWarning("Added drug: "+ sdrug +" ("+ dose +")");
-	                    	}
-	                    	else{
-	                    		logger_.logWarning("Added drug: "+ sdrug);
-	                    	}
-	                    	
-	                    	t.getTherapyGenerics().add(tg);
+                    	if(td != null){
+                    		if(td.generic != null){
+                    			TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, td.generic),false,false);
+                    			tg.setDayDosageMg(dose);
+                    			t.getTherapyGenerics().add(tg);
+                    		}
+                    		else{
+                    			TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, td.commercial),false,false);
+                    			tc.setDayDosageUnits(dose);
+                    			t.getTherapyCommercials().add(tc);
+                    		}
                     	}
                     }
                     
@@ -440,13 +444,23 @@ public class ImportIrsicaixa {
     }
     
     private void createNewTypeAndTest(String testtypeDescr, String testDescr){
-		TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(),testtypeDescr, new TreeSet<TestNominalValue>());
-		testTypes_.add(tt);
-		
-		Test tst = new Test(tt,testDescr);
-		tests_.put(testDescr,tst);
-		
-		//logger_.logWarning("Added TestType("+ testtypeDescr +"), Test("+ testDescr +").");
+    	if(testDescr.equals("HBsAg"))
+    		tests_.put(testDescr,StandardObjects.getGenericHBsAgTest());
+    	else if(testDescr.equals("HBeAg"))
+    		tests_.put(testDescr,StandardObjects.getGenericHBeAgTest());
+    	else if(testDescr.equals("anti HBc"))
+    		tests_.put(testDescr,StandardObjects.getGenericHBcAbTest());
+    	else if(testDescr.equals("anti HBs"))
+    		tests_.put(testDescr,StandardObjects.getGenericHBsAbTest());
+    	else if(testDescr.equals("anti HBe"))
+    		tests_.put(testDescr,StandardObjects.getGenericHBeAbTest());
+    	else{
+			TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(),testtypeDescr, new TreeSet<TestNominalValue>());
+			testTypes_.add(tt);
+			
+			Test tst = new Test(tt,testDescr);
+			tests_.put(testDescr,tst);
+    	}
     }
     
     public HashMap<String,ViralIsolate> handleFasta(HashMap<String, Patient> patients){
@@ -510,85 +524,81 @@ public class ImportIrsicaixa {
     	return nucleotides.toLowerCase();
     }
     
-    public HashMap<String,Double> processDrugs(String drugs) {
+    public HashMap<TherapyDrug,Double> processDrugs(String drugs) {
         StringTokenizer st = new StringTokenizer(drugs, ",");
-        HashMap<String,Double> genericDrugs = new HashMap<String,Double>();
+        HashMap<TherapyDrug,Double> drugsList = new HashMap<TherapyDrug,Double>();
         if(drugs.equals("NULL"))
-            return genericDrugs;
+            return drugsList;
+        
         while(st.hasMoreTokens())  {
             String drug = st.nextToken().trim();
-            Pair<String,Double> drugdos = getDrugDosageMapping(drug,regaDrugGenerics);
+            TherapyDrug drugdos = drugDosageMapping_.get(drug);
 
-            if(drugdos!=null && drugdos.getKey() != null && !drugdos.getKey().equals("")){
-            	Double dose = genericDrugs.get(drugdos.getKey());
-            	if(dose != null && drugdos.getValue() != null){
-           			genericDrugs.put(drugdos.getKey(),new Double(drugdos.getValue()+dose));
-            	}
-            	else{
-            		genericDrugs.put(drugdos.getKey(), drugdos.getValue());
-            	}
-            }
-        }
-        
-        return genericDrugs;
-    }
-    
-    public Pair<String,Double> getDrugDosageMapping(String drug, List<DrugGeneric> regaDrugGenerics){
-    	//TODO clean this code up 
-    	
-    	Pair<String,Double> drugdos;
-    	
-    	boolean foundDrug = false;
-        
-        for(int j = 0; j < regaDrugGenerics.size(); j++)
-    	{
-        	DrugGeneric genDrug = regaDrugGenerics.get(j);
-        	
-        	if(genDrug.getGenericId().equals(drug.toUpperCase()))
-        	{
-        		logger_.logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
-        		foundDrug = true;
-        		
-        		break;
+            if(drugdos == null)
+            	continue;
+            
+        	Double dose = drugsList.get(drugdos);
+        	if(dose != null){
+       			drugsList.put(drugdos, new Double(drugdos.dosage + dose));
         	}
-    	}
+        	else{
+        		drugsList.put(drugdos, drugdos.dosage);
+        	}
+        }
         
-        if(!foundDrug) {
-        	drugdos = drugDosageMapping_.get(drug);
-            if(drugdos == null) {
-            	logger_.logWarning("Generic Drug "+drug+" not found in RegaDB repository and no mapping was avaialable.");
-            }
-            else{
-            	logger_.logWarning("Found Generic Drug "+drug+" "+ drugdos.getKey() +" "+ drugdos.getValue());
-            }
-        }
-        else {
-        	drugdos = new Pair<String,Double>(drug,null);
-        }
-
-    	return drugdos;
+        return drugsList;
     }
     
-    public HashMap<String,Pair<String,Double>> buildDrugDosageMap(String drugMappingFile){
+    public HashMap<String,TherapyDrug> buildDrugDosageMap(String drugMappingFile){
     	Table t = Utils.readTable(drugMappingFile);
     	
-    	HashMap<String,Pair<String,Double>> ddmap = new HashMap<String,Pair<String,Double>>();
+    	HashMap<String,TherapyDrug> ddmap = new HashMap<String,TherapyDrug>();
     	
     	for(int i=1; i<t.numRows();++i){
-    		Pair<String,Double> dd = new Pair<String,Double>(null,null);
+    		TherapyDrug td = new TherapyDrug();
     		
-    		dd.setKey(t.valueAt(1, i));
+    		String name = t.valueAt(1, i);
     		String sdosage = t.valueAt(2,i); 
+    		
+    		for(int j = 0; j < regaDrugGenerics.size(); j++)
+        	{
+            	DrugGeneric d = regaDrugGenerics.get(j);
+            	
+            	if(d.getGenericId().equals(name))
+            	{
+            		td.generic = d;
+            		break;
+            	}
+        	}
+    		
+    		if(td.generic == null){
+    			for(int j = 0; j < regaDrugCommercials.size(); j++)
+            	{
+                	DrugCommercial d = regaDrugCommercials.get(j);
+                	
+                	if(d.getName().equals(name))
+                	{
+                		td.commercial = d;
+                		break;
+                	}
+            	}
+    		}
+    		
+    		if(td.generic == null && td.commercial == null){
+    			logger_.logWarning("No mapping available for drug: "+ t.valueAt(0,i));
+    			continue;
+    		}
+    		
     		if(sdosage != null && sdosage.length() > 0){
 	    		try{
 	    			Double dosage = new Double(Double.parseDouble(sdosage));
-	    			dd.setValue(dosage);
+	    			td.dosage = dosage;
 	    		}
 	    		catch(Exception e){
 	    			logger_.logWarning("Invalid dosage specified in generic_drugs.mapping file ("+ i +").");
 	    		}
     		}
-    		ddmap.put(t.valueAt(0,i), dd);
+    		ddmap.put(t.valueAt(0,i), td);
     	}
     	
     	return ddmap;
@@ -599,5 +609,12 @@ public class ImportIrsicaixa {
             System.out.println("Usage: ImportIrsicaixa <csv path> <mappings path>");
         ImportIrsicaixa imp = new ImportIrsicaixa(ConsoleLogger.getInstance(), args[0], args[1]);
         imp.run();
+    }
+    
+    public class TherapyDrug{
+    	public String name;
+    	public double dosage=0;
+    	public DrugGeneric generic=null;
+    	public DrugCommercial commercial=null;
     }
 }
