@@ -19,9 +19,9 @@ public class GenerateWindowsInstaller {
         File reportDir = null;
         File bundleDir = null;
         try {
-            buildDir = createTempDir("installer", "regadb_installer_build");
-            bundleDir = createTempDir("installer", "regadb_installer_bundle");
-            reportDir = createTempDir("installer", "regadb_installer_report");
+            buildDir = net.sf.regadb.util.file.FileUtils.createTempDir("installer", "regadb_installer_build");
+            bundleDir = net.sf.regadb.util.file.FileUtils.createTempDir("installer", "regadb_installer_bundle");
+            reportDir = net.sf.regadb.util.file.FileUtils.createTempDir("installer", "regadb_installer_report");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,14 +50,5 @@ public class GenerateWindowsInstaller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    public static File createTempDir(String prefix, String name) throws IOException {
-        File tempFile = File.createTempFile(prefix, name);
-        if (!tempFile.delete())
-            throw new IOException();
-        if (!tempFile.mkdir())
-            throw new IOException();
-        return tempFile;
     }
 }
