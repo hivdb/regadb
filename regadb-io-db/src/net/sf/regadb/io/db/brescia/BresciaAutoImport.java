@@ -2,8 +2,8 @@ package net.sf.regadb.io.db.brescia;
 
 import java.io.File;
 
-import net.sf.regadb.io.db.util.msaccess.AccessConnectionProvider;
-import net.sf.regadb.io.db.util.msaccess.DBToCsv;
+import net.sf.regadb.io.db.util.db2csv.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.db2csv.DBToCsv;
 
 public class BresciaAutoImport {
     public static void main(String [] args) {

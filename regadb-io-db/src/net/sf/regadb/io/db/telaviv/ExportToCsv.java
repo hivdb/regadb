@@ -7,9 +7,9 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.HashSet;
 
-import net.sf.regadb.io.db.util.msaccess.AccessConnectionProvider;
-import net.sf.regadb.io.db.util.msaccess.DBToCsv;
-import net.sf.regadb.io.db.util.msaccess.IConnectionProvider;
+import net.sf.regadb.io.db.util.db2csv.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.db2csv.DBToCsv;
+import net.sf.regadb.io.db.util.db2csv.IConnectionProvider;
 
 public class ExportToCsv extends DBToCsv {
 	private HashSet<String> ignoreTables_ = new HashSet<String>();

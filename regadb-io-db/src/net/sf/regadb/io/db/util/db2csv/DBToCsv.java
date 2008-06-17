@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.util.msaccess;
+package net.sf.regadb.io.db.util.db2csv;
 
 import java.io.File;
 import java.io.FileOutputStream;
