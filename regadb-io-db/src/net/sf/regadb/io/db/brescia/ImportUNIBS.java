@@ -192,9 +192,6 @@ public class ImportUNIBS
      	
      	NominalAttribute deathReasonA = new NominalAttribute("Reason of Death", deathReasonMappingTable, virolab, null);
      	 
-     	TestType hivTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Last date of follow-up available", new TreeSet<TestNominalValue>());
-    	Test hivTest = new Test(hivTestType, "Last date of follow-up available");
-     	
      	for(int i = 1; i < this.patientTable.numRows(); i++)
     	{
             String patientId = this.patientTable.valueAt(CpatientID, i);
@@ -251,9 +248,8 @@ public class ImportUNIBS
             	
             	if(Utils.checkColumnValueForExistance("date of last negative HIV test", lastTest, i, patientId))
             	{
-            	    //TODO
-            	    TestResult t = p.createTestResult(hivTest);
-                    t.setValue("Contact");
+            		TestResult t = p.createTestResult(StandardObjects.getContactTest());
+                    //t.setValue("Contact");
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
@@ -318,9 +314,6 @@ public class ImportUNIBS
     	int CVLTest = Utils.findColumn(this.rnaTable, "Metodica");
     	int CVLCutOff = Utils.findColumn(this.rnaTable, "CutOff");
     	
-    	TestType cd4PercTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD4 Percentage", new TreeSet<TestNominalValue>());
-    	Test cd4PercTest = new Test(cd4PercTestType, "CD4 Percentage (generic)");
-    	
     	for(int i = 1; i < this.cd4Table.numRows(); i++)
     	{
     		String cd4PatientID = this.cd4Table.valueAt(Ccd4PatientID, i);
@@ -336,7 +329,7 @@ public class ImportUNIBS
     		}
     		else
     		{
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (�L)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
+	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (yL)", cd4Count, i, cd4PatientID) && Utils.checkCDValue(cd4Count, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(cd4Count);
@@ -344,7 +337,7 @@ public class ImportUNIBS
 	    		}
 	    		if (Utils.checkColumnValueForExistance("CD4 test result (%)", cd4Percentage, i, cd4PatientID)) 
 	    		{
-	                TestResult t = p.createTestResult(cd4PercTest);
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
 	                t.setValue(cd4Percentage);
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
