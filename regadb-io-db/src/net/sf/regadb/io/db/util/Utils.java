@@ -571,6 +571,12 @@ public class Utils {
          
           if (env != null)
           {
+        	  for(PatientEventValue pev : p.getPatientEventValues()){
+        		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
+        			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
+        			  return;
+        		  }
+        	  }
               PatientEventValue v = p.createPatientEventValue(ne.event);
               v.setEventNominalValue(env);
               v.setStartDate(startDate);
