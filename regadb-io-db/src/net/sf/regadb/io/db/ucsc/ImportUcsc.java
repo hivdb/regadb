@@ -5,16 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.NtSequence;
@@ -25,8 +22,8 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -37,6 +34,7 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.msaccess.AccessToCsv;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.frequency.Frequency;
 
 public class ImportUcsc 
 {
@@ -68,7 +66,6 @@ public class ImportUcsc
 	private HashMap<String, Patient> patientMap = new HashMap<String, Patient>();
 	private HashMap<String, ViralIsolate> viralIsolateHM = new HashMap<String, ViralIsolate>();
 	
-	private List<DrugCommercial> regaDrugCommercials;
 	private List<DrugGeneric> regaDrugGenerics;
     
 	private List<Attribute> regadbAttributes;
@@ -78,6 +75,8 @@ public class ImportUcsc
 	
     private AttributeGroup regadb = new AttributeGroup("RegaDB");
     private AttributeGroup virolab = new AttributeGroup("Virolab");
+    
+    private TestNominalValue posSeroStatus;
 	
     public static void main(String [] args) 
     {
@@ -113,7 +112,9 @@ public class ImportUcsc
     		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
     				"t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR " +
     				"t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' OR " +
-    				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' " +
+    				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_risultato] LIKE 'Toxo%' OR " +
+    				"t_analisi.[desc_risultato] LIKE 'HAV%' OR t_analisi.[desc_risultato] LIKE 'HB%' OR " +
+    				"t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' "+
     				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
     		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
     		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
@@ -143,9 +144,10 @@ public class ImportUcsc
     		
     		ConsoleLogger.getInstance().logInfo("Retrieving attributes, drugs, and events...");
     		regadbAttributes = Utils.prepareRegaDBAttributes();
-    		regaDrugCommercials = Utils.prepareRegaDrugCommercials();
     		regaDrugGenerics = Utils.prepareRegaDrugGenerics();
     		regadbEvents = Utils.prepareRegaDBEvents();
+    		
+    		posSeroStatus = Utils.getNominalValue(StandardObjects.getHiv1SeroStatusTestType(), "Positive");
     		
     		ConsoleLogger.getInstance().logInfo("Migrating patient information...");
     		handlePatientData();
@@ -206,9 +208,6 @@ public class ImportUcsc
         
         TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
     	Test acuteSyndromTest = new Test(acuteSyndromTestType, "Acute Syndrome");
-    	
-    	TestType hivTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "HIV Test", new TreeSet<TestNominalValue>());
-    	Test hivTest = new Test(hivTestType, "HIV Test");
 	
     	NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryTable, regadb, Utils.selectAttribute("Country of origin", regadbAttributes));
     	NominalAttribute birthplaceA = new NominalAttribute("Birthplace", birthPlaceTable, virolab, null);
@@ -284,15 +283,15 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValueForExistance("date of first positive HIV test", firstTest, i, patientId))
             	{
-            		TestResult t = p.createTestResult(hivTest);
-                    t.setValue("First positive HIV test");
+            		TestResult t = p.createTestResult(StandardObjects.getGenericHiv1SeroStatusTest());
+                    t.setTestNominalValue(posSeroStatus);
                     t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
             	}
             	
             	if(Utils.checkColumnValueForExistance("date of last negative HIV test", lastTest, i, patientId))
             	{
-            		TestResult t = p.createTestResult(hivTest);
-                    t.setValue("Last negative HIV test");
+            		TestResult t = p.createTestResult(StandardObjects.getContactTest());
+                    //t.setValue("Contact");
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
@@ -340,22 +339,11 @@ public class ImportUcsc
     
     private void handleCDData()
     {
-        HashMap<String, Test> uniqueVLTests = new HashMap<String, Test>();
-        
     	int CCC4PatientID = Utils.findColumn(this.analysisTable, "cartella_ucsc");
     	int CAnalysisDate = Utils.findColumn(this.analysisTable, "data_analisi");
     	int CMethod = Utils.findColumn(this.analysisTable, "desc_risultato");
     	int CLabor = Utils.findColumn(this.analysisTable, "desc_laboratorio");
     	int CResult= Utils.findColumn(this.analysisTable, "risul_num");
-    	
-    	TestType cd4PercTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD4 Percentage", new TreeSet<TestNominalValue>());
-    	Test cd4PercTest = new Test(cd4PercTestType, "CD4 Percentage (generic)");
-    	
-    	TestType cd8TestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Count", new TreeSet<TestNominalValue>());
-    	Test cd8Test = new Test(cd8TestType, "CD8 Count (generic)");
-    	
-    	TestType cd8PercTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "CD8 Percentage", new TreeSet<TestNominalValue>());
-    	Test cd8PercTest = new Test(cd8PercTestType, "CD8 Percentage (generic)");
     	
     	for(int i = 1; i < this.analysisTable.numRows(); i++)
     	{
@@ -377,7 +365,7 @@ public class ImportUcsc
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3Test());
 	                t.setValue(result.replace(',', '.'));
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
@@ -386,7 +374,7 @@ public class ImportUcsc
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
-	                TestResult t = p.createTestResult(cd4PercTest);
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3PercentTest());
 	                t.setValue(result.replace(',', '.'));
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
@@ -406,7 +394,7 @@ public class ImportUcsc
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
-	                TestResult t = p.createTestResult(cd4PercTest);
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
 	                t.setValue(result.replace(',', '.'));
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
@@ -417,7 +405,7 @@ public class ImportUcsc
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
-	                TestResult t = p.createTestResult(cd8Test);
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
 	                t.setValue(result.replace(',', '.'));
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
@@ -426,12 +414,13 @@ public class ImportUcsc
     		{
 	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
 	    		{
-	                TestResult t = p.createTestResult(cd8PercTest);
+	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
 	                t.setValue(result.replace(',', '.'));
 	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
 	    		}
     		}
     		 
+    		//Viral Load
     		if(method.equals("HIV-RNA"))
     		{
 	    		if(Utils.checkColumnValueForEmptiness("HIV RNA test result", result, i, patientID) && Utils.checkColumnValueForEmptiness("date ofHIV RNA test result", analysisDate, i, patientID))
@@ -456,7 +445,89 @@ public class ImportUcsc
 	    			 {
 	    				 
 	    			 }
-	    		 }
+	    		}
+    		}
+    		
+    		//Toxo
+    		if(method.equals("Toxo IgG"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("Toxo IgG", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgGTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		if(method.equals("Toxo IgM"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("Toxo IgM", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgMTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		
+    		//HAV
+    		if(method.equals("HAV IgG"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("HAV IgG", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgGTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		if(method.equals("HAV IgM"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("HAV IgM", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgMTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		
+    		//HAV
+    		if(method.equals("HBeAg"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("HBeAg", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericHBeAgTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		if(method.equals("HBsAg"))
+    		{
+	    		if (Utils.checkColumnValueForEmptiness("HBsAg", result, i, patientID)) 
+	    		{
+	                TestResult t = p.createTestResult(StandardObjects.getGenericHBsAgTest());
+	                t.setValue(result.replace(',', '.'));
+	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	    		}
+    		}
+    		
+    		//Drug tests
+    		if(labor.equals("FARMACOLOGIA"))
+    		{
+    			for(int j = 0; j < regaDrugGenerics.size(); j++)
+    			{
+    				String name = regaDrugGenerics.get(j).getGenericName();
+    				
+    				if(name.equals(method.toLowerCase()))
+    				{	
+    					if (Utils.checkColumnValueForEmptiness("Drug testing for "+name+"", result, i, patientID)) 
+    		    		{
+    						//TODO: Wait for Pieter to fix it within the repository
+    		                /*TestResult t = p.createTestResult(StandardObjects.getGenericDrugTesting());
+    		                t.setValue(result.replace(',', '.'));
+    		                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));*/
+    		    		}
+    					
+    					break;
+    				}
+    			}
     		}
     	}
     }
@@ -513,15 +584,11 @@ public class ImportUcsc
     	int ChivStopReasonTherapy = Utils.findColumn(this.hivTherapyTable, "motivo stop terapia anti HIV");
     	int ChivCommercialDrug = Utils.findColumn(this.hivTherapyTable, "terapia ARV");
     	
-        HashMap<Integer, String> drugPositions = new HashMap<Integer, String>();
-        
         for(int i = ChivCommercialDrug+1; i < this.hivTherapyTable.numColumns(); i++) 
         {
             String drug = this.hivTherapyTable.valueAt(i, 0);
             
             Utils.checkDrugsWithRepos(drug, regaDrugGenerics, mappings);
-            
-            drugPositions.put(i, drug);
         }
     	    	
     	for(int i = 1; i < this.hivTherapyTable.numRows(); i++)
@@ -532,13 +599,12 @@ public class ImportUcsc
     		//String hivLineTherapy = this.hivTherapyTable.valueAt(ChivLineTherapy, i);
     		//String hivSuccessTherapy = this.hivTherapyTable.valueAt(ChivSuccessTherapy, i);
     		String hivStopReasonTherapy = this.hivTherapyTable.valueAt(ChivStopReasonTherapy, i);
-    		String hivCommercialDrug = this.hivTherapyTable.valueAt(ChivCommercialDrug, i);
             
         	if(!"".equals(hivPatientID))
             {
         		hivPatientID = hivPatientID.toUpperCase();
         		
-        		ArrayList<String> drugs = new ArrayList<String>();
+        		HashMap<String,String> drugs = new HashMap<String,String>();
         		Date startDate = null;
         		Date stopDate = null;
         		
@@ -547,17 +613,19 @@ public class ImportUcsc
         			startDate = Utils.parseEnglishAccessDate(hivStartTherapy);
         		}
         		
-                for(Map.Entry<Integer, String> entry : drugPositions.entrySet()) 
+        		for(int j = ChivCommercialDrug+1; j < this.hivTherapyTable.numColumns()-1; j++) 
                 {
-                    String drugValue = this.hivTherapyTable.valueAt(entry.getKey(), i);
+                    String drugValue = this.hivTherapyTable.valueAt(j, i);
                     
             		if(Utils.checkColumnValueForEmptiness("unknown drug value", drugValue, i, hivPatientID) && Utils.checkDrugValue(drugValue, i, hivPatientID))
             		{
-            			drugs.add(entry.getValue());
+            			String drugName = this.hivTherapyTable.getColumn(j).get(0);
+            			
+            			drugs.put(drugName.toUpperCase(), drugValue);
             		} 
                 }
         		
-        		ArrayList<DrugCommercial> comDrugs = evaluateDrugs(hivCommercialDrug.toLowerCase(), drugs, hivPatientID, i);
+        		ArrayList<DrugGeneric> genDrugs = evaluateDrugs(drugs);
         		
         		if(Utils.checkColumnValueForExistance("stop date of therapy", hivStopTherapy, i, hivPatientID))
         		{
@@ -579,7 +647,7 @@ public class ImportUcsc
         		
         		if(hivPatientID != null)
         		{
-        			storeTherapy(hivPatientID, startDate, stopDate, comDrugs, hivStopReasonTherapy);
+        			storeTherapy(hivPatientID, startDate, stopDate, genDrugs, hivStopReasonTherapy);
         		}
             }
         	else
@@ -589,79 +657,76 @@ public class ImportUcsc
     	}
     }
     
-    private ArrayList<DrugCommercial> evaluateDrugs(String hivCommercialDrug, ArrayList<String> drugs, String patientID, int row)
+    private ArrayList<DrugGeneric> evaluateDrugs(HashMap<String,String> drugs)
     {
-    	ArrayList<DrugCommercial> comDrugs = new ArrayList<DrugCommercial>();
-
-    	if("".equals(hivCommercialDrug))
-    	{
-    		ConsoleLogger.getInstance().logWarning("No commercial drug found for patient "+patientID+" at row "+row+".");
-    		return null;
-    	}
-    	String[] split = null;
+    	ArrayList<DrugGeneric> gDrugs = new ArrayList<DrugGeneric>();
     	
-    	split = hivCommercialDrug.split("\\+");
-    	
-    	if(split == null || split.length == 0)
+    	for(String drug : drugs.keySet())
     	{
-    		split = new String[1];
-    		split[0] = hivCommercialDrug.toLowerCase();
-    	}
-    	
-    	for(int i = 0; i < regaDrugCommercials.size(); i++)
-    	{
-    		DrugCommercial drug = regaDrugCommercials.get(i);
-    		
-    		if(drug != null)
+    		if(!"".equals(drug))
     		{
-    			for(int j = 0; j < split.length; j++)
-    			{
-    				if(drug.getName().toLowerCase().startsWith(split[j]))
-    				{
-    					String currentDrug = split[j];
-    					
-    					String tempDrug = "";
-    					
-		    			for(Iterator it = drug.getDrugGenerics().iterator(); it.hasNext();) 
-		    			{
-		    				DrugGeneric dg = (DrugGeneric)it.next();
-		    				
-		    				if(dg != null)
-		    				{
-		    					String id = dg.getGenericId();
-		    					
-		    					for(int k = 0; k < drugs.size(); k++)
-		    					{
-		    						if(id.startsWith((String)drugs.get(k)))
-		    						{
-		    							if(!tempDrug.equals(currentDrug))
-		    							{
-		    								//ConsoleLogger.getInstance().logInfo("Drug "+currentDrug+" found.");
-		    								comDrugs.add(drug);
-		    							}
-		    							
-		    							drugs.remove(k);
-		    							
-		    							tempDrug = currentDrug; 
-		    						}
-		    					}
-		    				}
-		    			}
-    				}
-    			}
+    			getDrugMapping(gDrugs, drug, drugs.get(drug));
     		}
     	}
     	
-    	if(comDrugs.size() != split.length)
-    	{
-    		return null;
-    	}
-    	
-    	return comDrugs;
+    	return gDrugs;
     }
     
-	@SuppressWarnings("deprecation")
-	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugCommercial> medicinsList, String motivation) 
+    private void getDrugMapping(ArrayList<DrugGeneric> gDrugs, String drug, String value)
+    {
+    	//ConsoleLogger.getInstance().logInfo("Found drug "+drug+" with value "+value);
+    	
+    	boolean foundDrug = false;
+    	DrugGeneric genDrug = null;
+    	
+        for(int j = 0; j < regaDrugGenerics.size(); j++)
+    	{
+        	genDrug = regaDrugGenerics.get(j);
+        	
+        	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+        	{
+        		foundDrug = true;
+        		
+        		gDrugs.add(genDrug);
+        		
+        		break;
+        	}
+    	}
+        
+        if(!foundDrug)
+        {
+        	String mapping = mappings.getMapping("generic_drugs.mapping", drug);
+        		
+            if(mapping != null) 
+            {
+            	for(int i = 0; i < regaDrugGenerics.size(); i++)
+             	{
+            		genDrug = regaDrugGenerics.get(i);
+            		
+            		if(genDrug.getGenericId().toUpperCase().equals(mapping))
+                	{
+            			gDrugs.add(genDrug);
+            			
+            			if(drug.equals("LPV") && value.equals("1.5"))
+            			{
+            				for(int j = 0; j < regaDrugGenerics.size(); j++)
+                         	{
+                        		genDrug = regaDrugGenerics.get(j);
+                        		
+                        		if(genDrug.getGenericId().toUpperCase().equals("RTV"))
+                        		{
+                        			gDrugs.add(genDrug);
+                        		}
+                         	}
+            			}
+                	}
+             	}
+            }
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugGeneric> medicinsList, String motivation) 
     {
     	Patient p = patientMap.get(patientId);
 
@@ -674,17 +739,37 @@ public class ImportUcsc
     	
     	if(medicinsList == null)
     	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found.");
-			
-    		return;
+    		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found...Storing anyway!");
     	}
 
     	if(startDate != null && endDate != null)
     	{
-	    	if(startDate.equals(endDate) || startDate.after(endDate))
+    		if(startDate.equals(endDate))
+    		{
+    			if(medicinsList != null)
+    	    	{
+    		    	for (int i = 0; i < medicinsList.size(); i++) 
+    		    	{
+    		    		DrugGeneric drug = medicinsList.get(i);
+    		    		
+    		    		if(drug.getGenericId().equals("Unknown"))
+    		    		{
+    		    		}
+    		    		else
+    		    		{
+    		    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": Dates are equal and drug \"UNK\" == 0...Ignoring!");
+    		        		
+    		    			return;
+    		    		}
+    		    	}
+    	    	}
+    		}
+    		
+	    	if(startDate.after(endDate))
 	    	{
-	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " -  Therapy end " + endDate.toLocaleString() + ": End date is in the past!");
+	    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": End date is in the past.");
 	    			
+	    		//Do not store here...
 	    		return;
 	    	}
     	}
@@ -692,33 +777,33 @@ public class ImportUcsc
     	{
     		ConsoleLogger.getInstance().logError(patientId, "No corresponding start date available.");
     	}
-    	
-    	//TODO: Additional error handling...
-    	/*else if(startDate != null && endDate == null)
-    	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable end date available...ignoring");
-			
-    		return;
-    	}
-    	/*else
-    	{
-    		ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': No suitable start and end dates available...ignoring");
-			
-    		return;
-    	}*/
 
     	Therapy t = p.createTherapy(startDate);
     	t.setStopDate(endDate);
     	
-    	for (int i = 0; i < medicinsList.size(); i++) 
+    	String drugs = ""; 
+    	
+    	if(medicinsList != null)
     	{
-    		TherapyCommercial tc = new TherapyCommercial(new TherapyCommercialId(t, medicinsList.get(i)),false,false);
-    		t.getTherapyCommercials().add(tc);
+	    	for (int i = 0; i < medicinsList.size(); i++) 
+	    	{
+	    		drugs += (String)medicinsList.get(i).getGenericId() + " "; 
+	    		
+	    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
+	    		                                        1.0, 
+	    		                                        false,
+	    		                                        false, 
+	    		                                        (long)Frequency.DAYS.getSeconds());
+	    		t.getTherapyGenerics().add(tg);
+	    	}
+	    	
+	    	//ConsoleLogger.getInstance().logInfo(""+p.getPatientId()+" "+startDate.toLocaleString()+" "+drugs);
     	}
     	
     	if(motivation != null && !motivation.equals(""))
     	{
-    		//TODO: needs improvement
+    		//TODO
+    	    //Needs improvement, requires the mapping of motivation
     		TherapyMotivation therapyMotivation = new TherapyMotivation("Toxicity");
     	
     		t.setTherapyMotivation(therapyMotivation);
