@@ -26,7 +26,7 @@ public abstract class GenericDatabase {
         setHost("localhost");
     }
     
-    public Connection createConnection() throws ClassNotFoundException, SQLException{
+    private Connection createConnection() throws ClassNotFoundException, SQLException{
         Class.forName(getDriver());
         Properties prop = new Properties();            
         prop.put("charSet", "UTF-8");
