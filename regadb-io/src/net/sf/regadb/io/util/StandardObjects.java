@@ -444,7 +444,6 @@ public class StandardObjects {
         e.getEventNominalValues().add(new EventNominalValue(e,"Non-tubercular mycobacteriosis"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Cerebral toxoplasmosis"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Recurrent bacterial pneumonias"));
-        e.getEventNominalValues().add(new EventNominalValue(e,"Pneumocystis carinii pneumonia"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi sarcoma"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated salmonellosis"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Disseminated strongyloidiasis"));
