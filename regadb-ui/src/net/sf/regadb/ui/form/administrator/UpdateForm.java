@@ -11,6 +11,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportDrugs;
@@ -44,6 +45,9 @@ public class UpdateForm extends FormWidget
     private WGroupBox attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
     private WText attributesText_ = new WText();
     
+    private WGroupBox eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
+    private WText eventsText_ = new WText();
+    
     private WGroupBox drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
     private WText drugClassTitle_ = new WText(tr("form.admin.update_central_server.drugClass.title"));
     private WText drugClassText_ = new WText();
@@ -71,11 +75,14 @@ public class UpdateForm extends FormWidget
         
         addWidget(testGroup_);
         addWidget(attributesGroup_);
+        addWidget(eventsGroup_);
         addWidget(drugsGroup_);
         
         testGroup_.addWidget(testText_);
         
         attributesGroup_.addWidget(attributesText_);
+        
+        eventsGroup_.addWidget(eventsText_);
         
         drugsGroup_.addWidget(drugClassTitle_);
         drugsGroup_.addWidget(new WBreak());
@@ -103,6 +110,7 @@ public class UpdateForm extends FormWidget
         else
         {
             handleAttributes(true);
+            handleEvents(true);
             handleTests(true);
             handleDrugs(true);
         }
@@ -200,6 +208,52 @@ public class UpdateForm extends FormWidget
         attributesText_.setText(lt(imp.getLog().toString()));
     }
     
+    private void handleEvents(final boolean simulate)
+    {
+        FileProvider fp = new FileProvider();
+        File eventsFile = RegaDBMain.getApp().createTempFile("events", "xml");
+        try 
+        {
+            fp.getFile("regadb-events", "events.xml", eventsFile);
+        }
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        final ImportFromXML imp = new ImportFromXML();
+        try 
+        {
+            final Transaction t = RegaDBMain.getApp().createTransaction();
+            imp.loadDatabaseObjects(t);
+            imp.readEvents(new InputSource(new FileReader(eventsFile)), new ImportHandler<Event>()
+                    {
+                        public void importObject(Event object) 
+                        {
+                            try 
+                            {
+                                imp.sync(t, object, SyncMode.Update, simulate);
+                            } 
+                            catch (ImportException e) 
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            t.commit();
+        } 
+        catch (SAXException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        eventsFile.delete();
+        eventsText_.setFormatting(WTextFormatting.PlainFormatting);
+        eventsText_.setText(lt(imp.getLog().toString()));
+    }
+    
     private void handleDrugs(boolean simulate)
     {
         Transaction t;
@@ -279,6 +333,17 @@ public class UpdateForm extends FormWidget
         handleFields(null, attributesText_, attributesNames);
         t.commit();
         
+        //Events
+        t = RegaDBMain.getApp().createTransaction();
+        List<Event> events = t.getEvents();
+        ArrayList<String> eventNames = new ArrayList<String>();
+        for(Event event : events)
+        {
+            eventNames.add(event.getName());
+        }
+        handleFields(null, eventsText_, eventNames);
+        t.commit();
+        
         //Drug Class
         t = RegaDBMain.getApp().createTransaction();
         List<DrugClass> classDrugs = t.getClassDrugs();
@@ -334,6 +399,7 @@ public class UpdateForm extends FormWidget
     public void saveData()
     {   
         handleAttributes(false);
+        handleEvents(false);
         handleTests(false);
         handleDrugs(false);
         
