@@ -142,8 +142,16 @@ public class ImportIrsicaixa {
         	logger_.logWarning("New testtype: "+ t.getDescription());
         }
         
-        IOUtils.exportPatientsXML(patients, basePath_ + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patients, getPatientsXmlPath(), ConsoleLogger.getInstance());
+        IOUtils.exportNTXML(viralisolates, getViralIsolatesXmlPath(), ConsoleLogger.getInstance());
+    }
+    
+    public String getPatientsXmlPath() {
+    	return basePath_ + File.separatorChar + "patients.xml";
+    }
+    
+    public String getViralIsolatesXmlPath() {
+    	return basePath_ + File.separatorChar + "viralisolates.xml";
     }
     
     public HashMap<String, Patient> handleGeneralData() {
