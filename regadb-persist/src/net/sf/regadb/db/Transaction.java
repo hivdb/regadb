@@ -521,7 +521,6 @@ public class Transaction {
 
         List<Pair<Patient,PatientAttributeValue>> res = new ArrayList<Pair<Patient,PatientAttributeValue>>();
 
-        System.out.println("Executing query: "+ q.getQueryString());
         List<Object[]> l = q.list();
         for(Object[] o : l){
             res.add(new Pair(getPatientByIi((Integer)o[0]),(PatientAttributeValue)o[1]));
@@ -592,7 +591,6 @@ public class Transaction {
             q.setParameter(arg.getKey(), arg.getValue());
         }
         
-        System.out.println("Executing query: "+ q.getQueryString());
         return ((Long)q.uniqueResult()).longValue();
     }
 
