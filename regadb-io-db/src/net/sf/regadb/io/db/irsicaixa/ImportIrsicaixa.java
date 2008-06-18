@@ -179,7 +179,7 @@ public class ImportIrsicaixa {
             String firstPosHIVTest = generalDataTable_.valueAt(CFirstHIVPosTest, i);
             String routeOfTransmission = generalDataTable_.valueAt(CRouteOfTransmission, i);
             
-            System.err.println(patientId);
+            //System.err.println(patientId);
             
             Patient p = new Patient();
             p.setPatientId(patientId);
@@ -326,13 +326,15 @@ public class ImportIrsicaixa {
                     }
                     
                     String smotiv = therapyTable_.valueAt(CMotivation, i);
-                    String mapping = mappings_.getMapping("motivation.mapping",smotiv);
-                    if(mapping != null && !mapping.equals("")){
-                    	TherapyMotivation tmotiv = new TherapyMotivation(mapping);
-                    	t.setTherapyMotivation(tmotiv);
-                    }
-                    else{
-                    	logger_.logWarning("Could not find mapping for motivation "+ smotiv);
+                    if(!smotiv.trim().equals("")) {
+	                    String mapping = mappings_.getMapping("motivation.mapping",smotiv);
+	                    if(mapping != null && !mapping.equals("")){
+	                    	TherapyMotivation tmotiv = new TherapyMotivation(mapping);
+	                    	t.setTherapyMotivation(tmotiv);
+	                    }
+	                    else{
+	                    	logger_.logWarning("Could not find mapping for motivation "+ smotiv);
+	                    }
                     }
                     
                 } else {
@@ -372,7 +374,7 @@ public class ImportIrsicaixa {
 	    				String value;
 	    				
 	    				try{
-	    					int vl = Integer.parseInt(vlTable_.valueAt(CVL,i));
+	    					double vl = Double.parseDouble(vlTable_.valueAt(CVL,i));
 	    					
 	    					try{
 		    					int limit = 0;
