@@ -707,27 +707,37 @@ public class ImportUcsc
             		if(genDrug.getGenericId().toUpperCase().equals(mapping))
                 	{
             			gDrugs.add(genDrug);
-            			
-            			if(drug.equals("LPV") && value.equals("1.5"))
-            			{
-            				for(int j = 0; j < regaDrugGenerics.size(); j++)
-                         	{
-                        		genDrug = regaDrugGenerics.get(j);
-                        		
-                        		if(genDrug.getGenericId().toUpperCase().equals("RTV"))
-                        		{
-                        			gDrugs.add(genDrug);
-                        		}
-                         	}
-            			}
                 	}
              	}
             }
         }
     }
     
+    private ArrayList<DrugGeneric> validateDrugs(ArrayList<DrugGeneric> foundDrugs, String patientID)
+    {
+    	ArrayList<DrugGeneric> vDrugs = new ArrayList<DrugGeneric>();
+    	
+    	for(int i = 0; i < foundDrugs.size(); i++)
+    	{
+    		DrugGeneric gDrug = (DrugGeneric)foundDrugs.get(i);
+    		
+    		List<DrugGeneric> subList = foundDrugs.subList(i+1, foundDrugs.size());
+    		
+    		if(subList.contains(gDrug))
+    		{
+    			ConsoleLogger.getInstance().logWarning("Found double drug entry "+(String)foundDrugs.get(i).getGenericId()+" for patient "+patientID+"");
+    		}
+    		else
+    		{
+    			vDrugs.add(gDrug);
+    		}
+    	}
+    	
+    	return vDrugs;
+    }
+    
     @SuppressWarnings("deprecation")
-	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugGeneric> medicinsList, String motivation) 
+	private void storeTherapy(String patientId, Date startDate, Date endDate, ArrayList<DrugGeneric> foundDrugs, String motivation) 
     {
     	Patient p = patientMap.get(patientId);
 
@@ -738,7 +748,7 @@ public class ImportUcsc
     		return;
     	}
     	
-    	if(medicinsList == null)
+    	if(foundDrugs == null)
     	{
     		ConsoleLogger.getInstance().logWarning("Something wrong with therapy mapping for patient '" + patientId + "': No valid drugs found...Storing anyway!");
     	}
@@ -747,23 +757,10 @@ public class ImportUcsc
     	{
     		if(startDate.equals(endDate))
     		{
-    			if(medicinsList != null)
-    	    	{
-    		    	for (int i = 0; i < medicinsList.size(); i++) 
-    		    	{
-    		    		DrugGeneric drug = medicinsList.get(i);
-    		    		
-    		    		if(drug.getGenericId().equals("Unknown"))
-    		    		{
-    		    		}
-    		    		else
-    		    		{
-    		    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": Dates are equal and drug \"UNK\" == 0...Ignoring!");
-    		        		
-    		    			return;
-    		    		}
-    		    	}
-    	    	}
+    			ConsoleLogger.getInstance().logWarning("Something wrong with treatment dates for patient '" + patientId + "': Therapy start " + startDate.toLocaleString() + " - Therapy end " + endDate.toLocaleString() + ": Dates are equal.");
+    		        
+    			//Do not store here...
+    		    return;
     		}
     		
 	    	if(startDate.after(endDate))
@@ -784,18 +781,21 @@ public class ImportUcsc
     	
     	String drugs = ""; 
     	
-    	if(medicinsList != null)
+    	if(foundDrugs != null)
     	{
+    		ArrayList<DrugGeneric> medicinsList = validateDrugs(foundDrugs, p.getPatientId());
+    		
 	    	for (int i = 0; i < medicinsList.size(); i++) 
 	    	{
-	    		drugs += (String)medicinsList.get(i).getGenericId() + " "; 
-	    		
 	    		TherapyGeneric tg = new TherapyGeneric(new TherapyGenericId(t, (DrugGeneric)medicinsList.get(i)), 
-	    		                                        1.0, 
-	    		                                        false,
-	    		                                        false, 
-	    		                                        (long)Frequency.DAYS.getSeconds());
-	    		t.getTherapyGenerics().add(tg);
+			                                1.0, 
+			                                false,
+			                                false, 
+			                                (long)Frequency.DAYS.getSeconds());
+				    		
+				t.getTherapyGenerics().add(tg);
+							
+				drugs += (String)medicinsList.get(i).getGenericId() + " ";
 	    	}
 	    	
 	    	//ConsoleLogger.getInstance().logInfo(""+p.getPatientId()+" "+startDate.toLocaleString()+" "+drugs);
@@ -846,7 +846,8 @@ public class ImportUcsc
     
     private void handleSequences() throws IOException
     {
-    	int count = 0;
+    	int counter = 0;
+    	int emptyCounter = 0;
     	
     	int CpatientID = Utils.findColumn(this.sequencesTable, "cartella UCSC");
     	int CsequenceDate = Utils.findColumn(this.sequencesTable, "data genotipo");
@@ -876,8 +877,14 @@ public class ImportUcsc
              				{
              					addViralIsolateToPatients(patientID, date, clearedSequ);
              					
-             					count++;
+             					counter++;
              				}
+             			}
+             			else
+             			{
+             				ConsoleLogger.getInstance().logWarning("Empty seq for patient "+patientID+"");
+                            
+                            emptyCounter++;
              			}
              		}
              		else
@@ -896,6 +903,7 @@ public class ImportUcsc
              }
     	}
     	
-    	ConsoleLogger.getInstance().logInfo("Processed "+count+" sequence(s).");
+    	ConsoleLogger.getInstance().logInfo(""+counter+" sequence(s) added");
+        ConsoleLogger.getInstance().logInfo(""+emptyCounter+" blank sequence(s) found");
     }
 }
