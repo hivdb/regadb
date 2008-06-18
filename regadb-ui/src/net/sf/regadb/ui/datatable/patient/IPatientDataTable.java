@@ -76,7 +76,10 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
     	    }
 	    }
 	    else{
-	        List<Patient> l = t.getPatients(startIndex, amountOfRows, filterVarNames_.get(sortColIndex), ascending, HibernateStringUtils.filterConstraintsQuery(this));
+	        String sort = filterVarNames_.get(sortColIndex);
+	        if(sort.equals("attributeValue.value"))
+	            sort = "patient.patientId";
+	        List<Patient> l = t.getPatients(startIndex, amountOfRows, sort, ascending, HibernateStringUtils.filterConstraintsQuery(this));
 	        List<Pair<Patient,PatientAttributeValue>> ret = new ArrayList<Pair<Patient,PatientAttributeValue>>();
 	        
 	        for(Patient p : l){

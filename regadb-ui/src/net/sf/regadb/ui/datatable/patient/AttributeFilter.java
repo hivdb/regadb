@@ -15,9 +15,12 @@ import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
+import net.sf.witty.wt.i8n.WMessage;
 
 public class AttributeFilter extends WContainerWidget implements IFilter 
 {
+    private static WMessage noAttribute = lt("No attribute");
+    
     private Attribute attribute_=null;
     private IFilter filter_=null;
     private Transaction transaction_;
@@ -44,9 +47,12 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             getAttributeCombo().addItem(lt(a.getName()));
         }
         getAttributeCombo().sort();
+        getAttributeCombo().insertItem(0, noAttribute);
         
         if(getAttribute() != null)
             getAttributeCombo().setCurrentItem(lt(getAttribute().getName()));
+        else
+            getAttributeCombo().setCurrentItem(noAttribute);
         
         getAttributeCombo().changed.addListener(new SignalListener<WEmptyEvent>()
                 {
@@ -73,11 +79,14 @@ public class AttributeFilter extends WContainerWidget implements IFilter
     }
     
     public void changeAttribute(String attributeName){
-        List<Attribute> l = getTransaction().getAttributes(attributeName);
-        if(l == null || l.size() < 1)
-            return;
+        Attribute a = null;
         
-        changeAttribute(l.get(0));
+        if(!attributeName.equals(noAttribute.value())){
+            List<Attribute> l = getTransaction().getAttributes(attributeName);
+            if(l != null || l.size() > 0)
+                a = l.get(0);
+        }
+        changeAttribute(a);
     }
     
     public void changeAttribute(Attribute attribute){
@@ -102,6 +111,10 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             
             addWidget(filter_.getFilterWidget());
         }
+        else{
+            filter_ = null;
+        }
+            
     }
 
     public WContainerWidget getFilterWidget()

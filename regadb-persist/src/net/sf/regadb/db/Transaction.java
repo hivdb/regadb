@@ -487,20 +487,19 @@ public class Transaction {
 
     public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeNominalValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
         return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, pav from PatientImpl patient left outer join patient.patientAttributeValues pav with ( pav.attribute.attributeIi = :attributeIi ) left outer join pav.attributeNominalValue attributeValue ");
+                "select patient.patientIi, pav from PatientImpl patient join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue ","pav.attribute.attributeIi = :attributeIi");
     }
     
     public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
         return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, attributeValue from PatientImpl patient left outer join patient.patientAttributeValues attributeValue with ( attributeValue.attribute.attributeIi = :attributeIi ) ");
+                "select patient.patientIi, attributeValue from PatientImpl patient join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi = :attributeIi");
     }
     
     @SuppressWarnings("unchecked")
-    private List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValuesEx(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, String selectFrom)
+    private List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValuesEx(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, String selectFrom, String where)
     {
-        String datasetQuery = " join patient.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid ";
-        String queryString = selectFrom + datasetQuery;
-        
+        String datasetQuery = " join patient.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid and ";
+        String queryString = selectFrom + datasetQuery + where +" ";
         
         if(!filterConstraints.clause_.equals(" "))
         {
@@ -522,6 +521,7 @@ public class Transaction {
 
         List<Pair<Patient,PatientAttributeValue>> res = new ArrayList<Pair<Patient,PatientAttributeValue>>();
 
+        System.out.println("Executing query: "+ q.getQueryString());
         List<Object[]> l = q.list();
         for(Object[] o : l){
             res.add(new Pair(getPatientByIi((Integer)o[0]),(PatientAttributeValue)o[1]));
@@ -561,14 +561,14 @@ public class Transaction {
     }
     
     public long getPatientPatientAttributeValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("left outer join patient.patientAttributeValues attributeValue with ( attributeValue.attribute.attributeIi=:attributeIi )",filterConstraints); 
+        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi=:attributeIi",filterConstraints); 
     }
 
     public long getPatientPatientAttributeNominalValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("left outer join patient.patientAttributeValues pav with ( pav.attribute.attributeIi=:attributeIi ) left outer join pav.attributeNominalValue attributeValue",filterConstraints); 
+        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue","pav.attribute.attributeIi=:attributeIi",filterConstraints); 
     }
 
-    private long getPatientPatientAttributeValuesCountEx(String from, HibernateFilterConstraint filterConstraints) 
+    private long getPatientPatientAttributeValuesCountEx(String from, String where, HibernateFilterConstraint filterConstraints) 
     {
         String queryString =    "select count(patient) " +
             "from PatientImpl as patient " +
@@ -577,7 +577,8 @@ public class Transaction {
             "join dataset.datasetAccesses access " +
             from +
             " where access.permissions >= 1 " +
-            "and access.id.settingsUser.uid = :uid ";
+            "and access.id.settingsUser.uid = :uid and "+
+            where +" ";
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += "and" + filterConstraints.clause_;
@@ -591,6 +592,7 @@ public class Transaction {
             q.setParameter(arg.getKey(), arg.getValue());
         }
         
+        System.out.println("Executing query: "+ q.getQueryString());
         return ((Long)q.uniqueResult()).longValue();
     }
 
