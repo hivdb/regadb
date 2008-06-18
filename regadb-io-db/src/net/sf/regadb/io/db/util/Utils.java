@@ -188,8 +188,6 @@ public class Utils {
     		 return true;
     	 else
     	 {
-    		 ConsoleLogger.getInstance().logWarning("No sequence found for patient "+patientID+" at row "+row+".");
-    		 
     		 return false;
     	 }
      }
