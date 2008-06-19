@@ -59,6 +59,8 @@ public class ImportIrsicaixa {
     private Table transmissionGroupTable_;
     private Table aidsDefiningIllnessTable_;
     
+    private HashSet<String> unmappedDrugs = new HashSet<String>();
+    
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
     
     private HashMap<String,TherapyDrug> drugDosageMapping_;
@@ -549,8 +551,24 @@ public class ImportIrsicaixa {
             String drug = st.nextToken().trim();
             TherapyDrug drugdos = drugDosageMapping_.get(drug);
 
-            if(drugdos == null)
-            	continue;
+            if(drugdos == null){
+                //search unmapped but identically named drug
+                DrugGeneric dg = getDrugGeneric(drug);
+                if(dg != null){
+                    drugdos = new TherapyDrug(drug,0,dg,null);
+                }
+                else{
+                    DrugCommercial dc = getDrugCommercial(drug);
+                    if(dc != null){
+                        drugdos = new TherapyDrug(drug,0,dg,null);
+                    }
+                    else{
+                        logUnmappedDrug(drug);
+                        continue;
+                    }
+                }
+                drugDosageMapping_.put(drug, drugdos);
+            }
             
         	Double dose = drugsList.get(drugdos);
         	if(dose != null){
@@ -575,32 +593,13 @@ public class ImportIrsicaixa {
     		String name = t.valueAt(1, i);
     		String sdosage = t.valueAt(2,i); 
     		
-    		for(int j = 0; j < regaDrugGenerics.size(); j++)
-        	{
-            	DrugGeneric d = regaDrugGenerics.get(j);
-            	
-            	if(d.getGenericId().equals(name))
-            	{
-            		td.generic = d;
-            		break;
-            	}
-        	}
     		
-    		if(td.generic == null){
-    			for(int j = 0; j < regaDrugCommercials.size(); j++)
-            	{
-                	DrugCommercial d = regaDrugCommercials.get(j);
-                	
-                	if(d.getName().equals(name))
-                	{
-                		td.commercial = d;
-                		break;
-                	}
-            	}
-    		}
+    		td.generic = getDrugGeneric(name);
+    		if(td.generic == null)
+    			td.commercial = getDrugCommercial(name);
     		
     		if(td.generic == null && td.commercial == null){
-    			logger_.logWarning("No mapping available for drug: "+ t.valueAt(0,i));
+    			logUnmappedDrug(name);
     			continue;
     		}
     		
@@ -619,6 +618,33 @@ public class ImportIrsicaixa {
     	return ddmap;
     }
     
+    public DrugGeneric getDrugGeneric(String generic_id){
+        for(int j = 0; j < regaDrugGenerics.size(); j++)
+        {
+            DrugGeneric d = regaDrugGenerics.get(j);
+            
+            if(d.getGenericId().equals(generic_id))
+                return d;
+        }
+        return null;
+    }
+    public DrugCommercial getDrugCommercial(String name){
+        for(int j = 0; j < regaDrugCommercials.size(); j++)
+        {
+            DrugCommercial d = regaDrugCommercials.get(j);
+            
+            if(d.getName().equals(name))
+                return d;
+        }
+        return null;
+    }
+    
+    public void logUnmappedDrug(String drug){
+        if(unmappedDrugs.add(drug))
+            logger_.logWarning("No mapping for drug: "+ drug);
+    }
+
+    
     public static void main(String [] args) {
         if(args.length < 2)
             System.out.println("Usage: ImportIrsicaixa <csv path> <mappings path>");
@@ -627,6 +653,14 @@ public class ImportIrsicaixa {
     }
     
     public class TherapyDrug{
+        public TherapyDrug(){}
+        public TherapyDrug(String name, double dosage, DrugGeneric generic, DrugCommercial commercial){
+            this.name = name;
+            this.dosage = dosage;
+            this.generic = generic;
+            this.commercial = commercial;
+        }
+        
     	public String name;
     	public double dosage=0;
     	public DrugGeneric generic=null;
