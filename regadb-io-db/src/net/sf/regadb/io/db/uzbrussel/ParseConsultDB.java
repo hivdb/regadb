@@ -96,11 +96,11 @@ public class ParseConsultDB {
         }
         
         for(String s : setset) {
-            ConsoleLogger.getInstance().logError("Setset: " + s);
+            ConsoleLogger.getInstance().logWarning("Setset: " + s);
         }
         
         for(String s : ParseMedication.notParsableMeds) {
-            ConsoleLogger.getInstance().logError("Cannot parse drug: " + s);
+            ConsoleLogger.getInstance().logWarning("Cannot parse drug: " + s);
         }
     }
     
@@ -168,7 +168,7 @@ public class ParseConsultDB {
             if(therapyEl!=null)
                 ParseMedication.parseTherapy(therapyEl, p);
         } else {
-            ConsoleLogger.getInstance().logError("No patient id found for:" + consultId);
+            ConsoleLogger.getInstance().logWarning("No patient id found for:" + consultId);
         }
     }
     
@@ -260,7 +260,7 @@ public class ParseConsultDB {
             } else if(value.trim().equals("ZZ")) {
                 tr.setTestNominalValue(Utils.getNominalValue(WivObjects.getGenericwivConfirmation().getTestType(), "Not performed"));
             } else {
-                ConsoleLogger.getInstance().logError("Cannot parse BHIVC value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse BHIVC value: " + value);
             }
             return tr;
         }

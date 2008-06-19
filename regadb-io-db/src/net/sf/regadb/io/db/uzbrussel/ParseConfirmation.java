@@ -108,7 +108,7 @@ public class ParseConfirmation {
                 if(id!=null) {
                     p = patients_.get(id);
                 } else {
-                    ConsoleLogger.getInstance().logError("Cannot retrieve patientConsultId from : " + dossiernummer);
+                    ConsoleLogger.getInstance().logWarning("Cannot retrieve patientConsultId from : " + dossiernummer);
                 }
             } else {
                 Integer id = parseIds_.getPatientIdForPatcode("19" + code_pat);
@@ -121,7 +121,7 @@ public class ParseConfirmation {
                     if(canIgnorePatCode(code_pat) || canIgnorePatCode("19" + code_pat)) {
                         
                     } else {
-                        ConsoleLogger.getInstance().logError("Cannot retrieve patientId for patcode (confirmation): " + code_pat);
+                        ConsoleLogger.getInstance().logWarning("Cannot retrieve patientId for patcode (confirmation): " + code_pat);
                     }
                }
             }
@@ -142,14 +142,14 @@ public class ParseConfirmation {
                 try {
                     birthDate = df.parse(birth_date);
                 } catch (ParseException e) {
-                    ConsoleLogger.getInstance().logError("Cannot parse birthDate for Patient with id: "+p.getPatientId() + "(" +birth_date+ ")");
+                    ConsoleLogger.getInstance().logWarning("Cannot parse birthDate for Patient with id: "+p.getPatientId() + "(" +birth_date+ ")");
                 }
                 if(birthDate!=null) {
                     if(p.getBirthDate()==null) {
                         p.setBirthDate(birthDate);
                     } else {
                         if(!p.getBirthDate().equals(birthDate)) {
-                            ConsoleLogger.getInstance().logError("Confirmation birthDate and original birthDate are not the same for Patient with id: "+p.getPatientId() + "(pat code =" + code_pat + ")");
+                            ConsoleLogger.getInstance().logWarning("Confirmation birthDate and original birthDate are not the same for Patient with id: "+p.getPatientId() + "(pat code =" + code_pat + ")");
                         }
                     }
                 }
@@ -162,7 +162,7 @@ public class ParseConfirmation {
                 } else {
                 	AttributeNominalValue gnv = genderNominal_.nominalValueMap.get(sex.toUpperCase());
                     if(!pav.getAttributeNominalValue().getValue().equals(gnv.getValue())) {
-                        ConsoleLogger.getInstance().logError("Confirmation sex and original sex are not the same for Patient with id: "+p.getPatientId());
+                        ConsoleLogger.getInstance().logWarning("Confirmation sex and original sex are not the same for Patient with id: "+p.getPatientId());
                     }
                 }
             }
@@ -249,7 +249,7 @@ public class ParseConfirmation {
                     try{ 
                         setTest(StandardObjects.getGenericCD4Test(), Double.parseDouble(lympho)+"", testDate, p);
                     } catch (NumberFormatException nfe) {
-                        ConsoleLogger.getInstance().logError("Cannot parse confirmations CD4 value: " + lympho);
+                        ConsoleLogger.getInstance().logWarning("Cannot parse confirmations CD4 value: " + lympho);
                     }
                 }
             
@@ -276,7 +276,7 @@ public class ParseConfirmation {
                 Date d = df.parse(value);
                 handleWIVAttribute(attributeName, d.getTime()+"", p);
             } catch (ParseException e) {
-                ConsoleLogger.getInstance().logError("Cannot parse date " + attributeName + " value:" + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse date " + attributeName + " value:" + value);
             }
         }
     }
@@ -291,7 +291,7 @@ public class ParseConfirmation {
             }
         }
         if(date==null) {
-        	ConsoleLogger.getInstance().logError("No date for confirmation test " + p.getPatientId());
+        	ConsoleLogger.getInstance().logWarning("No date for confirmation test " + p.getPatientId());
         	return;
         }
         TestResult tr = p.createTestResult(test);
@@ -306,7 +306,7 @@ public class ParseConfirmation {
             }
         }
         if(date==null) {
-            ConsoleLogger.getInstance().logError("No date for confirmation test " + p.getPatientId());
+            ConsoleLogger.getInstance().logWarning("No date for confirmation test " + p.getPatientId());
             return;
         }
         TestResult tr = p.createTestResult(test);
@@ -324,7 +324,7 @@ public class ParseConfirmation {
         
         if(patientPutAttribute(p, attributeName)){  //check duplicate
             if(WivObjects.createCountryPANV(attributeName, value.toUpperCase(), p)==null) {
-            	ConsoleLogger.getInstance().logError("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+            	ConsoleLogger.getInstance().logWarning("Cannot handle WIV country attribute - attributeNominalVal: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
             }
         }
     }
@@ -344,10 +344,10 @@ public class ParseConfirmation {
                 int i_value = Integer.parseInt(value);
                 handleWIVAttribute(attributeName, value, p);
                 } catch(NumberFormatException nfe) {
-                    ConsoleLogger.getInstance().logError("No valid " + attributeName + " value: " + value);
+                    ConsoleLogger.getInstance().logWarning("No valid " + attributeName + " value: " + value);
                 }
             } else {
-                ConsoleLogger.getInstance().logError("No valid " + attributeName + " value: " + value);
+                ConsoleLogger.getInstance().logWarning("No valid " + attributeName + " value: " + value);
             }
         }
     }
@@ -372,11 +372,11 @@ public class ParseConfirmation {
             return;
         }
         if(attributeNominalValue.length()>1) {
-            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
+            ConsoleLogger.getInstance().logWarning("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
             return;
         }
         if(WivObjects.createPatientAttributeNominalValue(attributeName, attributeNominalValue.toUpperCase().charAt(0), p)==null) {
-            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
+            ConsoleLogger.getInstance().logWarning("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
         }
     }
     
@@ -391,7 +391,7 @@ public class ParseConfirmation {
         }
         
         if(WivObjects.createPatientAttributeValue(attributeName, value, p)==null) {
-            ConsoleLogger.getInstance().logError("Cannot handle WIV attribute - value: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
+            ConsoleLogger.getInstance().logWarning("Cannot handle WIV attribute - value: " + attributeName + " - " + value + " (for Patient " + p.getPatientId() +")" );
         }
     }
     

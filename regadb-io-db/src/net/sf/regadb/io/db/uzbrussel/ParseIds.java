@@ -103,7 +103,7 @@ public class ParseIds {
                     if(!history_a.getKey().equals(history_b.getKey())) {
                         for(String h_b : history_b.getValue()) {
                             if(h_a.equals(h_b)) {
-                                ConsoleLogger.getInstance().logError("Duplicate consult id: "+codepat_.get(history_a.getKey()) + " -> "+ h_b);
+                                ConsoleLogger.getInstance().logWarning("Duplicate consult id: "+codepat_.get(history_a.getKey()) + " -> "+ h_b);
                             }
                         }
                     }
