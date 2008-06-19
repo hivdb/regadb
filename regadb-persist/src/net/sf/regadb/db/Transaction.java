@@ -745,7 +745,8 @@ public class Transaction {
     {
         String queryString = "from TestResult as testResult " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
-                            "and testResult.viralIsolate is null";
+                            "and testResult.viralIsolate is null " +
+                            "and testResult.ntSequence is null";
         return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
