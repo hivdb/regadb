@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
@@ -40,23 +42,25 @@ public class ParseSeqs {
             String seqDate = seqMappingTable.valueAt(2, i).trim();
             if(!id.equals("") && !seqId.equals("")) {
                 if(!seqDate.equals("")) {
-                    File seq = new File(seqPath.getAbsolutePath()+File.separatorChar+getFileName(seqId)+".seq");
+                    Date d = null;
+                    try {
+                        d = dateFormatter.parse(seqDate);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                    File seq = new File(getSequencePath(seqPath, d) + getFileName(seqId)+".seq");
                     if(!seq.exists()) {
-                        seq = new File(seqPath.getAbsolutePath()+File.separatorChar+"0"+seqId+".seq");
+                        seq = new File(getSequencePath(seqPath, d) + "0"+seqId+".seq");
                     }
                     if(seq.exists()) {
                         Patient p = getPatientForId(id);
                         if(p==null) {
-                            //TODO
-                        	//ConsoleLogger.getInstance().logError("Cannot find patient for sequence: " + id);
+                        	ConsoleLogger.getInstance().logWarning("Cannot find patient for sequence: " + id);
                         } else {
                             ViralIsolate vi = p.createViralIsolate();
-                            try {
-                                vi.setSampleDate(dateFormatter.parse(seqDate));
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
+
                             vi.setSampleId(seqId);
+                            vi.setSampleDate(d);
                             
                             NtSequence ntseq = new NtSequence();
                             ntseq.setLabel("Sequence 1");
@@ -65,8 +69,7 @@ public class ParseSeqs {
                             counter++;
                         }
                     } else {
-                    	//TODO
-                        //ConsoleLogger.getInstance().logError("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
+                        ConsoleLogger.getInstance().logWarning("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
                     }
                 }
                 else {
@@ -76,6 +79,12 @@ public class ParseSeqs {
         }
         
         System.err.println("Amount of succesfully imported sequences: "+ counter);
+    }
+    
+    private String getSequencePath(File seqPath, Date d) {
+    	Calendar c = Calendar.getInstance();
+        c.setTime(d);
+    	return seqPath.getAbsolutePath()+File.separatorChar+"sequences"+File.separatorChar+c.get(Calendar.YEAR)+File.separatorChar;
     }
     
     private String getNtSeqFromFile(File seqFile) {
