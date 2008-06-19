@@ -182,6 +182,37 @@ public class Utils {
     	 }
      }
      
+     public static boolean checkColumnValueForSyndrome(String columnName, String value, int row, String patientID)
+     {
+    	 if(!"".equals(value) &&
+    	   (value.equals("1") ||
+    	    value.equals("-1")))
+    		 return true;
+    	 else
+    	 {
+    		 return false;
+    	 }
+     }
+     
+     public static boolean checkDate(String columnName, String value, int row, String patientID)
+     {
+    	 try 
+    	 {
+    		 Date date = Utils.parseEnglishAccessDate(value);
+	    	 
+	    	 if(date != null)
+	    		 return true;
+	    	 else
+	    		 return false;
+    	 } 
+    	 catch(NumberFormatException nfe) 
+    	 {
+             ConsoleLogger.getInstance().logWarning(patientID, "No valid CD4 value found for patient "+patientID + " for value " + value);
+             
+             return false;
+         }
+     }
+     
      public static boolean checkSequence(String value, int row, String patientID)
      {
     	 if(!"".equals(value))
