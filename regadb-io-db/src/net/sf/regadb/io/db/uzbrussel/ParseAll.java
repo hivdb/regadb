@@ -27,7 +27,7 @@ public class ParseAll {
     		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile);
     	}
     	else{
-	    	exec(	"/home/plibin0/import/jette/import/cd/080321/",
+	    	exec(	"/home/plibin0/import/jette/import/cd/080415/",
 	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
 	    			"www-proxy",
 	    			"3128",
@@ -50,6 +50,9 @@ public class ParseAll {
         Map<Integer, Patient> patients = new HashMap<Integer, Patient>();
         ParseConsultDB parseDB = new ParseConsultDB(baseDir,patients, parseIds, mappingDir, codepat);
         parseDB.exec();
+        
+        ParseOldViralLoad povl = new ParseOldViralLoad();
+        povl.run("/home/plibin0/import/jette/old_vl/", parseIds, patients);
         
         ParseConfirmation pc = new ParseConfirmation(baseDir, parseIds, patients);
         pc.exec();
