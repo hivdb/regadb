@@ -412,6 +412,7 @@ public class StandardObjects {
         e.getEventNominalValues().add(new EventNominalValue(e,"Isosporiasis, chronic intestinal (greater than 1 month's duration)"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Kaposi's sarcoma"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Listeriosis"));
+        e.getEventNominalValues().add(new EventNominalValue(e,"Hodgkin's lymphoma"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, Burkitt's (or equivalent term)"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, immunoblastic (or equivalent term)"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Lymphoma, primary, of brain"));
