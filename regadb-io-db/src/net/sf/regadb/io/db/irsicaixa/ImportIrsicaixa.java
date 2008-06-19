@@ -136,10 +136,10 @@ public class ImportIrsicaixa {
         HashMap<String,ViralIsolate> viralisolates = handleFasta(patients);
         
         for(String t: tests_.keySet()){
-        	logger_.logWarning("New test: "+ t +":"+ tests_.get(t).getDescription());
+        	logger_.logInfo("New test: "+ t +":"+ tests_.get(t).getDescription());
         }
         for(TestType t: testTypes_){
-        	logger_.logWarning("New testtype: "+ t.getDescription());
+        	logger_.logInfo("New testtype: "+ t.getDescription());
         }
         
         IOUtils.exportPatientsXML(patients, getPatientsXmlPath(), ConsoleLogger.getInstance());
@@ -216,7 +216,9 @@ public class ImportIrsicaixa {
 
             if(Utils.checkColumnValueForEmptiness("risk group", routeOfTransmission, i, patientId))
         	{
-                Utils.handlePatientAttributeValue(transmissionGroupA, routeOfTransmission, p);
+                String[] tgs = routeOfTransmission.split("\\+");
+                for(int j=0; j<tgs.length; ++j)
+                    Utils.handlePatientAttributeValue(transmissionGroupA, tgs[j].trim(), p);
         	}
         }
         
@@ -269,10 +271,12 @@ public class ImportIrsicaixa {
                 Date cd4Date = Utils.parseMysqlDate(cd4Table_.valueAt(Ccd4Date, i));
                 if(cd4Date!=null) {
                     try {
-                        double value = Double.parseDouble(cd4Table_.valueAt(Ccd4Count, i));
-                        TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
-                        t.setValue(value+"");
-                        t.setTestDate(cd4Date);
+                        if(cd4Table_.valueAt(Ccd4Count, i) != null && !cd4Table_.valueAt(Ccd4Count, i).equals("")){
+                            double value = Double.parseDouble(cd4Table_.valueAt(Ccd4Count, i));
+                            TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+                            t.setValue(value+"");
+                            t.setTestDate(cd4Date);
+                        }
                     }
                     catch(NumberFormatException nfe) {
                         logger_.logWarning("This is not a correct CD4 value (should be floating point or integer number: " + cd4Table_.valueAt(Ccd4Count, i));
@@ -369,34 +373,35 @@ public class ImportIrsicaixa {
 	
 	    			Date vldate = Utils.parseMysqlDate(vlTable_.valueAt(CVLDate, i));
 	    			if(vldate != null){
-
-		    			String slimit = vlTable_.valueAt(CLimit,i);
-	    				String value;
-	    				
-	    				try{
-	    					double vl = Double.parseDouble(vlTable_.valueAt(CVL,i));
-	    					
-	    					try{
-		    					int limit = 0;
-		    					if((slimit.length() > 0) && (!slimit.equals("NULL")))
-		    						limit = Integer.parseInt(vlTable_.valueAt(CLimit,i));
-			    				
-			    				if(vl <= limit)
-			    					value = "<"+ limit;
-			    				else
-			    					value = "="+ vl;
-			    				
-				    			TestResult tr = p.createTestResult(t);
-				    			tr.setTestDate(vldate);
-				    			tr.setValue(value);
-	    					}
-	    					catch(Exception e){
-	    						logger_.logWarning("Invalid limit specified in the viralload file ("+ i +").");
-	    					}
-	    				}
-	    				catch(Exception e){
-	    					logger_.logWarning("Invalid viral load specified in the viralload file ("+ i +").");
-	    				}
+	    			    if(vlTable_.valueAt(CVL,i) != null && !vlTable_.valueAt(CVL,i).equals("")){
+    		    			String slimit = vlTable_.valueAt(CLimit,i);
+    	    				String value;
+    	    				
+    	    				try{
+    	    					double vl = Double.parseDouble(vlTable_.valueAt(CVL,i));
+    	    					
+    	    					try{
+    		    					int limit = 0;
+    		    					if((slimit.length() > 0) && (!slimit.equals("NULL")))
+    		    						limit = Integer.parseInt(vlTable_.valueAt(CLimit,i));
+    			    				
+    			    				if(vl <= limit)
+    			    					value = "<"+ limit;
+    			    				else
+    			    					value = "="+ vl;
+    			    				
+    				    			TestResult tr = p.createTestResult(t);
+    				    			tr.setTestDate(vldate);
+    				    			tr.setValue(value);
+    	    					}
+    	    					catch(Exception e){
+    	    						logger_.logWarning("Invalid limit specified in the viralload file ("+ i +").");
+    	    					}
+    	    				}
+    	    				catch(Exception e){
+    	    					logger_.logWarning("Invalid viral load specified in the viralload file ("+ i +").");
+    	    				}
+	    			    }
 	    			}
 	    			else{
 	        			logger_.logWarning("Invalid date specified in the viralload file ("+ i +").");
@@ -435,7 +440,7 @@ public class ImportIrsicaixa {
 		    		for(int j=2; j<t.numColumns(); ++j){
 		    			String value = t.valueAt(j, i);
 		    			
-		    			if(!value.equals("NULL")){
+		    			if(value != null && !value.equals("NULL") && !value.equals("")){
 			    			//find test using column name
 			    			TestResult tr = p.createTestResult(tests_.get(t.valueAt(j,0)));
 			    			tr.setTestDate(testdate);
