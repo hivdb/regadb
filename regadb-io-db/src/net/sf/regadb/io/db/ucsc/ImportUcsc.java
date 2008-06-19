@@ -282,17 +282,17 @@ public class ImportUcsc
                     Utils.handlePatientAttributeValue(scA, seroConverter, p);
             	}
             	
-            	if(Utils.checkColumnValueForExistance("date of first positive HIV test", firstTest, i, patientId))
+            	if(Utils.checkDate("date of first positive HIV test", firstTest, i, patientId))
             	{
             		TestResult t = p.createTestResult(StandardObjects.getGenericHiv1SeroStatusTest());
                     t.setTestNominalValue(posSeroStatus);
                     t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
             	}
             	
-            	if(Utils.checkColumnValueForExistance("date of last negative HIV test", lastTest, i, patientId))
+            	if(Utils.checkDate("date of last negative HIV test", lastTest, i, patientId))
             	{
             		TestResult t = p.createTestResult(StandardObjects.getContactTest());
-                    //t.setValue("Contact");
+                    t.setValue("Contact");
                     t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
             	}
             	
@@ -306,7 +306,8 @@ public class ImportUcsc
             		//Ask if necessary, to be translated first (Wait for Mattia)
             	}
             	
-            	if(Utils.checkColumnValueForExistance("acute syndrom", syndrome, i, patientId) && Utils.checkColumnValueForExistance("date of acute syndrom", syndromeDate, i, patientId))
+            	if(Utils.checkColumnValueForSyndrome("acute syndrom", syndrome, i, patientId) && 
+            	   Utils.checkDate("date of acute syndrom", syndromeDate, i, patientId))
             	{
             		TestResult t = p.createTestResult(acuteSyndromTest);
                     t.setValue(syndrome);
@@ -820,7 +821,7 @@ public class ImportUcsc
     	}
     }
     
-    private void addViralIsolateToPatients(String patientID, Date date, String seq)
+    private void addViralIsolateToPatients(int counter, String patientID, Date date, String seq)
     {
     	Patient p = patientMap.get(patientID);
     	
@@ -830,7 +831,7 @@ public class ImportUcsc
     	}
     	
     	ViralIsolate vi = p.createViralIsolate();
-    	vi.setSampleId(patientID+date.toString());
+    	vi.setSampleId(counter+"");
     	vi.setSampleDate(date);
     	
     	NtSequence ntseq = new NtSequence();
@@ -875,7 +876,7 @@ public class ImportUcsc
              				
              				if(!"".equals(clearedSequ))
              				{
-             					addViralIsolateToPatients(patientID, date, clearedSequ);
+             					addViralIsolateToPatients(counter, patientID, date, clearedSequ);
              					
              					counter++;
              				}
