@@ -23,6 +23,9 @@ public class QueryDefinition implements java.io.Serializable {
 
     private int queryTypeIi;
 
+    private Set<CombinedQueryDefinition> combinedQueryDefinitions = new HashSet<CombinedQueryDefinition>(
+            0);
+
     private Set<QueryDefinitionParameter> queryDefinitionParameters = new HashSet<QueryDefinitionParameter>(
             0);
 
@@ -43,6 +46,7 @@ public class QueryDefinition implements java.io.Serializable {
     /** full constructor */
     public QueryDefinition(SettingsUser settingsUser, String name,
             String description, String query, int queryTypeIi,
+            Set<CombinedQueryDefinition> combinedQueryDefinitions,
             Set<QueryDefinitionParameter> queryDefinitionParameters,
             Set<QueryDefinitionRun> queryDefinitionRuns) {
         this.settingsUser = settingsUser;
@@ -50,6 +54,7 @@ public class QueryDefinition implements java.io.Serializable {
         this.description = description;
         this.query = query;
         this.queryTypeIi = queryTypeIi;
+        this.combinedQueryDefinitions = combinedQueryDefinitions;
         this.queryDefinitionParameters = queryDefinitionParameters;
         this.queryDefinitionRuns = queryDefinitionRuns;
     }
@@ -101,6 +106,15 @@ public class QueryDefinition implements java.io.Serializable {
 
     public void setQueryTypeIi(int queryTypeIi) {
         this.queryTypeIi = queryTypeIi;
+    }
+
+    public Set<CombinedQueryDefinition> getCombinedQueryDefinitions() {
+        return this.combinedQueryDefinitions;
+    }
+
+    public void setCombinedQueryDefinitions(
+            Set<CombinedQueryDefinition> combinedQueryDefinitions) {
+        this.combinedQueryDefinitions = combinedQueryDefinitions;
     }
 
     public Set<QueryDefinitionParameter> getQueryDefinitionParameters() {

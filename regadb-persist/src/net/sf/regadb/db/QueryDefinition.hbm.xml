@@ -24,6 +24,12 @@
     <property name="queryTypeIi" type="int">
       <column name="query_type_ii" not-null="true" />
     </property>
+    <set name="combinedQueryDefinitions" inverse="false" cascade="all">
+      <key>
+        <column name="query_definition_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.CombinedQueryDefinition" />
+    </set>
     <set name="queryDefinitionParameters" inverse="true" cascade="all">
       <key>
         <column name="query_definition_ii" />

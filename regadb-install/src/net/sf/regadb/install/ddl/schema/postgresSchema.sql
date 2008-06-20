@@ -5,6 +5,7 @@ create sequence analysis_type_analysis_type_ii_seq;
 create sequence attribute_attribute_ii_seq;
 create sequence attribute_group_attribute_group_ii_seq;
 create sequence attribute_nominal_value_attribute_nominal_value_ii_seq;
+create sequence combined_query_combined_query_ii_seq;
 create sequence dataset_dataset_ii_seq;
 create sequence drug_class_drug_class_ii_seq;
 create sequence drug_commercial_drug_commercial_ii_seq;
@@ -42,6 +43,8 @@ create table public.analysis_type (analysis_type_ii integer default nextval('ana
 create table public.attribute (attribute_ii integer default nextval('attribute_attribute_ii_seq'), version integer  not null, value_type_ii integer , attribute_group_ii integer , name varchar(50) not null, primary key (attribute_ii));
 create table public.attribute_group (attribute_group_ii integer default nextval('attribute_group_attribute_group_ii_seq'), version integer  not null, group_name varchar(50), primary key (attribute_group_ii));
 create table public.attribute_nominal_value (nominal_value_ii integer default nextval('attribute_nominal_value_attribute_nominal_value_ii_seq'), version integer  not null, attribute_ii integer  not null, value varchar(100) not null, primary key (nominal_value_ii));
+create table public.combined_query (combined_query_ii integer default nextval('combined_query_combined_query_ii_seq'), name varchar(50) not null, primary key (combined_query_ii));
+create table public.combined_query_definition (combined_query_ii integer  not null, query_definition_ii integer  not null, number integer  not null, name varchar(50), primary key (combined_query_ii, query_definition_ii));
 create table public.dataset (dataset_ii integer default nextval('dataset_dataset_ii_seq'), version integer  not null, uid varchar(50) not null, description varchar(50) not null, creation_date date not null, closed_date date, revision integer , primary key (dataset_ii));
 create table public.dataset_access (uid varchar(50) not null, dataset_ii integer  not null, version integer  not null, permissions integer  not null, provider varchar(50) not null, primary key (uid, dataset_ii));
 create table public.drug_class (drug_class_ii integer default nextval('drug_class_drug_class_ii_seq'), version integer  not null, class_id varchar(10) not null, class_name varchar(100) not null, resistance_table_order integer , primary key (drug_class_ii));
@@ -85,6 +88,8 @@ alter table public.analysis_data add constraint "FK_analysis_data_analysis" fore
 alter table public.attribute add constraint "FK_attribute_value_type" foreign key (value_type_ii) references public.value_type(value_type_ii) ON UPDATE CASCADE;
 alter table public.attribute add constraint "FK_attribute_attribute_group" foreign key (attribute_group_ii) references public.attribute_group(attribute_group_ii) ON UPDATE CASCADE;
 alter table public.attribute_nominal_value add constraint "FK_attribute_nominal_value_attribute" foreign key (attribute_ii) references public.attribute(attribute_ii) ON UPDATE CASCADE;
+alter table public.combined_query_definition add constraint "FK_combined_query_definition_query_definition" foreign key (query_definition_ii) references public.query_definition(query_definition_ii) ON UPDATE CASCADE;
+alter table public.combined_query_definition add constraint "FK_combined_query_definition_combined_query" foreign key (combined_query_ii) references public.combined_query(combined_query_ii) ON UPDATE CASCADE;
 alter table public.dataset add constraint "FK_dataset_settings_user" foreign key (uid) references public.settings_user(uid) ON UPDATE CASCADE;
 alter table public.dataset_access add constraint "FK_dataset_access_dataset" foreign key (dataset_ii) references public.dataset(dataset_ii) ON UPDATE CASCADE;
 alter table public.dataset_access add constraint "FK_dataset_access_settings_user" foreign key (uid) references public.settings_user(uid) ON UPDATE CASCADE;
