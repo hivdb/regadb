@@ -26,7 +26,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
 	        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
 	        "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
 	        "or tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
-	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and p.patientIi in ("+ getArcPatientQuery() +") ";
+	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and pav.patient.patientIi in ("+ getArcPatientQuery() +") ";
 
         setQuery(query);
         
@@ -55,7 +55,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
         	Date tDate = tr.getTestDate();
         	int testCode = TestCode.T4.getCode();
 
-        	if(DateUtils.getDateOffset(bDate, Calendar.YEAR, 15).after(tDate)){
+        	if(bDate != null && tDate != null && DateUtils.getDateOffset(bDate, Calendar.YEAR, 15).after(tDate)){
         		// < 15 years old at time of test
         		testCode = TestCode.T4PERCENT.getCode();
         		if(!tr.getTest().getTestType().getDescription().equals(StandardObjects.getCd4PercentageTestType().getDescription()))

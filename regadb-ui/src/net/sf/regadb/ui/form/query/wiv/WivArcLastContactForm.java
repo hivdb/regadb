@@ -21,7 +21,7 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     public WivArcLastContactForm(){
         super(tr("menu.query.wiv.arc.lastContact"),tr("form.query.wiv.label.arc.lastContact"),tr("file.query.wiv.arc.lastContact"));
         setQuery("select pav.value, max(tr.testDate) from PatientAttributeValue pav, TestResult tr " +
-                "where pav.patient = tr.patient and pav.attribute.name = 'PatCode' and pav.patientIi in (" + getArcPatientQuery() +") "+
+                "where pav.patient = tr.patient and pav.attribute.name = 'PatCode' and pav.patient.patientIi in (" + getArcPatientQuery() +") "+
                 "and tr.test.description = '"+ StandardObjects.getContactTest().getDescription() +"' " +
                 "and :var_start_date < :var_end_date group by pav.value");
         
