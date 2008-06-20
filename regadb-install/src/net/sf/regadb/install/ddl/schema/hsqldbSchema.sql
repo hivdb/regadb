@@ -17,6 +17,9 @@ create sequence attribute_group_attribute_group_ii_seq start with 1 increment by
 create table dual_attribute_nominal_value_attribute_nominal_value_ii_seq (zero integer);
 insert into dual_attribute_nominal_value_attribute_nominal_value_ii_seq values (0);
 create sequence attribute_nominal_value_attribute_nominal_value_ii_seq start with 1 increment by 1;
+create table dual_combined_query_combined_query_ii_seq (zero integer);
+insert into dual_combined_query_combined_query_ii_seq values (0);
+create sequence combined_query_combined_query_ii_seq start with 1 increment by 1;
 create table dual_dataset_dataset_ii_seq (zero integer);
 insert into dual_dataset_dataset_ii_seq values (0);
 create sequence dataset_dataset_ii_seq start with 1 increment by 1;
@@ -108,6 +111,8 @@ create table public.analysis_type (analysis_type_ii integer not null, type varch
 create table public.attribute (attribute_ii integer not null, version integer not null, value_type_ii integer, attribute_group_ii integer, name varchar(50) not null, primary key (attribute_ii));
 create table public.attribute_group (attribute_group_ii integer not null, version integer not null, group_name varchar(50), primary key (attribute_group_ii));
 create table public.attribute_nominal_value (nominal_value_ii integer not null, version integer not null, attribute_ii integer not null, value varchar(100) not null, primary key (nominal_value_ii));
+create table public.combined_query (combined_query_ii integer not null, name varchar(50) not null, primary key (combined_query_ii));
+create table public.combined_query_definition (combined_query_ii integer not null, query_definition_ii integer not null, number integer not null, name varchar(50), primary key (combined_query_ii, query_definition_ii));
 create table public.dataset (dataset_ii integer not null, version integer not null, uid varchar(50) not null, description varchar(50) not null, creation_date date not null, closed_date date, revision integer, primary key (dataset_ii));
 create table public.dataset_access (uid varchar(50) not null, dataset_ii integer not null, version integer not null, permissions integer not null, provider varchar(50) not null, primary key (uid, dataset_ii));
 create table public.drug_class (drug_class_ii integer not null, version integer not null, class_id varchar(10) not null, class_name varchar(100) not null, resistance_table_order integer, primary key (drug_class_ii));
@@ -121,7 +126,7 @@ create table public.patient_attribute_value (patient_attribute_value_ii integer 
 create table public.patient_dataset (dataset_ii integer not null, patient_ii integer not null, primary key (dataset_ii, patient_ii));
 create table public.patient_event_value (patient_event_value_ii integer not null, version integer not null, patient_ii integer not null, nominal_value_ii integer, event_ii integer not null, value varchar(100), start_date date, end_date date, primary key (patient_event_value_ii));
 create table public.protein (protein_ii integer not null, version integer not null, abbreviation varchar(50) not null, full_name varchar(50), primary key (protein_ii));
-create table public.query_definition (query_definition_ii integer not null, uid varchar(50), name varchar(50), description longvarchar, query longvarchar, primary key (query_definition_ii));
+create table public.query_definition (query_definition_ii integer not null, uid varchar(50), name varchar(50), description longvarchar, query longvarchar, query_type_ii integer not null, primary key (query_definition_ii));
 create table public.query_definition_parameter (query_definition_parameter_ii integer not null, query_definition_parameter_type_ii integer, query_definition_ii integer, name varchar(50), primary key (query_definition_parameter_ii));
 create table public.query_definition_parameter_type (query_definition_parameter_type_ii integer not null, name varchar(100) not null, id integer not null, primary key (query_definition_parameter_type_ii), unique (name), unique (id));
 create table public.query_definition_run (query_definition_run_ii integer not null, query_definition_ii integer, uid varchar(50), startdate date, enddate date, status integer, name varchar(100) not null, result varchar(100), primary key (query_definition_run_ii));
@@ -151,6 +156,8 @@ alter table public.analysis_data add constraint FK6232DF2D46EE23D6 foreign key (
 alter table public.attribute add constraint FKC7AA9C5FC38F0B foreign key (value_type_ii) references public.value_type;
 alter table public.attribute add constraint FKC7AA9C6B7C6CBD foreign key (attribute_group_ii) references public.attribute_group;
 alter table public.attribute_nominal_value add constraint FK558F63EB28201F88 foreign key (attribute_ii) references public.attribute;
+alter table public.combined_query_definition add constraint FKA512272468B43D19 foreign key (query_definition_ii) references public.query_definition;
+alter table public.combined_query_definition add constraint FKA51227245D802F7D foreign key (combined_query_ii) references public.combined_query;
 alter table public.dataset add constraint FK5605B478F76A62F5 foreign key (uid) references public.settings_user;
 alter table public.dataset_access add constraint FK1C0C870BB165C048 foreign key (dataset_ii) references public.dataset;
 alter table public.dataset_access add constraint FK1C0C870BF76A62F5 foreign key (uid) references public.settings_user;
