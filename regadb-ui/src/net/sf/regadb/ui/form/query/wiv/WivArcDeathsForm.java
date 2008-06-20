@@ -14,7 +14,7 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
         super(tr("menu.query.wiv.arc.deaths"),tr("form.query.wiv.label.arc.deaths"),tr("file.query.wiv.arc.deaths"));
         setQuery("select p, pav from PatientImpl as p inner join p.patientAttributeValues pav " +
         		"where p.deathDate >= :var_start_date and p.deathDate <= :var_end_date " +
-        		"and pav.attribute.name = 'PatCode' " +
+        		"and pav.attribute.name = 'PatCode' and p.patientIi in (" + getArcPatientQuery() +") "+
         		"order by p.deathDate desc");
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));

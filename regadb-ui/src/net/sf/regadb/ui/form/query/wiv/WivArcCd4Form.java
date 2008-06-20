@@ -26,7 +26,7 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
 	        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
 	        "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
 	        "or tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
-	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
+	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and p.patientIi in ("+ getArcPatientQuery() +") ";
 
         setQuery(query);
         
