@@ -121,7 +121,19 @@ public class ParseConsultDB {
             String nationality = text(patientEl, "Nationality");
             String transmission = text(patientEl, "Transmission");
             String adherence = text(patientEl, "TherapyAdherence");
+            String followup = text(patientEl, "Followup");
             
+            if(followup!=null) {
+            	if(followup.equals("intern")) {
+            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'I', p);
+            	} else if(followup.equals("extern")) {
+            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'E', p);
+            	} else {
+            		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
+            	}
+            } else {
+            	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
+            }
             if(birthDate!=null) {
                 try {
                     p.setBirthDate(dateFormatter.parse(birthDate));

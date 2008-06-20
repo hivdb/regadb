@@ -77,6 +77,7 @@ public class WivObjects {
         createAttribute("FORM_OUT",dat);
         createAttribute("FORM_IN",dat);
         //createAttribute(ag,"LABO",nom,new String[]{"HSP","ITG","KUL","RUG","UCL","ULB","VUB"});
+        createAttribute("PATIENT_TYPE",nom,new String[]{"I: Internal", "E: External"}, false);
         
         TestType wivConfirmation = new TestType(StandardObjects.getPatientObject(), "WIV HIV Confirmation");
         wivConfirmation.setValueType(StandardObjects.getNominalValueType());
@@ -99,17 +100,22 @@ public class WivObjects {
         return a;
     }
     
-    private static Attribute createAttribute(String name, ValueType vt, String[] anvs){
+    private static Attribute createAttribute(String name, ValueType vt, String[] anvs, boolean unknown){
         Attribute a = createAttribute(name, vt);
     
         if(anvs != null){
             for(String value : anvs){
                 createAttributeNominalValue(a,value);
             }
-            createAttributeNominalValue(a,"U: Unknown");
+            if(unknown)
+            	createAttributeNominalValue(a,"U: Unknown");
         }
         
         return a;
+    }
+    
+    private static Attribute createAttribute(String name, ValueType vt, String[] anvs) {
+    	return createAttribute(name, vt, anvs, true);
     }
     
     private static void createAttributeNominalValue(Attribute a, String value){
