@@ -87,7 +87,7 @@ public class NominalAttribute {
             for (int i = 1; i < (conversionTable.numRows()); ++i) {
             	String valueS = conversionTable.valueAt(1, i);
                 if( "".equals(conversionTable.valueAt(0, i)) || "".equals(valueS)) {
-                	ConsoleLogger.getInstance().logError("Values in row "+i+" not present in translation file for \"" + name + "\"");
+                	ConsoleLogger.getInstance().logWarning("Values in row "+i+" not present in translation file for \"" + name + "\"");
                 } else {
                 	AttributeNominalValue value = null;
                 	for(Map.Entry<String, AttributeNominalValue> v : nominalValueMap.entrySet()) {
