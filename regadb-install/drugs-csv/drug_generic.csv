@@ -25,7 +25,7 @@ generic_ii,generic_id,class_ii,generic_name,atc_code
 25,NNRTI,3,unknown NNRTI,
 26,NRTI,2,unknown NRTI,
 27,Unknown,5,Unknown,
-28,ADV,2,Adefovir,
+28,ADV,2,Adefovir,J05AF08
 29,R82913,3,TIBO R82913,
 30,aAPA,3,alpha-APA R 95845,
 31,LPV/r,1,lopinavir/r,J05AE06+J05AE03
@@ -35,6 +35,7 @@ generic_ii,generic_id,class_ii,generic_name,atc_code
 35,DRV,1,darunavir,J05AE10
 36,DRV/r,1,darunavir/r,J05AE10+J05AE03
 37,FPV/r,1,fosamprenavir/r,J05AE07+J05AE03
-38,ETV,3,etravirine,J05AG ETV
-39,RTG,6,raltegravir,
-40,MVC,4,maraviroc,
+38,ETV,3,etravirine,J05AG-ETV
+39,RTG,6,raltegravir,J05AX08
+40,MVC,4,maraviroc,J05AX09
+41,CPV,3,capravirine,J05AG-CPV
