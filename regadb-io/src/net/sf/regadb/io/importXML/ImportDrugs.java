@@ -104,7 +104,8 @@ public class ImportDrugs
                 {
                     resistanceTableOrderI = Integer.parseInt(resistanceTableOrder);
                 }
-                if(t.getDrugGeneric(id)==null)
+                dg = t.getDrugGeneric(id);
+                if(dg==null)
                 {
                     if(simulate)
                     {
@@ -118,6 +119,24 @@ public class ImportDrugs
                         dg.setAtcCode(atcCode);
                         dg.setResistanceTableOrder(resistanceTableOrderI);
                         t.save(dg);
+                    }
+                }
+                else{
+                    if(simulate)
+                    {
+                        report.add("Synchronizing: "+ id + " - " + name);
+                    }
+                    else{
+                    	report.add("Synchronizing: "+ id + " - " + name);
+
+                    	if(!dg.getDrugClass().getClassId().equals(classId)){
+                    		dc = t.getDrugClass(classId);
+                    		dg.setDrugClass(dc);
+                    	}
+                    	dg.setGenericName(name);
+	                    dg.setAtcCode(atcCode);
+	                    dg.setResistanceTableOrder(resistanceTableOrderI);
+	                    t.save(dg);
                     }
                 }
             }
