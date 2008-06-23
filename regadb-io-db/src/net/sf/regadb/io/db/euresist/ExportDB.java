@@ -90,12 +90,18 @@ public class ExportDB {
         coiAttr.setValueType(StandardObjects.getNominalValueType());
         coiAttr.setName("Country of infection");
         
+        Attribute gooiAttr = new Attribute();
+        gooiAttr.setAttributeGroup(eurAttrGrp);
+        gooiAttr.setValueType(StandardObjects.getNominalValueType());
+        gooiAttr.setName("Geographic origin of infection");
+        
         Map<String,AttributeNominalValue> tgMap =  createMap("Transmission group", "transmission_group.mapping", "RiskGroups", "risk_name", "riskID");
         Map<String,AttributeNominalValue> genMap = createMap("Gender", "gender.mapping", "Genders", "name", "genderID");
         Map<String,AttributeNominalValue> cooMap = createMap("Country of origin", "country_of_origin.mapping", "Countries", "iso_name_en", "countryID");
         Map<String,AttributeNominalValue> goMap =  createMap("Geographic origin", "geographic_origin.mapping", "Countries", "iso_name_en", "countryID");
         Map<String,AttributeNominalValue> ethMap = createMap("Ethnicity", "ethnicity.mapping", "EthnicGroups", "ethnic_group", "ethnicID");
-        Map<String,AttributeNominalValue> coiMap = copyCoO2CoI(cooMap,coiAttr);
+        Map<String,AttributeNominalValue> coiMap = copyNominals(cooMap,coiAttr);
+        Map<String,AttributeNominalValue> gooiMap = copyNominals(goMap,gooiAttr);
         
 //        Map<String,Dataset> dsMap = createDatasetMap();
 
@@ -119,6 +125,7 @@ public class ExportDB {
             createAttributeNominalValue(p,goMap, rs.getString("country_of_originID"));
             createAttributeNominalValue(p,ethMap,rs.getString("ethnicID"));
             createAttributeNominalValue(p,coiMap,rs.getString("country_of_infectionID"));
+            createAttributeNominalValue(p,gooiMap,rs.getString("country_of_infectionID"));
         }
         
         return patients;
@@ -170,7 +177,7 @@ public class ExportDB {
         return map;
     }
 
-    public Map<String,AttributeNominalValue> copyCoO2CoI(Map<String,AttributeNominalValue> anvs, Attribute coi){
+    public Map<String,AttributeNominalValue> copyNominals(Map<String,AttributeNominalValue> anvs, Attribute coi){
         Map<String,AttributeNominalValue> map = new HashMap<String,AttributeNominalValue>();
         Map<String,AttributeNominalValue> uniques = new HashMap<String,AttributeNominalValue>();
         AttributeNominalValue anv,nanv;
