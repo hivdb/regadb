@@ -6,14 +6,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Utils;
@@ -23,14 +26,11 @@ public class HandleTherapies {
 	private ExportDB exportDb_;
 	
 	private List<DrugGeneric> regaDrugGenerics = Utils.prepareRegaDrugGenerics();
-	private Mappings drugMapping_;
-	
-	//TODO
-	//stop reasons
+	private Mappings mappings_;
 	
 	public HandleTherapies(ExportDB exportDb) {
 		exportDb_ = exportDb;
-		drugMapping_ = Mappings.getInstance(exportDb_.getMappingPath()+File.separatorChar);
+		mappings_ = Mappings.getInstance(exportDb_.getMappingPath()+File.separatorChar);
 	}
 	
 	public void run(Map<String,Patient> patients) {
@@ -44,6 +44,7 @@ public class HandleTherapies {
         		int patientID = rs.getInt("patientID");
         		Date start = rs.getDate("start_date");
         		Date end = rs.getDate("stop_date");
+        		int stopCause = rs.getInt("stop_causeID");
         		
         		Patient p = patients.get(patientID+"");
         		if(p!=null) {
@@ -62,7 +63,7 @@ public class HandleTherapies {
         				}
         			}
         			if(medicineList.size()>0)
-        				storeTherapy(p, start, end, medicineList, rtvb_b);
+        				storeTherapy(p, start, end, medicineList, rtvb_b, getTherapyMotivation(therapyID, stopCause));
         		} else {
                     ConsoleLogger.getInstance().logWarning(
                             "No patient with id " + patientID + " for therapy with id " + therapyID);
@@ -74,9 +75,38 @@ public class HandleTherapies {
         }
 	}
 	
-	private void storeTherapy(Patient p, Date start, Date end, List<DrugGeneric> medicinsList, boolean rtvb) {
+	private String getTherapyMotivation(int therapyID, int stopID) throws SQLException {
+		if(stopID==0) {
+			ResultSet rs_compounds = exportDb_.getDb().executeQuery("SELECT * FROM TherapyCompounds WHERE therapyID="+therapyID);
+			Set<Integer> causes = new HashSet<Integer>();
+			
+			while(rs_compounds.next()) {
+				int compoundStopCause = rs_compounds.getInt("stop_causeID");
+				if(compoundStopCause!=0)
+					causes.add(compoundStopCause);
+			}
+			
+			if(causes.size()>1) {
+				int min = Integer.MAX_VALUE;
+				for(Integer c : causes) {
+					min = Math.min(c, min);
+				}
+				return mappings_.getMapping("motivation.mapping", min+"");
+			} else {
+				return null;
+			}
+		} else {
+			return mappings_.getMapping("motivation.mapping", stopID+"");
+		}
+	}
+	
+	private void storeTherapy(Patient p, Date start, Date end, List<DrugGeneric> medicinsList, boolean rtvb, String motivation) {
     	Therapy t = p.createTherapy(start);
     	t.setStopDate(end);
+    	if(motivation!=null) {
+    		TherapyMotivation tmotiv = new TherapyMotivation(motivation);
+    		t.setTherapyMotivation(tmotiv);
+    	}
     	
 	    	for (int i = 0; i < medicinsList.size(); i++) {
 	    		DrugGeneric dg = medicinsList.get(i);
@@ -106,7 +136,7 @@ public class HandleTherapies {
 			if(!abbrev.equals("RTVB")) {
 				DrugGeneric dg = locateDrugGeneric(abbrev, generic_name);
 				if(dg==null) {
-					String mapping = drugMapping_.getMapping("drugs.mapping", abbrev);
+					String mapping = mappings_.getMapping("drugs.mapping", abbrev);
 					dg = locateDrugGeneric("", mapping);
 				}
 				if(dg==null) {
