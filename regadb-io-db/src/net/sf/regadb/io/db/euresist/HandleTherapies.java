@@ -91,12 +91,12 @@ public class HandleTherapies {
 				for(Integer c : causes) {
 					min = Math.min(c, min);
 				}
-				return mappings_.getMapping("motivation.mapping", min+"");
+				return mappings_.getMapping("motivation.mapping", min+"",true);
 			} else {
 				return null;
 			}
 		} else {
-			return mappings_.getMapping("motivation.mapping", stopID+"");
+			return mappings_.getMapping("motivation.mapping", stopID+"",true);
 		}
 	}
 	
@@ -136,7 +136,7 @@ public class HandleTherapies {
 			if(!abbrev.equals("RTVB")) {
 				DrugGeneric dg = locateDrugGeneric(abbrev, generic_name);
 				if(dg==null) {
-					String mapping = mappings_.getMapping("drugs.mapping", abbrev);
+					String mapping = mappings_.getMapping("drugs.mapping", abbrev, true);
 					dg = locateDrugGeneric("", mapping);
 				}
 				if(dg==null) {
