@@ -90,12 +90,14 @@ public class InitRegaDB
     }
 
     private void initTherapyChangeMotivations(Session session) {
-        session.save(new TherapyMotivation("Unknown"));
         session.save(new TherapyMotivation("Toxicity"));
         session.save(new TherapyMotivation("Treatment failure, resistance"));
         session.save(new TherapyMotivation("Treatment failure, other"));
-        session.save(new TherapyMotivation("Other"));
         session.save(new TherapyMotivation("Patient's choice"));
+        session.save(new TherapyMotivation("Therapy change"));
+        session.save(new TherapyMotivation("Adherence"));
+        session.save(new TherapyMotivation("Other"));
+        session.save(new TherapyMotivation("Unknown"));
     }
 
     private void addAdminUser(Session session)
