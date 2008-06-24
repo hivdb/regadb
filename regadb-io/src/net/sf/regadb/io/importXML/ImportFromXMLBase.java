@@ -195,6 +195,10 @@ public class ImportFromXMLBase extends DefaultHandler{
         }
         return result;
     }
+    
+    protected void addDataset(Patient patient, Dataset dataset){
+        patient.setSourceDataset(dataset,transaction);
+    }
 
     public void loadDatabaseObjects(Transaction t) {
         transaction = t;

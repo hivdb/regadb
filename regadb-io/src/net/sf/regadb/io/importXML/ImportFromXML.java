@@ -455,7 +455,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     }
                 } else if (currentState() == ParseState.statePatient) {
                     elDataset = resolveDataset(fieldDataset_description);
-                    patient.addDataset(elDataset);
+                    addDataset(patient, elDataset);
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }

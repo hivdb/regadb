@@ -249,6 +249,10 @@ public class XMLWriteCodeGen
     
     public static void writePointerSet(String id, Class toWrite, String fieldName, String parentNode, Class parentClass)
     {
+        if(fieldName.equals("patientDatasets")){
+            toWrite = GenerateIO.replacePatientDatasetByDataset(toWrite);
+            fieldName = "datasets";
+        }
         String var = generateGetterConstruct(id, null, fieldName, toWrite);
         String writeClassCode = "";
         writeClassCode += "Element forParent"+fieldName+" = new Element(\""+fieldName+"\");";

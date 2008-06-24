@@ -82,7 +82,7 @@ public class XMLReadCodeGen {
                 write(tabs, resolved.varName() + " = patient.createPatientEventValue(fieldPatientEventValue_event);\n");
             } else if (javaClass == Dataset.class) {
                 write(tabs, resolved.varName() + " = resolveDataset(fieldDataset_description);\n");
-                write(tabs, "patient.setSourceDataset("+ resolved.varName() +");\n");                
+                write(tabs, "addDataset(patient, "+ resolved.varName() +");\n");                
             } else if (parent.javaClass == Patient.class) {
                 write(tabs, resolved.varName() + " = patient.create" + javaClass.getSimpleName() + "();\n");
             } else {

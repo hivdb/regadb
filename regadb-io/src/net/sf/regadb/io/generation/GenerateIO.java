@@ -88,7 +88,7 @@ public class GenerateIO
         pointerClasses_.add(dbPackage + "Analysis");
         pointerClasses_.add(dbPackage + "AnalysisData");
         
-        pointerClasses_.add(dbPackage + "Dataset");
+        //pointerClasses_.add(dbPackage + "Dataset");
         
         nominalValues_.add(dbPackage + "TestNominalValue");
         nominalValues_.add(dbPackage + "AttributeNominalValue");
@@ -143,7 +143,7 @@ public class GenerateIO
         return false;
     }
     
-    private Class replacePatientDatasetByDataset(Class cc)
+    public static Class replacePatientDatasetByDataset(Class cc)
     {       
        //Exception because we cannot acces PatientDataset directly 
        if(cc.getName().equals("net.sf.regadb.db.PatientDataset"))
