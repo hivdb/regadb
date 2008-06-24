@@ -1,4 +1,4 @@
-package net.sf.regadb.util.sql;
+package net.sf.regadb.db.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,9 +70,11 @@ public class RunSqlCommand {
             logInfo("Executing: "+ query);
             s.execute(query);
             s.close();
+            logInfo("Success.");
         }
         catch(Exception e){
-            e.printStackTrace();
+            logError("Fail.");
+            //e.printStackTrace();
         }
     }
     
