@@ -251,4 +251,8 @@ public class Patient {
                 return d.getId().getDataset();
         return null;
     }
+    
+    public void addDataset(Dataset ds){
+        getPatient().getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds,getPatient())));
+    }
 }
