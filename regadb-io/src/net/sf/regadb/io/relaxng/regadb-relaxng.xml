@@ -39,9 +39,9 @@
         </element>
       </zeroOrMore>
     </element>
-    <element name="Datasets">
+    <element name="datasets">
       <zeroOrMore>
-        <element name="Datasets-el">
+        <element name="datasets-el">
           <ref name="net.sf.regadb.db.Dataset" />
         </element>
       </zeroOrMore>
