@@ -25,6 +25,7 @@ import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.impl.ImportXML;
 import net.sf.regadb.io.util.ILogger;
 import net.sf.regadb.io.util.IOUtils;
+import net.sf.regadb.service.ioAssist.IOAssist;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -34,10 +35,21 @@ public class AutoImport {
 		public boolean equals(ViralIsolate oldVI, ViralIsolate newVI);
 	}
 	
-	public static File exportViralIsolates(Login login, String dataset, ILogger logger) {
-		Transaction t = login.createTransaction();
+	private Login login_;
+	private ILogger logger_;
+	private String dataset_;
+	private List<File> filesToRemove = new ArrayList<File>();
+	
+	public AutoImport(Login login, ILogger logger, String dataset) {
+		login_ = login;
+		logger_ = logger;
+		dataset_ = dataset;
+	}
+	
+	public File exportViralIsolates() {
+		Transaction t = login_.createTransaction();
 		
-		Dataset ds = t.getDataset(dataset);
+		Dataset ds = t.getDataset(dataset_);
 		List<Patient> patients  = t.getPatients(ds);
 		
 		Map<String, Patient> patientsMap = new HashMap<String, Patient>();
@@ -48,11 +60,12 @@ public class AutoImport {
 		File tmpFile = null;
 		try {
 			tmpFile = File.createTempFile("viral_isolates", "xml");
+			filesToRemove.add(tmpFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		IOUtils.exportNTXMLFromPatients(patientsMap, tmpFile.getAbsolutePath(), logger);
+		IOUtils.exportNTXMLFromPatients(patientsMap, tmpFile.getAbsolutePath(), logger_);
 	
 		t.clearCache();
 		t.commit();
@@ -60,7 +73,7 @@ public class AutoImport {
 		return tmpFile;
 	}
 	
-	public static void removeOldDatabase() {
+	public void removeOldDatabase() {
         Connection c = HibernateUtil.getJDBCConnection();
         try {
             c.createStatement().execute("truncate patient cascade");
@@ -69,21 +82,21 @@ public class AutoImport {
         }
 	}
 	
-	public static void importPatients(Login login, File xmlInputFile, String dataset) throws WrongUidException, WrongPasswordException, DisabledUserException, FileNotFoundException, SAXException, IOException {
+	public void importPatients(File xmlInputFile) throws WrongUidException, WrongPasswordException, DisabledUserException, FileNotFoundException, SAXException, IOException {
         ImportXML instance;
-        instance = new ImportXML(login);
-	    instance.importPatients(new InputSource(new FileReader(xmlInputFile)), dataset);
+        instance = new ImportXML(login_);
+	    instance.importPatients(new InputSource(new FileReader(xmlInputFile)), dataset_);
 	}
 	
-	public static void importFormerViralIsolates(Login login, File xmlInputFile, String dataset) throws WrongUidException, WrongPasswordException, DisabledUserException, FileNotFoundException, SAXException, IOException {
+	public void importFormerViralIsolates(File xmlInputFile) throws WrongUidException, WrongPasswordException, DisabledUserException, FileNotFoundException, SAXException, IOException {
         ImportXML instance;
-        instance = new ImportXML(login);
-	    instance.importViralIsolates(new InputSource(new FileReader(xmlInputFile)), dataset);
+        instance = new ImportXML(login_);
+	    instance.importViralIsolates(new InputSource(new FileReader(xmlInputFile)), dataset_);
 	}
 	
-	public static void importNewViralIsolate(Login login, File formerXml, File newXml, String dataset, ViralIsolateComparator comparator, ILogger logger) throws SAXException, IOException {
-		List<ViralIsolate> oldVis = getViralIsolateList(login, formerXml);
-		List<ViralIsolate> newVis = getViralIsolateList(login, newXml);
+	public void importNewViralIsolate(File formerXml, File newXml, ViralIsolateComparator comparator) throws SAXException, IOException, WrongUidException, WrongPasswordException, DisabledUserException {
+		List<ViralIsolate> oldVis = getViralIsolateList(formerXml);
+		List<ViralIsolate> newVis = getViralIsolateList(newXml);
 
 		List<ViralIsolate> diffVis = new ArrayList<ViralIsolate>();
 		
@@ -106,22 +119,28 @@ public class AutoImport {
 		
 		if(diffVis.size()>0) {
 			File diffViFile = File.createTempFile("diffViFile", "xml");
+			filesToRemove.add(diffViFile);
 			Map<String, ViralIsolate> diffViMap = new HashMap<String, ViralIsolate>();
 			for(ViralIsolate vi : diffVis) {
 				diffViMap.put(vi.getSampleId(), vi);
 			}
-			IOUtils.exportNTXML(diffViMap, diffViFile.getAbsolutePath(), logger);
+			IOUtils.exportNTXML(diffViMap, diffViFile.getAbsolutePath(), logger_);
 			
 			File diffViProcessedFile = File.createTempFile("diffViFileProcessed", "xml");
+			filesToRemove.add(diffViProcessedFile);
 			
-			//IOAssist.run(diffViFile, diffViProcessedFile, null);
+			IOAssist.run(diffViFile, diffViProcessedFile, null);
+			
+	        ImportXML instance;
+	        instance = new ImportXML(login_);
+		    instance.importViralIsolates(new InputSource(new FileReader(diffViProcessedFile)), dataset_);
 		}
 	}
 	
-	private static List<ViralIsolate> getViralIsolateList(Login login, File xmlFile) throws SAXException, IOException {
+	private List<ViralIsolate> getViralIsolateList(File xmlFile) throws SAXException, IOException {
 		final List<ViralIsolate> vis = new ArrayList<ViralIsolate>();
 		
-		Transaction t = login.createTransaction();
+		Transaction t = login_.createTransaction();
 		
 		ImportFromXML instance = new ImportFromXML();
 		instance.loadDatabaseObjects(t);
@@ -133,5 +152,11 @@ public class AutoImport {
 		t.commit();
 		
 		return vis;
+	}
+	
+	public void cleanTempFiles() {
+		for(File f : filesToRemove) {
+			f.delete();
+		}
 	}
 }
