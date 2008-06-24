@@ -10,6 +10,7 @@ import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.CombinedQuery;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.ViralIsolate;
@@ -29,6 +30,7 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.CombinedQueryDefinition;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.EventNominalValue;
@@ -553,13 +555,13 @@ public class ExportToXML
 			patientEventValuesEl.addContent(patientEventValues_elEl);
 			writePatientEventValue(PatientEventValueloopvar,patientEventValues_elEl);
 		}
-		Element DatasetsEl = new Element("Datasets");
-		parentNode.addContent(DatasetsEl);
+		Element datasetsEl = new Element("datasets");
+		parentNode.addContent(datasetsEl);
 		for (Dataset Datasetloopvar : Patientvar.getDatasets())
 		{
-			Element Datasets_elEl = new Element("Datasets-el");
-			DatasetsEl.addContent(Datasets_elEl);
-			writeDataset(Datasetloopvar,Datasets_elEl);
+			Element datasets_elEl = new Element("datasets-el");
+			datasetsEl.addContent(datasets_elEl);
+			writeDataset(Datasetloopvar,datasets_elEl);
 		}
 		Element testResultsEl = new Element("testResults");
 		parentNode.addContent(testResultsEl);

@@ -87,7 +87,8 @@ public class ImportXML {
         public void importObject(Patient patient) {
 
             try {
-                patient.setSourceDataset(dataset, t);
+                if(dataset != null)
+                    patient.setSourceDataset(dataset, t);
                 instance.sync(t, patient, SyncMode.Update, false);
                 out.println(instance.getLog());
                 instance.getLog().delete(0, instance.getLog().length());
@@ -105,7 +106,8 @@ public class ImportXML {
                 t.clearCache();
                 t = login.createTransaction();
                 instance.loadDatabaseObjects(t);
-                dataset = loadOrCreateDataset(t, dataset.getDescription());
+                if(dataset != null)
+                    dataset = loadOrCreateDataset(t, dataset.getDescription());
             }
         }        
     }
@@ -114,7 +116,7 @@ public class ImportXML {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
-        Dataset dataset = loadOrCreateDataset(t, datasetName);
+        Dataset dataset = (datasetName != null? loadOrCreateDataset(t, datasetName) : null);
 
         PatientImportHandler importHandler = new PatientImportHandler(t, dataset);
         instance.readPatients(s, importHandler);

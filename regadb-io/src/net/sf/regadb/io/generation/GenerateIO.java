@@ -88,6 +88,8 @@ public class GenerateIO
         pointerClasses_.add(dbPackage + "Analysis");
         pointerClasses_.add(dbPackage + "AnalysisData");
         
+        pointerClasses_.add(dbPackage + "Dataset");
+        
         nominalValues_.add(dbPackage + "TestNominalValue");
         nominalValues_.add(dbPackage + "AttributeNominalValue");
         nominalValues_.add(dbPackage + "EventNominalValue");
@@ -234,7 +236,7 @@ public class GenerateIO
         if(field.getName().equals("patientDatasets"))
         {
 			bareClass = replacePatientDatasetByDataset(bareClass);
-            fieldName = "Datasets";
+            fieldName = "datasets";
         }
         
         if(!interpreter.isComposite(c.getName(), field.getName()))

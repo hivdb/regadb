@@ -454,7 +454,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                         throw new SAXException(new ImportException("Unexpected top level object: " + qName));
                     }
                 } else if (currentState() == ParseState.statePatient) {
-                    elDataset = null; // FIXME
+                    elDataset = resolveDataset(fieldDataset_description);
+                    patient.addDataset(elDataset);
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
                 }
@@ -2137,7 +2138,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
-                        ;// TODO
+                        dbo.addDataset(e);
                     }
                 } else {
                     if (syncPair(t, e, dbe, syncMode, simulate)) changed = true;

@@ -81,7 +81,8 @@ public class XMLReadCodeGen {
             } else if (javaClass == PatientEventValue.class) {
                 write(tabs, resolved.varName() + " = patient.createPatientEventValue(fieldPatientEventValue_event);\n");
             } else if (javaClass == Dataset.class) {
-                write(tabs, resolved.varName() + " = null; // FIXME\n");                
+                write(tabs, resolved.varName() + " = resolveDataset(fieldDataset_description);\n");
+                write(tabs, "patient.setSourceDataset("+ resolved.varName() +");\n");                
             } else if (parent.javaClass == Patient.class) {
                 write(tabs, resolved.varName() + " = patient.create" + javaClass.getSimpleName() + "();\n");
             } else {
@@ -592,10 +593,7 @@ public class XMLReadCodeGen {
                     write(5, "changed = true;\n");
                     write(5, "if (!simulate) {\n");
                     if (o.javaClass == Patient.class) {
-                        if (f.resolved.javaClass != Dataset.class)
-                            write(6, "dbo.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
-                        else
-                            write(6, ";// TODO\n");
+                    	write(6, "dbo.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
                     } else {
                         write(6, "dbo." + f.getterName() + "().add(e);\n");
                         if (f.resolved.hasCompositeId)

@@ -12,13 +12,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
@@ -31,12 +36,15 @@ public class ImportFromXMLBase extends DefaultHandler{
     protected Patient patient = null;
     protected StringBuffer value = null;
     private DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private Transaction transaction;
 
     private Map<String, DrugGeneric> genericDrugs;
     private Map<String, DrugCommercial> commercialDrugs;
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
     private Map<String, TherapyMotivation> therapyMotivations;
+    private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
     
     protected StringBuffer log = new StringBuffer();
     public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
@@ -165,8 +173,32 @@ public class ImportFromXMLBase extends DefaultHandler{
         else
             return result;
     }
+    protected Dataset resolveDataset(String value) throws SAXException {
+        Dataset result = datasets.get(value.toUpperCase());
+        
+        if(result == null){
+            result = transaction.getDataset(value);
+            
+            if(result == null){
+                result = new Dataset(transaction.getSettingsUser(), value, new Date());
+                result.setRevision(1);
+                
+                transaction.getSettingsUser().getDatasetAccesses().add( new DatasetAccess(
+                                                                            new DatasetAccessId(transaction.getSettingsUser(), result),
+                                                                            Privileges.READWRITE.getValue(),
+                                                                            transaction.getSettingsUser().getUid())
+                                                                        );
+                transaction.save(result);
+            }
+            
+            datasets.put(value, result);
+        }
+        return result;
+    }
 
     public void loadDatabaseObjects(Transaction t) {
+        transaction = t;
+        
         genericDrugs = new TreeMap<String, DrugGeneric>();
         if (t!=null) {
             for (DrugGeneric d : t.getGenericDrugs()) {
