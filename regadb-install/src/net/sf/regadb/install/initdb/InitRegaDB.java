@@ -96,6 +96,8 @@ public class InitRegaDB
         session.save(new TherapyMotivation("Patient's choice"));
         session.save(new TherapyMotivation("Therapy change"));
         session.save(new TherapyMotivation("Adherence"));
+        session.save(new TherapyMotivation("Pregnancy"));
+        session.save(new TherapyMotivation("Interaction with other drugs"));
         session.save(new TherapyMotivation("Other"));
         session.save(new TherapyMotivation("Unknown"));
     }
