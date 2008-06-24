@@ -3,14 +3,17 @@ package net.sf.regadb.io.db.irsicaixa;
 import java.io.File;
 import java.io.IOException;
 
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.autoImport.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.db2csv.DBToCsv;
 import net.sf.regadb.io.db.util.db2csv.MysqlConnectionProvider;
 
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 public class IrsicaixaAutoImport {
@@ -40,6 +43,8 @@ public class IrsicaixaAutoImport {
 		DBToCsv db2csv = new DBToCsv(connectionProvider);
 		db2csv.createCsv(csvDirectory);
 		
+		AutoImport auto = new AutoImport(login, ConsoleLogger.getInstance(), dataset);
+		
 		ImportIrsicaixa importIrsicaixa = new ImportIrsicaixa(ConsoleLogger.getInstance(),
 				csvDirectory.getAbsolutePath(),
 				mappingPath);
@@ -51,10 +56,32 @@ public class IrsicaixaAutoImport {
 		System.err.println(patientXmlFile);
 		System.err.println(viralIsolateXmlFile);
 		
-		//AutoImport.removeOldDatabase();
+		System.err.println("Start exporting former viral isolates");
+		File oldViralIsolates = auto.exportViralIsolates();
+		System.err.println(oldViralIsolates);
 		
-		//AutoImport.importPatients(login, new File(patientXmlFile), dataset);
+		System.err.println("Start removing former database");
+		auto.removeOldDatabase();
 		
-		//AutoImport.
+		System.err.println("Start importing new patients");
+		auto.importPatients(new File(patientXmlFile));
+		
+		System.err.println("Start importing former viralisolates");
+		auto.importFormerViralIsolates(oldViralIsolates);
+		
+		System.err.println("Start importing new viralisolates");
+		auto.importNewViralIsolate(oldViralIsolates, new File(viralIsolateXmlFile), new AutoImport.ViralIsolateComparator() {
+			public boolean equals(ViralIsolate oldVI, ViralIsolate newVI) {
+				if(oldVI.getSampleId().equals(newVI.getSampleId()))
+					return true;
+				else
+					return false;
+			}
+		});
+		
+		login.closeSession();
+		
+		FileUtils.deleteDirectory(csvDirectory);
+		auto.cleanTempFiles();
 	}
 }
