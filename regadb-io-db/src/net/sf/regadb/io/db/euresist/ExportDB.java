@@ -30,6 +30,8 @@ public class ExportDB {
     private String outputPath=null;
     
     public static void main(String[] args){
+        System.setProperty("http.proxyHost", "www-proxy");
+        System.setProperty("http.proxyPort", "3128");
         ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3], args[4]);
         edb.run();
     }
@@ -39,9 +41,6 @@ public class ExportDB {
         
         setMappingPath(mappingPath);
         setOutputPath(outputPath);
-        
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
     }
     
     public void run(){
@@ -74,7 +73,7 @@ public class ExportDB {
     }
     
     public Map<String,Patient> exportPatients() throws Exception{
-        ResultSet rs = getDb().executeQuery("SELECT * FROM Patients");
+        ResultSet rs = getDb().executeQuery("select * from Patients order by originalID");
         Map<String,Patient> patients = new HashMap<String,Patient>();
         
         SimpleDateFormat yearDf = new SimpleDateFormat("yyyy");
@@ -103,13 +102,15 @@ public class ExportDB {
         Map<String,AttributeNominalValue> coiMap = copyNominals(cooMap,coiAttr);
         Map<String,AttributeNominalValue> gooiMap = copyNominals(goMap,gooiAttr);
         
-//        Map<String,Dataset> dsMap = createDatasetMap();
+        Map<String,Dataset> dsMap = createDatasetMap();
 
         while(rs.next()){
             Patient p = new Patient();
+            Dataset ds = dsMap.get(rs.getString("databaseID"));
             patients.put(rs.getString("patientID"), p);
             
-            p.setPatientId(rs.getString("databaseID") +"_"+ rs.getString("originalID"));
+            p.addDataset(ds);
+            p.setPatientId(rs.getString("originalID"));
             
             s = rs.getString("year_of_birth");
             if(check(s))
@@ -200,8 +201,22 @@ public class ExportDB {
         return map;
     }
     
-    public Map<String,Dataset> createDatasetMap(){
+    public Map<String,Dataset> createDatasetMap() throws Exception{
         Map<String, Dataset> map = new HashMap<String,Dataset>();
+        
+        ResultSet rs = getDb().executeQuery("select * from DataSources");
+        
+        Dataset ds;
+        
+        while(rs.next()){
+            ds = new Dataset();
+            ds.setCreationDate(convert(rs.getDate("version_date")));
+            ds.setDescription(rs.getString("database_name"));
+            ds.setRevision(1);
+            
+            map.put(rs.getString("databaseID"), ds);
+        }
+        
         return map;
     }
     
