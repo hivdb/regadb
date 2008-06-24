@@ -33,14 +33,18 @@ public class IOAssist
                 break;
             }
         }
+
+        run(new File(args[0]), new File(args[1]), wtsUrl);
+    }
+    
+    public static void run(File inputFile, File outputFile, String wtsUrl) {
         long start = System.currentTimeMillis();
         ImportFromXML imp = new ImportFromXML();
         FileReader r;
         try 
         {
-            r = new FileReader(new File(args[0]));
-            File outFile = new File(args[1]);
-            FileWriter out = new FileWriter(outFile);
+            r = new FileReader(inputFile);
+            FileWriter out = new FileWriter(outputFile);
             out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <viralIsolates>");
             imp.readViralIsolates(new InputSource(r), new IOAssistImportHandler(out, wtsUrl));
             out.write("</viralIsolates>");
