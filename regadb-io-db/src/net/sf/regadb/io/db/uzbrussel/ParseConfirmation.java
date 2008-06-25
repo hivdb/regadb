@@ -271,7 +271,7 @@ public class ParseConfirmation {
     }
     
     public void handleWivDateAttribute(String attributeName, String value, Patient p, DateFormat df) {
-        if(!"".equals(value)) {
+        if(!"".equals(value) && !"U".equals(value)) {
             try {
                 Date d = df.parse(value);
                 handleWIVAttribute(attributeName, d.getTime()+"", p);
