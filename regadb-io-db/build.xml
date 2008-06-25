@@ -38,12 +38,28 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	
+  	<jar jarfile="${dist}/${proj.name}-rome-auto-import.jar" basedir="${build}">
+  	  		<manifest>
+  	  			<attribute name="Main-Class" value="net.sf.regadb.io.db.ucsc.UCSCAutoImport"/>
+  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  	  		</manifest>
+  	</jar>
+  	
+  	<jar jarfile="${dist}/${proj.name}-badalona-auto-import.jar" basedir="${build}">
+  	  	  		<manifest>
+  	  	  			<attribute name="Main-Class" value="net.sf.regadb.io.db.irsicaixa.IrsicaixaAutoImport"/>
+  	  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  	  	  		</manifest>
+  	</jar>
+  	
  	<jar jarfile="${dist}/${proj.name}-uzbrussel-auto-import.jar" basedir="${build}">
   		<manifest>
   			<attribute name="Main-Class" value="net.sf.regadb.io.db.uzbrussel.UZBrusselAutoImport"/>
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	
  	<jar jarfile="${dist}/${proj.name}-pt-fix-months.jar" basedir="${build}">
   		<manifest>
   			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.FixMonths"/>
