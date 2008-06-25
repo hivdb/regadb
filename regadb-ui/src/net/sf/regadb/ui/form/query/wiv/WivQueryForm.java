@@ -588,45 +588,101 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         return getFormattedDecimal(d,2,2);
     }
     
+    protected enum FillerType {QUESTIONMARK, UNKNOWN, COUNTRYCODE};
+    protected class EpidemiologyTable{
+        private Map<String, Integer> position = new HashMap<String, Integer>();
+        private List<Integer> length = new ArrayList<Integer>();
+        private List<FillerType> filler = new ArrayList<FillerType>();
+        private ArrayList<String> header = new ArrayList<String>();
+
+        public void add(String name, String header, int length){
+            add(name,header,length,FillerType.QUESTIONMARK);
+        }
+        
+        public void add(String name, String header, int length, FillerType filler){
+            this.position.put(name, position.size());
+            this.header.add(header);
+            this.length.add(length);
+            this.filler.add(filler);
+        }
+        
+        public ArrayList<String> getHeader(){
+            return header;
+        }
+        
+        public int size(){
+            return position.size();
+        }
+        
+        public Integer getPosition(String name){
+            return position.get(name);
+        }
+        
+        public int getLength(String name){
+            Integer i = position.get(name);
+            return (i != null? getLength(i):0);
+        }
+        
+        public int getLength(int i){
+            return length.get(i);
+        }
+        
+        public FillerType getFillerType(int i){
+            return filler.get(i);
+        }
+        
+        public String getEmptyValue(int position){
+            FillerType f = getFillerType(position);
+            if(f == FillerType.QUESTIONMARK)
+                return getPadding(getLength(position));
+            
+            if(f == FillerType.UNKNOWN)
+                return "U";
+            
+            if(f == FillerType.COUNTRYCODE)
+                return "999";
+            
+            return "";
+        }
+    }
+    
     protected Table getArlEpidemiologyTable(List<Patient> patients){
-    	Map<String, Integer> position = new HashMap<String, Integer>();
-        List<Integer> length = new ArrayList<Integer>();
-        ArrayList<String> header = new ArrayList<String>();
-        int i=0;
-        length.add(13); position.put("PatCode", i++);                   header.add("PAT_CODE");
-        length.add(10); position.put("REF_LABO", i++);                  header.add("REF_LABO");
-        length.add(8);  position.put("HivConf.TestResult.value", i++);  header.add("DATE_TEST");
-        length.add(8);  position.put("Patient.birthDate", i++);         header.add("BIRTH_DATE");
-        length.add(1);  position.put("Gender", i++);                    header.add("SEX");
-        length.add(1);  position.put("HivType.TestResult.value", i++);  header.add("HIVTYPE");
-        length.add(0);  position.put("VL.TestResult.value", i++);       header.add("VIRLOAD");
-        length.add(3);  position.put("NATION", i++);                    header.add("NATION");
-        length.add(3);  position.put("COUNTRY", i++);                   header.add("COUNTRY");
-        length.add(2);  position.put("RESID_B", i++);                   header.add("RESID_B");
-        length.add(3);  position.put("ORIGIN", i++);                    header.add("ORIGIN");
-        length.add(4);  position.put("ARRIVAL_B", i++);                 header.add("ARRIVAL_B");
-        length.add(1);  position.put("SEXCONTACT", i++);                header.add("SEXCONTACT");
-        length.add(4);  position.put("SEXPARTNER", i++);                header.add("SEXPARTNER");
-        length.add(3);  position.put("NATPARTNER", i++);                header.add("NATPARTNER");
-        length.add(1);  position.put("BLOODBORNE", i++);                header.add("BLOODBORNE");
-        length.add(4);  position.put("YEARTRANSF", i++);                header.add("YEARTRANSF");
-        length.add(3);  position.put("TRANCOUNTR", i++);                header.add("TRANCOUNTR");
-        length.add(1);  position.put("CHILD", i++);                     header.add("CHILD");
-        length.add(1);  position.put("PROFRISK", i++);                  header.add("PROFRISK");
-        length.add(4);  position.put("PROBYEAR", i++);                  header.add("PROBYEAR");
-        length.add(3);  position.put("PROBCOUNTR", i++);                header.add("PROBCOUNTR");
-        length.add(4);  position.put("CD4.TestResult.value", i++);      header.add("LYMPHO");
-        length.add(1);  position.put("STAD_CLIN", i++);                 header.add("STAD_CLIN");
-        length.add(1);  position.put("REASONTEST", i++);                header.add("REASONTEST");
-        length.add(8);  position.put("FORM_OUT", i++);                  header.add("FORM_OUT");
-        length.add(8);  position.put("FORM_IN", i++);                   header.add("FORM_IN");
-        length.add(3);  position.put("LABO", i++);                        header.add("LABO");
-        length.add(0);  position.put("Comment", i);                     header.add("OPMERKING");
+        EpidemiologyTable table = new EpidemiologyTable();
+        
+        table.add("PatCode",                    "PAT_CODE",     13);
+        table.add("REF_LABO",                   "REF_LABO",     0);
+        table.add("HivConf.TestResult.value",   "DATE_TEST",    8);
+        table.add("Patient.birthDate",          "BIRTH_DATE",   8);
+        table.add("Gender",                     "SEX",          1);
+        table.add("HivType.TestResult.value",   "HIVTYPE",      1);
+        table.add("NATION",                     "NATION",       3,  FillerType.COUNTRYCODE);
+        table.add("COUNTRY",                    "COUNTRY",      3,  FillerType.COUNTRYCODE);
+        table.add("RESID_B",                    "RESID_B",      2);
+        table.add("ORIGIN",                     "ORIGIN",       3,  FillerType.COUNTRYCODE);
+        table.add("ARRIVAL_B",                  "ARRIVAL_B",    0);
+        table.add("SEXCONTACT",                 "SEXCONTACT",   1,  FillerType.UNKNOWN);
+        table.add("SEXPARTNER",                 "SEXPARTNER",   1,  FillerType.UNKNOWN);
+        table.add("NATPARTNER",                 "NATPARTNER",   0);
+        table.add("BLOODBORNE",                 "BLOODBORNE",   1,  FillerType.UNKNOWN);
+        table.add("YEARTRANSF",                 "YEARTRANSF",   0);
+        table.add("TRANCOUNTR",                 "TRANCOUNTR",   0);
+        table.add("CHILD",                      "CHILD",        1);
+        table.add("PROFRISK",                   "PROFRISK",     1,  FillerType.UNKNOWN);
+        table.add("PROBYEAR",                   "PROBYEAR",     1,  FillerType.UNKNOWN);
+        table.add("PROBCOUNTR",                 "PROBCOUNTR",   3,  FillerType.COUNTRYCODE);
+        table.add("CD4.TestResult.value",       "LYMPHO",       4);
+        table.add("VL.TestResult.value",        "VIRLOAD",      4);
+        table.add("STAD_CLIN",                  "STAD_CLIN",    1,  FillerType.UNKNOWN);
+        table.add("REASONTEST",                 "REASONTEST",   1,  FillerType.UNKNOWN);
+        table.add("FORM_OUT",                   "FORM_OUT",     8);
+        table.add("FORM_IN",                    "FORM_IN",      8);
+        table.add("LABO",                       "LABO",         3);
+        table.add("Comment",                    "OPMERKING",    0);
         
         Table res = new Table();
         String [] row;
         
-        res.addRow(header);
+        res.addRow(table.getHeader());
         
         for(Patient p : patients){
             
@@ -634,42 +690,42 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
             
             tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
             if(tr != null){
-                row = new String[position.size()];
+                row = new String[table.size()];
 
                 TestNominalValue tnv = tr.getTestNominalValue();
                 if(tnv != null){
                     String hivTypeCode = getHivTypeCode(tnv.getValue());
                     if(hivTypeCode != null)
-                        row[position.get("HivType.TestResult.value")] = hivTypeCode;
+                        row[table.getPosition("HivType.TestResult.value")] = hivTypeCode;
                     else
                         continue;
                 }
                 else
                     continue;
                 
-	            row[position.get("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
+	            row[table.getPosition("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
 	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
 	            if(tr != null){
-	            	row[position.get("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
+	            	row[table.getPosition("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
 	            }
 	            
 	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
 	            if(tr != null){
-	            	row[position.get("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
+	            	row[table.getPosition("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
 	            }
 	            else
-	            	row[position.get("CD4.TestResult.value")] = "U";
+	            	row[table.getPosition("CD4.TestResult.value")] = "U";
 	            
 	            tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
                 if(tr != null){
-                    row[position.get("HivConf.TestResult.value")] = getFormattedDate(tr.getTestDate());
+                    row[table.getPosition("HivConf.TestResult.value")] = getFormattedDate(tr.getTestDate());
                 }
 	            
-	            row[position.get("LABO")] = getCentreName();
+	            row[table.getPosition("LABO")] = getCentreName();
 	            
 	            for(PatientAttributeValue pav : p.getPatientAttributeValues()){
-	                Integer pos = position.get(pav.getAttribute().getName());
+	                Integer pos = table.getPosition(pav.getAttribute().getName());
 	                if(pos != null){
 	                    String s = null;
 	
@@ -682,10 +738,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
 	                
 	            }
 	            
-	            //fill empty fields with question marks
+	            //fill empty fields
 	            for(int j=0; j<row.length; ++j){
 	                if(row[j] == null){
-	                    row[j] = getPadding(length.get(j));
+	                    row[j] = table.getEmptyValue(j);
 	                }
 	            }
 	
