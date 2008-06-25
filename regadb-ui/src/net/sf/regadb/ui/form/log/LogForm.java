@@ -103,7 +103,7 @@ public class LogForm extends FormWidget {
     private String parseContent(File f){
         String content = null;
         try{
-            content = org.apache.commons.io.FileUtils.readFileToString(f);
+            content = org.apache.commons.io.FileUtils.readFileToString(f, null);
         }
         catch(Exception e){
             e.printStackTrace();
