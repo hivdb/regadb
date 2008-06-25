@@ -510,8 +510,8 @@ public class ImportUcsc
 	    		}
     		}
     		
-    		//Drug tests
-    		if(labor.equals("FARMACOLOGIA"))
+    		//Drug tests not used yet
+    		/*if(labor.equals("FARMACOLOGIA"))
     		{
     			for(int j = 0; j < regaDrugGenerics.size(); j++)
     			{
@@ -522,15 +522,15 @@ public class ImportUcsc
     					if (Utils.checkColumnValueForEmptiness("Drug testing for "+name+"", result, i, patientID)) 
     		    		{
     						//TODO: Wait for Pieter to fix it within the repository
-    		                /*TestResult t = p.createTestResult(StandardObjects.getGenericDrugTesting());
+    		                TestResult t = p.createTestResult(StandardObjects.getGenericDrugTesting());
     		                t.setValue(result.replace(',', '.'));
-    		                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));*/
+    		                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
     		    		}
     					
     					break;
     				}
     			}
-    		}
+    		}*/
     	}
     }
     
