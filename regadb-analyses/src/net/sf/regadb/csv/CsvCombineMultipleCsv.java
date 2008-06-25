@@ -27,7 +27,7 @@ public class CsvCombineMultipleCsv {
         }
         
         try {
-            FileUtils.writeStringToFile(new File(outputFile), bos.toString());
+            FileUtils.writeStringToFile(new File(outputFile), bos.toString(), null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class CsvCombineMultipleCsv {
                 }
                 new File(outputFile).delete();
                 try {
-                    FileUtils.writeStringToFile(new File(outputFile), bos.toString());
+                    FileUtils.writeStringToFile(new File(outputFile), bos.toString(), null);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

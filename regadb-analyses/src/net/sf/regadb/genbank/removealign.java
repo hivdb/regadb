@@ -16,8 +16,8 @@ public class removealign {
 		String fasta1 = ">" + read1.fastaHeader_ + "\n" + read1.xna_.replace("-", "");
 		String fasta2 = ">" + read2.fastaHeader_ + "\n" + read2.xna_.replace("-", "");
 		try {
-			FileUtils.writeStringToFile(new File("/home/plibin0/projects/genbank/hiv2/M15390_compendium_noalign.fasta"), fasta1);
-			FileUtils.writeStringToFile(new File("/home/plibin0/projects/genbank/hiv2/M33262_compendium_noalign.fasta"), fasta2);
+			FileUtils.writeStringToFile(new File("/home/plibin0/projects/genbank/hiv2/M15390_compendium_noalign.fasta"), fasta1, null);
+			FileUtils.writeStringToFile(new File("/home/plibin0/projects/genbank/hiv2/M33262_compendium_noalign.fasta"), fasta2, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
