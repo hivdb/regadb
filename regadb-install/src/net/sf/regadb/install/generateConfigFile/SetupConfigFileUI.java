@@ -134,7 +134,7 @@ public class SetupConfigFileUI {
         
         try
         {
-            FileUtils.writeStringToFile(tmpFile, content);
+            FileUtils.writeStringToFile(tmpFile, content, null);
         }
         catch(IOException ioe){}
         

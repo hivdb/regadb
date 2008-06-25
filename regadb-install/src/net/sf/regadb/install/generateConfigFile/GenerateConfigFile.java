@@ -73,7 +73,7 @@ public class GenerateConfigFile {
 		List configElements = new ArrayList();
 		
 		try {
-			configElements = FileUtils.readLines(installFile);
+			configElements = FileUtils.readLines(installFile, null);
 		}
 		catch (IOException e) {
 			e.printStackTrace();

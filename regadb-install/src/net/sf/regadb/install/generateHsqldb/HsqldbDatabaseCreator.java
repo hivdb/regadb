@@ -61,7 +61,7 @@ public class HsqldbDatabaseCreator {
 		String query = new String();
 		
 		try {
-			query = FileUtils.readFileToString(hsqldbSchemaFile);
+			query = FileUtils.readFileToString(hsqldbSchemaFile, null);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -93,7 +93,7 @@ public class HsqldbDatabaseCreator {
 		String scriptFile = new String();
 		
 		try {
-			scriptFile = FileUtils.readFileToString(databaseScript);
+			scriptFile = FileUtils.readFileToString(databaseScript, null);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -103,7 +103,7 @@ public class HsqldbDatabaseCreator {
 		scriptFile = scriptFile.replace("GRANT DBA TO SA", "GRANT DBA TO " + userName_.toUpperCase());
 		
 		try {
-			FileUtils.writeStringToFile(databaseScript, scriptFile);
+			FileUtils.writeStringToFile(databaseScript, scriptFile, null);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
