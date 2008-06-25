@@ -26,8 +26,9 @@ public class IrsicaixaAutoImport {
 	            System.exit(0);
 	        }
 			
-	        System.setProperty("http.proxyHost", "www-proxy");
-	        System.setProperty("http.proxyPort", "3128");
+	        //System.setProperty("http.proxyHost", "www-proxy");
+	        //System.setProperty("http.proxyPort", "3128");
+	        
 	        Login login = Login.authenticate(args[0], args[1]);
 			IrsicaixaAutoImport auto = new IrsicaixaAutoImport(args[2], new MysqlConnectionProvider("virolab", args[3], args[4]), login, args[5]);
 		} catch (IOException e) {
