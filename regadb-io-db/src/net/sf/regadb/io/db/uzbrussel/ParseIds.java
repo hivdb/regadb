@@ -120,7 +120,7 @@ public class ParseIds {
                 }
             }
             if(counter>1) {
-                ConsoleLogger.getInstance().logError("Duplicate patcode: " + patcode);
+                ConsoleLogger.getInstance().logWarning("Duplicate patcode: " + patcode);
             }
             counter = 0;
         }
