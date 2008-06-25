@@ -19,10 +19,17 @@ import org.xml.sax.SAXException;
 public class IrsicaixaAutoImport {
 	public static void main(String [] args) {
 		try {
+			
+			if(args.length!=6) 
+	        {
+	            System.err.println("Usage: IrsicaixaAutoImport [regadb user] [regadb pw] [mappingBasePath] [mysql user] [mysql pw] [dataset]");
+	            System.exit(0);
+	        }
+			
 	        System.setProperty("http.proxyHost", "www-proxy");
 	        System.setProperty("http.proxyPort", "3128");
 	        Login login = Login.authenticate(args[0], args[1]);
-			IrsicaixaAutoImport auto = new IrsicaixaAutoImport("/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/irsicaixa/mappings/", new MysqlConnectionProvider("virolab", args[2], args[3]), login, args[4]);
+			IrsicaixaAutoImport auto = new IrsicaixaAutoImport(args[2], new MysqlConnectionProvider("virolab", args[3], args[4]), login, args[5]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (WrongUidException e) {
