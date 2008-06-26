@@ -40,7 +40,8 @@ public class ParseSeqs {
             String id = seqMappingTable.valueAt(0, i).trim();
             String seqId = seqMappingTable.valueAt(1, i).trim();
             String seqDate = seqMappingTable.valueAt(2, i).trim();
-            if(!id.equals("") && !seqId.equals("")) {
+            String code = seqMappingTable.valueAt(3, i).trim();
+            if(!id.equals("") && !seqId.equals("") && code.toLowerCase().equals("zbr")) {
                 if(!seqDate.equals("")) {
                     Date d = null;
                     try {
