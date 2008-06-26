@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
@@ -63,10 +65,8 @@ public class ParseSeqs {
                             vi.setSampleId(seqId);
                             vi.setSampleDate(d);
                             
-                            NtSequence ntseq = new NtSequence();
-                            ntseq.setLabel("Sequence 1");
-                            ntseq.setNucleotides(getNtSeqFromFile(seq));
-                            vi.getNtSequences().add(ntseq);
+                            getNtSeqsFromFile(seq, vi);
+
                             counter++;
                         }
                     } else {
@@ -88,15 +88,27 @@ public class ParseSeqs {
     	return seqPath.getAbsolutePath()+File.separatorChar+"sequences"+File.separatorChar+c.get(Calendar.YEAR)+File.separatorChar;
     }
     
-    private String getNtSeqFromFile(File seqFile) {
-        String content = null;
+    private List<NtSequence> getNtSeqsFromFile(File seqFile, ViralIsolate vi) {
+    	List<NtSequence> seqs = new ArrayList<NtSequence>();
+    	String content = null;
         try {
             content = new String(FileUtils.readFileToByteArray(seqFile));
+            String[] lines = content.split("\n");
+            int counter = 1;
+            for(String l : lines) {
+            	if(!l.trim().equals("")) {
+                    NtSequence ntseq = new NtSequence();
+                    ntseq.setLabel("Sequence " + counter);
+                    ntseq.setNucleotides(Utils.clearNucleotides(l));
+                    vi.getNtSequences().add(ntseq);
+                    counter ++;
+            	}
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        return Utils.clearNucleotides(content);
+        return seqs;
     }
     
     public String getFileName(String seqId) {
