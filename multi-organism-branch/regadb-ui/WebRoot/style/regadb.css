@@ -1,0 +1,490 @@
+@CHARSET "UTF-8";
+
+*.header-mainTitle
+{
+	Font-weight: bold;
+  	font-size: 40px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.header-subTitle 
+{
+  	font-weight: bold;
+  	font-size: 20px;
+  	margin-left: 10px;
+  	margin-right: 5px;  
+}
+
+*.filterTF-valid-input
+{
+
+}
+
+*.filterTF-invalid-input
+{
+	color: red;
+}
+
+*.treemenu-menuItem
+{
+	cursor: pointer;
+	color: blue;
+}
+
+*.treemenu-disabledMenuItem
+{
+	color: grey;
+}
+
+*.treemenu-selectedMenuItem
+{
+	color: blue;
+	font-weight: bold;
+}
+
+fieldset {
+	padding: .7em;
+}
+
+*.form-field-textfield-edit-valid
+{
+	
+}
+
+*.form-field-textfield-edit-invalid
+{
+	background-color: red;
+}
+
+*.form-field-combo-edit-valid
+{
+	
+}
+
+*.form-field-ntfield-edit-invalid
+{
+	background-color: red;
+}
+
+*.form-field-ntfield-edit-valid
+{
+
+}
+
+*.form-field-combo-edit-invalid
+{
+	background-color: red;
+}
+
+*.general-clickable-text
+{
+	color : blue;
+	cursor: pointer;
+}
+*.spacyTable {
+	min-width: 600px;
+	width: 100%;
+}
+*.spacyTable td {
+	padding: .4em;
+}
+*.table-cell
+{
+	cursor: pointer;
+}
+
+*.dialog-title
+{
+	color : white;
+	
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-title-container
+{
+	background-color : blue;
+}
+
+*.dialog-image
+{
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-message
+{
+	color : black;
+	
+	margin-left: 5px;
+  	margin-right: 5px;
+  	margin-left: 5px;
+  	margin-right: 5px;
+}
+
+*.dialog-message-container
+{
+	background-color : grey;
+}
+
+*.table-expander-text
+{
+	text-decoration: underline;
+}
+
+*.form-label 
+{ 
+	white-space : nowrap;
+	
+	margin-right: 10px;
+	padding-right: 10px;
+}
+	
+*.form-label span
+{
+	display: -moz-inline-box;
+	display: inline-block;
+	
+	font-style: arial;
+	font-weight: bold;	
+}
+
+*.main-tree
+{
+	width: 15em;
+}
+
+*.tabmenu span
+{
+	color: blue;
+	text-decoration: underline;
+}
+
+*.tabmenu span.itemselected
+{
+	padding-left: 5px;
+	padding-bottom: 2px;
+	padding-right: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
+}
+
+*.tabmenu span.item
+{
+	padding-left: 5px;
+	padding-bottom: 2px;
+	padding-right: 5px;
+	cursor: pointer;
+}
+
+*.viralisolateform
+{
+	padding: 5px;
+	border: 1px solid black;
+}
+
+*.datatable td
+{
+	padding-right: 10px;
+}
+
+*.scrollingButtons span
+{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+*.scrollingButtons button
+{
+	margin: 1px;
+}
+
+*.Generic-drug-table th
+{
+	margin: 5px;
+}
+
+*.Generic-drug-table td
+{
+	padding: 3px;
+}
+
+*.table-header-bold
+{
+	font-weight: bold;
+}
+
+*.table-header
+{
+	font-weight: bold;
+}
+
+*.table-cell-center
+{
+	text-align: center !important;
+	vertical-align: middle !important;
+}
+
+*.editable-table td
+{
+	padding: 3px;
+}
+
+*.form-field-textarea-edit-invalid
+{
+	background-color: red;
+}
+
+*.form-field-textarea-edit-valid
+{
+}
+
+*.link span
+{
+	cursor: pointer;
+}
+
+*.groupbox div
+{
+	padding-right: 300px
+}
+*.link {
+	color: blue;
+}
+
+*.vi-mutation-evolution-table td {
+	padding: 3px;
+}
+
+*.viral-isolate-fasta-label {
+	color: blue;
+}
+
+
+
+/* tabbed panes */
+
+.tabbedpane {
+	width: 100%;
+}
+
+.tabbedpane .tabstack {
+	border: 1px solid rgb(102, 102, 102);
+	background-color: rgb(225, 225, 225);
+}
+
+ .dialog .tabstack {
+	border-left: 0px solid rgb(102, 102, 102);
+	border-right: 0px solid rgb(102, 102, 102);
+	border-bottom: 0px solid rgb(102, 102, 102);
+}
+
+.tabbedpane .tab {
+	border-top: 1px solid rgb(140, 140, 140);
+	margin: 0.2em 0px 0px;
+	padding-bottom:0.5em;
+	background-color: rgb(255, 255, 255);
+}
+
+.dialog .tab {
+	background-color: rgb(235, 235, 235);
+}
+
+.tabbedpane .tabmenu span {
+	text-decoration:none !important;
+	color: #000 !important;
+}
+
+.tabbedpane .tabmenu .item, .tabbedpane .tabmenu .itemselected {
+	padding:0px;
+	margin:0px;
+	border:0px;
+	display:block;
+	height:1.9em;
+	float:left;
+}
+
+.tabbedpane .tabmenu .item span, .tabbedpane .tabmenu .itemselected span{
+	border-top: 1px solid rgb(102, 102, 102);
+	border-left: 1px solid rgb(102, 102, 102);
+	border-right: 1px solid rgb(102, 102, 102);
+	display:block;
+	margin-right:0.2em !important;
+	min-width:6em;
+	height:1.2em;
+	padding: 0.2em 0.3em;
+	line-height:1.2em;
+	margin-bottom:-1px !important;
+	position:relative;
+	bottom:0px;
+	left:0px;
+}
+
+.tabbedpane .tabmenu .item span {
+	background-color:rgb(205,205,205);
+	margin-top:0.25em !important;
+}
+
+.tabbedpane .tabmenu .itemselected span {
+	font-weight:bold;
+	background-color:rgb(225,225,225);
+	border-top: 0.3em solid rgb(102, 102, 102);
+	border-bottom:1px solid rgb(225,225,225);
+}
+
+.tabbedpane .tabmenu {
+	vertical-align: bottom;
+	width:100%;
+}
+
+.tabbedpane .tabmenu td {
+	padding-left:0.2em;
+	padding-top:0.2em;
+}
+
+
+
+/* button panels */
+
+.buttonpanel {
+	padding: 0.15em;	
+}
+
+.buttonpanel .separator {
+	padding:0px 0.2em;
+}
+
+.flatbuttonpanel button {
+	margin-left:-1px;
+	margin-right:0px;
+	background-color:transparent;
+	border:1px solid transparent;
+	padding:0px 3px;
+}
+
+.flatbuttonpanel button:hover, .flatbuttonpanel button:focus {
+	border:1px solid rgb(180, 180, 180);
+	background-color:rgb(225, 225, 225);
+}
+
+.flatbuttonpanel button:disabled {
+	opacity:0.3;
+	filter:alpha(opacity=30);
+    color:#000;
+	padding:0px 3px;
+	background-color:transparent;
+}
+
+.defaultbuttonpanel button {
+	margin-left:4px;
+	margin-right:4px;
+}
+
+
+
+/* dialog windows */
+
+.dialog {
+	border: 1px solid rgb(64, 64, 64);
+	background-color: rgb(235, 235, 235);
+	margin:0.3em;
+}
+
+.dialog .dialogtitle{
+	text-align:center !important;
+	font-weight:bold;
+	background-color: rgb(128, 128, 255);
+	padding:0.15em;
+	border-bottom: 1px solid rgb(102, 102, 102);
+}
+
+.dialog .dialogcontent{
+	padding:0.3em;
+}
+
+.dialog .dialogcontent .buttonpanel{
+	text-align:right !important;
+}
+
+.unfocusArea {
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	background-color:#fff;	
+	opacity:0.5;
+	z-index:200
+}
+
+.fixed {
+	position:fixed;
+}
+
+.modalDialog {
+	position:relative;
+	top:0px;
+	left:0px;
+	z-index:201;	
+	border:1px solid #555;
+	background-color: rgb(235, 235, 235);
+	z-index:202;
+}
+
+
+
+
+/* status bar */
+
+.statusbar {
+	background-color: rgb(235,235,235);	
+	border-top: 1px solid rgb(180,180,180);
+	padding: 0.1em 0.3em;
+	font-size:95%;
+}
+
+.statusbar table {
+	width:100%;
+}
+
+.statusbar .warning {
+	display:block;
+}
+
+.statusbar .buttonpanel {
+	padding:0px;
+	float:right;
+}
+
+
+
+
+
+/* progress bar */
+
+.progressbar {
+	height:1.4em;
+	border:1px solid rgb(180,180,180);
+}
+
+.progressbar div {
+	background-color:#6ec81e;
+	height:100%;
+	width:100%;	
+}
+
+.progresstext {
+	position:relative;
+	top:-1.3em;
+	left:0.5em;
+	display:block;
+	height:0px;
+}
