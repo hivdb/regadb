@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB Subtyping Tool 
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		nt_sequence
+		</name>
+		<description>
+		A FASTA file containing a nucleotide sequence 
+		</description>
+	</input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		subtype	
+		</name>
+		<description>
+		A file containing the HIV subtype of a sequence 
+		</description>
+	</output>
+</outputs>
+</service>
