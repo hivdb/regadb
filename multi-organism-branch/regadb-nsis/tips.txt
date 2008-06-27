@@ -1,0 +1,4 @@
+; MUI Settings
+!define MUI_ABORTWARNING
+!define MUI_ICON "${WIN_DEPLOY_DIR}\static_bins\pics\noesis_e.ICO"
+!define MUI_UNICON "${WIN_DEPLOY_DIR}\static_bins\pics\noesis_e.ICO"
