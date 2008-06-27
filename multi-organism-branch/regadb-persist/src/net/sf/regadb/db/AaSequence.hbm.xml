@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.AaSequence" table="aa_sequence" schema="public">
+    <id name="aaSequenceIi" type="java.lang.Integer">
+      <column name="aa_sequence_ii" />
+      <generator class="sequence">
+        <param name="sequence">aa_sequence_aa_sequence_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update">
+      <column name="nt_sequence_ii" not-null="true" />
+    </many-to-one>
+    <many-to-one name="protein" class="net.sf.regadb.db.Protein" fetch="select" cascade="save-update">
+      <column name="protein_ii" not-null="true" />
+    </many-to-one>
+    <property name="firstAaPos" type="short">
+      <column name="first_aa_pos" not-null="true" />
+    </property>
+    <property name="lastAaPos" type="short">
+      <column name="last_aa_pos" not-null="true" />
+    </property>
+    <set name="aaMutations" inverse="true" cascade="all">
+      <key>
+        <column name="aa_sequence_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.AaMutation" />
+    </set>
+    <set name="aaInsertions" inverse="true" cascade="all">
+      <key>
+        <column name="aa_sequence_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.AaInsertion" />
+    </set>
+  </class>
+</hibernate-mapping>
+

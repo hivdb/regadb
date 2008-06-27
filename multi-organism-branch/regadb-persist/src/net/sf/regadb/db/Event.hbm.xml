@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.Event" table="event" schema="public">
+    <id name="eventIi" type="java.lang.Integer">
+      <column name="event_ii" />
+      <generator class="sequence">
+        <param name="sequence">event_event_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update">
+      <column name="value_type_ii" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" not-null="true" />
+    </property>
+    <set name="eventNominalValues" inverse="true" cascade="all">
+      <key>
+        <column name="event_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.EventNominalValue" />
+    </set>
+  </class>
+</hibernate-mapping>
+

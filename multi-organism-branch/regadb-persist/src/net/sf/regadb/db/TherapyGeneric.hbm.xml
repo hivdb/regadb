@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.TherapyGeneric" table="therapy_generic" schema="public">
+    <composite-id name="id" class="net.sf.regadb.db.TherapyGenericId">
+      <key-many-to-one name="therapy" class="net.sf.regadb.db.Therapy">
+        <column name="therapy_ii" />
+      </key-many-to-one>
+      <key-many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric">
+        <column name="generic_ii" />
+      </key-many-to-one>
+    </composite-id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <property name="dayDosageMg" type="java.lang.Double">
+      <column name="day_dosage_mg" precision="17" scale="17" />
+    </property>
+    <property name="placebo" type="boolean">
+      <column name="placebo" not-null="true" />
+    </property>
+    <property name="blind" type="boolean">
+      <column name="blind" not-null="true" />
+    </property>
+    <property name="frequency" type="java.lang.Long">
+      <column name="frequency" />
+    </property>
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.DrugGeneric" table="drug_generic" schema="public">
+    <id name="genericIi" type="java.lang.Integer">
+      <column name="generic_ii" />
+      <generator class="sequence">
+        <param name="sequence">drug_generic_drug_generic_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="drugClass" class="net.sf.regadb.db.DrugClass" fetch="select" cascade="save-update">
+      <column name="drug_class_ii" not-null="true" />
+    </many-to-one>
+    <property name="genericId" type="string">
+      <column name="generic_id" length="10" not-null="true" />
+    </property>
+    <property name="genericName" type="string">
+      <column name="generic_name" length="50" not-null="true" />
+    </property>
+    <property name="resistanceTableOrder" type="java.lang.Integer">
+      <column name="resistance_table_order" />
+    </property>
+    <property name="atcCode" type="string">
+      <column name="atc_code" length="50" />
+    </property>
+    <set name="drugCommercials" inverse="false" table="commercial_generic" cascade="all">
+      <key>
+        <column name="generic_ii" not-null="true" />
+      </key>
+      <many-to-many entity-name="net.sf.regadb.db.DrugCommercial">
+        <column name="commercial_ii" not-null="true" />
+      </many-to-many>
+    </set>
+  </class>
+</hibernate-mapping>
+

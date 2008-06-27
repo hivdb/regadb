@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.Protein" table="protein" schema="public">
+    <id name="proteinIi" type="java.lang.Integer">
+      <column name="protein_ii" />
+      <generator class="sequence">
+        <param name="sequence">protein_protein_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <property name="abbreviation" type="string">
+      <column name="abbreviation" length="50" not-null="true" />
+    </property>
+    <property name="fullName" type="string">
+      <column name="full_name" length="50" />
+    </property>
+  </class>
+</hibernate-mapping>
+

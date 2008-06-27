@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.Attribute" table="attribute" schema="public">
+    <id name="attributeIi" type="java.lang.Integer">
+      <column name="attribute_ii" />
+      <generator class="sequence">
+        <param name="sequence">attribute_attribute_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update">
+      <column name="value_type_ii" />
+    </many-to-one>
+    <many-to-one name="attributeGroup" class="net.sf.regadb.db.AttributeGroup" fetch="select" cascade="save-update">
+      <column name="attribute_group_ii" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" not-null="true" />
+    </property>
+    <set name="attributeNominalValues" inverse="true" cascade="all">
+      <key>
+        <column name="attribute_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.AttributeNominalValue" />
+    </set>
+  </class>
+</hibernate-mapping>
+

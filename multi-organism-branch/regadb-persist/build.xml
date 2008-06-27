@@ -1,0 +1,53 @@
+<project name="regadb-persist" default="all" basedir=".">
+    <description>
+        RegaDB build file for regadb-persist
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+	<property name="proj.name" value="regadb-persist"/>
+	<property name="proj.version" value="0.9"/>
+
+	<path id="project.classpath">
+		<fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	</path>
+	
+	<patternset id="meta.files">
+	    <include name="**/*.xml"/>
+	    <include name="**/*.properties"/>
+	</patternset>
+	
+  <target name="init" depends="clean">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile" description="compile the source" depends="init" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}">
+  		<classpath refid="project.classpath"/>
+    </javac>
+  	
+  	<copy todir="${build}">
+  	  <fileset dir="${src}"
+  	           includes="**/*.xml" />
+  	</copy>
+  </target>
+
+  <target name="dist" description="Make jar file" depends="compile" >
+    <!-- Put everything in ${build} into the jar file -->
+    <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+  </target>
+  
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="all" description="Do the build" depends="dist" />
+</project>

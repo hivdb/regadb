@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.ResistanceInterpretationTemplate" table="resistance_interpretation_template" schema="public">
+    <id name="templateIi" type="java.lang.Integer">
+      <column name="template_ii" />
+      <generator class="sequence">
+        <param name="sequence">resistance_interpretation_template_resistance_interpretation_template_ii_seq</param>
+      </generator>
+    </id>
+    <property name="name" type="string">
+      <column name="name" length="100" />
+    </property>
+    <property name="document" type="binary">
+      <column name="document" />
+    </property>
+    <property name="filename" type="string">
+      <column name="filename" length="100" />
+    </property>
+  </class>
+</hibernate-mapping>
+

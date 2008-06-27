@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.QueryDefinitionParameter" table="query_definition_parameter" schema="public">
+    <id name="queryDefinitionParameterIi" type="java.lang.Integer">
+      <column name="query_definition_parameter_ii" />
+      <generator class="sequence">
+        <param name="sequence">query_definition_parameter_query_definition_parameter_ii_seq</param>
+      </generator>
+    </id>
+    <many-to-one name="queryDefinitionParameterType" class="net.sf.regadb.db.QueryDefinitionParameterType" fetch="select" cascade="save-update">
+      <column name="query_definition_parameter_type_ii" />
+    </many-to-one>
+    <many-to-one name="queryDefinition" class="net.sf.regadb.db.QueryDefinition" fetch="select" cascade="save-update">
+      <column name="query_definition_ii" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" />
+    </property>
+  </class>
+</hibernate-mapping>
+

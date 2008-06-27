@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.PatientEventValue" table="patient_event_value" schema="public">
+    <id name="patientEventValueIi" type="java.lang.Integer">
+      <column name="patient_event_value_ii" />
+      <generator class="sequence">
+        <param name="sequence">patient_event_value_patient_event_value_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
+      <column name="patient_ii" not-null="true" />
+    </many-to-one>
+    <many-to-one name="eventNominalValue" class="net.sf.regadb.db.EventNominalValue" fetch="select" cascade="save-update">
+      <column name="nominal_value_ii" />
+    </many-to-one>
+    <many-to-one name="event" class="net.sf.regadb.db.Event" fetch="select" cascade="save-update">
+      <column name="event_ii" not-null="true" />
+    </many-to-one>
+    <property name="value" type="string">
+      <column name="value" length="100" />
+    </property>
+    <property name="startDate" type="date">
+      <column name="start_date" length="13" />
+    </property>
+    <property name="endDate" type="date">
+      <column name="end_date" length="13" />
+    </property>
+  </class>
+</hibernate-mapping>
+

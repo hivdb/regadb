@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.ValueType" table="value_type" schema="public">
+    <id name="valueTypeIi" type="java.lang.Integer">
+      <column name="value_type_ii" />
+      <generator class="sequence">
+        <param name="sequence">value_type_value_type_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <property name="description" type="string">
+      <column name="description" length="50" not-null="true" />
+    </property>
+    <property name="minimum" type="java.lang.Double">
+      <column name="minimum" precision="17" scale="17" />
+    </property>
+    <property name="maximum" type="java.lang.Double">
+      <column name="maximum" precision="17" scale="17" />
+    </property>
+    <property name="multiple" type="java.lang.Boolean">
+      <column name="multiple" />
+    </property>
+  </class>
+</hibernate-mapping>
+

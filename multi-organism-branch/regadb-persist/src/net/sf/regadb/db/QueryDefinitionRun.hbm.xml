@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.QueryDefinitionRun" table="query_definition_run" schema="public">
+    <id name="queryDefinitionRunIi" type="java.lang.Integer">
+      <column name="query_definition_run_ii" />
+      <generator class="sequence">
+        <param name="sequence">query_definition_run_query_definition_run_ii_seq</param>
+      </generator>
+    </id>
+    <many-to-one name="queryDefinition" class="net.sf.regadb.db.QueryDefinition" fetch="select" cascade="save-update">
+      <column name="query_definition_ii" />
+    </many-to-one>
+    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update">
+      <column name="uid" length="50" />
+    </many-to-one>
+    <property name="startdate" type="date">
+      <column name="startdate" length="13" />
+    </property>
+    <property name="enddate" type="date">
+      <column name="enddate" length="13" />
+    </property>
+    <property name="status" type="java.lang.Integer">
+      <column name="status" />
+    </property>
+    <property name="name" type="string">
+      <column name="name" length="100" not-null="true" />
+    </property>
+    <property name="result" type="string">
+      <column name="result" length="100" />
+    </property>
+    <set name="queryDefinitionRunParameters" inverse="false" cascade="all">
+      <key>
+        <column name="query_definition_run_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.QueryDefinitionRunParameter" />
+    </set>
+  </class>
+</hibernate-mapping>
+

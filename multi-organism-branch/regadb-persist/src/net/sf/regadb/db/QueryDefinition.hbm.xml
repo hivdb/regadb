@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.QueryDefinition" table="query_definition" schema="public">
+    <id name="queryDefinitionIi" type="java.lang.Integer">
+      <column name="query_definition_ii" />
+      <generator class="sequence">
+        <param name="sequence">query_definition_query_definition_ii_seq</param>
+      </generator>
+    </id>
+    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update">
+      <column name="uid" length="50" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" />
+    </property>
+    <property name="description" type="string">
+      <column name="description" />
+    </property>
+    <property name="query" type="string">
+      <column name="query" />
+    </property>
+    <property name="queryTypeIi" type="int">
+      <column name="query_type_ii" not-null="true" />
+    </property>
+    <set name="combinedQueryDefinitions" inverse="false" cascade="all">
+      <key>
+        <column name="query_definition_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.CombinedQueryDefinition" />
+    </set>
+    <set name="queryDefinitionParameters" inverse="true" cascade="all">
+      <key>
+        <column name="query_definition_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.QueryDefinitionParameter" />
+    </set>
+    <set name="queryDefinitionRuns" inverse="false" cascade="all">
+      <key>
+        <column name="query_definition_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.QueryDefinitionRun" />
+    </set>
+  </class>
+</hibernate-mapping>
+

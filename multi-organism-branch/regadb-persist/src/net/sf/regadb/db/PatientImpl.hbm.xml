@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="public">
+    <id name="patientIi" type="java.lang.Integer">
+      <column name="patient_ii" />
+      <generator class="sequence">
+        <param name="sequence">patient_patient_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <property name="patientId" type="string">
+      <column name="patient_id" length="50" not-null="true" />
+    </property>
+    <property name="lastName" type="string">
+      <column name="last_name" length="50" />
+    </property>
+    <property name="firstName" type="string">
+      <column name="first_name" length="50" />
+    </property>
+    <property name="birthDate" type="date">
+      <column name="birth_date" length="13" />
+    </property>
+    <property name="deathDate" type="date">
+      <column name="death_date" length="13" />
+    </property>
+    <set name="patientEventValues" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.PatientEventValue" />
+    </set>
+    <set name="patientDatasets" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.PatientDataset" />
+    </set>
+    <set name="testResults" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.TestResult" />
+    </set>
+    <set name="patientAttributeValues" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
+    </set>
+    <set name="viralIsolates" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.ViralIsolate" />
+    </set>
+    <set name="therapies" inverse="true" cascade="all">
+      <key>
+        <column name="patient_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.Therapy" />
+    </set>
+  </class>
+</hibernate-mapping>
+
