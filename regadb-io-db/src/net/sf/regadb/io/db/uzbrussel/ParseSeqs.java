@@ -26,16 +26,19 @@ public class ParseSeqs {
     private ParseIds parseIds_;
     private Map<Integer, Patient> patients_;
     private String basePath_;
+    private File seqPath_;
+    private Table patientIdsToIgnore;
     
     public ParseSeqs(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
         parseIds_ = parseIds;
         patients_ = patients;
         basePath_ = basePath;
+        seqPath_ = new File(basePath_ + File.separatorChar + "labo" + File.separatorChar + "sequentions");
+        patientIdsToIgnore = Utils.readTable(seqPath_.getAbsolutePath() + File.separatorChar + "seq_ignore.csv");
     }
     
     public void exec() {
-        File seqPath = new File(basePath_ + File.separatorChar + "labo" + File.separatorChar + "sequentions");
-        File seqMapping = new File(seqPath.getAbsolutePath() + File.separatorChar + "seq_match.csv");
+        File seqMapping = new File(seqPath_.getAbsolutePath() + File.separatorChar + "seq_match.csv");
         Table seqMappingTable = Utils.readTable(seqMapping.getAbsolutePath(), ';');
         int counter = 0;
         for(int i = 0; i<seqMappingTable.numRows(); i++) {
@@ -43,7 +46,7 @@ public class ParseSeqs {
             String seqId = seqMappingTable.valueAt(1, i).trim();
             String seqDate = seqMappingTable.valueAt(2, i).trim();
             String code = seqMappingTable.valueAt(3, i).trim();
-            if(!id.equals("") && !seqId.equals("") && code.toLowerCase().equals("zbr")) {
+            if(!id.equals("") && !seqId.equals("") && code.toLowerCase().equals("zbr") && !ignorePatientId(id)) {
                 if(!seqDate.equals("")) {
                     Date d = null;
                     try {
@@ -51,9 +54,9 @@ public class ParseSeqs {
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                     }
-                    File seq = new File(getSequencePath(seqPath, d) + getFileName(seqId)+".seq");
+                    File seq = new File(getSequencePath(seqPath_, d) + getFileName(seqId)+".seq");
                     if(!seq.exists()) {
-                        seq = new File(getSequencePath(seqPath, d) + "0"+seqId+".seq");
+                        seq = new File(getSequencePath(seqPath_, d) + "0"+seqId+".seq");
                     }
                     if(seq.exists()) {
                         Patient p = getPatientForId(id);
@@ -80,6 +83,16 @@ public class ParseSeqs {
         }
         
         System.err.println("Amount of succesfully imported sequences: "+ counter);
+    }
+    
+    private boolean ignorePatientId(String id) {
+    	for(int i = 1; i<patientIdsToIgnore.numRows(); i++) {
+    		String c = patientIdsToIgnore.valueAt(0, i);
+    		if(id.equals(c)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
     
     private String getSequencePath(File seqPath, Date d) {
