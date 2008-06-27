@@ -1,0 +1,40 @@
+"AgentNo","Chemical","AbrvName","AgentFamily","GenericName","BrandName","type","mapping"
+1,"AZT","ZDV","  NRTI","zidovudine","Retrovir",2,"Retrovir (AZT)"
+2,"3TC","3TC","  NRTI","lamivudine","Epivir",2,"Epivir (3TC)"
+3,"AZT+3TC","AZT+3TC","  NRTI","zidovudine+lamivudine","Combivir",2,"Combivir (3TC+AZT)"
+4,"BMI-40900","ddI","  NRTI","didanosine","Videx",2,"Videx (DDI)"
+5,"ddC","ddC","  NRTI","zalcitabine","Hivid",2,"Hivid (DDC)"
+6,"BMY-27857","d4T","  NRTI","stavudine","Zerit",2,"Zerit (D4T)"
+7,"1592U89","ABC","  NRTI","abacavir","Ziagen",2,"Ziagen (ABC)"
+8,"NVP","NVP"," NNRTI","nevirapine","Viramune",2,"Viramune (NVP)"
+9,"DLV","DLV"," NNRTI","delavirdine","Rescriptor",2,"Rescriptor (DLV)"
+10,"EFP","EFV"," NNRTI","efavirenz","Stocrin, Sustiva",2,"Sustiva (EFV)"
+11,"Ro-31-8959","SQV"," PI","saquinavir","Fortovase, Invirase",2,"Fortovase (SQV-sgc)"
+12,"Ro-31-8959","SQV-S"," PI","saquinavir","Fortovase",2,"Fortovase (SQV-sgc) "
+13,"ABT-538","RTV"," PI","ritonovir","Norvir",2,"Norvir (RTV)"
+14,"MK-639","IDV"," PI","indinavir","Crixivan",2,"Crixivan (IDV)"
+15,"Ag-1343","NFV"," PI","nelfinavir","Viracept",2,"Viracept (NFV)"
+16,"APV","APV"," PI","amprenavir","Agenerase",2,"Agenerase (APV)"
+17,"ADV","ADV","  NRTI","adefovir","Preveon",2,
+18,"HyUr","HDU","RRI","Hydroxyurea","Hydrea",2,
+19,"FTC","FTC","  NRTI","emtricitabine","Emtriva",2,"Emtriva (FTC)"
+20,"PFA","PFA","  NRTI","Foscarnet","Foscarnet",,
+21,"LPV","LPV"," PI","lopinovir","Lopinovir",1,
+22,"ABT-378/r","LPV/r"," PI","lopinovir+ritonavir","Kaletra",2,"Kaletra (LPV+RTV)"
+23,"Resprin","Resprin","Resprin","Resprin","Resprin",0,
+24,"Doxil","Doxil","Doxil","Doxil","Doxil",0,
+25,"- - -","- - -",,"- - -","- - -",0,
+26,"???","???",,"???",,0,
+27,"TDF","TDF","  NRTI","tenofovir","Viread",2,"Viread (TDF)"
+28,"BMS-232632","ATZ"," PI","atazanavir","Reyataz",2,"Reyataz (ATV)"
+29,"T-20","T-20","Fusion","enfuvirtide","Fuzeon",2,"Fuzeon (T20)"
+30,"PNU-140690","TPV/r"," PI","tipranavir/RTV boosted","Aptivus",2,"Aptivus (TPV)"
+31,"SQV/r","SQV/r"," PI","saquinavir/RTV boosted",,1,"SQV/r"
+32,"IDV/r","IDV/r"," PI","indinavir/RTV boosted",,1,"IDV/r"
+33,"NFV/r","NFV/r"," PI","nelfinavir/RTV boosted",,1,
+34,"APV/r","APV/r"," PI","amprenavir/RTV boosted",,1,"APV/r"
+35,"GW-433908","FPV"," PI","FosAmprenavir","Lexiva",2,"Lexiva (f-APV)"
+36,,"ABC+3TC","  NRTI","abacavir+lamivudine","Epzicom",2,"Epzicom (ABC+3TC)"
+37,,"ABC+ZDV+3TC","  NRTI","abacavir+zidovudine+lamivudine","Trizivir",2,"Trizivir (ABC+AZT+3TC)"
+38,"TMC-114","DRV"," PI","darunavir","Prezista",2,"Prezista (DRV)"
+39,,"TDF + FTC","  NRTI","tenofivir+emtricitabine","Truvada",2,"Truvada (FTC+TDF)"
