@@ -1,0 +1,109 @@
+<project name="regadb-analyses" default="all" basedir=".">
+    <description>
+        RegaDB build file for regadb-analyses
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+	<property name="proj.name" value="regadb-analyses"/>
+	<property name="proj.version" value="0.9"/>
+
+	<path id="project.classpath">
+		<fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	</path>
+	
+  <target name="init" depends="clean">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile" description="compile the source" depends="init" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}">
+  		<classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="dist" description="Make jar file" depends="compile" >
+    <!-- Put everything in ${build} into the jar file -->
+    <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+  	<jar jarfile="${dist}/${proj.name}-ioAssist-${proj.version}.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.service.ioAssist.IOAssist"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/fasta-merge.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.analysis.functions.FastaMerge"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvcat.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvCat"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvdiff.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvDiff"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvmerge.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvMerge"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvtool.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvTool"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvcombine.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvCombine"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/csvcombinemultiple.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.csv.CsvCombineMultipleCsv"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/regadb-discordance-report.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.validate.DiscordanceReport"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/regadb-subtypebatch.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.tools.SubTypeBatch"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  	<jar jarfile="${dist}/mutpos.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.tools.MutPos"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
+  </target>
+  
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="all" description="Do the build" depends="dist" />
+</project>
