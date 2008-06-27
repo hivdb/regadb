@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-persist"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/regadb-util"/>
+	<classpathentry kind="lib" path="lib/isorelax.jar"/>
+	<classpathentry kind="lib" path="lib/isorelax-jaxp-bridge-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/msv.jar"/>
+	<classpathentry kind="lib" path="lib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
