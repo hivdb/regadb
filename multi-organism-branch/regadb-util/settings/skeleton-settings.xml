@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regadb-settings>
+  <property name="hibernate.connection.driver_class">default</property>
+  <property name="hibernate.connection.password">default</property>
+  <property name="hibernate.connection.url">default</property>
+  <property name="hibernate.connection.username">default</property>
+  <property name="hibernate.dialect">default</property>
+  <property name="regadb.query.resultDir">default</property>
+  <property name="http.proxy.url">default</property>
+  <property name="http.proxy.port">default</property>
+  <proxy>
+    <property name="http.proxy.url">default</property>
+    <property name="http.proxy.port">default</property>
+  </proxy>
+</regadb-settings>
+
