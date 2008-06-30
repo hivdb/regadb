@@ -1510,7 +1510,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         
         addRelations("PatientEventValue", "patient", "PatientImpl", null, false, "comes from",  "has an");
         addRelations("Therapy", "patient", "PatientImpl", null, false, "was performed on a",  "has received");        
-        addRelations("ViralIsolate", "patient", "PatientImpl",  null, false, "comes froma ",  "has a");
+        addRelations("ViralIsolate", "patient", "PatientImpl",  null, false, "comes from a ",  "has a");
         addRelation("PatientImpl", "id.patient", "Dataset", "id.dataset",  "PatientDataset", true, null);        
         
         addRelation("Therapy", "therapyMotivation", "TherapyMotivation", null, "TherapyMotivation", false, null);
