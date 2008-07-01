@@ -4,33 +4,12 @@ import net.sf.regadb.analysis.functions.AaSequenceHelper;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.genome.HivGenome;
 
-public class VisualizeAaSequence 
-{
-    public static final int LINE_SIZE = 81;
-    
-    private StringBuffer page = new StringBuffer();
-    
-    private StringBuffer refAa = new StringBuffer();
-    private StringBuffer refNt = new StringBuffer();
-    private StringBuffer diff = new StringBuffer();
-    private StringBuffer tarNt = new StringBuffer();
-    private StringBuffer tarAa = new StringBuffer();
-
-    private StringBuffer refCodon = new StringBuffer();
-    private StringBuffer tarCodon = new StringBuffer();
-    
-    private int aaCounter = 0;
-    private int lineCounter = 0;
-    
-    private static String newLine = "<br>";
-    
-    public String getAlignmentView (AaSequence aaseq)
-    {
-        clear();
-        
+public abstract class VisualizeAaSequence {
+    public String getAlignmentView(AaSequence aaseq) {
+    	clear();
+    	
         HivGenome genome = HivGenome.getHxb2();
         String proteinNt = genome.getNtSequenceForProtein(aaseq.getProtein().getAbbreviation());
                 
@@ -39,153 +18,52 @@ public class VisualizeAaSequence
         AaInsertion[] insertions = AaSequenceHelper.getSortedAaInsertionArray(aaseq);
         int insertionIndex = 0;
         
+        int codonIndex;
         String mutationCodon;
-        
-        for(int i = 0 ; i<proteinNt.length(); i++)
-        {
-            if(i<(aaseq.getFirstAaPos()-1*3) || i>=aaseq.getLastAaPos()*3)
-            {
-                addNt(proteinNt.charAt(i), '-');
-            }
-            else if(mutations.length != mutationIndex && (mutations[mutationIndex].getId().getMutationPosition()-1)*3==i)
-            {
+        for(int i = 0; i<proteinNt.length()/3; i++) {
+        	codonIndex = i+1;
+        	if(codonIndex==77) {
+        		System.err.println("wait");
+        	}
+        	if(mutations.length != mutationIndex && mutations[mutationIndex].getId().getMutationPosition()==codonIndex) {
                 mutationCodon = mutations[mutationIndex].getNtMutationCodon();
-                addNt(proteinNt.charAt(i), mutationCodon.charAt(0));
-                addNt(proteinNt.charAt(i+1), mutationCodon.charAt(1));
-                addNt(proteinNt.charAt(i+2), mutationCodon.charAt(2));
-                i+=2;
+                addNt(proteinNt.charAt(i*3), mutationCodon.charAt(0), codonIndex);
+                addNt(proteinNt.charAt(i*3+1), mutationCodon.charAt(1), codonIndex);
+                addNt(proteinNt.charAt(i*3+2), mutationCodon.charAt(2), codonIndex);
                 mutationIndex++;
-            }
-            else
-            {
-                addNt(proteinNt.charAt(i), proteinNt.charAt(i));
-            }
-            
-            if(insertions.length != insertionIndex && (insertions[insertionIndex].getId().getInsertionPosition()-1)*3==i)
-            {
+            } else if(insertions.length != insertionIndex && insertions[insertionIndex].getId().getInsertionPosition()==codonIndex) {
                 short pos = insertions[insertionIndex].getId().getInsertionPosition();
-                while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getInsertionPosition()==pos)
-                {
+                while(insertionIndex!=insertions.length && insertions[insertionIndex].getId().getInsertionPosition()==pos) {
                     mutationCodon = insertions[insertionIndex].getNtInsertionCodon();
-                    addNt('-', mutationCodon.charAt(0));
-                    addNt('-', mutationCodon.charAt(1));
-                    addNt('-', mutationCodon.charAt(2));
+                    addNt('-', mutationCodon.charAt(0), codonIndex);
+                    addNt('-', mutationCodon.charAt(1), codonIndex);
+                    addNt('-', mutationCodon.charAt(2), codonIndex);
                     
                     insertionIndex++;
                 }
+            } else {
+            	if(codonIndex<aaseq.getFirstAaPos() || codonIndex>aaseq.getLastAaPos()) {
+                    addNt(proteinNt.charAt(i*3), '-', codonIndex);
+                    addNt(proteinNt.charAt(i*3+1), '-', codonIndex);
+                    addNt(proteinNt.charAt(i*3+2), '-', codonIndex);
+            	} else {
+                    addNt(proteinNt.charAt(i*3), proteinNt.charAt(i*3), codonIndex);
+                    addNt(proteinNt.charAt(i*3+1), proteinNt.charAt(i*3+1), codonIndex);
+                    addNt(proteinNt.charAt(i*3+2), proteinNt.charAt(i*3+2), codonIndex);
+            	}
             }
-            
-            if(refCodon.length()>=3)
-            {
-                addAa();
-            }
         }
         
-        endOfAlignment();
-
-        //return refAa.toString() + '\n' +refNt.toString() + '\n'+  tarNt.toString() + '\n' + tarAa.toString() + '\n';
-        //return '\n' +refNt.toString() + '\n' + tarNt.toString() + '\n';
-        return page.toString();
-    }
-    
-    private void addNt(char reference, char target)
-    {
-        if(reference==target || target == '-')
-        {
-            refNt.append(reference);
-            tarNt.append(target);
-        }
-        else
-        {
-            refNt.append("<font color=red>"+reference+"</font>");
-            tarNt.append("<font color=red>"+target+"</font>");
-        }
+        end();
         
-        refCodon.append(reference);
-        tarCodon.append(target);
-        diff.append(reference==target?'|':' ');
+        return getStringRepresentation();
     }
     
-    private void addAa()
-    {
-        String ref = AaSequenceHelper.getAminoAcid(refCodon.toString());
-        String tar = AaSequenceHelper.getAminoAcid(tarCodon.toString());
-        if(ref.equals(tar) || tar.toString().equals(" - "))
-        {
-            refAa.append(ref);
-            tarAa.append(tar);
-        }
-        else
-        {
-            refAa.append("<font color=red>"+ref+"</font>");
-            tarAa.append("<font color=red>"+tar+"</font>");
-        }
-
-        refCodon.delete(0, 3);
-        tarCodon.delete(0, 3);
-        aaCounter++;
-        
-        nextLine();
-    }
+    public abstract void addNt(char reference, char target, int codonIndex);
     
-    private void nextLine()
-    {
-        if(aaCounter==(LINE_SIZE/3.0))
-        {
-            endOfAlignment();
-        }
-    }
+    public abstract String getStringRepresentation();
     
-    private void endOfAlignment()
-    {
-        int fromNt = ((LINE_SIZE * lineCounter) + 1);
-        int toNt = fromNt + (aaCounter*3) - 1;
-        int fromAa = (((LINE_SIZE/3) * lineCounter) + 1);
-        int toAa = fromAa + aaCounter - 1;
-
-        page.append("Going from " + fromNt + " to " + toNt + " (" + fromAa + " to " + toAa + ")"+ newLine);
-        
-        appendLineToPage(refAa);
-        appendLineToPage(refNt);
-        appendLineToPage(diff);
-        appendLineToPage(tarNt);
-        appendLineToPage(tarAa);
-
-        aaCounter = 0;
-        lineCounter++;
-    }
+    public abstract void clear();
     
-    private void appendLineToPage(StringBuffer b)
-    {
-        page.append(b+newLine);
-        b.delete(0, b.length());
-    }
-    
-    private void clear()
-    {
-        if(page.length()!=0)
-        {
-            page.delete(0, page.length());
-        }
-        
-        aaCounter = 0;
-        lineCounter = 0;
-    }
-    
-    public static void main(String [] args)
-    {
-       String c = AaSequenceHelper.getAminoAcid("%cg");
-       System.err.println(c);
-       
-       AaSequence aaseq = new AaSequence();
-       aaseq.setFirstAaPos((short)1);
-       aaseq.setLastAaPos((short)99);
-       //aaseq.getAaInsertions().add(new AaInsertion());
-       Protein p = new Protein();
-       p.setAbbreviation("PRO");
-       aaseq.setProtein(p);
-       
-       VisualizeAaSequence v = new VisualizeAaSequence();
-       System.err.println(v.getAlignmentView (aaseq));
-    }
+    public abstract void end();
 }
