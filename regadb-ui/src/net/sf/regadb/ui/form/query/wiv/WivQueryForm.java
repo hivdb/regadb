@@ -74,7 +74,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     private SimpleDateFormat sdf_ = new SimpleDateFormat("yyyy-MM-dd");
     private DecimalFormat decimalFormat = new DecimalFormat("##########.00");
     
-    private static String arcPatientQuery = "select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = 'PATIENT_TYPE' and arc_pav.attributeNominalValue.value = 'I: INTERNAL'";
+    private static String arcPatientQuery = "select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = 'PATIENT_TYPE' and lower(arc_pav.attributeNominalValue.value) = 'i: internal'";
 
     
     private HashMap<String,IFormField> parameters_ = new HashMap<String,IFormField>();
