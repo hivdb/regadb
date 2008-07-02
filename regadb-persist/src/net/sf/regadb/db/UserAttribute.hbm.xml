@@ -9,10 +9,10 @@
         <param name="sequence">user_attribute_user_attribute_ii_seq</param>
       </generator>
     </id>
-    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update">
+    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update" index="user_attribute_value_type_ii_idx">
       <column name="value_type_ii" />
     </many-to-one>
-    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update">
+    <many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser" fetch="select" cascade="save-update" index="user_attribute_uid_idx">
       <column name="uid" length="50" />
     </many-to-one>
     <property name="name" type="string">

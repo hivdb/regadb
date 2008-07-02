@@ -12,13 +12,13 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update" index="patient_event_value_patient_ii_idx">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
-    <many-to-one name="eventNominalValue" class="net.sf.regadb.db.EventNominalValue" fetch="select" cascade="save-update">
+    <many-to-one name="eventNominalValue" class="net.sf.regadb.db.EventNominalValue" fetch="select" cascade="save-update" index="patient_event_value_nominal_value_ii_idx">
       <column name="nominal_value_ii" />
     </many-to-one>
-    <many-to-one name="event" class="net.sf.regadb.db.Event" fetch="select" cascade="save-update">
+    <many-to-one name="event" class="net.sf.regadb.db.Event" fetch="select" cascade="save-update" index="patient_event_value_event_ii_idx">
       <column name="event_ii" not-null="true" />
     </many-to-one>
     <property name="value" type="string">

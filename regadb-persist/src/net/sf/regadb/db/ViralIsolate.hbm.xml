@@ -12,7 +12,7 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update" index="viral_isolate_patient_ii_idx">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
     <property name="sampleId" type="string">
