@@ -54,7 +54,10 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             || referencedTable.getName().equals("query_definition_run")
             //|| referencedTable.getName().equals("query_definition_run_parameter")
             //|| referencedTable.getName().equals("query_definition_parameter")
-            || referencedTable.getName().equals("query_definition"))
+            || referencedTable.getName().equals("query_definition")
+            || (referencedTable.getName().equals("genome") && fromTable.getName().equals("open_reading_frame"))
+            || (referencedTable.getName().equals("open_reading_frame") && fromTable.getName().equals("protein"))
+            || (referencedTable.getName().equals("protein") && fromTable.getName().equals("splicing_position")))
             return false;
         else
             return true;

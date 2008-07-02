@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.SplicingPosition" table="splicing_position" schema="public">
+    <id name="splicingPositionIi" type="java.lang.Integer">
+      <column name="splicing_position_ii" />
+      <generator class="sequence">
+        <param name="sequence">splicing_position_splicing_position_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="protein" class="net.sf.regadb.db.Protein" fetch="select" cascade="save-update">
+      <column name="protein_ii" not-null="true" />
+    </many-to-one>
+    <property name="position" type="int">
+      <column name="position" not-null="true" />
+    </property>
+  </class>
+</hibernate-mapping>
+

@@ -12,12 +12,27 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
+    <many-to-one name="openReadingFrame" class="net.sf.regadb.db.OpenReadingFrame" fetch="select" cascade="save-update">
+      <column name="open_reading_frame_ii" not-null="true" />
+    </many-to-one>
     <property name="abbreviation" type="string">
       <column name="abbreviation" length="50" not-null="true" />
     </property>
     <property name="fullName" type="string">
       <column name="full_name" length="50" />
     </property>
+    <property name="startPosition" type="int">
+      <column name="start_position" not-null="true" />
+    </property>
+    <property name="stopPosition" type="int">
+      <column name="stop_position" not-null="true" />
+    </property>
+    <set name="splicingPositions" inverse="false" cascade="all">
+      <key>
+        <column name="protein_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.SplicingPosition" />
+    </set>
   </class>
 </hibernate-mapping>
 

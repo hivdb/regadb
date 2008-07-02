@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.OpenReadingFrame" table="open_reading_frame" schema="public">
+    <id name="openReadingFrameIi" type="java.lang.Integer">
+      <column name="open_reading_frame_ii" />
+      <generator class="sequence">
+        <param name="sequence">open_reading_frame_open_reading_frame_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <many-to-one name="genome" class="net.sf.regadb.db.Genome" fetch="select" cascade="save-update">
+      <column name="genome_ii" not-null="true" />
+    </many-to-one>
+    <property name="name" type="string">
+      <column name="name" length="50" not-null="true" />
+    </property>
+    <property name="description" type="string">
+      <column name="description" length="50" not-null="true" />
+    </property>
+    <property name="referenceSequence" type="string">
+      <column name="reference_sequence" not-null="true" />
+    </property>
+    <set name="proteins" inverse="false" cascade="all">
+      <key>
+        <column name="open_reading_frame_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.Protein" />
+    </set>
+  </class>
+</hibernate-mapping>
+

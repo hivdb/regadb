@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="net.sf.regadb.db.Genome" table="genome" schema="public">
+    <id name="genomeIi" type="java.lang.Integer">
+      <column name="genome_ii" />
+      <generator class="sequence">
+        <param name="sequence">genome_genome_ii_seq</param>
+      </generator>
+    </id>
+    <version name="version" type="int">
+      <column name="version" not-null="true" />
+    </version>
+    <property name="organismName" type="string">
+      <column name="organism_name" length="50" not-null="true" />
+    </property>
+    <property name="organismDescription" type="string">
+      <column name="organism_description" length="50" not-null="true" />
+    </property>
+    <property name="genbankNumber" type="string">
+      <column name="genbank_number" length="50" />
+    </property>
+    <set name="openReadingFrames" inverse="false" cascade="all">
+      <key>
+        <column name="genome_ii" not-null="true" />
+      </key>
+      <one-to-many class="net.sf.regadb.db.OpenReadingFrame" />
+    </set>
+  </class>
+</hibernate-mapping>
+
