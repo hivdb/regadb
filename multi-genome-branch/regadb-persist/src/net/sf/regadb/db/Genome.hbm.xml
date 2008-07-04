@@ -16,7 +16,7 @@
       <column name="organism_name" length="50" not-null="true" />
     </property>
     <property name="organismDescription" type="string">
-      <column name="organism_description" length="50" not-null="true" />
+      <column name="organism_description" length="500" not-null="true" />
     </property>
     <property name="genbankNumber" type="string">
       <column name="genbank_number" length="50" />

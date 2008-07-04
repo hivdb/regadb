@@ -19,7 +19,7 @@
       <column name="name" length="50" not-null="true" />
     </property>
     <property name="description" type="string">
-      <column name="description" length="50" not-null="true" />
+      <column name="description" length="500" not-null="true" />
     </property>
     <property name="referenceSequence" type="string">
       <column name="reference_sequence" not-null="true" />
