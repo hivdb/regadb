@@ -77,7 +77,10 @@ public class WivObjects {
         createAttribute("FORM_OUT",dat);
         createAttribute("FORM_IN",dat);
         //createAttribute(ag,"LABO",nom,new String[]{"HSP","ITG","KUL","RUG","UCL","ULB","VUB"});
-        createAttribute("PATIENT_TYPE",nom,new String[]{"I: Internal", "E: External"}, false);
+        createAttribute("FOLLOW-UP",nom,new String[]{
+        		"1: ARC of the same institution as ARL",
+        		"2: ARC of another institution",
+        		"3: Outside of ARC"}, false);
         
         TestType wivConfirmation = new TestType(StandardObjects.getPatientObject(), "WIV HIV Confirmation");
         wivConfirmation.setValueType(StandardObjects.getNominalValueType());

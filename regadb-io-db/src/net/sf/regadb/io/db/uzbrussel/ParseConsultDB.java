@@ -126,9 +126,9 @@ public class ParseConsultDB {
             
             if(followup!=null) {
             	if(followup.equals("intern")) {
-            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'I', p);
+            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
             	} else if(followup.equals("extern")) {
-            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'E', p);
+            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '3', p);
             	} else {
             		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
             	}
