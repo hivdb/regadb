@@ -38,16 +38,12 @@ public class HibernateScrollableResult implements ScrollableQueryResult {
 		return "";
 	}
 
-
-	@Override
 	public Object[] get() {
 		Object[] res = results.get();
 		results.next();
 		return res;
 	}
 
-
-	@Override
 	public boolean isLast() {
 		return results.get() == null;
 	}

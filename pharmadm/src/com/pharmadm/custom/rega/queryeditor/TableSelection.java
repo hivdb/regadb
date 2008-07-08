@@ -82,7 +82,6 @@ public class TableSelection extends ComposedSelection implements Serializable{
     	return clone;
     }
 
-	@Override
 	public boolean isValid() {
 		boolean valid = ((OutputVariable) getObject()).getObject().getTable() != null; 
 		

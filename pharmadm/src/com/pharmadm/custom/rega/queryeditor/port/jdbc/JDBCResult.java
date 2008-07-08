@@ -89,7 +89,6 @@ public class JDBCResult implements QueryResult, ScrollableQueryResult {
 		return 0;
 	}
 
-	@Override
 	public Object[] get() {
 		Object[] results = new Object[getColumnCount()]; 
 		try {
@@ -102,7 +101,6 @@ public class JDBCResult implements QueryResult, ScrollableQueryResult {
 		return results;
 	}
 
-	@Override
 	public boolean isLast() {
 		try {
 			return rs.isLast();

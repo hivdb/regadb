@@ -229,7 +229,6 @@ public class SelectionStatusList implements SelectionList, Serializable {
         }
     }
 
-	@Override
 	public boolean isValid() {
 		boolean valid = true;
 		for (Selection sel : getSelections()) {

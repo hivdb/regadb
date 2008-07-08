@@ -36,7 +36,6 @@ public class DataOutputSelection extends com.pharmadm.custom.rega.queryeditor.Si
         return objectSpec;
     }
 
-	@Override
 	public boolean isValid() {
 		return true;
 	}

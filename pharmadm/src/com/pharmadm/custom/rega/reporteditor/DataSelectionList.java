@@ -289,7 +289,6 @@ public class DataSelectionList implements SelectionList {
         selectionChangeListeners.remove(listener);
     }
 
-	@Override
 	public boolean isValid() {
 		boolean valid = true;
 		for (Selection sel : getSelections()) {

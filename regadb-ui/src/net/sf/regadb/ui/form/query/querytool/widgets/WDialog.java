@@ -115,7 +115,6 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder, 
 		this.statusBar = statusBar;
 	}
 
-	@Override
 	public void setToolbar(WButtonPanel panel) {
 		if (toolbar != null) {
 			toolbar.getStyleClasses().removeStyle("toolbar");

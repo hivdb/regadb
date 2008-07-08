@@ -58,8 +58,6 @@ public class HibernateResult implements QueryResult {
 		return "";
 	}
 
-
-	@Override
 	public Object[] get() {
 		Object[] res =  results.get();
 		results.next();

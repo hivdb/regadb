@@ -39,12 +39,10 @@ public class WGroupContainer extends WGroupBox implements StyledWidget, Statusba
 		return content;
 	}
 
-	@Override
 	public CssClasses getStyleClasses() {
 		return style;
 	}
 
-	@Override
 	public void setStatusBar(WStatusBar statusBar) {
 		if (this.statusbar != null) {
 			statusbarArea.removeWidget(this.statusbar);
@@ -53,7 +51,6 @@ public class WGroupContainer extends WGroupBox implements StyledWidget, Statusba
 		this.statusbar = statusBar;
 	}
 
-	@Override
 	public void setToolbar(WButtonPanel panel) {
 		if (toolbar != null) {
 			toolbar.getStyleClasses().removeStyle("toolbar");

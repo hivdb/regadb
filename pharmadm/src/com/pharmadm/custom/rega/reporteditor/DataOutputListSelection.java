@@ -36,7 +36,6 @@ public class DataOutputListSelection extends com.pharmadm.custom.rega.queryedito
         return objectSpec;
     }
 
-	@Override
 	public boolean isValid() {
 		return true;
 	}
