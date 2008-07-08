@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +175,24 @@ public class ParseConsultDB {
                     Element analysisEl = (Element)analysis;
                     parseAnalysis(analysisEl, p);
                 }
+            }
+            
+            Element contactsEl = patientEl.getChild("Contacts");
+            if(contactsEl!=null) {
+            	for(Object contact : contactsEl.getChildren("Contact")) {
+            		Element contactE = (Element)contact;
+            		String contactDateS = contactE.getChildText("ContactDate");
+            		Date contactDate = null;
+					try {
+						contactDate = dateFormatter.parse(contactDateS);
+					} catch (ParseException e) {
+						ConsoleLogger.getInstance().logError("Cannot parse contact date: " + contactDateS);
+					}
+            		
+                	TestResult t = p.createTestResult(StandardObjects.getContactTest());
+                	t.setValue(contactDate.getTime()+"");
+                	t.setTestDate(contactDate);
+            	}
             }
             
             Element therapyEl = patientEl.getChild("Therapy");
