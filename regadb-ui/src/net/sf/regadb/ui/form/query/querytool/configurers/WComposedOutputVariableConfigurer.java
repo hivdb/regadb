@@ -27,8 +27,8 @@ public class WComposedOutputVariableConfigurer extends WComboBox implements Comp
 		vars.add(confy);
 	}
 	
-	public void add(List<WordConfigurer> words) {
-		addItem((OutputVariableConfigurer) words.get(0));
+	public void add(List<WordConfigurer> keys, List<WordConfigurer> words) {
+		addItem((OutputVariableConfigurer) keys.get(0));
 	}
 	
 	public void configureWord() {

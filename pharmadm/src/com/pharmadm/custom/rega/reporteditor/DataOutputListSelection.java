@@ -35,5 +35,10 @@ public class DataOutputListSelection extends com.pharmadm.custom.rega.queryedito
         // the object (a DataOutputVariable) is specified by itself
         return objectSpec;
     }
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
     
 }

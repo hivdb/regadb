@@ -41,6 +41,7 @@ import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultJTable;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
+import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.util.gui.mdi.DocumentLoader;
@@ -1342,7 +1343,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                     String queryString = getQueryStringAndInformUserOnError(query);
                     System.out.println(queryString);
                     statement.setFetchSize(50);
-                    QueryResult resultSet = statement.executeQuery(queryString);
+                    QueryResult resultSet = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query.getQueryString());
                     final QueryResultTableModel model = new QueryResultTableModel(resultSet, query.getSelectList().getSelectedColumnNames());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {

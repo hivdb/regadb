@@ -22,8 +22,8 @@ public class JComposedWordConfigurer extends javax.swing.JComboBox implements Co
 		setEditable(false);
 	}
 	
-	public void add(List<WordConfigurer> words) {
-		vars.add(words.get(0));
+	public void add(List<WordConfigurer> keys, List<WordConfigurer> words) {
+		vars.add(new JCombinedConfigurer(keys));
 	}
 	
 	public void configureWord() {

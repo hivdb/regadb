@@ -1,19 +1,15 @@
 package com.pharmadm.custom.rega.queryeditor.port;
 
-public interface QueryResult {
+public interface ScrollableQueryResult {
 	public void close();
-	public int size();
 	public String getColumnName(int index);
 	public String getColumnClassName(int index);
-	public int getColumnCount();
 	
 	/**
-	 * index starts at 0
-	 * @param x
-	 * @param y
+	 * return true when the end of the results is reached
 	 * @return
 	 */
-	public Object get(int x, int y);
+	public boolean isLast();
 
 	/**
 	 * gets the next row of objects

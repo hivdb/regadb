@@ -1,51 +1,7 @@
-.root {
-	width: 95%;	
-}
-
-
-/* fields general */
-
 .querytoolform {
 	width:95%;	
 	width:700px;
 }
-
-.querytoolform fieldset legend {
-	border-top: 1px solid rgb(64, 64, 64);
-	border-left: 1px solid rgb(64, 64, 64);
-	border-right: 1px solid rgb(64, 64, 64);
-	background-color: rgb(215, 215, 215);
-	margin-top:-1.4em;
-	margin-left:-1px;
-	position:relative;
-	top:-0.35em;
-	left:0px;
-	zoom:1;
-	font-weight: bold;
-	padding: 0.1em 0.5em;
-	line-height:1.2em;
-}
-
-.querytoolform fieldset {
-	display:block;
-	margin-top:2em;
-	margin-bottom:0.5em;
-	border: 1px solid rgb(64, 64, 64);
-	padding:0.2em 0px 0px 0px;
-	background-color: rgb(215, 215, 215);
-	position:relative;
-	top:0px;
-	left:0px;
-	zoom:1;
-}
-
-
-.querytoolform fieldset .content {
-	background-color: #fff;
-	padding: 0.5em;
-	border-top: 1px solid rgb(102, 102, 102);
-}
-
 
 
 
@@ -227,6 +183,24 @@
 
 .querytoolform .resultfield .runresults label {
 	font-weight:bold;
+}
+
+.querytoolform .resultfield .runresults .runresult table {
+	width:100%;	
+}
+
+.querytoolform .resultfield .runresults .runresult table td{
+	padding:0.2em 0px;
+	line-height:1.5em;
+}
+
+.querytoolform .resultfield .runresults .runresult table .resultNumber {
+	width:2em;	
+}
+
+.querytoolform .resultfield .runresults .runresult table .resultCancel{
+	width:6em;
+	text-align:right !important;	
 }
 
 .querytoolform .resultfield .runresults .runresult .label {

@@ -4,42 +4,45 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PatientImplHelper {
-    public static boolean canAccessViralIsolate(ViralIsolate vi, Set<Dataset> datasets) {
-        return canAccesPI(vi.getPatient(), datasets);
+    public static boolean canAccessViralIsolate(ViralIsolate vi, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return canAccesPI(vi.getPatient(), datasets, accessiblePatients);
     }
     
-    public static boolean canAccessPatient(Patient p, Set<Dataset> datasets) {
-        return canAccesPI(p.getPatient(), datasets);
+    public static boolean canAccessPatient(Patient p, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return canAccesPI(p.getPatient(), datasets, accessiblePatients);
     }
     
-    public static boolean canAccessPatientAttributeValue(PatientAttributeValue patientAttributeValuevar, Set<Dataset> datasets) {
-        return canAccesPI(patientAttributeValuevar.getPatient(), datasets);
+    public static boolean canAccessPatientAttributeValue(PatientAttributeValue patientAttributeValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return canAccesPI(patientAttributeValuevar.getPatient(), datasets, accessiblePatients);
     }
     
-    public static boolean canAccessPatientEventValue(PatientEventValue patientEventValuevar, Set<Dataset> datasets) {
-        return canAccesPI(patientEventValuevar.getPatient(), datasets);
+    public static boolean canAccessPatientEventValue(PatientEventValue patientEventValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return canAccesPI(patientEventValuevar.getPatient(), datasets, accessiblePatients);
     }
     
-    public static boolean canAccessTestResult(TestResult testResultvar, Set<Dataset> datasets) {
+    public static boolean canAccessTestResult(TestResult testResultvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
     	if (testResultvar.getPatient() != null) {
-            return canAccesPI(testResultvar.getPatient(), datasets);
+            return canAccesPI(testResultvar.getPatient(), datasets, accessiblePatients);
     	}
     	else if (testResultvar.getViralIsolate() != null) {
-    		return canAccessViralIsolate(testResultvar.getViralIsolate(), datasets);
+    		return canAccessViralIsolate(testResultvar.getViralIsolate(), datasets, accessiblePatients);
     	}
     	else if (testResultvar.getNtSequence() != null) {
-    		return canAccessViralIsolate(testResultvar.getNtSequence().getViralIsolate(), datasets);
+    		return canAccessViralIsolate(testResultvar.getNtSequence().getViralIsolate(), datasets, accessiblePatients);
     	}
     	else {
     		return false;
     	}
     }
 
-    public static boolean canAccessTherapy(Therapy therapyvar, Set<Dataset> datasets) {
-        return canAccesPI(therapyvar.getPatient(), datasets);
+    public static boolean canAccessTherapy(Therapy therapyvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return canAccesPI(therapyvar.getPatient(), datasets, accessiblePatients);
     }
     
-    private static boolean canAccesPI(PatientImpl p, Set<Dataset> datasets) {
+    private static boolean canAccesPI(PatientImpl p, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+    	if (accessiblePatients != null) {
+    		return accessiblePatients.contains(p.getPatientIi());
+    	}
         Set<Dataset> pDatasets = new HashSet<Dataset>();
         for(PatientDataset pd : p.getPatientDatasets()) {
             pDatasets.add(pd.getId().getDataset());
@@ -63,6 +66,8 @@ public class PatientImplHelper {
                 }
             }
         }
-        return new Patient((PatientImpl)o, privillege);
+    	return new Patient((PatientImpl)o, privillege);
     }
+    
+
 }

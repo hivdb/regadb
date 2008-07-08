@@ -26,8 +26,8 @@ public class WComposedWordConfigurer extends WComboBox implements ComposedWordCo
 		vars.add(confy);
 	}
 	
-	public void add(List<WordConfigurer> words) {
-		addItem((WordConfigurer) words.get(0));
+	public void add(List<WordConfigurer> keys, List<WordConfigurer> words) {
+		addItem(new WCombinedConfigurer(keys));
 	}
 	
 	public void configureWord() {

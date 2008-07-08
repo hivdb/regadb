@@ -17,5 +17,5 @@ package com.pharmadm.custom.rega.queryeditor;
  * @author  kristof
  */
 public interface SelectionList {
-    
+	public boolean isValid();
 }

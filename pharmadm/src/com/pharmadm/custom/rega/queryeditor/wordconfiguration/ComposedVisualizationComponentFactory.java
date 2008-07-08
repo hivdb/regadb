@@ -6,5 +6,5 @@ import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 
 public abstract class ComposedVisualizationComponentFactory {
 
-	public abstract ComposedWordConfigurer createWord(CompositionBehaviour behaviour, List<WordConfigurer> configurers);
+	public abstract ComposedWordConfigurer createWord(CompositionBehaviour behaviour, List<WordConfigurer> configurers,  List<WordConfigurer> keys);
 }

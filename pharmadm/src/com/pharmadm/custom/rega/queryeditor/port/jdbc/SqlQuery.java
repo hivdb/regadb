@@ -102,33 +102,27 @@ public class SqlQuery implements QueryVisitor {
 	public String visitWhereClauseOutputVariable(OutputVariable ovar) {
         return ovar.getExpression().acceptWhereClause(this);
 	}
-
-	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
-		String str = constant.getValue().toString();
+	
+	private String formatString(String str) {
 		str = str.replace('*', '%');
 		str = str.replace('?', '_');
-        return "\'%" + str + "\'";
+		return str;
+	}
+
+	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
+        return "\'%" + formatString(constant.getValue().toString()) + "\'";
 	}
 
 	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
-		String str = constant.getValue().toString();
-		str = str.replace('*', '%');
-		str = str.replace('?', '_');
-        return "\'" + str + "%\'";
+        return "\'" + formatString(constant.getValue().toString()) + "%\'";
 	}
 
 	public String visitWhereClauseStringConstant(StringConstant constant) {
-		String str = constant.getValue().toString();
-		str = str.replace('*', '%');
-		str = str.replace('?', '_');
-		return "\'" + str + "\'";
+		return "\'" + formatString(constant.getValue().toString()) + "\'";
 	}
 
 	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
-		String str = constant.getValue().toString();
-		str = str.replace('*', '%');
-		str = str.replace('?', '_');
-        return "\'%" + str + "%\'";
+        return "\'%" + formatString(constant.getValue().toString()) + "%\'";
 	}
 
 	public String visitWhereClauseConstant(Constant constant) {

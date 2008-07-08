@@ -20,39 +20,39 @@ public class JComposedVisualizationComponentFactory extends
 
 	@Override
 	public ComposedWordConfigurer createWord(CompositionBehaviour behaviour,
-			List<WordConfigurer> configurers) {
+			List<WordConfigurer> configurers, List<WordConfigurer> keys) {
 		
 		if (behaviour instanceof NullComposition) {
 			return null;
 		}
 		else if (behaviour instanceof PrimitiveDeclarationComposition) {
-			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 3));
-			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers);
+			JComposedWordConfigurer string = new JComposedWordConfigurer(new JCombinedConfigurer(keys));
 			return new JAttributeConfigurer(string, constants);			
 		}
 		else if (behaviour instanceof NamedTablePropertyComposition) {
-			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 4));
-			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers);
+			JComposedWordConfigurer string = new JComposedWordConfigurer(new JCombinedConfigurer(keys));
 			return new JAttributeConfigurer(string, constants);			
 		}
 		else if (behaviour instanceof PropertySetComposition) {
-			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 3));
-			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers);
+			JComposedWordConfigurer string = new JComposedWordConfigurer(new JCombinedConfigurer(keys));
 			return new JAttributeConfigurer(string, constants);			
 		}
 		else if (behaviour instanceof NamedTableFetchComposition) {
-			JCombinedConfigurer constants = new JCombinedConfigurer(configurers.subList(1, 4));
-			JComposedWordConfigurer string = new JComposedWordConfigurer(configurers.get(0));
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers);
+			JComposedWordConfigurer string = new JComposedWordConfigurer(new JCombinedConfigurer(keys));
 			return new JAttributeConfigurer(string, constants);			
 		}
 		else if (behaviour instanceof PropertyFetchComposition) {
-			return new JComposedWordConfigurer(configurers.get(0));
+			return new JComposedWordConfigurer(keys.get(0));
 		}
 		else if (behaviour instanceof TableFetchComposition) {
-			return new JComposedWordConfigurer(configurers.get(0));
+			return new JComposedWordConfigurer(keys.get(0));
 		}
 		else if (behaviour instanceof NewTableComposition) {
-			return new JComposedWordConfigurer(configurers.get(0));
+			return new JComposedWordConfigurer(keys.get(0));
 		}
 		else {
 			return null;

@@ -86,7 +86,7 @@ public class InputVariable extends Variable implements AWCWord, Cloneable, Seria
      * determined
      * </p>
      * <p>
-     * @return true iff the given OutputVariable can be bound to this
+     * @return true if the given OutputVariable can be bound to this
      * InputVariable.
      * </p>
      */

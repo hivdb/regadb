@@ -33,4 +33,10 @@ public interface Selection {
     
     public void setController(SelectionList controller);
     
+    /**
+     * return true when the selection matches the DB state
+     * @return
+     */
+    public boolean isValid();
+    
 }

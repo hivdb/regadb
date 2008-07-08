@@ -63,7 +63,9 @@ public class QueryLoader implements Savable {
 				infoContainer.setDescription(def.getDescription());
 				infoContainer.setUser(def.getSettingsUser().getUid());
 		    	XStream xs = new XStream();
-		    	return (Query) xs.fromXML(def.getQuery());
+		    	Query query = (Query) xs.fromXML(def.getQuery());
+		    	queryLoaded = checkQueryValidity(query);
+		    	return query;
 			}
 			catch (Throwable t) {
 				queryLoaded = false;
@@ -72,7 +74,11 @@ public class QueryLoader implements Savable {
 		}
 	}
 	
-
+	private boolean checkQueryValidity(Query query) {
+		boolean result = query.getSelectList().isValid();
+		return result;
+	}
+	
 	public boolean isLoaded() {
 		return queryLoaded;
 	}

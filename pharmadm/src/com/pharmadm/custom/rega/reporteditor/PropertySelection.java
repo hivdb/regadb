@@ -36,5 +36,10 @@ public class PropertySelection extends com.pharmadm.custom.rega.queryeditor.Simp
         Object[] spec = (Object[])objectSpec;
         return ((DataOutputVariable)spec[1]).getProperty((String)spec[0]);
     }
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
     
 }

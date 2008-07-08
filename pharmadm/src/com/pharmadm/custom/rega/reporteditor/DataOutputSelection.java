@@ -35,5 +35,10 @@ public class DataOutputSelection extends com.pharmadm.custom.rega.queryeditor.Si
         // the object (a DataOutputVariable) is specified by itself
         return objectSpec;
     }
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
     
 }

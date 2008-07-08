@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.query.querytool.select;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.SimpleSelection;
+import com.pharmadm.custom.rega.savable.Savable;
 
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
@@ -15,10 +16,11 @@ public class SimpleSelectionContainer extends WContainerWidget {
 	private WCheckBox checkBox;
 	
 
-	public SimpleSelectionContainer(SimpleSelection selection) {
+	public SimpleSelectionContainer(Savable savable, SimpleSelection selection) {
 		super();
 		this.selection = selection;
 		init();
+		checkBox.setEnabled(savable.isLoaded());
 	}
 	
 	private void init() {

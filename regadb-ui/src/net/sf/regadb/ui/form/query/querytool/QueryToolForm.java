@@ -19,7 +19,6 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WApplication;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
@@ -109,7 +108,6 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	 * update controls to reflect editability
 	 */
 	public void updateControls() {
-		System.err.println("update requested");
 		boolean editable = isQueryEditable() &&  statusbar.isCatalogLoaded() && getSavable().isLoaded();
 		if (editable != controlsEnabled) {
 			queryTreeTab.setEditable(editable);

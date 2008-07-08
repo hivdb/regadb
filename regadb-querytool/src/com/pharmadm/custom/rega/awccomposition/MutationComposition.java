@@ -19,7 +19,7 @@ public class MutationComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(2, 4);
+		return clause.getVisualizationClauseList().getWords().subList(3, 4);
 	}
 
 	@Override
@@ -29,6 +29,11 @@ public class MutationComposition extends CompositionBehaviour {
 		clause.getInputVariables().iterator().next().getObject().isTable() &&
 		clause.getVisualizationClauseList().getWords().get(2) instanceof FixedString &&				
 		clause.getVisualizationClauseList().getWords().get(3) instanceof MutationConstant;
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(2, 3);
 	}
 
 }

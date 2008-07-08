@@ -43,11 +43,18 @@ public class DatabaseTableCatalog {
     		String simpleName = tableName.substring(tableName.lastIndexOf('.')+1);
     		Table table = new Table(simpleName, tableComment);
     		for (String fieldName : fieldNames) {
+    			String field_name = fieldName;
+    			
+    			// used for quick emulation of bug 106
+//    			if (fieldName.equals("startDate")) {
+//    				field_name =  "startDateTest";
+//    			}
+    			
     			String fieldComment = connector.getCommentForColumn(tableName, fieldName);
     			int dataType = connector.getColumnType(tableName, fieldName);
     			boolean isKey = keys.contains(fieldName);
-    			Field field = new Field(fieldName, table, fieldComment, isKey, dataType, true);
-    			fields.put(fieldName, field);
+    			Field field = new Field(field_name, table, fieldComment, isKey, dataType, true);
+    			fields.put(field_name, field);
     			table.addField(field);
     		}
     		

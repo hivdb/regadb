@@ -12,10 +12,11 @@ import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 
 import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
+import net.sf.regadb.ui.form.query.querytool.widgets.ToolbarHolder;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import net.sf.witty.wt.WContainerWidget;
 
-public class QueryEditorTreeContainer extends WContainerWidget implements QueryEditorComponent, QueryContext {
+public class QueryEditorTreeContainer extends WContainerWidget implements QueryEditorComponent, QueryContext, ToolbarHolder {
 	private QueryEditor editor = null;
 	private WhereClause contextClause;
 	private QueryToolApp mainForm; 

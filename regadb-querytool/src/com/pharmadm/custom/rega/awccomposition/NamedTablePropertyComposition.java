@@ -20,7 +20,7 @@ public class NamedTablePropertyComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(2, 6);
+		return clause.getVisualizationClauseList().getWords().subList(3, 6);
 	}
 
 	@Override
@@ -32,6 +32,11 @@ public class NamedTablePropertyComposition extends CompositionBehaviour {
 		clause.getOutputVariables().iterator().next().getObject().isTable() &&
 		clause.getVisualizationClauseList().getWords().get(4) instanceof OperatorConstant &&				
 		clause.getVisualizationClauseList().getWords().get(5) instanceof Constant;			
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(2, 3);
 	}
 
 }

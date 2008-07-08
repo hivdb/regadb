@@ -50,4 +50,12 @@ public class WCombinedConfigurer extends WContainerWidget implements WordConfigu
 		}
 		return false;
 	}
+	
+	public String toString() {
+		String result = "";
+		for (WordConfigurer confy : words) {
+			result += confy.toString() + " ";
+		}
+		return result.trim();
+	}
 }

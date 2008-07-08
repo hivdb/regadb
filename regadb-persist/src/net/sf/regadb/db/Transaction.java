@@ -104,6 +104,10 @@ public class Transaction {
     public void clearCache() {
         session.clear();
     }
+    
+    public void clearCache(Object o) {
+    	session.evict(o);
+    }
 
     public Query createQuery(String query)
     {

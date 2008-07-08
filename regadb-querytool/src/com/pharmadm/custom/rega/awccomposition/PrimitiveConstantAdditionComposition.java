@@ -20,7 +20,7 @@ public class PrimitiveConstantAdditionComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(1, 7);
+		return clause.getVisualizationClauseList().getWords().subList(2, 7);
 	}
 
 	@Override
@@ -32,6 +32,11 @@ public class PrimitiveConstantAdditionComposition extends CompositionBehaviour {
 		clause.getInputVariables().iterator().next().getObject().isPrimitive() &&
 		clause.getVisualizationClauseList().getWords().get(4) instanceof OperatorConstant &&			
 		clause.getVisualizationClauseList().getWords().get(5) instanceof Constant;			
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(1, 2);
 	}
 
 }

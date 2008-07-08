@@ -27,7 +27,7 @@ public class PropertySetComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(3, 6);
+		return clause.getVisualizationClauseList().getWords().subList(4, 6);
 	}
 
 	@Override
@@ -39,6 +39,11 @@ public class PropertySetComposition extends CompositionBehaviour {
 				(clause.getVisualizationClauseList().getWords().get(3) instanceof FixedString || clause.getVisualizationClauseList().getWords().get(3) instanceof OutputVariable) &&				
 				clause.getVisualizationClauseList().getWords().get(4) instanceof OperatorConstant &&				
 				clause.getVisualizationClauseList().getWords().get(5) instanceof Constant;			
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(3, 4);
 	}
 
 }

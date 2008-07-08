@@ -14,6 +14,8 @@ package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
+
 /**
  *
  * @author  kristof
@@ -37,4 +39,15 @@ public class OutputSelection extends SimpleSelection implements Serializable {
         // the object (an OutputVariable) is specified by itself
         return (OutputVariable)objectSpec;
     }
+
+	@Override
+	public boolean isValid() {
+		DbObject obj = ((OutputVariable) getObject()).getObject();
+		if (obj.getTableName() != null || obj.getPropertyName() != null) {
+			return obj.isTable() || obj.isField();
+		}
+		return true;
+	}
+    
+    
 }

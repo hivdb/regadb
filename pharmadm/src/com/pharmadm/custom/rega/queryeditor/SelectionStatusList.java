@@ -228,5 +228,14 @@ public class SelectionStatusList implements SelectionList, Serializable {
             listener.selectionChanged();
         }
     }
+
+	@Override
+	public boolean isValid() {
+		boolean valid = true;
+		for (Selection sel : getSelections()) {
+			valid &= sel.isValid();
+		}
+		return valid;
+	}
     
 }

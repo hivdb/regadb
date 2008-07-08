@@ -23,7 +23,7 @@ public class Header extends WTable
 		
 		  WImage icon = new WImage("pics/regaDBHeader.gif", this.elementAt(0, 0));
 		  icon.setMargin(new WLength(5));
-		  
+		  this.elementAt(0, 1).setStyleClass("header");
 		  WTable textTable = new WTable(this.elementAt(0, 1));
 		  textTable.setMargin(new WLength(5));
 		  mainHeader_ = new WText(tr("main.header.mainTitle"),textTable.elementAt(0, 0));

@@ -7,7 +7,7 @@ import net.sf.witty.wt.WText;
 import net.sf.witty.wt.WTimer;
 import net.sf.witty.wt.i8n.WMessage;
 
-public class WDialog extends WStyledContainerWidget implements StatusbarHolder {
+public class WDialog extends WStyledContainerWidget implements StatusbarHolder, ToolbarHolder {
 	private WContainerWidget titlePanel;
 	private WText titleText;
 	
@@ -23,6 +23,8 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder {
 	
 	private WContainerWidget statusBarArea;
 	private WStatusBar statusBar;
+	private WButtonPanel toolbar;
+	private WContainerWidget toolbarArea;
 	
 	/** 
 	 * a dialog with content and button panel
@@ -111,4 +113,19 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder {
 		}
 		statusBarArea.addWidget(statusBar);
 		this.statusBar = statusBar;
-	}}
+	}
+
+	@Override
+	public void setToolbar(WButtonPanel panel) {
+		if (toolbar != null) {
+			toolbar.getStyleClasses().removeStyle("toolbar");
+			toolbarArea.removeWidget(toolbar);
+		}
+		
+		toolbar = panel;
+		if (toolbar != null) {
+			toolbarArea.addWidget(toolbar);
+			toolbar.getStyleClasses().addStyle("toolbar");
+		}
+	}
+}

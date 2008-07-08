@@ -62,4 +62,12 @@ public class JCombinedConfigurer extends JPanel implements WordConfigurer{
 	public boolean isUseless() {
 		return false;
 	}
+	
+	public String toString() {
+		String result = "";
+		for (WordConfigurer confy : words) {
+			result += confy.toString() + " ";
+		}
+		return result.trim();
+	}
 }

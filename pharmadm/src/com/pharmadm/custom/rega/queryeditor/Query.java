@@ -14,6 +14,7 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.util.work.Work;
@@ -49,7 +50,7 @@ public class Query implements Serializable, Cloneable {
     ///////////////////////////////////////
     // associations
     
-	private transient HashMap<String, Object>  preparedConstantMap = new HashMap<String, Object>();
+	private HashMap<String, Object>  preparedConstantMap = new HashMap<String, Object>();
 	
 	
     private WhereClause rootClause = new AndClause();
@@ -71,7 +72,7 @@ public class Query implements Serializable, Cloneable {
     	setRootClause(whereClause);
     	setSelectList(selectList);
     	setUniqueNameContext(context);
-    }
+   }
     
     ///////////////////////////////////////
     // access methods for associations
@@ -187,11 +188,10 @@ public class Query implements Serializable, Cloneable {
 	
 	public Object clone() throws CloneNotSupportedException{
 		Query q = new Query();
-		q.setRootClause((WhereClause) rootClause.clone());
+		q.setRootClause((WhereClause) rootClause);
 		q.setSelectList(selectList);
 		q.setUniqueNameContext(uniqueNameContext);
 		q.preparedConstantMap = preparedConstantMap;
-		
 		return q;
 	}
 }

@@ -7,7 +7,7 @@ import java.sql.Statement;
 import com.pharmadm.custom.rega.queryeditor.port.*;
 
 
-public class JDBCResult implements QueryResult {
+public class JDBCResult implements QueryResult, ScrollableQueryResult {
 	private ResultSet rs;
 	
 	public JDBCResult(ResultSet result) {
@@ -87,5 +87,26 @@ public class JDBCResult implements QueryResult {
 			catch (SQLException e) {}
 		}
 		return 0;
+	}
+
+	@Override
+	public Object[] get() {
+		Object[] results = new Object[getColumnCount()]; 
+		try {
+			for (int i = 1 ; i <= results.length ; i++) {
+				results[i-1] = rs.getObject(i);
+			}
+			rs.next();
+		} catch (SQLException e) {}
+		
+		return results;
+	}
+
+	@Override
+	public boolean isLast() {
+		try {
+			return rs.isLast();
+		} catch (SQLException e) {}
+		return true;
 	}
 }

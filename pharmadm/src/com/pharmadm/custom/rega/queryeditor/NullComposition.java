@@ -35,4 +35,9 @@ public class NullComposition extends CompositionBehaviour {
 	public ComposedWordConfigurer getWordConfigurer(List<WordConfigurer> configurers) {
 		return null;
 	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return null;
+	}
 }

@@ -251,13 +251,13 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	 * @param invertLink false for a relation from input and foreigntable to idtable
 	 *                   true for a relation from idtable to input and foreigntable
      */
-    private void addRelationClauseToComposer(WhereClauseComposer aComposer, AWCWord inputTable, FromVariable foreignTable, String inputTableToIdTable, String foreignTableToIdTable, FromVariable idTable, String idTableKey, boolean invertLink) {
+    private void addRelationClauseToComposer(OrderedAWCWordList aComposer, AWCWord inputTable, AWCWord foreignTable, String inputTableToIdTable, String foreignTableToIdTable, FromVariable idTable, String idTableKey, boolean invertLink) {
     	if (!invertLink) {
     		// regular link between input table and foreign table
     		// check if they point to the same id table
             aComposer.addWord(inputTable);
             aComposer.addFixedString(new FixedString((inputTableToIdTable != null ? "." + inputTableToIdTable: "") + (idTableKey != null ?"." + idTableKey:"") + " = "));
-            aComposer.addFromVariable(foreignTable);
+            aComposer.addWord(foreignTable);
             aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable:"") + (idTableKey != null ?"." + idTableKey:"")));
     	}
     	else {
@@ -269,7 +269,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             aComposer.addFixedString(new FixedString(" AND\n\t"));
             aComposer.addFromVariable(idTable);
             aComposer.addFixedString(new FixedString((foreignTableToIdTable != null ? "." + foreignTableToIdTable: "") + " = "));
-            aComposer.addFromVariable(foreignTable);
+            aComposer.addWord(foreignTable);
     	}
     }
     
@@ -453,10 +453,93 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             }
             
             return aClause;
-
     }
     
-    private AtomicWhereClause getGenericDrugResolvedClause() {
+    private AtomicWhereClause getAggregateClause(DbObject field, ObjectRelation rel) {
+    	SimpleAtomicWhereClause aClause = new SimpleAtomicWhereClause();
+        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
+        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
+        aClause.setCompositionBehaviour(new AggregateComposition());
+        aClause.addGroup(rel.getInputTable().getDescription());
+
+        InputVariable ivar = new InputVariable(rel.getInputTable());
+        Constant constant = getAggregateFunction(field);
+        FromVariable fromVar = new FromVariable(rel.getForeignTable());
+        OutputVariable ovar =  new OutputVariable(rel.getForeignTable());
+        ovar.setRelation(rel.getDescription());
+        ovar.getExpression().addFromVariable(fromVar);
+        
+        aVisList.addFixedString(new FixedString(rel.getInputTable().getDescription()));
+        aVisList.addInputVariable(ivar);
+        aVisList.addOutputVariable(ovar);
+        aVisList.addFixedString(new FixedString("with a"));
+        aVisList.addFixedString(new FixedString(field.getDescription()));
+        aVisList.addFixedString(new FixedString("that is the"));
+        aVisList.addConstant(constant);
+
+        aComposer.addFixedString(new FixedString("(\n\t\tSELECT\n\t\t\t"));
+        aComposer.addConstant(constant);
+        aComposer.addFixedString(new FixedString("(" + field.getTableObject().getSqlAlias() + "." + field.getPropertyName() + ")"));
+        aComposer.addFixedString(new FixedString("\n\t\tFROM\n\t\t\t"));
+        aComposer.addFixedString(new FixedString(field.getTableObject().getTableName() + " " + field.getTableObject().getSqlAlias()));
+        aComposer.addFixedString(new FixedString("\n\t\tWHERE\n\t\t\t"));
+        addRelationClauseToComposer(aComposer, ivar, new FixedString(field.getTableObject().getSqlAlias()), rel.getInputTableToIdTable(), rel.getForeignTableToIdTable(), new FromVariable(rel.getIdTable()), rel.getIdTableKey(), rel.isInvertLink());
+        aComposer.addFixedString(new FixedString("\n\t\tGROUP BY\n\t\t\t"));
+        aComposer.addInputVariable(ivar);
+        aComposer.addFixedString(new FixedString(")"));
+        aComposer.addFixedString(new FixedString(" = "));
+        aComposer.addOutputVariable(ovar);
+        aComposer.addFixedString(new FixedString("." + field.getPropertyName()));
+        aComposer.addFixedString(new FixedString(" AND\n\t"));
+        addRelationClauseToComposer(aComposer, ivar, fromVar, rel.getInputTableToIdTable(), rel.getForeignTableToIdTable(), new FromVariable(rel.getIdTable()), rel.getIdTableKey(), rel.isInvertLink());
+        
+        
+        return aClause;
+    }
+    
+    
+    private Constant getAggregateFunction(DbObject object) {
+    	ValueType type = object.getValueType();
+    	if (type == ValueType.String) {
+    		return new OperatorConstant();
+    	}
+    	else if (type == ValueType.Boolean) {
+    		return new OperatorConstant();
+    	}
+    	else if (type == ValueType.Number) {
+    		return getNumberAggregateFunction();
+    	}
+    	else if (type == ValueType.Date) {
+    		return getDateAggregateFunction();
+    	}
+    	else {
+    		return new OperatorConstant();
+    	}
+    }    
+
+	private Constant getNumberAggregateFunction() {
+    	Constant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("min", "lowest"));
+       	constant.addSuggestedValue(new SuggestedValuesOption("max", "highest"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+	}
+
+
+	private Constant getDateAggregateFunction() {
+    	Constant constant = new OperatorConstant();
+       	constant.addSuggestedValue(new SuggestedValuesOption("min", "earliest"));
+       	constant.addSuggestedValue(new SuggestedValuesOption("max", "latest"));
+    	constant.setSuggestedValuesMandatory(true);
+    	return constant;
+	}
+    
+    
+
+    
+    
+
+	private AtomicWhereClause getGenericDrugResolvedClause() {
     	DbObject therapyTable = catalog.getObject("Therapy");
     	DbObject genericDrugTable = catalog.getObject("DrugGeneric");
     	DbObject genericTherapyTable = catalog.getObject("TherapyGeneric");
@@ -1325,20 +1408,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         return clause;
     }
     
-    private AtomicWhereClause getRelationClause(AtomicWhereClause... relations) {
-    	ComposedAtomicWhereClause clause = new ComposedAtomicWhereClause(ExportPolicy.LAST);
-    	VisualizationClauseList aVisList = clause.getVisualizationClauseList();
-        clause.setCompositionBehaviour(new NamedTablePropertyComposition());
-        
-        boolean first = true;
-        for (AtomicWhereClause aClause : relations) {
-        	clause.addChild(aClause, (first ? VisualisationListPolicy.INPUT : VisualisationListPolicy.NONE));
-        	first = false;
-        }
-        
-        return clause;
-    }
-    
     /**
      * set all variable names, table descriptions and table aliases
      */
@@ -1531,14 +1600,20 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addRelations("AaInsertion", "id.aaSequence", "AaSequence", null, false, "comes from an",  "has an");
         addRelations("Protein", null, "AaSequence", "protein", false, "has an encoding",  "encodes for a");   
 
+        addRelations("AaMutation", "id.aaSequence.ntSequence.viralIsolate.patient", "PatientImpl", null,  false, "comes from a",  "has a");
+        addRelations("AaInsertion", "id.aaSequence.ntSequence.viralIsolate.patient", "PatientImpl", null, false, "comes from a",  "has a");
+        addRelations("AaMutation", "id.aaSequence.ntSequence.viralIsolate", "ViralIsolate", null,  false, "comes from a",  "has a");
+        addRelations("AaInsertion", "id.aaSequence.ntSequence.viralIsolate", "ViralIsolate", null, false, "comes from a",  "has a");
+        addRelations("AaMutation", "id.aaSequence.ntSequence", "NtSequence", null,  false, "comes from a",  "has a");
+        addRelations("AaInsertion", "id.aaSequence.ntSequence", "NtSequence", null, false, "comes from a",  "has a");
+        
+        
         addRelations("TestResult", "test", "Test", null, false, null, null);
         addRelations("TestResult", "test.testType.testObject", "TestObject", null, false, null, null);
         addRelations("PatientImpl", null, "TestResult", "patient",  false, "has a",  "is a result from a");
         addRelations("DrugGeneric", null, "TestResult", "drugGeneric",  false, "has a",  "is a result from a");
         addRelations("ViralIsolate", null, "TestResult", "viralIsolate",  false, "has a",  "is a result from a");
         addRelations("NtSequence", null, "TestResult", "ntSequence",  false, "has a",  "is a result from a");
-//        addRelations("AaMutation", "id.aaSequence.ntSequence.viralIsolate.patient", "PatientImpl", null,  false, "comes from a",  "has a");
-//        addRelations("AaInsertion", "id.aaSequence.ntSequence.viralIsolate.patient", "PatientImpl", null, false, "comes from a",  "has a");
         addRelations("DrugClass", null, "DrugGeneric", "drugClass", false, "has a",  "belongs to the");
         
         
@@ -1619,6 +1694,16 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("PatientImpl", "therapies"), "number of"));
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("PatientImpl", "testResults"), "number of"));
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("PatientImpl", "viralIsolates"), "number of"));
+
+        catalog.add(getAggregateClause(catalog.getObject("Therapy","startDate"), catalog.getRelation("PatientImpl", "Therapy")));	// patient's first therapy
+        catalog.add(getAggregateClause(catalog.getObject("Therapy","stopDate"), catalog.getRelation("PatientImpl", "Therapy")));	// patient's first completed therapy
+        catalog.add(getAggregateClause(catalog.getObject("ViralIsolate","sampleDate"), catalog.getRelation("PatientImpl", "ViralIsolate")));	// patient's first viral isolate
+        catalog.add(getAggregateClause(catalog.getObject("TestResult","testDate"), catalog.getRelation("PatientImpl", "TestResult")));	// patient's first test
+        catalog.add(getAggregateClause(catalog.getObject("NtSequence","sequenceDate"), catalog.getRelation("PatientImpl", "NtSequence")));	// patient's first sequenced nt sequence
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","firstAaPos"), catalog.getRelation("PatientImpl", "AaSequence")));	// patient's first first aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","lastAaPos"), catalog.getRelation("PatientImpl", "AaSequence")));		// patient's first last aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaMutation","id.mutationPosition"), catalog.getRelation("PatientImpl", "AaMutation")));		// patient's first aa mutation pos
+        catalog.add(getAggregateClause(catalog.getObject("AaInsertion","id.insertionPosition"), catalog.getRelation("PatientImpl", "AaInsertion")));	// patient's first aa insertion pos
         
         
 
@@ -1644,7 +1729,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyGenerics"), "number of"));
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyCommercials"), "number of"));
         
-        
+   		catalog.add(getAggregateClause(catalog.getObject("Therapy","startDate"), catalog.getRelation("DrugGeneric", "Therapy")));	// first usage of a generic drug
+        catalog.add(getAggregateClause(catalog.getObject("Therapy","stopDate"), catalog.getRelation("DrugGeneric", "Therapy")));	// first completed usage of a generic drug
+        catalog.add(getAggregateClause(catalog.getObject("Therapy","startDate"), catalog.getRelation("DrugCommercial", "Therapy")));	// first usage of a commercial drug
+        catalog.add(getAggregateClause(catalog.getObject("Therapy","stopDate"), catalog.getRelation("DrugCommercial", "Therapy")));		// first completed usage of a commercial drug
+
+   		
         ///////////////////////////////////////
         // therapyCommercial
         catalog.addAll(getPropertyComparisonClauses("TherapyCommercial", "dayDosageUnits"));
@@ -1667,7 +1757,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
    		catalog.addAll(getPropertyComparisonClauses(catalog.getRelation("TherapyGeneric", "DrugGeneric"), catalog.getObject("DrugGeneric", "genericName")));
    		catalog.addAll(getPropertyComparisonClauses(catalog.getRelation("TherapyGeneric", "DrugGeneric"), catalog.getObject("DrugGeneric", "resistanceTableOrder")));
    		catalog.addAll(getPropertyComparisonClauses(catalog.getRelation("TherapyGeneric", "DrugGeneric"), catalog.getObject("DrugGeneric", "atcCode")));
-   		
         
    		catalog.addAll(getRelationClauses("DrugGeneric", "TherapyGeneric"));
 
@@ -1676,8 +1765,17 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // viral isolates
         catalog.addAll(getPropertyComparisonClauses("ViralIsolate", "sampleId"));
         catalog.addAll(getPropertyComparisonClauses("ViralIsolate", "sampleDate"));
+        
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("ViralIsolate", "ntSequences"), "number of"));
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("ViralIsolate", "testResults"), "number of"));
+        
+        catalog.add(getAggregateClause(catalog.getObject("TestResult","testDate"), catalog.getRelation("ViralIsolate", "TestResult")));		// vi's first test
+        catalog.add(getAggregateClause(catalog.getObject("NtSequence","sequenceDate"), catalog.getRelation("ViralIsolate", "NtSequence")));	// vi's first sequenced nt sequence
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","firstAaPos"), catalog.getRelation("ViralIsolate", "AaSequence")));	// vi's first first aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","lastAaPos"), catalog.getRelation("ViralIsolate", "AaSequence")));	// vi's first last aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaMutation","id.mutationPosition"), catalog.getRelation("ViralIsolate", "AaMutation")));		// vi's first aa mutation pos
+        catalog.add(getAggregateClause(catalog.getObject("AaInsertion","id.insertionPosition"), catalog.getRelation("ViralIsolate", "AaInsertion")));	// vi's first aa insertion pos
+        
         
         catalog.addAll(getRelationClauses("NtSequence", "ViralIsolate"));
  
@@ -1687,8 +1785,16 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "sequenceDate"));
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "label"));
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "nucleotides"));
+        
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("NtSequence", "aaSequences"), "number of"));
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("NtSequence", "testResults"), "number of"));
+
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","firstAaPos"), catalog.getRelation("NtSequence", "AaSequence")));	// nt sequence's first first aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaSequence","lastAaPos"), catalog.getRelation("NtSequence", "AaSequence")));	// nt sequence's first last aa pos
+        catalog.add(getAggregateClause(catalog.getObject("AaMutation","id.mutationPosition"), catalog.getRelation("NtSequence", "AaMutation")));	// nt sequence's first aa mutation pos
+        catalog.add(getAggregateClause(catalog.getObject("AaInsertion","id.insertionPosition"), catalog.getRelation("NtSequence", "AaInsertion")));	// nt sequence's first aa insertion pos
+        catalog.add(getAggregateClause(catalog.getObject("TestResult","testDate"), catalog.getRelation("NtSequence", "TestResult")));	// nt sequence's first test
+        
         
         catalog.addAll(getRelationClauses("PatientImpl", "NtSequence"));
         catalog.addAll(getRelationClauses("AaSequence", "NtSequence"));
@@ -1702,8 +1808,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getPropertyComparisonClauses("AaSequence", "lastAaPos"));
         catalog.add(getMutationClause("ntReferenceCodon", "ntMutationCodon", "has synonymous mutations"));
         catalog.add(getMutationClause("aaReference", "aaMutation", "has non-synonymous mutations"));
+        
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("AaSequence", "aaMutations"), "number of"));
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("AaSequence", "aaInsertions"), "number of"));
+        
+        catalog.add(getAggregateClause(catalog.getObject("AaMutation","id.mutationPosition"), catalog.getRelation("AaSequence", "AaMutation")));	// aa sequence's first aa mutation pos
+        catalog.add(getAggregateClause(catalog.getObject("AaInsertion","id.insertionPosition"), catalog.getRelation("AaSequence", "AaInsertion")));	// aa sequence's first aa insertion pos
         
         catalog.addAll(getRelationClauses("AaSequence", "PatientImpl"));
         catalog.addAll(getRelationClauses("AaSequence", "ViralIsolate"));

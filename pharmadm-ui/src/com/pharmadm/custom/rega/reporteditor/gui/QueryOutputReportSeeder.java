@@ -208,7 +208,7 @@ public class QueryOutputReportSeeder implements OutputReportSeeder{
                     + "\nWHERE " + query.getRootClause().acceptWhereClause(DatabaseManager.getInstance().getQueryBuilder());
                     
                     System.out.println(queryString);
-                    QueryResult resultSet = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement().executeQuery(queryString);
+                    QueryResult resultSet = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(queryString);
                     try {
                     	int count = determineNbRows(resultSet);
                         setTotalAmount(objectListVariables.size() * count);

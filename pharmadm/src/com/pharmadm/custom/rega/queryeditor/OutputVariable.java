@@ -132,10 +132,6 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     }
     
     public void setUniqueName(String uniqueName) {
-    	if (uniqueName != null) {
-    		System.err.println("new unique name assigned: " + this.uniqueName + " -> " + uniqueName);
-    	}
-    	System.err.println(uniqueName);
         this.uniqueName = uniqueName;
     }
     
@@ -218,8 +214,8 @@ public class OutputVariable extends Variable implements AWCWord, Cloneable, Seri
     }
     
     /**
-     * returns the first from variable in this output variable
-     * if the first word is not a fromvariable return null
+     * returns the first FromVariable in this output variable's expression string
+     * if this output variable has no FromVariable in its expression string return null
      * @return
      */
     public FromVariable getFirstFromVariable() {

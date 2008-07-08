@@ -62,4 +62,9 @@ public class POJOSelection extends com.pharmadm.custom.rega.queryeditor.Composed
         }
         setSubSelections(propertySelections);
     }
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
 }

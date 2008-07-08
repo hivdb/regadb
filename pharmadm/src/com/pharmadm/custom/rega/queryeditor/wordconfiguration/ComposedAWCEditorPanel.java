@@ -10,8 +10,8 @@ public interface ComposedAWCEditorPanel {
 	public abstract void initConfigurers();
     public abstract void applyEditings();
     public abstract AtomicWhereClause getClause();
-    public abstract void createComposedWord(List<ConfigurableWord> words, ComposedWordConfigurer configurer);    
-    public abstract void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected);
+    public abstract void createComposedWord(List<ConfigurableWord> keys, List<ConfigurableWord> words, ComposedWordConfigurer configurer);    
+    public abstract void composeWord(List<WordConfigurer> keys, List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected);
     public ConfigurationController getEditor();
     
     /**

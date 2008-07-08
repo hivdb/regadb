@@ -17,7 +17,7 @@ public class PrimitiveDeclarationComposition extends CompositionBehaviour{
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(1, 4);
+		return clause.getVisualizationClauseList().getWords().subList(2, 4);
 	}
 
 	@Override
@@ -26,5 +26,10 @@ public class PrimitiveDeclarationComposition extends CompositionBehaviour{
 		clause.getVisualizationClauseList().getWords().get(1) instanceof OutputVariable &&
 		clause.getOutputVariables().iterator().next().getObject().isPrimitive() &&
 		clause.getVisualizationClauseList().getWords().get(3) instanceof Constant;			
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(1, 2);
 	}
 }

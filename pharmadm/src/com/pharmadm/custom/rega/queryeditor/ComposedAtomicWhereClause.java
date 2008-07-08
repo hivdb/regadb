@@ -73,7 +73,7 @@ public class ComposedAtomicWhereClause extends AtomicWhereClause {
 			if (c.isAtomic() && !((AtomicWhereClause) c).getOutputVariables().isEmpty() && !clause.getInputVariables().isEmpty()) {
 				OutputVariable ovar = ((AtomicWhereClause) c).getOutputVariables().iterator().next();
 				InputVariable ivar = clause.getInputVariables().iterator().next();
-				if (ivar.getObject().isCompatible(ovar.getObject())) {
+				if (ivar.isCompatible(ovar)) {
 					ivar.setOutputVariable(ovar);
 				}
 			}

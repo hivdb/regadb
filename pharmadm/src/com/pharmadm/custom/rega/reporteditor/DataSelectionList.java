@@ -32,7 +32,7 @@ public class DataSelectionList implements SelectionList {
     // again, a common superclass (SelectionList ?) might be a good idea
     
     private ReportFormat reportFormat;
-    private List selections = new ArrayList(); // of type Selection
+    private List<Selection> selections = new ArrayList(); // of type Selection
     private Collection selectionChangeListeners = new ArrayList();
     
     /** for xml-encoding purposes only */
@@ -59,7 +59,7 @@ public class DataSelectionList implements SelectionList {
         this.reportFormat = reportFormat;
     }
     
-    public List getSelections() {
+    public List<Selection> getSelections() {
         return selections;
     }
     
@@ -288,4 +288,13 @@ public class DataSelectionList implements SelectionList {
     public void removeSelectionChangeListener(SelectionChangeListener listener) {
         selectionChangeListeners.remove(listener);
     }
+
+	@Override
+	public boolean isValid() {
+		boolean valid = true;
+		for (Selection sel : getSelections()) {
+			valid &= sel.isValid();
+		}
+		return valid;
+	}
 }

@@ -24,6 +24,14 @@ public abstract class CompositionBehaviour implements Serializable {
 	 */
 	public abstract boolean matches(AtomicWhereClause clause);
 	
+	
+	/**
+	 * returns the list of words that should be used as key
+	 * @param clause
+	 * @return
+	 */
+	public abstract List<ConfigurableWord> getKeyWords(AtomicWhereClause clause);
+	
 	/**
 	 * returns the list of words that should be turned into a single configurer
 	 * @param clause

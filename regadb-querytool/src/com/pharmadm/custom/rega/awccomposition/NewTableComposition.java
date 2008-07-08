@@ -27,6 +27,12 @@ public class NewTableComposition extends CompositionBehaviour {
 
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
 		List<ConfigurableWord> words = new ArrayList<ConfigurableWord>();
+		return words;
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		List<ConfigurableWord> words = new ArrayList<ConfigurableWord>();
 		words.add(clause.getOutputVariables().iterator().next());
 		return words;
 	}

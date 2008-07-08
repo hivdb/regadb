@@ -36,4 +36,16 @@ public class FieldSelection extends SimpleSelection implements Serializable{
         DbObject spec = (DbObject)objectSpec;
         return spec.getField();
     }
+
+	@Override
+	public boolean isValid() {
+		DbObject object = (DbObject) getObjectSpec();
+		if (object.getTable() == null) {
+			return false;
+		}
+		if (object.getField() == null) {
+			return false;
+		}
+		return true;
+	}
 }

@@ -1,53 +1,226 @@
 package net.sf.regadb.io.exportCsv;
+import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.TestObject;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.QueryDefinitionParameterType;
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.QueryDefinitionRunParameter;
-import net.sf.regadb.db.QueryDefinitionRun;
-import net.sf.regadb.db.ValueType;
-import net.sf.regadb.db.AnalysisData;
-import net.sf.regadb.db.SettingsUser;
-import net.sf.regadb.db.DrugClass;
-import net.sf.regadb.db.QueryDefinitionParameterType;
-import net.sf.regadb.db.ResistanceInterpretationTemplate;
-import net.sf.regadb.db.AttributeGroup;
-import net.sf.regadb.db.CombinedQuery;
-import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.QueryDefinition;
-import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.Event;
-import net.sf.regadb.db.UserAttribute;
-import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.TestObject;
-import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.AttributeNominalValue;
-import net.sf.regadb.db.QueryDefinitionParameter;
-import net.sf.regadb.db.TestNominalValue;
-import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.QueryDefinitionRun;
+import net.sf.regadb.db.AnalysisData;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.AnalysisType;
-import net.sf.regadb.db.CombinedQueryDefinition;
-import net.sf.regadb.db.TherapyMotivation;
-import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.EventNominalValue;
-import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.AaMutation;
-import net.sf.regadb.db.Test;
-import net.sf.regadb.db.PatientDataset;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.AaInsertion;
+import net.sf.regadb.db.AnalysisType;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.PatientEventValue;
-import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.PatientDataset;
+import net.sf.regadb.db.ResistanceInterpretationTemplate;
+import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.CombinedQuery;
+import net.sf.regadb.db.TherapyMotivation;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.CombinedQueryDefinition;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.UserAttribute;
+import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.QueryDefinitionParameter;
+import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.PatientImplHelper;
 import java.util.Set;
 import net.sf.regadb.util.xml.XMLTools;
 import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 
 public class ExportToCsv {
+public String getCsvContentLine(PatientAttributeValue PatientAttributeValuevar) {
+String PatientAttributeValueLine = "";
+if(PatientAttributeValuevar.getValue()!=null) {
+PatientAttributeValueLine += PatientAttributeValuevar.getValue().toString();
+}
+PatientAttributeValueLine += ",";
+return PatientAttributeValueLine;
+}
+
+public String getCsvContentLine(Therapy Therapyvar) {
+String TherapyLine = "";
+if(Therapyvar.getTherapyMotivation()!=null) {
+TherapyLine += Therapyvar.getTherapyMotivation().getValue();
+}
+TherapyLine += ",";
+if(Therapyvar.getStartDate()!=null) {
+TherapyLine += XMLTools.dateToRelaxNgString(Therapyvar.getStartDate());
+}
+TherapyLine += ",";
+if(Therapyvar.getStopDate()!=null) {
+TherapyLine += XMLTools.dateToRelaxNgString(Therapyvar.getStopDate());
+}
+TherapyLine += ",";
+if(Therapyvar.getComment()!=null) {
+TherapyLine += Therapyvar.getComment().toString();
+}
+TherapyLine += ",";
+return TherapyLine;
+}
+
+public String getCsvContentLine(TestNominalValue TestNominalValuevar) {
+String TestNominalValueLine = "";
+if(TestNominalValuevar.getValue()!=null) {
+TestNominalValueLine += TestNominalValuevar.getValue().toString();
+}
+TestNominalValueLine += ",";
+return TestNominalValueLine;
+}
+
+public String getCsvContentLine(AaInsertion AaInsertionvar) {
+String AaInsertionLine = "";
+AaInsertionLine += String.valueOf(AaInsertionvar.getId().getInsertionPosition());
+AaInsertionLine += ",";
+AaInsertionLine += String.valueOf(AaInsertionvar.getId().getInsertionOrder());
+AaInsertionLine += ",";
+if(AaInsertionvar.getAaInsertion()!=null) {
+AaInsertionLine += AaInsertionvar.getAaInsertion().toString();
+}
+AaInsertionLine += ",";
+if(AaInsertionvar.getNtInsertionCodon()!=null) {
+AaInsertionLine += AaInsertionvar.getNtInsertionCodon().toString();
+}
+AaInsertionLine += ",";
+return AaInsertionLine;
+}
+
+public String getCsvContentLine(TestObject TestObjectvar) {
+String TestObjectLine = "";
+if(TestObjectvar.getDescription()!=null) {
+TestObjectLine += TestObjectvar.getDescription().toString();
+}
+TestObjectLine += ",";
+if(TestObjectvar.getTestObjectId()!=null) {
+TestObjectLine += TestObjectvar.getTestObjectId().toString();
+}
+TestObjectLine += ",";
+return TestObjectLine;
+}
+
+public String getCsvContentLine(TherapyGeneric TherapyGenericvar) {
+String TherapyGenericLine = "";
+if(TherapyGenericvar.getId().getDrugGeneric()!=null) {
+TherapyGenericLine += TherapyGenericvar.getId().getDrugGeneric().getGenericId();
+}
+TherapyGenericLine += ",";
+if(TherapyGenericvar.getDayDosageMg()!=null) {
+TherapyGenericLine += TherapyGenericvar.getDayDosageMg().toString();
+}
+TherapyGenericLine += ",";
+TherapyGenericLine += String.valueOf(TherapyGenericvar.isPlacebo());
+TherapyGenericLine += ",";
+TherapyGenericLine += String.valueOf(TherapyGenericvar.isBlind());
+TherapyGenericLine += ",";
+if(TherapyGenericvar.getFrequency()!=null) {
+TherapyGenericLine += TherapyGenericvar.getFrequency().toString();
+}
+TherapyGenericLine += ",";
+return TherapyGenericLine;
+}
+
+public String getCsvContentLine(TestType TestTypevar) {
+String TestTypeLine = "";
+if(TestTypevar.getDescription()!=null) {
+TestTypeLine += TestTypevar.getDescription().toString();
+}
+TestTypeLine += ",";
+return TestTypeLine;
+}
+
+public String getCsvContentLine(TherapyCommercial TherapyCommercialvar) {
+String TherapyCommercialLine = "";
+if(TherapyCommercialvar.getId().getDrugCommercial()!=null) {
+TherapyCommercialLine += TherapyCommercialvar.getId().getDrugCommercial().getName();
+}
+TherapyCommercialLine += ",";
+if(TherapyCommercialvar.getDayDosageUnits()!=null) {
+TherapyCommercialLine += TherapyCommercialvar.getDayDosageUnits().toString();
+}
+TherapyCommercialLine += ",";
+TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isPlacebo());
+TherapyCommercialLine += ",";
+TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isBlind());
+TherapyCommercialLine += ",";
+if(TherapyCommercialvar.getFrequency()!=null) {
+TherapyCommercialLine += TherapyCommercialvar.getFrequency().toString();
+}
+TherapyCommercialLine += ",";
+return TherapyCommercialLine;
+}
+
+public String getCsvContentLine(AaMutation AaMutationvar) {
+String AaMutationLine = "";
+AaMutationLine += String.valueOf(AaMutationvar.getId().getMutationPosition());
+AaMutationLine += ",";
+if(AaMutationvar.getAaReference()!=null) {
+AaMutationLine += AaMutationvar.getAaReference().toString();
+}
+AaMutationLine += ",";
+if(AaMutationvar.getAaMutation()!=null) {
+AaMutationLine += AaMutationvar.getAaMutation().toString();
+}
+AaMutationLine += ",";
+if(AaMutationvar.getNtReferenceCodon()!=null) {
+AaMutationLine += AaMutationvar.getNtReferenceCodon().toString();
+}
+AaMutationLine += ",";
+if(AaMutationvar.getNtMutationCodon()!=null) {
+AaMutationLine += AaMutationvar.getNtMutationCodon().toString();
+}
+AaMutationLine += ",";
+return AaMutationLine;
+}
+
+public String getCsvContentLine(AaSequence AaSequencevar) {
+String AaSequenceLine = "";
+if(AaSequencevar.getProtein()!=null) {
+AaSequenceLine += AaSequencevar.getProtein().getAbbreviation();
+}
+AaSequenceLine += ",";
+AaSequenceLine += String.valueOf(AaSequencevar.getFirstAaPos());
+AaSequenceLine += ",";
+AaSequenceLine += String.valueOf(AaSequencevar.getLastAaPos());
+AaSequenceLine += ",";
+return AaSequenceLine;
+}
+
+public String getCsvContentLine(AnalysisData AnalysisDatavar) {
+String AnalysisDataLine = "";
+if(AnalysisDatavar.getName()!=null) {
+AnalysisDataLine += AnalysisDatavar.getName().toString();
+}
+AnalysisDataLine += ",";
+if(AnalysisDatavar.getData()!=null) {
+AnalysisDataLine += XMLTools.base64Encoding(AnalysisDatavar.getData());
+}
+AnalysisDataLine += ",";
+if(AnalysisDatavar.getMimetype()!=null) {
+AnalysisDataLine += AnalysisDatavar.getMimetype().toString();
+}
+AnalysisDataLine += ",";
+return AnalysisDataLine;
+}
+
 public String getCsvContentLine(Analysis Analysisvar) {
 String AnalysisLine = "";
 if(Analysisvar.getAnalysisType()!=null) {
@@ -85,107 +258,17 @@ AnalysisLine += ",";
 return AnalysisLine;
 }
 
-public String getCsvContentLine(AaSequence AaSequencevar) {
-String AaSequenceLine = "";
-if(AaSequencevar.getProtein()!=null) {
-AaSequenceLine += AaSequencevar.getProtein().getAbbreviation();
+public String getCsvContentLine(ViralIsolate ViralIsolatevar) {
+String ViralIsolateLine = "";
+if(ViralIsolatevar.getSampleId()!=null) {
+ViralIsolateLine += ViralIsolatevar.getSampleId().toString();
 }
-AaSequenceLine += ",";
-AaSequenceLine += String.valueOf(AaSequencevar.getFirstAaPos());
-AaSequenceLine += ",";
-AaSequenceLine += String.valueOf(AaSequencevar.getLastAaPos());
-AaSequenceLine += ",";
-return AaSequenceLine;
+ViralIsolateLine += ",";
+if(ViralIsolatevar.getSampleDate()!=null) {
+ViralIsolateLine += XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate());
 }
-
-public String getCsvContentLine(TestType TestTypevar) {
-String TestTypeLine = "";
-if(TestTypevar.getDescription()!=null) {
-TestTypeLine += TestTypevar.getDescription().toString();
-}
-TestTypeLine += ",";
-return TestTypeLine;
-}
-
-public String getCsvContentLine(AaInsertion AaInsertionvar) {
-String AaInsertionLine = "";
-AaInsertionLine += String.valueOf(AaInsertionvar.getId().getInsertionPosition());
-AaInsertionLine += ",";
-AaInsertionLine += String.valueOf(AaInsertionvar.getId().getInsertionOrder());
-AaInsertionLine += ",";
-if(AaInsertionvar.getAaInsertion()!=null) {
-AaInsertionLine += AaInsertionvar.getAaInsertion().toString();
-}
-AaInsertionLine += ",";
-if(AaInsertionvar.getNtInsertionCodon()!=null) {
-AaInsertionLine += AaInsertionvar.getNtInsertionCodon().toString();
-}
-AaInsertionLine += ",";
-return AaInsertionLine;
-}
-
-public String getCsvContentLine(Event Eventvar) {
-String EventLine = "";
-if(Eventvar.getName()!=null) {
-EventLine += Eventvar.getName().toString();
-}
-EventLine += ",";
-return EventLine;
-}
-
-public String getCsvContentLine(TestResult TestResultvar) {
-String TestResultLine = "";
-if(TestResultvar.getDrugGeneric()!=null) {
-TestResultLine += TestResultvar.getDrugGeneric().getGenericId();
-}
-TestResultLine += ",";
-if(TestResultvar.getValue()!=null) {
-TestResultLine += TestResultvar.getValue().toString();
-}
-TestResultLine += ",";
-if(TestResultvar.getTestDate()!=null) {
-TestResultLine += XMLTools.dateToRelaxNgString(TestResultvar.getTestDate());
-}
-TestResultLine += ",";
-if(TestResultvar.getSampleId()!=null) {
-TestResultLine += TestResultvar.getSampleId().toString();
-}
-TestResultLine += ",";
-if(TestResultvar.getData()!=null) {
-TestResultLine += XMLTools.base64Encoding(TestResultvar.getData());
-}
-TestResultLine += ",";
-return TestResultLine;
-}
-
-public String getCsvContentLine(Attribute Attributevar) {
-String AttributeLine = "";
-if(Attributevar.getName()!=null) {
-AttributeLine += Attributevar.getName().toString();
-}
-AttributeLine += ",";
-return AttributeLine;
-}
-
-public String getCsvContentLine(Therapy Therapyvar) {
-String TherapyLine = "";
-if(Therapyvar.getTherapyMotivation()!=null) {
-TherapyLine += Therapyvar.getTherapyMotivation().getValue();
-}
-TherapyLine += ",";
-if(Therapyvar.getStartDate()!=null) {
-TherapyLine += XMLTools.dateToRelaxNgString(Therapyvar.getStartDate());
-}
-TherapyLine += ",";
-if(Therapyvar.getStopDate()!=null) {
-TherapyLine += XMLTools.dateToRelaxNgString(Therapyvar.getStopDate());
-}
-TherapyLine += ",";
-if(Therapyvar.getComment()!=null) {
-TherapyLine += Therapyvar.getComment().toString();
-}
-TherapyLine += ",";
-return TherapyLine;
+ViralIsolateLine += ",";
+return ViralIsolateLine;
 }
 
 public String getCsvContentLine(NtSequence NtSequencevar) {
@@ -222,36 +305,6 @@ PatientEventValueLine += ",";
 return PatientEventValueLine;
 }
 
-public String getCsvContentLine(PatientAttributeValue PatientAttributeValuevar) {
-String PatientAttributeValueLine = "";
-if(PatientAttributeValuevar.getValue()!=null) {
-PatientAttributeValueLine += PatientAttributeValuevar.getValue().toString();
-}
-PatientAttributeValueLine += ",";
-return PatientAttributeValueLine;
-}
-
-public String getCsvContentLine(Dataset Datasetvar) {
-String DatasetLine = "";
-if(Datasetvar.getDescription()!=null) {
-DatasetLine += Datasetvar.getDescription().toString();
-}
-DatasetLine += ",";
-if(Datasetvar.getCreationDate()!=null) {
-DatasetLine += XMLTools.dateToRelaxNgString(Datasetvar.getCreationDate());
-}
-DatasetLine += ",";
-if(Datasetvar.getClosedDate()!=null) {
-DatasetLine += XMLTools.dateToRelaxNgString(Datasetvar.getClosedDate());
-}
-DatasetLine += ",";
-if(Datasetvar.getRevision()!=null) {
-DatasetLine += Datasetvar.getRevision().toString();
-}
-DatasetLine += ",";
-return DatasetLine;
-}
-
 public String getCsvContentLine(AttributeGroup AttributeGroupvar) {
 String AttributeGroupLine = "";
 if(AttributeGroupvar.getGroupName()!=null) {
@@ -259,66 +312,6 @@ AttributeGroupLine += AttributeGroupvar.getGroupName().toString();
 }
 AttributeGroupLine += ",";
 return AttributeGroupLine;
-}
-
-public String getCsvContentLine(TherapyGeneric TherapyGenericvar) {
-String TherapyGenericLine = "";
-if(TherapyGenericvar.getId().getDrugGeneric()!=null) {
-TherapyGenericLine += TherapyGenericvar.getId().getDrugGeneric().getGenericId();
-}
-TherapyGenericLine += ",";
-if(TherapyGenericvar.getDayDosageMg()!=null) {
-TherapyGenericLine += TherapyGenericvar.getDayDosageMg().toString();
-}
-TherapyGenericLine += ",";
-TherapyGenericLine += String.valueOf(TherapyGenericvar.isPlacebo());
-TherapyGenericLine += ",";
-TherapyGenericLine += String.valueOf(TherapyGenericvar.isBlind());
-TherapyGenericLine += ",";
-if(TherapyGenericvar.getFrequency()!=null) {
-TherapyGenericLine += TherapyGenericvar.getFrequency().toString();
-}
-TherapyGenericLine += ",";
-return TherapyGenericLine;
-}
-
-public String getCsvContentLine(EventNominalValue EventNominalValuevar) {
-String EventNominalValueLine = "";
-if(EventNominalValuevar.getValue()!=null) {
-EventNominalValueLine += EventNominalValuevar.getValue().toString();
-}
-EventNominalValueLine += ",";
-return EventNominalValueLine;
-}
-
-public String getCsvContentLine(AttributeNominalValue AttributeNominalValuevar) {
-String AttributeNominalValueLine = "";
-if(AttributeNominalValuevar.getValue()!=null) {
-AttributeNominalValueLine += AttributeNominalValuevar.getValue().toString();
-}
-AttributeNominalValueLine += ",";
-return AttributeNominalValueLine;
-}
-
-public String getCsvContentLine(TherapyCommercial TherapyCommercialvar) {
-String TherapyCommercialLine = "";
-if(TherapyCommercialvar.getId().getDrugCommercial()!=null) {
-TherapyCommercialLine += TherapyCommercialvar.getId().getDrugCommercial().getName();
-}
-TherapyCommercialLine += ",";
-if(TherapyCommercialvar.getDayDosageUnits()!=null) {
-TherapyCommercialLine += TherapyCommercialvar.getDayDosageUnits().toString();
-}
-TherapyCommercialLine += ",";
-TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isPlacebo());
-TherapyCommercialLine += ",";
-TherapyCommercialLine += String.valueOf(TherapyCommercialvar.isBlind());
-TherapyCommercialLine += ",";
-if(TherapyCommercialvar.getFrequency()!=null) {
-TherapyCommercialLine += TherapyCommercialvar.getFrequency().toString();
-}
-TherapyCommercialLine += ",";
-return TherapyCommercialLine;
 }
 
 public String getCsvContentLine(Patient PatientImplvar) {
@@ -346,52 +339,13 @@ PatientImplLine += ",";
 return PatientImplLine;
 }
 
-public String getCsvContentLine(TestNominalValue TestNominalValuevar) {
-String TestNominalValueLine = "";
-if(TestNominalValuevar.getValue()!=null) {
-TestNominalValueLine += TestNominalValuevar.getValue().toString();
+public String getCsvContentLine(AttributeNominalValue AttributeNominalValuevar) {
+String AttributeNominalValueLine = "";
+if(AttributeNominalValuevar.getValue()!=null) {
+AttributeNominalValueLine += AttributeNominalValuevar.getValue().toString();
 }
-TestNominalValueLine += ",";
-return TestNominalValueLine;
-}
-
-public String getCsvContentLine(AnalysisData AnalysisDatavar) {
-String AnalysisDataLine = "";
-if(AnalysisDatavar.getName()!=null) {
-AnalysisDataLine += AnalysisDatavar.getName().toString();
-}
-AnalysisDataLine += ",";
-if(AnalysisDatavar.getData()!=null) {
-AnalysisDataLine += XMLTools.base64Encoding(AnalysisDatavar.getData());
-}
-AnalysisDataLine += ",";
-if(AnalysisDatavar.getMimetype()!=null) {
-AnalysisDataLine += AnalysisDatavar.getMimetype().toString();
-}
-AnalysisDataLine += ",";
-return AnalysisDataLine;
-}
-
-public String getCsvContentLine(Test Testvar) {
-String TestLine = "";
-if(Testvar.getDescription()!=null) {
-TestLine += Testvar.getDescription().toString();
-}
-TestLine += ",";
-return TestLine;
-}
-
-public String getCsvContentLine(TestObject TestObjectvar) {
-String TestObjectLine = "";
-if(TestObjectvar.getDescription()!=null) {
-TestObjectLine += TestObjectvar.getDescription().toString();
-}
-TestObjectLine += ",";
-if(TestObjectvar.getTestObjectId()!=null) {
-TestObjectLine += TestObjectvar.getTestObjectId().toString();
-}
-TestObjectLine += ",";
-return TestObjectLine;
+AttributeNominalValueLine += ",";
+return AttributeNominalValueLine;
 }
 
 public String getCsvContentLine(ValueType ValueTypevar) {
@@ -415,40 +369,175 @@ ValueTypeLine += ",";
 return ValueTypeLine;
 }
 
-public String getCsvContentLine(AaMutation AaMutationvar) {
+public String getCsvContentLine(Dataset Datasetvar) {
+String DatasetLine = "";
+if(Datasetvar.getDescription()!=null) {
+DatasetLine += Datasetvar.getDescription().toString();
+}
+DatasetLine += ",";
+if(Datasetvar.getCreationDate()!=null) {
+DatasetLine += XMLTools.dateToRelaxNgString(Datasetvar.getCreationDate());
+}
+DatasetLine += ",";
+if(Datasetvar.getClosedDate()!=null) {
+DatasetLine += XMLTools.dateToRelaxNgString(Datasetvar.getClosedDate());
+}
+DatasetLine += ",";
+if(Datasetvar.getRevision()!=null) {
+DatasetLine += Datasetvar.getRevision().toString();
+}
+DatasetLine += ",";
+return DatasetLine;
+}
+
+public String getCsvContentLine(Event Eventvar) {
+String EventLine = "";
+if(Eventvar.getName()!=null) {
+EventLine += Eventvar.getName().toString();
+}
+EventLine += ",";
+return EventLine;
+}
+
+public String getCsvContentLine(TestResult TestResultvar) {
+String TestResultLine = "";
+if(TestResultvar.getDrugGeneric()!=null) {
+TestResultLine += TestResultvar.getDrugGeneric().getGenericId();
+}
+TestResultLine += ",";
+if(TestResultvar.getValue()!=null) {
+TestResultLine += TestResultvar.getValue().toString();
+}
+TestResultLine += ",";
+if(TestResultvar.getTestDate()!=null) {
+TestResultLine += XMLTools.dateToRelaxNgString(TestResultvar.getTestDate());
+}
+TestResultLine += ",";
+if(TestResultvar.getSampleId()!=null) {
+TestResultLine += TestResultvar.getSampleId().toString();
+}
+TestResultLine += ",";
+if(TestResultvar.getData()!=null) {
+TestResultLine += XMLTools.base64Encoding(TestResultvar.getData());
+}
+TestResultLine += ",";
+return TestResultLine;
+}
+
+public String getCsvContentLine(Test Testvar) {
+String TestLine = "";
+if(Testvar.getDescription()!=null) {
+TestLine += Testvar.getDescription().toString();
+}
+TestLine += ",";
+return TestLine;
+}
+
+public String getCsvContentLine(EventNominalValue EventNominalValuevar) {
+String EventNominalValueLine = "";
+if(EventNominalValuevar.getValue()!=null) {
+EventNominalValueLine += EventNominalValuevar.getValue().toString();
+}
+EventNominalValueLine += ",";
+return EventNominalValueLine;
+}
+
+public String getCsvContentLine(Attribute Attributevar) {
+String AttributeLine = "";
+if(Attributevar.getName()!=null) {
+AttributeLine += Attributevar.getName().toString();
+}
+AttributeLine += ",";
+return AttributeLine;
+}
+
+public String getCsvHeaderLinePatientAttributeValue() {
+String PatientAttributeValueLine = "";
+PatientAttributeValueLine += "PatientAttributeValue.value,";
+return PatientAttributeValueLine;
+}
+
+public String getCsvHeaderLineTherapy() {
+String TherapyLine = "";
+TherapyLine += "Therapy.therapyMotivation,";
+TherapyLine += "Therapy.startDate,";
+TherapyLine += "Therapy.stopDate,";
+TherapyLine += "Therapy.comment,";
+return TherapyLine;
+}
+
+public String getCsvHeaderLineTestNominalValue() {
+String TestNominalValueLine = "";
+TestNominalValueLine += "TestNominalValue.value,";
+return TestNominalValueLine;
+}
+
+public String getCsvHeaderLineAaInsertion() {
+String AaInsertionLine = "";
+AaInsertionLine += "AaInsertion.id.insertionPosition,";
+AaInsertionLine += "AaInsertion.id.insertionOrder,";
+AaInsertionLine += "AaInsertion.aaInsertion,";
+AaInsertionLine += "AaInsertion.ntInsertionCodon,";
+return AaInsertionLine;
+}
+
+public String getCsvHeaderLineTestObject() {
+String TestObjectLine = "";
+TestObjectLine += "TestObject.description,";
+TestObjectLine += "TestObject.testObjectId,";
+return TestObjectLine;
+}
+
+public String getCsvHeaderLineTherapyGeneric() {
+String TherapyGenericLine = "";
+TherapyGenericLine += "TherapyGeneric.id.drugGeneric,";
+TherapyGenericLine += "TherapyGeneric.dayDosageMg,";
+TherapyGenericLine += "TherapyGeneric.placebo,";
+TherapyGenericLine += "TherapyGeneric.blind,";
+TherapyGenericLine += "TherapyGeneric.frequency,";
+return TherapyGenericLine;
+}
+
+public String getCsvHeaderLineTestType() {
+String TestTypeLine = "";
+TestTypeLine += "TestType.description,";
+return TestTypeLine;
+}
+
+public String getCsvHeaderLineTherapyCommercial() {
+String TherapyCommercialLine = "";
+TherapyCommercialLine += "TherapyCommercial.id.drugCommercial,";
+TherapyCommercialLine += "TherapyCommercial.dayDosageUnits,";
+TherapyCommercialLine += "TherapyCommercial.placebo,";
+TherapyCommercialLine += "TherapyCommercial.blind,";
+TherapyCommercialLine += "TherapyCommercial.frequency,";
+return TherapyCommercialLine;
+}
+
+public String getCsvHeaderLineAaMutation() {
 String AaMutationLine = "";
-AaMutationLine += String.valueOf(AaMutationvar.getId().getMutationPosition());
-AaMutationLine += ",";
-if(AaMutationvar.getAaReference()!=null) {
-AaMutationLine += AaMutationvar.getAaReference().toString();
-}
-AaMutationLine += ",";
-if(AaMutationvar.getAaMutation()!=null) {
-AaMutationLine += AaMutationvar.getAaMutation().toString();
-}
-AaMutationLine += ",";
-if(AaMutationvar.getNtReferenceCodon()!=null) {
-AaMutationLine += AaMutationvar.getNtReferenceCodon().toString();
-}
-AaMutationLine += ",";
-if(AaMutationvar.getNtMutationCodon()!=null) {
-AaMutationLine += AaMutationvar.getNtMutationCodon().toString();
-}
-AaMutationLine += ",";
+AaMutationLine += "AaMutation.id.mutationPosition,";
+AaMutationLine += "AaMutation.aaReference,";
+AaMutationLine += "AaMutation.aaMutation,";
+AaMutationLine += "AaMutation.ntReferenceCodon,";
+AaMutationLine += "AaMutation.ntMutationCodon,";
 return AaMutationLine;
 }
 
-public String getCsvContentLine(ViralIsolate ViralIsolatevar) {
-String ViralIsolateLine = "";
-if(ViralIsolatevar.getSampleId()!=null) {
-ViralIsolateLine += ViralIsolatevar.getSampleId().toString();
+public String getCsvHeaderLineAaSequence() {
+String AaSequenceLine = "";
+AaSequenceLine += "AaSequence.protein,";
+AaSequenceLine += "AaSequence.firstAaPos,";
+AaSequenceLine += "AaSequence.lastAaPos,";
+return AaSequenceLine;
 }
-ViralIsolateLine += ",";
-if(ViralIsolatevar.getSampleDate()!=null) {
-ViralIsolateLine += XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate());
-}
-ViralIsolateLine += ",";
-return ViralIsolateLine;
+
+public String getCsvHeaderLineAnalysisData() {
+String AnalysisDataLine = "";
+AnalysisDataLine += "AnalysisData.name,";
+AnalysisDataLine += "AnalysisData.data,";
+AnalysisDataLine += "AnalysisData.mimetype,";
+return AnalysisDataLine;
 }
 
 public String getCsvHeaderLineAnalysis() {
@@ -464,58 +553,11 @@ AnalysisLine += "Analysis.dataoutputfile,";
 return AnalysisLine;
 }
 
-public String getCsvHeaderLineAaSequence() {
-String AaSequenceLine = "";
-AaSequenceLine += "AaSequence.protein,";
-AaSequenceLine += "AaSequence.firstAaPos,";
-AaSequenceLine += "AaSequence.lastAaPos,";
-return AaSequenceLine;
-}
-
-public String getCsvHeaderLineTestType() {
-String TestTypeLine = "";
-TestTypeLine += "TestType.description,";
-return TestTypeLine;
-}
-
-public String getCsvHeaderLineAaInsertion() {
-String AaInsertionLine = "";
-AaInsertionLine += "AaInsertion.id.insertionPosition,";
-AaInsertionLine += "AaInsertion.id.insertionOrder,";
-AaInsertionLine += "AaInsertion.aaInsertion,";
-AaInsertionLine += "AaInsertion.ntInsertionCodon,";
-return AaInsertionLine;
-}
-
-public String getCsvHeaderLineEvent() {
-String EventLine = "";
-EventLine += "Event.name,";
-return EventLine;
-}
-
-public String getCsvHeaderLineTestResult() {
-String TestResultLine = "";
-TestResultLine += "TestResult.drugGeneric,";
-TestResultLine += "TestResult.value,";
-TestResultLine += "TestResult.testDate,";
-TestResultLine += "TestResult.sampleId,";
-TestResultLine += "TestResult.data,";
-return TestResultLine;
-}
-
-public String getCsvHeaderLineAttribute() {
-String AttributeLine = "";
-AttributeLine += "Attribute.name,";
-return AttributeLine;
-}
-
-public String getCsvHeaderLineTherapy() {
-String TherapyLine = "";
-TherapyLine += "Therapy.therapyMotivation,";
-TherapyLine += "Therapy.startDate,";
-TherapyLine += "Therapy.stopDate,";
-TherapyLine += "Therapy.comment,";
-return TherapyLine;
+public String getCsvHeaderLineViralIsolate() {
+String ViralIsolateLine = "";
+ViralIsolateLine += "ViralIsolate.sampleId,";
+ViralIsolateLine += "ViralIsolate.sampleDate,";
+return ViralIsolateLine;
 }
 
 public String getCsvHeaderLineNtSequence() {
@@ -534,57 +576,10 @@ PatientEventValueLine += "PatientEventValue.endDate,";
 return PatientEventValueLine;
 }
 
-public String getCsvHeaderLinePatientAttributeValue() {
-String PatientAttributeValueLine = "";
-PatientAttributeValueLine += "PatientAttributeValue.value,";
-return PatientAttributeValueLine;
-}
-
-public String getCsvHeaderLineDataset() {
-String DatasetLine = "";
-DatasetLine += "Dataset.description,";
-DatasetLine += "Dataset.creationDate,";
-DatasetLine += "Dataset.closedDate,";
-DatasetLine += "Dataset.revision,";
-return DatasetLine;
-}
-
 public String getCsvHeaderLineAttributeGroup() {
 String AttributeGroupLine = "";
 AttributeGroupLine += "AttributeGroup.groupName,";
 return AttributeGroupLine;
-}
-
-public String getCsvHeaderLineTherapyGeneric() {
-String TherapyGenericLine = "";
-TherapyGenericLine += "TherapyGeneric.id.drugGeneric,";
-TherapyGenericLine += "TherapyGeneric.dayDosageMg,";
-TherapyGenericLine += "TherapyGeneric.placebo,";
-TherapyGenericLine += "TherapyGeneric.blind,";
-TherapyGenericLine += "TherapyGeneric.frequency,";
-return TherapyGenericLine;
-}
-
-public String getCsvHeaderLineEventNominalValue() {
-String EventNominalValueLine = "";
-EventNominalValueLine += "EventNominalValue.value,";
-return EventNominalValueLine;
-}
-
-public String getCsvHeaderLineAttributeNominalValue() {
-String AttributeNominalValueLine = "";
-AttributeNominalValueLine += "AttributeNominalValue.value,";
-return AttributeNominalValueLine;
-}
-
-public String getCsvHeaderLineTherapyCommercial() {
-String TherapyCommercialLine = "";
-TherapyCommercialLine += "TherapyCommercial.id.drugCommercial,";
-TherapyCommercialLine += "TherapyCommercial.dayDosageUnits,";
-TherapyCommercialLine += "TherapyCommercial.placebo,";
-TherapyCommercialLine += "TherapyCommercial.blind,";
-TherapyCommercialLine += "TherapyCommercial.frequency,";
-return TherapyCommercialLine;
 }
 
 public String getCsvHeaderLinePatient() {
@@ -597,31 +592,10 @@ PatientImplLine += "PatientImpl.deathDate,";
 return PatientImplLine;
 }
 
-public String getCsvHeaderLineTestNominalValue() {
-String TestNominalValueLine = "";
-TestNominalValueLine += "TestNominalValue.value,";
-return TestNominalValueLine;
-}
-
-public String getCsvHeaderLineAnalysisData() {
-String AnalysisDataLine = "";
-AnalysisDataLine += "AnalysisData.name,";
-AnalysisDataLine += "AnalysisData.data,";
-AnalysisDataLine += "AnalysisData.mimetype,";
-return AnalysisDataLine;
-}
-
-public String getCsvHeaderLineTest() {
-String TestLine = "";
-TestLine += "Test.description,";
-return TestLine;
-}
-
-public String getCsvHeaderLineTestObject() {
-String TestObjectLine = "";
-TestObjectLine += "TestObject.description,";
-TestObjectLine += "TestObject.testObjectId,";
-return TestObjectLine;
+public String getCsvHeaderLineAttributeNominalValue() {
+String AttributeNominalValueLine = "";
+AttributeNominalValueLine += "AttributeNominalValue.value,";
+return AttributeNominalValueLine;
 }
 
 public String getCsvHeaderLineValueType() {
@@ -633,27 +607,53 @@ ValueTypeLine += "ValueType.multiple,";
 return ValueTypeLine;
 }
 
-public String getCsvHeaderLineAaMutation() {
-String AaMutationLine = "";
-AaMutationLine += "AaMutation.id.mutationPosition,";
-AaMutationLine += "AaMutation.aaReference,";
-AaMutationLine += "AaMutation.aaMutation,";
-AaMutationLine += "AaMutation.ntReferenceCodon,";
-AaMutationLine += "AaMutation.ntMutationCodon,";
-return AaMutationLine;
+public String getCsvHeaderLineDataset() {
+String DatasetLine = "";
+DatasetLine += "Dataset.description,";
+DatasetLine += "Dataset.creationDate,";
+DatasetLine += "Dataset.closedDate,";
+DatasetLine += "Dataset.revision,";
+return DatasetLine;
 }
 
-public String getCsvHeaderLineViralIsolate() {
-String ViralIsolateLine = "";
-ViralIsolateLine += "ViralIsolate.sampleId,";
-ViralIsolateLine += "ViralIsolate.sampleDate,";
-return ViralIsolateLine;
+public String getCsvHeaderLineEvent() {
+String EventLine = "";
+EventLine += "Event.name,";
+return EventLine;
 }
 
-public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {
+public String getCsvHeaderLineTestResult() {
+String TestResultLine = "";
+TestResultLine += "TestResult.drugGeneric,";
+TestResultLine += "TestResult.value,";
+TestResultLine += "TestResult.testDate,";
+TestResultLine += "TestResult.sampleId,";
+TestResultLine += "TestResult.data,";
+return TestResultLine;
+}
+
+public String getCsvHeaderLineTest() {
+String TestLine = "";
+TestLine += "Test.description,";
+return TestLine;
+}
+
+public String getCsvHeaderLineEventNominalValue() {
+String EventNominalValueLine = "";
+EventNominalValueLine += "EventNominalValue.value,";
+return EventNominalValueLine;
+}
+
+public String getCsvHeaderLineAttribute() {
+String AttributeLine = "";
+AttributeLine += "Attribute.name,";
+return AttributeLine;
+}
+
+public String getCsvLineSwitch(Object object, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
 if(PatientImplHelper.isInstanceOfPatientImpl(object)) {
 Patient p_casted = PatientImplHelper.castPatientImplToPatient(object, datasets);
-if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets, accessiblePatients)){
 return getCsvContentLine(p_casted);
 }
 else {
@@ -661,7 +661,7 @@ return null;
 }
 }
 else if(object instanceof PatientEventValue) {
-if(DatasetAccessSolver.getInstance().canAccessPatientEventValue((PatientEventValue)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessPatientEventValue((PatientEventValue)object, datasets, accessiblePatients)){
 return getCsvContentLine((PatientEventValue)object);
 }
 else {
@@ -669,7 +669,7 @@ else {
 }
 }
 else if(object instanceof Event) {
-if(DatasetAccessSolver.getInstance().canAccessEvent((Event)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessEvent((Event)object, datasets, accessiblePatients)){
 return getCsvContentLine((Event)object);
 }
 else {
@@ -677,7 +677,7 @@ else {
 }
 }
 else if(object instanceof ValueType) {
-if(DatasetAccessSolver.getInstance().canAccessValueType((ValueType)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessValueType((ValueType)object, datasets, accessiblePatients)){
 return getCsvContentLine((ValueType)object);
 }
 else {
@@ -685,7 +685,7 @@ else {
 }
 }
 else if(object instanceof EventNominalValue) {
-if(DatasetAccessSolver.getInstance().canAccessEventNominalValue((EventNominalValue)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessEventNominalValue((EventNominalValue)object, datasets, accessiblePatients)){
 return getCsvContentLine((EventNominalValue)object);
 }
 else {
@@ -693,7 +693,7 @@ else {
 }
 }
 else if(object instanceof Dataset) {
-if(DatasetAccessSolver.getInstance().canAccessDataset((Dataset)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessDataset((Dataset)object, datasets, accessiblePatients)){
 return getCsvContentLine((Dataset)object);
 }
 else {
@@ -701,7 +701,7 @@ else {
 }
 }
 else if(object instanceof TestResult) {
-if(DatasetAccessSolver.getInstance().canAccessTestResult((TestResult)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTestResult((TestResult)object, datasets, accessiblePatients)){
 return getCsvContentLine((TestResult)object);
 }
 else {
@@ -709,7 +709,7 @@ else {
 }
 }
 else if(object instanceof Test) {
-if(DatasetAccessSolver.getInstance().canAccessTest((Test)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTest((Test)object, datasets, accessiblePatients)){
 return getCsvContentLine((Test)object);
 }
 else {
@@ -717,7 +717,7 @@ else {
 }
 }
 else if(object instanceof Analysis) {
-if(DatasetAccessSolver.getInstance().canAccessAnalysis((Analysis)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAnalysis((Analysis)object, datasets, accessiblePatients)){
 return getCsvContentLine((Analysis)object);
 }
 else {
@@ -725,7 +725,7 @@ else {
 }
 }
 else if(object instanceof AnalysisData) {
-if(DatasetAccessSolver.getInstance().canAccessAnalysisData((AnalysisData)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAnalysisData((AnalysisData)object, datasets, accessiblePatients)){
 return getCsvContentLine((AnalysisData)object);
 }
 else {
@@ -733,7 +733,7 @@ else {
 }
 }
 else if(object instanceof TestType) {
-if(DatasetAccessSolver.getInstance().canAccessTestType((TestType)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTestType((TestType)object, datasets, accessiblePatients)){
 return getCsvContentLine((TestType)object);
 }
 else {
@@ -741,7 +741,7 @@ else {
 }
 }
 else if(object instanceof TestObject) {
-if(DatasetAccessSolver.getInstance().canAccessTestObject((TestObject)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTestObject((TestObject)object, datasets, accessiblePatients)){
 return getCsvContentLine((TestObject)object);
 }
 else {
@@ -749,7 +749,7 @@ else {
 }
 }
 else if(object instanceof TestNominalValue) {
-if(DatasetAccessSolver.getInstance().canAccessTestNominalValue((TestNominalValue)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTestNominalValue((TestNominalValue)object, datasets, accessiblePatients)){
 return getCsvContentLine((TestNominalValue)object);
 }
 else {
@@ -757,7 +757,7 @@ else {
 }
 }
 else if(object instanceof PatientAttributeValue) {
-if(DatasetAccessSolver.getInstance().canAccessPatientAttributeValue((PatientAttributeValue)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessPatientAttributeValue((PatientAttributeValue)object, datasets, accessiblePatients)){
 return getCsvContentLine((PatientAttributeValue)object);
 }
 else {
@@ -765,7 +765,7 @@ else {
 }
 }
 else if(object instanceof Attribute) {
-if(DatasetAccessSolver.getInstance().canAccessAttribute((Attribute)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAttribute((Attribute)object, datasets, accessiblePatients)){
 return getCsvContentLine((Attribute)object);
 }
 else {
@@ -773,7 +773,7 @@ else {
 }
 }
 else if(object instanceof AttributeGroup) {
-if(DatasetAccessSolver.getInstance().canAccessAttributeGroup((AttributeGroup)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAttributeGroup((AttributeGroup)object, datasets, accessiblePatients)){
 return getCsvContentLine((AttributeGroup)object);
 }
 else {
@@ -781,7 +781,7 @@ else {
 }
 }
 else if(object instanceof AttributeNominalValue) {
-if(DatasetAccessSolver.getInstance().canAccessAttributeNominalValue((AttributeNominalValue)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAttributeNominalValue((AttributeNominalValue)object, datasets, accessiblePatients)){
 return getCsvContentLine((AttributeNominalValue)object);
 }
 else {
@@ -789,7 +789,7 @@ else {
 }
 }
 else if(object instanceof ViralIsolate) {
-if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)object, datasets, accessiblePatients)){
 return getCsvContentLine((ViralIsolate)object);
 }
 else {
@@ -797,7 +797,7 @@ else {
 }
 }
 else if(object instanceof NtSequence) {
-if(DatasetAccessSolver.getInstance().canAccessNtSequence((NtSequence)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessNtSequence((NtSequence)object, datasets, accessiblePatients)){
 return getCsvContentLine((NtSequence)object);
 }
 else {
@@ -805,7 +805,7 @@ else {
 }
 }
 else if(object instanceof AaSequence) {
-if(DatasetAccessSolver.getInstance().canAccessAaSequence((AaSequence)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAaSequence((AaSequence)object, datasets, accessiblePatients)){
 return getCsvContentLine((AaSequence)object);
 }
 else {
@@ -813,7 +813,7 @@ else {
 }
 }
 else if(object instanceof AaMutation) {
-if(DatasetAccessSolver.getInstance().canAccessAaMutation((AaMutation)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAaMutation((AaMutation)object, datasets, accessiblePatients)){
 return getCsvContentLine((AaMutation)object);
 }
 else {
@@ -821,7 +821,7 @@ else {
 }
 }
 else if(object instanceof AaInsertion) {
-if(DatasetAccessSolver.getInstance().canAccessAaInsertion((AaInsertion)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessAaInsertion((AaInsertion)object, datasets, accessiblePatients)){
 return getCsvContentLine((AaInsertion)object);
 }
 else {
@@ -829,7 +829,7 @@ else {
 }
 }
 else if(object instanceof Therapy) {
-if(DatasetAccessSolver.getInstance().canAccessTherapy((Therapy)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTherapy((Therapy)object, datasets, accessiblePatients)){
 return getCsvContentLine((Therapy)object);
 }
 else {
@@ -837,7 +837,7 @@ else {
 }
 }
 else if(object instanceof TherapyCommercial) {
-if(DatasetAccessSolver.getInstance().canAccessTherapyCommercial((TherapyCommercial)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTherapyCommercial((TherapyCommercial)object, datasets, accessiblePatients)){
 return getCsvContentLine((TherapyCommercial)object);
 }
 else {
@@ -845,7 +845,7 @@ else {
 }
 }
 else if(object instanceof TherapyGeneric) {
-if(DatasetAccessSolver.getInstance().canAccessTherapyGeneric((TherapyGeneric)object, datasets)){
+if(DatasetAccessSolver.getInstance().canAccessTherapyGeneric((TherapyGeneric)object, datasets, accessiblePatients)){
 return getCsvContentLine((TherapyGeneric)object);
 }
 else {

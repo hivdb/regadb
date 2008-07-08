@@ -45,10 +45,10 @@ public class SelectionListContainer extends WContainerWidget{
 		List<Selection> selections = mainForm.getEditorModel().getQueryEditor().getQuery().getSelectList().getSelections();
 		for (Selection selection : selections) {
 			if (selection instanceof ComposedSelection) {
-				rootSelectorPanel.addWidget(new TableSelectionContainer((TableSelection) selection));
+				rootSelectorPanel.addWidget(new TableSelectionContainer(mainForm.getSavable(), (TableSelection) selection));
 			}
 			else {
-				rootSelectorPanel.addWidget(new SimpleSelectionContainer((SimpleSelection) selection));
+				rootSelectorPanel.addWidget(new SimpleSelectionContainer(mainForm.getSavable(), (SimpleSelection) selection));
 			}
 		}
 		

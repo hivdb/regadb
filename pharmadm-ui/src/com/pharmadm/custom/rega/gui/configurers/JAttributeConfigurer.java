@@ -41,9 +41,9 @@ public class JAttributeConfigurer extends JPanel implements ComposedWordConfigur
 		this.revalidate();
 	}
 	
-	public void add(List<WordConfigurer> words) {
-		ovar.add(words.subList(0, 1));
-		constantPanels.add(new JCombinedConfigurer(words.subList(1, words.size())));
+	public void add(List<WordConfigurer> keys, List<WordConfigurer> words) {
+		ovar.add(keys, words);
+		constantPanels.add(new JCombinedConfigurer(words));
 	}
 
 	public void configureWord() {

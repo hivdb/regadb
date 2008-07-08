@@ -16,7 +16,7 @@ public class Tree extends WContainerWidget
 		super(root);
 		
 		RootItem rootItem = new RootItem(root);
-		root.addWidget(rootItem);
+		this.addWidget(rootItem);
 		rootItem.expand();
 		rootTreeNode_ = rootItem;
         this.setStyleClass("main-tree");

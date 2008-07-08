@@ -287,7 +287,7 @@ public class QueryEditor implements Cloneable{
      * </p>
      * <p>
      *
-     * @return true iff the argument clause can be wrapped in a surrounding OR
+     * @return true if the argument clause can be wrapped in a surrounding OR
      * node and the result has no more unbound variables than the current query.
      * </p>
      * <p>

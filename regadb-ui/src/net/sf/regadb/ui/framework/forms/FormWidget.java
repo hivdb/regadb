@@ -73,7 +73,9 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 	
     public int addLineToTable(WTable table, Label label, IFormField field)
     {
+    	table.setStyleClass("datatable");
         int numRows = table.numRows();
+        table.elementAt(numRows, 0).setStyleClass("form-label-area");
         table.putElementAt(numRows, 0, label);
         table.putElementAt(numRows, 1, field.getWidget());
         label.setBuddy(field);
