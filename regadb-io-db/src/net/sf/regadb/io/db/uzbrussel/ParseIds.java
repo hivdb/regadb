@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.xls.Xls2Csv;
 
 public class ParseIds {
     private String baseDir_;
@@ -49,14 +52,14 @@ public class ParseIds {
         }
         
         File patientIdHistory = new File(baseDir_+"emd" + File.separatorChar + "pathistory.csv");
-        Table patientIdHistoryTable = Utils.readTable(patientIdHistory.getAbsolutePath(), ';');
+        Table patientIdHistoryTable = Utils.readTable(patientIdHistory.getAbsolutePath());
         parsePatHistoryTable(patientIdHistoryTable);
         
         checkIds();
     }
     
     private void parseCodePatLine(String line) {
-        StringTokenizer st = new StringTokenizer(line, ";");
+        StringTokenizer st = new StringTokenizer(line, ",");
         String token;
         String patCode = null;
         List<String> codesHistory = new ArrayList<String>();
