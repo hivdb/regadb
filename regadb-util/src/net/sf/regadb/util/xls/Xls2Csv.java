@@ -48,11 +48,15 @@ public class Xls2Csv {
 				PrintStream ps = new PrintStream(new FileOutputStream(out));
 				for(int i = 0; i < sheet.getRows(); ++i){
 					StringBuffer line = new StringBuffer();
+					boolean hasValues = false;
 					for(int j = 0; j < sheet.getColumns(); ++j){
-						line.append(",\""+ format(sheet.getCell(j, i).getContents()) +"\"");
+						if(!sheet.getCell(j, i).getContents().trim().equals("")) {
+							hasValues = true;
+						}
+						line.append(","+ format(sheet.getCell(j, i).getContents()) +"");
 					}
-					
-					ps.println(line.substring(1));
+					if(hasValues)
+						ps.println(line.substring(1));
 				}
 				ps.close();
 			}
