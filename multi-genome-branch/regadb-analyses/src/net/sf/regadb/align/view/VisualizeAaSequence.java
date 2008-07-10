@@ -63,29 +63,7 @@ public abstract class VisualizeAaSequence {
     }
     
     protected String getNtSequenceForProtein(Protein protein){
-        String ntSequence="";
-        String pSeq = protein.getOpenReadingFrame().getReferenceSequence().substring(protein.getStartPosition()-1,protein.getStopPosition()-1);
-        
-        TreeSet<Integer> ts = new TreeSet<Integer>();
-        
-        for(SplicingPosition sp : protein.getSplicingPositions())
-            ts.add(sp.getPosition());
-        
-        ts.add(1);
-        for(Integer sp : ts){
-            String sSeq;
-            if(ts.tailSet(sp).size() > 1){
-                Iterator<Integer> it = ts.tailSet(sp).iterator();
-                it.next();
-                sSeq = pSeq.substring(sp-1,it.next());
-            }
-            else{
-                sSeq = pSeq.substring(sp-1,pSeq.length());
-            }
-            ntSequence += sSeq;
-        }
-        
-        return ntSequence;
+        return protein.getOpenReadingFrame().getReferenceSequence().substring(protein.getStartPosition()-1,protein.getStopPosition()-1);
     }
     
     public abstract void addNt(char reference, char target, int codonIndex);
