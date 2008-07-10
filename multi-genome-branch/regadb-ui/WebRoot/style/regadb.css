@@ -1,5 +1,11 @@
 @CHARSET "UTF-8";
 
+
+.datatable .general-clickable-text{
+	font-weight:bold;
+}
+
+
 *.header-mainTitle
 {
 	Font-weight: bold;
@@ -154,10 +160,17 @@ fieldset {
 	font-weight: bold;	
 }
 
+
+
+
 *.main-tree
 {
 	width: 15em;
 }
+
+
+
+
 
 *.tabmenu span
 {
@@ -367,7 +380,7 @@ fieldset {
 	margin-right:0px;
 	background-color:transparent;
 	border:1px solid transparent;
-	padding:0px 3px;
+	padding:0px 2px;
 }
 
 .flatbuttonpanel button:hover, .flatbuttonpanel button:focus {
@@ -379,9 +392,10 @@ fieldset {
 	opacity:0.3;
 	filter:alpha(opacity=30);
     color:#000;
-	padding:0px 3px;
+	padding:0px 2px;
 	background-color:transparent;
 }
+
 
 .defaultbuttonpanel button {
 	margin-left:4px;
@@ -487,4 +501,43 @@ fieldset {
 	left:0.5em;
 	display:block;
 	height:0px;
+}
+
+
+
+/* fields general */
+
+.prettyfieldset legend {
+	border-top: 1px solid rgb(64, 64, 64);
+	border-left: 1px solid rgb(64, 64, 64);
+	border-right: 1px solid rgb(64, 64, 64);
+	background-color: rgb(215, 215, 215);
+	margin-top:-1.4em;
+	margin-left:-1px;
+	position:relative;
+	top:-0.35em;
+	left:0px;
+	zoom:1;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+	line-height:1.2em;
+}
+
+.prettyfieldset {
+	display:block;
+	margin-top:2em;
+	margin-bottom:0.5em;
+	border: 1px solid rgb(64, 64, 64);
+	padding:0.2em 0px 0px 0px;
+	background-color: rgb(215, 215, 215);
+	position:relative;
+	top:0px;
+	left:0px;
+	zoom:1;
+}
+
+.prettyfieldset .content {
+	background-color: #fff;
+	padding: 0.5em;
+	border-top: 1px solid rgb(102, 102, 102);
 }

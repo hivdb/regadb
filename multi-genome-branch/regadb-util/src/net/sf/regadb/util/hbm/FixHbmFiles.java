@@ -135,6 +135,7 @@ public class FixHbmFiles
                     }
                 }
             }
+           addIndexOnForeignKeys(a.getKey());
         }
         
         toRemoveGeneratorFrom.removeChild("generator");
@@ -333,6 +334,41 @@ public class FixHbmFiles
                 {
                     el.setAttribute(new Attribute("cascade", "save-update"));
                 }
+            }
+        }
+    }
+    
+    private static void addIndexOnForeignKeys(String className)
+    {
+    	InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        Element e = interpreter.classHbms_.get(className);
+        
+        Object o;
+        Element el;
+        for(Iterator i = e.getDescendants(); i.hasNext();)
+        {
+            o = i.next();
+            if(o instanceof Element)
+            {
+                el = (Element)o;
+                
+                //skip keys, they're already indexed
+                if(el.getName().startsWith("key"))
+                	continue;
+                
+                String foreignClassName = el.getAttributeValue("class");
+                if(foreignClassName == null)
+                	continue;
+                
+                Element fkCol = el.getChild("column");
+                if(fkCol == null)
+                	continue;
+                
+        		String fkName = fkCol.getAttributeValue("name");
+        		if(fkName == null)
+        			continue;
+        		
+        		el.setAttribute(new Attribute("index", e.getAttributeValue("table") +"_"+ fkName +"_idx"));
             }
         }
     }

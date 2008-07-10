@@ -12,22 +12,22 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select" cascade="save-update">
+    <many-to-one name="test" class="net.sf.regadb.db.Test" fetch="select" cascade="save-update" index="test_result_test_ii_idx">
       <column name="test_ii" not-null="true" />
     </many-to-one>
-    <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" fetch="select" cascade="save-update">
+    <many-to-one name="drugGeneric" class="net.sf.regadb.db.DrugGeneric" fetch="select" cascade="save-update" index="test_result_generic_ii_idx">
       <column name="generic_ii" />
     </many-to-one>
-    <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select" cascade="save-update">
+    <many-to-one name="viralIsolate" class="net.sf.regadb.db.ViralIsolate" fetch="select" cascade="save-update" index="test_result_viral_isolate_ii_idx">
       <column name="viral_isolate_ii" />
     </many-to-one>
-    <many-to-one name="testNominalValue" class="net.sf.regadb.db.TestNominalValue" fetch="select" cascade="save-update">
+    <many-to-one name="testNominalValue" class="net.sf.regadb.db.TestNominalValue" fetch="select" cascade="save-update" index="test_result_nominal_value_ii_idx">
       <column name="nominal_value_ii" />
     </many-to-one>
-    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update">
+    <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update" index="test_result_patient_ii_idx">
       <column name="patient_ii" />
     </many-to-one>
-    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update">
+    <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update" index="test_result_nt_sequence_ii_idx">
       <column name="nt_sequence_ii" />
     </many-to-one>
     <property name="value" type="string">

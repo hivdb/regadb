@@ -7,6 +7,7 @@
 package net.sf.regadb.align;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,11 +17,10 @@ import net.sf.regadb.db.AaInsertionId;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaMutationId;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.genome.Genome;
-import net.sf.regadb.genome.HivGenome;
-import net.sf.regadb.genome.OpenReadingFrame;
-import net.sf.regadb.genome.Protein;
+import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Protein;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
@@ -34,15 +34,13 @@ import org.biojava.bio.symbol.SymbolList;
 public class Aligner {
     private AlignmentService service;
 
-    private Map<String, net.sf.regadb.db.Protein> proteins;
-
     private final SymbolTokenization aatok;
     private final SymbolTokenization nttok;
+    
+    private static Map<OpenReadingFrame,Sequence> referenceSequences = new HashMap<OpenReadingFrame,Sequence>();
 
-    public Aligner(AlignmentService service,
-            Map<String, net.sf.regadb.db.Protein> proteins) {
+    public Aligner(AlignmentService service) {
         this.service = service;
-        this.proteins = proteins;
         try {
             aatok = ProteinTools.getTAlphabet().getTokenization("token");
             nttok = DNATools.getDNA().getTokenization("token");
@@ -51,10 +49,10 @@ public class Aligner {
         }
     }
 
-    public List<AaSequence> alignHiv(NtSequence seq) throws IllegalSymbolException {
-
-        return align(seq, HivGenome.getHxb2());
-    }
+//    public List<AaSequence> alignHiv(NtSequence seq) throws IllegalSymbolException {
+//
+//        return align(seq, HivGenome.getHxb2());
+//    }
 
     public List<AaSequence> align(NtSequence seq, Genome genome) throws IllegalSymbolException {
 
@@ -62,9 +60,7 @@ public class Aligner {
 
         List<AaSequence> result = new ArrayList<AaSequence>();
 
-        for (String r : genome.getOpenReadingFrames().keySet()) {
-            OpenReadingFrame orf = genome.getOpenReadingFrames().get(r);
-
+        for (OpenReadingFrame orf : genome.getOpenReadingFrames()) {
             System.err.println("Trying: " + orf.getName());
             
             List<AaSequence> aas = align(s, orf);
@@ -84,7 +80,8 @@ public class Aligner {
     }
 
     private List<AaSequence> align(Sequence s, OpenReadingFrame orf) {
-        AlignmentResult r = service.alignTo(s, orf.getSequence());
+        AlignmentResult r=null;
+        r = service.alignTo(s, getReferenceSequence(orf));
 
         if (r != null)
             return convertToAaSequences(orf, r);
@@ -97,30 +94,27 @@ public class Aligner {
         try {
             List<AaSequence> result = new ArrayList<AaSequence>();
 
-            for (String k : orf.getProteins().keySet()) {
-                Protein protein = orf.getProtein(k);
+            for (Protein protein : orf.getProteins()) {
 
-                if ((aligned.getFirstAa() < protein.getLastAa())
-                        && (aligned.getLastAa() > protein.getFirstAa())) {
+                if ((aligned.getFirstAa() < getLastAa(protein))
+                        && (aligned.getLastAa() > getFirstAa(protein))) {
                     AaSequence s = new AaSequence();
                     result.add(s);
 
-                    s.setProtein(proteins.get(protein.getName()));
-                    s.setFirstAaPos((short) Math.max(1, protein
-                            .posInProtein(aligned.getFirstAa())));
-                    s.setLastAaPos((short) Math.min(protein.getAaLength(), protein
-                            .posInProtein(aligned.getLastAa())));
+                    s.setProtein(protein);
+                    s.setFirstAaPos((short) Math.max(1, posInProtein(protein, aligned.getFirstAa())));
+                    s.setLastAaPos((short) Math.min(getAaLength(protein), posInProtein(protein, aligned.getLastAa())));
 
                     Set<AaMutation> mutations = s.getAaMutations();
                     Set<AaInsertion> insertions = s.getAaInsertions();
 
                     for (Mutation m:aligned.getMutations()) {
                         //System.err.println(m);
-                        if (m.getAaPos() >= protein.getFirstAa()
-                            && m.getAaPos() <= protein.getLastAa()) {
+                        if (m.getAaPos() >= getFirstAa(protein)
+                            && m.getAaPos() <= getLastAa(protein)) {
                             if (m.getInsIndex() == -1) {
                                 AaMutation aam = new AaMutation();
-                                aam.setId(new AaMutationId((short) protein.posInProtein(m.getAaPos()), s));
+                                aam.setId(new AaMutationId((short) posInProtein(protein, m.getAaPos()), s));
                                 aam.setAaMutation(asString(m.getTargetAminoAcids()));
                                 aam.setAaReference(aatok.tokenizeSymbol(m.getRefAminoAcid()));
                                 aam.setNtMutationCodon(asCodonString(nttok, m.getTargetCodon()));
@@ -129,7 +123,7 @@ public class Aligner {
                                 mutations.add(aam);
                             } else {
                                 AaInsertion aai = new AaInsertion();
-                                aai.setId(new AaInsertionId((short) protein.posInProtein(m.getAaPos()), s, (short) m.getInsIndex()));
+                                aai.setId(new AaInsertionId((short) posInProtein(protein, m.getAaPos()), s, (short) m.getInsIndex()));
                                 aai.setAaInsertion(asString(m.getTargetAminoAcids()));
                                 aai.setNtInsertionCodon(asCodonString(nttok, m.getTargetCodon()));
                                 
@@ -144,6 +138,14 @@ public class Aligner {
         } catch (IllegalSymbolException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    private int posInProtein(Protein p, int aa) {
+        return aa - p.getStartPosition()/3;
+    }
+    
+    private int getAaLength(Protein p) {
+        return (p.getStopPosition() - p.getStartPosition())/3;
     }
 
     private String asCodonString(SymbolTokenization st, SymbolList codon) {
@@ -172,5 +174,26 @@ public class Aligner {
         } catch (IllegalSymbolException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    private int getFirstAa(Protein p){
+        return p.getStartPosition()/3;
+    }
+    
+    private int getLastAa(Protein p){
+        return p.getStopPosition()/3;
+    }
+    
+    private static Sequence getReferenceSequence(OpenReadingFrame orf){
+        Sequence s = referenceSequences.get(orf);
+        if(s == null){
+            try {
+                s = DNATools.createDNASequence(orf.getReferenceSequence(),orf.getName());
+                referenceSequences.put(orf, s);
+            } catch (IllegalSymbolException e) {
+                e.printStackTrace();
+            }
+        }
+        return s;
     }
 }

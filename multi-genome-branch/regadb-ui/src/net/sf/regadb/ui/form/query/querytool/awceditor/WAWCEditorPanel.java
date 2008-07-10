@@ -58,12 +58,12 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
         return editor.getSelectedEditor().getAtomicWhereClause();
     }      
     
-    public void createComposedWord(List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
-    	editor.createComposedWord(words, configurer);
+    public void createComposedWord(List<ConfigurableWord> keys, List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
+    	editor.createComposedWord(keys, words, configurer);
     }
     
-    public void composeWord(List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
-    	this.editor.composeWord(additions, editor, makeSelected);
+    public void composeWord(List<WordConfigurer> keys, List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
+    	this.editor.composeWord(keys, additions, editor, makeSelected);
     }
 
 	public List<WordConfigurer> getConfigurers() {

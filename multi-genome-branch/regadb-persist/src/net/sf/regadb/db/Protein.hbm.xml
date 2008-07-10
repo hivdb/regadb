@@ -12,7 +12,7 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="openReadingFrame" class="net.sf.regadb.db.OpenReadingFrame" fetch="select" cascade="save-update">
+    <many-to-one name="openReadingFrame" class="net.sf.regadb.db.OpenReadingFrame" fetch="select" cascade="save-update" index="protein_open_reading_frame_ii_idx">
       <column name="open_reading_frame_ii" not-null="true" />
     </many-to-one>
     <property name="abbreviation" type="string">

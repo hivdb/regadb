@@ -12,7 +12,7 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="protein" class="net.sf.regadb.db.Protein" fetch="select" cascade="save-update">
+    <many-to-one name="protein" class="net.sf.regadb.db.Protein" fetch="select" cascade="save-update" index="splicing_position_protein_ii_idx">
       <column name="protein_ii" not-null="true" />
     </many-to-one>
     <property name="position" type="int">

@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +22,9 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
+import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
+import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateStatement;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -39,68 +41,73 @@ public class QueryToolRunnable implements Runnable {
 	private String fileName;
 	private Status status;
 	private File csvFile;
-	private WMessage statusMsg;
+	private String statusMsg = "";
+	private QueryStatement statement;
+	private Object mutex = new Object();
 	
 	private enum Status {
-		waiting,
-		running,
-		finished,
-		failed
+		WAITING,
+		RUNNING,
+		FINISHED,
+		FAILED,
+		CANCELED
 	}
 	
 	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
 		this.login = copiedLogin;
 		this.editor = editor;
-		status = Status.waiting;
+		status = Status.WAITING;
 	}
 	
 	public boolean isDone() {
-		return status == Status.finished;
+		return status == Status.FINISHED;
 	}
 	
 	public boolean isFailed() {
-		return status == Status.failed;
+		return status == Status.FAILED;
 	}
 	
 	public WMessage getStatusText() {
-		if (status == Status.running) {
-			return new WMessage("form.query.querytool.label.status.running");			
+		if (status == Status.RUNNING) {
+			return new WMessage(new WMessage("form.query.querytool.label.status.running").value() + statusMsg, true);			
 		}
-		else if (status == Status.finished) {
-			return new WMessage(new WMessage("form.query.querytool.link.result").value() + " " + statusMsg.value(), true);			
+		else if (status == Status.FINISHED) {
+			return new WMessage(new WMessage("form.query.querytool.link.result").value() + statusMsg, true);			
 		}
-		else if (status == Status.failed) {
-			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + (statusMsg == null?"":": " + statusMsg.value() ), true);			
+		else if (status == Status.FAILED) {
+			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + statusMsg, true);			
+		}
+		else if (status == Status.CANCELED) {
+			return new WMessage(new WMessage("form.query.querytool.label.status.canceling").value() + statusMsg, true);			
 		}
 		return new WMessage("form.query.querytool.label.status.initial");
 	}
 
 	public void run() {
         csvFile =  getOutputFile();
-        status = Status.running;  
-        
+
         if(process(csvFile)){
-            status = Status.finished;
+            status = Status.FINISHED;
         }
         else{
-            status = Status.failed;
+            status = Status.FAILED;
         }
         
 		QueryToolThread.removeQueryThread(fileName);
 	}
 	
     private File getResultDir(){
-        File queryDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "querytool");
+        File queryDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separator + "querytool");
         if(!queryDir.exists()){
-        	queryDir.mkdir();
+        	 queryDir.mkdirs();
         }
         return queryDir;
     }
     
     private File getOutputFile() {
         File queryDir = getResultDir();
-        return new File(queryDir.getAbsolutePath() + File.separatorChar + fileName);
+        return new File(queryDir.getAbsolutePath()  + File.separator + fileName);
     }  
 	
     public String getDownloadLink(){
@@ -110,12 +117,12 @@ public class QueryToolRunnable implements Runnable {
     	return "";
     }		
 	
-    @SuppressWarnings("unchecked")
-    protected boolean process(File csvFile){
+    private boolean process(File csvFile){
     	boolean success = false;
         
-        Transaction t = login.createTransaction();
-        
+    	Transaction t = login.createTransaction();
+    	statement = new HibernateStatement(t);
+    	
         try{
         	// create a copy of the query editor so the user can work on
         	// his query while this thread is running
@@ -127,10 +134,10 @@ public class QueryToolRunnable implements Runnable {
     		SelectionStatusList newList = createSelectionList(oldList);
     		newList.setQuery(newEditor.getQuery());
     		newEditor.getQuery().setSelectList(newList);
-    		List result = null;
-			result = getQueryResult(newEditor.getQuery(), t);
+    		ScrollableQueryResult result = getQueryResult(newEditor.getQuery(), statement);
 			newEditor.getQuery().setSelectList(oldList);
-    		
+	        status = Status.RUNNING;  
+			
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
 
@@ -141,65 +148,85 @@ public class QueryToolRunnable implements Runnable {
             	
 	            FileOutputStream os = new FileOutputStream(csvFile);
 	            ExportToCsv csvExport = new ExportToCsv();
+				Set<Integer> accessiblePatients = getAccessiblePatients(t);
 	          
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
 	            int lines = 0;
-            	for (Object o : result) {
-            		String line = getLine(o, selections, userDatasets, csvExport);
-            		if (line != "") {
-            			os.write(getLine(o, selections, userDatasets, csvExport).getBytes());
-            			lines++;
-            		}
+	            int writtenLines = 0;
+            	while (!result.isLast() && status != Status.CANCELED) {
+            		Object[] o = null;
+            		synchronized (mutex) {
+                		o = result.get();
+					}
+            		writtenLines+= (processLine(o, t, os, csvExport, selections, userDatasets, accessiblePatients)?1:0);
+            		lines++;
+            		statusMsg = " (" + writtenLines + ")";
             	}
 	            
 	            os.close();
-	            statusMsg = new WMessage("(" + lines + ")", true);
+        		statusMsg = " (" + writtenLines + ")";
 	            success = true;
             }
         }
         catch(IOException e){
-        	statusMsg = new WMessage("form.query.querytool.label.status.failed.writeerror");
+        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.writeerror").value();
             e.printStackTrace();
         } catch (OutOfMemoryError e) {
-        	statusMsg = new WMessage("form.query.querytool.label.status.failed.memoryerror");
+        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.memoryerror").value();
 			e.printStackTrace();
 		} catch (SQLException e) {
-        	statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
+        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
-			statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
+			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
 			e.printStackTrace();
 		} catch (SQLGrammarException e ) {
-			statusMsg = new WMessage("form.query.querytool.label.status.failed.sqlerror");
+			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
 			e.printStackTrace();
 		}
 		catch (ClassCastException e ) {
-			statusMsg = new WMessage("form.query.querytool.label.status.failed.typeerror");
+			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.typeerror").value();
 			e.printStackTrace();
 		}		
 		catch (Exception e) {
-			statusMsg = null;
+			statusMsg = ": " + e.getMessage();
 			e.printStackTrace();
 		}
-        t.commit();
-        
+		statement.close();
+    	t.clearCache();
         return success;
     }
     
 
+    private Set<Integer> getAccessiblePatients(Transaction t) {
+		ScrollableQueryResult result = new HibernateStatement(t).executeQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'");
+		Set<Integer> results = new HashSet<Integer>();
+		while (!result.isLast()) {
+			results.add((Integer) result.get()[0]);
+		}
+		return results;
+	}
 
+	private boolean processLine(Object[] o, Transaction t, FileOutputStream os, ExportToCsv csvExport, List<Selection> selections, Set<Dataset> userDatasets, Set<Integer> accessiblePatients) throws IOException {
+		String line = getLine(o, selections, userDatasets, csvExport, accessiblePatients);
+		t.clearCache(o);
+		if (line != "") {
+			os.write(line.getBytes());
+			return true;
+		}
+		return false;
+    }
 	
-    private String getLine(Object o, List<Selection> selections, Set<Dataset> userDatasets, ExportToCsv csvExport) {
+    private String getLine(Object[] array, List<Selection> selections, Set<Dataset> userDatasets, ExportToCsv csvExport, Set<Integer> accessiblePatients) {
 		boolean lastTableAccess = false;
 		boolean nullLine = true;
 		
 		String line = "";
-		Object[] array = getObjectArray(o, selections.size());
 		
 		for (int j = 0 ; j < array.length ; j++) {
 			if (selections.get(j) instanceof TableSelection) {
-				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets) != null);
+				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 			}
 			else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
 				// if the first element is an outputselection selection list
@@ -225,32 +252,11 @@ public class QueryToolRunnable implements Runnable {
 		}
 		return line;
     }
-    
-    private Object[] getObjectArray(Object o, int size) {
-  		Object[] array;
-  		
-  		if (size == 1) {
-  			array = new Object[1];
-  			array[0] = o;
-  		}
-  		else {
-  			 array = (Object[])o;              			
-  		}
-  		return array;
-  	}
 
-	@SuppressWarnings("unchecked")
-	private List getQueryResult(Query query, Transaction t) throws SQLException, OutOfMemoryError {
-		String qstr = editor.getQuery().getQueryString();
+    private ScrollableQueryResult getQueryResult(Query query, QueryStatement statement) throws SQLException, OutOfMemoryError {
+		String qstr = query.getQueryString();
 		System.err.println(qstr);
-		org.hibernate.Query q = t.createQuery(qstr);
-		HashMap<String, Object> preparedWordMap = query.getPreparedParameters();
-		for (String str : preparedWordMap.keySet()) {
-			q.setParameter(str, preparedWordMap.get(str));
-		}
-		
-		List result = q.list();
-		return result;
+		return statement.executeQuery(qstr);
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {
@@ -342,7 +348,7 @@ public class QueryToolRunnable implements Runnable {
      * @param ovar
      * @return
      */
-    public TableSelection getTableSelectionFromOutputVariable(OutputVariable ovar) {
+    private TableSelection getTableSelectionFromOutputVariable(OutputVariable ovar) {
 		ConfigurableWord firstWord = ovar.getExpression().getWords().get(0);
 		TableSelection outputTable = null;
 		if (firstWord instanceof FromVariable) {
@@ -358,5 +364,18 @@ public class QueryToolRunnable implements Runnable {
 			outputTable = getTableSelectionFromOutputVariable((OutputVariable) firstWord);
 		}
 		return outputTable;
-    }    
+    }  
+    
+    public void cancel() {
+    	synchronized (mutex) {
+        	if (status == Status.RUNNING) {
+        		status = Status.CANCELED;
+        		statement.cancel();
+        	}
+		}
+    }
+
+	public boolean isRunning() {
+		return status == Status.RUNNING;
+	}
 }

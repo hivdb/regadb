@@ -1,39 +1,37 @@
 package com.pharmadm.custom.rega.queryeditor.port.hibernate;
 
-import java.util.List;
-
+import org.hibernate.ScrollableResults;
 import org.hibernate.type.Type;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
 public class HibernateResult implements QueryResult {
 
-	private List<Object> list;
+	private ScrollableResults results;
 	private String[] columnNames;
 	private Type[] classNames;
-	
-	public HibernateResult(List<Object> list, String[] columnNames, Type[] classNames) {
-		this.list = list;
+
+	public HibernateResult(ScrollableResults results, String[] columnNames, Type[] classNames) {
+		this.results = results;
 		this.columnNames = columnNames;
 		this.classNames = classNames;
+		results.next();
 	}
 	
-	public void close() {}
+	
+	public void close() {
+		results.close();
+	}
 
 	public Object get(int row, int column) {
-		if (list.size() > 0) {
-			if (list.get(0) instanceof Object[]) {
-				return ((Object[]) list.get(row))[column];
-			}
-			else {
-				return list.get(row);
-			}
-		}
-		return null;
+		results.setRowNumber(row);
+		return results.get(column);
+
 	}
 
 	public int size() {
-		return list.size();
+		results.last();
+		return results.getRowNumber() + 1;
 	}
 
 	public String getColumnClassName(int index) {
@@ -45,15 +43,12 @@ public class HibernateResult implements QueryResult {
 	}
 
 	public int getColumnCount() {
-		if (list.size() > 0) {
-			if (list.get(0) instanceof Object[]) {
-				return ((Object[]) list.get(0)).length;
-			}
-			else {
-				return 1;
-			}
+		System.err.println(results);
+		Object[] o = results.get();
+		if (o == null) {
+			return 0;
 		}
-		return 0;
+		return o.length;
 	}
 
 	public String getColumnName(int index) {
@@ -61,5 +56,11 @@ public class HibernateResult implements QueryResult {
 			return columnNames[index];
 		}
 		return "";
+	}
+
+	public Object[] get() {
+		Object[] res =  results.get();
+		results.next();
+		return res;
 	}
 }

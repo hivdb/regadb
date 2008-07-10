@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import net.sf.regadb.genome.HivGenome;
 import net.sf.regadb.util.http.HttpDownload;
 
 import org.jdom.Document;

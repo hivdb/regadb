@@ -2,22 +2,21 @@ package net.sf.regadb.align.test;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
-
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 public class AlignMutipleFastas
 {
@@ -69,14 +68,14 @@ public class AlignMutipleFastas
         seq.setNucleotides(nt);
 
         Transaction t = login.createTransaction();
+        Genome g = t.getGenome("HIV-1");
 
-        Map<String, Protein> proteins = t.getProteinMap();
-        Aligner aligner = new Aligner(new LocalAlignmentService(), proteins);
+        Aligner aligner = new Aligner(new LocalAlignmentService());
         
         t.commit();
         
         try {
-            List<AaSequence> result = aligner.alignHiv(seq);
+            List<AaSequence> result = aligner.align(seq, g);
             for (AaSequence aas:result) {
                 System.err.println("protein: " + aas.getProtein().getFullName());
                 System.err.println("region: " + aas.getFirstAaPos() + " - " + aas.getLastAaPos());

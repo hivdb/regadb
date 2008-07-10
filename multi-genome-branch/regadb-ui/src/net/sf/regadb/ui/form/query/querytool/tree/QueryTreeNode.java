@@ -8,6 +8,7 @@ import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionException;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
 import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
@@ -18,7 +19,6 @@ import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.extra.WTreeNode;
 
@@ -220,7 +220,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * returns true if this node has a dialog open
 	 * @return
 	 */
-	public boolean hasDialog() {
+	private boolean hasDialog() {
 		return editDialog != null;
 	}
 	
@@ -287,7 +287,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 				addChildNode(node);
 				if (clause.isAtomic()) {
 					if (!((AtomicWhereClause) clause).getOutputVariables().isEmpty()) {
-						lastAddition = ((AtomicWhereClause) clause).getOutputVariables().get(0).getObject().getDescription();
+						setLastAddition(((AtomicWhereClause) clause).getOutputVariables().get(0).getObject());
 					}
 				}
 				
@@ -346,7 +346,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	public void selectNewNode() {
 		NewWhereClauseTreeNode node = new NewWhereClauseTreeNode(mainForm, this);
-		node.loadContent(lastAddition);
+		node.loadContent(getLastAddition());
 	}
 	
 	
@@ -385,7 +385,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 				
 				if (newClause.isAtomic()) {
 					if (!((AtomicWhereClause) newClause).getOutputVariables().isEmpty()) {
-						lastAddition = ((AtomicWhereClause) newClause).getOutputVariables().get(0).getObject().getDescription();
+						setLastAddition(((AtomicWhereClause) newClause).getOutputVariables().get(0).getObject());
 					}
 				}
 				// update local enabled state
@@ -395,5 +395,23 @@ public abstract class QueryTreeNode extends WTreeNode {
 			}
 		}
 		return this;
+	}
+	
+	private void setLastAddition(DbObject object) {
+		if (object.isPrimitive() || object.isField()) {
+			lastAddition = object.getValueType().toString();
+		}
+		else {
+			lastAddition = object.getDescription();
+		}
+	}
+	
+	private String getLastAddition() {
+		if (lastAddition == null && getParentNode() != null) {
+			return getParentNode().getLastAddition();
+		}
+		else {
+			return lastAddition;
+		}
 	}
 }

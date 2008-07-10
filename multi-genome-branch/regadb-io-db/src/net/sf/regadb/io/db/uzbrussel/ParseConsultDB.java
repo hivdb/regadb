@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -125,9 +126,9 @@ public class ParseConsultDB {
             
             if(followup!=null) {
             	if(followup.equals("intern")) {
-            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'I', p);
+            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
             	} else if(followup.equals("extern")) {
-            		WivObjects.createPatientAttributeNominalValue("PATIENT_TYPE", 'E', p);
+            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '3', p);
             	} else {
             		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
             	}
@@ -174,6 +175,24 @@ public class ParseConsultDB {
                     Element analysisEl = (Element)analysis;
                     parseAnalysis(analysisEl, p);
                 }
+            }
+            
+            Element contactsEl = patientEl.getChild("Contacts");
+            if(contactsEl!=null) {
+            	for(Object contact : contactsEl.getChildren("Contact")) {
+            		Element contactE = (Element)contact;
+            		String contactDateS = contactE.getChildText("ContactDate");
+            		Date contactDate = null;
+					try {
+						contactDate = dateFormatter.parse(contactDateS);
+					} catch (ParseException e) {
+						ConsoleLogger.getInstance().logError("Cannot parse contact date: " + contactDateS);
+					}
+            		
+                	TestResult t = p.createTestResult(StandardObjects.getContactTest());
+                	t.setValue(contactDate.getTime()+"");
+                	t.setTestDate(contactDate);
+            	}
             }
             
             Element therapyEl = patientEl.getChild("Therapy");

@@ -18,7 +18,6 @@ public class TextArea extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             _fieldEdit = new WTextArea();
-            ConfirmUtils.addConfirmAction(form, _fieldEdit);
             
             addWidget(_fieldEdit);
             flagValid();

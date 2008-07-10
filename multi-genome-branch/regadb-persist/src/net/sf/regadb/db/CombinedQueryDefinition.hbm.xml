@@ -11,10 +11,10 @@
         <column name="query_definition_ii" />
       </key-property>
     </composite-id>
-    <many-to-one name="queryDefinition" class="net.sf.regadb.db.QueryDefinition" update="false" insert="false" fetch="select" cascade="save-update">
+    <many-to-one name="queryDefinition" class="net.sf.regadb.db.QueryDefinition" update="false" insert="false" fetch="select" cascade="save-update" index="combined_query_definition_query_definition_ii_idx">
       <column name="query_definition_ii" not-null="true" />
     </many-to-one>
-    <many-to-one name="combinedQuery" class="net.sf.regadb.db.CombinedQuery" update="false" insert="false" fetch="select" cascade="save-update">
+    <many-to-one name="combinedQuery" class="net.sf.regadb.db.CombinedQuery" update="false" insert="false" fetch="select" cascade="save-update" index="combined_query_definition_combined_query_ii_idx">
       <column name="combined_query_ii" not-null="true" />
     </many-to-one>
     <property name="number" type="int">

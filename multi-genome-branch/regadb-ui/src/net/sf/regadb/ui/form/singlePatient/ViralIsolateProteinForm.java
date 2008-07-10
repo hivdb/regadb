@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import net.sf.regadb.align.view.UIVisualizeAaSequence;
 import net.sf.regadb.align.view.VisualizeAaSequence;
 import net.sf.regadb.analysis.functions.MutationHelper;
 import net.sf.regadb.db.AaSequence;
@@ -46,7 +47,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
     private WPushButton refreshAlignments_;
     WTimer refreshAlignmentsTimer_;
     
-	private VisualizeAaSequence visAaSeq_ = new VisualizeAaSequence();
+	private VisualizeAaSequence visAaSeq_ = new UIVisualizeAaSequence();
 	
 	public ViralIsolateProteinForm(ViralIsolateForm viralIsolateForm)
 	{

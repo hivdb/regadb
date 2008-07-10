@@ -30,7 +30,7 @@ public class CsvWriteCodeGen {
         
         if(!classToWrite.getSimpleName().equals("PatientImpl")) {
         contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
-        contentCallMethod += "if(DatasetAccessSolver.getInstance().canAccess"+classToWrite.getSimpleName()+"(("+classToWrite.getSimpleName()+")object, datasets"+")){\n";
+        contentCallMethod += "if(DatasetAccessSolver.getInstance().canAccess"+classToWrite.getSimpleName()+"(("+classToWrite.getSimpleName()+")object, datasets, accessiblePatients"+")){\n";
         contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
         contentCallMethod += "else {\n return null;\n}\n}\n";
         
@@ -45,7 +45,7 @@ public class CsvWriteCodeGen {
     public static void patientHeaderContent() {
         contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {\n" +
             "Patient p_casted = PatientImplHelper.castPatientImplToPatient(object, datasets);\n" +
-            "if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets)){\n" +
+            "if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets, accessiblePatients)){\n" +
             "return getCsvContentLine(p_casted);\n" +
             "}\n" +
             "else {\n" +
@@ -184,8 +184,8 @@ public class CsvWriteCodeGen {
             total += e.getValue() + "\n";
         }
         
-        total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets) {\n" + contentCallMethod + "\n return null;\n}\n";
-        
+        total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets, Set<Integer> accessiblePatients) {\n" + contentCallMethod + "\n return null;\n}\n";
+
         total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";
         
         total += "\n}";

@@ -17,19 +17,19 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 public class WAttributeConfigurer extends WContainerWidget implements ComposedWordConfigurer {
 
 	private ComposedWordConfigurer ovar;
-	private List<WCombinedConfigurer> constantPanels;
+	private List<WordConfigurer> constantPanels;
 	private WContainerWidget contentTable;
 	
-	public WAttributeConfigurer(ComposedWordConfigurer ovar, WCombinedConfigurer constantPanel) {
+	public WAttributeConfigurer(ComposedWordConfigurer ovar, WordConfigurer constantPanel) {
 		this.ovar = ovar;
 		this.setInline(true);
-		this.constantPanels = new ArrayList<WCombinedConfigurer>();
+		this.constantPanels = new ArrayList<WordConfigurer>();
 		constantPanels.add(constantPanel);
 		
 		this.addWidget((WWidget) ovar);
 		contentTable = new WContainerWidget(this);
 		contentTable.setInline(true);
-		contentTable.addWidget(constantPanels.get(ovar.getSelectedIndex()));
+		contentTable.addWidget((WWidget) constantPanels.get(ovar.getSelectedIndex()));
 		
 		((WInteractWidget) ovar).clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
@@ -48,13 +48,13 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 		int index = ovar.getSelectedIndex();
 		if (index >= 0 && index < constantPanels.size()) {
 			contentTable.removeWidget(contentTable.children().get(0));
-			contentTable.addWidget(constantPanels.get(index));
+			contentTable.addWidget((WWidget) constantPanels.get(index));
 		}
 	}
 	
-	public void add(List<WordConfigurer> words) {
-		ovar.add(words.subList(0, 1));
-		constantPanels.add(new WCombinedConfigurer(words.subList(1, words.size())));
+	public void add(List<WordConfigurer> keys, List<WordConfigurer> words) {
+		ovar.add(keys, words);
+		constantPanels.add(new WCombinedConfigurer(words));
 	}
 
 	public void configureWord() {

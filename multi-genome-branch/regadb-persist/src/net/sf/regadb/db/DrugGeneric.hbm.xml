@@ -12,7 +12,7 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="drugClass" class="net.sf.regadb.db.DrugClass" fetch="select" cascade="save-update">
+    <many-to-one name="drugClass" class="net.sf.regadb.db.DrugClass" fetch="select" cascade="save-update" index="drug_generic_drug_class_ii_idx">
       <column name="drug_class_ii" not-null="true" />
     </many-to-one>
     <property name="genericId" type="string">

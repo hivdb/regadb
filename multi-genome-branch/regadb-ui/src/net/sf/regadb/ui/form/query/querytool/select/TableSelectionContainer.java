@@ -5,6 +5,7 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.savable.Savable;
 
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WCheckBox;
@@ -17,13 +18,13 @@ public class TableSelectionContainer extends WContainerWidget {
 	private WContainerWidget fieldsPanel;
 	private WCheckBox tableCheckBox;
 
-	public TableSelectionContainer(TableSelection selection) {
+	public TableSelectionContainer(Savable savable, TableSelection selection) {
 		super();
 		this.selection = selection;
-		init();
+		init(savable);
 	}
 	
-	private void init() {
+	private void init(Savable savable) {
 		this.setStyleClass("selectionitem tableselectionitem");
 		
 		tableCheckBox = new WCheckBox(new WMessage(selection.getVariableName(), true), this);
@@ -38,8 +39,10 @@ public class TableSelectionContainer extends WContainerWidget {
 		toggleTableChecked();
 		
 		for (Selection subSelection : selection.getSubSelections()) {
-			fieldsPanel.addWidget(new FieldSelectionContainer(selection, (FieldSelection) subSelection));
+			fieldsPanel.addWidget(new FieldSelectionContainer(savable, selection, (FieldSelection) subSelection));
 		}
+		
+		tableCheckBox.setEnabled(savable.isLoaded());
 	}
 	
 	private void toggleTableChecked() {

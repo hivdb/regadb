@@ -6,13 +6,10 @@
  */
 package net.sf.regadb.io.util;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -193,37 +190,6 @@ public class StandardObjects {
     }
     public static TestType getHiv1SeroconversionTestType() {
         return hiv1SeroconversionTestType;
-    }
-    public static Protein[] getProteins() {
-        Protein[] proteins = new Protein[7];
-        Protein p6 = new Protein("p6", "Transframe peptide (partially)");
-        proteins[0] = p6;
-        Protein pro = new Protein("PRO", "Protease");
-        proteins[1] = pro;
-        Protein rt = new Protein("RT", "Reverse Transcriptase");
-        proteins[2] = rt;
-        Protein in = new Protein("IN", "Integrase");
-        proteins[3] = in;
-
-        Protein sig = new Protein("sig", "Signal peptide");
-        proteins[4] = sig;
-        Protein gp120 = new Protein("gp120", "Envelope surface glycoprotein gp120");
-        proteins[5] = gp120;
-        Protein gp41 = new Protein("gp41", "Envelope transmembrane domain");
-        proteins[6] = gp41;
-        
-        return proteins;
-    }
-    
-    public static Map<String, Protein> getProteinMap() {
-        Protein[] proteins = getProteins();
-        Map<String, Protein> result = new HashMap<String, Protein>();
-        
-        for (Protein p:proteins)
-            result.put(p.getAbbreviation(), p);
-        
-
-        return result;
     }
     public static ValueType getStringValueType() {
         return stringValueType;

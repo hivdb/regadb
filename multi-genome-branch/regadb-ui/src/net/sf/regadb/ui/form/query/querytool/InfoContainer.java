@@ -27,13 +27,14 @@ public class InfoContainer extends WContainerWidget {
 		setStyleClass("infofield");
 		
 		WTable infoTable = new WTable(this);
+		infoTable.setStyleClass("datatable");
 		
     	nameL = new Label(tr("form.query.definition.label.name"));
     	nameTF = new TextField(form.getInteractionState(), form);
         nameTF.setMandatory(true);
         infoTable.putElementAt(0, 0, nameL);
         infoTable.putElementAt(0, 1, nameTF);
-        infoTable.elementAt(0, 0).setStyleClass("labels");
+        infoTable.elementAt(0, 0).setStyleClass("form-label-area");
         infoTable.elementAt(0, 1).setStyleClass("inputs");
         nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
@@ -46,6 +47,7 @@ public class InfoContainer extends WContainerWidget {
         descriptionTA.setMandatory(true);
         infoTable.putElementAt(1, 0, descriptionL);
         infoTable.putElementAt(1, 1, descriptionTA);
+        infoTable.elementAt(1, 0).setStyleClass("form-label-area");
         descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);

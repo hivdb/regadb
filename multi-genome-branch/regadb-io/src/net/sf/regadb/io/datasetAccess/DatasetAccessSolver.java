@@ -35,106 +35,106 @@ public class DatasetAccessSolver implements IDatasetAccess {
         
     }
 
-    public boolean canAccessAaInsertion(AaInsertion AaInsertionvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessViralIsolate(AaInsertionvar.getId().getAaSequence().getNtSequence().getViralIsolate(), datasets);
+    public boolean canAccessAaInsertion(AaInsertion AaInsertionvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessViralIsolate(AaInsertionvar.getId().getAaSequence().getNtSequence().getViralIsolate(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessAaMutation(AaMutation AaMutationvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessViralIsolate(AaMutationvar.getId().getAaSequence().getNtSequence().getViralIsolate(), datasets);
+    public boolean canAccessAaMutation(AaMutation AaMutationvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessViralIsolate(AaMutationvar.getId().getAaSequence().getNtSequence().getViralIsolate(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessAaSequence(AaSequence AaSequencevar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessViralIsolate(AaSequencevar.getNtSequence().getViralIsolate(), datasets);
+    public boolean canAccessAaSequence(AaSequence AaSequencevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessViralIsolate(AaSequencevar.getNtSequence().getViralIsolate(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessAnalysis(Analysis Analysisvar, Set<Dataset> datasets) {
+    public boolean canAccessAnalysis(Analysis Analysisvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessAnalysisData(AnalysisData AnalysisDatavar, Set<Dataset> datasets) {
+    public boolean canAccessAnalysisData(AnalysisData AnalysisDatavar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessAttribute(Attribute Attributevar, Set<Dataset> datasets) {
+    public boolean canAccessAttribute(Attribute Attributevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessAttributeGroup(AttributeGroup AttributeGroupvar, Set<Dataset> datasets) {
+    public boolean canAccessAttributeGroup(AttributeGroup AttributeGroupvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Set<Dataset> datasets) {
+    public boolean canAccessAttributeNominalValue(AttributeNominalValue AttributeNominalValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessDataset(Dataset Datasetvar, Set<Dataset> datasets) {
+    public boolean canAccessDataset(Dataset Datasetvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessNtSequence(NtSequence NtSequencevar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessViralIsolate(NtSequencevar.getViralIsolate(), datasets);
+    public boolean canAccessNtSequence(NtSequence NtSequencevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessViralIsolate(NtSequencevar.getViralIsolate(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessPatient(Patient Patientvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessPatient(Patientvar, datasets);
+    public boolean canAccessPatient(Patient Patientvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessPatient(Patientvar, datasets, accessiblePatients);
     }
 
-    public boolean canAccessPatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessPatientAttributeValue(PatientAttributeValuevar, datasets);
+    public boolean canAccessPatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessPatientAttributeValue(PatientAttributeValuevar, datasets, accessiblePatients);
     }
 
-    public boolean canAccessTest(Test Testvar, Set<Dataset> datasets) {
+    public boolean canAccessTest(Test Testvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessTestNominalValue(TestNominalValue TestNominalValuevar, Set<Dataset> datasets) {
+    public boolean canAccessTestNominalValue(TestNominalValue TestNominalValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessTestObject(TestObject TestObjectvar, Set<Dataset> datasets) {
+    public boolean canAccessTestObject(TestObject TestObjectvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessTestResult(TestResult TestResultvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessTestResult(TestResultvar, datasets);
+    public boolean canAccessTestResult(TestResult TestResultvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessTestResult(TestResultvar, datasets, accessiblePatients);
     }
 
-    public boolean canAccessTestType(TestType TestTypevar, Set<Dataset> datasets) {
+    public boolean canAccessTestType(TestType TestTypevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessTherapy(Therapy Therapyvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessTherapy(Therapyvar, datasets);
+    public boolean canAccessTherapy(Therapy Therapyvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessTherapy(Therapyvar, datasets, accessiblePatients);
     }
 
-    public boolean canAccessTherapyCommercial(TherapyCommercial TherapyCommercialvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessTherapy(TherapyCommercialvar.getId().getTherapy(), datasets);
+    public boolean canAccessTherapyCommercial(TherapyCommercial TherapyCommercialvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessTherapy(TherapyCommercialvar.getId().getTherapy(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessTherapyGeneric(TherapyGeneric TherapyGenericvar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessTherapy(TherapyGenericvar.getId().getTherapy(), datasets);
+    public boolean canAccessTherapyGeneric(TherapyGeneric TherapyGenericvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessTherapy(TherapyGenericvar.getId().getTherapy(), datasets, accessiblePatients);
     }
 
-    public boolean canAccessValueType(ValueType ValueTypevar, Set<Dataset> datasets) {
+    public boolean canAccessValueType(ValueType ValueTypevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
-    public boolean canAccessViralIsolate(ViralIsolate ViralIsolatevar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessViralIsolate(ViralIsolatevar, datasets);
+    public boolean canAccessViralIsolate(ViralIsolate ViralIsolatevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessViralIsolate(ViralIsolatevar, datasets, accessiblePatients);
     }
 
-    public boolean canAccessEvent(Event Eventvar, Set<Dataset> datasets) {
+    public boolean canAccessEvent(Event Eventvar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
     public boolean canAccessEventNominalValue(
-            EventNominalValue EventNominalValuevar, Set<Dataset> datasets) {
+            EventNominalValue EventNominalValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return true;
     }
 
     public boolean canAccessPatientEventValue(
-            PatientEventValue PatientEventValuevar, Set<Dataset> datasets) {
-        return PatientImplHelper.canAccessPatientEventValue(PatientEventValuevar, datasets);
+            PatientEventValue PatientEventValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+        return PatientImplHelper.canAccessPatientEventValue(PatientEventValuevar, datasets, accessiblePatients);
     }
     
     public static DatasetAccessSolver getInstance() {

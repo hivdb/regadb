@@ -7,6 +7,7 @@ import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisStatus;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
@@ -59,8 +60,9 @@ public class AlignmentAnalysis implements IAnalysis
         startTime_ = new Date(System.currentTimeMillis());
         
         Transaction t = sessionSafeLogin.createTransaction();
+        Genome g = t.getGenome("HIV-1");
         
-        Aligner aligner = new Aligner(new LocalAlignmentService(), t.getProteinMap());
+        Aligner aligner = new Aligner(new LocalAlignmentService());
         
         NtSequence ntseq = t.getSequence(seqIi_);
         
@@ -69,7 +71,7 @@ public class AlignmentAnalysis implements IAnalysis
         List<AaSequence> aaSeqs = null;
         try 
         {
-            aaSeqs = aligner.alignHiv(ntseq);
+            aaSeqs = aligner.align(ntseq, g);
         } 
         catch (IllegalSymbolException e)
         {

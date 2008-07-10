@@ -38,8 +38,8 @@ public class WStatusBar extends WStyledContainerWidget {
 	 * and assign it the given style class
 	 * @param message
 	 */
-	public void showMessage(String message, String cssClass) {
-		warningText.setText(tr(message));
+	public void showMessage(WMessage message, String cssClass) {
+		warningText.setText(message);
 		warningText.setStyleClass(cssClass);
 	}	
 	

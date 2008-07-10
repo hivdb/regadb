@@ -689,12 +689,6 @@ public class ImportPortugalDB {
     public void importSequences() throws FileNotFoundException {
         System.err.println("Importing sequences ...");
         
-        Map<String, Protein> proteinMap_ = new HashMap<String, Protein>();
-        
-        for(Protein p : StandardObjects.getProteins()) {
-            proteinMap_.put(p.getAbbreviation(), p);
-        }
-        
 //        Aligner aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
         
         HashMap<String, Integer> sampleMap = new HashMap<String, Integer>();

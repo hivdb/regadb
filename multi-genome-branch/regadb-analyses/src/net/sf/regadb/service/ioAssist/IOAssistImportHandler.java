@@ -1,11 +1,13 @@
 package net.sf.regadb.service.ioAssist;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,23 +18,24 @@ import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
-import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
 import net.sf.regadb.service.wts.util.Utils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.WtsClient;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -42,7 +45,6 @@ import org.xml.sax.SAXException;
 public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
 {
     private int countViralIsolates = 0;
-    private Map<String, Protein> proteinMap_;
     private Aligner aligner_;
     
     private Test subType_;
@@ -55,6 +57,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     private List<Test> resistanceTests_;
     
+    private Map<String, Genome> genomes_;
+    
     private List<AaSequence> aaSeqs_;
     
     public IOAssistImportHandler(FileWriter fw)
@@ -64,16 +68,12 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public IOAssistImportHandler(FileWriter fw, String wtsURL)
     {        
-        proteinMap_ = new HashMap<String, Protein>();
-        
-        for(Protein p : StandardObjects.getProteins()) {
-            proteinMap_.put(p.getAbbreviation(), p);
-        }
-        
-        aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
+        aligner_ = new Aligner(new LocalAlignmentService());
         
         subType_ = RegaDBWtsServer.getHIV1SubTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
         type_ = RegaDBWtsServer.getHIVTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+        
+        genomes_ = getGenomes();
         
         export_ = new ExportToXML();
         fileWriter_ = fw;
@@ -93,8 +93,10 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     }
     
     public void importObject(ViralIsolate object) {
+        Genome genome = getGenome(object);
+        
         for(final NtSequence ntseq : object.getNtSequences()) {
-                align(ntseq);
+                align(ntseq, genome);
 
                 TestResult subType = ntSeqAnalysis(ntseq, subType_);
                 ntseq.getTestResults().add(subType);
@@ -117,9 +119,9 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         System.err.println("Processed viral isolate nr "+countViralIsolates);
     }
     
-    private void align(final NtSequence ntseq) {
+    private void align(final NtSequence ntseq, Genome genome) {
         try {
-            aaSeqs_ = aligner_.alignHiv(ntseq);
+            aaSeqs_ = aligner_.align(ntseq, genome);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,5 +238,38 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         tr.setTest(test);
         
         return tr;
+    }
+    
+    public Genome getGenome(ViralIsolate viralIsolate){
+        return genomes_.get("HIV-1");
+    }
+    
+    private Map<String, Genome> getGenomes(){
+        Map<String, Genome> map = new HashMap<String, Genome>();
+        
+        RegaDBSettings.getInstance().initProxySettings();
+        
+        FileProvider fp = new FileProvider();
+        Collection<Genome> genomes = null;
+        File genomesFile = null;
+        try {
+            genomesFile = File.createTempFile("genomes", "xml");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        try 
+        {
+            fp.getFile("regadb-genomes", "genomes.xml", genomesFile);
+        }
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        final ImportGenomes imp = new ImportGenomes();
+        genomes = imp.importFromXml(genomesFile);
+        
+        for(Genome g : genomes)
+            map.put(g.getOrganismName(), g);
+        return map;
     }
 }

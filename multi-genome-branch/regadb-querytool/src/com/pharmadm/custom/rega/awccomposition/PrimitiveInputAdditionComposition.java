@@ -7,7 +7,6 @@ import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
-import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
 
 public class PrimitiveInputAdditionComposition extends CompositionBehaviour {
@@ -20,7 +19,7 @@ public class PrimitiveInputAdditionComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(1, 7);
+		return clause.getVisualizationClauseList().getWords().subList(2, 7);
 	}
 
 	@Override
@@ -32,6 +31,11 @@ public class PrimitiveInputAdditionComposition extends CompositionBehaviour {
 		clause.getInputVariables().iterator().next().getObject().isPrimitive() &&			
 		clause.getVisualizationClauseList().getWords().get(4) instanceof OperatorConstant &&			
 		clause.getVisualizationClauseList().getWords().get(5) instanceof InputVariable;
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(1, 2);
 	}
 
 }

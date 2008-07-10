@@ -25,7 +25,7 @@ public class NamedTableFetchComposition extends CompositionBehaviour {
 
 	@Override
 	public List<ConfigurableWord> getComposableWords(AtomicWhereClause clause) {
-		return clause.getVisualizationClauseList().getWords().subList(1, 5);
+		return clause.getVisualizationClauseList().getWords().subList(2, 5);
 	}
 
 	@Override
@@ -36,5 +36,10 @@ public class NamedTableFetchComposition extends CompositionBehaviour {
 		clause.getVisualizationClauseList().getWords().get(2) instanceof FixedString &&				
 		clause.getVisualizationClauseList().getWords().get(3) instanceof OperatorConstant &&				
 		clause.getVisualizationClauseList().getWords().get(4) instanceof Constant;			
+	}
+
+	@Override
+	public List<ConfigurableWord> getKeyWords(AtomicWhereClause clause) {
+		return clause.getVisualizationClauseList().getWords().subList(1, 2);
 	}
 }

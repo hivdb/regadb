@@ -17,6 +17,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportDrugs;
 import net.sf.regadb.io.importXML.ImportException;
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 import net.sf.regadb.service.wts.FileProvider;
@@ -109,6 +110,7 @@ public class UpdateForm extends FormWidget
         }
         else
         {
+            handleGenomes(true);
             handleAttributes(true);
             handleEvents(true);
             handleTests(true);
@@ -307,6 +309,29 @@ public class UpdateForm extends FormWidget
         t.commit();
     }
     
+    private void handleGenomes(boolean simulate){
+        Transaction t;
+        ArrayList<String> report;
+        
+        FileProvider fp = new FileProvider();
+        
+        File genomesXml = RegaDBMain.getApp().createTempFile("genomes", "xml");
+        try 
+        {
+            fp.getFile("regadb-genomes", "genomes.xml", genomesXml);
+        } 
+        catch (RemoteException e) 
+        {
+            e.printStackTrace();
+        }
+        t = RegaDBMain.getApp().createTransaction();
+        
+        ImportGenomes ig = new ImportGenomes(t,simulate);
+        ig.importFromXml(genomesXml);
+        
+        t.commit();
+    }
+    
     private void showInstalledItems()
     {
         Transaction t;
@@ -398,6 +423,7 @@ public class UpdateForm extends FormWidget
     @Override
     public void saveData()
     {   
+        handleGenomes(false);
         handleAttributes(false);
         handleEvents(false);
         handleTests(false);

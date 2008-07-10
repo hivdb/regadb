@@ -42,8 +42,7 @@ public class HibernateConnector implements DatabaseConnector {
 	public QueryResult executeQuery(String query) throws SQLException {
 		Transaction transaction = login.createTransaction();
 		Query q = transaction.createQuery(query);
-		QueryResult result = new HibernateResult(q.list(), q.getReturnAliases(), q.getReturnTypes());
-		transaction.commit();
+		QueryResult result = new HibernateResult(q.scroll(), q.getReturnAliases(), q.getReturnTypes());
 		return result;
 	}
 

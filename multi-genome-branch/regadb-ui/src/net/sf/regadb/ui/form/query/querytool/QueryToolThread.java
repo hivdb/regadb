@@ -52,7 +52,6 @@ public class QueryToolThread {
 		queryThreads.put(fileName_, this);
 	}
     
-    @SuppressWarnings("deprecation")
 	public static void stopQueryThread(String fileName)
     {
     	Thread thread = queryThreads.get(fileName).thread_;

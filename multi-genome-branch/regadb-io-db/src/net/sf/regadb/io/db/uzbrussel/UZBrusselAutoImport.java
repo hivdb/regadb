@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -15,6 +18,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.io.importXML.impl.ImportXML;
+import net.sf.regadb.util.xls.Xls2Csv;
 
 public class UZBrusselAutoImport {
 	public static void main(String [] args) {
@@ -39,6 +43,8 @@ public class UZBrusselAutoImport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		splitExcelFile(args[0]);
 		
 		ParseAll.exec(args[0], args[1], proxyHost, proxyPort, tmpXmlFile.getAbsolutePath());
 		
@@ -66,6 +72,27 @@ public class UZBrusselAutoImport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
+	
+    public static void splitExcelFile(String baseDir) {
+    	File patHistoryCsv = new File(baseDir+"emd" + File.separatorChar + "pathistory.csv");
+    	File patCodesCsv = new File(baseDir+"emd" + File.separatorChar + "patcodes.csv");
+    	File patcodesToIgnoreCsv = new File(baseDir+"emd" + File.separatorChar + "patcodesToIgnore.csv");
+    	File ignoreOldViralLoadCsv = new File(baseDir+"emd" + File.separatorChar + "ignoreOldViralLoad.csv");
+    
+		Xls2Csv xls = new Xls2Csv();
+		
+        Workbook wb = null;
+        try {
+            wb = Workbook.getWorkbook(new File(baseDir+File.separatorChar + "emd" + File.separatorChar + "patcodes.xls" ));
+            xls.process(wb.getSheet(0),patHistoryCsv);
+            xls.process(wb.getSheet(1),patCodesCsv);
+            xls.process(wb.getSheet(2),patcodesToIgnoreCsv);
+            xls.process(wb.getSheet(3),ignoreOldViralLoadCsv);
+        } catch (BiffException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

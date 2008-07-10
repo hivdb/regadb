@@ -63,7 +63,6 @@ public class InitRegaDB
         }
         
         ArrayList<ValueType> valueTypes = initValueTypes(session);
-        initProteins(session);
         initTherapyChangeMotivations(session);
         AnalysisType wts = initAnalysisTypes(session);
         initQueryDefinitionParameterTypes(session);
@@ -175,13 +174,6 @@ public class InitRegaDB
         session.save(dateValue);
         
         return valueTypes;
-    }
-    
-    private void initProteins(Session session)
-    {
-        for(Protein p : StandardObjects.getProteins()) {
-            session.save(p);
-        }
     }
     
     private AnalysisType initAnalysisTypes(Session session)

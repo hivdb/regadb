@@ -35,12 +35,14 @@ public class WComposedAWCSelectorPanel extends WBasicAWCSelectorPanel {
 			VisualizationComponentFactory factory = editPanel.getEditor().getVisualizationComponentFactory();
 			if (composedWordConfigurer == null) {
 				List<ConfigurableWord> words = clause1.getCompositionBehaviour().getComposableWords(clause1);
-				composedWordConfigurer = new WComposedVisualizationComponentFactory().createWord(clause1.getCompositionBehaviour(), factory.createComponents(words));
-				getEditorPanel().createComposedWord(words, composedWordConfigurer);
+				List<ConfigurableWord> keys = clause1.getCompositionBehaviour().getKeyWords(clause1);
+				composedWordConfigurer = new WComposedVisualizationComponentFactory().createWord(clause1.getCompositionBehaviour(), factory.createComponents(words), factory.createComponents(keys));
+				getEditorPanel().createComposedWord(keys, words, composedWordConfigurer);
 			}
 
 			List<ConfigurableWord> words2 = clause2.getCompositionBehaviour().getComposableWords(clause2);
-			getEditorPanel().composeWord(factory.createComponents(words2), new WAtomicWhereClauseEditor(context, clause2), makeSelected);
+			List<ConfigurableWord> keys2 = clause2.getCompositionBehaviour().getKeyWords(clause2);
+			getEditorPanel().composeWord(factory.createComponents(keys2), factory.createComponents(words2), new WAtomicWhereClauseEditor(context, clause2), makeSelected);
 			return true;
 		}
 		return false;

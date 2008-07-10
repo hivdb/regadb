@@ -514,7 +514,7 @@ public class TreeContent
     		                patientEventView = new ActionItem(WResource.tr("menu.singlePatient.event.view"), patientEventSelected, new ITreeAction()
     		                {
     							public void performAction(TreeMenuNode node) {
-    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Viewing, WWidget.tr("menu.singlePatient.event.add"), patientEventSelected.getSelectedItem()));
+    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Viewing, WWidget.tr("menu.singlePatient.event.view"), patientEventSelected.getSelectedItem()));
     							}
     		                });
     		                

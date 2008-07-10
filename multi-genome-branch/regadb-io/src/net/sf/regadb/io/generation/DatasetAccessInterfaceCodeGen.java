@@ -3,6 +3,7 @@ package net.sf.regadb.io.generation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Set;
 
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
@@ -12,7 +13,7 @@ public class DatasetAccessInterfaceCodeGen {
     
     public static void methodSig(String id, Class classToWrite) {
         String sig = "public boolean canAccess" + classToWrite.getSimpleName() +
-            "(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var, Set<Dataset> datasets);\n";
+            "(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var, Set<Dataset> datasets, Set<Integer> accessiblePatients);\n";
         content.append(sig);
     }
     

@@ -13,9 +13,10 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
     public WivArlViralLoadForm(){
         super(tr("menu.query.wiv.arl.viralLoad"),tr("form.query.wiv.label.arl.viralLoad"),tr("file.query.wiv.arl.viralLoad"));
         
-        String query =  "select tr, pav "+
-                        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
+        String query =  "select tr, pav, fu.attributeNominalValue "+
+                        "from TestResult tr join tr.patient p, PatientAttributeValue pav, PatientAttributeValue fu " +
                         "where pav.patient = p and pav.attribute.name = 'PatCode' "+
+                        "and fu.patient = p and fu.attribute.name = 'FOLLOW-UP' "+
                         "and tr.test.testType.description = '"+ StandardObjects.getHiv1ViralLoadTestType().getDescription() +"' "+
                         "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
         setQuery(query);
@@ -37,6 +38,7 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
         int CValue = in.findColumn("TestResult.value");
         int CTestDate = in.findColumn("TestResult.testDate");
         int CPatCode = in.findColumn("PatientAttributeValue.value");
+        int CFollowUp = in.findColumn("AttributeNominalValue.value");
         
         for(int i=1; i<in.numRows(); ++i){
             row = new ArrayList<String>();
@@ -44,12 +46,11 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
             row.add(getCentreName());
             row.add(OriginCode.ARL.getCode()+"");
             row.add(in.valueAt(CPatCode, i));
+            row.add(getAbbreviation(in.valueAt(CFollowUp, i)));
             row.add(getFormattedDate(getDate(in.valueAt(CTestDate, i))));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(TestCode.VL.getCode()+"");
             row.add(getFormattedViralLoadResult(in.valueAt(CValue,i),false,true));
-            row.add("");
-            row.add("");
             row.add("");
 
             out.addRow(row);

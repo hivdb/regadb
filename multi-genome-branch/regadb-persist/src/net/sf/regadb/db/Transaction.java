@@ -51,6 +51,11 @@ public class Transaction {
     private final Query getEventQuery;
     private final Query getEventNominalValueQuery;
 
+    private final Query getGenomeQuery;
+    private final Query getOpenReadingFrameQuery;
+    private final Query getProteinQuery;
+    private final Query getSplicingPositionQuery;
+
     public Transaction(Login login, Session session) {
         this.login = login;
         this.session = session;
@@ -86,7 +91,12 @@ public class Transaction {
                         + "and vi.sampleId = :sampleId");
         
         getEventQuery = session.createQuery("from Event event where event.name = :name");
-        getEventNominalValueQuery = session.createQuery("from EventNominalValue as anv where event = :event and value = :value"); 
+        getEventNominalValueQuery = session.createQuery("from EventNominalValue as anv where event = :event and value = :value");
+        
+        getGenomeQuery = session.createQuery("from Genome g where g.organismName = :organismName");
+        getOpenReadingFrameQuery = session.createQuery("from OpenReadingFrame orf where orf.genome = :genome and orf.name = :name");
+        getProteinQuery = session.createQuery("from Protein p where p.openReadingFrame = :openReadingFrame and p.abbreviation = :abbreviation");
+        getSplicingPositionQuery = session.createQuery("from SplicingPosition sp where sp.protein = :protein and sp.position = :position");
     }
     
     private void begin() {
@@ -103,6 +113,10 @@ public class Transaction {
 
     public void clearCache() {
         session.clear();
+    }
+    
+    public void clearCache(Object o) {
+    	session.evict(o);
     }
 
     public Query createQuery(String query)
@@ -1422,6 +1436,29 @@ public class Transaction {
         getTestNominalValueQuery.setParameter("value", value);
         
         return (TestNominalValue)getTestNominalValueQuery.uniqueResult();        
+    }
+    
+    public Genome getGenome(String organismName){
+        getGenomeQuery.setParameter("organismName", organismName);
+        return (Genome)getGenomeQuery.uniqueResult();
+    }
+    
+    public OpenReadingFrame getOpenReadingFrame(Genome genome, String name){
+        getOpenReadingFrameQuery.setParameter("genome", genome);
+        getOpenReadingFrameQuery.setParameter("name", name);
+        return (OpenReadingFrame)getOpenReadingFrameQuery.uniqueResult();
+    }
+    
+    public Protein getProtein(OpenReadingFrame orf, String abbreviation){
+        getProteinQuery.setParameter("openReadingFrame", orf);
+        getProteinQuery.setParameter("abbreviation", abbreviation);
+        return (Protein)getProteinQuery.uniqueResult();
+    }
+    
+    public SplicingPosition getSplicingPosition(Protein protein, int position){
+        getSplicingPositionQuery.setParameter("protein", protein);
+        getSplicingPositionQuery.setParameter("position", position);
+        return (SplicingPosition)getSplicingPositionQuery.uniqueResult();
     }
 
     public void clear() 

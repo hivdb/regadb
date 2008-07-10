@@ -12,7 +12,7 @@
     <version name="version" type="int">
       <column name="version" not-null="true" />
     </version>
-    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update">
+    <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update" index="event_value_type_ii_idx">
       <column name="value_type_ii" />
     </many-to-one>
     <property name="name" type="string">
