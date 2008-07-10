@@ -52,7 +52,7 @@ public class ParseAll {
         parseDB.exec();
         
         ParseOldViralLoad povl = new ParseOldViralLoad();
-        povl.run(baseDir + File.separatorChar + "old_vl", parseIds, patients);
+        povl.run(baseDir + File.separatorChar + "old_vl", parseIds, patients, new File(baseDir+"emd" + File.separatorChar + "ignoreOldViralLoad.csv"));
         
         ParseConfirmation pc = new ParseConfirmation(baseDir, parseIds, patients);
         pc.exec();
