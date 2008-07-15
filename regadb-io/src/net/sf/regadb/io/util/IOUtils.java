@@ -24,6 +24,15 @@ public class IOUtils {
         exportPatientsXML(patientMapS, fileName, logger);
     }
     
+    public static void exportViralIsolatesXMLFromPatientsI(Map<Integer, Patient> patientMap, String fileName, ILogger logger) {
+        Map<String, Patient> patientMapS = new HashMap<String, Patient>();
+        for (Integer patientId:patientMap.keySet()) {
+            patientMapS.put(patientId+"", patientMap.get(patientId));
+        }
+        
+        exportNTXMLFromPatients(patientMapS, fileName, logger);
+    }
+    
     public static void exportPatientsXML(Map<String, Patient> patientMap, String fileName, ILogger logger) 
     {
     	try {
