@@ -77,7 +77,7 @@ public class TherapyForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
         generalGroupTable_ = new WTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
-        startDateDF = new DateField(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
+        startDateDF = new DateField(getInteractionState(), this);
         startDateDF.setMandatory(true);
         addLineToTable(generalGroupTable_, startDateL, startDateDF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
