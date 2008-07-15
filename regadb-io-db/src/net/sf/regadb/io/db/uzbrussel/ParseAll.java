@@ -61,5 +61,6 @@ public class ParseAll {
         parseSeqs.exec();
         
         IOUtils.exportPatientsXMLI(patients, regadbXmlFile, ConsoleLogger.getInstance());
+        IOUtils.exportViralIsolatesXMLFromPatientsI(patients, regadbXmlFile+"vi", ConsoleLogger.getInstance());
     }
 }
