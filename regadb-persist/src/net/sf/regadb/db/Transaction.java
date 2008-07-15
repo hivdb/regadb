@@ -759,7 +759,8 @@ public class Transaction {
         String queryString = "select count(testResult) " +
                             "from TestResult as testResult " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
-                            "and testResult.viralIsolate is null";
+                            "and testResult.viralIsolate is null " + 
+                            "and testResult.ntSequence is null";
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += " and" + filterConstraints.clause_;
