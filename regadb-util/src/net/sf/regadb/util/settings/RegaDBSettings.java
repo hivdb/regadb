@@ -46,6 +46,8 @@ public class RegaDBSettings {
         
         settings_.add("regadb.report.dateTolerance");
         settings_.add("regadb.log.dir");
+        
+        settings_.add("custom.dir");
     }
     
     public String getPropertyValue(String name)

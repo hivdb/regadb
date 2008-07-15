@@ -42,10 +42,17 @@ public class MultipleTestResultForm extends FormWidget {
     private List<Test> tests_;
     private ActionItem lastItem_;
 
-    public MultipleTestResultForm(WMessage name, InteractionState state, List<Test> tests, ActionItem lastItem) {
+    public MultipleTestResultForm(WMessage name, InteractionState state, List<String> tests, ActionItem lastItem) {
         super(name, state);
         
-        tests_ = tests;
+        tests_ = new ArrayList<Test>();
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        for(String description : tests){
+        	tests_.add(t.getTest(description));
+        }
+        t.commit();
+        
         lastItem_ = lastItem;
         
         init();
