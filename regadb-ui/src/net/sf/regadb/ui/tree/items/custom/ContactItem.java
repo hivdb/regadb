@@ -28,21 +28,11 @@ public class ContactItem extends ActionItem {
     private static List<String> contactTests = new ArrayList<String>();
     
     static {
-    	File configFile = new File(RegaDBSettings.getInstance().getPropertyValue("custom.dir") + File.separatorChar +"form.multipleTestResults.contact.xml");
-    	if(configFile.exists()){
-	    	SAXBuilder builder = new SAXBuilder();
-	        Document doc = null;
-	        try {
-	            doc = builder.build(configFile);
-	            Element tests = (Element)doc.getRootElement().getChild("tests");
-	            for(Object o : tests.getChildren())
-	            	contactTests.add(((Element)o).getAttributeValue("description"));
-	            
-	        } catch (JDOMException e) {
-	            e.printStackTrace();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+    	Element root = RegaDBSettings.getInstance().getCustomSettings("form.multipleTestResults.contact");
+    	if(root != null){
+            Element tests = (Element)root.getChild("tests");
+            for(Object o : tests.getChildren())
+            	contactTests.add(((Element)o).getAttributeValue("description"));
     	}
     	else{
 	        contactTests.add(StandardObjects.getGenericCD4Test().getDescription());
