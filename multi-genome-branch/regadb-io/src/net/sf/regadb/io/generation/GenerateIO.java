@@ -65,12 +65,14 @@ public class GenerateIO
         stringRepresentedFields_.add(dbPackage + "Protein");
         stringRepresentedFields_.add(dbPackage + "AnalysisType");
         stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
+        stringRepresentedFields_.add(dbPackage + "Genome");
         
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
         stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "TherapyMotivation", "value"));
+        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Genome", "organismName"));
         
         pointerClasses_.add(dbPackage + "Test");
         pointerClasses_.add(dbPackage + "TestType");

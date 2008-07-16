@@ -110,6 +110,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Date fieldPatientEventValue_startDate;
     private Date fieldPatientEventValue_endDate;
     private ValueType fieldTestType_valueType;
+    private Genome fieldTestType_genome;
     private TestObject fieldTestType_testObject;
     private String fieldTestType_description;
     private Set<TestNominalValue> fieldTestType_testNominalValues;
@@ -152,6 +153,7 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAaInsertion_aaInsertion;
     private String fieldAaInsertion_ntInsertionCodon;
     private TherapyMotivation fieldTherapy_therapyMotivation;
+    private Genome fieldTherapy_genome;
     private Date fieldTherapy_startDate;
     private Date fieldTherapy_stopDate;
     private String fieldTherapy_comment;
@@ -248,6 +250,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.stateTestType);
             referenceTestType = null;
             fieldTestType_valueType = null;
+            fieldTestType_genome = null;
             fieldTestType_testObject = null;
             fieldTestType_description = nullValueString();
             fieldTestType_testNominalValues = new HashSet<TestNominalValue>();
@@ -335,6 +338,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("therapys-el".equals(qName)|| "therapies-el".equals(qName)) {
             pushState(ParseState.stateTherapy);
             fieldTherapy_therapyMotivation = null;
+            fieldTherapy_genome = null;
             fieldTherapy_startDate = nullValueDate();
             fieldTherapy_stopDate = nullValueDate();
             fieldTherapy_comment = nullValueString();
@@ -853,6 +857,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!referenceResolved) {
                     elTestType.setValueType(fieldTestType_valueType);
                 }
+                if (referenceResolved && fieldTestType_genome != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elTestType.setGenome(fieldTestType_genome);
+                }
                 if (referenceResolved && fieldTestType_testObject != null)
                     throw new SAXException(new ImportException("Cannot modify resolved reference"));
                 if (!referenceResolved) {
@@ -877,6 +886,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elTestType);
                 }
             } else if ("valueType".equals(qName)) {
+            } else if ("genome".equals(qName)) {
+                fieldTestType_genome = resolveGenome(value == null ? null : value.toString());
             } else if ("testObject".equals(qName)) {
             } else if ("description".equals(qName)) {
                 fieldTestType_description = parseString(value == null ? null : value.toString());
@@ -1538,6 +1549,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elTherapy.setTherapyMotivation(fieldTherapy_therapyMotivation);
                 }
                 {
+                    elTherapy.setGenome(fieldTherapy_genome);
+                }
+                {
                     elTherapy.setStartDate(fieldTherapy_startDate);
                 }
                 {
@@ -1564,6 +1578,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("therapyMotivation".equals(qName)) {
                 fieldTherapy_therapyMotivation = resolveTherapyMotivation(value == null ? null : value.toString());
+            } else if ("genome".equals(qName)) {
+                fieldTherapy_genome = resolveGenome(value == null ? null : value.toString());
             } else if ("startDate".equals(qName)) {
                 fieldTherapy_startDate = parseDate(value == null ? null : value.toString());
             } else if ("stopDate".equals(qName)) {
@@ -2907,6 +2923,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             }
         }
+        if (dbo != null) {
+            if (!equals(dbo.getGenome(), o.getGenome())) {
+                if (!simulate)
+                    dbo.setGenome(o.getGenome());
+                log.append(Describe.describe(o) + ": changed genome\n");
+                changed = true;
+            }
+        }
         {
             TestObject dbf = null;
             if (dbo == null) {
@@ -3855,6 +3879,14 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setTherapyMotivation(o.getTherapyMotivation());
                 log.append(Describe.describe(o) + ": changed therapyMotivation\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getGenome(), o.getGenome())) {
+                if (!simulate)
+                    dbo.setGenome(o.getGenome());
+                log.append(Describe.describe(o) + ": changed genome\n");
                 changed = true;
             }
         }

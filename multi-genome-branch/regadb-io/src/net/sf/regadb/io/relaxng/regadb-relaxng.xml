@@ -377,6 +377,11 @@
       </element>
     </optional>
     <optional>
+      <element name="genome">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
       <element name="testObject">
         <element name="reference">
           <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
@@ -664,6 +669,11 @@
   <define name="net.sf.regadb.db.Therapy">
     <optional>
       <element name="therapyMotivation">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="genome">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
     </optional>

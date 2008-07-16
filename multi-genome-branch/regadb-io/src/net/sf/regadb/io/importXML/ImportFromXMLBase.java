@@ -22,6 +22,7 @@ import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
@@ -44,6 +45,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
     private Map<String, TherapyMotivation> therapyMotivations;
+    private Map<String, Genome> genomes;
     private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
     
     protected StringBuffer log = new StringBuffer();
@@ -173,6 +175,13 @@ public class ImportFromXMLBase extends DefaultHandler{
         else
             return result;
     }
+    protected Genome resolveGenome(String value) throws SAXException {
+        Genome result = genomes.get(value.toUpperCase());
+        if (result == null)
+            throw new SAXException(new ImportException("Could not resolve genome: '" + value + "'"));
+        else
+            return result;
+    }
     protected Dataset resolveDataset(String value) throws SAXException {
         Dataset result = datasets.get(value.toUpperCase());
         
@@ -237,6 +246,13 @@ public class ImportFromXMLBase extends DefaultHandler{
                 therapyMotivations.put(a.getValue().toUpperCase(), a);
             }
         }
+        
+        genomes = new TreeMap<String, Genome>();
+        if(t!=null){
+            for(Genome g : t.getGenomes()){
+                genomes.put(g.getOrganismName(), g);
+            }
+        }
     }    
 
     protected boolean equals(Date o1, Date o2) {
@@ -289,6 +305,10 @@ public class ImportFromXMLBase extends DefaultHandler{
     
     protected boolean equals(Long a, Long b){
         return a == b || (a != null && a.equals(b));
+    }
+    
+    protected boolean equals(Genome a, Genome b){
+        return (a == b) || (a != null && b != null && a.getOrganismName().equals(b.getOrganismName()));
     }
 
     public StringBuffer getLog() 
