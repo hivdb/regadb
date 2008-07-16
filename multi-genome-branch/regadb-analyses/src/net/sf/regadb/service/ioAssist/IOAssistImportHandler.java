@@ -15,6 +15,7 @@ import java.util.Map;
 
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
+import net.sf.regadb.analysis.BlastAnalysis;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.DrugGeneric;
@@ -57,7 +58,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     private List<Test> resistanceTests_;
     
-    private Map<String, Genome> genomes_;
+    private static Map<String, Genome> genomes_;
     
     private List<AaSequence> aaSeqs_;
     
@@ -72,8 +73,6 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         
         subType_ = RegaDBWtsServer.getHIV1SubTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
         type_ = RegaDBWtsServer.getHIVTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
-        
-        genomes_ = getGenomes();
         
         export_ = new ExportToXML();
         fileWriter_ = fw;
@@ -94,6 +93,10 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public void importObject(ViralIsolate object) {
         Genome genome = getGenome(object);
+        if(genome == null){
+            System.err.println("Unknown organism for viral isolate: "+ object.getSampleId());
+            return;
+        }
         
         for(final NtSequence ntseq : object.getNtSequences()) {
                 align(ntseq, genome);
@@ -240,36 +243,14 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         return tr;
     }
     
-    public Genome getGenome(ViralIsolate viralIsolate){
-        return genomes_.get("HIV-1");
+    public static Genome getGenome(NtSequence ntseq)
+    {
+        BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq);
+        blastAnalysis.launch();
+        return blastAnalysis.getGenome();
     }
     
-    private Map<String, Genome> getGenomes(){
-        Map<String, Genome> map = new HashMap<String, Genome>();
-        
-        RegaDBSettings.getInstance().initProxySettings();
-        
-        FileProvider fp = new FileProvider();
-        Collection<Genome> genomes = null;
-        File genomesFile = null;
-        try {
-            genomesFile = File.createTempFile("genomes", "xml");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        try 
-        {
-            fp.getFile("regadb-genomes", "genomes.xml", genomesFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        final ImportGenomes imp = new ImportGenomes();
-        genomes = imp.importFromXml(genomesFile);
-        
-        for(Genome g : genomes)
-            map.put(g.getOrganismName(), g);
-        return map;
+    public static Genome getGenome(ViralIsolate viralIsolate){
+        return getGenome(viralIsolate.getNtSequences().iterator().next());
     }
 }
