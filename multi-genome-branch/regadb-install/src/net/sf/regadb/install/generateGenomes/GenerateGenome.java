@@ -96,6 +96,11 @@ public class GenerateGenome {
             getOrfRegions().add(new RegionValue<OpenReadingFrame>(r,orf));
         }
         orf.setReferenceSequence(seq);
+        
+        int mod = (seq.length())%3;;
+        if(mod != 0)
+            System.err.println(name+ " length%3 "+mod);
+        
         return orf;
     }
     
@@ -130,6 +135,10 @@ public class GenerateGenome {
         p.setStartPosition(start+1);
         p.setStopPosition(stop+1);
 
+        int mod = (p.getStopPosition() - p.getStopPosition())%3;
+        if(mod != 0)
+            System.err.println(name+ " length%3 "+mod);
+        
         return p;
     }
     
