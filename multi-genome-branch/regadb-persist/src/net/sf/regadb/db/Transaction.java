@@ -1438,6 +1438,11 @@ public class Transaction {
         return (TestNominalValue)getTestNominalValueQuery.uniqueResult();        
     }
     
+    @SuppressWarnings("unchecked")
+    public List<Genome> getGenomes(){
+        return session.createQuery("from Genome").list();
+    }
+    
     public Genome getGenome(String organismName){
         getGenomeQuery.setParameter("organismName", organismName);
         return (Genome)getGenomeQuery.uniqueResult();

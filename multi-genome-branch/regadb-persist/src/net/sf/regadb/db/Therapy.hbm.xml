@@ -18,6 +18,9 @@
     <many-to-one name="patient" class="net.sf.regadb.db.PatientImpl" fetch="select" cascade="save-update" index="therapy_patient_ii_idx">
       <column name="patient_ii" not-null="true" />
     </many-to-one>
+    <many-to-one name="genome" class="net.sf.regadb.db.Genome" fetch="select" cascade="save-update" index="therapy_genome_ii_idx">
+      <column name="genome_ii" />
+    </many-to-one>
     <property name="startDate" type="date">
       <column name="start_date" length="13" not-null="true" />
     </property>

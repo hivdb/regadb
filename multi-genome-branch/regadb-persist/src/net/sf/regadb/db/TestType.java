@@ -17,6 +17,8 @@ public class TestType implements java.io.Serializable {
 
     private ValueType valueType;
 
+    private Genome genome;
+
     private TestObject testObject;
 
     private String description;
@@ -37,9 +39,10 @@ public class TestType implements java.io.Serializable {
     }
 
     /** full constructor */
-    public TestType(ValueType valueType, TestObject testObject,
+    public TestType(ValueType valueType, Genome genome, TestObject testObject,
             String description, Set<TestNominalValue> testNominalValues) {
         this.valueType = valueType;
+        this.genome = genome;
         this.testObject = testObject;
         this.description = description;
         this.testNominalValues = testNominalValues;
@@ -68,6 +71,14 @@ public class TestType implements java.io.Serializable {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    public Genome getGenome() {
+        return this.genome;
+    }
+
+    public void setGenome(Genome genome) {
+        this.genome = genome;
     }
 
     public TestObject getTestObject() {

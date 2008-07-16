@@ -15,6 +15,9 @@
     <many-to-one name="valueType" class="net.sf.regadb.db.ValueType" fetch="select" cascade="save-update" index="test_type_value_type_ii_idx">
       <column name="value_type_ii" />
     </many-to-one>
+    <many-to-one name="genome" class="net.sf.regadb.db.Genome" fetch="select" cascade="save-update" index="test_type_genome_ii_idx">
+      <column name="genome_ii" />
+    </many-to-one>
     <many-to-one name="testObject" class="net.sf.regadb.db.TestObject" fetch="select" cascade="save-update" index="test_type_test_object_ii_idx">
       <column name="test_object_ii" not-null="true" />
     </many-to-one>

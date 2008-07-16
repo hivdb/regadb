@@ -149,8 +149,8 @@ create table public.test (test_ii integer not null, version integer not null, an
 create table public.test_nominal_value (nominal_value_ii integer not null, version integer not null, test_type_ii integer not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table public.test_object (test_object_ii integer not null, version integer not null, description varchar(50) not null, test_object_id integer, primary key (test_object_ii));
 create table public.test_result (test_result_ii integer not null, version integer not null, test_ii integer not null, generic_ii integer, viral_isolate_ii integer, nominal_value_ii integer, patient_ii integer, nt_sequence_ii integer, value varchar(50), test_date date, sample_id varchar(50), data varbinary(255), primary key (test_result_ii));
-create table public.test_type (test_type_ii integer not null, version integer not null, value_type_ii integer, test_object_ii integer not null, description varchar(50) not null, primary key (test_type_ii));
-create table public.therapy (therapy_ii integer not null, version integer not null, therapy_motivation_ii integer, patient_ii integer not null, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
+create table public.test_type (test_type_ii integer not null, version integer not null, value_type_ii integer, genome_ii integer, test_object_ii integer not null, description varchar(50) not null, primary key (test_type_ii));
+create table public.therapy (therapy_ii integer not null, version integer not null, therapy_motivation_ii integer, patient_ii integer not null, genome_ii integer, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
 create table public.therapy_commercial (therapy_ii integer not null, commercial_ii integer not null, version integer not null, day_dosage_units double, placebo bit not null, blind bit not null, frequency bigint, primary key (therapy_ii, commercial_ii));
 create table public.therapy_generic (therapy_ii integer not null, generic_ii integer not null, version integer not null, day_dosage_mg double, placebo bit not null, blind bit not null, frequency bigint, primary key (therapy_ii, generic_ii));
 create table public.therapy_motivation (therapy_motivation_ii integer not null, version integer not null, value varchar(50) not null, primary key (therapy_motivation_ii));
@@ -249,12 +249,16 @@ alter table public.test_result add constraint FKEF1E986A4596F6EF foreign key (no
 alter table public.test_result add constraint FKEF1E986A3C3F2CE1 foreign key (viral_isolate_ii) references public.viral_isolate;
 create index test_type_value_type_ii_idx on public.test_type (value_type_ii);
 create index test_type_test_object_ii_idx on public.test_type (test_object_ii);
+create index test_type_genome_ii_idx on public.test_type (genome_ii);
 alter table public.test_type add constraint FKB9A90EC75FC38F0B foreign key (value_type_ii) references public.value_type;
+alter table public.test_type add constraint FKB9A90EC75A4F23B6 foreign key (genome_ii) references public.genome;
 alter table public.test_type add constraint FKB9A90EC7264DC6FB foreign key (test_object_ii) references public.test_object;
 create index therapy_therapy_motivation_ii_idx on public.therapy (therapy_motivation_ii);
+create index therapy_genome_ii_idx on public.therapy (genome_ii);
 create index therapy_patient_ii_idx on public.therapy (patient_ii);
 alter table public.therapy add constraint FKAF8F6C692F95783B foreign key (therapy_motivation_ii) references public.therapy_motivation;
 alter table public.therapy add constraint FKAF8F6C69CC6FF868 foreign key (patient_ii) references public.patient;
+alter table public.therapy add constraint FKAF8F6C695A4F23B6 foreign key (genome_ii) references public.genome;
 alter table public.therapy_commercial add constraint FKE158F8E0AC63EEA8 foreign key (therapy_ii) references public.therapy;
 alter table public.therapy_commercial add constraint FKE158F8E0A152DB96 foreign key (commercial_ii) references public.drug_commercial;
 alter table public.therapy_generic add constraint FKE73DA401AC63EEA8 foreign key (therapy_ii) references public.therapy;

@@ -20,6 +20,8 @@ public class Therapy implements java.io.Serializable {
 
     private PatientImpl patient;
 
+    private Genome genome;
+
     private Date startDate;
 
     private Date stopDate;
@@ -45,11 +47,12 @@ public class Therapy implements java.io.Serializable {
 
     /** full constructor */
     public Therapy(TherapyMotivation therapyMotivation, PatientImpl patient,
-            Date startDate, Date stopDate, String comment,
+            Genome genome, Date startDate, Date stopDate, String comment,
             Set<TherapyCommercial> therapyCommercials,
             Set<TherapyGeneric> therapyGenerics) {
         this.therapyMotivation = therapyMotivation;
         this.patient = patient;
+        this.genome = genome;
         this.startDate = startDate;
         this.stopDate = stopDate;
         this.comment = comment;
@@ -88,6 +91,14 @@ public class Therapy implements java.io.Serializable {
 
     public void setPatient(PatientImpl patient) {
         this.patient = patient;
+    }
+
+    public Genome getGenome() {
+        return this.genome;
+    }
+
+    public void setGenome(Genome genome) {
+        this.genome = genome;
     }
 
     public Date getStartDate() {
