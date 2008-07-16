@@ -52,6 +52,10 @@ public class ComposedAWCEditor {
     	}
     }
     
+    public AtomicWhereClauseEditor getFirstEditor() {
+    	return controllers.get(0);
+    }
+    
     public void createComposedWord(List<ConfigurableWord> keys, List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
     	List<ConfigurableWord> all = new ArrayList<ConfigurableWord>();
     	all.addAll(keys);

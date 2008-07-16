@@ -32,10 +32,6 @@ public class DoubleConstant extends Constant implements Serializable{
     
 	private static final Format DOUBLE_FORMAT = new DecimalFormat();
     
-    public Format getFormat() {
-        return DOUBLE_FORMAT;
-    }
-
 	@Override
 	public DbObject getDbObject() {
 		return DatabaseManager.getInstance().getAWCCatalog().getObject(ValueType.Number.toString());

@@ -3,6 +3,7 @@ package com.pharmadm.custom.rega.queryeditor.port.jdbc;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 
@@ -36,7 +37,7 @@ public class JDBCStatement implements QueryStatement {
         }
 	}
 
-	public ScrollableQueryResult executeQuery(String query) {
+	public ScrollableQueryResult executeScrollableQuery(String query) {
 		if (exists()) {
 			try {
 				return new JDBCResult(statement.executeQuery(query));
@@ -57,5 +58,15 @@ public class JDBCStatement implements QueryStatement {
 	
 	public boolean exists() {
 		return statement != null;
+	}
+
+	public QueryResult executeQuery(String query) {
+		if (exists()) {
+			try {
+				return new JDBCResult(statement.executeQuery(query));
+			}
+			catch (SQLException e) {}
+		}
+		return null;
 	}
 }

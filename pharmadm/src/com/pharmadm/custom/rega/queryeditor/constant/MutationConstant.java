@@ -65,7 +65,7 @@ public class MutationConstant extends Constant {
 		str = str.trim();
 		
 		if (str.length() == 0) {
-			return "";
+			return query;
 		}
 		else {
 	    	String[] options = str.split(" ");

@@ -97,8 +97,8 @@ public class AtomicClauseEditorDialog extends javax.swing.JDialog {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         // Add your handling code here:
 		AWCEditorPanel selectedEditPanel = editPanel.getSelectedClause();
-		selectedEditPanel.applyEditings();
-		selectedClause = selectedEditPanel.getClause();
+		selectedEditPanel.getManager().applyEditings();
+		selectedClause = selectedEditPanel.getManager().getClause();
         setVisible(false);
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed

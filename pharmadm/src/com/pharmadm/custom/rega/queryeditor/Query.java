@@ -14,7 +14,6 @@ package com.pharmadm.custom.rega.queryeditor;
 import java.io.Serializable;
 import java.util.*;
 
-import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.util.work.Work;
@@ -146,6 +145,34 @@ public class Query implements Serializable, Cloneable {
     
     public boolean hasFromVariables() {
     	return countFromVariables(getRootClause()) > 0;
+    }
+    
+    /**
+     * returns true when all tables are connected
+     * @return
+     */
+    public boolean isConnected() {
+    	QueryGraph graph = new QueryGraph(this);
+    	return graph.isConnected();
+    }
+    
+ 
+    
+    
+    
+    private Set<FromVariable> getFromVariables(WhereClause clause) {
+    	Set<FromVariable> all = new HashSet<FromVariable>();
+    	Iterator<WhereClause> it = clause.iterateChildren();
+    	while (it.hasNext()) {
+    		WhereClause child = it.next();
+    		if (child.isAtomic()) {
+    			all.addAll(((AtomicWhereClause)child).getFromVariables());
+    		}
+    		else {
+    			all.addAll(getFromVariables(child));
+    		}
+    	}
+    	return all;
     }
     
     private int countFromVariables(WhereClause clause) {

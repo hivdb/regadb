@@ -102,7 +102,12 @@ public class JConstantChoiceConfigurer extends JComboBox implements WordConfigur
         		selectedItem = values.get(index);
         	}
         	else {
-        		selectedItem = values.get(0);
+        		if (values.size() > 0) {
+        			selectedItem = values.get(0);
+        		}
+        		else {
+        			selectedItem = null;
+        		}
         	}
         }
     }

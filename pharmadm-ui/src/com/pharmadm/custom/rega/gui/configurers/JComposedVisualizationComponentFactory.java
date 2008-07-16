@@ -2,6 +2,7 @@ package com.pharmadm.custom.rega.gui.configurers;
 
 import java.util.List;
 
+import com.pharmadm.custom.rega.awccomposition.AggregateComposition;
 import com.pharmadm.custom.rega.awccomposition.NamedTablePropertyComposition;
 import com.pharmadm.custom.rega.awccomposition.PrimitiveDeclarationComposition;
 import com.pharmadm.custom.rega.awccomposition.PropertyFetchComposition;
@@ -53,6 +54,12 @@ public class JComposedVisualizationComponentFactory extends
 		}
 		else if (behaviour instanceof NewTableComposition) {
 			return new JComposedWordConfigurer(keys.get(0));
+		}
+		else if (behaviour instanceof AggregateComposition) {
+			JCombinedConfigurer constants = new JCombinedConfigurer(configurers);
+			JComposedWordConfigurer string = new JComposedWordConfigurer(new JCombinedConfigurer(keys));
+			return new JAttributeConfigurer(string, constants);			
+			
 		}
 		else {
 			return null;

@@ -120,6 +120,10 @@ public class ComposedAtomicWhereClause extends AtomicWhereClause {
 	protected void addOutputVariable(OutputVariable cst) {}
 
 	@Override
+	public void addRelation(Join join) {}
+	
+	
+	@Override
 	public List<Constant> getConstants() {
 		List<Constant> constants = new ArrayList<Constant>();
 		for (WhereClause clause : root.getChildren()) {
@@ -231,6 +235,18 @@ public class ComposedAtomicWhereClause extends AtomicWhereClause {
     		excludeChild = this;
     	}
         return getParent().getOutputVariablesAvailableForImport(excludeChild);
-    }	
+    }
+
+
+	@Override
+	public List<Join> getRelations() {
+		List<Join> relations = new ArrayList<Join>();
+		for (WhereClause clause : root.getChildren()) {
+			if (clause.isAtomic()) {
+				relations.addAll(((AtomicWhereClause) clause).getRelations());
+			}
+		}
+		return relations;
+	}	
 
 }

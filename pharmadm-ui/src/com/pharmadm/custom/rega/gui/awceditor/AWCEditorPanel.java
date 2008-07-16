@@ -3,13 +3,11 @@ package com.pharmadm.custom.rega.gui.awceditor;
 import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
-
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCManager;
 
 /**
  * Specialized version of {@link WLOEditorPanel} for configuring an {@link AtomicWhereClause}
@@ -18,42 +16,24 @@ import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
  * @author  kristof
  */
 public class AWCEditorPanel extends WLOEditorPanel implements ComposedAWCEditorPanel{
-    private ComposedAWCEditor editor;
-	
+	private ComposedAWCManager manager;
+    
     /** Creates a new instance of AWCEditorPanel */
     public AWCEditorPanel(AtomicWhereClauseEditor controller) {
         super(controller);
-        editor = new ComposedAWCEditor(this, controller);
+        manager = new ComposedAWCManager(new ComposedAWCEditor(this, controller));
     }
     
     /** Applies changes made to all visualisation components in the componentList to the corresponding AWCWords */
     public void applyEditings() {
-    	editor.applyEditings();
+    	getManager().applyEditings();
     }
     
-    
-    
-    public AtomicWhereClause getClause() {
-    	return editor.getSelectedEditor().getAtomicWhereClause();
-    }
-    
-    public AtomicWhereClauseEditor getWhereClauseEditor() {
-    	return (AtomicWhereClauseEditor)controller;
-    }
-    
-    public void createComposedWord(List<ConfigurableWord> keys, List<ConfigurableWord> words, ComposedWordConfigurer configurer) {
-    	editor.createComposedWord(keys, words, configurer);
-    }
-    
-    public void composeWord(List<WordConfigurer> keys, List<WordConfigurer> additions, AtomicWhereClauseEditor  editor, boolean makeSelected) {
-    	this.editor.composeWord(keys, additions, editor, makeSelected);
-    }
-
 	public List<WordConfigurer> getConfigurers() {
 		return configList;
 	}
 
-	public boolean isUseless() {
-		return editor.isUseless();
-	}
+	public ComposedAWCManager getManager() {
+		return manager;
+	}	
 }

@@ -41,7 +41,6 @@ import com.pharmadm.custom.rega.queryeditor.gui.resulttable.QueryResultJTable;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
-import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 import com.pharmadm.custom.rega.savable.DirtinessEvent;
 import com.pharmadm.custom.rega.savable.DirtinessListener;
 import com.pharmadm.util.gui.mdi.DocumentLoader;
@@ -1343,7 +1342,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                     String queryString = getQueryStringAndInformUserOnError(query);
                     System.out.println(queryString);
                     statement.setFetchSize(50);
-                    QueryResult resultSet = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query.getQueryString());
+                    QueryResult resultSet = statement.executeQuery(query.getQueryString());
                     final QueryResultTableModel model = new QueryResultTableModel(resultSet, query.getSelectList().getSelectedColumnNames());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -1359,46 +1358,34 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
             } catch (final Exception sqle) {
             	sqle.printStackTrace();
                 synchronized (cancelLock) {
-                    if (!canceled) {
-                        canceled = true;
-                        if (statement.exists()) {
-                            System.err.println("About to close statement " + id + " after an SQL exception...");
-                            statement.close();
-                            System.err.println("Closing the statement was successful.");
+                	statement.close();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            setRunning(false);
+                            numberRowsLabel.setText("Query execution failed");
+                            resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
+                            QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
                         }
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                setRunning(false);
-                                numberRowsLabel.setText("Query execution failed");
-                                resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
-                                QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
-                            }
-                        });
-                    }
+                    });
                 }
             }
         }
         
         public void cancel() {
             synchronized (cancelLock) {
-                if (!canceled) {
                     canceled = true;
                     setRunning(false);
                     numberRowsLabel.setText("Canceled");
                     resultTable.setModel(new BusyTableModel("Canceled", "The query was canceled."));
                     System.err.println("User Cancel:: about to cancel statement " + id + "...");
-                    statement.cancel();
+                    statement.close();
                     System.err.println("User Cancel:: cancel statement done.");
-                }
             }
         }
         
         public void close() {
             synchronized (cancelLock) {
-                // the Oracle 9i driver locks up on close after cancel...
-                if (!canceled) {
-                	statement.close();
-                }
+            	statement.close();
             }
         }
     }

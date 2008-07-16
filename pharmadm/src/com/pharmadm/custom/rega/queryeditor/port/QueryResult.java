@@ -1,10 +1,7 @@
 package com.pharmadm.custom.rega.queryeditor.port;
 
-public interface QueryResult {
-	public void close();
+public interface QueryResult extends Result{
 	public int size();
-	public String getColumnName(int index);
-	public String getColumnClassName(int index);
 	public int getColumnCount();
 	
 	/**

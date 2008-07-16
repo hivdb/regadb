@@ -55,10 +55,6 @@ public class WLOEditorPanel extends javax.swing.JPanel {
         }
     }
     
-    public ConfigurationController getEditor() {
-        return controller;
-    }
-    
     public void addFocusListener(java.awt.event.FocusListener listener) {
         if (configList == null) {
             // I am very sorry to have to add this, but addFocusListener is apparently called in the behind-the-screens initialization

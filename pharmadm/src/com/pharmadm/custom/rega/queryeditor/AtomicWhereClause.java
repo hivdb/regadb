@@ -149,7 +149,10 @@ public abstract class AtomicWhereClause extends WhereClause implements WordListO
 	public abstract List<InputVariable> getInputVariables();
 	public abstract List<Constant> getConstants();
 	public abstract List<FromVariable> getFromVariables();
+	public abstract List<Join> getRelations();
+	
 
+	public abstract void addRelation(Join join);
 	protected abstract void addConstant(Constant cst);	
 	protected abstract void addInputVariable(InputVariable cst);	
 	protected abstract void addOutputVariable(OutputVariable cst);	

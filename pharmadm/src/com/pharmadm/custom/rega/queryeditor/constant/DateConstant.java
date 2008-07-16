@@ -13,7 +13,6 @@ package com.pharmadm.custom.rega.queryeditor.constant;
 
 import java.util.Date;
 import java.io.Serializable;
-import java.text.Format;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
@@ -35,22 +34,6 @@ public class DateConstant extends Constant implements Serializable{
     	super();
     }
 
-    public DateConstant(String dateString) {
-    	super();
-        Date date;
-        try {
-            date = DATE_FORMAT.parse(dateString);
-        } catch (java.text.ParseException pe) {
-            date = new Date();
-        }
-        super.setValue(new java.sql.Date(date.getTime()));
-    }
-    
-    // formats are not threadsafe!
-    public Format getFormat() {
-        return DATE_FORMAT;
-    }    
-    
     public String acceptWhereClause(QueryVisitor visitor) {
         return visitor.visitWhereClauseDateConstant(this);
     }

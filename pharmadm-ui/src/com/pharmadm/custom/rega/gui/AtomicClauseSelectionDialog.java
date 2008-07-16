@@ -122,8 +122,8 @@ public class AtomicClauseSelectionDialog extends JDialog {
         selectedClause = null;
         if (selectorPanel.isSelected()) {
 			AWCEditorPanel editPanel = selectorPanel.getSelectedClause();
-			editPanel.applyEditings();
-			selectedClause = editPanel.getClause();
+			editPanel.getManager().applyEditings();
+			selectedClause = editPanel.getManager().getClause();
         }
     }
     

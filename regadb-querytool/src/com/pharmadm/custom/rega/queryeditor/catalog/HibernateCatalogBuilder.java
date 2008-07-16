@@ -75,6 +75,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	String foreignTableToIdTable = null;
     	String suggestedValuesQuery = null;
     	ValueType t = ValueType.String;
+    	boolean invert = true;
     	
     	if (valueType.equals("nominal value")) {
     		foreingTable = nominalValues;			// select from the table of nominal values
@@ -86,6 +87,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	else if (valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
     		foreingTable = possibleIdTable;					// select from the single attribute table
     		foreignTableToIdTable = idTableToInputTable;	
+    		invert = false;
         	if (valueType.equals("number") || valueType.equals("limited number (<,=,>)")) {
         		t = ValueType.Number;
         	}
@@ -94,7 +96,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         	}
         }
     	
-    	ObjectRelation relation = new ObjectRelation(inputTable, inputTableToIdTable, foreingTable, foreignTableToIdTable, idTable, true, null);
+    	ObjectRelation relation = new ObjectRelation(inputTable, inputTableToIdTable, foreingTable, foreignTableToIdTable, idTable, invert, null);
 		DbObject propertyOrig = catalog.getObject(foreingTable.getTableName(), propertyStr);
 		DbObject property = new DbObject(propertyOrig.getTableName(), propertyOrig.getPropertyName(), propertyName, propertyOrig.getSqlAlias(), propertyName, propertyOrig.hasDropdown(), t);
 		result = addTypeRestrictionToNominalValueClause(getPropertyComparisonClauses(relation, property, suggestedValuesQuery),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
@@ -169,21 +171,23 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    			newWords.addAll(words);
 	    			newWords.add(new FixedString(", 2, length("));
 	    			newWords.addAll(words);
-	    			newWords.add(new FixedString(") ), big_decimal) ELSE cast("));
+	    			newWords.add(new FixedString(") ), double) ELSE cast("));
 	    			newWords.addAll(words);
 	    			newWords.add(new FixedString(", big_decimal) END"));
 	    			newWords.add(new FixedString(") ELSE 0 END"));
 	    			ovar.getExpression().setWords(newWords);
     			}
     			else if (valueType.equalsIgnoreCase("date")) {
+    				java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("gmt"));
 	    			List<ConfigurableWord> words = ovar.getExpression().getWords();
 	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
 	    			newWords.add(new FixedString("CASE WHEN "));
 	    			newWords.add(words.get(0));
-	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
-	    			newWords.add(new FixedString("THEN cast ("));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "' "));
+	    			newWords.add(new FixedString("THEN (TO_DATE('01-01-1970', 'DD-MM-YYYY')"));
+	    			newWords.add(new FixedString(" + cast(cast("));
 	    			newWords.addAll(words);
-	    			newWords.add(new FixedString(", date) ELSE current_date() END"));
+	    			newWords.add(new FixedString(", long)/86400000, int)) ELSE current_date() END"));
 	    			ovar.getExpression().setWords(newWords);
     				
     			}
@@ -231,6 +235,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aVisList.addOutputVariable(ovar);
         
         addRelationClauseToComposer(aComposer, ivar, newFromVar, relation.getInputTableToIdTable(), relation.getForeignTableToIdTable(), new FromVariable(relation.getIdTable()), relation.getIdTableKey(), relation.isInvertLink());
+    	aClause.addRelation(new InputOutputJoin(ivar,ovar));
         
         return aClause;
     }
@@ -305,6 +310,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aComposer.addFromVariable(newFromVar);
         aComposer.addFixedString(new FixedString("." +  foreignTableProperty.getDescription()));
         aComposer.addFixedString(new FixedString(")"));
+    	aClause.addRelation(new InputOutputJoin(ivar, ovar));
         
         return aClause;
     }
@@ -562,6 +568,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         gDrug1.setRelation("'s medication contains a drug that resolves to a");
         gDrug1.getExpression().addFromVariable(fromgDrug1);
         aClause.addFromVariable(fromgDrug1);
+    	aClause.addRelation(new InputOutputJoin(therapy1,gDrug1));
         
 
         aVisList.addFixedString(new FixedString(therapyTable.getDescription()));
@@ -988,6 +995,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	        ovar.getExpression().addFromVariable(fromVar);
             aClause.addFromVariable(fromVar);
             aClause.setCompositionBehaviour(new NewTableComposition());
+            
+        	aClause.addRelation(new OutputJoin(ovar));
         }
         
         aComposer.addFixedString(new FixedString("1=1"));
@@ -1113,6 +1122,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aVisList.addInputVariable(ivar1);
         aVisList.addConstant(constant);
         aVisList.addInputVariable(ivar2);
+        
+        if (!object.isPrimitive()) {
+        	aClause.addRelation(new InputJoin(ivar1,ivar2));
+        }
         
         addComparisonClauseToComposer(aComposer, ivar1, constant, ivar2, isCaseSensitive(object));
         

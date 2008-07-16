@@ -15,6 +15,7 @@ public class SimpleAtomicWhereClause extends AtomicWhereClause {
     private List<Constant> constants = new ArrayList<Constant>(); // of type Constant
     private List<OutputVariable> outputVariables = new ArrayList<OutputVariable>(); // of type OutputVariable
     private List<FromVariable> fromVariables = new ArrayList<FromVariable>(); // of type FromVariable
+    private List<Join> relations = new ArrayList<Join>();
 
     
     public List<InputVariable> getInputVariables() {
@@ -126,6 +127,11 @@ public class SimpleAtomicWhereClause extends AtomicWhereClause {
         	clone.addGroup(group);
         }
         clone.setCompositionBehaviour(getCompositionBehaviour());
+
+        for (Join join : relations) {
+        	clone.addRelation(join.cloneInContext(originalToCloneMap));
+        }
+        
         
         return clone;
     }
@@ -195,5 +201,13 @@ public class SimpleAtomicWhereClause extends AtomicWhereClause {
             valid &= (c.getValue() != null);
         }
         return valid;
-    }    
+    }
+	@Override
+	public void addRelation(Join join) {
+		relations.add(join);
+	}
+	@Override
+	public List<Join> getRelations() {
+		return relations;
+	}    
 }

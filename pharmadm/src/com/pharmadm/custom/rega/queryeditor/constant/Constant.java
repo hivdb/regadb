@@ -17,7 +17,6 @@ import java.util.*;
 import com.pharmadm.custom.rega.queryeditor.AWCWord;
 import com.pharmadm.custom.rega.queryeditor.ValueChangeListener;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 import com.pharmadm.custom.rega.reporteditor.DataGroupWord;
 import com.pharmadm.custom.rega.reporteditor.DataRow;
@@ -83,7 +82,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     /**
      * parse the given object into a string representation of the object
      * @param o
-     * @return null on failure
+     * @return null when the given object is not a valid value for this constant
      */
     protected abstract String parseObject(Object o);
     
@@ -94,7 +93,7 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
      * @param o
      * @return
      */
-    public boolean parseValue(Object o) {
+    public boolean setValue(Object o) {
     	String str = parseObject(o);
     	if (str != null) {
     		this.value = o;
@@ -129,20 +128,15 @@ public abstract class Constant implements Cloneable, AWCWord, DataGroupWord, Val
     	notifyValueChangeListeners();
     }
     
-    /*
-     * For efficiency reasons, this does NOT check for mandatory values compliance.
-     */
-    public void setValue(Object newVal) {
-        value = newVal;
-        assignDefaultWhenNull();
-        notifyValueChangeListeners();
-    }
-    
     public String getHumanStringValue() {
     	assignDefaultWhenNull();
     	return parseObject(getValue());
     }
     
+    /**
+     * if the current value of this constant is null,
+     * reset it to its default value
+     */
     private void assignDefaultWhenNull() {
     	if (value == null) {
     		value = getdefaultValue();

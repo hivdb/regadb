@@ -61,6 +61,9 @@ public class QueryStatusBar extends WStatusBar {
 		        else if (!query.getSelectList().isAnythingSelected()) {
 		        	showMessage(tr("form.query.querytool.message.emptyselection"), "error");
 		        }
+		        else if (!query.isConnected()) {
+		        	showMessage(tr("form.query.querytool.message.cartesianproduct"), "error");
+		        }
 		        else {
 		        	showMessage(tr("form.query.querytool.message.ok"), "info");
 		        	hasWarning = false;

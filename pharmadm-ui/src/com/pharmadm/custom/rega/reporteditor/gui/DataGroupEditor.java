@@ -188,7 +188,7 @@ public class DataGroupEditor implements ConfigurationController, ConstantControl
  * </p>
  */
     public boolean setConstantValueString(Constant cst, Object value) {   
-       	return cst.parseValue(value);
+       	return cst.setValue(value);
     } // end setConstantValueString        
 
 /**

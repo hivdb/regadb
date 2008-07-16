@@ -103,7 +103,7 @@ public class SqlQuery implements QueryVisitor {
         return ovar.getExpression().acceptWhereClause(this);
 	}
 	
-	private String formatString(String str) {
+	protected String formatString(String str) {
 		str = str.replace('*', '%');
 		str = str.replace('?', '_');
 		return str;
