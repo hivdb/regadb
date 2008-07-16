@@ -25,7 +25,7 @@ public class StandardObjects {
     private static String viralLoadDescription = "Viral Load (copies/ml)";
     private static String viralLoadLog10Description = "Viral Load (log10)";
     private static String seroStatusDescription = "Serostatus";
-    private static String seroconversionDescription = "Serovoncersion";
+    private static String seroconversionDescription = "Seroconversion";
     
     private static List<TestType> standardGenomeTestTypes = new ArrayList<TestType>();
     private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
