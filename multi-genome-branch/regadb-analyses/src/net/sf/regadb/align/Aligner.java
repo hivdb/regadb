@@ -177,11 +177,11 @@ public class Aligner {
     }
     
     private int getFirstAa(Protein p){
-        return p.getStartPosition()/3;
+        return (int)Math.ceil(p.getStartPosition()/3.0);
     }
     
     private int getLastAa(Protein p){
-        return p.getStopPosition()/3;
+        return (int)Math.floor(p.getStopPosition()/3.0);
     }
     
     private static Sequence getReferenceSequence(OpenReadingFrame orf){
