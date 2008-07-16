@@ -12,12 +12,12 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ITestTypeDataTable implements IDataTable<TestType>
 {
-    private static String [] _colNames = {"dataTable.testType.colName.description","dataTable.testType.colName.testObject","dataTable.testType.colName.valueType" };
-    private static String[] filterVarNames_ = { "testType.valueType.description", "testType.testObject.description", "testType.description"};
+    private static String [] _colNames = {"dataTable.testType.colName.description","dataTable.testType.colName.testObject","dataTable.testType.colName.valueType","dataTable.testType.colName.organismName" };
+    private static String[] filterVarNames_ = { "testType.valueType.description", "testType.testObject.description", "testType.description", null};
     
-    private IFilter[] filters_ = new IFilter[3];
+    private IFilter[] filters_ = new IFilter[4];
     
-    private static boolean [] sortable_ = {true, true, true};
+    private static boolean [] sortable_ = {true, true, true, false};
     
     public String[] getColNames()
     {
@@ -46,11 +46,12 @@ public class ITestTypeDataTable implements IDataTable<TestType>
 
     public String[] getRowData(TestType testType)
     {
-        String [] row = new String[3];
+        String [] row = new String[4];
         
         row[0] = testType.getDescription();
         row[1] = testType.getTestObject().getDescription();
         row[2] = testType.getValueType().getDescription();
+        row[3] = (testType.getGenome() == null ? "":testType.getGenome().getOrganismName());
       
         return row;
     }
@@ -60,6 +61,7 @@ public class ITestTypeDataTable implements IDataTable<TestType>
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
+        filters_[3] = null;
     }
 
     public void selectAction(TestType selectedItem)

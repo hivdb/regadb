@@ -14,6 +14,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
@@ -37,6 +38,9 @@ public class TestTypeForm extends FormWidget
     private ComboBox<ValueType> valueTypeCB;
     private Label testObjectL;
     private ComboBox<TestObject> testObjectCB;    
+    
+    private Label genomeL;
+    private GenomeComboBox genomeCB;
     
 //  nominal values group
     private WGroupBox nominalValuesGroup_;
@@ -69,6 +73,11 @@ public class TestTypeForm extends FormWidget
 	    testObjectCB= new ComboBox<TestObject>(getInteractionState(),this);
 	    testObjectCB.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testObjectL, testObjectCB);
+	    
+	    genomeL = new Label(tr("form.testSettings.testType.editView.genome"));
+	    genomeCB = new GenomeComboBox(getInteractionState(), this);
+	    addLineToTable(mainFrameTable_, genomeL, genomeCB);
+	    
 	    Transaction t = RegaDBMain.getApp().createTransaction();
 	    List<ValueType> valueTypes=t.getValueTypes();
         for(ValueType vt : valueTypes)
@@ -151,6 +160,14 @@ public class TestTypeForm extends FormWidget
 	                        setNominalValuesGroup();
 	                    }
 	                });
+		 
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        genomeCB.fill(t);
+        if(testType_.getGenome() != null)
+            genomeCB.selectItem(testType_.getGenome().getOrganismName());
+        else
+            genomeCB.selectIndex(0);
+        t.commit();
 	}
 
 	@Override
@@ -180,6 +197,7 @@ public class TestTypeForm extends FormWidget
         testType_.setDescription(testTypeTF.text());
         testType_.setValueType(vt);
         testType_.setTestObject(to);
+        testType_.setGenome(genomeCB.currentValue());
           
         if(!nominalValuesGroup_.isHidden())
         {
