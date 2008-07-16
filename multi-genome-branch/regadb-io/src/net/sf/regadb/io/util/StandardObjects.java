@@ -86,12 +86,16 @@ public class StandardObjects {
     static {
         TestType tt;
         
-        tt = new TestType(nominalValueType, null, patientObject, getSeroconversionDescription(), new TreeSet<TestNominalValue>());
+        tt = new TestType(patientObject, getSeroconversionDescription());
+        tt.setGenome(null);
+        tt.setValueType(nominalValueType);
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Positive"));
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
         standardGenomeTestTypes.add(tt);
         
-        tt = new TestType(nominalValueType, null, patientObject, getSeroStatusDescription(), new TreeSet<TestNominalValue>());
+        tt = new TestType(patientObject, getSeroStatusDescription());
+        tt.setGenome(null);
+        tt.setValueType(nominalValueType);
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Positive"));
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
         standardGenomeTestTypes.add(tt);
@@ -140,7 +144,9 @@ public class StandardObjects {
         }
         
         for(TestType tt : standardGenomeTestTypes){
-            TestType ntt = new TestType(tt.getValueType(), g, tt.getTestObject(), tt.getDescription(), new TreeSet<TestNominalValue>());
+            TestType ntt = new TestType(tt.getTestObject(), tt.getDescription());
+            ntt.setGenome(g);
+            ntt.setValueType(tt.getValueType());
             
             for(TestNominalValue tnv : tt.getTestNominalValues()){
                 ntt.getTestNominalValues().add(new TestNominalValue(ntt, tnv.getValue()));
