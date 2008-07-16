@@ -341,6 +341,9 @@ public class SinglePatientForm extends FormWidget
     
     public void saveData()
     {
+    	if(getNulled(idTF.text()) == null)
+    		return;
+    	
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         if(patient_.getPatientIi()!=null)
