@@ -13,13 +13,11 @@ import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.align.AlignmentAnalysis;
-import net.sf.regadb.service.wts.NtSequenceAnalysis;
+import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
@@ -467,24 +465,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     public void startAnalysis()
     {
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        Test subTypeTest = t.getTest(RegaDBWtsServer.getSubTypeTest(), RegaDBWtsServer.getSubTypeTestType());
-        Test typeTest = t.getTest(RegaDBWtsServer.getTypeTest(), RegaDBWtsServer.getTypeTestType());
-        t.commit();
-        
-        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
-        {
-            if(ntseq.getAaSequences().size()==0)
-            {
-            AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq,
-                                                                                subTypeTest, 
-                                                                                RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin()); 
-            AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq, 
-                                                                                typeTest,
-                                                                                RegaDBMain.getApp().getLogin().getUid()), RegaDBMain.getApp().getLogin());
-            }
-        }
+        FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate());
+        AnalysisPool.getInstance().launchAnalysis(fullAnalysis, RegaDBMain.getApp().getLogin());
     }
 
     private void addButtons()
