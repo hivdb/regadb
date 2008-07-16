@@ -49,7 +49,9 @@ public class MultipleTestResultForm extends FormWidget {
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         for(String description : tests){
-        	tests_.add(t.getTest(description));
+        	Test test = t.getTest(description);
+        	if(test != null)
+        		tests_.add(test);
         }
         t.commit();
         
