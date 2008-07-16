@@ -20,6 +20,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
@@ -43,7 +44,7 @@ public class TestForm extends FormWidget
     private Label testL ;
     private TextField testTF ;
     private Label testTypeL;
-    private ComboBox<TestType> testTypeCB;
+    private TestTypeComboBox testTypeCB;
     private Label analysisL;
     private CheckBox analysisCK;
     
@@ -96,7 +97,7 @@ public class TestForm extends FormWidget
         addLineToTable(mainFrameTable_, testL, testTF);
         
 	    testTypeL=new Label(tr("form.testSettings.test.editView.testType"));
-	    testTypeCB= new ComboBox<TestType>(getInteractionState(),this);
+	    testTypeCB= new TestTypeComboBox(getInteractionState(),this);
 	    testTypeCB.setMandatory(true);
 	    addLineToTable(mainFrameTable_, testTypeL, testTypeCB);
 	    
@@ -114,13 +115,7 @@ public class TestForm extends FormWidget
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        List<TestType> testTypes = t.getTestTypes();
-        
-        for(TestType tt : testTypes)
-        {
-            testTypeCB.addItem(new DataComboMessage<TestType>(tt, tt.getDescription()));
-        }
-        testTypeCB.sort();
+        testTypeCB.fill(t, false);
         
         t.commit();
         //main -end-
@@ -219,7 +214,7 @@ public class TestForm extends FormWidget
         
         if(test_.getTestType() != null)
         {
-            testTypeCB.selectItem(test_.getTestType().getDescription());
+            testTypeCB.selectItem(test_.getTestType());
         }
         
         if(test_.getAnalysis() != null)

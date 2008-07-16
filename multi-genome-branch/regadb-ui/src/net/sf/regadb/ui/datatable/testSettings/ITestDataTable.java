@@ -12,12 +12,12 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ITestDataTable implements IDataTable<Test>
 {
-	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType" };
-	private static String[] filterVarNames_ = {"test.description", "test.testType.description" };
+	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType", "dataTable.test.colName.genome" };
+	private static String[] filterVarNames_ = {"test.description", "test.testType.description", "test.testType.genome.organismName" };
 
-	private IFilter[] filters_ = new IFilter[2];
+	private IFilter[] filters_ = new IFilter[3];
 
-	private static boolean [] sortable_ = {true, true};
+	private static boolean [] sortable_ = {true, true, true};
 	public String[] getColNames() 
 	{
 		return _colNames;
@@ -45,10 +45,11 @@ public class ITestDataTable implements IDataTable<Test>
 
 	public String[] getRowData(Test test) 
 	{
-		String [] row = new String[2];
+		String [] row = new String[3];
         
         row[0] = test.getDescription();
         row[1] = test.getTestType().getDescription();
+        row[2] = (test.getTestType().getGenome() == null ? "":test.getTestType().getGenome().getOrganismName());
              
         return row;
 	}
@@ -57,6 +58,7 @@ public class ITestDataTable implements IDataTable<Test>
 	{
 		filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
+        filters_[2] = new StringFilter();
 	}
 
 	public void selectAction(Test selectedItem) 

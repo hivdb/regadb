@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
@@ -36,7 +37,7 @@ public class MeasurementForm extends FormWidget
     private Label dateL;
     private DateField dateTF;
     private Label testTypeL;
-    private ComboBox<TestType> testTypeCB;
+    private TestTypeComboBox testTypeCB;
     private Label testNameL;
     private ComboBox<Test> testNameCB;
     private Label testResultL;
@@ -63,7 +64,7 @@ public class MeasurementForm extends FormWidget
         dateTF = new DateField(getInteractionState(), this);
         addLineToTable(generalGroupTable_, dateL, dateTF);
         testTypeL = new Label(tr("form.testResult.editView.testType"));
-        testTypeCB = new ComboBox<TestType>(getInteractionState(), this);
+        testTypeCB = new TestTypeComboBox(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
         addLineToTable(generalGroupTable_, testTypeL, testTypeCB);
@@ -80,15 +81,7 @@ public class MeasurementForm extends FormWidget
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
-        for(TestType testType : t.getTestTypes())
-        {
-        	if(t.hasTests(testType))
-        	{
-	        	testTypeCB.addItem(new DataComboMessage<TestType>(testType, testType.getDescription()));
-        	}
-        }
-        testTypeCB.sort();
-        
+        testTypeCB.fill(t, true);
         testTypeCB.selectIndex(0);
 
         t.commit();
@@ -102,7 +95,7 @@ public class MeasurementForm extends FormWidget
 	{
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
-	       	testTypeCB.selectItem(testResult_.getTest().getTestType().getDescription());
+	       	testTypeCB.selectItem(testResult_.getTest().getTestType());
 	        testNameCB.selectItem(testResult_.getTest().getDescription());
 	        
 	        dateTF.setDate(testResult_.getTestDate());

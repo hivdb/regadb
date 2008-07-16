@@ -23,11 +23,11 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 {
 	private static String [] _colNames = {"dataTable.therapy.colName.startDate","dataTable.therapy.colName.endDate", 
 		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment", "dataTable.therapy.colName.organismName"};
-	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment", null};
+	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment", "therapy.genome.organismName"};
 	
 	private IFilter[] filters_ = new IFilter[5];
 	
-	private static boolean [] sortable_ = {true, true, false, true, false};
+	private static boolean [] sortable_ = {true, true, false, true, true};
 	
 	public String[] getColNames()
 	{
@@ -101,7 +101,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 		filters_[1] = new DateFilter();
 		filters_[2] = null;
 		filters_[3] = new StringFilter();
-		filters_[4] = null;
+		filters_[4] = new StringFilter();
 	}
 
 	public void selectAction(Therapy selectedItem)
