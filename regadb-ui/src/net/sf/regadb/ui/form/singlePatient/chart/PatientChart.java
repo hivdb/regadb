@@ -17,11 +17,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -111,6 +115,17 @@ public class PatientChart
     
     private HashMap<String, String> positionMap_ = null;
     private String positionAlgorithm_ = null;
+    
+    private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+    private static Date before1900;
+    
+    static {
+		try {
+			before1900 = formatter.parse("01-01-1900");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    }
 
 	public MutationBlock getMutationBlock(AaSequence a)
 	{
@@ -133,7 +148,7 @@ public class PatientChart
 	{
 		this.data = patientData;
 
-		for (Therapy therapy : patientData.getTherapies())
+		for (Therapy therapy : filterTherapies(patientData.getTherapies()))
 		{
 			for (TherapyGeneric tg : therapy.getTherapyGenerics())
 			{
@@ -332,7 +347,7 @@ public class PatientChart
 		{
 			int ytop = CHART_HEIGHT + BORDER_CHART_DRUGS + (n * DRUG_HEIGHT);
 
-			for (Therapy f : data.getTherapies())
+			for (Therapy f : filterTherapies(data.getTherapies()))
 			{
 				for(TherapyGeneric tg : f.getTherapyGenerics())
                 {
@@ -670,7 +685,7 @@ public class PatientChart
 			}
 		}
 
-		for (Therapy f : data.getTherapies())
+		for (Therapy f : filterTherapies(data.getTherapies()))
 		{
 			expandBounds(f.getStartDate());
 			expandBounds(f.getStopDate());
@@ -698,5 +713,16 @@ public class PatientChart
 			if (d.after(maxDate))
 				maxDate = d;
 		}
+	}
+	
+	private Set<Therapy> filterTherapies(Set<Therapy> therapies) {		
+		for(Iterator<Therapy> i = therapies.iterator(); i.hasNext();) {
+			Therapy t = i.next();
+			if(t.getStartDate().before(before1900)) {
+				i.remove();
+			}
+		}
+		
+		return therapies;
 	}
 }
