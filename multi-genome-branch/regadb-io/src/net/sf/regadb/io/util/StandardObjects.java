@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
@@ -22,41 +25,47 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 
 public class StandardObjects {
+    private static List<TestType> standardGenomeTestTypes = new ArrayList<TestType>();
+    private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
+
+    
     private static String viralLoadDescription = "Viral Load (copies/ml)";
     private static String viralLoadLog10Description = "Viral Load (log10)";
     private static String seroStatusDescription = "Serostatus";
     private static String seroconversionDescription = "Seroconversion";
     
-    private static List<TestType> standardGenomeTestTypes = new ArrayList<TestType>();
-    private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
-    
-    private static Genome hiv1Genome = new Genome("HIV-1", "");
-    
-    private static TestObject patientObject = new TestObject("Patient test", 0);
-    private static TestObject viralIsolateObject = new TestObject("Viral Isolate analysis", 4);
-    private static ValueType numberValueType = new ValueType("number");
-    private static ValueType limitedNumberValueType = new ValueType("limited number (<,=,>)");
-    private static ValueType nominalValueType = new ValueType("nominal value");
-    private static ValueType stringValueType = new ValueType("string");
-    private static ValueType dateValueType = new ValueType("date");
-    private static TestType cd4TestType = new TestType(numberValueType, null, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>());
-    private static TestType cd4PercentageTestType = new TestType(numberValueType, null, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>());
-    private static TestType cd8TestType = new TestType(numberValueType, null, patientObject, "CD8 Count", new TreeSet<TestNominalValue>());
-    private static TestType cd8PercentageTestType = new TestType(numberValueType, null, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>());
-    private static TestType followUpTestType = new TestType(dateValueType, null, patientObject, "Follow up",new TreeSet<TestNominalValue>());
-    private static Test genericCD4Test = new Test(cd4TestType, "CD4 Count (generic)");
-    private static Test genericCD4PercentageTest = new Test(cd4PercentageTestType, "CD4 Count % (generic)");
-    private static Test genericCD8Test = new Test(cd8TestType, "CD8 Count (generic)");
-    private static Test genericCD8PercentageTest = new Test(cd8PercentageTestType, "CD8 Count % (generic)");
-    private static Test followUpTest = new Test(followUpTestType, "Follow up");
-    
-    private static TestType contactTestType = new TestType(dateValueType, null, patientObject,"Contact",new TreeSet<TestNominalValue>());
-    private static Test contactTest = new Test(contactTestType, "General contact");
-    
     private static String gssId = "Genotypic Susceptibility Score (GSS)";
-    private static String clinicalFileNumberAttribute = "Clinical File Number";
     
+    private static Genome hiv1Genome;
+    
+    private static TestObject patientObject;
+    private static TestObject viralIsolateObject;
+
+    private static ValueType numberValueType;
+    private static ValueType limitedNumberValueType;
+    private static ValueType nominalValueType;
+    private static ValueType stringValueType;
+    private static ValueType dateValueType;
+    
+    private static AttributeGroup regadbAttributeGroup;
+    
+    private static Attribute genderAttribute;
+    private static Attribute ethnicityAttribute;
+    private static Attribute geographicOriginAttribute;
+    private static Attribute transmissionGroupAttribute;
+    private static Attribute clinicalFileNumberAttribute;
+//    private static Attribute countryOfOriginAttribute;
+
+    private static Test followUpTest;
+    private static Test contactTest;
     private static Test pregnancy;
+
+    private static Test genericCD3Test;
+    private static Test genericCD3PercentTest;
+    private static Test genericCD4Test;
+    private static Test genericCD4PercentageTest;
+    private static Test genericCD8Test;
+    private static Test genericCD8PercentageTest;
     
     private static Test genericHBVViralLoadTest;
     private static Test genericHCVViralLoadTest;
@@ -69,8 +78,6 @@ public class StandardObjects {
     private static Test genericHBsAbTest;
     private static Test genericHBsAgTest;
     
-    private static Test genericCD3Test;
-    private static Test genericCD3PercentTest;
     
     private static Test genericCMVIgGTest;
     private static Test genericCMVIgMTest;
@@ -81,9 +88,38 @@ public class StandardObjects {
     private static Test genericHAVIgGTest;
     private static Test genericHAVIgMTest;
     
+    private static Test seroconversionTest;
+    
+//    private static Test anrs200607Test;
+//    private static Test hivdb429Test;
+//    private static Test rega641Test;
+//    private static Test rega71Test;
+
+    
     private static Event aidsDefiningIllnessEvent;
 
     static {
+        hiv1Genome = new Genome("HIV-1", "");
+        
+        numberValueType         = new ValueType("number");
+        limitedNumberValueType  = new ValueType("limited number (<,=,>)");
+        nominalValueType        = new ValueType("nominal value");
+        stringValueType         = new ValueType("string");
+        dateValueType           = new ValueType("date");
+        
+        regadbAttributeGroup = new AttributeGroup("RegaDB");
+        
+        genderAttribute             = createGender();
+        ethnicityAttribute          = createEthnicity();
+        geographicOriginAttribute   = createGeographicOrigin();
+        transmissionGroupAttribute  = createTransmissionGroup();
+        clinicalFileNumberAttribute = createClinicalFileNumber();
+//        countryOfOriginAttribute    = createCountryOfOrigin();
+        
+        patientObject       = new TestObject("Patient test", 0);
+        viralIsolateObject  = new TestObject("Viral Isolate analysis", 4);
+        
+        
         TestType tt;
         
         tt = new TestType(patientObject, getSeroconversionDescription());
@@ -108,13 +144,14 @@ public class StandardObjects {
         
         createStandardGenomeTests(getHiv1Genome());
         
-        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
-        pregnancyType.setValueType(nominalValueType);
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
         
-        pregnancy = new Test(pregnancyType, "Pregnancy");
-
+        genericCD4Test          = new Test(new TestType(numberValueType, null, patientObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
+        genericCD4PercentageTest= new Test(new TestType(numberValueType, null, patientObject, "CD4 Count (%)", new TreeSet<TestNominalValue>()), "CD4 Count % (generic)");
+        genericCD8Test          = new Test(new TestType(numberValueType, null, patientObject, "CD8 Count", new TreeSet<TestNominalValue>()), "CD8 Count (generic)");
+        genericCD8PercentageTest= new Test(new TestType(numberValueType, null, patientObject, "CD8 Count (%)", new TreeSet<TestNominalValue>()), "CD8 Count % (generic)");
+        followUpTest            = new Test(new TestType(dateValueType, null, patientObject, "Follow up",new TreeSet<TestNominalValue>()), "Follow up");
+        contactTest             = new Test(new TestType(dateValueType, null, patientObject,"Contact",new TreeSet<TestNominalValue>()), "General contact");
+        
         genericHBVViralLoadTest = createGenericTest("HBV Viral Load", getLimitedNumberValueType(), null, getPatientObject());
         genericHCVViralLoadTest = createGenericTest("HCV Viral Load", getLimitedNumberValueType(), null, getPatientObject());
         genericHCVAbTest 		= createGenericTest("HCVAb", getNumberValueType(), null, getPatientObject());
@@ -132,6 +169,15 @@ public class StandardObjects {
         genericToxoIgMTest 		= createGenericTest("Toxo IgM", getNumberValueType(), null, getPatientObject());
         genericHAVIgGTest 		= createGenericTest("HAV IgG", getNumberValueType(), null, getPatientObject());
         genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), null, getPatientObject());
+        
+        seroconversionTest = createSeroconversionTest();
+        pregnancy = createPregnancyTest();
+        
+        
+//        anrs200607Test = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
+//        hivdb429Test = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9");
+//        rega641Test = createResistanceTest("RegaV6.4.1.xml", "REGA v6.4.1");
+//        rega71Test = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
         
         aidsDefiningIllnessEvent = createAidsDefiningIllnessEvent();
     }
@@ -175,86 +221,137 @@ public class StandardObjects {
 				name + " (generic)");
     }
     
-    public static Test getPregnancyTest() {
-        return pregnancy;
+    
+    public static String getGssId() {
+        return gssId;
     }
     
-    public static TestType getCd4TestType() {
-        return cd4TestType;
+    public static String getViralLoadDescription() {
+        return viralLoadDescription;
     }
-    public static Test getGenericCD4Test() {
-        return genericCD4Test;
+    public static String getViralLoadLog10Description() {
+        return viralLoadLog10Description;
     }
-    public static TestType getCd4PercentageTestType() {
-        return cd4PercentageTestType;
+    public static String getSeroStatusDescription() {
+        return seroStatusDescription;
     }
-    public static Test getGenericCD4PercentageTest() {
-        return genericCD4PercentageTest;
+    public static String getSeroconversionDescription() {
+        return seroconversionDescription;
     }
+
+    
+    public static Genome getHiv1Genome(){
+        return hiv1Genome;
+    }
+
+
     public static ValueType getLimitedNumberValueType() {
         return limitedNumberValueType;
     }
     public static ValueType getNumberValueType() {
         return numberValueType;
     }
+    public static ValueType getNominalValueType() {
+        return nominalValueType;
+    }
+    public static ValueType getDateValueType(){
+        return dateValueType;
+    }
+    public static ValueType getStringValueType() {
+        return stringValueType;
+    }
+
+    
     public static TestObject getPatientObject() {
         return patientObject;
     }
     public static TestObject getViralIsolateObject() {
         return viralIsolateObject;
     }
-    public static ValueType getNominalValueType() {
-        return nominalValueType;
+
+    public static AttributeGroup getRegaDBAttributeGroup(){
+        return regadbAttributeGroup;
     }
-    public static String getGssId() {
-        return gssId;
+    
+    public static Attribute getGenderAttribute(){
+        return genderAttribute;
     }
-    public static String getClinicalFileNumber() {
+    public static Attribute getEthnicityAttribute(){
+        return ethnicityAttribute;
+    }
+    public static Attribute getGeoGraphicOriginAttribute(){
+        return geographicOriginAttribute;
+    }
+    public static Attribute getTransmissionGroupAttribute(){
+        return transmissionGroupAttribute;
+    }
+    public static Attribute getClinicalFileNumberAttribute(){
         return clinicalFileNumberAttribute;
     }
+//    public static Attribute getCountryOfOriginAttribute(){
+//        return countryOfOriginAttribute;
+//    }
+    
+    public static Test getPregnancyTest() {
+        return pregnancy;
+    }
+
+    public static TestType getCD3TestType(){
+        return genericCD3Test.getTestType();
+    }
+    public static Test getGenericCD3Test(){
+        return genericCD3Test;
+    }
+    public static TestType getCD3PercentTestType(){
+        return genericCD3PercentTest.getTestType();
+    }
+    public static Test getGenericCD3PercentTest(){
+        return genericCD3PercentTest;
+    }
+    
+    public static TestType getCd4TestType() {
+        return getGenericCD4Test().getTestType();
+    }
+    public static Test getGenericCD4Test() {
+        return genericCD4Test;
+    }
+    public static TestType getCd4PercentageTestType() {
+        return getGenericCD4PercentageTest().getTestType();
+    }
+    public static Test getGenericCD4PercentageTest() {
+        return genericCD4PercentageTest;
+    }
     public static boolean isCD4(TestType tt) {
-        return cd4TestType.getDescription().equals(tt.getDescription());
+        return getCd4TestType().getDescription().equals(tt.getDescription());
     }
-    public static ValueType getStringValueType() {
-        return stringValueType;
-    }
-    public static ValueType getDateValueType(){
-        return dateValueType;
-    }
+    
     public static TestType getCd8TestType() {
-        return cd8TestType;
+        return getGenericCD8Test().getTestType();
     }
     public static Test getGenericCD8Test() {
         return genericCD8Test;
-    }
+    }   
     public static TestType getCd8PercentageTestType() {
-        return cd8PercentageTestType;
+        return getGenericCD8PercentageTest().getTestType();
     }
     public static Test getGenericCD8PercentageTest() {
         return genericCD8PercentageTest;
     }
+    
     public static TestType getFollowUpTestType(){
-        return followUpTestType;
+        return getFollowUpTest().getTestType();
     }
     public static Test getFollowUpTest(){
         return followUpTest;
     }
     
     public static TestType getContactTestType(){
-    	return contactTestType;
+    	return getContactTest().getTestType();
     }
     public static Test getContactTest(){
     	return contactTest;
     }
 
-    public static int getHqlQueryQueryType(){
-        return 1;
-    }
-
-    public static int getQueryToolQueryType(){
-        return 2;
-    }
-    
     public static Test getGenericHiv1ViralLoadTest() {
         return getGenericTest(getViralLoadDescription(), getHiv1Genome());
     }
@@ -270,12 +367,14 @@ public class StandardObjects {
     public static boolean isHiv1ViralLoad(TestType tt) {
         return getViralLoadDescription().equals(tt.getDescription());
     }
+    
     public static Test getGenericHiv1SeroStatusTest() {
         return getGenericTest(getSeroStatusDescription(), getHiv1Genome());
     }
     public static TestType getHiv1SeroStatusTestType() {
         return getGenericHiv1SeroStatusTest().getTestType();
     }
+    
     public static Test getHiv1SeroconversionTest() {
         return getGenericTest(getSeroconversionDescription(), getHiv1Genome());
     }
@@ -346,20 +445,6 @@ public class StandardObjects {
     	return genericHBsAgTest.getTestType();
     }
 
-    public static Test getGenericCD3Test(){
-    	return genericCD3Test;
-    }
-    public static TestType getCD3TestType(){
-    	return genericCD3Test.getTestType();
-    }
-
-    public static Test getGenericCD3PercentTest(){
-    	return genericCD3PercentTest;
-    }
-    public static TestType getCD3PercentTestType(){
-    	return genericCD3PercentTest.getTestType();
-    }
-
     public static Test getGenericCMVIgGTest(){
     	return genericCMVIgGTest;
     }
@@ -401,6 +486,38 @@ public class StandardObjects {
     public static TestType getHAVIgMTestType(){
     	return genericHAVIgMTest.getTestType();
     }
+    
+    public static Test getSeroconversionTest(){
+        return seroconversionTest;
+    }
+    
+//    public static Test getAnrs200607Test(){
+//        return anrs200607Test;
+//    }
+//    public static Test getHivdb429Test(){
+//        return hivdb429Test;
+//    }
+//    public static Test getRega641Test(){
+//        return rega641Test;
+//    }
+//    public static Test getRega71Test(){
+//        return rega71Test;
+//    }
+    
+    public static Event getAidsDefiningIllnessEvent(){
+        return aidsDefiningIllnessEvent;
+    }
+    
+    
+    public static int getHqlQueryQueryType(){
+        return 1;
+    }
+    public static int getQueryToolQueryType(){
+        return 2;
+    }
+
+    
+    
     
     private static Event createAidsDefiningIllnessEvent(){
     	Event e = new Event();
@@ -450,24 +567,156 @@ public class StandardObjects {
         return e;
     }
     
-    public static Event getAidsDefiningIllnessEvent(){
-    	return aidsDefiningIllnessEvent;
+    private static Test createPregnancyTest()
+    {
+        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
+        pregnancyType.setValueType(nominalValueType);
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
+        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
+        return new Test(pregnancyType, "Pregnancy");
     }
     
-    public static Genome getHiv1Genome(){
-        return hiv1Genome;
+    private static Test createSeroconversionTest()
+    {
+        TestType seroconversionType = new TestType(new TestObject("Patient test", 0), "Seroconversion");
+        seroconversionType.setValueType(getNominalValueType());
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Positive"));
+        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
+        
+        Test seroconversion = new Test(seroconversionType, "Seroconversion");
+        
+        return seroconversion;
+    }
+
+    private static Attribute createGender()
+    {
+        Attribute transmissionGroup = new Attribute("Gender");
+        transmissionGroup.setAttributeGroup(getRegaDBAttributeGroup());
+        transmissionGroup.setValueType(getNominalValueType());
+        
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "male"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "female"));
+        
+        return transmissionGroup;
     }
     
-    public static String getViralLoadDescription() {
-        return viralLoadDescription;
+    private static Attribute createTransmissionGroup()
+    {
+        Attribute transmissionGroup = new Attribute("Transmission group");
+        transmissionGroup.setAttributeGroup(getRegaDBAttributeGroup());
+        transmissionGroup.setValueType(getNominalValueType());
+        
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "bisexual"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "heterosexual"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "homosexual"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "IVDU"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "other"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "vertical"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "transfusion"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "occupational exposure"));
+        transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "unknown"));
+        
+        return transmissionGroup;
     }
-    public static String getViralLoadLog10Description() {
-        return viralLoadLog10Description;
+    
+    private static Attribute createGeographicOrigin()
+    {
+        Attribute geographicOrigin = new Attribute("Geographic origin");
+        geographicOrigin.setAttributeGroup(getRegaDBAttributeGroup());
+        geographicOrigin.setValueType(getNominalValueType());
+        
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Asia"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North America"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "South America"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Europe"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Subsaharan Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Eastern Europe"));
+        
+        return geographicOrigin;
     }
-    public static String getSeroStatusDescription() {
-        return seroStatusDescription;
+    
+    private static Attribute createEthnicity()
+    {
+        Attribute ethnicity = new Attribute("Ethnicity");
+        ethnicity.setAttributeGroup(getRegaDBAttributeGroup());
+        ethnicity.setValueType(getNominalValueType());
+        
+        ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "african"));
+        ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "asian"));
+        ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "caucasian"));
+        
+        return ethnicity;
     }
-    public static String getSeroconversionDescription() {
-        return seroconversionDescription;
+    
+    private static Attribute createClinicalFileNumber()
+    {
+        Attribute clinicalFileNumber = new Attribute("Clinical File Number");
+        clinicalFileNumber.setAttributeGroup(getRegaDBAttributeGroup());
+        clinicalFileNumber.setValueType(getStringValueType());
+        
+        return clinicalFileNumber;
     }
+    
+//    private static Attribute createCountryOfOrigin()
+//    {
+//        Table countries = null;
+//        Attribute country = new Attribute("Country of origin");
+//        country.setAttributeGroup(getRegaDBAttributeGroup());
+//        country.setValueType(getNominalValueType());
+//        
+//        try 
+//        {
+//            countries = new Table(new BufferedInputStream(new FileInputStream("io-assist-files"+File.separatorChar+"countrylist.csv")), false);
+//        } 
+//        catch (FileNotFoundException e) 
+//        {
+//            e.printStackTrace();
+//        }
+//        
+//        ArrayList<String> countryList = countries.getColumn(1);
+//        ArrayList<String> typeList = countries.getColumn(3);
+//        for(int i = 1; i < countryList.size(); i++)
+//        {
+//            if(typeList.get(i).equals("Independent State"))
+//            {
+//                AttributeNominalValue anv = new AttributeNominalValue(country, countryList.get(i));
+//                country.getAttributeNominalValues().add(anv);
+//            }
+//        }
+//        
+//        return country;
+//    }
+//    
+//    private static Test createResistanceTest(String baseFileName, String algorithm)
+//    {
+//        TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), getGssId());
+//        resistanceTestType.setValueType(getNumberValueType());
+//        Test resistanceTest = new Test(resistanceTestType, algorithm);
+//        
+//        Analysis analysis = new Analysis();
+//        analysis.setUrl(RegaDBWtsServer.url_);
+//        analysis.setAnalysisType(new AnalysisType("wts"));
+//        analysis.setAccount("public");
+//        analysis.setPassword("public");
+//        analysis.setBaseinputfile("viral_isolate");
+//        analysis.setBaseoutputfile("interpretation");
+//        analysis.setServiceName("regadb-hiv-resist");
+//        
+//        byte[] algo = null;
+//        try 
+//        {
+//            algo = FileUtils.readFileToByteArray(new File("io-assist-files"+File.separatorChar+baseFileName));
+//        } 
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        analysis.getAnalysisDatas().add(new AnalysisData(analysis, "asi_rules", algo, "application/xml"));
+//
+//        resistanceTest.setAnalysis(analysis);
+//        
+//        return resistanceTest;
+//    }
 }
