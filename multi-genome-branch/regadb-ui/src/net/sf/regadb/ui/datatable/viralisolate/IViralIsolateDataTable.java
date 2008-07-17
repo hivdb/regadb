@@ -6,10 +6,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateMainForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
@@ -21,7 +23,7 @@ import net.sf.regadb.util.date.DateUtils;
 public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 {
 	private static String [] _colNames = {"dataTable.viralIsolate.colName.sampleDate","dataTable.viralIsolate.colName.sampleId", 
-		"dataTable.viralIsolate.colName.protein", "dataTable.viralIsolate.colName.hivType"};
+		"dataTable.viralIsolate.colName.protein", "dataTable.viralIsolate.colName.genome"};
 	private static String[] filterVarNames_ = { "viralIsolate.sampleDate", "viralIsolate.sampleId", null, null};
 	
 	private IFilter[] filters_ = new IFilter[4];
@@ -80,7 +82,8 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		}
 		row[2] = proteinBuffer.toString();
 		
-		row[3] = "";
+		Genome genome = ViralIsolateMainForm.getGenome(type);
+		row[3] = (genome == null ? "":genome.getOrganismName());
 		
 		return row;
 	}

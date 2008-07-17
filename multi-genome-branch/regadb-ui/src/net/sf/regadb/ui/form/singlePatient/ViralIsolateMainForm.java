@@ -332,7 +332,8 @@ public class ViralIsolateMainForm extends WContainerWidget
             genomeTF.setText(genome.getOrganismName());
     }
     
-    private Genome getGenome(ViralIsolate vi){
+    //TODO move these two functions to a more appropriate place
+    public static Genome getGenome(ViralIsolate vi){
         Genome genome=null;
         if(vi.getNtSequences().size() > 0){
             NtSequence ntSeq = vi.getNtSequences().iterator().next();
@@ -340,8 +341,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
         return genome;
     }
-    
-    private Genome getGenome(NtSequence ntSeq){
+    public static Genome getGenome(NtSequence ntSeq){
         Genome genome=null;
         if(ntSeq.getAaSequences().size() > 0){
             AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
