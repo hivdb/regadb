@@ -9,59 +9,62 @@ import net.sf.regadb.db.ValueType;
 
 public class RegaDBWtsServer 
 {
-    public static final String url_ = "http://regadb.med.kuleuven.be/wts/services/";
+    private static final String url_ = "http://regadb.med.kuleuven.be/wts/services/";
     
-    public static Test getHIV1SubTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
+    public static Test getSubtypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
-        TestType type = new TestType(to, getSubTypeTestType());
+        TestType type = new TestType(to, getSubtypeTestType());
         type.setValueType(valueType);
-        Test test = new Test(type, getSubTypeTest());
+        Test test = new Test(type, getSubtypeTest());
         Analysis analysis = new Analysis(analysisType);
-        analysis.setUrl(url_);
+        analysis.setUrl(getUrl());
         analysis.setAccount("public");
         analysis.setPassword("public");
-        analysis.setServiceName("regadb-hiv-subtype");
+        analysis.setServiceName("regadb-subtype");
         analysis.setBaseinputfile("nt_sequence");
+        //analysis.setBaseinputfile("species");
         analysis.setBaseoutputfile("subtype");
         test.setAnalysis(analysis);
         
         return test;
     }
     
-    public static String getSubTypeTestType()
+    public static String getSubtypeTestType()
     {
-        return "HIV-1 Subtype Test";
+        return "Subtype Test";
     }
     
-    public static String getSubTypeTest()
+    public static String getSubtypeTest()
     {
-        return "Rega HIV-1 Subtype Tool";
+        return "Rega Subtype Tool";
     }
     
-    public static Test getHIVTypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
-    {
-        TestType type = new TestType(to, getTypeTestType());
-        type.setValueType(valueType);
-        Test test = new Test(type, getTypeTest());
-        Analysis analysis = new Analysis(analysisType);
-        analysis.setUrl(url_);
-        analysis.setAccount("public");
-        analysis.setPassword("public");
-        analysis.setServiceName("regadb-hiv-type");
-        analysis.setBaseinputfile("nt_sequence");
-        analysis.setBaseoutputfile("type");
-        test.setAnalysis(analysis);
-        
-        return test;
-    }
+//    public static Test getBlastTest(TestObject to, AnalysisType analysisType, ValueType valueType)
+//    {
+//        TestType type = new TestType(to, getBlastTestType());
+//        type.setValueType(valueType);
+//        Test test = new Test(type, getBlastTest());
+//        Analysis analysis = new Analysis(analysisType);
+//        analysis.setUrl(getUrl());
+//        analysis.setAccount("public");
+//        analysis.setPassword("public");
+//        analysis.setServiceName("regadb-blast");
+//        analysis.setBaseinputfile("nt_sequence");
+//        analysis.setBaseoutputfile("species");
+//        test.setAnalysis(analysis);
+//        
+//        return test;
+//    }
+//    
+//    public static String getBlastTestType()
+//    {
+//        return "Blast Test";
+//    }
+//    public static String getBlastTest(){
+//        return "Rega Blast Tool";
+//    }
     
-    public static String getTypeTestType()
-    {
-        return "HIV Type Test";
-    }
-    
-    public static String getTypeTest()
-    {
-        return "Rega HIV Type Tool";
+    public static String getUrl() {
+        return url_;
     }
 }

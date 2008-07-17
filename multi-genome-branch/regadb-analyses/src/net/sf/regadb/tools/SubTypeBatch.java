@@ -3,7 +3,6 @@ package net.sf.regadb.tools;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Properties;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AnalysisType;
@@ -12,8 +11,10 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.service.wts.SubtypeAnalysis;
 
 public class SubTypeBatch {
 	public static void main(String [] args) {
@@ -26,7 +27,7 @@ public class SubTypeBatch {
 			wtsServer = args[1];
 		}
 		
-		Test subtype = RegaDBWtsServer.getHIV1SubTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+		Test subtype = RegaDBWtsServer.getSubtypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
 		if(wtsServer!=null) {
 			subtype.getAnalysis().setUrl(wtsServer);
 		}
@@ -41,7 +42,10 @@ public class SubTypeBatch {
 			NtSequence ntseq = new NtSequence();
 			ntseq.setLabel(inputTable.valueAt(0, i));
 			ntseq.setNucleotides(inputTable.valueAt(1, i));
-			TestResult tr = IOAssistImportHandler.ntSeqAnalysis(ntseq, subtype);
+			
+			//TODO fixed genome
+			TestResult tr = IOAssistImportHandler.doSubtypeAnalysis(ntseq, subtype, StandardObjects.getHiv1Genome());
+			
 			System.out.println(inputTable.valueAt(0, i) + "," + tr.getValue());
 		}
 	}

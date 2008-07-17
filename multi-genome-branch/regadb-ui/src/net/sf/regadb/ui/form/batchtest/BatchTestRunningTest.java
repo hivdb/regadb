@@ -10,8 +10,8 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.service.wts.NtSequenceAnalysis;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
+import net.sf.regadb.service.wts.TestNtSequenceAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -72,7 +72,7 @@ public class BatchTestRunningTest extends Thread {
 					percent = i * 100 / total;
 					
 					NtSequence seq = seqs.get(i);
-					new NtSequenceAnalysis(seq, test, login_.getUid()).launch(login_);
+					new TestNtSequenceAnalysis(seq, test, login_.getUid()).launch(login_);
 					
 					if ( cancelled ) {
 						status = BatchTestStatus.CANCELED;

@@ -47,28 +47,25 @@ public class FullAnalysis implements IAnalysis {
         setStartTime(new Date());
         
         if(getViralIsolate().getNtSequences().size() > 0){
-            WtsBlastAnalysis blastAnalysis = new WtsBlastAnalysis(getViralIsolate().getNtSequences().iterator().next(), sessionSafeLogin.getUid());
+            Transaction t = sessionSafeLogin.createTransaction();
+            Test subTypeTest = t.getTest(RegaDBWtsServer.getSubtypeTest(), RegaDBWtsServer.getSubtypeTestType());
+            t.commit();
+            
+            BlastAnalysis blastAnalysis = new BlastAnalysis(getViralIsolate().getNtSequences().iterator().next(), sessionSafeLogin.getUid());
             blastAnalysis.launch(sessionSafeLogin);
             Genome genome = blastAnalysis.getGenome();
             
             if(genome != null){
-                Transaction t = sessionSafeLogin.createTransaction();
-                Test subTypeTest = t.getTest(RegaDBWtsServer.getSubTypeTest(), RegaDBWtsServer.getSubTypeTestType());
-                Test typeTest = t.getTest(RegaDBWtsServer.getTypeTest(), RegaDBWtsServer.getTypeTestType());
-                t.commit();
-    
                 
                 for(NtSequence ntseq : getViralIsolate().getNtSequences())
                 {
                     if(ntseq.getAaSequences().size()==0)
                     {
-                    AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), sessionSafeLogin.getUid()), sessionSafeLogin);
-                    AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq,
-                                                                                        subTypeTest, 
-                                                                                        sessionSafeLogin.getUid()), sessionSafeLogin); 
-                    AnalysisPool.getInstance().launchAnalysis(new NtSequenceAnalysis(   ntseq, 
-                                                                                        typeTest,
-                                                                                        sessionSafeLogin.getUid()), sessionSafeLogin);
+                        AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), sessionSafeLogin.getUid()), sessionSafeLogin);
+                        AnalysisPool.getInstance().launchAnalysis(new SubtypeAnalysis(   ntseq,
+                                                                                            subTypeTest,
+                                                                                            genome,
+                                                                                            sessionSafeLogin.getUid()), sessionSafeLogin); 
                     }
                 }
             }

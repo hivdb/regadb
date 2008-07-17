@@ -7,7 +7,7 @@ import net.sf.wts.client.WtsClient;
 
 public class DescribeMutations {
     public static byte[] describeMutations(byte[] asi) {
-        WtsClient client_ = new WtsClient(RegaDBWtsServer.url_);
+        WtsClient client_ = new WtsClient(RegaDBWtsServer.getUrl());
 
         String challenge;
         String ticket = null;

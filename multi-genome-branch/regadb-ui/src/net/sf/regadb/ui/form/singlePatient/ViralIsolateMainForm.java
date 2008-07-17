@@ -12,6 +12,7 @@ import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
@@ -78,8 +79,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     private WPushButton uploadFasta_;
     private Label ntL;
     private NucleotideField ntTF;
-    private Label typeL;
-    private TextField typeTF;
+    private Label genomeL;
+    private TextField genomeTF;
 	private Label subTypeL;
 	private TextField subTypeTF;
 	private WText fastaLabel_;
@@ -130,17 +131,17 @@ public class ViralIsolateMainForm extends WContainerWidget
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
 		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		viralIsolateForm_.addLineToTable(ntSeqGroupTable_, seqDateL, seqDateTF);
-        typeL = new Label(tr("form.viralIsolate.editView.HIVType"));
-        typeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        viralIsolateForm_.addLineToTable(ntSeqGroupTable_, typeL, typeTF);
+        genomeL = new Label(tr("form.viralIsolate.editView.genome"));
+        genomeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+        viralIsolateForm_.addLineToTable(ntSeqGroupTable_, genomeL, genomeTF);
         subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
         subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         viralIsolateForm_.addLineToTable(ntSeqGroupTable_, subTypeL, subTypeTF);
         
         if(viralIsolateForm_.isEditable())
         {
-            typeL.setHidden(true);
-            typeTF.setHidden(true);
+            genomeL.setHidden(true);
+            genomeTF.setHidden(true);
             subTypeL.setHidden(true);
             subTypeTF.setHidden(true);
             WTable ntFileTable = new WTable(ntSeqGroupTable_.elementAt(2, 1));
@@ -319,13 +320,34 @@ public class ViralIsolateMainForm extends WContainerWidget
         seqDateTF.setDate(seq.getSequenceDate());
         ntTF.setText(seq.getNucleotides());
         
-        for(TestResult tr : seq.getTestResults())
-        {
-            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
-                subTypeTF.setText(tr.getValue());   
-            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getTypeTestType()))
-                typeTF.setText(tr.getValue());
+        for(TestResult tr : seq.getTestResults()){
+            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubtypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubtypeTestType())){
+                subTypeTF.setText(tr.getValue());
+                break;
+            }
         }
+        
+        Genome genome = getGenome(seq);
+        if(genome != null)
+            genomeTF.setText(genome.getOrganismName());
+    }
+    
+    private Genome getGenome(ViralIsolate vi){
+        Genome genome=null;
+        if(vi.getNtSequences().size() > 0){
+            NtSequence ntSeq = vi.getNtSequences().iterator().next();
+            genome = getGenome(ntSeq);
+        }
+        return genome;
+    }
+    
+    private Genome getGenome(NtSequence ntSeq){
+        Genome genome=null;
+        if(ntSeq.getAaSequences().size() > 0){
+            AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
+            genome = aaSeq.getProtein().getOpenReadingFrame().getGenome();
+        }
+        return genome;
     }
     
     private String getUniqueSequenceLabel(ViralIsolate vi)
@@ -389,10 +411,10 @@ public class ViralIsolateMainForm extends WContainerWidget
             
             for(TestResult tr : currentSeq.getTestResults())
             {
-                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubTypeTestType()))
+                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubtypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubtypeTestType())){
                     removedTestResults.add(tr);
-                else if(tr.getTest().getDescription().equals(RegaDBWtsServer.getTypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getTypeTestType()))
-                    removedTestResults.add(tr);
+                    break;
+                }
             }
         }
     }

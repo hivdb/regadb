@@ -17,7 +17,7 @@ public class FileProvider
     
     public void getFile(String fileProvider, String fileName, File placeToDownload) throws RemoteException
     {
-        WtsClient client = new WtsClient(RegaDBWtsServer.url_);
+        WtsClient client = new WtsClient(RegaDBWtsServer.getUrl());
 
         try
         {

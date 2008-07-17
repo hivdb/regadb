@@ -31,7 +31,7 @@ import net.sf.wts.client.WtsClient;
 public class StanfordResistanceInterpretation 
 {
     public void calculate(final File algorithmFile, ViralIsolate vi, final File resultFile) {
-        WtsClient client = new WtsClient(RegaDBWtsServer.url_);
+        WtsClient client = new WtsClient(RegaDBWtsServer.getUrl());
         try {
             String challenge = client.getChallenge("public");
             String serviceName = "stanford-hiv-resist";

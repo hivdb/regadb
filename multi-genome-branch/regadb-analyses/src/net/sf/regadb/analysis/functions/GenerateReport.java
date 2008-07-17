@@ -82,8 +82,8 @@ public class GenerateReport
         else
             replace("$CD4_COUNT", "- ");
         
-        replace("$TYPE", getType(vi, RegaDBWtsServer.getTypeTest()));
-        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubTypeTest()));
+        replace("$TYPE", getOrganismName(vi));
+        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubtypeTest()));
         
         List<TestResult> results = getGssTestResults(vi, algorithm);
         setRITable(results, t);
@@ -101,7 +101,7 @@ public class GenerateReport
     {
         for(PatientAttributeValue pav : patient.getPatientAttributeValues())
         {
-            if(StandardObjects.getClinicalFileNumber().equals(pav.getAttribute().getName()))
+            if(StandardObjects.getClinicalFileNumberAttribute().getName().equals(pav.getAttribute().getName()))
             {
                 return pav.getValue();
             }
@@ -122,6 +122,19 @@ public class GenerateReport
         }
         
         return "";
+    }
+    
+    private String getOrganismName(ViralIsolate vi){
+        String organismName="";
+        if(vi.getNtSequences().size() > 0){
+            NtSequence ntSeq = vi.getNtSequences().iterator().next();
+            
+            if(ntSeq.getAaSequences().size() > 0){
+                AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
+                organismName = aaSeq.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+            }
+        }
+        return organismName;
     }
     
     private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)

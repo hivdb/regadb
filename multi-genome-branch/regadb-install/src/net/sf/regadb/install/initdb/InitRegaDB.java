@@ -3,7 +3,6 @@ package net.sf.regadb.install.initdb;
 import java.util.ArrayList;
 
 import net.sf.regadb.db.AnalysisType;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.QueryDefinitionParameterTypes;
 import net.sf.regadb.db.SettingsUser;
@@ -223,15 +222,11 @@ public class InitRegaDB
             }
         }
         
-        Test subType = RegaDBWtsServer.getHIV1SubTypeTest(seqAnalysis, wts, stringVT);
-        Test type = RegaDBWtsServer.getHIVTypeTest(seqAnalysis, wts, stringVT);
+        Test subType = RegaDBWtsServer.getSubtypeTest(seqAnalysis, wts, stringVT);
         
         session.save(subType.getTestType());
         session.save(subType.getAnalysis());
         session.save(subType);
-        session.save(type.getTestType());
-        session.save(type.getAnalysis());
-        session.save(type);
     }
     
     private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
