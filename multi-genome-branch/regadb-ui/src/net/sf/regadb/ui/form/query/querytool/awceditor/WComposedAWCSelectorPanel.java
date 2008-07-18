@@ -1,14 +1,11 @@
 package net.sf.regadb.ui.form.query.querytool.awceditor;
 
-import java.util.List;
 
 import net.sf.regadb.ui.form.query.querytool.configurers.WComposedVisualizationComponentFactory;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
-import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.VisualizationComponentFactory;
 
 public class WComposedAWCSelectorPanel extends WBasicAWCSelectorPanel {
     private ComposedWordConfigurer composedWordConfigurer;
@@ -24,27 +21,10 @@ public class WComposedAWCSelectorPanel extends WBasicAWCSelectorPanel {
 	}
 	
 	public boolean addAtomicWhereClause(AtomicWhereClause clause, boolean select) {
-		AtomicWhereClause firstClause = editPanel.getClause();
-		return checkSignature(firstClause, clause, select);
-	}
-	
-	private boolean checkSignature(AtomicWhereClause clause1, AtomicWhereClause clause2, boolean makeSelected) {
-		if (clause1.getCompositionBehaviour().getClass().equals(clause2.getCompositionBehaviour().getClass()) &&
-			clause1.getCompositionBehaviour().canCompose(clause1, clause2)) {
-
-			VisualizationComponentFactory factory = editPanel.getEditor().getVisualizationComponentFactory();
-			if (composedWordConfigurer == null) {
-				List<ConfigurableWord> words = clause1.getCompositionBehaviour().getComposableWords(clause1);
-				List<ConfigurableWord> keys = clause1.getCompositionBehaviour().getKeyWords(clause1);
-				composedWordConfigurer = new WComposedVisualizationComponentFactory().createWord(clause1.getCompositionBehaviour(), factory.createComponents(words), factory.createComponents(keys));
-				getEditorPanel().createComposedWord(keys, words, composedWordConfigurer);
-			}
-
-			List<ConfigurableWord> words2 = clause2.getCompositionBehaviour().getComposableWords(clause2);
-			List<ConfigurableWord> keys2 = clause2.getCompositionBehaviour().getKeyWords(clause2);
-			getEditorPanel().composeWord(factory.createComponents(keys2), factory.createComponents(words2), new WAtomicWhereClauseEditor(context, clause2), makeSelected);
-			return true;
+		boolean composable = editPanel.getManager().canCompose(clause);
+		if (composable) {
+			composedWordConfigurer = editPanel.getManager().addAtomicWhereClause(clause, select, composedWordConfigurer, new WComposedVisualizationComponentFactory(), context, new WAtomicWhereClauseEditor(context, clause));
 		}
-		return false;
+		return composable;
 	}
 }

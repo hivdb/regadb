@@ -311,7 +311,7 @@ public class ImportIrsicaixa {
                     String drugs = therapyTable_.valueAt(CDrugs, i);
                     HashMap<TherapyDrug,Double> drugsList = processDrugs(drugs);
                     
-                    Therapy t = p.createTherapy(startDate);
+                    Therapy t = p.createTherapy(startDate, StandardObjects.getHiv1Genome());
                     t.setStopDate(endDate);
 
                     for (TherapyDrug td : drugsList.keySet()){
@@ -472,7 +472,7 @@ public class ImportIrsicaixa {
     	else if(testDescr.equals("anti HBe"))
     		tests_.put(testDescr,StandardObjects.getGenericHBeAbTest());
     	else{
-			TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(),testtypeDescr, new TreeSet<TestNominalValue>());
+			TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getHiv1Genome(), StandardObjects.getPatientObject(),testtypeDescr, new TreeSet<TestNominalValue>());
 			testTypes_.add(tt);
 			
 			Test tst = new Test(tt,testDescr);

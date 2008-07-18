@@ -10,16 +10,21 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.Utils;
 
 public class ParseOldViralLoad {
+	Table oldVLToIgnoreTable;
+	
 	public static void main(String [] args) {
 		ParseOldViralLoad ovl = new ParseOldViralLoad();
 		//ovl.run("/home/plibin0/import/jette/old_vl/", new HashM);
 	}
 	
-	public void run(String path, ParseIds parseIds, Map<Integer, Patient> patients) {
+	public void run(String path, ParseIds parseIds, Map<Integer, Patient> patients, File oldVLToIgnore) {
+		oldVLToIgnoreTable = Utils.readTable(oldVLToIgnore.getAbsolutePath());
 		System.err.println("Parse old viral load excel files=======================================");
 		File pathF = new File(path);
 		File [] excelFiles = pathF.listFiles();
@@ -52,7 +57,9 @@ public class ParseOldViralLoad {
 			if(!dossierNr.equals("") && !dossierNr.toLowerCase().equals("dossiernr")) {
 				Integer patientId = parseIds.getPatientId(dossierNr);
 				if(patients.get(patientId)==null) {
-					ConsoleLogger.getInstance().logWarning("Cannot map dossierNr to patientId: " + dossierNr);
+					if(!ignoreViralLoad(dossierNr)) {
+						ConsoleLogger.getInstance().logWarning("Cannot map dossierNr to patientId: " + dossierNr);
+					}
 				} else {
 					String date = s.getCell(datumC, i).getContents().trim();
 					String vl = s.getCell(vlC, i).getContents().trim();
@@ -60,6 +67,15 @@ public class ParseOldViralLoad {
 				}
 			}
 		}
+	}
+	
+	public boolean ignoreViralLoad(String id) {
+		for(int i = 1; i<oldVLToIgnoreTable.numRows(); i++) {
+			if(id.equals(oldVLToIgnoreTable.valueAt(0, i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private int getColPos(Sheet s, String colName, String colName2) {

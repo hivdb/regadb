@@ -200,7 +200,7 @@ public class QueryToolRunnable implements Runnable {
     
 
     private Set<Integer> getAccessiblePatients(Transaction t) {
-		ScrollableQueryResult result = new HibernateStatement(t).executeQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'");
+		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'");
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);
@@ -256,7 +256,7 @@ public class QueryToolRunnable implements Runnable {
     private ScrollableQueryResult getQueryResult(Query query, QueryStatement statement) throws SQLException, OutOfMemoryError {
 		String qstr = query.getQueryString();
 		System.err.println(qstr);
-		return statement.executeQuery(qstr);
+		return statement.executeScrollableQuery(qstr);
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {

@@ -68,7 +68,6 @@ public class SelectClauseDialog extends WDialog {
 		// then fill in the active tab
 		List<AtomicWhereClause> clauseList = clauses.get(this.focusGroup);
 		rootSelector.addAll(clauseList.subList(1, clauseList.size()), this.focusGroup);
-		
 		rootSelector.showTab(this.focusGroup);
 		
 		// only start filling in all the other tabs after the UI
@@ -85,7 +84,7 @@ public class SelectClauseDialog extends WDialog {
 				rootSelector.keyWentUp.addListener(new SignalListener<WKeyEvent>() {
 					public void notify(WKeyEvent a) {
 						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().isUseless());
+							setEditable(!getSelectedClause().getManager().isUseless());
 						}
 					}
 				});
@@ -93,7 +92,7 @@ public class SelectClauseDialog extends WDialog {
 				rootSelector.clicked.addListener(new SignalListener<WMouseEvent>() {
 					public void notify(WMouseEvent a) {
 						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().isUseless());
+							setEditable(!getSelectedClause().getManager().isUseless());
 						}
 					}
 				});

@@ -26,6 +26,8 @@ public class RegaDBSettings {
     private ArrayList<Pair<String, String>> proxyList_ = new ArrayList<Pair<String, String>>();
 
     private static RegaDBSettings instance_ = null;
+    
+    private Map<String,Element> customizeElements = new HashMap<String, Element>();
 
     private RegaDBSettings() {
         // hibernate settings
@@ -46,6 +48,8 @@ public class RegaDBSettings {
         
         settings_.add("regadb.report.dateTolerance");
         settings_.add("regadb.log.dir");
+        
+        settings_.add("custom.dir");
     }
     
     public String getPropertyValue(String name)
@@ -152,6 +156,13 @@ public class RegaDBSettings {
             proxyList_.add(new Pair<String, String>(proxyUrl,proxyPort));
         }
         
+        Element customize = root.getChild("customize");
+        if(customize != null){
+	        for(Object o : customize.getChildren()){
+	        	customizeElements.put(((Element)o).getAttributeValue("name"), (Element)o);
+	        }
+        }
+        
         List defaults = root.getChildren("default");
         Element dft;
         for(Object o : defaults){
@@ -215,5 +226,9 @@ public class RegaDBSettings {
         RegaDBSettings settings = new RegaDBSettings();
         settings.writeConfFileSkeleton(new File("settings" + File.separatorChar
                 + "skeleton-settings.xml"));
+    }
+
+    public Element getCustomSettings(String elementName){
+    	return customizeElements.get(elementName);
     }
 }

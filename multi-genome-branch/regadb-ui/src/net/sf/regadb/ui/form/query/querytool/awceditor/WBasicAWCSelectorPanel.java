@@ -96,6 +96,6 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 
 	@Override
 	public boolean isUseless() {
-		return editPanel.isUseless();
+		return editPanel.getManager().isUseless();
 	}    
 }

@@ -779,11 +779,11 @@ public class ImportPortugalDB {
         System.err.println("Importing patient attributes");
 
         AttributeGroup portugal = new AttributeGroup("PT");
-        AttributeGroup regadb = new AttributeGroup("RegaDB");
+        AttributeGroup regadb = StandardObjects.getRegaDBAttributeGroup();
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
 
-        Attribute clinicalFileAttribute = Utils.selectAttribute(StandardObjects.getClinicalFileNumber(), regadbAttributes);
+        Attribute clinicalFileAttribute = StandardObjects.getClinicalFileNumberAttribute();
 
         ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
         nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));

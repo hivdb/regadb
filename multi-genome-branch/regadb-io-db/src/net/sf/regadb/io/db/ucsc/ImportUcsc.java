@@ -207,7 +207,7 @@ public class ImportUcsc
                 new String[] { "1", "0" } );
         scA.attribute.setAttributeGroup(virolab);
         
-        TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
+        TestType acuteSyndromTestType = new TestType(StandardObjects.getNumberValueType(), null, StandardObjects.getPatientObject(), "Acute Syndrome", new TreeSet<TestNominalValue>());
     	Test acuteSyndromTest = new Test(acuteSyndromTestType, "Acute Syndrome");
 	
     	NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryTable, regadb, Utils.selectAttribute("Country of origin", regadbAttributes));

@@ -531,7 +531,7 @@ public class ImportUNIBS
     }
     
     private Test createCoinfectionTest(String testTypeDescription, String testDescription) {
-        TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getPatientObject(), testTypeDescription, new TreeSet<TestNominalValue>());
+        TestType tt = new TestType(StandardObjects.getNumberValueType(), null, StandardObjects.getPatientObject(), testTypeDescription, new TreeSet<TestNominalValue>());
         Test tst = new Test(tt,testDescription);
         return tst;
     }
@@ -707,7 +707,7 @@ public class ImportUNIBS
     			therapyMotivation = new TherapyMotivation("Treatment failure, other");
     		else if(motivation.equals("unknown"))
     			therapyMotivation = new TherapyMotivation("Unknown");
-    		else if(motivation.equals("non-adherence or patient’s decision"))
+    		else if(motivation.equals("non-adherence or patientï¿½s decision"))
     			therapyMotivation = new TherapyMotivation("Patient's choice");
     		else
     			therapyMotivation = new TherapyMotivation("Other");

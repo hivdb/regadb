@@ -99,6 +99,12 @@ public class HibernateQuery extends SqlQuery {
         return "net.sf.regadb.db." + fromVar.getObject().getTableName() + " " + fromVar.getUniqueName();
 	}	
 	
+	protected String formatString(String str) {
+		str = super.formatString(str);
+		str = str.replace("'", "''");
+		return str;
+	}	
+	
 	
 // uncomment this part to enable prepared queries
 // 

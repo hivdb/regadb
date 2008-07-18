@@ -29,8 +29,8 @@ public class ModifyClauseButtonPanel extends WButtonPanel {
 
 		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
-				editPanel.getSelectedClause().applyEditings();
-				node.replaceNode(editPanel.getSelectedClause().getClause());
+				editPanel.getSelectedClause().getManager().applyEditings();
+				node.replaceNode(editPanel.getSelectedClause().getManager().getClause());
 				node.showContent();
 			}
 		});

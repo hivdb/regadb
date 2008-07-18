@@ -36,12 +36,12 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 				if (!disabled) {
 					disabled = true;
 					WAWCEditorPanel panel = dialog.getSelectedClause();
-					if (panel == null || panel.isUseless()) {
+					if (panel == null || panel.getManager().isUseless()) {
 						cancel();
 					}
 					else {
-						panel.applyEditings();
-						owner.getParentNode().addNode(panel.getClause(), AssignMode.output);
+						panel.getManager().applyEditings();
+						owner.getParentNode().addNode(panel.getManager().getClause(), AssignMode.output);
 						owner.getParentNode().removeChildNode(owner);
 						owner.getQueryApp().setQueryEditable(true);
 					}
