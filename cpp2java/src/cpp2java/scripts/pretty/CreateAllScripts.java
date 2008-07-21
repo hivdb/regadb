@@ -8,9 +8,9 @@ public class CreateAllScripts {
 		String scriptDirectory = args[1];
 		String ccparse = args[2];
 		
-		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "wt", scriptDirectory, ccparse);
+		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt", scriptDirectory, ccparse);
+		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt/Ext", scriptDirectory, ccparse);
+		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt/Chart", scriptDirectory, ccparse);
 		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "web", scriptDirectory, ccparse);
-		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Ext", scriptDirectory, ccparse);
-		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Chart", scriptDirectory, ccparse);
 	}
 }

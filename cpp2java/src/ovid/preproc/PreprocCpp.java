@@ -19,21 +19,21 @@ public class PreprocCpp {
     public static void main(String [] args) {
         PreprocCpp preproc = new PreprocCpp();
         
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "wt");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt/Chart");
+        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt/Ext");
         preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Chart");
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Ext");
         
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WCalendar.C"),
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
         		"WCalendar::dateForCell",
         		"{return date();}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WCalendar.C"),
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
         		"WCalendar::renderMonth",
         		"{}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WEnvironment.C"),
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion",
         		"{return std::string();}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "wt" + File.separatorChar + "WEnvironment.C"),
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion(int",
         		"{}");
     }
