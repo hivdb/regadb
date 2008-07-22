@@ -86,6 +86,7 @@ public class WStatusBar extends WStyledContainerWidget {
 					}
 				}
 			});
+			rep.start();
 		}
 		else {
 			hideLoadingBar();
