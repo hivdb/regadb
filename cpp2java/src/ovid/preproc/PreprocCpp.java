@@ -50,30 +50,7 @@ public class PreprocCpp {
     	        performChangesOnFile(f);
     	}
     }
-    
-    public void removeExterns(File f) {
-    	System.err.println("Removing externs from file: " + f.getAbsolutePath());
-    	StringBuffer fileContent = readFileAsString(f.getAbsolutePath());
-    	
-        int pos = fileContent.indexOf("extern", 0);
-        int endpos;
         
-        while(pos != -1) {
-            endpos = fileContent.indexOf("\n", pos);
-            String textToReplace = fileContent.substring(pos, endpos);
-            String textToReplaceWith = "";
-            
-            if(textToReplaceWith != null) {
-                fileContent.replace(pos, endpos, textToReplaceWith);
-                pos = fileContent.indexOf("extern", pos + textToReplaceWith.length());
-            } else {
-                pos = fileContent.indexOf("extern", endpos);
-            }
-        }
-        
-        writeFile(f, fileContent);
-    }
-    
     public void performChangesOnFile(File f) {
         System.err.println("Preprocess file: " + f.getAbsolutePath());
         
@@ -108,42 +85,6 @@ public class PreprocCpp {
     private void handleVoidTemplateArg(StringBuffer sb) {
         String [] toReplace = {"<void>"};
         String [] toReplaceWith = {"<DummyClass>"};
-    
-        replaceStrings(toReplace, toReplaceWith, sb);
-    }
-    
-    private void handleSizeInBytes(StringBuffer sb) {
-        String [] toReplace = {"public:", "public :"};
-        String [] toReplaceWith = {"public: \n int sizeInBytes;\n", "public: \n int sizeInBytes;\n"};
-    
-        replaceStrings(toReplace, toReplaceWith, sb);    
-    }
-
-    private void handleSlots(StringBuffer sb) {
-        String [] toReplace = {"public slots:", "private slots:"};
-        String [] toReplaceWith = {"public:", "private:"};
-    
-        replaceStrings(toReplace, toReplaceWith, sb);
-    }
-    
-    private StringBuffer handleJSignal(StringBuffer sb) {
-        String temp = sb.toString();
-        temp = Pattern.compile("JSignal<([^>]|[\r\n])*>").matcher(temp).replaceAll(Matcher.quoteReplacement("JSignal"));
-        temp = Pattern.compile("template <([^>]|[\r\n])*> class JSignal;").matcher(temp).replaceAll(Matcher.quoteReplacement(""));
-        
-        return new StringBuffer(temp);
-    }
-    
-    private StringBuffer handleBitsetDeclaration(StringBuffer sb) {
-        String temp = sb.toString();
-        temp = Pattern.compile("bitset<([^>]|[\r\n])*>").matcher(temp).replaceAll(Matcher.quoteReplacement("bitset"));
-        
-        return new StringBuffer(temp);
-    }
-
-    private void handleWStringWChar(StringBuffer sb) {
-        String [] toReplace = {"std::wstring", "wchar_t"};
-        String [] toReplaceWith = {"std::string", "char"};
     
         replaceStrings(toReplace, toReplaceWith, sb);
     }
@@ -209,85 +150,6 @@ public class PreprocCpp {
         
         replaceStrings(patterns, replacements, sb);
     }
-    
-    public void removeComments(File f) {
-        //Run external program
-        //#!/bin/sh
-        //#http://www.bdc.cx/software/stripcmt/
-        //stripcmt $1 > $2
-        String[] cmd = { "/usr/bin/stripcomment.sh", f.getAbsolutePath() , f.getAbsolutePath() + ".commentLess"};
-        try {
-            Process p = Runtime.getRuntime().exec(cmd);
-            p.waitFor();
-            File commentLess = new File(f.getAbsolutePath() + ".commentLess");
-            commentLess.renameTo(new File(f.getAbsolutePath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public StringBuffer handleEnumsAndStructs(StringBuffer sb, File f) {
-        ArrayList<Integer> enumStartIndices = new ArrayList<Integer>();
-        ArrayList<Integer> enumEndIndices = new ArrayList<Integer>();
-        sb = locateStructure("enum", sb, enumStartIndices, enumEndIndices);
-        
-        ArrayList<Integer> structStartIndices = new ArrayList<Integer>();
-        ArrayList<Integer> structEndIndices = new ArrayList<Integer>();
-        sb = locateStructure("struct", sb, structStartIndices, structEndIndices);
-        
-        String structsAndEnums = "";
-        ArrayList<String> structs = new ArrayList<String>(); 
-        ArrayList<String> toDelete = new ArrayList<String>(); 
-        for(int i = 0; i<enumStartIndices.size(); i++) {
-            toDelete.add(sb.substring(enumStartIndices.get(i), enumEndIndices.get(i)+1));
-            structsAndEnums += toDelete.get(toDelete.size()-1) + '\n';
-        }
-        for(int i = 0; i<structStartIndices.size(); i++) {
-            toDelete.add(sb.substring(structStartIndices.get(i), structEndIndices.get(i)+1));
-            structsAndEnums += toDelete.get(toDelete.size()-1) + '\n';
-            structs.add(sb.substring(structStartIndices.get(i), structEndIndices.get(i)+1));
-        }
-        String temp = sb.toString();
-        for(String toDel : toDelete) {
-            temp = temp.replace(toDel, "");
-        }
-        sb = new StringBuffer(temp);
-        
-        int nsPos = sb.indexOf("namespace Wt");
-        if(nsPos==-1)
-            System.err.println("\t could not find \"namespace Wt\"");
-        int insertPos = sb.indexOf("{", nsPos);
-        if(insertPos==-1)
-            System.err.println("\t could not find \"namespace Wt\"");
-        else 
-            sb.insert(insertPos+1, "\n" + structsAndEnums);
-        
-        if(!f.getAbsolutePath().endsWith(".C")) {
-        ArrayList<String> structNames = new ArrayList<String>();
-        for(String struct : structs) {
-            int indexOfBracket = struct.indexOf('{');
-            String [] structWords = struct.substring(0, indexOfBracket).split(" ");
-            structNames.add(structWords[structWords.length-1]);
-        }
-        
-        File cFile;
-        if(f.getAbsolutePath().endsWith(".h")) {
-            cFile = new File(f.getAbsolutePath().substring(0, f.getAbsolutePath().lastIndexOf('.'))+".C");
-        } else {
-            cFile = new File(f.getAbsolutePath() + ".C");
-        }
-        String className = cFile.getAbsolutePath().substring(cFile.getAbsolutePath().lastIndexOf(File.separatorChar)+1, cFile.getAbsolutePath().lastIndexOf("."));
-        StringBuffer sbCFile = readFileAsString(cFile.getAbsolutePath());
-        for(String structName : structNames) {
-            sbCFile = new StringBuffer(sbCFile.toString().replaceAll(className.trim() + "::" + structName.trim(), structName.trim()));
-        }
-        writeFile(cFile, sbCFile);
-        }
-        
-        return sb;
-    }
 
     public void writeFile(File f, StringBuffer sb) {
         FileWriter out;
@@ -298,15 +160,6 @@ public class PreprocCpp {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    
-    public StringBuffer handleIterators(StringBuffer fileContent) {
-        String [] toReplace = {"const_iterator"};
-        String [] toReplaceWith = {"const_iterator*"};
-    
-        replaceStrings(toReplace, toReplaceWith, fileContent);
-        
-        return fileContent;
     }
     
     public StringBuffer handleIncludes(StringBuffer fileContent) {
@@ -374,25 +227,6 @@ public class PreprocCpp {
         return fileContent;
     }
     
-    public StringBuffer locateStructure(String name, StringBuffer content, ArrayList<Integer> enumSI, ArrayList<Integer> enumEI) {
-        int index = content.indexOf(name);
-        int endIndex;
-        //System.err.println(content.toString());
-        while(index!=-1) {
-            endIndex = findMatchingBracket(content, index);
-            if(endIndex==-1) {
-                index = content.indexOf(name, content.indexOf(";", index));
-            } else {
-            endIndex = content.indexOf(";", endIndex);
-            enumSI.add(index);
-            enumEI.add(endIndex);
-            index = content.indexOf(name, endIndex);
-            }
-        }
-        
-        return content;
-    }
-    
     public int findMatchingBracket(StringBuffer content, int index) {
         int dotComma = content.indexOf(";", index);
         int openingBracket = content.indexOf("{", index);
@@ -414,49 +248,10 @@ public class PreprocCpp {
         return endBracket;
     }
     
-    public StringBuffer locateStringLiterals(StringBuffer content, IStringLiteral stringLiteral) {
-        boolean backslashState = false;
-        
-        int startIndex = -1;
-        int endIndex;
-        for(int i = 0; i<content.length(); i++) {
-            if(content.charAt(i)=='\\' && !backslashState) {
-                backslashState = true;
-                continue;
-            }
-            if(backslashState) {
-                backslashState = false;
-                continue;
-            } else {
-                if(content.charAt(i) == '"') {
-                    if(startIndex==-1 && content.charAt(i-1) != '\'') {
-                        startIndex = i;
-                    } else if(startIndex!=-1){
-                        endIndex = i;
-                        i = stringLiteral.locateStringAction(content, startIndex, endIndex);
-                        startIndex = -1; 
-                    }
-                }
-            }
-        }
-        
-        return content;
-    }
-    
-        
     public StringBuffer handleUsings(StringBuffer fileContent) {
         String [] toReplace = {"using std::exit;", "using WAbstractItemModel::setData;", "using WAbstractItemModel::data;"};
         String [] toReplaceWith = {"#include <myexit.h>", "//using WAbstractItemModel::setData;", "//using WAbstractItemModel::data;"};
     
-        replaceStrings(toReplace, toReplaceWith, fileContent);
-        
-        return fileContent;
-    }
-    
-    public StringBuffer handleBoost(StringBuffer fileContent) {
-        String [] toReplace = {"boost::lexical_cast<std::string>"};
-        String [] toReplaceWith = {"std::string"};
-        
         replaceStrings(toReplace, toReplaceWith, fileContent);
         
         return fileContent;
