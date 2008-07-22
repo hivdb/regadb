@@ -3,21 +3,24 @@ package net.sf.regadb.io.generation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Set;
 
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 
 public class DatasetAccessInterfaceCodeGen {
-    public static StringBuffer content = new StringBuffer();
+    public static StringBuffer content;
     
-    public static void methodSig(String id, Class classToWrite) {
+    public DatasetAccessInterfaceCodeGen() {
+    	content = new StringBuffer();
+    }
+    
+    public void methodSig(String id, Class classToWrite) {
         String sig = "public boolean canAccess" + classToWrite.getSimpleName() +
             "(" + classToWrite.getSimpleName() + " " + classToWrite.getSimpleName()+"var, Set<Dataset> datasets, Set<Integer> accessiblePatients);\n";
         content.append(sig);
     }
     
-    public static void writeInterfaceToFile() {
+    public void writeInterfaceToFile() {
         String total = "";
         
         //package declaration

@@ -61,7 +61,7 @@ public class Describe {
         return "Amino Acid sequence for " + describe(o.getProtein()) + "";
     }
 
-    private static String describe(Protein o) {
+    public static String describe(Protein o) {
         return "Protein " + o.getAbbreviation();
     }
 

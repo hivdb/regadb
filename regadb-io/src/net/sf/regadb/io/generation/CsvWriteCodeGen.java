@@ -7,9 +7,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientImplHelper;
-import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 
@@ -19,7 +16,14 @@ public class CsvWriteCodeGen {
     private static String contentCallMethod = "";
     private static String headerCallMethod = "";
     
-    public static void methodSig(String id, Class classToWrite) {
+    public CsvWriteCodeGen() {
+        contentMethod = new HashMap<String, String>();
+        headerMethod = new HashMap<String, String>();
+        contentCallMethod = "";
+        headerCallMethod = "";
+    }
+    
+    public void methodSig(String id, Class classToWrite) {
         String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + " " + classToWrite.getSimpleName()+"var) {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         contentMethod.put(id, sig);
@@ -42,7 +46,7 @@ public class CsvWriteCodeGen {
         }
     }
     
-    public static void patientHeaderContent() {
+    public void patientHeaderContent() {
         contentCallMethod +=  "if(PatientImplHelper.isInstanceOfPatientImpl(object)) {\n" +
             "Patient p_casted = PatientImplHelper.castPatientImplToPatient(object, datasets);\n" +
             "if(DatasetAccessSolver.getInstance().canAccessPatient(p_casted, datasets, accessiblePatients)){\n" +
@@ -57,7 +61,7 @@ public class CsvWriteCodeGen {
         headerCallMethod += "return getCsvHeaderLine"+"Patient"+"();\n}\n";
     }
 
-    public static void methodEnd(String id, Class classToWrite) {
+    public void methodEnd(String id, Class classToWrite) {
         String temp = contentMethod.get(id);
         temp += "return " + classToWrite.getSimpleName() + "Line;";
         temp += "\n}\n";
@@ -69,12 +73,11 @@ public class CsvWriteCodeGen {
         headerMethod.put(id, temp);
     }
     
-    public static void stringRepresentedValue(String id, String fieldName, Class toWrite, boolean composite, Class parentClass)
+    public void stringRepresentedValue(XMLWriteCodeGen xmlWriteCodeGen, String id, String fieldName, Class toWrite, String stringRepField, boolean composite, Class parentClass)
     {
-        String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
         stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
         String var;
-        var = XMLWriteCodeGen.generateGetterConstruct(id, composite?"id":null, fieldName,toWrite);
+        var = xmlWriteCodeGen.generateGetterConstruct(id, composite?"id":null, fieldName,toWrite);
         String var2 = var + ".get" + stringRepField+"()";
         
         String temp = contentMethod.get(id);
@@ -94,10 +97,10 @@ public class CsvWriteCodeGen {
         headerMethod.put(id, temp);
     }
  
-    public static void writePrimitiveVar(String grandFatherFieldName, Field field, String id, Class parentClass, boolean composite) {
+    public void writePrimitiveVar(XMLWriteCodeGen xmlWriteCodeGen, String grandFatherFieldName, Field field, String id, Class parentClass, boolean composite) {
     String writeClassCode="";
     
-    String var = XMLWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName(),field.getType());
+    String var = xmlWriteCodeGen.generateGetterConstruct(id, grandFatherFieldName, field.getName(),field.getType());
     
         String fieldType = field.getType().toString();
         String startChar = "";
@@ -153,7 +156,7 @@ public class CsvWriteCodeGen {
         headerMethod.put(id, temp);
     }
     
-    public static void writeClassToFile() {
+    public void writeClassToFile() {
         String total = "";
         
         //package declaration

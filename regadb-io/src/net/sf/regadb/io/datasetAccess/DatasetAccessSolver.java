@@ -11,6 +11,8 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
@@ -18,6 +20,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.PatientImplHelper;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -143,4 +146,19 @@ public class DatasetAccessSolver implements IDatasetAccess {
         }
         return das;
     }
+
+	public boolean canAccessProtein(Protein Proteinvar, Set<Dataset> datasets,
+			Set<Integer> accessiblePatients) {
+		return true;
+	}
+
+	public boolean canAccessDrugCommercial(DrugCommercial DrugCommercialvar,
+			Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+		return true;
+	}
+
+	public boolean canAccessDrugGeneric(DrugGeneric DrugGenericvar,
+			Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+		return true;
+	}
 }

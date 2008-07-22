@@ -15,6 +15,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -24,6 +25,10 @@ import net.sf.regadb.db.ValueType;
 
 public class Retrieve {
 
+    public static Protein retrieve(Transaction t, Protein p) {
+        return t.getProtein(p.getProteinIi());
+    }	
+	
     public static Test retrieve(Transaction t, Test test) {
         return t.getTest(test.getDescription());
     }

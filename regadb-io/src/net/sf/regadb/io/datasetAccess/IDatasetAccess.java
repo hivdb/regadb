@@ -58,6 +58,7 @@ public boolean canAccessAnalysisData(AnalysisData AnalysisDatavar, Set<Dataset> 
 public boolean canAccessTestType(TestType TestTypevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessTestObject(TestObject TestObjectvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessTestNominalValue(TestNominalValue TestNominalValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
+public boolean canAccessDrugGeneric(DrugGeneric DrugGenericvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessPatientAttributeValue(PatientAttributeValue PatientAttributeValuevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessAttribute(Attribute Attributevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessAttributeGroup(AttributeGroup AttributeGroupvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
@@ -65,9 +66,11 @@ public boolean canAccessAttributeNominalValue(AttributeNominalValue AttributeNom
 public boolean canAccessViralIsolate(ViralIsolate ViralIsolatevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessNtSequence(NtSequence NtSequencevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessAaSequence(AaSequence AaSequencevar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
+public boolean canAccessProtein(Protein Proteinvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessAaMutation(AaMutation AaMutationvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessAaInsertion(AaInsertion AaInsertionvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessTherapy(Therapy Therapyvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessTherapyCommercial(TherapyCommercial TherapyCommercialvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
+public boolean canAccessDrugCommercial(DrugCommercial DrugCommercialvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 public boolean canAccessTherapyGeneric(TherapyGeneric TherapyGenericvar, Set<Dataset> datasets, Set<Integer> accessiblePatients);
 }
