@@ -111,5 +111,4 @@ public class OrderedConfigurableWordList implements Cloneable, Serializable {
         clone.setWords(cloneWords);
         return clone;
     }
-    
 }

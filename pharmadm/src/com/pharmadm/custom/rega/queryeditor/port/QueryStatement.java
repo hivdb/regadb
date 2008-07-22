@@ -1,5 +1,7 @@
 package com.pharmadm.custom.rega.queryeditor.port;
 
+import java.util.HashMap;
+
 public interface QueryStatement {
 	public void close();
 	public void cancel();
@@ -10,7 +12,7 @@ public interface QueryStatement {
 	 * @param query
 	 * @return
 	 */
-	public ScrollableQueryResult executeScrollableQuery(String query);
+	public ScrollableQueryResult executeScrollableQuery(String query, HashMap<String, Object>  preparedConstantMap);
 	
 	/**
 	 * Present a feature rich result but
@@ -18,6 +20,6 @@ public interface QueryStatement {
 	 * @param query
 	 * @return
 	 */
-	public QueryResult executeQuery(String query);
+	public QueryResult executeQuery(String query, HashMap<String, Object>  preparedConstantMap);
 	public boolean exists();
 }

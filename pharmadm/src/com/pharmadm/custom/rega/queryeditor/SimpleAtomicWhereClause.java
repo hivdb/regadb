@@ -208,6 +208,11 @@ public class SimpleAtomicWhereClause extends AtomicWhereClause {
 	}
 	@Override
 	public List<Join> getRelations() {
+		// XStream backwards compatibilty for
+		// AWC's from before relations
+		if (relations == null) {
+			relations = new ArrayList<Join>();
+		}
 		return relations;
 	}    
 }

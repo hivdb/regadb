@@ -14,8 +14,16 @@ import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
  */
 public class PropertyFetchComposition extends CompositionBehaviour {
 
+	private int group;
+	
+	public PropertyFetchComposition(int group) {
+		this.group = group;
+	}
+	
+	
 	public boolean canCompose(AtomicWhereClause signatureClause, AtomicWhereClause clause) {
-		return matches(signatureClause) && matches(clause);
+		return ((PropertyFetchComposition) signatureClause.getCompositionBehaviour()).group == ((PropertyFetchComposition) clause.getCompositionBehaviour()).group &&
+		matches(signatureClause) && matches(clause);
 	}
 
 	public boolean matches(AtomicWhereClause clause) {

@@ -1,5 +1,7 @@
 package com.pharmadm.custom.rega.queryeditor.port.hibernate;
 
+import java.util.HashMap;
+
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
@@ -25,7 +27,6 @@ public class HibernateStatement implements QueryStatement {
 	public void cancel() {
 		if (!closed && exists()) {
 			result.close();
-//			transaction.rollback();
 		}
 		closed = true;
 	}
@@ -38,8 +39,8 @@ public class HibernateStatement implements QueryStatement {
 		closed = true;
 	}
 
-	public ScrollableQueryResult executeScrollableQuery(String query) {
-		Query q = prepareQuery(query);
+	public ScrollableQueryResult executeScrollableQuery(String query, HashMap<String, Object>  preparedConstantMap) {
+		Query q = prepareQuery(query, preparedConstantMap);
 		q.setCacheMode(CacheMode.IGNORE);
 		result = new HibernateScrollableResult(q.scroll(ScrollMode.FORWARD_ONLY), q.getReturnAliases(), q.getReturnTypes());
 		closed = false;
@@ -54,17 +55,23 @@ public class HibernateStatement implements QueryStatement {
 		this.fetchSize = size;
 	}
 
-	public QueryResult executeQuery(String query) {
-		Query q = prepareQuery(query);
+	public QueryResult executeQuery(String query, HashMap<String, Object>  preparedConstantMap) {
+		Query q = prepareQuery(query, preparedConstantMap);
 		result = new HibernateResult(q.scroll(), q.getReturnAliases(), q.getReturnTypes());
 		closed = false;
 		return (QueryResult) result;
 	}
 	
-	private Query prepareQuery(String queryString) {
+	private Query prepareQuery(String queryString, HashMap<String, Object>  preparedConstantMap) {
 		Query q = transaction.createQuery(queryString);
 		q.setReadOnly(true);
 		q.setFetchSize(fetchSize);
+		
+		if (preparedConstantMap != null) {
+			for (String key : preparedConstantMap.keySet()) {
+				q.setParameter(key, preparedConstantMap.get(key));
+			}
+		}
 		return q;
 		
 	}

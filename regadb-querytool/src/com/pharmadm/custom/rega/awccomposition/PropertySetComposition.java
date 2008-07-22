@@ -18,10 +18,17 @@ import com.pharmadm.custom.rega.queryeditor.constant.OperatorConstant;
  */
 public class PropertySetComposition extends CompositionBehaviour {
 
+	private int group;
+	
+	public PropertySetComposition(int group) {
+		this.group = group;
+	}
+	
 	@Override
 	public boolean canCompose(AtomicWhereClause signatureClause,
 			AtomicWhereClause clause) {
-		return matches(signatureClause) && matches(clause) &&
+		return ((PropertySetComposition) signatureClause.getCompositionBehaviour()).group == ((PropertySetComposition) clause.getCompositionBehaviour()).group &&
+		matches(signatureClause) && matches(clause) &&
 		signatureClause.getInputVariables().iterator().next().getObject().isCompatible(clause.getInputVariables().iterator().next().getObject());
 	}
 

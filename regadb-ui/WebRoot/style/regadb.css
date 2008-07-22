@@ -1,5 +1,7 @@
 @CHARSET "UTF-8";
 
+/*	fixes for browser bugs */
+
 /* ie does not support position:fixed
    position this element manually */
 * html #feedback {
@@ -7,9 +9,6 @@
 	top:expression(document.body.scrollTop + "px"); 
 	right:0px;
 }
-
-
-
 
 /* general dialog fixes */
 html div.MODAL_FLOATING_BACK {
@@ -53,8 +52,7 @@ html div.MODAL_FLOATING_BACK {
 	top:expression(document.documentElement.scrollTop + "px");
 }
 
-
-/* ie6 and 7  don't do hassle-free vertical centering all that well.
+/* ie6 and 7 don't do hassle-free vertical centering all that well.
    calculating the position instead*/
 * html .MODAL_FLOATING_FORE {
 	position:absolute;
@@ -64,8 +62,6 @@ html div.MODAL_FLOATING_BACK {
 	position:absolute;
 	top:expression( ((document.documentElement.clientHeight)/2) + "px");
 }
-
-
 
 div.MODAL_FLOATING_FORE {
 	text-align:center;
@@ -93,6 +89,12 @@ html div.MODAL_FLOATING_FORE iframe {
 	width:3000px !important;
 	height:3000px !important;
 }
+
+
+
+
+
+
 
 
 

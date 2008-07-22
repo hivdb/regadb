@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,7 @@ public class QueryToolRunnable implements Runnable {
 	private String statusMsg = "";
 	private QueryStatement statement;
 	private Object mutex = new Object();
+	private HashMap<String, String> errors;
 	
 	private enum Status {
 		WAITING,
@@ -58,6 +60,11 @@ public class QueryToolRunnable implements Runnable {
 		this.login = copiedLogin;
 		this.editor = editor;
 		status = Status.WAITING;
+		errors = new HashMap<String, String>();
+		errors.put("write_error", new WMessage("form.query.querytool.label.status.failed.writeerror").value());
+		errors.put("memory_error", new WMessage("form.query.querytool.label.status.failed.memoryerror").value());
+		errors.put("sql_error", new WMessage("form.query.querytool.label.status.failed.sqlerror").value());
+		errors.put("type_error", new WMessage("form.query.querytool.label.status.failed.typeerror").value());
 	}
 	
 	public boolean isDone() {
@@ -170,23 +177,23 @@ public class QueryToolRunnable implements Runnable {
             }
         }
         catch(IOException e){
-        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.writeerror").value();
+        	statusMsg = ": " + errors.get("write_error");
             e.printStackTrace();
         } catch (OutOfMemoryError e) {
-        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.memoryerror").value();
+        	statusMsg = ": " + errors.get("memory_error");
 			e.printStackTrace();
 		} catch (SQLException e) {
-        	statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
+        	statusMsg = ": " + errors.get("sql_error");
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
-			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
+			statusMsg = ": " + errors.get("sql_error");
 			e.printStackTrace();
 		} catch (SQLGrammarException e ) {
-			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.sqlerror").value();
+			statusMsg = ": " + errors.get("sql_error");
 			e.printStackTrace();
 		}
 		catch (ClassCastException e ) {
-			statusMsg = ": " + new WMessage("form.query.querytool.label.status.failed.typeerror").value();
+			statusMsg = ": " + errors.get("type_error");
 			e.printStackTrace();
 		}		
 		catch (Exception e) {
@@ -200,7 +207,7 @@ public class QueryToolRunnable implements Runnable {
     
 
     private Set<Integer> getAccessiblePatients(Transaction t) {
-		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'");
+		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'", null);
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);
@@ -256,7 +263,7 @@ public class QueryToolRunnable implements Runnable {
     private ScrollableQueryResult getQueryResult(Query query, QueryStatement statement) throws SQLException, OutOfMemoryError {
 		String qstr = query.getQueryString();
 		System.err.println(qstr);
-		return statement.executeScrollableQuery(qstr);
+		return statement.executeScrollableQuery(qstr, query.getPreparedParameters());
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {

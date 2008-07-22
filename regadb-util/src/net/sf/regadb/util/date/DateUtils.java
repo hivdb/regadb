@@ -8,6 +8,10 @@ public class DateUtils
 {
     private static SimpleDateFormat europeanDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     
+    public static String getHQLdateFormatString() {
+    	return "DD-MM-YYYY";
+    }
+    
     public static Date parserEuropeanDate(String europeanDate)
     {
         try{

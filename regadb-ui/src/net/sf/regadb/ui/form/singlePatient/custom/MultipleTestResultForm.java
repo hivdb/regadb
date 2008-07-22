@@ -20,7 +20,6 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;

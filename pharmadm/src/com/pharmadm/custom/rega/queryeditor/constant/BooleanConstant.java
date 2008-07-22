@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
 
 
 
@@ -29,6 +30,10 @@ public class BooleanConstant extends Constant implements Serializable {
 	public Object getdefaultValue() {
 		return trueOption;
 	}
+	
+    public String acceptWhereClause(QueryVisitor visitor) {
+        return visitor.visitWhereClauseConstant(this);
+    } 	
 
 	@Override
 	protected String parseObject(Object o) {

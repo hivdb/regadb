@@ -13,6 +13,7 @@ import com.pharmadm.custom.rega.queryeditor.OrderedAWCWordList;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
+import com.pharmadm.custom.rega.queryeditor.constant.BooleanConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
@@ -98,6 +99,14 @@ public interface QueryVisitor {
 	 * @return
 	 */
 	public String visitWhereClauseConstant(DoubleConstant constant);	
+
+	/**
+	 * boolean constants
+	 * for the where clause of the query
+	 * @param constant
+	 * @return
+	 */
+	public String visitWhereClauseConstant(BooleanConstant constant);	
 	
 	/**
 	 * string representation of constants that are of an unsupported type

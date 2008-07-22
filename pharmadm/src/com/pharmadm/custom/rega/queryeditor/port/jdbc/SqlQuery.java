@@ -20,6 +20,7 @@ import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.pharmadm.custom.rega.queryeditor.constant.BooleanConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
@@ -74,7 +75,7 @@ public class SqlQuery implements QueryVisitor {
                     
                 }
                 else { // selection instanceof OutputSelection
-                    buffy.append(ovar.getExpression().acceptWhereClause(this));
+                    buffy.append(ovar.acceptWhereClause(this));
                     buffy.append(",\n\t");
                 }
             }
@@ -133,6 +134,10 @@ public class SqlQuery implements QueryVisitor {
 		return constant.getValue().toString();
 	}	
 
+	public String visitWhereClauseConstant(BooleanConstant constant) {
+		return constant.getValue().toString();
+	}	
+	
 	public String visitWhereClauseDateConstant(DateConstant constant) {
 		return "TO_DATE(\'" + constant.getHumanStringValue() + "\', 'DD-MM-YYYY')";
 	}

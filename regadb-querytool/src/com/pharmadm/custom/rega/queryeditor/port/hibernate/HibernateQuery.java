@@ -14,11 +14,16 @@ package com.pharmadm.custom.rega.queryeditor.port.hibernate;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+import net.sf.regadb.util.date.DateUtils;
+
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.constant.BooleanConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.DateConstant;
 import com.pharmadm.custom.rega.queryeditor.constant.DoubleConstant;
@@ -31,12 +36,28 @@ import com.pharmadm.custom.rega.queryeditor.port.jdbc.SqlQuery;
 
 public class HibernateQuery extends SqlQuery {
 	private Query query;
+	private boolean inselect;
 	
 	// make sure query building is thread safe as we keep
 	// state during building
 	public synchronized String visitQuery(Query query)  throws java.sql.SQLException {
 		this.query = query;
-		return super.visitQuery(query);
+		inselect = true;
+		String select = query.getSelectList().accept(this);
+		inselect = false;
+		String from = query.getRootClause().acceptFromClause(this);
+		String where =  query.getRootClause().acceptWhereClause(this);
+		String q = "";
+		if (select.length() > 0) {
+			q += "\nSELECT\n\t" + select;
+		}
+		if (from.length() > 0) {
+			q += "\nFROM\n\t" + from;
+		}
+		if (where.length() > 0) {
+			q += "\nWHERE\n\t" + where;
+		}
+        return q;
 	}
 
 	
@@ -94,86 +115,105 @@ public class HibernateQuery extends SqlQuery {
         }
         return "1=1";  // always true
 	}
+	
+	public String visitWhereClauseOutputVariable(OutputVariable ovar) {
+        String str = ovar.getExpression().acceptWhereClause(this);
+        if (ovar.getObject().getValueType() == ValueType.Number) {
+        	return "cast(" + str +", double)";
+        }
+        else {
+        	return str;
+        }
+	}	
 
 	public String visitFromClauseFromVariable(FromVariable fromVar) {
         return "net.sf.regadb.db." + fromVar.getObject().getTableName() + " " + fromVar.getUniqueName();
 	}	
 	
+	/**
+	 * format and escape string
+	 */
 	protected String formatString(String str) {
 		str = super.formatString(str);
 		str = str.replace("'", "''");
 		return str;
 	}	
 	
+	/**
+	 * format but don't escape string
+	 * @param str
+	 * @return
+	 */
+	private String formatNonPreparedString(String str) {
+		return super.formatString(str);
+	}
 	
-// uncomment this part to enable prepared queries
-// 
-// TODO
-// DoubleConstant does not differentiate between
-// integers and doubles. this causes problems when
-// a user enters a double for fields that require
-// an integer
-//	
-// TODO
-// a method for booleans is not yet implemented
-//	
-// TODO
-// HQL does not support prepared statements in the 
-// select part of the query. As this is the place
-// where users can do the most harm a workaround
-// should be implemented
-//	
-//	private String createKey(Object o) {
-//		return  ":" + query.createKey(o);
-//	}
-//	
-//	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
-//		String str = constant.getValue().toString();
-//		str = str.replace('*', '%');
-//		str = str.replace('?', '_');
-//        return "%" + createKey(str);
-//	}
-//
-//	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
-//		String str = constant.getValue().toString();
-//		str = str.replace('*', '%');
-//		str = str.replace('?', '_');
-//        return createKey(str) + "%";
-//	}
-//
-//	public String visitWhereClauseStringConstant(StringConstant constant) {
-//		String str = constant.getValue().toString();
-//		str = str.replace('*', '%');
-//		str = str.replace('?', '_');
-//		return createKey(str);
-//	}
-//
-//	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
-//		String str = constant.getValue().toString();
-//		str = str.replace('*', '%');
-//		str = str.replace('?', '_');
-//        return createKey("%" + str + "%");
-//	}
-//
-//	public String visitWhereClauseConstant(DoubleConstant constant) {
-//		Object val;
-//		try {
-//			val = Integer.parseInt(constant.getValue().toString());
-//		}
-//		catch (NumberFormatException e) {
-//			val = Double.parseDouble(constant.getValue().toString());
-//		}
-//		
-//		return createKey(val);
-//	}	
-//	
-//	public String visitWhereClauseConstant(Constant constant) {
-//		return createKey(constant.getValue());
-//	}
-//
-//	public String visitWhereClauseDateConstant(DateConstant constant) {
-//		return "TO_DATE(" + createKey(constant.getHumanStringValue()) + ", 'DD-MM-YYYY')";
-//	}
+	/**
+	 * escape string
+	 * @param str
+	 * @return
+	 */
+	private String escapeString(String str) {
+		str = str.replace("'", "''");
+		return str;
+	}
+	
+
+	
+	private String createKey(Object o) {
+		if (inselect) {
+			String str = escapeString(o.toString());
+			if (o instanceof String) {
+				str = "'" + str + "'";
+			}
+			return str;
+		}
+		else {
+			return  ":" + query.createKey(o);
+		}
+	}
+	
+	public String visitWhereClauseEndstringConstant(EndstringConstant constant) {
+		String str = constant.getValue().toString();
+        return "%" + createKey(formatNonPreparedString(str));
+	}
+
+	public String visitWhereClauseStartstringConstant(StartstringConstant constant) {
+		String str = constant.getValue().toString();
+        return createKey(formatNonPreparedString(str)) + "%";
+	}
+
+	public String visitWhereClauseStringConstant(StringConstant constant) {
+		String str = constant.getValue().toString();
+		return createKey(formatNonPreparedString(str));
+	}
+
+	public String visitWhereClauseSubstringConstant(SubstringConstant constant) {
+		String str = constant.getValue().toString();
+        return createKey("%" + formatNonPreparedString(str) + "%");
+	}
+	
+	public String visitWhereClauseConstant(BooleanConstant constant) {
+		if (constant.getValue().toString().equals("true")) {
+			return createKey(true);
+		}
+		else {
+			return createKey(false);
+		}
+	}
+
+	public String visitWhereClauseConstant(DoubleConstant constant) {
+		Object val = Double.parseDouble(constant.getValue().toString());
+		return createKey(val);
+	}	
+	
+	public String visitWhereClauseConstant(Constant constant) {
+		return createKey(constant.getValue());
+	}
+
+	public String visitWhereClauseDateConstant(DateConstant constant) {
+		return "TO_DATE(" + createKey(constant.getHumanStringValue()) + ", '" + DateUtils.getHQLdateFormatString() + "')";
+	}
 }
 
 

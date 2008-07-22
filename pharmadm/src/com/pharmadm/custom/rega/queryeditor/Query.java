@@ -156,25 +156,6 @@ public class Query implements Serializable, Cloneable {
     	return graph.isConnected();
     }
     
- 
-    
-    
-    
-    private Set<FromVariable> getFromVariables(WhereClause clause) {
-    	Set<FromVariable> all = new HashSet<FromVariable>();
-    	Iterator<WhereClause> it = clause.iterateChildren();
-    	while (it.hasNext()) {
-    		WhereClause child = it.next();
-    		if (child.isAtomic()) {
-    			all.addAll(((AtomicWhereClause)child).getFromVariables());
-    		}
-    		else {
-    			all.addAll(getFromVariables(child));
-    		}
-    	}
-    	return all;
-    }
-    
     private int countFromVariables(WhereClause clause) {
     	int count = 0;
     	Iterator<WhereClause> it = clause.iterateChildren();

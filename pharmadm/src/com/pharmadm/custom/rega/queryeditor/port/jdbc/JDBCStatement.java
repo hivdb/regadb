@@ -2,6 +2,7 @@ package com.pharmadm.custom.rega.queryeditor.port.jdbc;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
@@ -37,7 +38,7 @@ public class JDBCStatement implements QueryStatement {
         }
 	}
 
-	public ScrollableQueryResult executeScrollableQuery(String query) {
+	public ScrollableQueryResult executeScrollableQuery(String query, HashMap<String, Object>  preparedConstantMap) {
 		if (exists()) {
 			try {
 				return new JDBCResult(statement.executeQuery(query));
@@ -60,7 +61,7 @@ public class JDBCStatement implements QueryStatement {
 		return statement != null;
 	}
 
-	public QueryResult executeQuery(String query) {
+	public QueryResult executeQuery(String query, HashMap<String, Object>  preparedConstantMap) {
 		if (exists()) {
 			try {
 				return new JDBCResult(statement.executeQuery(query));

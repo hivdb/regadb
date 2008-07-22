@@ -1342,7 +1342,7 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                     String queryString = getQueryStringAndInformUserOnError(query);
                     System.out.println(queryString);
                     statement.setFetchSize(50);
-                    QueryResult resultSet = statement.executeQuery(query.getQueryString());
+                    QueryResult resultSet = statement.executeQuery(query.getQueryString(), query.getPreparedParameters());
                     final QueryResultTableModel model = new QueryResultTableModel(resultSet, query.getSelectList().getSelectedColumnNames());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
