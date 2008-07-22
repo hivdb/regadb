@@ -32,9 +32,9 @@ public class ViralIsolateResistanceTable extends WTable {
         //drug names - column position
         HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
         int col = 0;
-        putElementAt(0, col, new WText());
+        putElementAt(0, col, new WText(lt("")));
         col = numColumns();
-        putElementAt(0, col, new WText());
+        putElementAt(0, col, new WText(lt("")));
         int maxWidth = 0;
         for(Test test : t.getTests())
         {

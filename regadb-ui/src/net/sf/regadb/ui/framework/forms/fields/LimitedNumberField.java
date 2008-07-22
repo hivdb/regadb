@@ -52,6 +52,7 @@ public class LimitedNumberField extends FormField
                     break;
             }
         }
+		setText(null);
     }
     
     public LimitedNumberField(InteractionState state, IForm form)

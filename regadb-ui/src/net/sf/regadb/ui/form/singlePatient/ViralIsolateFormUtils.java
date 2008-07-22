@@ -27,9 +27,11 @@ public class ViralIsolateFormUtils {
                 return;
         }
         
-        cell.clear();
+        while (cell.children().size() > 0) {
+        	cell.removeWidget(cell.children().get(0));
+        }
         
-        final WText toReturn = new WText();
+        final WText toReturn = new WText(lt(""));
         
         if(tr==null)
         {
