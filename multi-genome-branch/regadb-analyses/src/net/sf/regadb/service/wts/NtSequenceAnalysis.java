@@ -10,10 +10,10 @@ import net.sf.regadb.service.IAnalysis;
 public abstract class NtSequenceAnalysis extends AbstractService implements IAnalysis{
     private String user_;
     
+    private int ntsequence_ii;
     private NtSequence ntSequence=null;
     
-    
-    private Transaction transaction = null;
+    private Login login = null;
     
     public NtSequenceAnalysis(NtSequence ntSequence, String uid, int waitDelay)
     {
@@ -43,29 +43,52 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
     
     public void setNtSequence(NtSequence ntSequence) {
         this.ntSequence = ntSequence;
+        if(ntSequence != null)
+            setNtSequenceIi(ntSequence.getNtSequenceIi());
     }
 
     public NtSequence getNtSequence() {
         return ntSequence;
     }
-
     
-    
-    public NtSequence refreshNtSequence(){
-        Transaction t = getTransaction();
+    public NtSequence refreshNtSequence(Transaction t){
         if(t != null)
-            setNtSequence(t.getSequence(getNtSequence().getNtSequenceIi()));
+            setNtSequence(t.getSequence(getNtSequenceIi()));
         return getNtSequence();
     }
 
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
+    public Transaction createTransaction() {
+        if(getLogin() != null)
+            return getLogin().createTransaction();
+        return null;
+    }
+    public void destroyTransaction(Transaction t){
+        if(t != null){
+            t.commit();
+            setNtSequence(null);
+        }
+    }
+    public void clearTransaction(Transaction t){
+        if(t != null)
+            t.clear();
+    }
+    
+    public void setLogin(Login login) {
+        this.login = login;
     }
 
-    public Transaction getTransaction() {
-        return transaction;
+    public Login getLogin() {
+        return login;
     }
 
+    protected void setNtSequenceIi(int sequence_ii) {
+        this.ntsequence_ii = sequence_ii;
+    }
+
+    protected int getNtSequenceIi() {
+        return ntsequence_ii;
+    }
+    
     //IAnalysis methods
     public AnalysisStatus getStatus() 
     {
@@ -93,7 +116,7 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
     }
 
     public void launch(Login sessionSafeLogin) {
-        setTransaction(sessionSafeLogin.createTransaction());
+        setLogin(sessionSafeLogin);
         launch();
     }
 }

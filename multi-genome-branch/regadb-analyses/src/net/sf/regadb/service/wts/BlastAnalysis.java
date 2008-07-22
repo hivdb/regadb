@@ -28,9 +28,13 @@ public class BlastAnalysis extends NtSequenceAnalysis{
     }
 
     protected void init(){
+        Transaction t = createTransaction();
+        
         setService("regadb-blast");
-        getInputs().put("nt_sequence", toFasta(refreshNtSequence()));
+        getInputs().put("nt_sequence", toFasta(refreshNtSequence(t)));
         getOutputs().put("species", null);
+        
+        destroyTransaction(t);
     }
     
     protected void processResults()
@@ -69,12 +73,14 @@ public class BlastAnalysis extends NtSequenceAnalysis{
     }
     
     protected Collection<Genome> getAllGenomes(){
-        Transaction t = getTransaction();
+        Collection<Genome> genomes = null;
+        Transaction t = createTransaction();
+        
         if(t == null){
             RegaDBSettings.getInstance().initProxySettings();
             
             FileProvider fp = new FileProvider();
-            Collection<Genome> genomes = null;
+            
             File genomesFile = null;
             try {
                 genomesFile = File.createTempFile("genomes", "xml");
@@ -91,11 +97,12 @@ public class BlastAnalysis extends NtSequenceAnalysis{
             }
             final ImportGenomes imp = new ImportGenomes();
             genomes = imp.importFromXml(genomesFile);
-    
-            return genomes;
         }
         else{
-            return t.getGenomes();
+            genomes = t.getGenomes();
         }
+
+        destroyTransaction(t);
+        return genomes;
     }
 }

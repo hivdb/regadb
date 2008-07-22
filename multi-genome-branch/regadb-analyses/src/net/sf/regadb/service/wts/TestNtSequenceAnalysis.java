@@ -11,6 +11,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisThread;
 
 public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
+    private int test_ii;
     private Test test=null;
     private TestResult testResult=null;
     
@@ -32,7 +33,9 @@ public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
     }
 
     protected void init(){
-        refreshTest();
+        Transaction t = createTransaction();
+        
+        refreshTest(t);
         Analysis a = getTest().getAnalysis();
         
         setUrl(a.getUrl());
@@ -40,27 +43,30 @@ public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
         setAccount(a.getAccount());
         setPassword(a.getPassword());
         
-        getInputs().put(a.getBaseinputfile(), toFasta(refreshNtSequence()));
+        getInputs().put(a.getBaseinputfile(), toFasta(refreshNtSequence(t)));
         getOutputs().put(a.getBaseoutputfile(), null);
+        
+        destroyTransaction(t);
     }
     
     protected void processResults(){
-        Transaction t = getTransaction();
+        Transaction t = createTransaction();
         if(t != null){
             synchronized(AnalysisThread.mutex_)
             {
-                refreshTest();
-                refreshNtSequence();
+                t.clear();
+                refreshTest(t);
+                refreshNtSequence(t);
                 
                 createTestResult();
                 
                 t.save(getNtSequence());
-                t.commit();
             }
         }
         else{
             createTestResult();
         }
+        destroyTransaction(t);
     }
     
     protected void createTestResult(){
@@ -83,6 +89,8 @@ public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
     
     public void setTest(Test test) {
         this.test = test;
+        if(test != null)
+            setTestIi(test.getTestIi());
     }
 
     public Test getTest() {
@@ -97,10 +105,24 @@ public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
         return testResult;
     }
     
-    public Test refreshTest(){
-        Transaction t = getTransaction();
+    public Test refreshTest(Transaction t){
         if(t != null)
-            setTest(t.getTest(getTest().getTestIi()));
+            setTest(t.getTest(getTestIi()));
         return getTest();
+    }
+
+    protected void setTestIi(int test_ii) {
+        this.test_ii = test_ii;
+    }
+
+    protected int getTestIi() {
+        return test_ii;
+    }
+    
+    public void destroyTransaction(Transaction t){
+        if(t != null){
+            super.destroyTransaction(t);
+            setTest(null);
+        }
     }
 }
