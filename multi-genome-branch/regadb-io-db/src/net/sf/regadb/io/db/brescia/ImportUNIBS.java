@@ -531,7 +531,7 @@ public class ImportUNIBS
     }
     
     private Test createCoinfectionTest(String testTypeDescription, String testDescription) {
-        TestType tt = new TestType(StandardObjects.getNumberValueType(), null, StandardObjects.getPatientObject(), testTypeDescription, new TreeSet<TestNominalValue>());
+        TestType tt = new TestType(StandardObjects.getNumberValueType(), null, StandardObjects.getPatientTestObject(), testTypeDescription, new TreeSet<TestNominalValue>());
         Test tst = new Test(tt,testDescription);
         return tst;
     }

@@ -41,7 +41,8 @@ public class Transaction {
     private final Query getValueTypeQuery;
     private final Query getAttributeNominalValueQuery;
     private final Query getTestNominalValueQuery;
-    private final Query getTestTypeQuery;
+    private final Query getTestTypeGenomeQuery;
+    private final Query getTestTypeNoGenomeQuery;
     private final Query getAttributeQuery;
     private final Query getAmbiguousAttributeQuery;
     private final Query getPatientQuery;
@@ -67,7 +68,10 @@ public class Transaction {
         getValueTypeQuery = session.createQuery("from ValueType as valuetype where description = :description");
         getAttributeNominalValueQuery = session.createQuery("from AttributeNominalValue as anv where attribute = :attribute and value = :value");
         getTestNominalValueQuery = session.createQuery("from TestNominalValue as anv where testType = :type and value = :value");
-        getTestTypeQuery = session.createQuery("from TestType as testType where testType.description = :description");
+
+        getTestTypeGenomeQuery   = session.createQuery("from TestType as testType where testType.description = :description and (testType.genome is not null) and (testType.genome.organismName = :organismName)");
+        getTestTypeNoGenomeQuery = session.createQuery("from TestType as testType where testType.description = :description and testType.genome is null");
+
         getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name and attribute.attributeGroup.groupName = :groupName");
         getAmbiguousAttributeQuery = session.createQuery("from Attribute attribute where lower(attribute.name) = lower(:name)");
         getPatientQuery = session.createQuery(
@@ -1232,11 +1236,19 @@ public class Transaction {
         return (Test)q.uniqueResult();
     }
 
-    public TestType getTestType(String description) {
-        getTestTypeQuery.setParameter("description", description);
-        
-        return (TestType)getTestTypeQuery.uniqueResult();
-       
+    public TestType getTestType(TestType t){
+        return getTestType(t.getDescription(), (t.getGenome() != null ? t.getGenome().getOrganismName():null));
+    }
+    public TestType getTestType(String description, String organismName) {
+        if(organismName != null && organismName.length() > 0){
+            getTestTypeGenomeQuery.setParameter("description", description);
+            getTestTypeGenomeQuery.setParameter("organismName", organismName);
+            return (TestType)getTestTypeGenomeQuery.uniqueResult();
+        }
+        else{
+            getTestTypeNoGenomeQuery.setParameter("description", description);
+            return (TestType)getTestTypeNoGenomeQuery.uniqueResult();
+        }
     }
 
     public DrugGeneric getGenericDrug(String genericId) {

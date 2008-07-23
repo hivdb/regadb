@@ -13,7 +13,6 @@ public class InputOutputJoin implements Join {
 		this.ovar = ovar;
 	}
 	
-	@Override
 	public List<String> getJoinedVariables() {
 		List<String> joined = new ArrayList<String>();
 		joined.add(ivar.getOutputVariable().getUniqueName());
@@ -21,7 +20,6 @@ public class InputOutputJoin implements Join {
 		return joined;
 	}
 
-	@Override
 	public Join cloneInContext(
 			Map<ConfigurableWord, ConfigurableWord> originalToCloneMap)
 			throws CloneNotSupportedException {

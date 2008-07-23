@@ -472,7 +472,7 @@ public class ImportIrsicaixa {
     	else if(testDescr.equals("anti HBe"))
     		tests_.put(testDescr,StandardObjects.getGenericHBeAbTest());
     	else{
-			TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getHiv1Genome(), StandardObjects.getPatientObject(),testtypeDescr, new TreeSet<TestNominalValue>());
+			TestType tt = new TestType(StandardObjects.getNumberValueType(), StandardObjects.getHiv1Genome(), StandardObjects.getPatientTestObject(),testtypeDescr, new TreeSet<TestNominalValue>());
 			testTypes_.add(tt);
 			
 			Test tst = new Test(tt,testDescr);

@@ -1,16 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.util.HashMap;
-import java.util.List;
 
-import net.sf.regadb.db.DrugClass;
-import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WBreak;
 import net.sf.witty.wt.WCheckBox;
@@ -19,9 +11,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.core.utils.WSide;
 
 public class ViralIsolateResistanceForm extends WContainerWidget
@@ -68,7 +58,6 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         refreshTable();
                     }
                 });
-        
         resistanceTable_.loadTable(showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults());
     }
     

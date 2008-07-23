@@ -37,6 +37,7 @@ public class ComboBox<ComboDataType> extends FormField
         {
         	form.addFormField(this);
         }
+        setText(null);
     }
     
     public void addComboChangeListener(SignalListener<WEmptyEvent> listener)

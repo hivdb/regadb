@@ -12,8 +12,8 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ITestTypeDataTable implements IDataTable<TestType>
 {
-    private static String [] _colNames = {"dataTable.testType.colName.description","dataTable.testType.colName.testObject","dataTable.testType.colName.valueType","dataTable.testType.colName.organismName" };
-    private static String[] filterVarNames_ = { "testType.valueType.description", "testType.testObject.description", "testType.description", "testType.genome.organismName"};
+    private static String [] _colNames = {"dataTable.testType.colName.description","dataTable.testType.colName.organismName","dataTable.testType.colName.testObject","dataTable.testType.colName.valueType"};
+    private static String[] filterVarNames_ = { "testType.description", "testType.genome.organismName", "testType.testObject.description", "testType.valueType.description"};
     
     private IFilter[] filters_ = new IFilter[4];
     
@@ -49,9 +49,10 @@ public class ITestTypeDataTable implements IDataTable<TestType>
         String [] row = new String[4];
         
         row[0] = testType.getDescription();
-        row[1] = testType.getTestObject().getDescription();
-        row[2] = testType.getValueType().getDescription();
-        row[3] = (testType.getGenome() == null ? "":testType.getGenome().getOrganismName());
+        row[1] = (testType.getGenome() == null ? "":testType.getGenome().getOrganismName());
+        row[2] = testType.getTestObject().getDescription();
+        row[3] = testType.getValueType().getDescription();
+        
       
         return row;
     }

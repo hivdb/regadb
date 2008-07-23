@@ -24,13 +24,15 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 
 public class XMLReadCodeGen {
-    private static class ObjectField {
+    private enum Type { Primitive, ObjectSet, ObjectKey, ObjectPointer, ObjectPointerSet };
+
+	
+	private class ObjectField {
         ObjectInfo parent;
         String name;
         Class javaClass;
         String getPrefix;
 
-        enum Type { Primitive, ObjectSet, ObjectKey, ObjectPointer, ObjectPointerSet };
         Type type;
         boolean composite;
         
@@ -134,7 +136,7 @@ public class XMLReadCodeGen {
         }
     }
     
-    private static class ObjectInfo {
+    private class ObjectInfo {
         String id;
         Class javaClass;
         boolean hasCompositeId;
@@ -199,34 +201,39 @@ public class XMLReadCodeGen {
         }
     }
     
-    private static Map<String, ObjectInfo> objectIdMap = new TreeMap<String, ObjectInfo>();
-    private static Writer output;
+    private Map<String, ObjectInfo> objectIdMap;
+    private Writer output;
+    
+    public XMLReadCodeGen() {
+    	objectIdMap = new TreeMap<String, ObjectInfo>();
+    }
+    
 
-    public static void addObject(Class c, String id) {
+    public void addObject(Class c, String id) {
         objectIdMap.put(id, new ObjectInfo(id, c));
     }
 
-    public static void addSet(String id, String name, Class bareClass) {
-        objectIdMap.get(id).addField(new ObjectField(name, bareClass, ObjectField.Type.ObjectSet, false));
+    public void addSet(String id, String name, Class bareClass) {
+        objectIdMap.get(id).addField(new ObjectField(name, bareClass, Type.ObjectSet, false));
     }
 
-    public static void addRepresentedValue(String id, String name, Class bareClass, boolean isComposite) {
-        objectIdMap.get(id).addField(new ObjectField(name, bareClass, ObjectField.Type.ObjectKey, isComposite));
+    public void addRepresentedValue(String id, String name, Class bareClass, boolean isComposite) {
+        objectIdMap.get(id).addField(new ObjectField(name, bareClass, Type.ObjectKey, isComposite));
     }
 
-    public static void addPointer(String id, String name, Class bareClass, boolean isComposite) {
-        objectIdMap.get(id).addField(new ObjectField(name, bareClass, ObjectField.Type.ObjectPointer, isComposite));        
+    public void addPointer(String id, String name, Class bareClass, boolean isComposite) {
+        objectIdMap.get(id).addField(new ObjectField(name, bareClass, Type.ObjectPointer, isComposite));        
     }
 
-    public static void addPointerSet(String id, String name, Class bareClass) {
-        objectIdMap.get(id).addField(new ObjectField(name, bareClass, ObjectField.Type.ObjectPointerSet, false));
+    public void addPointerSet(String id, String name, Class bareClass) {
+        objectIdMap.get(id).addField(new ObjectField(name, bareClass, Type.ObjectPointerSet, false));
     }
 
-    public static void addPrimitive(String id, String name, Class bareClass, boolean isComposite) {
-        objectIdMap.get(id).addField(new ObjectField(name, bareClass, ObjectField.Type.Primitive, isComposite));
+    public void addPrimitive(String id, String name, Class bareClass, boolean isComposite) {
+        objectIdMap.get(id).addField(new ObjectField(name, bareClass, Type.Primitive, isComposite));
     }
     
-    public static void generate(Writer writer) throws IOException {
+    public void generate(Writer writer) throws IOException {
         output = writer;
 
         resolveReferredObjects();
@@ -328,7 +335,7 @@ public class XMLReadCodeGen {
                 if (f.isSet())
                     write(3, f.memberName() + " = new Hash" + f.typeName(true) + "();\n");
                 else
-                    if (f.type == ObjectField.Type.Primitive)
+                    if (f.type == Type.Primitive)
                         write(3, f.memberName() + " = nullValue" + f.typeName(true) + "();\n");
                     else
                         write(3, f.memberName() + " = null;\n");
@@ -397,7 +404,7 @@ public class XMLReadCodeGen {
                         write(4, "if (referenceResolved && !" + f.memberName() + ".isEmpty())\n");
                     } else {
                     String nullValue
-                        = (f.type == ObjectField.Type.Primitive ? "nullValue" + f.typeName(true) + "()" : "null");
+                        = (f.type == Type.Primitive ? "nullValue" + f.typeName(true) + "()" : "null");
                         write(4, "if (referenceResolved && " + f.memberName() + " != " + nullValue + ")\n");
                     }
                     write(5, "throw new SAXException(new ImportException(\"Cannot modify resolved reference\"));\n");
@@ -434,9 +441,9 @@ public class XMLReadCodeGen {
              */
             for (ObjectField f : o.fields) {
                 write(3, "} else if (\"" + f.name + "\".equals(qName)) {\n");
-                if (f.type == ObjectField.Type.Primitive) {
+                if (f.type == Type.Primitive) {
                     write(4, f.memberName() + " = parse" + f.typeName(true) + "(value == null ? null : value.toString());\n");
-                } else if (f.type == ObjectField.Type.ObjectKey) {
+                } else if (f.type == Type.ObjectKey) {
                     write(4, f.memberName() + " = resolve" + f.javaClass.getSimpleName() + "(value == null ? null : value.toString());\n");
                 }
             }
@@ -672,7 +679,7 @@ public class XMLReadCodeGen {
         write(0, "}\n");
     }
 
-    private static void resolveReferredObjects() {
+    private void resolveReferredObjects() {
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
             for (ObjectField f : o.getRefererringFields()) {
@@ -683,7 +690,7 @@ public class XMLReadCodeGen {
         }
     }
 
-    private static void write(int tabs, String s) throws IOException {
+    private void write(int tabs, String s) throws IOException {
         for (int i = 0; i < tabs; ++i) {
             output.write("    ");
         }

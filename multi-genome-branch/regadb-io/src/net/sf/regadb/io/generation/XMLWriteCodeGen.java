@@ -13,11 +13,18 @@ import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class XMLWriteCodeGen 
 {
-    private static HashMap<String, String> methodString_ = new HashMap<String, String>();
-    private static HashMap<String, String> varNameList_ = new HashMap<String, String> ();
-    private static int amounfOfMethod_ = 0;
+    private HashMap<String, String> methodString_;
+    private HashMap<String, String> varNameList_;
+    private int amounfOfMethod_;
     
-    public static String createString()
+    public XMLWriteCodeGen() {
+        methodString_ = new HashMap<String, String>();
+        varNameList_ = new HashMap<String, String> ();
+        amounfOfMethod_ = 0;
+    	
+    }
+    
+    public String createString()
     {
         String id = "id" + amounfOfMethod_;
         String value = "";
@@ -26,20 +33,20 @@ public class XMLWriteCodeGen
         return id;
     }
     
-    private static void addString(String id, String addValue)
+    private void addString(String id, String addValue)
     {
         String original = methodString_.get(id);
         original += addValue;
         methodString_.put(id, original);
     }
     
-    public static void writeMethodSigEnd(String id)
+    public void writeMethodSigEnd(String id)
     {
         String writeClassCode = "}";
         addString(id, writeClassCode);
     }
     
-    public static void writeTopMethod(Class toWrite, String id)
+    public void writeTopMethod(Class toWrite, String id)
     {
         String writeClassCode="";
         
@@ -55,7 +62,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static void writeMethodSig(Class toWrite, String id)
+    public void writeMethodSig(Class toWrite, String id)
     {
         String writeClassCode="";
         
@@ -73,7 +80,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static void writeSet(Class toWrite, String fieldName, String xmlParentNode, String id)
+    public void writeSet(Class toWrite, String fieldName, String xmlParentNode, String id)
     {
         String writeClassCode="";
         
@@ -91,7 +98,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName, Class fieldClass)
+    public String generateGetterConstruct(String id, String grandFatherFieldName, String fieldName, Class fieldClass)
     {
         String toReturn = "";
         
@@ -131,7 +138,7 @@ public class XMLWriteCodeGen
         return toReturn;
     }
     
-    public static void writePrimitiveVar(String grandFatherFieldName, Field field, String parentNode, String id)
+    public void writePrimitiveVar(String grandFatherFieldName, Field field, String parentNode, String id)
     {
         String writeClassCode="";
         
@@ -177,7 +184,7 @@ public class XMLWriteCodeGen
             addString(id, writeClassCode);
     }
     
-    public static void writePointer(String id, Class toWrite, String fieldName, String parentNode, boolean doNotTransformFieldName, Class parentClass)
+    public void writePointer(String id, Class toWrite, String fieldName, String parentNode, boolean doNotTransformFieldName, Class parentClass)
     {
         //boolean doNotTransformFieldName is necessary when working from a loop (writePointerSet)
         String writeClassCode = "";
@@ -236,7 +243,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    private static String  handlePointerRef(String fieldName)
+    private String  handlePointerRef(String fieldName)
     {
         String writeClassCode = "";
         
@@ -247,7 +254,7 @@ public class XMLWriteCodeGen
         return writeClassCode;
     }
     
-    public static void writePointerSet(String id, Class toWrite, String fieldName, String parentNode, Class parentClass)
+    public void writePointerSet(String id, Class toWrite, String fieldName, String parentNode, Class parentClass)
     {
         if(fieldName.equals("patientDatasets")){
             toWrite = GenerateIO.replacePatientDatasetByDataset(toWrite);
@@ -273,7 +280,7 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id, String noGetter)
+    public void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id, String noGetter)
     {
         String var = generateGetterConstruct(id, grandFatherFieldName, fieldName, toWrite);
         if(noGetter!=null)
@@ -286,20 +293,19 @@ public class XMLWriteCodeGen
         addString(id, writeClassCode);
     }
     
-    public static void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id)
+    public void callClassWriteMethod(String grandFatherFieldName, Class toWrite, String fieldName, String parentNode, String id)
     {
         callClassWriteMethod(grandFatherFieldName, toWrite, fieldName, parentNode, id, null);
     }
     
-    private static void printAndClear(String id)
+    private void printAndClear(String id)
     {
         System.out.println(methodString_.get(id));
         methodString_.put(id, "");
     }
     
-    public static void writeStringRepresentedValue(String id, String fieldName, Class toWrite, boolean composite, String parentNode)
+    public void writeStringRepresentedValue(String id, String fieldName, Class toWrite, String stringRepField, boolean composite, String parentNode)
     {
-        String stringRepField = GenerateIO.getStringRepValueName(toWrite.getName());
         stringRepField = Character.toUpperCase(stringRepField.charAt(0)) + stringRepField.substring(1);
         String var;
         var = generateGetterConstruct(id, composite?"id":null, fieldName, toWrite);
@@ -317,10 +323,11 @@ public class XMLWriteCodeGen
     
     public static void main(String [] args)
     {
-        String id = createString();
-        writeMethodSig(AaSequence.class, id);
+    	XMLWriteCodeGen xmlWriteCodeGen = new XMLWriteCodeGen();
+        String id = xmlWriteCodeGen.createString();
+        xmlWriteCodeGen.writeMethodSig(AaSequence.class, id);
         //printAndClear();
-        writeSet(AaSequence.class, "sequences", "parentNode", id);
+        xmlWriteCodeGen.writeSet(AaSequence.class, "sequences", "parentNode", id);
         //printAndClear();
         
         Date today = new Date();
@@ -330,27 +337,27 @@ public class XMLWriteCodeGen
         Field [] fs = c.getDeclaredFields();
         System.err.println("test");
         
-        writePrimitiveVar(null, fs[5], "parentNode", id);
-        printAndClear(id);
+        xmlWriteCodeGen.writePrimitiveVar(null, fs[5], "parentNode", id);
+        xmlWriteCodeGen.printAndClear(id);
         
-        writePrimitiveVar(null, fs[3], "parentNode", id);
-        printAndClear(id);
+        xmlWriteCodeGen.writePrimitiveVar(null, fs[3], "parentNode", id);
+        xmlWriteCodeGen.printAndClear(id);
         
         c = AaInsertionId.class;
         fs = c.getDeclaredFields();
         
-        writePrimitiveVar(null, fs[0], "parentNode", id);
-        printAndClear(id);
+        xmlWriteCodeGen.writePrimitiveVar(null, fs[0], "parentNode", id);
+        xmlWriteCodeGen.printAndClear(id);
         
-        System.out.println(generateGetterConstruct(id, "patient", "currentDate", java.util.Date.class));
-        System.out.println(generateGetterConstruct(id, null, "currentDate", java.util.Date.class));
+        System.out.println(xmlWriteCodeGen.generateGetterConstruct(id, "patient", "currentDate", java.util.Date.class));
+        System.out.println(xmlWriteCodeGen.generateGetterConstruct(id, null, "currentDate", java.util.Date.class));
         
-        writePointer(id, Test.class,"testField", "parentNode", false, null);
+        xmlWriteCodeGen.writePointer(id, Test.class,"testField", "parentNode", false, null);
         
         //System.out.println(createClassCode());
     }
     
-    public static String createClassCode(ArrayList<String> pointerClasses)
+    public String createClassCode(ArrayList<String> pointerClasses)
     {
         String total = "";
         

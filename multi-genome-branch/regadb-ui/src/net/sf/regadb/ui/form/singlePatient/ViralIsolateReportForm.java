@@ -95,7 +95,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     private void filldata()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
-        TestType testType = t.getTestType(StandardObjects.getGssId());
+        TestType testType = t.getTestType(StandardObjects.getGssTestType());
         
         for(Test test : t.getTests(testType))
         {

@@ -17,12 +17,15 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -53,7 +56,13 @@ public class Equals {
 
     public static boolean isSameTestType(TestType o1, TestType o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()));
+        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription())
+                && isSameGenome(o1.getGenome(), o2.getGenome()));
+    }
+    
+    public static boolean isSameGenome(Genome o1, Genome o2){
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getOrganismName().equals(o2.getOrganismName()));
     }
 
     public static boolean isSameDataset(Dataset o1, Dataset o2) {
@@ -70,7 +79,7 @@ public class Equals {
                 && isSameNtSequence(o1.getNtSequence(), o2.getNtSequence()));
     }
 
-    private static boolean isSameDrugGeneric(DrugGeneric o1, DrugGeneric o2) {
+    public static boolean isSameDrugGeneric(DrugGeneric o1, DrugGeneric o2) {
         return o1 == o2;
     }
 
@@ -193,5 +202,16 @@ public class Equals {
         return s1 == s2
             || (s1 != null && s1.equals(s2));
     }
+
+	public static boolean isSameProtein(Protein protein, Protein protein2) {
+		return protein == protein2 
+		|| (protein != null && protein2 != null && protein.getProteinIi().equals(protein2.getProteinIi()));
+	}
+
+	public static boolean isSameDrugCommercial(DrugCommercial drugCommercial,
+			DrugCommercial drugCommercial2) {
+		return drugCommercial == drugCommercial2 
+		|| (drugCommercial != null && drugCommercial2 != null && drugCommercial.getCommercialIi().equals(drugCommercial2.getCommercialIi()));
+	}
 
 }

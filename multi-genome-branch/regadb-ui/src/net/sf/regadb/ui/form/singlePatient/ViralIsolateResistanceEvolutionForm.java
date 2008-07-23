@@ -11,6 +11,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -74,7 +75,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         for(Test test : t.getTests()) {
-            if(StandardObjects.getGssId().equals(test.getTestType().getDescription())) {
+            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType())){
                 asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
             }
         }

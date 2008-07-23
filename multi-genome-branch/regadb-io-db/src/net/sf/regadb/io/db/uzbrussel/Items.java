@@ -17,7 +17,7 @@ public class Items {
 
     
     static {
-        hivTherapyAdherence = new TestType(StandardObjects.getPatientObject(), "HIV Therapy Adherence");
+        hivTherapyAdherence = new TestType(StandardObjects.getPatientTestObject(), "HIV Therapy Adherence");
         hivTherapyAdherence.setValueType(StandardObjects.getNominalValueType());
         hivTherapyAdherence.getTestNominalValues().add(new TestNominalValue(hivTherapyAdherence, "Good"));
         hivTherapyAdherence.getTestNominalValues().add(new TestNominalValue(hivTherapyAdherence, "Moderate"));

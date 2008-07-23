@@ -9,6 +9,7 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.DescribeMutations;
@@ -223,7 +224,7 @@ public class AccountForm extends FormWidget
                 
                 for(Test test : t.getTests())
                 {
-                    if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
+                    if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()))
                     {
                         chartMutationCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
                     }

@@ -129,11 +129,11 @@ public class InitRegaDB
     {
         ArrayList<TestObject> tos = new ArrayList<TestObject>();
         
-        TestObject patientTest = new TestObject("Patient test", 0);
-        TestObject seqAnalysis = new TestObject("Sequence analysis", 1);
-        TestObject genericDrugTest = new TestObject("Generic drug test", 2);
-        TestObject resistanceTest = new TestObject("Resistance test", 3);
-        TestObject viAnalysis = new TestObject("Viral Isolate analysis", 4);
+        TestObject patientTest      = StandardObjects.getPatientTestObject();
+        TestObject seqAnalysis      = StandardObjects.getSequenceAnalysisTestObject();
+        TestObject genericDrugTest  = StandardObjects.getGenericDrugTestObject();
+        TestObject resistanceTest   = StandardObjects.getResistanceTestObject();
+        TestObject viAnalysis       = StandardObjects.getViralIsolateAnalysisTestObject();
         
         tos.add(patientTest);
         tos.add(seqAnalysis);
@@ -154,11 +154,11 @@ public class InitRegaDB
     {
         ArrayList<ValueType> valueTypes = new ArrayList<ValueType>();
         
-        ValueType number = new ValueType("number");
-        ValueType limitedNumber = new ValueType("limited number (<,=,>)");
-        ValueType string = new ValueType("string");
-        ValueType nominalValue = new ValueType("nominal value");
-        ValueType dateValue = new ValueType("date");
+        ValueType number        = StandardObjects.getNumberValueType();
+        ValueType limitedNumber = StandardObjects.getLimitedNumberValueType();
+        ValueType string        = StandardObjects.getStringValueType();
+        ValueType nominalValue  = StandardObjects.getNominalValueType();
+        ValueType dateValue     = StandardObjects.getDateValueType();
         
         valueTypes.add(number);
         valueTypes.add(limitedNumber);
@@ -231,7 +231,7 @@ public class InitRegaDB
     
     private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
     {
-        TestType gss = new TestType(to, StandardObjects.getGssId());
+        TestType gss = StandardObjects.getGssTestType();
         
         ValueType numberVT = null;
         for(ValueType vt : valueTypes)

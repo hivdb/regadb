@@ -23,6 +23,7 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -189,7 +190,7 @@ public class GenerateReport
         
         for(TestResult tr : vi.getTestResults())
         {
-            if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId()) 
+            if(Equals.isSameTestType(tr.getTest().getTestType(), StandardObjects.getGssTestType()) 
                     && tr.getTest().getDescription().equals(algorithm.getDescription())) {
                 testResults.add(tr);
             }

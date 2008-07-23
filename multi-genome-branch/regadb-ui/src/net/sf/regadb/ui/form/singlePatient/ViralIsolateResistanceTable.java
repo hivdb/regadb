@@ -9,6 +9,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -32,13 +33,13 @@ public class ViralIsolateResistanceTable extends WTable {
         //drug names - column position
         HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
         int col = 0;
-        putElementAt(0, col, new WText());
+        putElementAt(0, col, new WText(lt("")));
         col = numColumns();
-        putElementAt(0, col, new WText());
+        putElementAt(0, col, new WText(lt("")));
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
-            if(StandardObjects.getGssId().equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
+            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()) && test.getAnalysis()!=null)
             {
                 col = numColumns();
                 putElementAt(0, col, new TableHeader(lt(test.getDescription())));

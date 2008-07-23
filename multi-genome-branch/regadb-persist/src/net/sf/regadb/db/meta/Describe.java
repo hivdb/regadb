@@ -19,6 +19,7 @@ import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -61,7 +62,7 @@ public class Describe {
         return "Amino Acid sequence for " + describe(o.getProtein()) + "";
     }
 
-    private static String describe(Protein o) {
+    public static String describe(Protein o) {
         return "Protein " + o.getAbbreviation();
     }
 
@@ -127,9 +128,13 @@ public class Describe {
     }
 
     public static String describe(TestType o) {
-        return "Test type '" + o.getDescription() + "'";
+        return "Test type '" + o.getDescription() + "' "+ (o.getGenome() != null ? describe(o.getGenome()):"");
     }
 
+    public static String describe(Genome o){
+        return "Genome '"+ o.getOrganismName() +"'";
+    }
+    
     public static String describe(DrugGeneric o) {
         return "Generic drug '" + o.getGenericId() + "'";
     }

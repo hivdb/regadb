@@ -11,6 +11,7 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
 public class CatalogLoader implements ProgressReporter {
 	private static CatalogLoader instance;
+	private Thread thread;
 	
 	public static CatalogLoader getInstance() {
 		if (instance == null) {
@@ -27,8 +28,7 @@ public class CatalogLoader implements ProgressReporter {
 			}
 			
 		};
-		Thread thread_ = new Thread(run_);
-		thread_.start();
+		thread = new Thread(run_);
 	}
 	
 	public int getProgress() {
@@ -52,5 +52,9 @@ public class CatalogLoader implements ProgressReporter {
 	public boolean isDone() {
 		return DatabaseManager.getInstance().getAWCCatalog().getStatus() == Status.DONE ||
 		DatabaseManager.getInstance().getAWCCatalog().getStatus() == Status.FAILED;
+	}
+
+	public void start() {
+		thread.start();
 	}
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
@@ -25,13 +26,13 @@ public class Utils {
         {
             File tests =  File.createTempFile("tests_from_central_repos",".xml");
             FileProvider fp = new FileProvider();
-            fp.getFile("regadb-tests", "tests.xml", tests);
+            fp.getFile("regadb-tests", "tests-genomes.xml", tests);
             List<Test> resistanceTests = importXML.readTests(new InputSource(new FileReader(tests)), null);
             //remove non-resistance tests
             ArrayList<Test> toRemove = new ArrayList<Test>();
             for(Test resTest : resistanceTests)
             {
-                if(!resTest.getTestType().getDescription().equals(StandardObjects.getGssId()))
+                if(!Equals.isSameTestType(resTest.getTestType(),StandardObjects.getGssTestType()))
                 {
                     toRemove.add(resTest);
                 }

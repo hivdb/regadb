@@ -53,6 +53,7 @@ public class TextField extends FormField
                     break;
 	        }
 		}
+		setText(null);
 	}
     
     public TextField(InteractionState state, IForm form)

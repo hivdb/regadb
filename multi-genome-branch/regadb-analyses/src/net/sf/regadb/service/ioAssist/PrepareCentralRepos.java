@@ -14,7 +14,6 @@ import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
@@ -28,7 +27,7 @@ import org.jdom.output.XMLOutputter;
 
 public class PrepareCentralRepos
 {
-    private static TestType resistanceTestType = new TestType(new TestObject("Resistance test", 3), StandardObjects.getGssId());
+    private static TestType resistanceTestType = StandardObjects.getGssTestType();
     
     public static void main(String [] args)
     {
@@ -105,7 +104,7 @@ public class PrepareCentralRepos
         Test rega_71 = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
         export.writeTopTest(rega_71, tests);
         
-        File testsFile = new File(outputDir +File.separatorChar+"tests.xml");
+        File testsFile = new File(outputDir +File.separatorChar+"tests-genomes.xml");
         writeXMLFile(testsFile, tests);
         
         //testing
@@ -184,7 +183,6 @@ public class PrepareCentralRepos
     
     private static Test createResistanceTest(String baseFileName, String algorithm)
     {
-        resistanceTestType.setValueType(StandardObjects.getNumberValueType());
         Test resistanceTest = new Test(resistanceTestType, algorithm);
         
         Analysis analysis = new Analysis();

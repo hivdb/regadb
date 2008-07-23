@@ -57,10 +57,8 @@ public class WProgressbar extends WStyledContainerWidget {
 	private void setProgress(int progress) {
 		progressBar.resize(new WLength(progress, WLengthUnit.Percentage), progressBar.height());
 		
-		if (progress != this.progress) {
-			for (ProgressListener l : progressListeners) {
-				l.progressChanged(reporter);
-			}
+		for (ProgressListener l : progressListeners) {
+			l.progressChanged(reporter);
 		}
 		this.progress = progress;
 	}

@@ -9,6 +9,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
@@ -62,6 +63,19 @@ public class ViralIsolateForm extends FormWidget
 
 	public void init()
 	{
+//		WTabbedPane tabs = new WTabbedPane(this);
+//		_mainForm = new ViralIsolateMainForm(this);
+//		tabs.addTab(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
+//		
+//        if(getInteractionState()==InteractionState.Viewing) {
+//	        proteinForm_ = new ViralIsolateProteinForm(this);
+//			tabs.addTab(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
+//	        resistanceForm_ = new ViralIsolateResistanceForm(this);
+//			tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
+//	        reportForm_ = new ViralIsolateReportForm(this);
+//			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+//        }
+        
 		WTable layout = new WTable(this);
 		layout.resize(new WLength(100, WLengthUnit.Percentage), new WLength());
 
@@ -89,6 +103,7 @@ public class ViralIsolateForm extends FormWidget
         }
 		tabForm_.setStyleClass("tabmenu");
 		_mainForm.setStyleClass("viralisolateform");
+        
 		
         fillData();
         
@@ -129,7 +144,7 @@ public class ViralIsolateForm extends FormWidget
         for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
         {
             TestResult test = i.next();
-            if(StandardObjects.getGssId().equals(test.getTest().getTestType().getDescription()))
+            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTest().getTestType()))
             {
                 if(test.getTest().getAnalysis()!=null)
                 {
@@ -157,7 +172,7 @@ public class ViralIsolateForm extends FormWidget
         String uid = RegaDBMain.getApp().getLogin().getUid();
         for(Test test : tests)
         {
-            if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
+            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()))
             {
                 if(test.getAnalysis()!=null)
                 {

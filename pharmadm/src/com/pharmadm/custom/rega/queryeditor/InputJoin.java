@@ -14,7 +14,6 @@ public class InputJoin implements Join {
 		this.ivar2 = ivar2;
 	}
 	
-	@Override
 	public List<String> getJoinedVariables() {
 		List<String> joined = new ArrayList<String>();
 		joined.add(ivar1.getOutputVariable().getUniqueName());
@@ -22,7 +21,6 @@ public class InputJoin implements Join {
 		return joined;
 	}
 
-	@Override
 	public Join cloneInContext(
 			Map<ConfigurableWord, ConfigurableWord> originalToCloneMap)
 			throws CloneNotSupportedException {

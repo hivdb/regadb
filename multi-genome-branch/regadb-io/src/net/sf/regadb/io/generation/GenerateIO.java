@@ -27,79 +27,141 @@ public class GenerateIO
 	private Element rootE1_;
 	private Class startclass_;
 	
-	private static Class[] regaClasses_;
-    private static ArrayList<String> classToBeIgnored_ = new ArrayList<String>();
-    private static String dbPackage = "net.sf.regadb.db.";
-    private static ArrayList<String> stringRepresentedFields_ = new ArrayList<String>();
-    private static ArrayList<String> pointerClasses_ = new ArrayList<String>();
-    private static ArrayList<String> nominalValues_ = new ArrayList<String>();
-    
-    private static ArrayList<Pair<String, String>>  stringRepresentedFieldsRepresentationFields_ = new ArrayList<Pair<String, String>> ();
-    private static ArrayList<Pair<String, String>>  fieldsToBeIgnored_ = new ArrayList<Pair<String, String>> ();
-    
+	private GenerationRules rules;
+	private CsvWriteCodeGen csvWriteCodeGen = new CsvWriteCodeGen();
+	private DatasetAccessInterfaceCodeGen daInterfaceCodeGen = new DatasetAccessInterfaceCodeGen();
+	private XMLWriteCodeGen xmlWriteCodeGen = new XMLWriteCodeGen();
+	private XMLReadCodeGen xmlReadCodeGen = new XMLReadCodeGen();
+	
+	
+	private static String dbPackage = "net.sf.regadb.db.";
     private static ArrayList<Class>  idClasses_ = new ArrayList<Class> ();
       
     private ArrayList<Class> grammarAlreadyWritten_ = new ArrayList<Class>();
 	
-    static
-    {
+    private static GenerationRules getCsvRules() {
+    	GenerationRules rules = new GenerationRules();
+    	rules.writeCsv = true;
+    	
         try
         {
-            regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getClasses(Patient.class.getPackage().getName());
+        	rules.regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getClasses(Patient.class.getPackage().getName());
         }
         catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }
         
-        classToBeIgnored_.add(dbPackage + "DatasetAccess");
+        rules.classToBeIgnored_.add(dbPackage + "DatasetAccess");
+
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"DrugGeneric", "drugCommercials"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"DrugCommercial", "drugGenerics"));
         
-        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
-        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"EventNominalValue", "event"));
-        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
-        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
-        fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"EventNominalValue", "event"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
         
-        stringRepresentedFields_.add(dbPackage + "DrugGeneric");
-        stringRepresentedFields_.add(dbPackage + "DrugCommercial");
-        stringRepresentedFields_.add(dbPackage + "Protein");
-        stringRepresentedFields_.add(dbPackage + "AnalysisType");
-        stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
-        stringRepresentedFields_.add(dbPackage + "Genome");
+        rules.stringRepresentedFields_.add(dbPackage + "AnalysisType");
+        rules.stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
         
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "TherapyMotivation", "value"));
-        stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Genome", "organismName"));
         
-        pointerClasses_.add(dbPackage + "Test");
-        pointerClasses_.add(dbPackage + "TestType");
-        pointerClasses_.add(dbPackage + "ValueType");
-        pointerClasses_.add(dbPackage + "TestObject");
-        pointerClasses_.add(dbPackage + "TestNominalValue");
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "TherapyMotivation", "value"));
         
-        pointerClasses_.add(dbPackage + "Attribute");
-        pointerClasses_.add(dbPackage + "AttributeGroup");
-        pointerClasses_.add(dbPackage + "AttributeNominalValue");
         
-        pointerClasses_.add(dbPackage + "Event");
-        pointerClasses_.add(dbPackage + "EventNominalValue");
+        rules.pointerClasses_.add(dbPackage + "Protein");
+        rules.pointerClasses_.add(dbPackage + "DrugGeneric");
+        rules.pointerClasses_.add(dbPackage + "DrugCommercial");
+        rules.pointerClasses_.add(dbPackage + "Genome");
+        rules.pointerClasses_.add(dbPackage + "OpenReadingFrame");
+        rules.pointerClasses_.add(dbPackage + "SplicingPosition");
+
         
-        pointerClasses_.add(dbPackage + "Analysis");
-        pointerClasses_.add(dbPackage + "AnalysisData");
+        rules.pointerClasses_.add(dbPackage + "Test");
+        rules.pointerClasses_.add(dbPackage + "TestType");
+        rules.pointerClasses_.add(dbPackage + "ValueType");
+        rules.pointerClasses_.add(dbPackage + "TestObject");
+        rules.pointerClasses_.add(dbPackage + "TestNominalValue");
         
-        //pointerClasses_.add(dbPackage + "Dataset");
+        rules.pointerClasses_.add(dbPackage + "Attribute");
+        rules.pointerClasses_.add(dbPackage + "AttributeGroup");
+        rules.pointerClasses_.add(dbPackage + "AttributeNominalValue");
         
-        nominalValues_.add(dbPackage + "TestNominalValue");
-        nominalValues_.add(dbPackage + "AttributeNominalValue");
-        nominalValues_.add(dbPackage + "EventNominalValue");
+        rules.pointerClasses_.add(dbPackage + "Event");
+        rules.pointerClasses_.add(dbPackage + "EventNominalValue");
+        
+        rules.pointerClasses_.add(dbPackage + "Analysis");
+        rules.pointerClasses_.add(dbPackage + "AnalysisData");
+        
+        rules.nominalValues_.add(dbPackage + "TestNominalValue");
+        rules.nominalValues_.add(dbPackage + "AttributeNominalValue");
+        rules.nominalValues_.add(dbPackage + "EventNominalValue");
+    	
+        return rules;
     }
     
-    public static String getStringRepValueName(String className)
+    private static GenerationRules getXmlRules() {
+    	GenerationRules rules = new GenerationRules();
+    	rules.writeXml = true;
+        try
+        {
+        	rules.regaClasses_ = net.sf.regadb.util.reflection.PackageUtils.getClasses(Patient.class.getPackage().getName());
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        
+        rules.classToBeIgnored_.add(dbPackage + "DatasetAccess");
+
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AttributeNominalValue", "attribute"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"EventNominalValue", "event"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
+        
+        rules.stringRepresentedFields_.add(dbPackage + "DrugGeneric");
+        rules.stringRepresentedFields_.add(dbPackage + "DrugCommercial");
+        rules.stringRepresentedFields_.add(dbPackage + "Protein");
+        rules.stringRepresentedFields_.add(dbPackage + "AnalysisType");
+        rules.stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
+        rules.stringRepresentedFields_.add(dbPackage + "Genome");
+        
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugGeneric", "genericId"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "DrugCommercial", "name"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Protein", "abbreviation"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "AnalysisType", "type"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "TherapyMotivation", "value"));
+        rules.stringRepresentedFieldsRepresentationFields_.add(new Pair<String, String>(dbPackage + "Genome", "organismName"));
+        
+        rules.pointerClasses_.add(dbPackage + "Test");
+        rules.pointerClasses_.add(dbPackage + "TestType");
+        rules.pointerClasses_.add(dbPackage + "ValueType");
+        rules.pointerClasses_.add(dbPackage + "TestObject");
+        rules.pointerClasses_.add(dbPackage + "TestNominalValue");
+        
+        rules.pointerClasses_.add(dbPackage + "Attribute");
+        rules.pointerClasses_.add(dbPackage + "AttributeGroup");
+        rules.pointerClasses_.add(dbPackage + "AttributeNominalValue");
+        
+        rules.pointerClasses_.add(dbPackage + "Event");
+        rules.pointerClasses_.add(dbPackage + "EventNominalValue");
+        
+        rules.pointerClasses_.add(dbPackage + "Analysis");
+        rules.pointerClasses_.add(dbPackage + "AnalysisData");
+        
+        rules.nominalValues_.add(dbPackage + "TestNominalValue");
+        rules.nominalValues_.add(dbPackage + "AttributeNominalValue");
+        rules.nominalValues_.add(dbPackage + "EventNominalValue");
+        
+        return rules;
+    }
+    
+    public String getStringRepValueName(String className)
     {
-        for(Pair<String, String> c : stringRepresentedFieldsRepresentationFields_)
+        for(Pair<String, String> c : rules.stringRepresentedFieldsRepresentationFields_)
         {
             if(c.getKey().equals(className) || c.getKey().equals(dbPackage+className))
             {
@@ -116,8 +178,9 @@ public class GenerateIO
         el.setNamespace(relaxng);
     }
     
-	public GenerateIO(String strstartclass,String rootnodename)
+	public GenerateIO(String strstartclass,String rootnodename, GenerationRules rules)
 	{
+		this.rules = rules;
 		rootE1_ = new Element("grammar");
         setNs(rootE1_);
 		//rootE1_.setAttribute("name", rootnodename);
@@ -176,15 +239,15 @@ public class GenerateIO
 		
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
         
-        String id = XMLWriteCodeGen.createString();
-        String id2 = XMLWriteCodeGen.createString();
+        String id = xmlWriteCodeGen.createString();
+        String id2 = xmlWriteCodeGen.createString();
         
-        CsvWriteCodeGen.methodSig(id, c);
-        DatasetAccessInterfaceCodeGen.methodSig(id, c);
-        XMLWriteCodeGen.writeTopMethod(c, id2);
-        XMLWriteCodeGen.writeMethodSig(c, id);
+        csvWriteCodeGen.methodSig(id, c);
+        daInterfaceCodeGen.methodSig(id, c);
+        xmlWriteCodeGen.writeTopMethod(c, id2);
+        xmlWriteCodeGen.writeMethodSig(c, id);
         
-        XMLReadCodeGen.addObject(c, id);
+        xmlReadCodeGen.addObject(c, id);
 		
         Field[] fields = c.getDeclaredFields();
         
@@ -223,8 +286,8 @@ public class GenerateIO
                 }
         }
         
-        CsvWriteCodeGen.methodEnd(id, c);
-        XMLWriteCodeGen.writeMethodSigEnd(id);
+        csvWriteCodeGen.methodEnd(id, c);
+        xmlWriteCodeGen.writeMethodSigEnd(id);
 	}
     
     private void handleField(Field field, Element toAdd, Class bareClass, Class c, String id)
@@ -286,12 +349,12 @@ public class GenerateIO
             addReference(toAdd, bareClass);
             if(set)
             {
-                XMLWriteCodeGen.writeSet(bareClass, fieldName, "parentNode", id);
-                XMLReadCodeGen.addSet(id, field.getName(), bareClass);
+            	xmlWriteCodeGen.writeSet(bareClass, fieldName, "parentNode", id);
+                xmlReadCodeGen.addSet(id, field.getName(), bareClass);
             }
             else
             {
-                XMLWriteCodeGen.callClassWriteMethod(null,bareClass, field.getName(), "parentNode", id);
+            	xmlWriteCodeGen.callClassWriteMethod(null,bareClass, field.getName(), "parentNode", id);
             }
             
             writeClassGrammar(bareClass);
@@ -301,9 +364,9 @@ public class GenerateIO
             Element data = new Element("data");
             setNs(data);
             toAdd.addContent(handleStringField(data, null));
-            XMLWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, false, "parentNode");
-            XMLReadCodeGen.addRepresentedValue(id, field.getName(), bareClass, false);
-            CsvWriteCodeGen.stringRepresentedValue(id, field.getName(), bareClass, false, c);
+            xmlWriteCodeGen.writeStringRepresentedValue(id, field.getName(), bareClass, getStringRepValueName(bareClass.getName()), false, "parentNode");
+            xmlReadCodeGen.addRepresentedValue(id, field.getName(), bareClass, false);
+            csvWriteCodeGen.stringRepresentedValue(xmlWriteCodeGen, id, field.getName(), bareClass, getStringRepValueName(bareClass.getName()), false, c);
         }
         else if(isPointer(bareClass))
         {
@@ -311,13 +374,13 @@ public class GenerateIO
             
             if(!set)
             {
-                XMLWriteCodeGen.writePointer(id, bareClass, field.getName(), "parentNode", false, c);
-                XMLReadCodeGen.addPointer(id, field.getName(), bareClass, false);
+            	xmlWriteCodeGen.writePointer(id, bareClass, field.getName(), "parentNode", false, c);
+                xmlReadCodeGen.addPointer(id, field.getName(), bareClass, false);
             }
             else
             {
-                XMLWriteCodeGen.writePointerSet(id, bareClass, field.getName(), "parentNode", c);
-                XMLReadCodeGen.addPointerSet(id, field.getName(), bareClass);
+            	xmlWriteCodeGen.writePointerSet(id, bareClass, field.getName(), "parentNode", c);
+                xmlReadCodeGen.addPointerSet(id, field.getName(), bareClass);
             }
         }
         else if(interpreter.isComposite(c.getName(), field.getName()))
@@ -334,9 +397,9 @@ public class GenerateIO
                     Element data = new Element("data");
                     setNs(data);
                     el.addContent(handleStringField(data, null));
-                    XMLWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, "parentNode");
-                    XMLReadCodeGen.addRepresentedValue(id, compositeField.getName(), compositeField.getType(), true);
-                    CsvWriteCodeGen.stringRepresentedValue(id, compositeField.getName(), compositeField.getType(), true, c);
+                    xmlWriteCodeGen.writeStringRepresentedValue(id, compositeField.getName(), compositeField.getType(), getStringRepValueName(compositeField.getType().getName()), true, "parentNode");
+                    xmlReadCodeGen.addRepresentedValue(id, compositeField.getName(), compositeField.getType(), true);
+                    csvWriteCodeGen.stringRepresentedValue(xmlWriteCodeGen, id, compositeField.getName(), compositeField.getType(), getStringRepValueName(compositeField.getType().getName()),true, c);
                 }
                 else if(isPointer(compositeField.getType()))
                 {
@@ -345,8 +408,8 @@ public class GenerateIO
                     el.setAttribute("name", compositeField.getName());
                     toAdd.addContent(el);
                     handlePointer(el, compositeField.getType(), false);
-                    XMLWriteCodeGen.writePointer(id, compositeField.getType(), compositeField.getName(), "parentNode", false, c);
-                    XMLReadCodeGen.addPointer(id, compositeField.getName(), compositeField.getType(), true);
+                    xmlWriteCodeGen.writePointer(id, compositeField.getType(), compositeField.getName(), "parentNode", false, c);
+                    xmlReadCodeGen.addPointer(id, compositeField.getName(), compositeField.getType(), true);
                 }
                 else 
                 {
@@ -361,9 +424,9 @@ public class GenerateIO
                         el.setAttribute("name", compositeField.getName());
                         toAdd.addContent(el);
                         el.addContent(data);
-                        XMLWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
-                        XMLReadCodeGen.addPrimitive(id, compositeField.getName(), compositeField.getType(), true);
-                        CsvWriteCodeGen.writePrimitiveVar("id", compositeField, id, c, true);
+                        xmlWriteCodeGen.writePrimitiveVar("id",compositeField, "parentNode", id);
+                        xmlReadCodeGen.addPrimitive(id, compositeField.getName(), compositeField.getType(), true);
+                        csvWriteCodeGen.writePrimitiveVar(xmlWriteCodeGen, "id", compositeField, id, c, true);
                     }
                 }
             }
@@ -374,9 +437,9 @@ public class GenerateIO
             {
                 System.err.println("stop");
             }
-            XMLWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
-            XMLReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
-            CsvWriteCodeGen.writePrimitiveVar(null, field, id, c, false);
+            xmlWriteCodeGen.writePrimitiveVar(null, field, "parentNode", id);
+            xmlReadCodeGen.addPrimitive(id, field.getName(), bareClass, false);
+            csvWriteCodeGen.writePrimitiveVar(xmlWriteCodeGen, null, field, id, c, false);
             Integer length = interpreter.getLength(c.getName(), field.getName());
             Element primitive = addPrimitiveType(field, length);
             if(primitive==null)
@@ -422,7 +485,7 @@ public class GenerateIO
     
     private boolean isNominalClass(Class classs)
     {
-        for(String c : nominalValues_)
+        for(String c : rules.nominalValues_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
             {
@@ -435,7 +498,7 @@ public class GenerateIO
     
     private boolean isStringRepresentedField(Class classs)
     {
-        for(String c : stringRepresentedFields_)
+        for(String c : rules.stringRepresentedFields_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
             {
@@ -448,7 +511,7 @@ public class GenerateIO
     
     private boolean isPointer(Class classs)
     {
-        for(String c : pointerClasses_)
+        for(String c : rules.pointerClasses_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
             {
@@ -490,7 +553,7 @@ public class GenerateIO
             return true;
         }
         
-        for(Pair<String, String> ign : fieldsToBeIgnored_)
+        for(Pair<String, String> ign : rules.fieldsToBeIgnored_)
         {
             if(ign.getKey().equals(c.getName()) && ign.getValue().equals(field.getName()))
             {
@@ -590,7 +653,7 @@ public class GenerateIO
     
     private boolean isClassToBeIgnored(Class classs)
     {
-        for(String c : classToBeIgnored_)
+        for(String c : rules.classToBeIgnored_)
         {
             if(c.equals(classs.getName()) || c.equals(dbPackage+classs.getName()))
             {
@@ -622,55 +685,59 @@ public class GenerateIO
 	{
 		try
 		{
-            //relaxng schema
-            //create start element
-            Element start = new Element("start");
-            setNs(start);
-            Element el = new Element("element");
-            setNs(el);
-            el.setAttribute("name", "Patients");
-            start.addContent(el);
-            Element zeroOrMore = new Element("zeroOrMore");
-            setNs(zeroOrMore);
-            el.addContent(zeroOrMore);
-            Element ref = new Element("ref");
-            setNs(ref);
-            zeroOrMore.addContent(ref);
-            ref.setAttribute("name", "net.sf.regadb.db.Patient");
-            rootE1_.addContent(start);
-
-            Document n = new Document(rootE1_);
-			XMLOutputter outputter = new XMLOutputter();
-			outputter.setFormat(Format.getPrettyFormat());
-            String srcDir = getSrcPath("net.sf.regadb.io.relaxng");
-            File relaxNgFile = new File(srcDir+File.separatorChar+"regadb-relaxng.xml");
-            FileWriter fw = new FileWriter(relaxNgFile);
-            outputter.output(n, fw);
-            fw.flush();
-            fw.close();
-            //relaxng schema
+			if (rules.writeXml) {
+	            //relaxng schema
+	            //create start element
+	            Element start = new Element("start");
+	            setNs(start);
+	            Element el = new Element("element");
+	            setNs(el);
+	            el.setAttribute("name", "Patients");
+	            start.addContent(el);
+	            Element zeroOrMore = new Element("zeroOrMore");
+	            setNs(zeroOrMore);
+	            el.addContent(zeroOrMore);
+	            Element ref = new Element("ref");
+	            setNs(ref);
+	            zeroOrMore.addContent(ref);
+	            ref.setAttribute("name", "net.sf.regadb.db.Patient");
+	            rootE1_.addContent(start);
+	
+	            Document n = new Document(rootE1_);
+				XMLOutputter outputter = new XMLOutputter();
+				outputter.setFormat(Format.getPrettyFormat());
+	            String srcDir = getSrcPath("net.sf.regadb.io.relaxng");
+	            File relaxNgFile = new File(srcDir+File.separatorChar+"regadb-relaxng.xml");
+	            FileWriter fw = new FileWriter(relaxNgFile);
+	            outputter.output(n, fw);
+	            fw.flush();
+	            fw.close();
+	            //relaxng schema
+	            
+	            //export java code
+	            srcDir = getSrcPath("net.sf.regadb.io.exportXML");
+	            File exportJavaCodeFile = new File(srcDir+File.separatorChar+"ExportToXML.java");
+	            String exportCode = xmlWriteCodeGen.createClassCode(rules.pointerClasses_);
+	            fw = new FileWriter(exportJavaCodeFile);
+	            fw.write(exportCode);
+	            fw.flush();
+	            fw.close();
+	            //export java code
+	            
+	            //import java code
+	            srcDir = getSrcPath("net.sf.regadb.io.importXML");
+	            File importJavaCodeFile = new File(srcDir+File.separatorChar+"ImportFromXML.java");
+	            fw = new FileWriter(importJavaCodeFile);
+	            xmlReadCodeGen.generate(fw);
+	            fw.flush();
+	            fw.close();
+	            //import java code
+			}
             
-            //export java code
-            srcDir = getSrcPath("net.sf.regadb.io.exportXML");
-            File exportJavaCodeFile = new File(srcDir+File.separatorChar+"ExportToXML.java");
-            String exportCode = XMLWriteCodeGen.createClassCode(pointerClasses_);
-            fw = new FileWriter(exportJavaCodeFile);
-            fw.write(exportCode);
-            fw.flush();
-            fw.close();
-            //export java code
-            
-            //import java code
-            srcDir = getSrcPath("net.sf.regadb.io.importXML");
-            File importJavaCodeFile = new File(srcDir+File.separatorChar+"ImportFromXML.java");
-            fw = new FileWriter(importJavaCodeFile);
-            XMLReadCodeGen.generate(fw);
-            fw.flush();
-            fw.close();
-            //import java code
-            
-            CsvWriteCodeGen.writeClassToFile();
-            DatasetAccessInterfaceCodeGen.writeInterfaceToFile();
+            if (rules.writeCsv) {
+	            csvWriteCodeGen.writeClassToFile();
+	            daInterfaceCodeGen.writeInterfaceToFile();
+            }
 		}
 		catch (Exception e)
 		{
@@ -689,7 +756,7 @@ public class GenerateIO
 
 	private boolean isRegaClass(Class searchclass)
 	{
-		for (Class c : regaClasses_)
+		for (Class c : rules.regaClasses_)
 		{
 			if (c.equals(searchclass))
 			{
@@ -718,17 +785,16 @@ public class GenerateIO
         writeClassGrammar(startclass_);
 	}
 
-	public static void main(String[] args)
-	{
+	public static void generateAll(GenerationRules rules) {
         long start = System.currentTimeMillis();
-        GenerateIO test = new GenerateIO("net.sf.regadb.db.PatientImpl", "Patients");
+        GenerateIO test = new GenerateIO("net.sf.regadb.db.PatientImpl", "Patients", rules);
 		test.init();
 		test.generate();
         long duration = System.currentTimeMillis() -start;
         System.out.println("duration:"+duration);
         
         //check wether all classes are written
-        for(Class c : regaClasses_)
+        for(Class c : rules.regaClasses_)
         {
             boolean grammarWritten = false;
             if(test.grammarAlreadyWritten_.contains(c))
@@ -736,7 +802,7 @@ public class GenerateIO
                 grammarWritten = true;
             }
             boolean isStringRep = false;
-            for(Pair<String, String> stringRep : stringRepresentedFieldsRepresentationFields_)
+            for(Pair<String, String> stringRep : rules.stringRepresentedFieldsRepresentationFields_)
             {
                 if(stringRep.getKey().equals(c.getName()))
                 {
@@ -765,5 +831,11 @@ public class GenerateIO
                 System.err.println("oeioei"+c);
             
         }
+	}
+	
+	public static void main(String[] args)
+	{
+		generateAll(getCsvRules());
+		generateAll(getXmlRules());
 	}
 }

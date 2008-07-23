@@ -186,9 +186,7 @@ public class SinglePatientForm extends FormWidget
         idTF.setText(patient.getPatientId());
         firstNameTF.setText(patient.getFirstName());
         lastNameTF.setText(patient.getLastName());
-        if(patient.getBirthDate()!=null)
         birthDateTF.setDate(patient.getBirthDate());
-        if(patient.getDeathDate()!=null)
         deathDateTF.setDate(patient.getDeathDate());
         
         List<Attribute> attributes;

@@ -15,13 +15,17 @@ import com.pharmadm.custom.rega.queryeditor.constant.*;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.util.date.DateUtils;
 
 public class HibernateCatalogBuilder implements CatalogBuilder{
 
 	private AWCPrototypeCatalog catalog;
+	AWCPrototypeBuilder builder;
+	
 	
 	public void fillCatalog(AWCPrototypeCatalog catalog) {
 		this.catalog = catalog;
+		builder = new AWCPrototypeBuilder(catalog);
 		
 		try {
 			catalog.setTotalSize(320);
@@ -184,7 +188,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    			newWords.add(new FixedString("CASE WHEN "));
 	    			newWords.add(words.get(0));
 	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "' "));
-	    			newWords.add(new FixedString("THEN (TO_DATE('01-01-1970', 'DD-MM-YYYY')"));
+	    			newWords.add(new FixedString("THEN (TO_DATE('01-01-1970', '" + DateUtils.getHQLdateFormatString() + "')"));
 	    			newWords.add(new FixedString(" + cast(cast("));
 	    			newWords.addAll(words);
 	    			newWords.add(new FixedString(", long)/86400000, int)) ELSE current_date() END"));
@@ -366,7 +370,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	 */
     private AtomicWhereClause getPropertyComparisonClause(ObjectRelation relations, DbObject property, boolean fetchAsVariable, String suggestedValuesQuery) {
             
-    		Constant constant = getConstant(property, suggestedValuesQuery);
+    		Constant constant = HibernateCatalogUtils.getConstant(property, suggestedValuesQuery);
             
             AtomicWhereClause aClause = new SimpleAtomicWhereClause();
             WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
@@ -417,15 +421,15 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             		aVisList.addFixedString(new FixedString(property.getDescription()));
             }
 
-            Constant comparisonOperator = getOperatorConstant(property, suggestedValuesQuery != null);
+            Constant comparisonOperator = HibernateCatalogUtils.getComparisonOperator(property, suggestedValuesQuery != null);
             // only show the input control for the constant when needed 
             if (!fetchAsVariable) {
                 aVisList.addConstant(comparisonOperator);
                 aVisList.addConstant(constant);
-            	aClause.setCompositionBehaviour(new PropertySetComposition());	                	
+            	aClause.setCompositionBehaviour(new PropertySetComposition(0));	                	
             }
             else {
-        		aClause.setCompositionBehaviour(new PropertyFetchComposition());
+        		aClause.setCompositionBehaviour(new PropertyFetchComposition(0));
             }
             
             //// build the query
@@ -438,7 +442,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             	if (!fetchAsVariable) aComposer.addFixedString(new FixedString(" AND\n\t "));
             }
             if (!fetchAsVariable) {
-            	boolean caseSensitive = (isCaseSensitive(property));
+            	boolean caseSensitive = (HibernateCatalogUtils.isCaseSensitive(property));
             	// create comparison constraint
             	// [foreigntable.property] [operator] [constant]
                 if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
@@ -469,7 +473,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aClause.addGroup(rel.getInputTable().getDescription());
 
         InputVariable ivar = new InputVariable(rel.getInputTable());
-        Constant constant = getAggregateFunction(field);
+        Constant constant = HibernateCatalogUtils.getAggregateFunction(field);
         FromVariable fromVar = new FromVariable(rel.getForeignTable());
         OutputVariable ovar =  new OutputVariable(rel.getForeignTable());
         ovar.setRelation(rel.getDescription());
@@ -504,48 +508,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     }
     
     
-    private Constant getAggregateFunction(DbObject object) {
-    	ValueType type = object.getValueType();
-    	if (type == ValueType.String) {
-    		return new OperatorConstant();
-    	}
-    	else if (type == ValueType.Boolean) {
-    		return new OperatorConstant();
-    	}
-    	else if (type == ValueType.Number) {
-    		return getNumberAggregateFunction();
-    	}
-    	else if (type == ValueType.Date) {
-    		return getDateAggregateFunction();
-    	}
-    	else {
-    		return new OperatorConstant();
-    	}
-    }    
-
-	private Constant getNumberAggregateFunction() {
-    	Constant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("min", "lowest"));
-       	constant.addSuggestedValue(new SuggestedValuesOption("max", "highest"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-	}
-
-
-	private Constant getDateAggregateFunction() {
-    	Constant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("min", "earliest"));
-       	constant.addSuggestedValue(new SuggestedValuesOption("max", "latest"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-	}
-    
-    
-
-    
-    
-
-	private AtomicWhereClause getGenericDrugResolvedClause() {
+    private AtomicWhereClause getGenericDrugResolvedClause() {
     	DbObject therapyTable = catalog.getObject("Therapy");
     	DbObject genericDrugTable = catalog.getObject("DrugGeneric");
     	DbObject genericTherapyTable = catalog.getObject("TherapyGeneric");
@@ -601,65 +564,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         return aClause;
     }
     
-    private Constant getOperatorConstant(DbObject object, boolean exact) {
-    	ValueType type = object.getValueType();
-    	if (type == ValueType.String) {
-    		return getStringComparisonOperator(exact);
-    	}
-    	else if (type == ValueType.Boolean) {
-    		return getBooleanComparisonOperator();
-    	}
-    	else if (type == ValueType.Number) {
-    		return getNumberComparisonOperator(exact);
-    	}
-    	else if (type == ValueType.Date) {
-    		return getDateComparisonOperator(exact);
-    	}
-    	else {
-    		return getObjectComparisonOperator();
-    	}
-    }
-    
-    private boolean isCaseSensitive(DbObject object) {
-    	ValueType type = object.getValueType();
-    	if (type == ValueType.String) {
-    		return false;
-    	}
-    	else {
-    		return true;
-    	}
-    }
-    
-    private Constant getConstant(DbObject object, String suggestedValuesQuery) {
-    	ValueType type = object.getValueType();
-    	Constant constant = null;
-    	if (type == ValueType.String) {
-    		constant = new StringConstant();
-    	}
-    	else if (type == ValueType.Boolean) {
-    		constant = new BooleanConstant();
-    	}
-    	else if (type == ValueType.Number) {
-    		constant = new DoubleConstant();
-    	}
-    	else if (type == ValueType.Date) {
-    		constant = new DateConstant();
-    	}
-    	if (constant != null && type != ValueType.Boolean) {
-    		if (object.hasDropdown() && suggestedValuesQuery == null) {
-    			suggestedValuesQuery = "SELECT DISTINCT obj." + object.getPropertyName() + " FROM " + object.getTableName() + " obj";
-    			constant.setSuggestedValuesQuery(suggestedValuesQuery);
-        		constant.setSuggestedValuesMandatory(true);
-    		}
-    		else if (suggestedValuesQuery != null){
-    			constant.setSuggestedValuesQuery(suggestedValuesQuery);
-        		constant.setSuggestedValuesMandatory(true);
-    		}
-    	}
-    	return constant;
-    }
-
-	/**
+    /**
      * get all clauses related to number variables
      * @return all the clauses that have been made
      */
@@ -732,142 +637,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     }
     
     /**
--     * gets a constant with the possible comparison operators for NULL tests (IS NULL, IS NOT NULL)
-     * @return a constant with the possible comparison operators for NULL tests
-     */
-    private OperatorConstant getNullComparisonOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-    	constant.addSuggestedValue(new SuggestedValuesOption("IS NOT NULL", "is defined"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("IS NULL", "is not defined"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
-     * Get a constant with the possible comparison operations for persistent objects: (=, <>)
-     * @return a constant with the possible comparison operations for persistent objects
-     */
-    private OperatorConstant getObjectComparisonOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-    	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
-     * Get a constant with the possible comparison operations for date values: (=, <>, <, >)
-     * @param property the property to fetch the date comparator of
-     * @param exact true when comparison may only be exact
-     * @return a constant with the possible comparison operations for date values
-     */
-    private OperatorConstant getDateComparisonOperator(boolean exact) {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("="," is on"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<>", " is not on"));
-    	if (!exact) {
-	       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is before"));
-	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
-    	}
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }    
-    
-    /**
-     * Get a constant with the possible comparison operations for boolean values: (=, <>)
-     * @return a constant with the possible comparison operations for boolean values
-     */
-    private OperatorConstant getBooleanComparisonOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
-     * Get a constant with the possible comparison operations for string values: (like, not like)
-     * @return a constant with the possible comparison operations for string values
-     */
-    private OperatorConstant getStringComparisonOperator(boolean exact) {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("LIKE", "is"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("NOT LIKE", "is not"));
-    	if (!exact) {
-	    	constant.addSuggestedValue(new SuggestedValuesOption("<", "comes before"));
-	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "comes after"));
-    	}
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
-     * Get a constant with the possible comparison operations for numeric values: (=, <>, <, >)
-     * @return a constant with the possible comparison operations for numeric values
-     */
-    private OperatorConstant getNumberComparisonOperator(boolean exact) {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("=", "is"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("<>", "is not"));
-    	if (!exact) {
-	       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is less than"));
-	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is more than"));
-    	}
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
-     * Get a constant with the possible comparison operations for checking an interval: (between, not between)
-     * @return a constant with the possible comparison operations for checking an interval
-     */
-    private OperatorConstant getIntervalComparisonOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("BETWEEN", "is between"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("NOT BETWEEN", "is not between"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-
-
-    /**
-     * Get a constant with the possible calculation operations for numbers: (+, -, *, /)
-     * @return a constant with the possible calculation operations for numbers
-     */
-    private OperatorConstant getNumberCalculationOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("+", "+"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("-", "-"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("*", "*"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("/", "/"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-
-    /**
-     * Get a constant with the possible calculation operations for strings: (||)
-     * @return a constant with the possible calculation operations for strings
-     */
-    private OperatorConstant getStringCalculationOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("||", "+"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-
-    /**
-     * Get a constant with the possible calculation operations for dates: (+, -)
-     * @return a constant with the possible calculation operations for dates
-     */
-    private OperatorConstant getDateCalculationOperator() {
-    	OperatorConstant constant = new OperatorConstant();
-       	constant.addSuggestedValue(new SuggestedValuesOption("+", "+"));
-    	constant.addSuggestedValue(new SuggestedValuesOption("-", "-"));
-    	constant.setSuggestedValuesMandatory(true);
-    	return constant;
-    }
-    
-    /**
      * get a clause to check if a numeric variable is between two constants
      * @return the clause that has been made
      */
@@ -880,7 +649,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      * @return the clause that has been made
      */
     private AtomicWhereClause getDateVariableIntervalClause() {
-    	return getVariableIntervalClause(catalog.getObject(ValueType.Date.toString()));
+    	return getVariableIntervalClause(catalog.getObject(ValueType.Number.toString()));
     }
     
     /**
@@ -903,10 +672,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aClause.addGroup(object.getDescription());
         
         InputVariable ivar = new InputVariable(object);
-        Constant comparisonOperator = getIntervalComparisonOperator();
-        boolean caseSensitive = isCaseSensitive(object);
-        Constant startConstant = getConstant(object, null);
-        Constant endConstant = getConstant(object, null);
+        Constant comparisonOperator = HibernateCatalogUtils.getIntervalComparisonOperator();
+        boolean caseSensitive = HibernateCatalogUtils.isCaseSensitive(object);
+        Constant startConstant = HibernateCatalogUtils.getConstant(object, null);
+        Constant endConstant = HibernateCatalogUtils.getConstant(object, null);
         
         aVisList.addFixedString(new FixedString(object.getDescription()));
         aVisList.addInputVariable(ivar);
@@ -982,7 +751,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aVisList.addFixedString(new FixedString("There is a"));
         aVisList.addOutputVariable(ovar);
         
-        Constant constant = getConstant(object, null);
+        Constant constant = HibernateCatalogUtils.getConstant(object, null);
         
         if (constant != null) {
         	ovar.getExpression().addConstant(constant);
@@ -1049,15 +818,15 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aClause.addGroup(object.getDescription());
 
         InputVariable ivar1 = new InputVariable(object);
-        Constant operatorConstant = getOperatorConstant(object, false);
-        Constant constant = getConstant(object, null);
+        Constant operatorConstant = HibernateCatalogUtils.getComparisonOperator(object, false);
+        Constant constant = HibernateCatalogUtils.getConstant(object, null);
         
         aVisList.addFixedString(new FixedString(object.getDescription()));
         aVisList.addInputVariable(ivar1);
         aVisList.addConstant(operatorConstant);
         aVisList.addConstant(constant);
         
-        addComparisonClauseToComposer(aComposer, ivar1, operatorConstant, constant, isCaseSensitive(object));
+        addComparisonClauseToComposer(aComposer, ivar1, operatorConstant, constant, HibernateCatalogUtils.isCaseSensitive(object));
         
         return aClause;
     }
@@ -1117,7 +886,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         InputVariable ivar1 = new InputVariable(object);
         InputVariable ivar2 = new InputVariable(object);
 
-        Constant constant = getOperatorConstant(object, false);
+        Constant constant = HibernateCatalogUtils.getComparisonOperator(object, false);
         aVisList.addFixedString(new FixedString(object.getDescription()));
         aVisList.addInputVariable(ivar1);
         aVisList.addConstant(constant);
@@ -1127,7 +896,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         	aClause.addRelation(new InputJoin(ivar1,ivar2));
         }
         
-        addComparisonClauseToComposer(aComposer, ivar1, constant, ivar2, isCaseSensitive(object));
+        addComparisonClauseToComposer(aComposer, ivar1, constant, ivar2, HibernateCatalogUtils.isCaseSensitive(object));
         
         return aClause;
     }
@@ -1159,8 +928,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> getNumericCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.Number.toString()), new DoubleConstant(), null, getNumberCalculationOperator(), ""));
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.Number.toString()), null, catalog.getObject(ValueType.Number.toString()), getNumberCalculationOperator(), ""));
+       	list.add(getVariableCalculationClause(ValueType.Number, ValueType.Number, "constant", "%s", "%s"));
+    	list.add(getVariableCalculationClause(ValueType.Number, ValueType.Number, "ivar", "%s", "%s"));
     	return list;
     }
     
@@ -1170,8 +939,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> getStringCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.String.toString()), new StringConstant(), null, getStringCalculationOperator(), ""));
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.String.toString()), null, catalog.getObject(ValueType.String.toString()), getStringCalculationOperator(), ""));
+    	list.add(getVariableCalculationClause(ValueType.String, ValueType.String, "constant", "%s", "%s"));
+    	list.add(getVariableCalculationClause(ValueType.String, ValueType.String, "ivar", "%s", "%s"));
     	return list;
     }
 
@@ -1181,73 +950,36 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
      */
     private List<AtomicWhereClause> getDateCalculationClauses() {
     	List<AtomicWhereClause> list = new ArrayList<AtomicWhereClause>();
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.Date.toString()), new DoubleConstant(), null, getDateCalculationOperator(), "days"));
-    	list.add(getVariableCalculationClause(catalog.getObject(ValueType.Date.toString()), null, catalog.getObject(ValueType.Number.toString()), getDateCalculationOperator(), "days"));
+    	list.add(getVariableCalculationClause(ValueType.Date, ValueType.Number, "constant", "cast(%s, integer)", "%s days"));
+    	list.add(getVariableCalculationClause(ValueType.Date, ValueType.Number, "ivar", "cast(%s, integer)", "%s days"));
     	return list;
     }
     
     /**
      * get a clause to create a new variable of the given type from a calculation between a variable of the given type
      * and either a given constant or another variable
-     * @param variableType Numeric for numbers
-     * 	                   Date for dates
-     *                     String for strings
-     *                     Boolean for booleans
-     * @param comparisonOperator constant with the possible calculation operations
-     * @param calculationConstant The constant to do the calculation with
-     *                           null if you do not want to do a calculation with a constant
-     * @param calculationVariableType The type of variable you want to do the calculation with
-     *                               null if you do not want to do a calculation with a variable
-     * @param calculationOperator constant with the possible comparison operations
-     * @param description text at the start of the english representation of the clause
-     * @param additionalDescription text at the end of the english representation of the clause
+     * @param inputType type of result and starting variable
+     * @param addType type of addition element
+     * @param addWord constant for addition with a constant
+     *                ivar for addition with an existing variable
+     * @param outputExpr format string for the addition element in sql
+     * @param visExpr format string for the addition element in natural language
      * @return the clause that has been made
      */    
-    private AtomicWhereClause getVariableCalculationClause(DbObject object, Constant calculationConstant, DbObject calculationObject, OperatorConstant calculationOperator, String additionalDescription) {
-    	if (calculationConstant != null || calculationObject != null) {
-            AtomicWhereClause aClause = new SimpleAtomicWhereClause();
-            VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-            WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-            aClause.addGroup("New Variable");
-
-            InputVariable ivar1 = new InputVariable(object);
-            InputVariable ivar2 = null;
-            
-            OutputVariable ovar = new OutputVariable(object.getTableObject());
-            ovar.getExpression().addInputVariable(ivar1);
-            ovar.getExpression().addFixedString(new FixedString(" "));
-            ovar.getExpression().addConstant(calculationOperator);
-            ovar.getExpression().addFixedString(new FixedString(" "));
-            if (calculationConstant != null) {
-                aClause.setCompositionBehaviour(new PrimitiveConstantAdditionComposition());
-	            ovar.getExpression().addConstant(calculationConstant);
-            }
-            else if (calculationObject != null) {
-                aClause.setCompositionBehaviour(new PrimitiveInputAdditionComposition());
-            	ivar2 =  new InputVariable(calculationObject);
-	            ovar.getExpression().addInputVariable(ivar2);
-            }
-            
-            aVisList.addFixedString(new FixedString("There is a"));
-            aVisList.addOutputVariable(ovar);
-            aVisList.addFixedString(new FixedString("with value"));
-            aVisList.addInputVariable(ivar1);
-            aVisList.addConstant(calculationOperator);
-            if (calculationConstant != null) {
-            	aVisList.addConstant(calculationConstant);
-            }
-            else if (calculationObject != null) {
-                aVisList.addInputVariable(ivar2);
-            }
-            aVisList.addFixedString(new FixedString(additionalDescription));
-            
-            aComposer.addFixedString(new FixedString("1=1"));
-            
-            return aClause;
-        } else {
-            return null;
-        }
+    private AtomicWhereClause getVariableCalculationClause(ValueType inputType, ValueType addType, String addWord, String outputExpr, String visExpr) {
+    	AtomicWhereClause clause =  builder.getClause(
+    			"cst1  = {" + addWord + ":" + addType + "}",
+            	"op1   = {operator:" + inputType + "Calc}",
+            	"ivar1 = {ivar:" + inputType + "}",
+            	"ovar:" + inputType + " = {ivar1} {op1} " + String.format(outputExpr, "{cst1}"),
+            	"visualisation = there is a {ovar} with value {ivar1}{op1}" + String.format(visExpr, "{cst1}"),
+            	"sql           = 1=1",
+            	"group         = New Variable",
+            	"composition   = primitive " + addWord + " addition");
+    	return clause;
     }
+    
+
     
     private AtomicWhereClause getNullClause(DbObject object) {
         AtomicWhereClause aClause = new SimpleAtomicWhereClause();
@@ -1255,7 +987,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
         aClause.addGroup(object.getTableObject().getDescription());
         
-        Constant cst = getNullComparisonOperator();
+        Constant cst = HibernateCatalogUtils.getNullComparisonOperator();
         InputVariable ivar = new InputVariable(object);
         
         aVisList.addFixedString(new FixedString(object.getDescription()));
@@ -1294,9 +1026,9 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         aVisList.addFixedString(new FixedString(fetchAsVariable ? "has a" : "'s"));
         aVisList.addOutputVariable(ovar);
         if (!fetchAsVariable) {
-            aClause.setCompositionBehaviour(new PropertySetComposition());
-            Constant constant = getOperatorConstant(object, object.hasDropdown());
-            Constant amount = getConstant(object, null);
+            aClause.setCompositionBehaviour(new PropertySetComposition(1));
+            Constant constant = HibernateCatalogUtils.getComparisonOperator(object, object.hasDropdown());
+            Constant amount = HibernateCatalogUtils.getConstant(object, null);
 
             aVisList.addConstant(constant);
 	        aVisList.addConstant(amount);
@@ -1308,35 +1040,12 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	        aComposer.addConstant(amount);
         }
         else {
-        	aClause.setCompositionBehaviour(new PropertyFetchComposition());
+        	aClause.setCompositionBehaviour(new PropertyFetchComposition(1));
         }
         
         return aClause;
     	
     }
-    
-//    private AtomicWhereClause addCountClause(String variableType) {
-//        AtomicWhereClause aClause = new AtomicWhereClause();
-//        VisualizationClauseList aVisList = aClause.getVisualizationClauseList();
-//        WhereClauseComposer aComposer = aClause.getWhereClauseComposer();
-//        aClause.addGroup("Number");
-//        
-//        InputVariable ivar1 = new InputVariable(new VariableType(variableType));
-//        OutputVariable ovar = new OutputVariable(new VariableType(ValueType.Numeric.toString()), ValueType.Numeric.toString());
-//        ovar.getExpression().addFixedString(new FixedString("count (distinct "));
-//        ovar.getExpression().addInputVariable(ivar1);
-//        ovar.getExpression().addFixedString(new FixedString(")"));
-//        
-//        aVisList.addFixedString(new FixedString("There is a"));
-//        aVisList.addOutputVariable(ovar);
-//        aVisList.addFixedString(new FixedString(" with value number of different"));
-//        aVisList.addInputVariable(ivar1);
-//        
-//        aComposer.addFixedString(new FixedString("1=1"));
-//
-//        addAtomicWhereClause(aClause);
-//        return aClause;
-//    }
     
     private AtomicWhereClause getMutationClause(String referencePath, String mutationPath, String description) {
         AtomicWhereClause aClause = new SimpleAtomicWhereClause();
@@ -1430,7 +1139,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	catalog.addObject(new DbObject(ValueType.Boolean.toString()));
     	catalog.addObject(new DbObject(ValueType.Date.toString()));
     	catalog.addObject(new DbObject(ValueType.String.toString()));
-    	
+
     	// attributes
         catalog.addObject(new DbObject("Attribute"));
         catalog.addObject(new DbObject("PatientAttributeValue"));
@@ -1477,11 +1186,35 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addObject(new DbObject("NtSequence", "testResults", "test_result_count",  "test results").setValueType(ValueType.Number));
         catalog.addObject(new DbObject("NtSequence", "aaSequences", "aa_sequence_count",  "amino acid sequences").setValueType(ValueType.Number));
         
+        // genomes
+        catalog.addObject(new DbObject("Genome", null, "genome", "genome"));
+        catalog.addObject(new DbObject("Genome", "genomeIi", "index", "index"));
+        catalog.addObject(new DbObject("Genome", "organismName", "name", "name", true));
+        catalog.addObject(new DbObject("Genome", "organismDescription", "description", "description"));
+        catalog.addObject(new DbObject("Genome", "genbankNumber", "genbank_number", "genbank number"));
+        catalog.addObject(new DbObject("Genome", "openReadingFrames", "open_reading_frame_count", "open reading frames").setValueType(ValueType.Number));
+        
+        // open reading frames
+        catalog.addObject(new DbObject("OpenReadingFrame", null, "open_reading_frame", "open reading frame"));
+        catalog.addObject(new DbObject("OpenReadingFrame", "openReadingFrameIi", "index", "index"));
+        catalog.addObject(new DbObject("OpenReadingFrame", "name", "name", "name", true));
+        catalog.addObject(new DbObject("OpenReadingFrame", "description", "description", "description"));
+        catalog.addObject(new DbObject("OpenReadingFrame", "referenceSequence", "reference_sequence", "reference sequence"));
+        catalog.addObject(new DbObject("OpenReadingFrame", "proteins", "protein_count", "proteins").setValueType(ValueType.Number));
+
         // protein
         catalog.addObject(new DbObject("Protein", null, "protein", "protein"));
         catalog.addObject(new DbObject("Protein", "proteinIi", "index", "index"));
         catalog.addObject(new DbObject("Protein", "abbreviation", "abbreviation", "abbreviation", true));
         catalog.addObject(new DbObject("Protein", "fullName", "name", "name", true));
+        catalog.addObject(new DbObject("Protein", "startPosition", "start_position", "start position"));
+        catalog.addObject(new DbObject("Protein", "stopPosition", "stop_position", "stop position"));
+        catalog.addObject(new DbObject("Protein", "splicingPositions", "splicing_position_count", "splicing positions").setValueType(ValueType.Number));
+        
+        // splicing position
+        catalog.addObject(new DbObject("SplicingPosition", null, "splicing_position", "splicing position"));
+        catalog.addObject(new DbObject("SplicingPosition", "splicingPositionIi", "index", "index"));
+        catalog.addObject(new DbObject("SplicingPosition", "position", "position", "position"));
 
         // aa sequence
         catalog.addObject(new DbObject("AaSequence", null, "aa_sequence", "amino acid sequence"));
@@ -1604,6 +1337,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addRelations("TherapyCommercial", "id.therapy", "Therapy", null , false, "is a part of",  "has a");       
         addRelations("TherapyGeneric", "id.therapy", "Therapy", null , false, "is a part of",  "has a");
 
+        addRelations("SplicingPosition", "protein", "Protein", null, false, "is in a", "has a");
+        addRelations("Protein", "openReadingFrame", "OpenReadingFrame", null, false, "is transcribed from an", "transcribes a");
+        addRelations("OpenReadingFrame", "genome", "Genome", null, false, "is from a", "has an");
+        
         addRelations("NtSequence", "viralIsolate", "ViralIsolate", null, false, "comes from a",  "has a" );       
         addRelations("NtSequence", "viralIsolate.patient", "PatientImpl", null, false, "comes from a",  "has a");
         addRelations("AaSequence", "ntSequence", "NtSequence", null, false, "comes from a",  "has an"   );     
@@ -1670,6 +1407,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	catalog.addAll(getObjectClauses(catalog.getObject("Protein", "fullName")));
     	catalog.addAll(getObjectClauses(catalog.getObject("TestResult")));
     	catalog.addAll(getObjectClauses(catalog.getObject("PatientEventValue")));
+    	
+    	catalog.addAll(getObjectClauses(catalog.getObject("Genome")));
+    	catalog.addAll(getObjectClauses(catalog.getObject("OpenReadingFrame")));
+    	catalog.addAll(getObjectClauses(catalog.getObject("SplicingPosition")));
     	
         ///////////////////////////////////////
         // events
@@ -1834,14 +1575,35 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getRelationClauses("AaInsertion", "AaSequence"));
         catalog.addAll(getRelationClauses("AaSequence", "Protein"));
 
+        
+        ///////////////////////////////////////
+        // genome
+        catalog.addAll(getPropertyComparisonClauses("Genome", "organismName"));
+        catalog.addAll(getPropertyComparisonClauses("Genome", "organismDescription"));
+        catalog.addAll(getPropertyComparisonClauses("Genome", "genbankNumber"));
+        
+        
+        ///////////////////////////////////////
+        // open reading frame
+        catalog.addAll(getPropertyComparisonClauses("OpenReadingFrame", "name"));
+        catalog.addAll(getPropertyComparisonClauses("OpenReadingFrame", "description"));
+        catalog.addAll(getPropertyComparisonClauses("OpenReadingFrame", "referenceSequence"));
+        catalog.addAll(getRelationClauses("OpenReadingFrame", "Genome"));
+        
 
         ///////////////////////////////////////
         // protein
         catalog.addAll(getPropertyComparisonClauses("Protein", "abbreviation"));
         catalog.addAll(getPropertyComparisonClauses("Protein", "fullName"));
+        catalog.addAll(getRelationClauses("Protein", "OpenReadingFrame"));
+        
+        
+        ///////////////////////////////////////
+        // splicing position
+        catalog.addAll(getPropertyComparisonClauses("SplicingPosition", "position"));
+        catalog.addAll(getRelationClauses("SplicingPosition", "Protein"));
+        
 
-        
-        
         ///////////////////////////////////////
         // amino acid mutation
         catalog.addAll(getPropertyComparisonClauses("AaMutation", "aaReference"));

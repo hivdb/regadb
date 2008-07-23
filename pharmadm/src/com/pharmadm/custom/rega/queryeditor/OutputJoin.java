@@ -12,14 +12,12 @@ public class OutputJoin implements Join {
 		this.ovar = ovar;
 	}
 
-	@Override
 	public List<String> getJoinedVariables() {
 		List<String> joined = new ArrayList<String>();
 		joined.add(ovar.getUniqueName());
 		return joined;
 	}
 
-	@Override
 	public Join cloneInContext(
 			Map<ConfigurableWord, ConfigurableWord> originalToCloneMap)
 			throws CloneNotSupportedException {
