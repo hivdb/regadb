@@ -89,7 +89,7 @@ public class TestNtSequenceAnalysis extends NtSequenceAnalysis{
     
     public void setTest(Test test) {
         this.test = test;
-        if(test != null)
+        if(test != null && test.getTestIi() != null)
             setTestIi(test.getTestIi());
     }
 

@@ -43,7 +43,7 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
     
     public void setNtSequence(NtSequence ntSequence) {
         this.ntSequence = ntSequence;
-        if(ntSequence != null)
+        if(ntSequence != null && ntSequence.getNtSequenceIi() != null)
             setNtSequenceIi(ntSequence.getNtSequenceIi());
     }
 

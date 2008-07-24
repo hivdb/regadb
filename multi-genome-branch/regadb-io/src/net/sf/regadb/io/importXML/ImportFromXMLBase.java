@@ -176,7 +176,7 @@ public class ImportFromXMLBase extends DefaultHandler{
             return result;
     }
     protected Genome resolveGenome(String value) throws SAXException {
-        Genome result = genomes.get(value.toUpperCase());
+        Genome result = getGenomes().get(value.toUpperCase());
         if (result == null)
             throw new SAXException(new ImportException("Could not resolve genome: '" + value + "'"));
         else
@@ -247,10 +247,10 @@ public class ImportFromXMLBase extends DefaultHandler{
             }
         }
         
-        genomes = new TreeMap<String, Genome>();
+        setGenomes(new TreeMap<String, Genome>());
         if(t!=null){
             for(Genome g : t.getGenomes()){
-                genomes.put(g.getOrganismName(), g);
+                getGenomes().put(g.getOrganismName(), g);
             }
         }
     }    
@@ -318,5 +318,13 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public Map<String, AnalysisType> getAnalysisTypes() {
         return analysisTypes;
+    }
+
+    public void setGenomes(Map<String, Genome> genomes) {
+        this.genomes = genomes;
+    }
+
+    public Map<String, Genome> getGenomes() {
+        return genomes;
     }
 }
