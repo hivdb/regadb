@@ -9,11 +9,8 @@ import net.sf.witty.wt.WFileUpload;
 import net.sf.witty.wt.WFont;
 import net.sf.witty.wt.WFontGenericFamily;
 import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WTextArea;
-import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class NucleotideField extends FormField
@@ -54,12 +51,12 @@ public class NucleotideField extends FormField
     
     public void flagErroneous()
     {
-        _fieldEdit.setStyleClass("form-field-ntfield-edit-invalid");
+        _fieldEdit.setStyleClass("form-field ntfield edit-invalid");
     }
 
     public void flagValid()
     {
-        _fieldEdit.setStyleClass("form-field-ntfield-edit-valid");
+        _fieldEdit.setStyleClass("form-field ntfield edit-valid");
     }
 
     public void setFormText(String text) 

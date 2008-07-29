@@ -19,9 +19,9 @@ public class Tree extends WContainerWidget
 		this.addWidget(rootItem);
 		rootItem.expand();
 		rootTreeNode_ = rootItem;
-        this.setStyleClass("main-tree");
 		
 		selectedTreeNode_ = treeContent_.setContent(rootItem);
+		setStyleClass("main-tree-content");
 	}
 
 	public TreeMenuNode getSelectedTreeNode()

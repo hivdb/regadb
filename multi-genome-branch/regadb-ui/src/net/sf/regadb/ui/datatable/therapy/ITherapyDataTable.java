@@ -28,7 +28,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	private IFilter[] filters_ = new IFilter[5];
 	
 	private static boolean [] sortable_ = {true, true, false, true, true};
-	
+	private static int[] colWidths = {20,20,25,25,10};
 	public String[] getColNames()
 	{
 		return _colNames;
@@ -115,5 +115,9 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	public boolean[] sortableFields()
 	{
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

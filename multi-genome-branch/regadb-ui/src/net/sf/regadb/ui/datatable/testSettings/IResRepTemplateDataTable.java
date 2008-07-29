@@ -18,6 +18,7 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     private IFilter[] filters_ = new IFilter[1];
     
     private static boolean [] sortable_ = {true};
+    private static int[] colWidths = {100};
     
     public String[] getColNames()
     {
@@ -70,4 +71,8 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

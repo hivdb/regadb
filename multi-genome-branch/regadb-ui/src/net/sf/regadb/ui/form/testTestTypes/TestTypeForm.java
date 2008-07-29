@@ -18,11 +18,11 @@ import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class TestTypeForm extends FormWidget
@@ -31,7 +31,7 @@ public class TestTypeForm extends FormWidget
 	
 	//Frame 
 	private WGroupBox mainFrameGroup_;
-    private WTable mainFrameTable_;
+    private FormTable mainFrameTable_;
     private Label testTypeL ;
     private TextField testTypeTF ;
     private Label valueTypeL;
@@ -60,23 +60,23 @@ public class TestTypeForm extends FormWidget
 	private void init() 
 	{
 		mainFrameGroup_= new WGroupBox(tr("form.testSettings.testType.editView.general"), this);
-		mainFrameTable_ = new WTable(mainFrameGroup_);
+		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		testTypeL = new Label(tr("form.testSettings.testType.editView.testType"));
 		testTypeTF = new TextField(getInteractionState()==InteractionState.Editing?InteractionState.Viewing:getInteractionState(), this);
 	    testTypeTF.setMandatory(true);
-	    addLineToTable(mainFrameTable_, testTypeL, testTypeTF);
+	    mainFrameTable_.addLineToTable(testTypeL, testTypeTF);
 	    valueTypeL = new Label(tr("form.testSettings.testType.editView.valueType"));
         valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
-        addLineToTable(mainFrameTable_, valueTypeL, valueTypeCB);
+        mainFrameTable_.addLineToTable(valueTypeL, valueTypeCB);
 	    testObjectL=new Label(tr("form.testSettings.testType.editView.testobject"));
 	    testObjectCB= new ComboBox<TestObject>(getInteractionState(),this);
 	    testObjectCB.setMandatory(true);
-	    addLineToTable(mainFrameTable_, testObjectL, testObjectCB);
+	    mainFrameTable_.addLineToTable(testObjectL, testObjectCB);
 	    
 	    genomeL = new Label(tr("form.testSettings.testType.editView.genome"));
 	    genomeCB = new GenomeComboBox(getInteractionState(), this);
-	    addLineToTable(mainFrameTable_, genomeL, genomeCB);
+	    mainFrameTable_.addLineToTable(genomeL, genomeCB);
 	    
 	    Transaction t = RegaDBMain.getApp().createTransaction();
 	    List<ValueType> valueTypes=t.getValueTypes();

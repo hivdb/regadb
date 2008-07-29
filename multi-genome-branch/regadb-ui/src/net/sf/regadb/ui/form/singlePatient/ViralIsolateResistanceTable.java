@@ -16,12 +16,11 @@ import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
 
 public class ViralIsolateResistanceTable extends WTable {
     public ViralIsolateResistanceTable(WContainerWidget parent) {
         super(parent);
+        this.setStyleClass("datatable datatable-resistance");
     }
     
     public void loadTable(boolean showMutations, Set<TestResult> testResults) {
@@ -43,6 +42,8 @@ public class ViralIsolateResistanceTable extends WTable {
             {
                 col = numColumns();
                 putElementAt(0, col, new TableHeader(lt(test.getDescription())));
+                elementAt(0, col).setStyleClass("column-title");
+                
                 algoColumn.put(test.getDescription(), col);
                 maxWidth += test.getDescription().length();
             }
@@ -65,9 +66,11 @@ public class ViralIsolateResistanceTable extends WTable {
                 {
                     putElementAt(row, 0, new TableHeader(lt(dc.getClassId()+ ":")));
                     firstGenericDrugInThisClass = false;
+                    elementAt(row, 0).setStyleClass("form-label-area");
                 }
                 putElementAt(row, 1, new TableHeader(lt(dg.getGenericId())));
                 drugColumn.put(dg.getGenericId(), row);
+                elementAt(row, 1).setStyleClass("form-label-area");
             }
         }
         
@@ -95,7 +98,5 @@ public class ViralIsolateResistanceTable extends WTable {
             }
         }
         
-        resize(new WLength(maxWidth+maxWidth/2, WLengthUnit.FontEx), new WLength());
-        setCellPadding(4);
     }
 }

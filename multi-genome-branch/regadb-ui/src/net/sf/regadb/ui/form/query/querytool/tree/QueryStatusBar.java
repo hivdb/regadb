@@ -31,6 +31,7 @@ public class QueryStatusBar extends WStatusBar {
 		this.mainForm = mainForm;
 		runButtonPanel = new RunButtonPanel(mainForm);
 		setButtonPanel(runButtonPanel);
+		showMessage(tr("form.query.querytool.message.ok"), "warning");
 		showProgressBar(CatalogLoader.getInstance());
 	}
 	

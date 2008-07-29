@@ -6,6 +6,9 @@ import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WLineEdit;
 import net.sf.witty.wt.WLineEditEchoMode;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.validation.WDoubleValidator;
 import net.sf.witty.wt.validation.WIntValidator;
 import net.sf.witty.wt.validation.WValidatorState;
@@ -27,9 +30,10 @@ public class LimitedNumberField extends FormField
             limiterField_.addItem(lt("<"));
             limiterField_.addItem(lt("="));
             limiterField_.addItem(lt(">"));
-
-            addWidget(limiterField_);
-            addWidget(fieldEdit_);
+            WTable table = new WTable(this);
+            table.putElementAt(0, 0, limiterField_);
+            table.elementAt(0, 0).resize(new WLength(3, WLengthUnit.FontEm), new WLength());
+            table.putElementAt(0, 1, fieldEdit_);
             
             flagValid();
         }
@@ -72,14 +76,14 @@ public class LimitedNumberField extends FormField
     
     public void flagErroneous()
     {
-        fieldEdit_.setStyleClass("form-field-textfield-edit-invalid");
-        limiterField_.setStyleClass("form-field-combobox-edit-invalid");
+        fieldEdit_.setStyleClass("form-field textfield edit-invalid");
+        limiterField_.setStyleClass("form-field combobox edit-invalid");
     }
 
     public void flagValid()
     {
-        fieldEdit_.setStyleClass("form-field-textfield-edit-valid");
-        limiterField_.setStyleClass("form-field-combobox-edit-valid");
+        fieldEdit_.setStyleClass("form-field textfield edit-valid");
+        limiterField_.setStyleClass("form-field combobox edit-valid");
     }
 
     public String getFormText() 

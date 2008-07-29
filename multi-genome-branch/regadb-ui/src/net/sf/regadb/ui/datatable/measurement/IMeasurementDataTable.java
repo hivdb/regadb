@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
@@ -21,6 +22,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		"testResult.test.description",	null };
 	
 	private static boolean [] sortable_ = {true, true, true, true, false};
+	private static int[] colWidths = {20,30,10,20,20};
 	
 	private IFilter[] filters_ = new IFilter[5];
 	
@@ -64,8 +66,17 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		row[1] = type.getTest().getTestType().getDescription();
 		row[2] = (type.getTest().getTestType().getGenome() == null ? "":type.getTest().getTestType().getGenome().getOrganismName());
 		row[3] = type.getTest().getDescription();
-		row[4] = type.getValue()==null?type.getTestNominalValue().getValue():type.getValue();
-		
+		if (type.getValue() == null) {
+			row[4] = type.getTestNominalValue().getValue();
+		}
+		else {
+			if (ValueTypes.getValueType(type.getTest().getTestType().getValueType()) == ValueTypes.DATE) {
+				row[4] = DateUtils.getEuropeanFormat(type.getValue());
+			}
+			else {
+				row[4] = type.getValue();
+			}
+		}
 		
 		return row;
 	}
@@ -90,5 +101,9 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
     public boolean[] sortableFields()
 	{
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

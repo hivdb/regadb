@@ -26,6 +26,7 @@ public class RegaDBWindow extends WTable
 		header_ = new Header(this.elementAt(0, 0), Edition.Clinical);
 		WTable contentTable = new WTable(this.elementAt(1, 0));
 		tree_ = new Tree(contentTable.elementAt(0, 0));
+		contentTable.elementAt(0, 0).setStyleClass("main-tree");
 		container_ = new FormContainer(contentTable.elementAt(0, 1));
 		contentTable.elementAt(0, 1).setStyleClass("formcontent");
 

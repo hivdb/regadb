@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
-import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.witty.wt.SignalListener;
@@ -78,7 +77,7 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory) 
     {
-        if(checkBox_.validator()!=null)
+        if(checkBox_.validator()==null)
         {
             checkBox_.setValidator(new WValidator());
         }

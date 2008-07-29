@@ -34,6 +34,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.SignalListener;
@@ -43,6 +44,7 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -54,13 +56,13 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     private WGroupBox resultGroup_;
     
     private WTable generalTable_;
-    private WTable parameterTable_;
-    private WTable resultTable_;
+    private FormTable parameterTable_;
+    private FormTable resultTable_;
     
-    private Label description_;
+    private WText description_;
     
     private Label statusL_;
-    private Label status_;
+    private WText status_;
     
     private Label linkL_;
     private WAnchor link_;
@@ -88,7 +90,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         super(formName,InteractionState.Viewing);
         
         filename_ = filename.value();
-        description_ = new Label(description);
+        description_ = new WText(description);
         
         init();
     }
@@ -99,8 +101,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         resultGroup_     = new WGroupBox(tr("form.query.wiv.group.run"), this);
         
         generalTable_ = new WTable(generalGroup_);
-        parameterTable_ = new WTable(parameterGroup_);
-        resultTable_ = new WTable(resultGroup_);
+        parameterTable_ = new FormTable(parameterGroup_);
+        resultTable_ = new FormTable(resultGroup_);
 
         runL_ = new Label(tr("form.query.wiv.label.run"));
         run_ = new WPushButton(tr("form.query.wiv.pushbutton.run"));
@@ -109,14 +111,14 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         link_ = new WAnchor("dummy", lt(""));
         
         statusL_ = new Label(tr("form.query.wiv.label.status"));
-        status_ = new Label(tr("form.query.wiv.label.status.initial"));
+        status_ = new WText(tr("form.query.wiv.label.status.initial"));
 
 
         generalTable_.putElementAt(0, 0, description_);
         
-        addLineToTable(resultTable_,new WWidget[]{runL_,run_});
-        addLineToTable(resultTable_,new WWidget[]{statusL_,status_});
-        addLineToTable(resultTable_,new WWidget[]{linkL_,link_});
+        resultTable_.addLineToTable(new WWidget[]{runL_,run_});
+        resultTable_.addLineToTable(new WWidget[]{statusL_,status_});
+        resultTable_.addLineToTable(new WWidget[]{linkL_,link_});
         
         run_.clicked.addListener(this);
     }
@@ -275,14 +277,14 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     public void addParameter(String name, WMessage l, IFormField f){
-        addLineToTable(parameterTable_, new Label(l), f);
+    	parameterTable_.addLineToTable(new Label(l), f);
         parameters_.put(name, f);
     }
     
     public File getResultDir(){
         File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
         if(!wivDir.exists()){
-            wivDir.mkdir();
+            wivDir.mkdirs();
         }
         return wivDir;
     }

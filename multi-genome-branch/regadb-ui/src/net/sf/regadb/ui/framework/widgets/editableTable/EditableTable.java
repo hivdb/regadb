@@ -12,19 +12,18 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class EditableTable<DataType> extends WContainerWidget
 {
-    private WPushButton removeButton_;
     
     private WTable itemTable_;
     
@@ -46,26 +45,17 @@ public class EditableTable<DataType> extends WContainerWidget
     
     public void init()
     {
-        //buttons
-        WContainerWidget buttonContainer = new WContainerWidget(this);
-        buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
-        removeButton_ = new WPushButton(tr("editableDataTable.button.removeItem"), buttonContainer);
-        removeButton_.clicked.addListener(new SignalListener<WMouseEvent>()
-                {
-                    public void notify(WMouseEvent a)
-                    {
-                        removeItems();
-                    }
-                });
-        
-        addWidget(buttonContainer);
-        
         //item table
         itemTable_ = new WTable(this);
-        int headerPosition = itemTable_.numColumns()+1;
+        itemTable_.setStyleClass("datatable datatable-grid");
+
+        
+        int headerPosition = 0;
         for(String header : editableList_.getTableHeaders())
         {
             itemTable_.putElementAt(0, headerPosition, new TableHeader(tr(header)));
+            itemTable_.elementAt(0, headerPosition).setStyleClass("column-title");
+            itemTable_.elementAt(0, headerPosition).resize(new WLength(editableList_.getColumnWidths()[headerPosition], WLengthUnit.Percentage), new WLength());
             headerPosition++;
         }
         
@@ -77,45 +67,18 @@ public class EditableTable<DataType> extends WContainerWidget
         if(editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing)
         {
             addLine(editableList_.addRow(), true);
-        }
-        else
-        {
-            removeButton_.setHidden(true);
-        }
-    }
-    
-    private void removeItems()
-    {
-        ArrayList<Integer> indexes = new ArrayList<Integer>();
-        for(int i = 1; i < itemTable_.numRows()-1; i++)
-        {
-            if(((WCheckBox)itemTable_.elementAt(i, 0).children().get(0)).isChecked())
-            {
-                indexes.add(i-1);
-            }
-        }
-        
-        int amountOfRowsAlreadyDeleted = 0;
-        for(Integer index : indexes)
-        {
-            itemTable_.deleteRow(index+1-amountOfRowsAlreadyDeleted);
-            removedItemList_.add(itemList_.get(index-amountOfRowsAlreadyDeleted));
-            itemList_.remove(index-amountOfRowsAlreadyDeleted);
-            amountOfRowsAlreadyDeleted++;
+            itemTable_.elementAt(0, headerPosition).setStyleClass("column-action");            
         }
     }
     
     private void addItem(DataType item)
     {
-        addLine(editableList_.getWidgets(item), item==null);
-        
         itemList_.add(item);
+        addLine(editableList_.getWidgets(item), item==null);
     }
     
     private void addLine(WWidget[] widgets, boolean lineToAdd)
     {
-        int colIndex;
-        int rowNum;
         
         for(WWidget w : widgets) {
             if(w instanceof IFormField) {
@@ -131,12 +94,9 @@ public class EditableTable<DataType> extends WContainerWidget
             }
         }
         
-        rowNum = itemTable_.numRows();
-        if((editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) && !lineToAdd)
-        {
-            itemTable_.putElementAt(rowNum, 0, new WCheckBox());
-        }
-        colIndex = 1;
+        int colIndex = 0;
+        final int rowNum = itemTable_.numRows();
+
         for(WWidget widget : widgets)
         {
             widget.setParent(null);
@@ -148,6 +108,7 @@ public class EditableTable<DataType> extends WContainerWidget
         {
             WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
             itemTable_.putElementAt(rowNum, colIndex, addButton);
+            itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
             addButton.clicked.addListener(new SignalListener<WMouseEvent>()
                     {
                         public void notify(WMouseEvent a) 
@@ -155,6 +116,12 @@ public class EditableTable<DataType> extends WContainerWidget
                             addAction();
                         }
                     });
+        }
+        else if (editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) {
+			final DataType toRemove = itemList_.get(rowNum - 1);
+        	RemoveButton removeButton_ = new RemoveButton(tr("editableDataTable.button.removeItem"), toRemove);
+            itemTable_.putElementAt(rowNum, colIndex, removeButton_);
+            itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
         }
     }
     
@@ -164,10 +131,10 @@ public class EditableTable<DataType> extends WContainerWidget
         if(widgets!=null)
         {
             itemTable_.deleteRow(itemTable_.numRows()-1);
+            itemList_.add(null);
             addLine(widgets, false);
             
             addLine(editableList_.addRow(), true);
-            itemList_.add(null);
         }
         else
         {
@@ -234,9 +201,9 @@ public class EditableTable<DataType> extends WContainerWidget
         WWidget[] widgets = new WWidget[size];
         
         int processedFields = 0;
-        for(int i =1 ; i < itemTable_.numColumns() && processedFields<size; i++)
+        for(int i =0 ; i < itemTable_.numColumns()-1 && processedFields<size; i++)
         {
-            widgets[i-1] = itemTable_.elementAt(row, i).children().get(0);
+            widgets[i] = itemTable_.elementAt(row, i).children().get(0);
             processedFields++;
         }
         
@@ -247,11 +214,11 @@ public class EditableTable<DataType> extends WContainerWidget
     {
         ArrayList<WWidget> widgets = new ArrayList<WWidget>();
         
-        boolean ignoreLastLine = itemTable_.numColumns()>(editableList_.getTableHeaders().length+1);
+        boolean ignoreLastLine = itemTable_.numColumns()>(editableList_.getTableHeaders().length);
         
         for(int i = 1; i < itemTable_.numRows(); i++)
         {
-            widgets.add(itemTable_.elementAt(i, column+1).children().get(0));
+            widgets.add(itemTable_.elementAt(i, column).children().get(0));
         }
         
         if(ignoreLastLine)
@@ -266,9 +233,8 @@ public class EditableTable<DataType> extends WContainerWidget
     {
         for(int i = 1; i < itemTable_.numRows()-1; i++)
         {
-            ((WCheckBox)itemTable_.elementAt(i, 0).children().get(0)).setChecked(true);
+            ((RemoveButton)itemTable_.elementAt(i, itemTable_.numColumns()-1).children().get(0)).remove();
         }
-        removeItems();
     }
     
     public void refreshAddRow()
@@ -298,17 +264,37 @@ public class EditableTable<DataType> extends WContainerWidget
             for(int i = 0; i<widgets.size(); i++) {
                 if(((TextField)widgets.get(i)).text().equals(d)) {
                     if(itemList_.get(i)==null) {
-                        ((WCheckBox)itemTable_.elementAt(i+1, 0).children().get(0)).setChecked(true);
+                        ((RemoveButton)itemTable_.elementAt(i+1, itemTable_.numColumns()-1).children().get(0)).remove();
                     }
                 }
             }
         }
         
-        removeItems();
-        
         if(duplicates.size()>0)
             return new WMessage("editableTable.add.warning.duplicatesRemoved");
         else
             return null;
+    }
+    
+    private class RemoveButton extends WPushButton {
+    	private DataType toRemove;
+    	public RemoveButton(WMessage message, DataType toRemove) {
+    		super(message);
+    		this.toRemove = toRemove;
+    	
+    		this.clicked.addListener(new SignalListener<WMouseEvent>() {
+                public void notify(WMouseEvent a) {
+                	remove();
+                }
+            });        	
+    	}
+    	
+    	public void remove() {
+    		int row =  itemList_.indexOf(RemoveButton.this.toRemove)+1;
+    		
+            itemTable_.deleteRow(row);
+            removedItemList_.add(RemoveButton.this.toRemove);
+            itemList_.remove(RemoveButton.this.toRemove);
+    	}
     }
 }

@@ -13,6 +13,7 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
 {
 	private FormWidget form_;
     private static final String [] headers_ = {"editableTable.testNominvalValue.colName.name"};
+    private static final int[] colWidths = {100};
     
     private TestType testType_;
     private Transaction transaction_;
@@ -110,4 +111,8 @@ public class ITestNominalValueDataList implements IEditableTable <TestNominalVal
     {
         transaction_.flush();
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

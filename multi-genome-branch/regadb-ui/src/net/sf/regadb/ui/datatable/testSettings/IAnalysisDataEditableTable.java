@@ -25,6 +25,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     private Transaction transaction_;
     private static final String[] headers = {"editableTable.analysis.analysisData.colName.name", "editableTable.analysis.analysisData.colName.file"};
     
+    private static final int[] colWidths = {40,60};
     private ArrayList<String> inputFileNames_ = new ArrayList<String>();
     
     public IAnalysisDataEditableTable(FormWidget form)
@@ -92,7 +93,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         {
             cb.addItem(WWidget.lt(ifn));
         }
-        UploadFile upload = new UploadFile();
+        UploadFile upload = new UploadFile(getInteractionState(), form_);
         
         widgets[0] = cb;
         widgets[1] = upload;
@@ -105,7 +106,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         WComboBox add_cb = (WComboBox)widgets[0];
         UploadFile add_uf = (UploadFile)widgets[1];
         
-        if(add_uf.uploadedFile_==null)
+        if(add_uf.getFileUpload()==null)
         {
             return null;
         }
@@ -114,7 +115,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             byte[] data = null;
             try 
             {
-                data = FileUtils.readFileToByteArray(new File(add_uf.upload_.spoolFileName()));
+                data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().spoolFileName()));
             } 
             catch (IOException e) 
             {
@@ -126,7 +127,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             
             AnalysisData analysisData = new AnalysisData();
             analysisData.setData(data);
-            analysisData.setMimetype(add_uf.upload_.contentDescription());
+            analysisData.setMimetype(add_uf.getFileUpload().contentDescription());
             analysisData.setName(add_cb.currentText().value());
             
             return getWidgets(analysisData);
@@ -163,4 +164,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     {
         transaction_.flush();
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

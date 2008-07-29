@@ -17,11 +17,11 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class AttributeForm extends FormWidget
@@ -30,7 +30,7 @@ public class AttributeForm extends FormWidget
     
     //general group
     private WGroupBox generalGroup_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label nameL;
     private TextField nameTF;
     private Label valueTypeL;
@@ -58,24 +58,24 @@ public class AttributeForm extends FormWidget
     private void init()
     {
         generalGroup_ = new WGroupBox(tr("form.attributeSettings.attribute.editView.general"), this);
-        generalGroupTable_ = new WTable(generalGroup_);
+        generalGroupTable_ = new FormTable(generalGroup_);
         nameL = new Label(tr("form.attributeSettings.attribute.editView.name"));
         nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
-        addLineToTable(generalGroupTable_, nameL, nameTF);
+        generalGroupTable_.addLineToTable(nameL, nameTF);
         valueTypeL = new Label(tr("form.attributeSettings.attribute.editView.valueType"));
         valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
-        addLineToTable(generalGroupTable_, valueTypeL, valueTypeCB);
+        generalGroupTable_.addLineToTable(valueTypeL, valueTypeCB);
         groupL = new Label(tr("form.attributeSettings.attribute.editView.group"));
         groupCB = new ComboBox<AttributeGroup>(getInteractionState(), this);
         groupCB.setMandatory(true);
-        addLineToTable(generalGroupTable_, groupL, groupCB);
+        generalGroupTable_.addLineToTable(groupL, groupCB);
         if(getInteractionState()!=InteractionState.Adding)
         {
             usageL = new Label(tr("form.attributeSettings.attribute.editView.usage"));
             usageTF = new TextField(InteractionState.Viewing, null);
-            addLineToTable(generalGroupTable_, usageL, usageTF);
+            generalGroupTable_.addLineToTable(usageL, usageTF);
         }
         
         Transaction t = RegaDBMain.getApp().createTransaction();

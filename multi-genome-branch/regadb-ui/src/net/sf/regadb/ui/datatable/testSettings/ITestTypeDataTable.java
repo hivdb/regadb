@@ -16,7 +16,7 @@ public class ITestTypeDataTable implements IDataTable<TestType>
     private static String[] filterVarNames_ = { "testType.description", "testType.genome.organismName", "testType.testObject.description", "testType.valueType.description"};
     
     private IFilter[] filters_ = new IFilter[4];
-    
+    private static int[] colWidths = {30,10,30,30};
     private static boolean [] sortable_ = {true, true, true, true};
     
     public String[] getColNames()
@@ -77,4 +77,8 @@ public class ITestTypeDataTable implements IDataTable<TestType>
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

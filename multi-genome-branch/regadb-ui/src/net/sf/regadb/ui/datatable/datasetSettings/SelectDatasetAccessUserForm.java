@@ -2,9 +2,7 @@ package net.sf.regadb.ui.datatable.datasetSettings;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.framework.forms.SelectForm;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.witty.wt.WContainerWidget;
 
 public class SelectDatasetAccessUserForm extends SelectForm
 {

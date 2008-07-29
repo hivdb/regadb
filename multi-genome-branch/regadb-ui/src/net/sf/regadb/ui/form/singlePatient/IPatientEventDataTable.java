@@ -23,6 +23,8 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	private static String[] filterVarNames_ = {"patient_event_value.startDate", "patient_event_value.endDate", "event.name", null};
 	private static boolean [] sortable_ = {true, true, true, false};
 	
+	private static int[] colWidths = {20,20,25,35};
+	
 	private IFilter[] filters_ = new IFilter[4];
 	
 	public List<PatientEventValue> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending) {
@@ -83,5 +85,9 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	
 	public IFilter[] getFilters() {
 		return filters_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

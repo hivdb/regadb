@@ -30,6 +30,9 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
                                                 "editableTable.drugGeneric.colName.placebo",
                                                 "editableTable.drugGeneric.colName.blind"};
 
+    private static final int[] colWidths = {30,20,15,15,10,10};
+    
+    
     public IGenericDrugSelectionEditableTable(FormWidget form, Therapy therapy)
     {
         form_ = form;
@@ -232,4 +235,8 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     private String getGenericDrugRepresentation(DrugGeneric dg) {
     	return dg.getGenericName() + " ("+dg.getGenericId()+")";
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

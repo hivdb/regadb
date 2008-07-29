@@ -43,10 +43,10 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     
     private void validateConstant() {
     	if (validate() == WValidatorState.Valid) {
-    		css.removeStyle("form-field-textfield-edit-invalid");
+    		css.removeStyle("form-field textfield edit-invalid");
     	}
     	else {
-    		css.addStyle("form-field-textfield-edit-invalid");
+    		css.addStyle("form-field textfield edit-invalid");
     	}
     }
     

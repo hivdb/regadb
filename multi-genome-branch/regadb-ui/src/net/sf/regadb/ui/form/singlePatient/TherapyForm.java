@@ -22,12 +22,12 @@ import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -38,7 +38,7 @@ public class TherapyForm extends FormWidget
 	
 	//general group
     private WGroupBox generalGroup_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label startDateL;
     private DateField startDateDF;
     private Label stopDateL;
@@ -80,14 +80,14 @@ public class TherapyForm extends FormWidget
 	{
 		//general group
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
-        generalGroupTable_ = new WTable(generalGroup_);
+        generalGroupTable_ = new FormTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
         startDateDF = new DateField(getInteractionState(), this);
         startDateDF.setMandatory(true);
-        addLineToTable(generalGroupTable_, startDateL, startDateDF);
+        generalGroupTable_.addLineToTable(startDateL, startDateDF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
         stopDateDF = new DateField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, stopDateL, stopDateDF);
+        generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
         stopDateDF.addChangeListener(new SignalListener<WEmptyEvent>()
         {
@@ -99,14 +99,14 @@ public class TherapyForm extends FormWidget
         
         motivationL = new Label(tr("form.therapy.editView.motivation"));
         motivationCB = new ComboBox<TherapyMotivation>(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, motivationL, motivationCB);
+        generalGroupTable_.addLineToTable( motivationL, motivationCB);
         commentL = new Label(tr("form.therapy.editView.comment"));
         commentTF = new TextField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, commentL, commentTF);
+        generalGroupTable_.addLineToTable(commentL, commentTF);
         
         genomeL = new Label(tr("form.therapy.editView.genome"));
         genomeCB = new GenomeComboBox(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, genomeL, genomeCB);
+        generalGroupTable_.addLineToTable(genomeL, genomeCB);
         
         genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
         commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);

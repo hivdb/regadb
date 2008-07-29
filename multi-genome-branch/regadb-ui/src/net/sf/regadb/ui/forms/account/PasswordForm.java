@@ -8,11 +8,11 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class PasswordForm extends FormWidget
@@ -24,7 +24,7 @@ public class PasswordForm extends FormWidget
     private TreeMenuNode selectNode_, expandNode_;
     
     private WGroupBox passwordGroup_;
-    private WTable passwordGroupTable;
+    private FormTable passwordGroupTable;
     private Label passwordL;
     private TextField passwordTF;
     private Label newPasswordL;
@@ -58,7 +58,7 @@ public class PasswordForm extends FormWidget
     public void init()
     {
         passwordGroup_ = new WGroupBox(tr("form.account.editView.general"));
-        passwordGroupTable = new WTable(passwordGroup_);
+        passwordGroupTable = new FormTable(passwordGroup_);
         if(!administrator_)
         {
             passwordL = new Label(tr("form.settings.user.label.password.old"));
@@ -70,17 +70,17 @@ public class PasswordForm extends FormWidget
         passwordTF = new TextField(getInteractionState(), this);
         passwordTF.setMandatory(true);
         passwordTF.setEchomode(WLineEditEchoMode.Password);
-        addLineToTable(passwordGroupTable, passwordL, passwordTF);
+        passwordGroupTable.addLineToTable(passwordL, passwordTF);
         newPasswordL = new Label(tr("form.settings.user.label.password.new"));
         newPasswordTF = new TextField(getInteractionState(), this);
         newPasswordTF.setMandatory(true);
         newPasswordTF.setEchomode(WLineEditEchoMode.Password);
-        addLineToTable(passwordGroupTable, newPasswordL, newPasswordTF);
+        passwordGroupTable.addLineToTable(newPasswordL, newPasswordTF);
         retypePasswordL = new Label(tr("form.settings.user.label.password.retype.new"));
         retypePasswordTF = new TextField(getInteractionState(), this);
         retypePasswordTF.setMandatory(true);
         retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
-        addLineToTable(passwordGroupTable, retypePasswordL, retypePasswordTF);
+        passwordGroupTable.addLineToTable(retypePasswordL, retypePasswordTF);
         
         addWidget(passwordGroup_);
         addControlButtons();

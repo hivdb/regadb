@@ -5,10 +5,10 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WTable;
 
 public class InfoContainer extends WContainerWidget {
     private Label nameL;
@@ -25,17 +25,14 @@ public class InfoContainer extends WContainerWidget {
 	
 	private void init(final QueryToolApp mainForm, FormWidget form) {
 		setStyleClass("infofield");
+
 		
-		WTable infoTable = new WTable(this);
-		infoTable.setStyleClass("datatable");
+		FormTable infoTable = new FormTable(this);
 		
     	nameL = new Label(tr("form.query.definition.label.name"));
     	nameTF = new TextField(form.getInteractionState(), form);
         nameTF.setMandatory(true);
-        infoTable.putElementAt(0, 0, nameL);
-        infoTable.putElementAt(0, 1, nameTF);
-        infoTable.elementAt(0, 0).setStyleClass("form-label-area");
-        infoTable.elementAt(0, 1).setStyleClass("inputs");
+        infoTable.addLineToTable(nameL, nameTF);
         nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
@@ -45,9 +42,7 @@ public class InfoContainer extends WContainerWidget {
         descriptionL = new Label(tr("form.query.definition.label.description"));
         descriptionTA = new TextArea(form.getInteractionState(), form);
         descriptionTA.setMandatory(true);
-        infoTable.putElementAt(1, 0, descriptionL);
-        infoTable.putElementAt(1, 1, descriptionTA);
-        infoTable.elementAt(1, 0).setStyleClass("form-label-area");
+        infoTable.addLineToTable(descriptionL, descriptionTA);
         descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
 			public void notify(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
@@ -58,8 +53,7 @@ public class InfoContainer extends WContainerWidget {
         {
         	creatorL = new Label(tr("form.query.definition.label.creator"));
             creatorTF = new TextField(form.getInteractionState(), form);
-            infoTable.putElementAt(2, 0, creatorL);
-            infoTable.putElementAt(2, 1, creatorTF);
+            infoTable.addLineToTable(creatorL, creatorTF);
         }	
 	}
 	

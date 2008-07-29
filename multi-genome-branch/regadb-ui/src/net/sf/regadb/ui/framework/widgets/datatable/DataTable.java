@@ -51,7 +51,7 @@ public class DataTable<DataType> extends WTable
 	{
 		super();
         
-        this.setStyleClass("datatable");
+        this.setStyleClass("datatable datatable-grid");
         
 		dataTableInterface_ = dataTableInterface;
 		amountOfPageRows_ = amountOfPageRows;
@@ -67,26 +67,35 @@ public class DataTable<DataType> extends WTable
 		
 		if(dataTableInterface_.getFilters()!=null)
 		{
-		showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
-		showHideFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
-		{
-			public void notify(WMouseEvent e)
+			elementAt(row, col).setColumnSpan(dataTableInterface_.getColumnWidths().length);
+	        elementAt(row, col).setStyleClass("navigation");
+			showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
+			showHideFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
 			{
-				showHideFilters();
-			}
-		});
-		row++;
+				public void notify(WMouseEvent e)
+				{
+					showHideFilters();
+				}
+			});
+			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
+			applyFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
+			{
+				public void notify(WMouseEvent me)
+				{
+					applyFilter();
+				}
+			});
+			row++;
 		}
 		
-		
-			
-        
         colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
 		//put colheaders in the table
         int columnIndex = 0;
 		for(String colName : dataTableInterface_.getColNames())
 		{
             colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
+            elementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLengthUnit.Percentage), new WLength());
+            elementAt(row, col).setStyleClass("column-title");
             if(dataTableInterface_.sortableFields()[columnIndex])
             {
                 if(sortColIndex_ == -1)
@@ -133,20 +142,13 @@ public class DataTable<DataType> extends WTable
 				if(filter!=null)
 				{
 					filter.getFilterWidget().setParent(elementAt(row, col));
+		            elementAt(row, col).setStyleClass("filter");
 				}
 				col++;
 			}
-			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
-			applyFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
-			{
-				public void notify(WMouseEvent me)
-				{
-					applyFilter();
-				}
-			});
 			row++;
 			col = 0;
-		}
+		}	
 		
 		//put the necessary textfields
 		List<WText> textRow;
@@ -184,7 +186,8 @@ public class DataTable<DataType> extends WTable
 		}
         
         //scrolling buttons
-        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length+1);
+        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
+        elementAt(row, col).setStyleClass("navigation");
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
         scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
         scrollingButtons.setStyleClass("scrollingButtons");

@@ -13,9 +13,9 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -24,7 +24,7 @@ public class QueryDefinitionForm extends FormWidget
 	private QueryDefinition queryDefinition;
 	
     private WGroupBox queryDefinitionGroup_;
-    private WTable queryDefinitionGroupTable;
+    private FormTable queryDefinitionGroupTable;
     
     private WGroupBox queryDefinitionParameterGroup_;
     private EditableTable<QueryDefinitionParameter> queryDefinitionParameterList;
@@ -54,28 +54,28 @@ public class QueryDefinitionForm extends FormWidget
     {         
     	queryDefinitionGroup_ = new WGroupBox(tr("form.query.definition.general"), this);
     	
-    	queryDefinitionGroupTable = new WTable(queryDefinitionGroup_);
+    	queryDefinitionGroupTable = new FormTable(queryDefinitionGroup_);
     	
     	nameL = new Label(tr("form.query.definition.label.name"));
     	nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
-        addLineToTable(queryDefinitionGroupTable, nameL, nameTF);
+        queryDefinitionGroupTable.addLineToTable(nameL, nameTF);
         
         descriptionL = new Label(tr("form.query.definition.label.description"));
         descriptionTA = new TextArea(getInteractionState(), this);
         descriptionTA.setMandatory(true);
-        addLineToTable(queryDefinitionGroupTable, descriptionL, descriptionTA);
+        queryDefinitionGroupTable.addLineToTable(descriptionL, descriptionTA);
         
         queryL = new Label(tr("form.query.definition.label.query"));
         queryTA = new TextArea(getInteractionState(), this);
         queryTA.setMandatory(true);
-        addLineToTable(queryDefinitionGroupTable, queryL, queryTA);
+        queryDefinitionGroupTable.addLineToTable(queryL, queryTA);
         
         if(getInteractionState() == InteractionState.Viewing)
         {
         	creatorL = new Label(tr("form.query.definition.label.creator"));
             creatorTF = new TextField(getInteractionState(), this);
-            addLineToTable(queryDefinitionGroupTable, creatorL, creatorTF);
+            queryDefinitionGroupTable.addLineToTable( creatorL, creatorTF);
         }
         
         queryDefinitionParameterGroup_ = new WGroupBox(tr("form.query.definition.editableTable.parameters"), this);

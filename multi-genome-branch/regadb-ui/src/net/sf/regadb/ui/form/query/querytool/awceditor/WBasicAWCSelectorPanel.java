@@ -9,6 +9,8 @@ import net.sf.witty.wt.WKeyEvent;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WRadioButton;
 import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
@@ -75,6 +77,7 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     	WTable table = new WTable(this);
 		radioButton.setStyleClass("selectorradio");
     	table.putElementAt(0, 0, radioButton);
+    	table.elementAt(0, 0).resize(new WLength(2, WLengthUnit.FontEm), new WLength());
     	table.putElementAt(0, 1, editPanel);
     	if (!isUseless()) {
 	    	this.clicked.addListener(new SignalListener<WMouseEvent>(){

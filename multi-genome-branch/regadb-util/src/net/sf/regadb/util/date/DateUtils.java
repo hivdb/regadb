@@ -14,6 +14,10 @@ public class DateUtils
     
     public static Date parserEuropeanDate(String europeanDate)
     {
+    	if (europeanDate.trim().equals("")) {
+    		return null;
+    	}
+    	
         try{
             return europeanDateFormat.parse(europeanDate);
         }

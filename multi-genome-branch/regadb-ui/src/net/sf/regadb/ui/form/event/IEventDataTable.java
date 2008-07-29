@@ -14,6 +14,7 @@ public class IEventDataTable implements IDataTable<Event> {
 	private static String [] _colNames = {"dataTable.event.column.name", "dataTable.event.column.valuetype"};
 	private static String[] filterVarNames_ = {"event.name", "event.valueType"};
 	private static boolean [] sortable_ = {true, true};
+	private static int[] colWidths = {50,50};
 	
 	private IFilter[] filters_ = new IFilter[2];
 	
@@ -62,5 +63,9 @@ public class IEventDataTable implements IDataTable<Event> {
 	
 	public boolean[] sortableFields() {
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

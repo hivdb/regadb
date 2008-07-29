@@ -1,10 +1,3 @@
-.querytoolform {
-	width:95%;	
-	width:700px;
-}
-
-
-
 
 /* info field */
 
@@ -12,38 +5,12 @@
 	padding: 0.5em !important;	
 }
 
-.querytoolform .infofield table {
-	width:100%;	
-}
-
-.querytoolform .infofield td {
-	padding-bottom:0.3em;
-}
-
-.querytoolform .infofield input, .querytoolform .infofield textarea {
-	width: 98%;	
-}
-
-.querytoolform .infofield table td.inputs{
-	width:100%;
-}
-
-.querytoolform .infofield textarea {
-	height:4em;	
-}
-
-
-
 
 
 /* selection field */
 
 .querytoolform .selectionfield {
 	padding: 0.5em !important;	
-}
-
-.querytoolform .selectionfield .content, .querytoolform .resultfield .content {
-	text-align:center !important;	
 }
 
 .querytoolform .selectionfield .content .selectionitem {
@@ -65,17 +32,9 @@
 
 /* query tree */
 
-.querytoolform .querytreefield .content {
-	padding: 0px;
-}
-
 .querytoolform .querytreefield .content .treeroot {
 	margin-left:0.5em;
 	margin-bottom:1em;
-}
-
-.querytoolform .querytreefield .content .tree {
-	width:100%;
 }
 
 .querytoolform .querytreefield .statusbar .runbutton {
@@ -95,12 +54,10 @@
 }
 
 .querytoolform .tree .disabledtreenodecontent {
-	width:100%;	
 	display: none;
 }
 
 .querytoolform .tree .treenodecontent {
-	width:100%;	
 	display: block;
 	display:table;
 }
@@ -169,24 +126,8 @@
 
 /* results */
 
-.querytoolform .resultfield .warnings {
-	text-align:center !important;
-}
-
-.querytoolform .resultfield .runquery {
-	text-align:center !important;
-}
-
-.querytoolform .resultfield .runresults {
-	text-align:left !important;
-}
-
 .querytoolform .resultfield .runresults label {
 	font-weight:bold;
-}
-
-.querytoolform .resultfield .runresults .runresult table {
-	width:100%;	
 }
 
 .querytoolform .resultfield .runresults .runresult table td{
@@ -213,7 +154,6 @@
 
 .querytoolform .resultfield .runresult {
 	padding:0.5em 0px;
-	border-top:1px solid rgb(215, 215, 215);
 }
 
 

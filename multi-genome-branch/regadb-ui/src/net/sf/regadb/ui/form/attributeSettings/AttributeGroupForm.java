@@ -7,8 +7,8 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class AttributeGroupForm extends FormWidget 
@@ -17,7 +17,7 @@ public class AttributeGroupForm extends FormWidget
     
     //general group
     private WGroupBox generalGroup_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label nameL;
     private TextField nameTF;
     
@@ -34,11 +34,11 @@ public class AttributeGroupForm extends FormWidget
     private void init() 
     {
         generalGroup_ = new WGroupBox(tr("form.attributeSettings.attributeGroup.editView.general"), this);
-        generalGroupTable_= new WTable(generalGroup_);
+        generalGroupTable_= new FormTable(generalGroup_);
         nameL = new Label(tr("form.attributeSettings.attributeGroup.editView.groupName"));
         nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
-        addLineToTable(generalGroupTable_, nameL, nameTF);
+        generalGroupTable_.addLineToTable(nameL, nameTF);
         
         addControlButtons();
     }

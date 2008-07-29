@@ -15,8 +15,8 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WBreak;
 import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WTable;
@@ -38,12 +38,11 @@ public class ViralIsolateCumulatedResistance extends FormWidget
 
     public void init()
     {
-        WTable wrapper = new WTable(this);
-        
-        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(0, 0));
-        
-        wrapper.elementAt(0, 1).addWidget(new WBreak());
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 1));
+        WTable wrapper = new SimpleTable(this);
+        wrapper.elementAt(0, 0).setStyleClass("navigation");
+        wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
+        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 0));
         showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a)

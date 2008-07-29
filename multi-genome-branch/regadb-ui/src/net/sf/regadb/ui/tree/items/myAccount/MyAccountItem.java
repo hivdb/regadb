@@ -14,7 +14,13 @@ public class MyAccountItem extends TreeMenuNode
 	@Override
 	public ITreeAction getFormAction()
 	{
-		return null;
+		return new ITreeAction()
+		{
+			public void performAction(TreeMenuNode node)
+			{
+			    getChildren().get(2).prograSelectNode();
+			}
+		};
 	}
 
 	@Override

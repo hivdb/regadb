@@ -9,7 +9,6 @@ import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.core.utils.WVerticalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.widgets.extra.WModalFloating;
 

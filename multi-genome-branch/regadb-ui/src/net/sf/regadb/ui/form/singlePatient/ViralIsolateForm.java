@@ -13,26 +13,19 @@ import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
+import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WStackedWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.extra.WMenu;
-import net.sf.witty.wt.widgets.extra.WMenuOrientation;
 
 public class ViralIsolateForm extends FormWidget
 {
 	private ViralIsolate viralIsolate_;
 
-	private WMenu tabForm_;
-	
 	private ViralIsolateMainForm _mainForm;
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
@@ -63,48 +56,19 @@ public class ViralIsolateForm extends FormWidget
 
 	public void init()
 	{
-//		WTabbedPane tabs = new WTabbedPane(this);
-//		_mainForm = new ViralIsolateMainForm(this);
-//		tabs.addTab(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
-//		
-//        if(getInteractionState()==InteractionState.Viewing) {
-//	        proteinForm_ = new ViralIsolateProteinForm(this);
-//			tabs.addTab(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
-//	        resistanceForm_ = new ViralIsolateResistanceForm(this);
-//			tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
-//	        reportForm_ = new ViralIsolateReportForm(this);
-//			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
-//        }
-        
-		WTable layout = new WTable(this);
-		layout.resize(new WLength(100, WLengthUnit.Percentage), new WLength());
-
-		WStackedWidget menuContents = new WStackedWidget(layout.elementAt(1, 0));
-		tabForm_ = new WMenu(menuContents, WMenuOrientation.Horizontal, layout.elementAt(0, 0));
-		tabForm_.resize(new WLength(100, WLengthUnit.Percentage), new WLength());
-		layout.elementAt(1, 0).resize(new WLength(20, WLengthUnit.FontEx), new WLength());
-
+		WTabbedPane tabs = new WTabbedPane(this);
 		_mainForm = new ViralIsolateMainForm(this);
-		tabForm_.addItem(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
-        //tabForm_.setStyleClass("tab-menu");
-        if(getInteractionState()==InteractionState.Viewing)
-        {
-            proteinForm_ = new ViralIsolateProteinForm(this);
-            tabForm_.addItem(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
-            proteinForm_.setStyleClass("viralisolateform");
-            
-            resistanceForm_ = new ViralIsolateResistanceForm(this);
-            tabForm_.addItem(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
-            resistanceForm_.setStyleClass("viralisolateform");
-            
-            reportForm_ = new ViralIsolateReportForm(this);
-            tabForm_.addItem(tr("form.viralIsolate.editView.tab.report"), reportForm_);
-            reportForm_.setStyleClass("viralisolateform");
-        }
-		tabForm_.setStyleClass("tabmenu");
-		_mainForm.setStyleClass("viralisolateform");
-        
+		tabs.addTab(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
 		
+        if(getInteractionState()==InteractionState.Viewing) {
+	        proteinForm_ = new ViralIsolateProteinForm(this);
+			tabs.addTab(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
+	        resistanceForm_ = new ViralIsolateResistanceForm(this);
+			tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
+	        reportForm_ = new ViralIsolateReportForm(this);
+			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+        }
+        
         fillData();
         
         addControlButtons();

@@ -32,6 +32,9 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	
 	private List<Boolean> sortable_ = new ArrayList<Boolean>(5);
 
+	private List<Integer> widths = new ArrayList<Integer>(5);
+	
+	
 	private AttributeFilter attributeFilter_;
 	
 	public IPatientDataTable()
@@ -43,18 +46,19 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	{
 	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
-	    addColumn("dataTable.patient.colName.dataSet", new DatasetFilter(t), "dataset.description", true);
-	    addColumn("dataTable.patient.colName.patientId", new StringFilter(), "patient.patientId", true);
-	    addColumn("dataTable.patient.colName.name", new StringFilter(), "patient.lastName", true);
-	    addColumn("dataTable.patient.colName.surName", new StringFilter(), "patient.firstName", true);
-	    addColumn("dataTable.patient.colName.attribute", getAttributeFilter(), "attributeValue.value", true);
+	    addColumn("dataTable.patient.colName.dataSet", new DatasetFilter(t), "dataset.description", true,20);
+	    addColumn("dataTable.patient.colName.patientId", new StringFilter(), "patient.patientId", true,20);
+	    addColumn("dataTable.patient.colName.name", new StringFilter(), "patient.lastName", true,20);
+	    addColumn("dataTable.patient.colName.surName", new StringFilter(), "patient.firstName", true,20);
+	    addColumn("dataTable.patient.colName.attribute", getAttributeFilter(), "attributeValue.value", true,20);
 	}
 	
-	public void addColumn(String colName, IFilter filter, String varName, boolean sortable){
+	public void addColumn(String colName, IFilter filter, String varName, boolean sortable, int width){
 	    colNames_.add(colName);
 	    filters_.add(filter);
 	    filterVarNames_.add(varName);
 	    sortable_.add(sortable);
+	    widths.add(width);
 	}
 
 	public String[] getColNames()
@@ -208,4 +212,12 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
         
         return a;
     }
+
+	public int[] getColumnWidths() {
+	    int ret[] = new int[widths.size()];
+	    for(int i=0;i<widths.size();++i){
+	        ret[i] = widths.get(i);
+	    }
+	    return ret;
+	}
 }

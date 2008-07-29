@@ -6,22 +6,17 @@ import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFileUpload;
+import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.FileUpload;
+import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLabel;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class ImportFormAdd extends FormWidget {
-	private WTable addFileTable;
-	private WComboBox datasets;
-	private WFileUpload wfu;
+	private FormTable addFileTable;
+	private ComboBox<Dataset> datasetCB;
+	private FileUpload fileU;
 	
 	public ImportFormAdd(WMessage formName, InteractionState interactionState) {
 		super(formName, interactionState);
@@ -31,30 +26,17 @@ public class ImportFormAdd extends FormWidget {
 	private void init() {
 		WGroupBox add = new WGroupBox(tr("form.impex.import.addupload"), this);
 
-		addFileTable = new WTable();
-		addFileTable.setStyleClass("spacyTable");
-		add.addWidget(addFileTable);
+		addFileTable = new FormTable(add);
 
-		new WLabel(tr("form.impex.import.select"), addFileTable.elementAt(0, 0)).setStyleClass("form-label");
-		new WLabel(tr("form.impex.import.dataset"), addFileTable.elementAt(1, 0)).setStyleClass("form-label");
-		datasets = new WComboBox(addFileTable.elementAt(1, 1));
+		Label fileL = new Label(tr("form.impex.import.select"));
+		fileU = new FileUpload(getInteractionState(), this);
+		fileU.setMandatory(true);
+		addFileTable.addLineToTable(fileL, fileU);
 		
-		wfu = new WFileUpload(addFileTable.elementAt(0, 2));
-		wfu.uploaded.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
-				if ( wfu.clientFileName() != null ) {
-					addFileTable.elementAt(0, 1).clear();
-					new WLabel(new WMessage(wfu.clientFileName(), true), addFileTable.elementAt(0, 1));
-				}
-			}
-		});
-		
-		WPushButton cmdUpload = new WPushButton(WResource.tr("form.impex.import.upload"), addFileTable.elementAt(0, 2));
-		cmdUpload.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				wfu.upload();
-			}
-		});
+		Label datasetL = new Label(tr("form.impex.import.dataset"));
+		datasetCB = new ComboBox<Dataset>(getInteractionState(), this);
+		datasetCB.setMandatory(true);
+		addFileTable.addLineToTable(datasetL, datasetCB);
 		
 		fillComboBox();
 
@@ -64,14 +46,15 @@ public class ImportFormAdd extends FormWidget {
 	private void fillComboBox() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 
-		datasets.clear();
+		datasetCB.clearItems();
 
 		for (Dataset ds : t.getDatasets()) {
-			datasets.addItem(new DataComboMessage<Dataset>(ds, ds
+			datasetCB.addItem(new DataComboMessage<Dataset>(ds, ds
 					.getDescription()));
 		}
 
-		datasets.sort();
+		datasetCB.sort();
+		datasetCB.addNoSelectionItem();
 	}
 	
 	@Override
@@ -92,9 +75,7 @@ public class ImportFormAdd extends FormWidget {
 	
 	@Override
 	public void saveData() {
-		if ( wfu.clientFileName() != null ) {
-			ImportFormRunning.add( new ProcessXMLImport(RegaDBMain.getApp().getLogin(), wfu, datasets.currentText().value()) );
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importXMLrun, RegaDBMain.getApp().getTree().getTreeContent().importXMLrun);
-		}
+		ImportFormRunning.add( new ProcessXMLImport(RegaDBMain.getApp().getLogin(), fileU.getFileUpload(), datasetCB.currentValue()));
+		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importXMLrun, RegaDBMain.getApp().getTree().getTreeContent().importXMLrun);
 	}
 }

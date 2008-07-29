@@ -11,6 +11,9 @@ import net.sf.witty.wt.WFormWidget;
 import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WLineEdit;
 import net.sf.witty.wt.WLineEditEchoMode;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.validation.WEuropeanDateValidator;
 
 public class DateField extends FormField
@@ -25,9 +28,14 @@ public class DateField extends FormField
         {
 			_fieldEdit = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, _fieldEdit);
+            WTable table = new WTable(this);
+            table.putElementAt(0, 0, _fieldEdit);
+            table.putElementAt(0, 1, calendarIcon_);
+            table.elementAt(0, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
 			addWidget(_fieldEdit);
 			addWidget(calendarIcon_);
 			flagValid();
+			table.setStyleClass("date-field");
 		}
 		else
 		{
@@ -54,12 +62,12 @@ public class DateField extends FormField
 	
 	public void flagErroneous()
 	{
-		_fieldEdit.setStyleClass("form-field-textfield-edit-invalid");
+		_fieldEdit.setStyleClass("form-field textfield edit-invalid");
 	}
 
 	public void flagValid()
 	{
-		_fieldEdit.setStyleClass("form-field-textfield-edit-valid");
+		_fieldEdit.setStyleClass("form-field textfield edit-valid");
 	}
 
     public String getFormText() 

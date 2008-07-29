@@ -63,8 +63,8 @@ public class FilterTF extends WLineEdit
 	public void setStyle(boolean valid)
 	{
 		if(valid)
-			setStyleClass("filterTF-valid-input");
+			setStyleClass("filter-field textfield edit-valid");
 		else
-			setStyleClass("filterTF-invalid-input");
+			setStyleClass("filter-field textfield edit-invalid");
 	}
 }

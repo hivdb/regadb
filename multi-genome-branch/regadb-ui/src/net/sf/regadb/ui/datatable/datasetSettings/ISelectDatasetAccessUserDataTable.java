@@ -18,6 +18,8 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
         
     private static boolean [] sortable_ = {true, true, true};
     
+    private static int[] colWidths = {33,34,33};
+    
     private IFilter[] filters_ = new IFilter[3];
     
     public ISelectDatasetAccessUserDataTable()
@@ -80,4 +82,9 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		// TODO Auto-generated method stub
+		return colWidths;
+	}
 }

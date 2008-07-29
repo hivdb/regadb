@@ -19,5 +19,4 @@ public class SelectQueryToolQueryDefinitionDatatable extends
         RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView.selectNode();
 	}
-
 }
