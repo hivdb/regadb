@@ -27,6 +27,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.witty.wt.WGroupBox;
@@ -42,7 +43,7 @@ public class SinglePatientForm extends FormWidget
 {
     //general group
     private WGroupBox generalGroup_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label sourceDatasetL;
     private ComboBox<Dataset> sourceDatasetCB;
     private Label idL;
@@ -76,11 +77,11 @@ public class SinglePatientForm extends FormWidget
     {   
         //general group
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
-        generalGroupTable_ = new WTable(generalGroup_);
+        generalGroupTable_ = new FormTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
         sourceDatasetCB = new ComboBox<Dataset>(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         sourceDatasetCB.setMandatory(true);
-        addLineToTable(generalGroupTable_, sourceDatasetL, sourceDatasetCB);
+        generalGroupTable_.addLineToTable(sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
         idTF = new TextField(getInteractionState(), this){
                 public boolean checkUniqueness(){
@@ -90,19 +91,19 @@ public class SinglePatientForm extends FormWidget
             };
         idTF.setMandatory(true);
         idTF.setUnique(true);
-        addLineToTable(generalGroupTable_, idL, idTF);
+        generalGroupTable_.addLineToTable(idL, idTF);
         firstNameL = new Label(tr("form.singlePatient.editView.firstName"));
         firstNameTF = new TextField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, firstNameL, firstNameTF);
+        generalGroupTable_.addLineToTable(firstNameL, firstNameTF);
         lastNameL = new Label(tr("form.singlePatient.editView.lastName"));
         lastNameTF = new TextField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, lastNameL, lastNameTF);
+        generalGroupTable_.addLineToTable(lastNameL, lastNameTF);
         birthDateL = new Label(tr("form.singlePatient.editView.birthDate"));
         birthDateTF = new DateField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, birthDateL, birthDateTF);
+        generalGroupTable_.addLineToTable(birthDateL, birthDateTF);
         deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
         deathDateTF = new DateField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, deathDateL, deathDateTF);
+        generalGroupTable_.addLineToTable(deathDateL, deathDateTF);
         /*WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
         export.clicked.addListener(new SignalListener<WMouseEvent>()
         {
@@ -215,7 +216,7 @@ public class SinglePatientForm extends FormWidget
         {
             attributesGroup_ = new WGroupBox(tr("form.singlePatient.editView.attributes"), this);
             attributesGroupTable_ = new WTable(attributesGroup_);
-            
+            attributesGroupTable_.setStyleClass("datatable");
             int rowToPlace;
             TableExpander attributeGroup;
             WMessage groupMessage;
@@ -237,17 +238,20 @@ public class SinglePatientForm extends FormWidget
                 }
                 addRowIfNotEmpty(rowToPlace);
                 attributeGroup = new TableExpander(groupMessage, attributesGroupTable_, rowToPlace);
+                attributesGroupTable_.elementAt(rowToPlace, 0).setColumnSpan(2);
+                
                 for(Pair<Attribute, PatientAttributeValue> attrEl : entry.getValue())
                 {
                     rowToPlace++;
                     addRowIfNotEmpty(rowToPlace);
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
                     attributePairs_.put(attributeLabel, attrEl.getKey());
-                    attributesGroupTable_.putElementAt(rowToPlace, 1, attributeLabel);
+                    attributesGroupTable_.putElementAt(rowToPlace, 0, attributeLabel);
+                    attributesGroupTable_.elementAt(rowToPlace, 0).setStyleClass("form-label-area");
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
                         attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
-                        attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldCB);
+                        attributesGroupTable_.putElementAt(rowToPlace, 1, attributeFieldCB);
                         
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
@@ -279,7 +283,7 @@ public class SinglePatientForm extends FormWidget
                             else
                                 attributeFieldTF.setText(attrEl.getValue().getValue());
                         }
-                        attributesGroupTable_.putElementAt(rowToPlace, 2, attributeFieldTF);
+                        attributesGroupTable_.putElementAt(rowToPlace, 1, attributeFieldTF);
                     }
                 }
                 attributeGroup.expand();
@@ -370,11 +374,11 @@ public class SinglePatientForm extends FormWidget
         {
         for(int row = 0; row < attributesGroupTable_.numRows(); row++)
         {
-                label = attributesGroupTable_.elementAt(row, 1).children().get(0);
+                label = attributesGroupTable_.elementAt(row, 0).children().get(0);
                 if(label instanceof Label)
                 {
                     attribute = attributePairs_.get(label);
-                    tf = attributesGroupTable_.elementAt(row, 2).children().get(0);
+                    tf = attributesGroupTable_.elementAt(row, 1).children().get(0);
                     PatientAttributeValue attributeValue = patient_.getAttributeValue(attribute);
     
                     if(tf instanceof TextField)

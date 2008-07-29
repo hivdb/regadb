@@ -29,6 +29,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     private SettingsUser currentUser_;
     
     private static final String [] headers_ = {"editableTable.datasetAccess.colName.dataset", "editableTable.datasetAccess.colName.rights", "editableTable.datasetAccess.colName.providerUser"};
+    private static final int[] colWidths = {40,30,30};
     
     public IDatasetAccessSelectionEditableTable(FormWidget form, SettingsUser user)
     {
@@ -228,4 +229,8 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     {
         transaction_.flush();
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

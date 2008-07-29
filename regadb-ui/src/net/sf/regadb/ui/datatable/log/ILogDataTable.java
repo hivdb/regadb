@@ -19,6 +19,8 @@ public class ILogDataTable implements IDataTable<File> {
     private static String[] colNames_ = new String[]{"dataTable.log.colName.date",
                                                      "dataTable.log.colName.name",
                                                      "dataTable.log.colName.size"};
+    
+    private static int[] colWidths = {20,60,20};
 
     private static Comparator<File>[] comparators_ = new Comparator[]{ new FileDateComparator(), new FileNameComparator(), new FileSizeComparator() };
     private static boolean[] sortable_ = {true, true, true};
@@ -41,7 +43,11 @@ public class ILogDataTable implements IDataTable<File> {
     }
     
     private File getLogDir(){
-        return new File(RegaDBSettings.getInstance().getPropertyValue("regadb.log.dir"));
+        File f =  new File(RegaDBSettings.getInstance().getPropertyValue("regadb.log.dir"));
+        if (f!= null && !f.exists()) {
+        	f.mkdirs();
+        }
+        return f;
     }
     
     private boolean exists(File f){
@@ -161,4 +167,8 @@ public class ILogDataTable implements IDataTable<File> {
             return -comparator.compare(o1,o2);
         }
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

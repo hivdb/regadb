@@ -15,16 +15,15 @@ import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WBreak;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
@@ -61,24 +60,21 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         
         //login group
         addWidget(loginGroup_);
-        WTable loginGroupTable = new WTable(loginGroup_);
+        FormTable loginGroupTable = new FormTable(loginGroup_);
         //user id
         uidTF.setMandatory(true);
         uidL.setBuddy(uidTF);
-        loginGroupTable.putElementAt(0, 0, uidL);
-        loginGroupTable.putElementAt(0, 1, uidTF);
+        loginGroupTable.addLineToTable(uidL, uidTF);
         //user password
         passwordTF.setMandatory(true);
         passwordL.setBuddy(passwordTF);
         passwordTF.setEchomode(WLineEditEchoMode.Password);
-        loginGroupTable.putElementAt(1, 0, passwordL);
-        loginGroupTable.putElementAt(1, 1, passwordTF);
+        loginGroupTable.addLineToTable(passwordL, passwordTF);
         if(RegaDBSettings.getInstance().getProxyList().size() > 1)
         {
             proxyL = new Label(tr("form.login.label.proxy"));
             proxyCB = new ComboBox<Pair<String, String>>(InteractionState.Editing, this);
-            loginGroupTable.putElementAt(2, 0, proxyL);
-            loginGroupTable.putElementAt(2, 1, proxyCB);
+            loginGroupTable.addLineToTable(proxyL, proxyCB);
             for(Pair<String,String> proxy : RegaDBSettings.getInstance().getProxyList())
             {
                 String proxyKey = "".equals(proxy.getValue())?"Empty proxy":proxy.getKey();
@@ -86,6 +82,8 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
             }
             proxyCB.sort();
         }
+        WContainerWidget createAccountContainer = new WContainerWidget(loginGroup_);
+        createAccountContainer.setStyleClass("create-account");
         createAccountLink_.setStyleClass("general-clickable-text");
         createAccountLink_.clicked.addListener(new SignalListener<WMouseEvent>()
         {
@@ -94,9 +92,11 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
                 RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
             }
         });
+        createAccountContainer.addWidget(createAccountLink_);
         
         //control
         WContainerWidget buttonContainer = new WContainerWidget(this);
+        buttonContainer.setStyleClass("control-buttons");
         buttonContainer.addWidget(_loginButton);
         buttonContainer.addWidget(_helpButton);
         buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
@@ -107,8 +107,6 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
                 confirmAction();
             }
         });
-        buttonContainer.addWidget(new WBreak());
-        buttonContainer.addWidget(createAccountLink_);
     }
 	
 	private boolean validateLogin()

@@ -17,7 +17,7 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
     private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description", "queryDefinition.settingsUser.uid"};
         
     private static boolean [] sortable_ = {true, true, true};
-    
+    private static int[] colWidths = {30,50,20};
     private IFilter[] filters_ = new IFilter[3];
     
     public String[] getColNames()
@@ -71,4 +71,8 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
     {
         return sortable_;
     }
+
+    public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

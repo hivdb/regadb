@@ -27,7 +27,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	private IFilter[] filters_ = new IFilter[4];
 	
 	private static boolean [] sortable_ = {true, true, false, false};
-	
+	private static int[] colWidths = {25,25,25,25};
 	public String[] getColNames()
 	{
 		return _colNames;
@@ -104,5 +104,9 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	public boolean[] sortableFields()
 	{
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

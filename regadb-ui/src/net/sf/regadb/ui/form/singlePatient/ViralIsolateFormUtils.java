@@ -6,13 +6,8 @@ import java.util.ArrayList;
 
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
-import net.sf.witty.wt.WBorder;
-import net.sf.witty.wt.WColor;
 import net.sf.witty.wt.WTableCell;
 import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WBorder.Style;
-import net.sf.witty.wt.WBorder.Width;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -32,14 +27,12 @@ public class ViralIsolateFormUtils {
         }
         
         final WText toReturn = new WText(lt(""));
+        final WText mutation = new WText(lt(""));
         
         if(tr==null)
         {
             toReturn.setText(lt("NA"));
-            cell.decorationStyle().setBackgroundColor(WColor.black);
-            cell.decorationStyle().setForegroundColor(WColor.white);
-            toReturn.decorationStyle().setBackgroundColor(WColor.black);
-            toReturn.decorationStyle().setForegroundColor(WColor.white);
+            cell.setStyleClass("resistance-NA");
         }
         else
         {
@@ -49,51 +42,37 @@ public class ViralIsolateFormUtils {
                     if(gss == 0.0)
                     {
                         toReturn.setText(lt("R"));
-                        cell.decorationStyle().setBackgroundColor(WColor.red);
-                        cell.decorationStyle().setForegroundColor(WColor.white);
-                        toReturn.decorationStyle().setBackgroundColor(WColor.red);
-                        toReturn.decorationStyle().setForegroundColor(WColor.white);
+                        cell.setStyleClass("resistance-R");
                     }
                     else if(gss == 0.5 || gss == 0.75)
                     {
                         toReturn.setText(lt("I"));
-                        cell.decorationStyle().setBackgroundColor(WColor.yellow);
-                        cell.decorationStyle().setForegroundColor(WColor.black);
-                        toReturn.decorationStyle().setBackgroundColor(WColor.yellow);
-                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                        cell.setStyleClass("resistance-I");
                     }
                     else if(gss == 1.0 || gss == 1.5)
                     {
                         toReturn.setText(lt("S"));
-                        cell.decorationStyle().setBackgroundColor(WColor.green);
-                        cell.decorationStyle().setForegroundColor(WColor.black);
-                        toReturn.decorationStyle().setBackgroundColor(WColor.green);
-                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                        cell.setStyleClass("resistance-S");
                     }
                     else 
                     {
                         toReturn.setText(lt("Cannot interprete"));
-                        cell.decorationStyle().setBackgroundColor(WColor.black);
-                        cell.decorationStyle().setForegroundColor(WColor.white);
-                        toReturn.decorationStyle().setBackgroundColor(WColor.black);
-                        toReturn.decorationStyle().setForegroundColor(WColor.white);
+                        cell.setStyleClass("resistance-X");
                     }
                     if(remarks!=null && !remarks.equals("null")) {
-                        cell.decorationStyle().setBackgroundColor(WColor.lightGray);
-                        cell.decorationStyle().setForegroundColor(WColor.black);
-                        toReturn.decorationStyle().setBackgroundColor(WColor.lightGray);
-                        toReturn.decorationStyle().setForegroundColor(WColor.black);
+                    	cell.setStyleClass(cell.styleClass() + " resistance-remarks");
                         toReturn.setToolTipMessage(lt(remarks));
                         cell.setToolTipMessage(lt(remarks));
                     }
                     if(canShowMutations && mutations.size()>0) {
-                        StringBuffer currentValue = new StringBuffer(toReturn.text().value());
+                        StringBuffer currentValue = new StringBuffer();
                         currentValue.append(" (");
                         for(String mut : mutations) {
                             currentValue.append(mut + " ");
                         }
                         currentValue.replace(currentValue.length()-1, currentValue.length(), ")");
-                        toReturn.setText(lt(currentValue.toString()));
+                        mutation.setText(lt(currentValue.toString()));
+                        mutation.setStyleClass("mutations");
                     }
                 }
             };
@@ -106,9 +85,11 @@ public class ViralIsolateFormUtils {
             }
         }
 
-        cell.decorationStyle().setBorder(new WBorder(Style.Solid, Width.Thin, WColor.black));
-        cell.setContentAlignment(WHorizontalAlignment.AlignCenter);
+        cell.setStyleClass("resistance-cell " + cell.styleClass());
         cell.addWidget(toReturn);
+        if (!mutation.text().keyOrValue().equals("")) {
+            cell.addWidget(mutation);
+        }
     }
     
     public static String getFixedGenericId(TestResult tr) {

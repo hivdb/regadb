@@ -18,6 +18,7 @@ public class ITestDataTable implements IDataTable<Test>
 	private IFilter[] filters_ = new IFilter[2];
 
 	private static boolean [] sortable_ = {true, true};
+	private static int[] colWidths = {50,50};
 	public String[] getColNames() 
 	{
 		return _colNames;
@@ -70,5 +71,9 @@ public class ITestDataTable implements IDataTable<Test>
 	public boolean[] sortableFields()
 	{
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

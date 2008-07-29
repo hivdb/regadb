@@ -93,40 +93,57 @@ html div.MODAL_FLOATING_FORE iframe {
 
 
 
+/* new css */
 
-
-
-
-
-.datatable .general-clickable-text{
-	font-weight:bold;
+body {
+	margin:0 auto;
+	padding:0px 1em 1em;
+	text-align:center;
+	width:95%;	
+	background-color:#fbfbfb;
 }
 
+table {
+	width: 100%;	
+}
+
+.MODAL_FLOATING_FORE table {
+	width:auto;	
+}
+
+/* header */
+
+td.header {
+	width:100%;	
+	text-align:left;
+}
 
 *.header-mainTitle
 {
 	Font-weight: bold;
   	font-size: 40px;
-  	margin-left: 5px;
-  	margin-right: 5px;
 }
 
 *.header-subTitle 
 {
   	font-weight: bold;
   	font-size: 20px;
-  	margin-left: 10px;
-  	margin-right: 5px;  
 }
 
-*.filterTF-valid-input
-{
 
+/* tree */
+
+.main-tree {
+	padding:0.5em 1em 0.5em 0em;
 }
 
-*.filterTF-invalid-input
-{
-	color: red;
+.main-tree-content {
+	width:15em;
+}
+
+.main-tree table {
+	width:auto;
+	text-align:left;	
 }
 
 *.treemenu-menuItem
@@ -146,71 +163,293 @@ html div.MODAL_FLOATING_FORE iframe {
 	font-weight: bold;
 }
 
+
+/* main forms */
+
+.formcontent {
+	width:100%;	
+}
+
+.control-buttons {
+	margin-left:-1em;
+	padding:0.2em;
+	background-color:#ddd;	
+	border:1px solid #bbb;
+	margin-top:1em;
+}
+
+/* data tables */
+
+table.datatable {
+	border-collapse:collapse;
+	background-color:#f4f4f4;
+	border:1px solid #bbb;
+}
+
+table.datatable td {
+	padding:0.1em 0.2em;
+	text-align:left;
+	overflow:hidden;
+}
+
+table.datatable td.tablewrapper {
+	padding:0px;
+}
+
+table.datatable-grid td{
+	border-left:1px solid #bbb;
+	border-right:1px solid #bbb;
+}
+
+table.datatable-grid td.navigation{
+	border:1px solid #bbb;
+	background-color:#e5e5e5;
+}
+
+table.datatable td.column-title, table.datatable td.table-expander {
+	padding:0.2em 0.5em;	
+	background-color:#ddd;
+	border-top:1px solid #bbb;
+	border-left:1px solid #bbb;
+	border-right:1px solid #bbb;
+}
+
+table.datatable td.column-action {
+	background-color:#ddd;
+}
+
+table.datatable td.column-action button {
+	width:7em;
+}
+
+table.datatable td.hidden {
+	display:none;
+	padding:0px;	
+}
+
+table.datatable span.table-header {
+	font-weight: bold;
+}
+
+*.scrollingButtons span {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+*.scrollingButtons button {
+	margin: 1px;
+}
+
+*.table-cell {
+	cursor: pointer;
+	display:block;
+}
+
+*.table-expander-text {
+	text-decoration: underline;
+}
+
+
+
+/* groups and headers */
+
 fieldset {
-	padding: .7em;
+	border:0px;
+	margin:1em 0em 0em;
+	padding:0.5em 0em 0em 1em !important;
+	text-align:left !important;
 }
 
-*.form-field-textfield-edit-valid
-{
-	
+fieldset fieldset {
+	margin:1em 1em 0em;
+	padding:0.5em 1em 1em 0em !important;
 }
 
-*.form-field-textfield-edit-invalid
-{
-	background-color: red;
+fieldset legend {
+	font-size:130%;
+	font-weight:bold;
+	margin-left:0em !important;
 }
 
-*.form-field-combo-edit-valid
-{
-	
+fieldset fieldset legend {
+	font-size:105%;
 }
 
-*.form-field-ntfield-edit-invalid
-{
-	background-color: red;
+fieldset fieldset fieldset legend {
+	font-size:95%;
 }
 
-*.form-field-ntfield-edit-valid
-{
+/* forms */
 
+table.datatable td.form-label-area {
+	width:12em;
+	padding-right:0.5em;
+	text-align:right !important;
+	background-color: #e5e5e5;
 }
 
-*.form-field-combo-edit-invalid
-{
-	background-color: red;
+.form-label {
+	padding-right:0px !important;
+	margin-right:0px !important;	
+	white-space : nowrap;
 }
 
-*.general-clickable-text
-{
+.form-label span {
+	font-weight:bold;	
+}
+
+.form-field, .filter-field {
+	width:96%;
+	margin:0px 0%;
+	padding:0px;
+}
+
+.form-field.textfield {
+	width:94%;	
+}
+
+.edit-invalid {
+	background-color:#f5baaa;
+}
+
+.message-error {
+	border:1px solid #ee0000;
+	background-color:#f5baaa;
+}
+
+.message-info {
+	border:1px solid #00bb00;
+	background-color:#baf5ba;
+}
+
+.message-info, .message-error {
+	margin:0.5em;
+	padding:0.5em;
+	text-align:center !important;
+}
+
+.message-info img, .message-error img {
+	padding-right:0.5em;
+}
+
+.message-info div, .message-error div {
+	text-align:center !important;
+	margin-top:0.5em;
+}
+
+
+table.date-field {
+	width:96%;	
+}
+
+table.date-field .textfield {
+	width:99%;	
+}
+
+table.date-field td {
+	border-width:0px;	
+}
+
+.code-area, .log-area {
+	display:block;
+	overflow:auto;
+	font-family:monospace;
+	text-align:left;
+	width:40em;
+	max-height:20em;	
+	border:1px solid #bbb;
+	padding:0.2em;
+}
+
+/* links */
+
+.datatable .general-clickable-text{
+	font-weight:bold;
+}
+
+*.general-clickable-text {
 	color : blue;
 	cursor: pointer;
 }
-*.spacyTable {
-	min-width: 600px;
-	width: 100%;
-}
-*.spacyTable td {
-	padding: .4em;
-}
-*.table-cell
-{
+
+*.link span {
 	cursor: pointer;
+	display:block;
 }
 
-*.dialog-title
-{
-	color : white;
-	
-	margin-left: 5px;
-  	margin-right: 5px;
-  	margin-left: 5px;
-  	margin-right: 5px;
+*.link {
+	color: blue;
 }
 
-*.dialog-title-container
-{
-	background-color : blue;
+/* login form */
+
+.create-account {
+	text-align:right !important;
+	padding:0.2em 0px;
 }
+
+/* drug resistance table */
+
+table.datatable-resistance td {
+	width:12%;	
+}
+
+table.datatable-resistance td.resistance-cell {
+	border:1px solid #bbb;
+	width:19%;
+}
+
+table.datatable-resistance td.resistance-cell span {
+	display:block;
+	text-align:center;
+	padding:0em 0.2em;
+}
+
+table.datatable-resistance td.resistance-NA {
+	color:#fff;
+	background-color:#000;	
+}
+
+table.datatable-resistance td.resistance-R {
+	color:#fff;
+	background-color:red;	
+}
+
+table.datatable-resistance td.resistance-I {
+	color:#000;
+	background-color:yellow;	
+}
+
+table.datatable-resistance td.resistance-S {
+	color:#000;
+	background-color:#00ff00;	
+}
+
+table.datatable-resistance td.resistance-X {
+	color:#fff;
+	background-color:#000;	
+}
+
+table.datatable-resistance td.resistance-remarks {
+	background-color:#e5e5e5;
+	color:#000;
+}
+
+table.datatable-resistance td.resistance-cell span.mutations {
+	font-family:monospace;
+}
+
+/* viral isolate evolution */
+
+table.viral-isolate-table td {
+	border:1px solid #bbb;
+	padding-top:0.2em;
+	padding-bottom:0.2em;
+}
+
+
+/* old css */
+
 
 *.dialog-image
 {
@@ -218,160 +457,6 @@ fieldset {
   	margin-right: 5px;
   	margin-left: 5px;
   	margin-right: 5px;
-}
-
-*.dialog-message
-{
-	color : black;
-	
-	margin-left: 5px;
-  	margin-right: 5px;
-  	margin-left: 5px;
-  	margin-right: 5px;
-}
-
-*.dialog-message-container
-{
-	background-color : gray;
-}
-
-*.table-expander-text
-{
-	text-decoration: underline;
-}
-
-*.form-label 
-{ 
-	white-space : nowrap;
-	
-	margin-right: 10px;
-	padding-right: 10px;
-}
-	
-*.form-label span
-{
-	display: -moz-inline-box;
-	display: inline-block;
-	
-	font-style: arial;
-	font-weight: bold;	
-}
-
-
-
-
-*.main-tree
-{
-	width: 15em;
-}
-
-
-
-
-
-*.tabmenu span
-{
-	color: blue;
-	text-decoration: underline;
-}
-
-*.tabmenu span.itemselected
-{
-	padding-left: 5px;
-	padding-bottom: 2px;
-	padding-right: 5px;
-	cursor: pointer;
-	font-weight: bold;
-	border-left: 1px solid black;
-	border-top: 1px solid black;
-	border-right: 1px solid black;
-}
-
-*.tabmenu span.item
-{
-	padding-left: 5px;
-	padding-bottom: 2px;
-	padding-right: 5px;
-	cursor: pointer;
-}
-
-*.viralisolateform
-{
-	padding: 5px;
-	border: 1px solid black;
-}
-
-*.datatable td
-{
-	padding-right: 10px;
-}
-
-*.scrollingButtons span
-{
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-*.scrollingButtons button
-{
-	margin: 1px;
-}
-
-*.Generic-drug-table th
-{
-	margin: 5px;
-}
-
-*.Generic-drug-table td
-{
-	padding: 3px;
-}
-
-*.table-header-bold
-{
-	font-weight: bold;
-}
-
-*.table-header
-{
-	font-weight: bold;
-}
-
-*.table-cell-center
-{
-	text-align: center !important;
-	vertical-align: middle !important;
-}
-
-*.editable-table td
-{
-	padding: 3px;
-}
-
-*.form-field-textarea-edit-invalid
-{
-	background-color: red;
-}
-
-*.form-field-textarea-edit-valid
-{
-}
-
-*.link span
-{
-	cursor: pointer;
-}
-
-*.groupbox div
-{
-	padding-right: 300px
-}
-*.link {
-	color: blue;
-}
-
-*.vi-mutation-evolution-table td {
-	padding: 3px;
 }
 
 *.viral-isolate-fasta-label {
@@ -398,7 +483,7 @@ fieldset {
 }
 
 .tabbedpane .tabmenu td {
-	padding-top:0.8em !important;
+	padding-top:0.5em !important;
 }
 
 .tabbedpane .tab {
@@ -511,13 +596,13 @@ fieldset {
 
 /* dialog windows */
 
-.dialog {
+.dialog, .MODAL_FLOATING_FORE table {
 	border: 1px solid rgb(64, 64, 64);
 	background-color: rgb(235, 235, 235);
 	margin:0.3em;
 }
 
-.dialog .dialogtitle{
+.dialog .dialogtitle, .MODAL_FLOATING_FORE .dialog-title-container{
 	text-align:center !important;
 	font-weight:bold;
 	background-color: rgb(128, 128, 255);
@@ -525,8 +610,9 @@ fieldset {
 	border-bottom: 1px solid rgb(102, 102, 102);
 }
 
-.dialog .dialogcontent{
+.dialog .dialogcontent, .MODAL_FLOATING_FORE .dialog-message{
 	padding:0.3em;
+	display:block;
 }
 
 .dialog .dialogcontent .buttonpanel{
@@ -570,8 +656,9 @@ fieldset {
 	font-size:95%;
 }
 
-.statusbar table {
-	width:100%;
+.statusbar .statustext {
+	width:90%;	
+	text-align:left;
 }
 
 .statusbar .warning {
@@ -608,42 +695,3 @@ fieldset {
 	height:0px;
 }
 
-
-
-/* fields general */
-
-.prettyfieldset legend {
-	border-top: 1px solid rgb(64, 64, 64);
-	border-left: 1px solid rgb(64, 64, 64);
-	border-right: 1px solid rgb(64, 64, 64);
-	background-color: rgb(215, 215, 215);
-	margin-top:-1.4em;
-	margin-left:-1px;
-	position:relative;
-	top:-0.35em;
-	left:0px;
-	zoom:1;
-	font-weight: bold;
-	padding: 0.1em 0.5em;
-	line-height:1.2em;
-}
-
-.prettyfieldset {
-	display:block;
-	margin-top:2em;
-	margin-bottom:0.5em;
-	border: 1px solid rgb(64, 64, 64);
-	padding:0.2em 0px 0px 0px;
-	background-color: rgb(215, 215, 215);
-	position:relative;
-	top:0px;
-	left:0px;
-	zoom:1;
-}
-
-.prettyfieldset .content {
-	background-color: #fff;
-	padding: 0.5em;
-	border-top: 1px solid rgb(102, 102, 102);
-}102, 102);
-}

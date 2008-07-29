@@ -19,19 +19,19 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class MultipleTestResultForm extends FormWidget {
     
     private WGroupBox generalGroupBox_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label dateL_;
     private DateField dateTF_;
     private Label sampleIdL_;
@@ -61,14 +61,14 @@ public class MultipleTestResultForm extends FormWidget {
     
     private void init() {
         generalGroupBox_ = new WGroupBox(tr("form.multipleTestResults.general"), this);
-        generalGroupTable_ = new WTable(generalGroupBox_);
+        generalGroupTable_ = new FormTable(generalGroupBox_);
         dateL_ = new Label(tr("form.multipleTestResults.date"));
         dateTF_ = new DateField(getInteractionState(), this);
         dateTF_.setMandatory(true);
-        addLineToTable(generalGroupTable_, dateL_, dateTF_);
+        generalGroupTable_.addLineToTable(dateL_, dateTF_);
         sampleIdL_ = new Label(tr("form.multipleTestResults.sampleId"));
         sampleIdTF_ = new TextField(getInteractionState(), this, FieldType.ALFANUMERIC);
-        addLineToTable(generalGroupTable_, sampleIdL_, sampleIdTF_);
+        generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         
         for(Test t : tests_) {
             Label l = new Label(lt(t.getDescription()));
@@ -83,7 +83,7 @@ public class MultipleTestResultForm extends FormWidget {
                 testResultField = getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
             }
 
-            addLineToTable(generalGroupTable_, l, testResultField);
+            generalGroupTable_.addLineToTable(l, testResultField);
             formFields_.add(testResultField);
         }
         

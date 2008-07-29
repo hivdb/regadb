@@ -26,6 +26,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 
 	private static boolean [] sortable_ = {true, true,true,true};
 
+	private static int[] colWidths = {25,25,25,25};
+	
 	public String[] getColNames() 
 	{
 		return _colNames;
@@ -82,5 +84,9 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	public boolean[] sortableFields() 
 	{
 		return sortable_;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

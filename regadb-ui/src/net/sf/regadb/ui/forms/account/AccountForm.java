@@ -22,11 +22,11 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class AccountForm extends FormWidget
@@ -41,7 +41,7 @@ public class AccountForm extends FormWidget
 
     //Account fields
     private WGroupBox accountGroup_;
-    private WTable loginGroupTable;
+    private FormTable loginGroupTable;
     private Label uidL;
     private TextField uidTF;
     private Label firstNameL;
@@ -63,7 +63,7 @@ public class AccountForm extends FormWidget
     
     //Attribute fields
     private WGroupBox attributeGroup_;
-    private WTable attributeGroupTable;
+    private FormTable attributeGroupTable;
     private Label chartWidthL;
     private TextField chartWidthTF;
     private Label chartHeightL;
@@ -87,7 +87,7 @@ public class AccountForm extends FormWidget
     {
         //Account fields
         accountGroup_ = new WGroupBox(tr("form.account.editView.general"));
-        loginGroupTable = new WTable(accountGroup_);
+        loginGroupTable = new FormTable(accountGroup_);
         
         //UserId
         if(getInteractionState()!=InteractionState.Adding)
@@ -98,7 +98,7 @@ public class AccountForm extends FormWidget
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
             uidTF.setMandatory(true);
-            addLineToTable(loginGroupTable, uidL, uidTF);
+            loginGroupTable.addLineToTable(uidL, uidTF);
             
             datasetL = new Label(tr("form.settings.user.label.dataset"));
             datasetCB= new ComboBox<Dataset>(su_!=null&&
@@ -106,26 +106,26 @@ public class AccountForm extends FormWidget
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
             datasetCB.setMandatory(true);
-            addLineToTable(loginGroupTable,datasetL, datasetCB);
+            loginGroupTable.addLineToTable(datasetL, datasetCB);
         }
         
         //First name
         firstNameL = new Label(tr("form.settings.user.label.firstname"));
         firstNameTF = new TextField(getInteractionState(), this);
         firstNameTF.setMandatory(true);
-        addLineToTable(loginGroupTable, firstNameL, firstNameTF);
+        loginGroupTable.addLineToTable(firstNameL, firstNameTF);
         
         //Last name
         lastNameL = new Label(tr("form.settings.user.label.lastname"));
         lastNameTF = new TextField(getInteractionState(), this);
         lastNameTF.setMandatory(true);
-        addLineToTable(loginGroupTable, lastNameL, lastNameTF);
+        loginGroupTable.addLineToTable(lastNameL, lastNameTF);
         
         //E-mail address
         emailL = new Label(tr("form.settings.user.label.email"));
         emailTF = new TextField(getInteractionState(), this, FieldType.EMAIL);
         emailTF.setMandatory(true);
-        addLineToTable(loginGroupTable, emailL, emailTF);
+        loginGroupTable.addLineToTable(emailL, emailTF);
         
         //New password & retype password
         if(getInteractionState()==InteractionState.Adding)
@@ -134,12 +134,12 @@ public class AccountForm extends FormWidget
             newPasswordTF = new TextField(getInteractionState(), this);
             newPasswordTF.setMandatory(true);
             newPasswordTF.setEchomode(WLineEditEchoMode.Password);
-            addLineToTable(loginGroupTable, newPasswordL, newPasswordTF);
+            loginGroupTable.addLineToTable(newPasswordL, newPasswordTF);
             retypePasswordL = new Label(tr("form.settings.user.label.password.retype"));
             retypePasswordTF = new TextField(getInteractionState(), this);
             retypePasswordTF.setMandatory(true);
             retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
-            addLineToTable(loginGroupTable, retypePasswordL, retypePasswordTF);
+            loginGroupTable.addLineToTable(retypePasswordL, retypePasswordTF);
         }
         
         //Administrator & enabled
@@ -147,26 +147,26 @@ public class AccountForm extends FormWidget
         {
             administratorL = new Label(tr("form.settings.user.label.administrator"));
             administratorCB = new CheckBox(getInteractionState(), this);
-            addLineToTable(loginGroupTable, administratorL, administratorCB);
+            loginGroupTable.addLineToTable(administratorL, administratorCB);
             registeredL = new Label(tr("form.settings.user.label.enabled"));
             registeredCB = new CheckBox(getInteractionState(), this);
-            addLineToTable(loginGroupTable, registeredL, registeredCB);
+            loginGroupTable.addLineToTable(registeredL, registeredCB);
         }
         
         if(getInteractionState()!=InteractionState.Adding)
         {
             //Attribute fields
             attributeGroup_ = new WGroupBox(tr("form.account.editView.attributes"));
-            attributeGroupTable = new WTable(attributeGroup_);
+            attributeGroupTable = new FormTable(attributeGroup_);
             chartWidthL = new Label(tr("form.settings.user.label.chartWidth"));
             chartWidthTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
-            addLineToTable(attributeGroupTable, chartWidthL, chartWidthTF);
+            attributeGroupTable.addLineToTable(chartWidthL, chartWidthTF);
             chartHeightL = new Label(tr("form.settings.user.label.chartHeight"));
             chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
-            addLineToTable(attributeGroupTable, chartHeightL, chartHeightTF);
+            attributeGroupTable.addLineToTable(chartHeightL, chartHeightTF);
             chartMutationL = new Label(tr("form.settings.user.label.chartMutation"));
             chartMutationCB = new ComboBox<Test>(getInteractionState(), this);
-            addLineToTable(attributeGroupTable, chartMutationL, chartMutationCB);
+            attributeGroupTable.addLineToTable(chartMutationL, chartMutationCB);
         }
         
         addWidget(accountGroup_);
@@ -366,11 +366,16 @@ public class AccountForm extends FormWidget
                 }
             }
             
-            su_.setChartWidth( Integer.parseInt( chartWidthTF.getFormText() ) );
-            su_.setChartHeight( Integer.parseInt( chartHeightTF.getFormText() ) );
             
             if(attributeGroup_!=null)
             {
+                t = login.createTransaction();
+                su_.setChartWidth( Integer.parseInt( chartWidthTF.getFormText() ) );
+                su_.setChartHeight( Integer.parseInt( chartHeightTF.getFormText() ) );
+                update(su_, t);
+                t.commit();
+
+            	
                 t = login.createTransaction();
                 Test chartMutation = chartMutationCB.currentValue();
                 byte [] mutationDescription = null;

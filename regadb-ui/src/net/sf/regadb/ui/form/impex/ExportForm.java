@@ -12,14 +12,15 @@ import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WComboBox;
 import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WLabel;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
 import org.jdom.Document;
@@ -28,8 +29,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class ExportForm extends FormWidget {
-	private WTable table_;
-	private WComboBox datasets;
+	private FormTable table_;
+	private ComboBox<Dataset> datasets;
 	private File exportFile;
 	
 	public ExportForm(WMessage formName, InteractionState interactionState) {
@@ -37,22 +38,25 @@ public class ExportForm extends FormWidget {
 		init();
 	}
 	
-	public void init()
-    {
-		table_ = new WTable();
-		table_.setStyleClass("spacyTable");
-		addWidget(table_);
+	public void init() {
+		table_ = new FormTable(this);
 		
-		new WLabel(tr("form.impex.export.dataset"), table_.elementAt(0, 0)).setStyleClass("form-label");;
-		datasets = new WComboBox(table_.elementAt(0, 1));
+		Label datasetsL = new Label(tr("form.impex.export.dataset"));;
+		datasets = new ComboBox<Dataset>(InteractionState.Editing, this);
+		fillData();
+		table_.addLineToTable(datasetsL, datasets);
 		
-		WPushButton export = new WPushButton(tr("form.impex.export.title"), table_.elementAt(0, 1));
+		
+		WPushButton export = new WPushButton(tr("form.impex.export.title"));
+		Label exportL = new Label(tr("form.impex.export.title"));
+		WWidget[] widgets = {exportL, export};
+		table_.addLineToTable(widgets);
+		
 		export.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				ExportToXML l = new ExportToXML();
 		        Element root = new Element("patients");
-		        
-		        Dataset ds = ((DataComboMessage<Dataset>)datasets.currentText()).getValue();
+		        Dataset ds = datasets.currentValue();
 				
 				Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
 		        for ( Patient p : t.getPatients(ds) ) {
@@ -85,8 +89,6 @@ public class ExportForm extends FormWidget {
 			}
 		});
 		
-		fillData();
-		
 		addControlButtons();
     }
 	
@@ -94,12 +96,13 @@ public class ExportForm extends FormWidget {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
 		// Fill in dataset combo box
-		datasets.clear();
+//		datasets.clearItems();
         for(Dataset ds : t.getDatasets())
         {
         	datasets.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
         }
         datasets.sort();
+        datasets.selectIndex(0);
 	}
 	
 	private void deleteExportFile() {

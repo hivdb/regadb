@@ -30,6 +30,8 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
                                                 "editableTable.drugCommercial.colName.placebo",
                                                 "editableTable.drugCommercial.colName.blind"};
     
+    private static final int[] colWidths = {30,20,15,15,10,10};
+    
     public ICommercialDrugSelectionEditableTable(FormWidget form, Therapy therapy)
     {
         form_ = form;
@@ -231,4 +233,8 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
             combo_freq.selectItem(f.toString());
         }
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

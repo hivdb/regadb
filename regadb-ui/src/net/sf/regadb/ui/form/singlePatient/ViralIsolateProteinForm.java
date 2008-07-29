@@ -12,15 +12,18 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
+import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WFont;
 import net.sf.witty.wt.WFontGenericFamily;
 import net.sf.witty.wt.WGroupBox;
+import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WTimer;
 
 public class ViralIsolateProteinForm extends WContainerWidget
@@ -32,7 +35,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private ComboBox<NtSequence> ntSequenceCombo_;
 	private Label aaSequenceComboL_;
 	private ComboBox<AaSequence> aaSequenceCombo_;
-	private WTable proteinGroupTable_;
+	private FormTable proteinGroupTable_;
 	private Label proteinL;
 	private TextField proteinTF;
 	private Label regionL;
@@ -44,7 +47,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private Label nonSynonymousL;
 	private TextField nonSynonymousTF;
     
-    private WPushButton refreshAlignments_;
+	private WarningMessage warningMessage;
+//    private WPushButton refreshAlignments_;
     WTimer refreshAlignmentsTimer_;
     
 	private VisualizeAaSequence visAaSeq_ = new UIVisualizeAaSequence();
@@ -59,12 +63,6 @@ public class ViralIsolateProteinForm extends WContainerWidget
 
 	public void init()
 	{
-		proteinGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.protein"), this);
-		proteinGroupTable_ = new WTable(proteinGroup_);
-		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
-		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
-        int row = viralIsolateForm_.addLineToTable(proteinGroupTable_, ntSequenceComboL_, ntSequenceCombo_);
-        //alignment refresh
         boolean aligning = false;
         for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
         {
@@ -74,12 +72,13 @@ public class ViralIsolateProteinForm extends WContainerWidget
                 break;
             }
         }
+        
+        //alignment refresh
         if(aligning)
         {
-            refreshAlignments_ = new WPushButton(tr("form.viralIsolate.editView.button.aligning"));
-            refreshAlignments_.setEnabled(false);
-            proteinGroupTable_.putElementAt(row, 2, refreshAlignments_);
-            refreshAlignmentsTimer_ = new WTimer(refreshAlignments_);
+        	warningMessage = new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.aligning"), MessageType.INFO);
+        	addWidget(warningMessage);
+            refreshAlignmentsTimer_ = new WTimer(warningMessage);
             refreshAlignmentsTimer_.setInterval(2000);
             refreshAlignmentsTimer_.timeout.addListener(new SignalListener<WEmptyEvent>()
             {
@@ -89,27 +88,33 @@ public class ViralIsolateProteinForm extends WContainerWidget
                 }
             });
             refreshAlignmentsTimer_.start();
-        }
-        //alignment refresh
+        }        
+		
+		
+		proteinGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.protein"), this);
+		proteinGroupTable_ = new FormTable(proteinGroup_);
+		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
+		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
+        proteinGroupTable_.addLineToTable(ntSequenceComboL_, ntSequenceCombo_);
         aaSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.aaSequence"));
 		aaSequenceCombo_ = new ComboBox<AaSequence>(InteractionState.Editing, null);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, aaSequenceComboL_, aaSequenceCombo_);
+		proteinGroupTable_.addLineToTable(aaSequenceComboL_, aaSequenceCombo_);
 		proteinL = new Label(tr("form.viralIsolate.editView.label.protein"));
 		proteinTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, proteinL, proteinTF);
+		proteinGroupTable_.addLineToTable(proteinL, proteinTF);
 		regionL = new Label(tr("form.viralIsolate.editView.label.region"));
 		regionTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, regionL, regionTF);
+		proteinGroupTable_.addLineToTable(regionL, regionTF);
 		alignmentL = new Label(tr("form.viralIsolate.editView.label.alignment"));
 		alignmentTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		alignmentTF.decorationStyle().setFont(new WFont(WFontGenericFamily.Monospace, "Courier"));
-        viralIsolateForm_.addLineToTable(proteinGroupTable_, alignmentL, alignmentTF);
+		proteinGroupTable_.addLineToTable(alignmentL, alignmentTF);
 		synonymousL = new Label(tr("form.viralIsolate.editView.label.synonymous"));
 		synonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, synonymousL, synonymousTF);
+		proteinGroupTable_.addLineToTable(synonymousL, synonymousTF);
 		nonSynonymousL = new Label(tr("form.viralIsolate.editView.label.nonSynonymous"));
 		nonSynonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		viralIsolateForm_.addLineToTable(proteinGroupTable_, nonSynonymousL, nonSynonymousTF);
+		proteinGroupTable_.addLineToTable(nonSynonymousL, nonSynonymousTF);
 	}
     
     private void checkAlignments()
@@ -131,7 +136,9 @@ public class ViralIsolateProteinForm extends WContainerWidget
         
         if(!aligning)
         {
+        	warningMessage.setText(tr("form.viralIsolate.editView.message.aligningComplete"));
             refreshAlignmentsTimer_.stop();
+            WPushButton refreshAlignments_ = new WPushButton(warningMessage.getContentArea());
             refreshAlignments_.setText(tr("form.viralIsolate.editView.button.refreshAlignments"));
             refreshAlignments_.setEnabled(true);
             refreshAlignments_.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -139,7 +146,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
                 public void notify(WMouseEvent me)
                 {
                     fillData(viralIsolateForm_.getViralIsolate());
-                    refreshAlignments_.setHidden(true);
+                    warningMessage.setHidden(true);
                 }
             });
         }

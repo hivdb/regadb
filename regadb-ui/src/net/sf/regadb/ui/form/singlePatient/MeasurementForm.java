@@ -16,12 +16,12 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class MeasurementForm extends FormWidget
@@ -30,7 +30,7 @@ public class MeasurementForm extends FormWidget
 	
 	//General group
     private WGroupBox generalGroup_;
-    private WTable generalGroupTable_;
+    private FormTable generalGroupTable_;
     private Label sampleIdL_;
     private TextField sampleIdTF_;
     private Label dateL;
@@ -55,28 +55,29 @@ public class MeasurementForm extends FormWidget
 	{
         //general group
         generalGroup_ = new WGroupBox(tr("form.testResult.editView.general"), this);
-        generalGroupTable_ = new WTable(generalGroup_);
+        generalGroupTable_ = new FormTable(generalGroup_);
         sampleIdL_ = new Label(tr("form.testResult.editView.sampleid"));
         sampleIdTF_ = new TextField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, sampleIdL_, sampleIdTF_);
+        generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         dateL = new Label(tr("form.testResult.editView.date"));
         dateTF = new DateField(getInteractionState(), this);
-        addLineToTable(generalGroupTable_, dateL, dateTF);
+        generalGroupTable_.addLineToTable(dateL, dateTF);
         testTypeL = new Label(tr("form.testResult.editView.testType"));
         testTypeCB = new ComboBox<TestType>(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
-        addLineToTable(generalGroupTable_, testTypeL, testTypeCB);
+        generalGroupTable_.addLineToTable(testTypeL, testTypeCB);
         testNameL = new Label(tr("form.testResult.editView.testName"));
         testNameCB = new ComboBox<Test>(getInteractionState(), this);
         testNameCB.setMandatory(true);
-        addLineToTable(generalGroupTable_, testNameL, testNameCB);
+        generalGroupTable_.addLineToTable(testNameL, testNameCB);
         testResultL = new Label(tr("form.testResult.editView.testResult"));
         testResultL.setLabelUIMandatory(this);
         testResultC = new WContainerWidget();
         int row = generalGroupTable_.numRows();
         generalGroupTable_.putElementAt(row, 0, testResultL);
         generalGroupTable_.putElementAt(row, 1, testResultC);
+        generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -125,8 +126,7 @@ public class MeasurementForm extends FormWidget
             }
             else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
             {
-                testResult_.setValue(DateUtils.parserEuropeanDate(testResultField_.text()).getTime()+"");
-                testResult_.setTestNominalValue(null);
+            	((DateField) testResultField_).setDate(DateUtils.parseDate(testResult_.getValue()));
             }
             else
             {

@@ -10,6 +10,7 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.file.FileUtils;
 import net.sf.witty.wt.WAnchor;
 import net.sf.witty.wt.WFileResource;
@@ -24,7 +25,7 @@ public class LogForm extends FormWidget {
     private WGroupBox propertiesGroup;
     private WGroupBox contentGroup;
     
-    private WTable propertiesTable;
+    private FormTable propertiesTable;
     private WTable contentTable;
 
     private Label fileNameL;
@@ -55,26 +56,27 @@ public class LogForm extends FormWidget {
         propertiesGroup = new WGroupBox(tr("form.log.properties"),this);
         contentGroup = new WGroupBox(tr("form.log.content"),this);
         
-        propertiesTable = new WTable(propertiesGroup);
+        propertiesTable = new FormTable(propertiesGroup);
         contentTable = new WTable(contentGroup);
         
         fileNameL = new Label(tr("form.log.name"));
         fileNameTF = new TextField(getInteractionState(),this);
-        addLineToTable(propertiesTable, fileNameL, fileNameTF);
+        propertiesTable.addLineToTable(fileNameL, fileNameTF);
 
         fileDateL = new Label(tr("form.log.date"));
         fileDateDF = new DateField(InteractionState.Viewing,this);
-        addLineToTable(propertiesTable, fileDateL, fileDateDF);
+        propertiesTable.addLineToTable(fileDateL, fileDateDF);
         
         fileSizeL = new Label(tr("form.log.size"));
         fileSizeTF = new TextField(getInteractionState(),this);
-        addLineToTable(propertiesTable, fileSizeL, fileSizeTF);
+        propertiesTable.addLineToTable(fileSizeL, fileSizeTF);
         
         fileDownloadL = new Label(tr("form.log.download"));
         fileDownloadA = new WAnchor();
-        addLineToTable(propertiesTable, new WWidget[]{fileDownloadL, fileDownloadA});
+        propertiesTable.addLineToTable(new WWidget[]{fileDownloadL, fileDownloadA});
 
         fileContentTA = new TextArea(InteractionState.Viewing,this);
+        fileContentTA.setStyleClass("code-area");
         contentTable.putElementAt(0,0,fileContentTA);
     }
     

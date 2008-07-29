@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.impl.ImportXML;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -18,15 +19,14 @@ import org.xml.sax.InputSource;
 
 public class ProcessXMLImport extends Thread {
 	private File xmlFile;
-	private String dataset_;
+	private Dataset dataset_;
 	private String clientFileName;
 	private File logFile;
-	private boolean checked = false;
 	private UploadStatus status = UploadStatus.PROCESSING;
 	private String uid;
 	private Login login_;
 	
-	public ProcessXMLImport(Login login, WFileUpload fileUpload, String dataset) {
+	public ProcessXMLImport(Login login, WFileUpload fileUpload, Dataset dataset) {
 		clientFileName = fileUpload.clientFileName();
 		xmlFile = new File(fileUpload.spoolFileName());
 		dataset_ = dataset;
@@ -53,10 +53,10 @@ public class ProcessXMLImport extends Thread {
 				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
 				status = UploadStatus.FAILED;
 			} else if (line.contains("<patients>")) {
-				instance.importPatients(new InputSource(new FileReader(xmlFile)), dataset_);
+				instance.importPatients(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
 				status = UploadStatus.SUCCEEDED;
 			} else if (line.contains("<viralIsolates>")) {
-				instance.importViralIsolates(new InputSource(new FileReader(xmlFile)), dataset_);
+				instance.importViralIsolates(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
 				status = UploadStatus.SUCCEEDED;
 			} else {
 				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
@@ -75,7 +75,7 @@ public class ProcessXMLImport extends Thread {
 	}
 	
 	public WMessage getDatasetName() {
-		return new WMessage(dataset_, true);
+		return new WMessage(dataset_.getDescription(), true);
 	}
 	
 	public String clientFileName() {
@@ -84,13 +84,6 @@ public class ProcessXMLImport extends Thread {
 	
 	public String getUid() {
 		return uid;
-	}
-	
-	public void setChecked(boolean c) {
-		checked = c;
-	}
-	public boolean isChecked() {
-		return checked;
 	}
 	
 	public UploadStatus getStatus(){

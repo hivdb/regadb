@@ -21,7 +21,8 @@ public class WStatusBar extends WStyledContainerWidget {
 	private void init() {
 		getStyleClasses().addStyle("statusbar");
 		table = new WTable(this);
-		warningText = new WText(tr("form.query.querytool.message.ok"), getTextContainer());
+		table.elementAt(0, 0).setStyleClass("statustext");
+		warningText = new WText(lt(""), getTextContainer());
 		warningText.setStyleClass("warning");
 	}
 	

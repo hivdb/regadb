@@ -14,6 +14,7 @@ public class IAttributeDataTable implements IDataTable<Attribute>
 {
     private static String [] _colNames = {"dataTable.attribute.colName.name","dataTable.attribute.colName.group", "dataTable.attribute.colName.valueType"};
     private static String[] filterVarNames_ = { "attribute.name", "attribute.attributeGroup.groupName", "attribute.valueType.description"};
+    private static int[] colWidths = {33,34,33};
     
     private IFilter[] filters_ = new IFilter[3];
     
@@ -74,4 +75,8 @@ public class IAttributeDataTable implements IDataTable<Attribute>
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

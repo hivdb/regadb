@@ -174,13 +174,13 @@ public class ComboBox<ComboDataType> extends FormField
     public void flagErroneous()
     {
         if(fieldEdit_!=null)
-            fieldEdit_.setStyleClass("form-field-combo-edit-invalid");
+            fieldEdit_.setStyleClass("form-field combo edit-invalid");
     }
 
     public void flagValid()
     {
         if(fieldEdit_!=null)
-            fieldEdit_.setStyleClass("form-field-combo-edit-valid");
+            fieldEdit_.setStyleClass("form-field combo edit-valid");
     }
 
     public String getFormText() 
@@ -229,7 +229,7 @@ public class ComboBox<ComboDataType> extends FormField
             if(fieldEdit_.currentText()==null)
                 return false;
             
-            return !(fieldEdit_.currentText().keyOrValue().equals(noSelectionItem));
+            return !(fieldEdit_.currentText().keyOrValue().equals(tr(noSelectionItem).value()));
         }
         else
         {

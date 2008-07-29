@@ -1,12 +1,13 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import java.util.Date;
-
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WImage;
+import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.core.utils.WLength;
+import net.sf.witty.wt.core.utils.WLengthUnit;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.witty.wt.validation.WEuropeanDateValidator;
 
@@ -26,24 +27,20 @@ public class DateFilter extends WContainerWidget implements IFilter
 	public DateFilter()
 	{
 		setDateField1(new FilterTF(new WEuropeanDateValidator()));
-		//tf1_.setInline(false);
 		setDateField2(new FilterTF(new WEuropeanDateValidator()));
-		//tf2_.setInline(false);
 		getDateField2().setEnabled(false);
 		combo_ = new FilterOperatorCombo(getDateField1());
 		combo_.setInline(false);
 		
 		addWidget(combo_);
-		WContainerWidget w1 = new WContainerWidget();
-		w1.addWidget(getDateField1());
-		w1.addWidget(calendarIcon1);
-		w1.setInline(false);
-		addWidget(w1);
-		WContainerWidget w2 = new WContainerWidget();
-		w2.addWidget(getDateField2());
-		w2.addWidget(calendarIcon2);
-		w2.setInline(false);
-		addWidget(w2);
+		WTable w1 = new WTable(this);
+		w1.setStyleClass("date-field");
+		w1.putElementAt(0, 0, getDateField1());
+		w1.putElementAt(0,1, calendarIcon1);
+		w1.putElementAt(1, 0, getDateField2());
+		w1.putElementAt(1, 1, calendarIcon2);
+        w1.elementAt(0, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
+        w1.elementAt(1, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
 		
 		//filling of the combo-box with operators		
 		combo_.addItem(tr(equals_));

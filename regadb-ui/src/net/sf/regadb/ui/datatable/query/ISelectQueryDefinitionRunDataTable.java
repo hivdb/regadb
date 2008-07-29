@@ -18,7 +18,7 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
     private static String[] filterVarNames_ = {"queryDefinitionRun.name", "queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
         
     private static boolean [] sortable_ = {true, true, true, true};
-    
+    private static int[] colWidths = {20,20,40,20};
     private IFilter[] filters_ = new IFilter[4];
     
     public String[] getColNames()
@@ -78,4 +78,8 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

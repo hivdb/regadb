@@ -5,28 +5,25 @@ import java.util.ArrayList;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLabel;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.WTimer;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class BatchTestRunningForm extends FormWidget {
 	private static ArrayList<BatchTestRunningTest> runningList = new ArrayList<BatchTestRunningTest>();
-	private static WTable table;
-	private static WPushButton cmdClear, cmdCancel;
-	private static WTimer t = new WTimer();
+	private SimpleTable table;
+	private WTimer timer = new WTimer();
 	
 	public BatchTestRunningForm(WMessage formName, InteractionState interactionState) {
 		super(formName, interactionState);
-		t.setInterval(1000);
-		t.timeout.addListener(new SignalListener<WEmptyEvent>() {
+		timer.setInterval(1000);
+		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
 			public void notify(WEmptyEvent a) {
 				refreshRunning();
 			}
@@ -36,90 +33,74 @@ public class BatchTestRunningForm extends FormWidget {
 	}
 	
 	public void init() {
-		WGroupBox runGroup = new WGroupBox(WResource.tr("form.batchtest.running.title"), this);
-		
-		table = new WTable(runGroup);
-		table.setStyleClass("spacyTable");
-		
-		cmdClear = new WPushButton(WResource.tr("form.batchtest.running.control.clear"));
-		cmdClear.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				clearList();
-			}
-		});
-		
-		cmdCancel = new WPushButton(WResource.tr("form.batchtest.running.control.cancel"));
-		cmdCancel.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				clearList(true);
-			}
-		});
-		
+		WGroupBox runGroup = new WGroupBox(tr("form.batchtest.running.title"), this);
+		table = new SimpleTable(runGroup);
 		addControlButtons();
 	}
 	
-	public static void refreshRunning() {
+	public void refreshRunning() {
 		table.clear();
+		table.setHeaders(tr("form.batchtest.running.head.test"),
+				tr("form.batchtest.running.head.status"),
+				tr("form.batchtest.running.head.progress"));
 		
-		String[] headers = {
-				"form.batchtest.running.head.test",
-				"form.batchtest.running.head.status",
-				"form.batchtest.running.head.progress"
-				};
+		table.setWidths(60,20,20);
+		table.elementAt(0, 3).setStyleClass("column-action");
 		
-		for(String head : headers) {
-			WLabel wl = new WLabel( new WMessage(head) );
-			wl.setStyleClass("table-header-bold");
-			table.putElementAt(0, table.numColumns(), wl);
-		}
 		
-		int row = 0;
+		int row = 1;
 		int needRefreshCount = 0;
 		
 		for(final BatchTestRunningTest run : runningList) {
-			row++;
-			table.putElementAt(row, 0, new WLabel( run.testName() ));
-			table.putElementAt(row, 1, new WLabel( run.getStatusMessage() ));
-			table.putElementAt(row, 2, new WLabel( run.getPercent() ));
-			
-			if ( run.getStatus() != BatchTestStatus.CANCELING ) {
-				int col = ( run.isRunning() ) ? 5 : 4;  
-				final WCheckBox ck = new WCheckBox(new WMessage(" ", true), table.elementAt(row, col));
-				ck.clicked.addListener(new SignalListener<WMouseEvent>() {
-					public void notify(WMouseEvent a) {
-						if ( run.isRunning() )
-							run.setCancelChecked(ck.isChecked());
-						else
-							run.setClearChecked(ck.isChecked());
-					}
-				});
-				ck.setChecked(run.isRunning()?run.cancelIsChecked():run.clearIsChecked());
-				
-				table.elementAt(row, col).setStyleClass("table-cell-center");
-			}
-			
-//			if ( run.getStatus() == BatchTestStatus.FAILED && run.getLogFile() != null ) {
-//				new WAnchor(new WFileResource("text/txt", run.getLogFile().getAbsolutePath()),
-//						WResource.tr("form.batchtest.running.log"),
-//						table.elementAt(row, 3)).setStyleClass("link");
-//			}
-			
-			if ( run.isRunning() || run.getStatus() == BatchTestStatus.CANCELING ) {
+			if ( run.isRunning()) {
 				needRefreshCount++;
 			}
+			
+			table.putElementAt(row, 0, new WText( run.testName() ));
+			table.putElementAt(row, 1, new WText( run.getStatusMessage() ));
+			table.putElementAt(row, 2, new WText( run.getPercent() ));
+			table.elementAt(row, 3).setStyleClass("column-action");
+			
+			if (run.getStatus() == BatchTestStatus.RUNNING) {
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.elementAt(row, 3));
+				cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
+					public void notify(WMouseEvent a) {
+						if (run.isRunning()) {
+							run.cancel();
+							cancelButton.disable();
+							cancelButton.setText(tr("form.batchtest.running.control.canceling"));
+						}
+					}
+				});
+			}
+			
+			if (run.getStatus() == BatchTestStatus.CANCELING) {
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.canceling"), table.elementAt(row, 3));
+				cancelButton.disable();
+			}
+			
+			if (run.getStatus() == BatchTestStatus.DONE ||
+					run.getStatus() == BatchTestStatus.FAILED ||
+					run.getStatus() == BatchTestStatus.CANCELED) {
+				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.elementAt(row, 3));
+				clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
+					public void notify(WMouseEvent a) {
+						int row = runningList.indexOf(run);
+						table.deleteRow(row+1);
+						runningList.remove(run);
+					}
+				});
+			}
+			
+			row++;
 		}
 		
-		if ( needRefreshCount == 0 ) {
-			if ( t.isActive() ) t.stop();
-		} else {
-			if ( !t.isActive() ) t.start();
+		if ( needRefreshCount == 0  && timer.isActive()) {
+			 timer.stop();
 		}
-		
-		row++;
-		cmdClear.setParent(table.elementAt(row, 4));
-		table.elementAt(row, 4).setStyleClass("table-cell-center");
-		cmdCancel.setParent(table.elementAt(row, 5));
-		table.elementAt(row, 5).setStyleClass("table-cell-center");
+		else if (needRefreshCount > 0 && !timer.isActive()){
+			timer.start();
+		}
 	}
 	
 	public static void runTest(Test t) {
@@ -138,25 +119,6 @@ public class BatchTestRunningForm extends FormWidget {
 			}
 		}
 		return false;
-	}
-	
-	public static void clearList() {
-		clearList(false);
-	}
-	public static void clearList(boolean cancelRuns) {
-		for( int i=0; i<runningList.size(); i++ ) {
-			BatchTestRunningTest run = runningList.get(i);
-			
-			if ( run.cancelIsChecked() && cancelRuns && run.isRunning() ) {
-				run.cancel();
-			} else if ( run.clearIsChecked() && !cancelRuns && !run.isRunning() ) {
-				if ( run.getLogFile() != null ) run.getLogFile().delete();
-				runningList.remove(i);
-				i--;
-			}
-		}
-		
-		refreshRunning();
 	}
 	
 	@Override

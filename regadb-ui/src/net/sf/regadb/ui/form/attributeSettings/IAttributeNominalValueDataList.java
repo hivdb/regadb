@@ -13,6 +13,7 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
 {
     private FormWidget form_;
     private static final String [] headers_ = {"editableTable.attributeNominvalValue.colName.name"};
+    private static final int[] colWidths = {100};
     
     private Attribute attribute_;
     private Transaction transaction_;
@@ -107,4 +108,8 @@ public class IAttributeNominalValueDataList implements IEditableTable<AttributeN
     {
         transaction_.flush();
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

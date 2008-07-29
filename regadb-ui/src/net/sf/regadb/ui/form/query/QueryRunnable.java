@@ -37,6 +37,14 @@ public class QueryRunnable implements Runnable
 		qdr_ = qdr;
         paramObjects_ = paramObjects;
 	}
+	
+	private String getResultDir() {
+		File f= new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir"));
+		if (!f.exists()) {
+			f.mkdirs();
+		}
+		return f.getAbsolutePath();
+	}
     
 	public void run() 
         {
@@ -46,7 +54,7 @@ public class QueryRunnable implements Runnable
         	
         	try
         	{
-				os = new FileOutputStream(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + fileName_);
+				os = new FileOutputStream(getResultDir() + File.separatorChar + fileName_);
 			}
         	catch (FileNotFoundException e1)
         	{

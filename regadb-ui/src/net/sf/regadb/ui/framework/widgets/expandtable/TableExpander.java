@@ -22,9 +22,9 @@ public class TableExpander
         table_ = table;
         
         startTableCell_ = table.elementAt(row, 0);
-        
+        startTableCell_.setStyleClass("table-expander");
         plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", startTableCell_);
-        label_ = new WText(labelText, table.elementAt(row, 1));
+        label_ = new WText(labelText, table.elementAt(row, 0));
         label_.setStyleClass("table-expander-text");
         
         label_.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -92,13 +92,15 @@ public class TableExpander
                 {
                     if(table_.elementAt(i, j)!=null)
                     {
-                        for(WWidget widget : table_.elementAt(i, j).children())
-                        {
-                            if(widget!=null)
-                            {
-                                widget.setHidden(!expand);
-                            }
-                        }
+                    	if (expand && table_.elementAt(i, j).styleClass() != null) {
+                    		int index = table_.elementAt(i, j).styleClass().indexOf(" hidden");
+                    		if (index >= 0) {
+                    			table_.elementAt(i, j).setStyleClass(table_.elementAt(i, j).styleClass().substring(0, index));
+                    		}
+                    	}
+                    	else if (!expand) {
+                    		table_.elementAt(i, j).setStyleClass(table_.elementAt(i, j).styleClass() + " hidden");
+                    	}
                     }
                 }
             }

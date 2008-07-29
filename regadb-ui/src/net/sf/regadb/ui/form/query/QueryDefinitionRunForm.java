@@ -17,12 +17,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.WAnchor;
 import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 import org.apache.commons.io.FileUtils;
@@ -32,7 +32,7 @@ public class QueryDefinitionRunForm extends FormWidget
 	private QueryDefinitionRun queryDefinitionRun;
 	
     private WGroupBox queryDefinitionRunGroup_;
-    private WTable queryDefinitionRunGroupTable;
+    private FormTable queryDefinitionRunGroupTable;
     
     private QueryDefinitionRunParameterGroupBox queryDefinitionRunParameterGroup;
     
@@ -77,38 +77,38 @@ public class QueryDefinitionRunForm extends FormWidget
     	
     	queryDefinitionRunGroup_ = new WGroupBox(tr("form.query.definition.run.general"), this);
     	
-    	queryDefinitionRunGroupTable = new WTable(queryDefinitionRunGroup_);
+    	queryDefinitionRunGroupTable = new FormTable(queryDefinitionRunGroup_);
     	
     	nameL = new Label(tr("form.query.definition.run.label.name"));
     	nameTF = new TextField(getInteractionState(), this);
     	nameTF.setMandatory(true);
-        addLineToTable(queryDefinitionRunGroupTable, nameL, nameTF);
+    	queryDefinitionRunGroupTable.addLineToTable(nameL, nameTF);
     	
     	queryNameL = new Label(tr("form.query.definition.run.label.query"));
     	queryNameTF = new TextField(InteractionState.Viewing, this);
-        addLineToTable(queryDefinitionRunGroupTable, queryNameL, queryNameTF);
+    	queryDefinitionRunGroupTable.addLineToTable(queryNameL, queryNameTF);
         
         descriptionL = new Label(tr("form.query.definition.run.label.description"));
         descriptionTA = new TextArea(InteractionState.Viewing, this);
-        addLineToTable(queryDefinitionRunGroupTable, descriptionL, descriptionTA);
+        queryDefinitionRunGroupTable.addLineToTable(descriptionL, descriptionTA);
         
         queryL = new Label(tr("form.query.definition.label.query"));
         queryTA = new TextArea(InteractionState.Viewing, this);
-        addLineToTable(queryDefinitionRunGroupTable, queryL, queryTA);
+        queryDefinitionRunGroupTable.addLineToTable(queryL, queryTA);
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
         	startDateL = new Label(tr("form.query.definition.run.label.startTime"));
             startDateDF = new TextField(getInteractionState(), this);
-            addLineToTable(queryDefinitionRunGroupTable, startDateL, startDateDF);
+            queryDefinitionRunGroupTable.addLineToTable(startDateL, startDateDF);
             
             endDateL = new Label(tr("form.query.definition.run.label.endTime"));
             endDateDF = new TextField(getInteractionState(), this);
-            addLineToTable(queryDefinitionRunGroupTable, endDateL, endDateDF);
+            queryDefinitionRunGroupTable.addLineToTable(endDateL, endDateDF);
             
             statusL = new Label(tr("form.query.definition.run.label.status"));
             statusTF = new TextField(getInteractionState(), this);
-            addLineToTable(queryDefinitionRunGroupTable, statusL, statusTF);
+            queryDefinitionRunGroupTable.addLineToTable(statusL, statusTF);
         }
         
         queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("form.query.definition.run.parameters"), this);

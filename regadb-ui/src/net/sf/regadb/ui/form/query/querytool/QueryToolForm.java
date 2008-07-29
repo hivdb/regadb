@@ -19,6 +19,7 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
@@ -28,6 +29,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private SelectionListContainer selectionTab;
 	private InfoContainer infoTab;
 
+	private WGroupBox queryGroup_;
 	private RunGroupBox runGroup_;
 	private QueryStatusBar statusbar;
 	
@@ -72,7 +74,8 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         infoTab = new InfoContainer(this, this);
         statusbar = new QueryStatusBar(this);
 
-        tabs = new WTabbedPane(this);
+        queryGroup_ = new WGroupBox(tr("form.query.querytool.group.query"), this);
+        tabs = new WTabbedPane(queryGroup_);
         tabs.addTab(tr("form.query.querytool.group.query"), queryTreeTab);
         tabs.addTab(tr("form.query.querytool.group.fields"), selectionTab);
         tabs.addTab(tr("form.query.querytool.group.info"), infoTab);

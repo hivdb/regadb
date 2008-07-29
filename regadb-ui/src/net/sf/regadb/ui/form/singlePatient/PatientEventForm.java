@@ -16,13 +16,13 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class PatientEventForm extends FormWidget
@@ -31,7 +31,7 @@ public class PatientEventForm extends FormWidget
 	
 	// FORM COMPONENTS \\
 	private WGroupBox mainFrameGroup_;
-	private WTable mainFrameTable_;
+	private FormTable mainFrameTable_;
 	private Label lblEvent, lblValue, lblStartDate, lblEndDate;
 	private WContainerWidget valueContainer;
 	private FormField ffValue;
@@ -50,21 +50,21 @@ public class PatientEventForm extends FormWidget
 	private void init()
 	{
 		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
-		mainFrameTable_ = new WTable(mainFrameGroup_);
+		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
 		lblStartDate = new Label(tr("form.singlePatient.patientEvent.label.startDate"));
 		startDate = new DateField(getInteractionState(), this);
 		startDate.setMandatory(true);
-		addLineToTable(mainFrameTable_, lblStartDate, startDate);
+		mainFrameTable_.addLineToTable(lblStartDate, startDate);
 		
 		lblEndDate = new Label(tr("form.singlePatient.patientEvent.label.endDate"));
 		endDate = new DateField(getInteractionState(), this);
-		addLineToTable(mainFrameTable_, lblEndDate, endDate);
+		mainFrameTable_.addLineToTable(lblEndDate, endDate);
 		
 		lblEvent = new Label(tr("form.singlePatient.patientEvent.label.event"));
 		cmbEvents = new ComboBox<Event>(getInteractionState(), this);
         cmbEvents.setMandatory(true);
-		addLineToTable(mainFrameTable_, lblEvent, cmbEvents);
+        mainFrameTable_.addLineToTable(lblEvent, cmbEvents);
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		

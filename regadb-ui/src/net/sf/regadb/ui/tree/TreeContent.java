@@ -463,7 +463,7 @@ public class TreeContent
 							}
 						}
                     };
-                    viralIsolateMutationEvolution = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
+                    viralIsolateMutationEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
                     {
                         public void performAction(TreeMenuNode node)
                         {
@@ -471,7 +471,7 @@ public class TreeContent
                                     RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
                         }
                     });
-                    viralIsolateResistanceEvolution = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.evolution.resistance"), viralIsolateEvolution, new ITreeAction()
+                    viralIsolateResistanceEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.resistance"), viralIsolateEvolution, new ITreeAction()
                     {
                         public void performAction(TreeMenuNode node)
                         {
@@ -479,7 +479,7 @@ public class TreeContent
                                     RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
                         }
                     });
-                    viralIsolateCumulatedResistance = new ActionItem(rootItem.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
+                    viralIsolateCumulatedResistance = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
                     {
                         public void performAction(TreeMenuNode node)
                         {
@@ -1123,11 +1123,11 @@ public class TreeContent
            
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
-            myAccountCreate = new ActionItem(WResource.tr("form.account.create"), myAccountMain, new ITreeAction()
+            myAccountCreate = new ActionItem(WResource.tr("menu.myAccount.add"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.edit"), InteractionState.Adding, myAccountLogin, myAccountMain, false, new SettingsUser()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.account.create"), InteractionState.Adding, myAccountLogin, myAccountMain, false, new SettingsUser()));
                 }
             })
             {
@@ -1137,11 +1137,11 @@ public class TreeContent
                     return RegaDBMain.getApp().getLogin()==null;
                 }
             };
-            myAccountView = new ActionItem(WResource.tr("form.account.view"), myAccountMain, new ITreeAction()
+            myAccountView = new ActionItem(WResource.tr("menu.myAccount.view"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.view"), InteractionState.Viewing, myAccountView, myAccountMain, false, null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.account.view"), InteractionState.Viewing, myAccountView, myAccountMain, false, null));
                 }
             })
             {
@@ -1151,11 +1151,11 @@ public class TreeContent
                     return RegaDBMain.getApp().getLogin()!=null;
                 }
             };
-            myAccountEdit = new ActionItem(WResource.tr("form.account.edit"), myAccountMain, new ITreeAction()
+            myAccountEdit = new ActionItem(WResource.tr("menu.myAccount.edit"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("menu.myAccount.edit"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.account.edit"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
                 }
             })
             {
@@ -1165,11 +1165,11 @@ public class TreeContent
                     return RegaDBMain.getApp().getLogin()!=null;
                 }
             };
-            myAccountEditPassword = new ActionItem(WResource.tr("form.account.edit.password"), myAccountMain, new ITreeAction()
+            myAccountEditPassword = new ActionItem(WResource.tr("menu.myAccount.passwordForm"), myAccountMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("form.account.edit.password"), InteractionState.Editing, myAccountView, myAccountMain, false, null));
                 }
             })
             {
@@ -1254,7 +1254,7 @@ public class TreeContent
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, registeredUsersView, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, notRegisteredUsersView, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
                 }
             });
             
@@ -1274,15 +1274,15 @@ public class TreeContent
                 }
             });
             
-            importXML = new ActionItem(rootItem.tr("menu.impex.import"), administratorMain);
-            importXMLrun = new ActionItem(rootItem.tr("menu.impex.import.run"), importXML, new ITreeAction()
+            importXML = new ActionItem(WResource.tr("menu.impex.import"), administratorMain);
+            importXMLrun = new ActionItem(WResource.tr("menu.impex.import.run"), importXML, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new ImportFormRunning(WResource.tr("form.impex.import.title"), InteractionState.Viewing));
                 }
             });
-            importXMLadd = new ActionItem(rootItem.tr("menu.impex.import.add"), importXML, new ITreeAction()
+            importXMLadd = new ActionItem(WResource.tr("menu.impex.import.add"), importXML, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
@@ -1290,7 +1290,7 @@ public class TreeContent
                 }
             });
             
-            exportXML = new ActionItem(rootItem.tr("menu.impex.export"), administratorMain, new ITreeAction()
+            exportXML = new ActionItem(WResource.tr("menu.impex.export"), administratorMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
@@ -1298,21 +1298,22 @@ public class TreeContent
                 }
             });
             
-            batchTest = new ActionItem(rootItem.tr("menu.batchtest"), administratorMain);
+            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
             
-            batchTestAdd = new ActionItem(rootItem.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
-                }
-            });
-            
-            batchTestRunning = new ActionItem(rootItem.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
+            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
                 public void performAction(TreeMenuNode node) 
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
                 }
             });
+
+            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
+                }
+            });
+            
             
             log = new ActionItem(WResource.tr("menu.log"),administratorMain);
             logSelect = new ActionItem(WResource.tr("menu.log.select"), log, new ITreeAction()

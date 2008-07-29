@@ -22,13 +22,13 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WLineEditEchoMode;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 import net.sf.wts.client.meta.WtsMetaClient;
@@ -39,7 +39,7 @@ public class TestForm extends FormWidget
 	
 	//Frame 
 	private WGroupBox mainFrameGroup_;
-    private WTable mainFrameTable_;
+    private FormTable mainFrameTable_;
     private Label testL ;
     private TextField testTF ;
     private Label testTypeL;
@@ -49,7 +49,7 @@ public class TestForm extends FormWidget
     
     //analysis group
     private WGroupBox analysisGroup_;
-    private WTable analysisTable_;
+    private FormTable analysisTable_;
     private Label serviceL;
     private TextField serviceTF;
     private Label urlL;
@@ -88,21 +88,21 @@ public class TestForm extends FormWidget
 	{
         //main -start-
 		mainFrameGroup_= new WGroupBox(tr("form.testSettings.test.editView.general"), this);
-		mainFrameTable_ = new WTable(mainFrameGroup_);
+		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
 		testL = new Label(tr("form.testSettings.test.editView.test"));
         testTF = new TextField(getInteractionState(), this);
         testTF.setMandatory(true);
-        addLineToTable(mainFrameTable_, testL, testTF);
+        mainFrameTable_.addLineToTable(testL, testTF);
         
 	    testTypeL=new Label(tr("form.testSettings.test.editView.testType"));
 	    testTypeCB= new ComboBox<TestType>(getInteractionState(),this);
 	    testTypeCB.setMandatory(true);
-	    addLineToTable(mainFrameTable_, testTypeL, testTypeCB);
+	    mainFrameTable_.addLineToTable(testTypeL, testTypeCB);
 	    
 	    analysisL = new Label(tr("form.testSettings.test.editView.analysis"));
 	    analysisCK = new CheckBox(getInteractionState(),this);
-	    addLineToTable(mainFrameTable_,analysisL, analysisCK);
+	    mainFrameTable_.addLineToTable(analysisL, analysisCK);
 	    
         analysisCK.clicked.addListener(new SignalListener<WMouseEvent>()
         {
@@ -127,37 +127,38 @@ public class TestForm extends FormWidget
      
         //analysis -start-
         analysisGroup_= new WGroupBox(tr("form.testSettings.test.editView.analysisGroup"), this);
-        analysisTable_  = new WTable(analysisGroup_);
+        analysisTable_  = new FormTable(analysisGroup_);
         
         analysisTypeL = new Label(tr("form.testSettings.test.editView.analysis.analysisType"));
         analysisTypeCB = new ComboBox<AnalysisType>(getInteractionState(), this);
         analysisTypeCB.setMandatory(true);
-        addLineToTable(analysisTable_,analysisTypeL, analysisTypeCB);
+        analysisTable_.addLineToTable(analysisTypeL, analysisTypeCB);
         
         urlL = new Label(tr("form.testSettings.test.editView.analysis.URL"));
         urlTF = new TextField(getInteractionState(), this);
         urlTF.setMandatory(true);
-        addLineToTable(analysisTable_,urlL, urlTF);
+        analysisTable_.addLineToTable(urlL, urlTF);
         
         serviceL = new Label(tr("form.testSettings.test.editView.analysis.service.name"));
         serviceTF = new TextField(getInteractionState(), this);
         serviceTF.setMandatory(true);
-        addLineToTable(analysisTable_,serviceL, serviceTF);
+        analysisTable_.addLineToTable(serviceL, serviceTF);
         
         accountL = new Label(tr("form.testSettings.test.editView.analysis.account"));
         accountTF= new TextField(getInteractionState(), this);
         accountTF.setMandatory(true);
-        addLineToTable(analysisTable_,accountL, accountTF);
+        analysisTable_.addLineToTable(accountL, accountTF);
         
         passwordL = new Label(tr("form.testSettings.test.editView.analysis.password"));
         passwordTF = new TextField(getInteractionState(), this);
         passwordTF.setEchomode(WLineEditEchoMode.Password);
         passwordTF.setMandatory(true);
-        addLineToTable(analysisTable_,passwordL, passwordTF);
+        analysisTable_.addLineToTable(passwordL, passwordTF);
         
         if(getInteractionState() == InteractionState.Editing || getInteractionState() == InteractionState.Adding)
         {
             refreshButton = new WPushButton(tr("form.testSettings.test.editView.analysis.refreshButton"));
+            Label refreshL = new Label(tr("form.testSettings.test.editView.analysis.refreshButton"));
             
             refreshButton.clicked.addListener(new SignalListener<WMouseEvent>()
             {
@@ -166,23 +167,22 @@ public class TestForm extends FormWidget
                     refreshForm();
                 }
             });
-            
-            analysisTable_. putElementAt(analysisTable_.numRows()-1, 2, refreshButton);
+            analysisTable_.addLineToTable(refreshL, refreshButton);
         }
         
         baseInputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseInputFile"));
         baseInputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseInputFileCB.setMandatory(true);
-        addLineToTable(analysisTable_,baseInputFileL, baseInputFileCB);
+        analysisTable_.addLineToTable(baseInputFileL, baseInputFileCB);
 
         baseOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseOutputFile"));
         baseOutputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseOutputFileCB.setMandatory(true);
-        addLineToTable(analysisTable_,baseOutputFileL, baseOutputFileCB);
+        analysisTable_.addLineToTable(baseOutputFileL, baseOutputFileCB);
         
         dataOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.dataOutputFile"));
         dataOutputFileCB= new ComboBox<String>(getInteractionState(), this);
-        addLineToTable(analysisTable_, dataOutputFileL, dataOutputFileCB);
+        analysisTable_.addLineToTable(dataOutputFileL, dataOutputFileCB);
         
         t = RegaDBMain.getApp().createTransaction();
         

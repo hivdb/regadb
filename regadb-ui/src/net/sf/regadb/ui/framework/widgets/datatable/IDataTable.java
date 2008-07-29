@@ -25,4 +25,6 @@ public interface IDataTable <DataType>
     public void selectAction(DataType selectedItem);
     
     public boolean[] sortableFields();
+    
+    public int[] getColumnWidths();
 }

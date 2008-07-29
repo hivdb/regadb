@@ -18,7 +18,7 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     private static String[] filterVarNames_ = { "settingsUser.uid", "settingsUser.firstName", "settingsUser.lastName", "settingsUser.email", "settingsUser.admin", "settingsUser.enabled"};
         
     private static boolean [] sortable_ = {true, true, true, true, true, true};
-    
+    private static int[] colWidths = {15,15,15,35,10,10};
     private IFilter[] filters_ = new IFilter[6];
     
     private boolean enabledUsers_;
@@ -99,4 +99,8 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     {
         return sortable_;
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

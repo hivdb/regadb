@@ -10,7 +10,6 @@ public class FilterOperatorCombo extends WComboBox
 	public FilterOperatorCombo(FilterTF filterTF)
 	{
 		super();
-		
 		filterTF_ = filterTF;
 		
 		addItem(tr("datatable.filter.combo.noFilter"));

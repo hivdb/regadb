@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WAnchor;
 import net.sf.witty.wt.WContainerWidget;
@@ -22,14 +23,13 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMemoryResource;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
 
 public class ViralIsolateReportForm extends WContainerWidget
 {
     private ViralIsolateForm viralIsolateForm_;
     
     private WGroupBox reportGroup_;
-    private WTable reportTable_;
+    private FormTable reportTable_;
     private Label algorithmL_;
     private ComboBox<Test> algorithmCB_;
     private Label templateL_;
@@ -52,20 +52,20 @@ public class ViralIsolateReportForm extends WContainerWidget
     {
         reportGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.report"), this);
         reportGroup_.setStyleClass("groupbox");
-        reportTable_ = new WTable(reportGroup_);
+        reportTable_ = new FormTable(reportGroup_);
         algorithmL_ = new Label(tr("form.viralIsolate.editView.report.algorithm"));
         algorithmCB_ = new ComboBox<Test>(InteractionState.Editing, viralIsolateForm_);
-        viralIsolateForm_.addLineToTable(reportTable_, algorithmL_, algorithmCB_);
+        reportTable_.addLineToTable(algorithmL_, algorithmCB_);
         templateL_ = new Label(tr("form.viralIsolate.editView.report.template"));
         resRepTemplateCB_ = new ComboBox<ResistanceInterpretationTemplate>(InteractionState.Editing, viralIsolateForm_);
-        viralIsolateForm_.addLineToTable(reportTable_, templateL_, resRepTemplateCB_);
+        reportTable_.addLineToTable(templateL_, resRepTemplateCB_);
+        Label generateLabel = new Label(tr("form.viralIsolate.editView.report.label.generate"));
         generateButton_ = new WPushButton(tr("form.viralIsolate.editView.report.generateButton"));
-        int row = reportTable_.numRows();
+        reportTable_.addLineToTable(generateLabel, generateButton_);
         reportL = new Label(tr("form.viralIsolate.editView.report.report"));
-        reportTable_.putElementAt(row, 0, reportL);
-        reportA_ = new WAnchor("dummy", lt(""), reportTable_.elementAt(row, 1));
+        reportA_ = new WAnchor("dummy", lt(""));
         reportA_.setStyleClass("link");
-        reportTable_.putElementAt(row, 2, generateButton_);
+        reportTable_.addLineToTable(reportL, reportA_);
         
         generateButton_.clicked.addListener(new SignalListener<WMouseEvent>()
         {

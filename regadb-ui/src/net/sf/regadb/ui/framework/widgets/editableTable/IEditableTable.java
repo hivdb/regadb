@@ -14,4 +14,5 @@ public interface IEditableTable<DataType>
     public WWidget[] fixAddRow(WWidget[] widgets);
     public InteractionState getInteractionState();
     public void flush();
+    public int[] getColumnWidths();
 }

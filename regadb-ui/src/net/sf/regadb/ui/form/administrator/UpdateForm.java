@@ -23,8 +23,10 @@ import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WBreak;
-import net.sf.witty.wt.WFontWeight;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
+import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
+import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
+import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
 import net.sf.witty.wt.WText;
@@ -36,27 +38,17 @@ import org.xml.sax.SAXException;
 
 public class UpdateForm extends FormWidget
 {
-    private WText progressText_ = new WText(tr("form.update_central_server.running"));
+    private WMessage progressText_ = tr("form.update_central_server.running");
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
     
-    private WGroupBox testGroup_ = new WGroupBox(tr("form.update_central_server.test"));
-    private WText testText_ = new WText();
-    
-    private WGroupBox attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
-    private WText attributesText_ = new WText();
-    
-    private WGroupBox eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
-    private WText eventsText_ = new WText();
-    
-    private WGroupBox drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
-    private WText drugClassTitle_ = new WText(tr("form.admin.update_central_server.drugClass.title"));
-    private WText drugClassText_ = new WText();
-    
-    private WText drugGenericsTitle_ = new WText(tr("form.admin.update_central_server.drugGenerics.title"));
-    private WText drugGenericsText_ = new WText();
-    
-    private WText drugCommercialsTitle_ = new WText(tr("form.admin.update_central_server.drugCommercials.title"));
-    private WText drugCommercialsText_ = new WText();
+    private WContainerWidget testGroup_ = new WGroupBox(tr("form.update_central_server.test"));
+    private WContainerWidget attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
+    private WContainerWidget eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
+    private WContainerWidget drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
+
+    private WMessage drugClassTitle_ = tr("form.admin.update_central_server.drugClass.title");
+    private WMessage drugGenericsTitle_ = tr("form.admin.update_central_server.drugGenerics.title");
+    private WMessage drugCommercialsTitle_ = tr("form.admin.update_central_server.drugCommercials.title");
 
     
     public UpdateForm(WMessage formName, InteractionState interactionState)
@@ -69,32 +61,13 @@ public class UpdateForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Editing)
         {
-            addWidget(warningImage_);
-            addWidget(progressText_);
+        	addWidget(new WarningMessage(warningImage_, progressText_, MessageType.INFO));
         }
         
         addWidget(testGroup_);
         addWidget(attributesGroup_);
         addWidget(eventsGroup_);
         addWidget(drugsGroup_);
-        
-        testGroup_.addWidget(testText_);
-        
-        attributesGroup_.addWidget(attributesText_);
-        
-        eventsGroup_.addWidget(eventsText_);
-        
-        drugsGroup_.addWidget(drugClassTitle_);
-        drugsGroup_.addWidget(new WBreak());
-        drugsGroup_.addWidget(drugClassText_);
-        
-        drugsGroup_.addWidget(drugGenericsTitle_);
-        drugsGroup_.addWidget(new WBreak());
-        drugsGroup_.addWidget(drugGenericsText_);
-        
-        drugsGroup_.addWidget(drugCommercialsTitle_);
-        drugsGroup_.addWidget(new WBreak());
-        drugsGroup_.addWidget(drugCommercialsText_);
         
         fillData();
         
@@ -158,8 +131,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         testsFile.delete();
-        testText_.setFormatting(WTextFormatting.PlainFormatting);
-        testText_.setText(lt(imp.getLog().toString()));
+        new WLogText(testGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleAttributes(final boolean simulate)
@@ -204,8 +176,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         attributesFile.delete();
-        attributesText_.setFormatting(WTextFormatting.PlainFormatting);
-        attributesText_.setText(lt(imp.getLog().toString()));
+        new WLogText(attributesGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleEvents(final boolean simulate)
@@ -250,8 +221,7 @@ public class UpdateForm extends FormWidget
             e.printStackTrace();
         }
         eventsFile.delete();
-        eventsText_.setFormatting(WTextFormatting.PlainFormatting);
-        eventsText_.setText(lt(imp.getLog().toString()));
+        new WLogText(eventsGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleDrugs(boolean simulate)
@@ -272,7 +242,7 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importDrugClasses(new DrugTransaction(t), drugClasses, simulate);
-        handleFields(drugClassTitle_, drugClassText_, report);
+        handleFields(drugsGroup_, drugClassTitle_, report);
         drugClasses.delete();
         t.commit();
 
@@ -287,7 +257,7 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importGenericDrugs(new DrugTransaction(t), drugGenerics, simulate);
-        handleFields(drugGenericsTitle_, drugGenericsText_, report);
+        handleFields(drugsGroup_, drugGenericsTitle_, report);
         drugGenerics.delete();
         t.commit();
         
@@ -302,7 +272,7 @@ public class UpdateForm extends FormWidget
         }
         t = RegaDBMain.getApp().createTransaction();
         report = ImportDrugs.importCommercialDrugs(new DrugTransaction(t), drugCommercials, simulate);
-        handleFields(drugCommercialsTitle_, drugCommercialsText_, report);
+        handleFields(drugsGroup_, drugCommercialsTitle_, report);
         drugCommercials.delete();
         t.commit();
     }
@@ -314,85 +284,138 @@ public class UpdateForm extends FormWidget
         //Tests
         t = RegaDBMain.getApp().createTransaction();
         List<Test> tests = t.getTests();
-        ArrayList<String> testDescriptions = new ArrayList<String>();
+        List<List<String>> testDescriptions = new ArrayList<List<String>>();
         for(Test test : tests)
         {
-            testDescriptions.add(test.getDescription()+ " - " + test.getTestType().getDescription());
+        	ArrayList<String> row = new ArrayList<String>();
+        	row.add(test.getDescription());
+        	row.add(test.getTestType().getDescription());
+            testDescriptions.add(row);
         }
-        handleFields(null, testText_, testDescriptions);
+        List<String> testTitles = new ArrayList<String>();
+        testTitles.add("test");
+        testTitles.add("test type");
+        
+        handleFields(testGroup_, testTitles, testDescriptions);
         t.commit();
         
         //Attributes
         t = RegaDBMain.getApp().createTransaction();
         List<Attribute> attributes = t.getAttributes();
-        ArrayList<String> attributesNames = new ArrayList<String>();
+        
+        List<List<String>> attributeDescriptions = new ArrayList<List<String>>();
         for(Attribute attribute : attributes)
         {
-            attributesNames.add(attribute.getName()+ " - " + attribute.getAttributeGroup().getGroupName());
+        	ArrayList<String> row = new ArrayList<String>();
+        	row.add(attribute.getName());
+        	row.add(attribute.getAttributeGroup().getGroupName());
+        	attributeDescriptions.add(row);
         }
-        handleFields(null, attributesText_, attributesNames);
+        List<String> attributeTitles = new ArrayList<String>();
+        attributeTitles.add("attribute");
+        attributeTitles.add("attribute group");
+        
+        handleFields(attributesGroup_, attributeTitles, attributeDescriptions);
         t.commit();
         
         //Events
         t = RegaDBMain.getApp().createTransaction();
         List<Event> events = t.getEvents();
-        ArrayList<String> eventNames = new ArrayList<String>();
+        List<String> eventTitles = new ArrayList<String>();
+        eventTitles.add("event");
+        
+        List<List<String>> eventDescriptions = new ArrayList<List<String>>();
         for(Event event : events)
         {
-            eventNames.add(event.getName());
+        	List<String> row = new ArrayList<String>();
+        	row.add(event.getName());
+        	eventDescriptions.add(row);
         }
-        handleFields(null, eventsText_, eventNames);
+        handleFields(eventsGroup_, eventTitles, eventDescriptions);
         t.commit();
         
         //Drug Class
         t = RegaDBMain.getApp().createTransaction();
         List<DrugClass> classDrugs = t.getClassDrugs();
-        ArrayList<String> classDrugsNames = new ArrayList<String>();
+        
+        List<String> classTitles = new ArrayList<String>();
+        classTitles.add("drug class");
+        
+        List<List<String>> classDescriptions = new ArrayList<List<String>>();
         for(DrugClass dc : classDrugs)
         {
-            classDrugsNames.add(dc.getClassName());
+        	List<String> row = new ArrayList<String>();
+        	row.add(dc.getClassName());
+        	classDescriptions.add(row);
         }
-        handleFields(drugClassTitle_, drugClassText_, classDrugsNames);
-        t.commit();
+        handleFields(drugsGroup_, classTitles, classDescriptions);
+        t.commit();        
+
         
         //Generic Drugs
         t = RegaDBMain.getApp().createTransaction();
         List<DrugGeneric> genericDrugs = t.getGenericDrugs();
-        ArrayList<String> genericDrugsNames = new ArrayList<String>();
+        List<String> genericTitles = new ArrayList<String>();
+        genericTitles.add("generic drug");
+        
+        List<List<String>> genericDescriptions = new ArrayList<List<String>>();
         for(DrugGeneric dg : genericDrugs)
         {
-            genericDrugsNames.add(dg.getGenericName());
+        	List<String> row = new ArrayList<String>();
+        	row.add(dg.getGenericName());
+        	genericDescriptions.add(row);
         }
-        handleFields(drugGenericsTitle_, drugGenericsText_, genericDrugsNames);
+        handleFields(drugsGroup_, genericTitles, genericDescriptions);
         t.commit();
         
         //Commercial Drugs
         t = RegaDBMain.getApp().createTransaction();
         List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
-        ArrayList<String> commercialDrugsNames = new ArrayList<String>();
+        List<String> commercialTitles = new ArrayList<String>();
+        commercialTitles.add("commercial drug");
+        
+        List<List<String>> commercialDescriptions = new ArrayList<List<String>>();
         for(DrugCommercial dc : commercialDrugs)
         {
-            commercialDrugsNames.add(dc.getName());
+        	List<String> row = new ArrayList<String>();
+        	row.add(dc.getName());
+        	commercialDescriptions.add(row);
         }
-        handleFields(drugCommercialsTitle_, drugCommercialsText_, commercialDrugsNames);
+        handleFields(drugsGroup_, commercialTitles, commercialDescriptions);
         t.commit();
     }
     
-    private void handleFields(WText title, WText text, ArrayList<String> report)
+    private void handleFields(WContainerWidget parent, List<String> titles, List<List<String>> data)
     {
-        String field = "";
-        for(String line : report)
-        {
-            field += line + "<br>";
-        }
+    	WMessage[] messages = new WMessage[titles.size()];
+    	for (int i = 0 ; i < titles.size() ; i++) {
+    		messages[i] = lt(titles.get(i));
+    	}
+    	
+        SimpleTable table = new SimpleTable(parent);
+        table.setHeaders(messages);
+        table.distributeWidths();
         
-        if(title!=null)
-        {
-            title.decorationStyle().font().setWeight(WFontWeight.Bold);
+        for (List<String> dataRow : data) {
+        	WText[] txt = new WText[dataRow.size()];
+        	for (int i = 0 ; i < dataRow.size() ; i++) {
+        		txt[i] = new WText(lt(dataRow.get(i)));
+        	}        	
+        	table.addRow(txt);
         }
-        text.setText(lt(field));
+    }
+    
+    private void handleFields(WContainerWidget parent, WMessage title, ArrayList<String> report) {
+    	WGroupBox group = new WGroupBox(title, parent);
+    	
+    	String field = "";
+        for(String line : report) {
+        	field += line + "\n";
+        }
+        new WLogText(group, lt(field));
         
-        report.clear();
+        
+        report.clear();    	
     }
     
     @Override
@@ -422,5 +445,14 @@ public class UpdateForm extends FormWidget
     public void redirectAfterDelete() 
     {
         
+    }
+    
+    private class WLogText extends WText {
+    	public WLogText(WContainerWidget parent, WMessage msg) {
+    		super(parent);
+            setFormatting(WTextFormatting.PlainFormatting);
+            setText(msg);
+            setStyleClass("log-area");
+    	}
     }
 }

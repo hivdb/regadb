@@ -23,9 +23,10 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
+import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
@@ -38,7 +39,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 	
 	private Set<QueryDefinitionRunParameter> qdrps;
 	
-	private WTable parameterTable;
+	private FormTable parameterTable;
     
     public QueryDefinitionRunParameterGroupBox(InteractionState interactionState, WMessage message, QueryDefinitionRunForm queryDefinitionRunForm)
     {
@@ -55,19 +56,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     {
     	qdrps = queryDefinitionRun.getQueryDefinitionRunParameters();
     	
-    	parameterTable = new WTable(this);
-    	parameterTable.setStyleClass("datatable");
-    	
-    	TextField parameterL = new TextField(InteractionState.Viewing, queryDefinitionRunForm);
-    	parameterL.setText("Parameter");
-    	parameterL.setStyleClass("table-header");
-    	
-    	TextField valueL = new TextField(InteractionState.Viewing, queryDefinitionRunForm);
-    	valueL.setText("Value");
-    	valueL.setStyleClass("table-header");
-    	
-    	parameterTable.putElementAt(0, 0, parameterL);
-    	parameterTable.putElementAt(0, 1, valueL);
+    	parameterTable = new FormTable(this);
     	
     	if(interactionState == InteractionState.Adding)
     	{
@@ -82,12 +71,11 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     		}
     	}
     	
-    	int i = 1;
+    	int i = 0;
     	
     	for(QueryDefinitionRunParameter qdrp : qdrps)
     	{
-    		TextField qdpL = new TextField(InteractionState.Viewing, queryDefinitionRunForm);
-    		qdpL.setText(qdrp.getQueryDefinitionParameter().getName());
+    		Label qdpL = new Label(lt(qdrp.getQueryDefinitionParameter().getName()));
     		
     		WWidget w = new TextField(interactionState, queryDefinitionRunForm);
     		Transaction t;
@@ -270,7 +258,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     {
         boolean saved = true;
     	
-    	int i = 1;
+    	int i = 0;
     	
     	for(QueryDefinitionRunParameter qdrp : qdrps)
     	{
@@ -326,10 +314,10 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     
     private boolean saveDataFormField(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
-    	if(!((((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text()).equals("")))
+    	if(!((((FormField)(parameterTable.elementAt(i,1).children().get(i))).text()).equals("")))
     	{
-    		qdrp.setValue(((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-            params.put(qdrp.getQueryDefinitionParameter().getName(), ((FormField)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
+    		qdrp.setValue(((FormField)(parameterTable.elementAt(i,1).children().get(i))).text());
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((FormField)(parameterTable.elementAt(i,1).children().get(i))).text());
     		return true;
     	}
     	else
@@ -340,10 +328,10 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     
     private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
-    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentItem() != null)
+    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).currentItem() != null)
     	{
-    		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).text());
-            params.put(qdrp.getQueryDefinitionParameter().getName(), ((ComboBox)(parameterTable.elementAt(i,1).children().get(i - 1))).currentValue());
+    		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).text());
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).currentValue());
     		return true;
     	}
     	else

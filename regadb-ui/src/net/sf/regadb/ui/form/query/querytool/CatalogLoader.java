@@ -54,7 +54,6 @@ public class CatalogLoader implements ProgressReporter {
 		DatabaseManager.getInstance().getAWCCatalog().getStatus() == Status.FAILED;
 	}
 
-	@Override
 	public void start() {
 		thread.start();
 	}

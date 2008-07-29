@@ -14,16 +14,15 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.WText;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class ViralIsolateMutationEvolution extends FormWidget {
     private Patient patient_;
     
-    private WTable viralIsolatesTable_;
+    private SimpleTable viralIsolatesTable_;
     
     
     public ViralIsolateMutationEvolution(WMessage formName, Patient patient) {
@@ -34,18 +33,16 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     }
     
     public void init() {
-        viralIsolatesTable_ = new WTable(this);
-        viralIsolatesTable_.setStyleClass("vi-mutation-evolution-table");
+        viralIsolatesTable_ = new SimpleTable(this);
+        viralIsolatesTable_.setStyleClass(viralIsolatesTable_.styleClass() + " viral-isolate-table");
         
-        String [] headers = {"form.viralIsolate.evolution.mutation.table.header.sampleIdDate",
-                             "form.viralIsolate.evolution.mutation.table.header.protein",
-                             "form.viralIsolate.evolution.mutation.table.header.region",
-                             "form.viralIsolate.evolution.mutation.table.header.mutations",
-                             "form.viralIsolate.evolution.mutation.table.header.changes"};
         
-        for(String header : headers) {
-            viralIsolatesTable_.putElementAt(0, viralIsolatesTable_.numColumns(), new TableHeader(tr(header)));
-        }
+        viralIsolatesTable_.setHeaders(tr("form.viralIsolate.evolution.mutation.table.header.sampleIdDate"),
+        		tr("form.viralIsolate.evolution.mutation.table.header.protein"),
+                tr("form.viralIsolate.evolution.mutation.table.header.region"),
+                tr("form.viralIsolate.evolution.mutation.table.header.mutations"),
+                tr("form.viralIsolate.evolution.mutation.table.header.changes"));
+        viralIsolatesTable_.setWidths(15,10,10,45,20);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -66,23 +63,19 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             sampleId.setText(lt(vis.get(i).getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis.get(i).getSampleDate())));
             viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
             viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(aaseqs.size());
-            viralIsolatesTable_.elementAt(rowCounter, 0).setStyleClass("table-cell-center");
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();
                 protein.setText(lt(aaseq.getProtein().getAbbreviation()));
                 viralIsolatesTable_.putElementAt(rowCounter, 1, protein);
-                viralIsolatesTable_.elementAt(rowCounter, 1).setStyleClass("table-cell-center");
                 
                 region = new WText();
                 region.setText(lt(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos()));
                 viralIsolatesTable_.putElementAt(rowCounter, 2, region);
-                viralIsolatesTable_.elementAt(rowCounter, 2).setStyleClass("table-cell-center");
                 
                 mutations = new WText();
                 mutations.setText(lt(MutationHelper.getWildtypeMutationList(aaseq)));
                 viralIsolatesTable_.putElementAt(rowCounter, 3, mutations);
-                //viralIsolatesTable_.elementAt(rowCounter, 3).setStyleClass("table-cell-center");
                 
                 changes = new WText();
                 String changesS = "";

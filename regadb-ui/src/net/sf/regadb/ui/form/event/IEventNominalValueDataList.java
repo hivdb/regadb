@@ -12,6 +12,7 @@ import net.sf.witty.wt.WWidget;
 public class IEventNominalValueDataList implements IEditableTable <EventNominalValue>{
 	private FormWidget form_;
     private static final String [] headers_ = {"editableTable.eventNominalValue.name"};
+    private static final int[] colWidths = {100};
     
     private Event event_;
     private Transaction transaction_;
@@ -98,5 +99,9 @@ public class IEventNominalValueDataList implements IEditableTable <EventNominalV
         tf.setText(env.getValue());
         
         return widgets;
+	}
+
+	public int[] getColumnWidths() {
+		return colWidths;
 	}
 }

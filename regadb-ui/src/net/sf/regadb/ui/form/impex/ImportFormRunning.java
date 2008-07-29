@@ -4,134 +4,98 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WCheckBox;
 import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFileResource;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLabel;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.WTable;
+import net.sf.witty.wt.WText;
 import net.sf.witty.wt.WTimer;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class ImportFormRunning extends FormWidget {
-	private static WTable progressTable, progressControlTable;
-	private static WPushButton cmdClearChecked;
+	private SimpleTable table;
 	private static ArrayList<ProcessXMLImport> processList = new ArrayList<ProcessXMLImport>();
-	private static WTimer t = new WTimer();
+	private WTimer timer = new WTimer();
 	
 	public ImportFormRunning(WMessage formName, InteractionState interactionState) {
 		super(formName, interactionState);
-		
-		init();
-		
-		t.setInterval(1000);
-		t.timeout.addListener(new SignalListener<WEmptyEvent>() {
+		timer.setInterval(1000);
+		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
 			public void notify(WEmptyEvent a) {
 				refreshprogressTable();
 			}
 		});
-
+		
+		init();
 		refreshprogressTable();
 	}
 	
 	private void init() {
 		WGroupBox progress = new WGroupBox(tr("form.impex.import.progress"), this);
-		
-		progressTable = new WTable();
-		progressTable.setStyleClass("spacyTable");
-		progress.addWidget(progressTable);
-		
-		progressControlTable = new WTable();
-		progressControlTable.setStyleClass("spacyTable");
-		progressControlTable.elementAt(0, 1).setContentAlignment(WHorizontalAlignment.AlignRight);
-		progress.addWidget(progressControlTable);
-		
-		cmdClearChecked = new WPushButton(tr("form.impex.import.clearchecked"), progressControlTable.elementAt(0, 1));
-		cmdClearChecked.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
-				for (int i = 0; i < processList.size(); i++) {
-					ProcessXMLImport fu = processList.get(i);
-					if (fu.isChecked()) {
-						removeUpload(i);
-						i--;
-					}
-				}
-				refreshprogressTable();
-			}
-		});
+		table = new SimpleTable(progress);
+		addControlButtons();
 	}
 	
 	public static void add(ProcessXMLImport xmlImport) {
 		processList.add(xmlImport);
 		xmlImport.start();
-		refreshprogressTable();
 	}
 	
-	private void removeUpload(int index) {
-		ProcessXMLImport fu = processList.get(index);
-		if (fu.getLogFile() != null) fu.getLogFile().delete();
-		processList.remove(index);
-	}
-	
-	public static void refreshprogressTable() {
-		if ( progressTable != null ) {
-			progressTable.clear();
+	public void refreshprogressTable() {
+		if ( table != null ) {
+			table.clear();
 			
-			int row = 0;
+			table.setHeaders( tr("form.impex.import.progress.header.user"),
+					tr("form.impex.import.progress.header.file"),
+					tr("form.impex.import.progress.header.dataset"),
+					tr("form.impex.import.progress.header.status"));
 			
-			progressControlTable.elementAt(0, 0).clear();
-			
-			String headers[] = { "form.impex.import.progress.header.user",
-					"form.impex.import.progress.header.file",
-					"form.impex.import.progress.header.dataset",
-					"form.impex.import.progress.header.status" };
-			
-			for(String head : headers) {
-				new WLabel(WResource.tr(head), progressTable.elementAt(row, progressTable.numColumns())).setStyleClass("table-header-bold");
-			}
-			
+			table.setWidths(20,40,20,20);
+			table.elementAt(0, 4).setStyleClass("column-action");
+
+			int row = 1;
 			int running = 0;
 			for (final ProcessXMLImport importXml : processList) {
-				row++;
-				new WLabel(new WMessage(importXml.getUid(), true), progressTable.elementAt(row, 0));
-				new WLabel(new WMessage(importXml.clientFileName(), true), progressTable.elementAt(row, 1));
-				new WLabel(importXml.getDatasetName(), progressTable.elementAt(row, 2));
-				new WLabel(importXml.getStatusName(), progressTable.elementAt(row, 3));
+				if (importXml.getStatus() == UploadStatus.PROCESSING ) {
+					running++;
+				}			
 				
-				if (importXml.getLogFile() != null) {
-					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
-							WResource.tr("form.impex.import.progress.logfile"),
-							progressTable.elementAt(row, 4)).setStyleClass("link");
-				}
+				table.putElementAt(row, 0, new WText( lt(importXml.getUid()) ));
+				table.putElementAt(row, 1, new WText( lt(importXml.clientFileName()) ));
+				table.putElementAt(row, 2, new WText( importXml.getDatasetName() ));
+				table.putElementAt(row, 3, new WText( importXml.getStatusName() ));
+				table.elementAt(row, 4).setStyleClass("column-action");				
 				
-				if ( !importXml.getStatusName().key().equals("form.impex.import.progress.status.processing") ) {
-					final WCheckBox chk = new WCheckBox( new WMessage(" ", true), progressTable.elementAt(row, 5) );
-					chk.clicked.addListener(new SignalListener<WMouseEvent>() {
+//				if (importXml.getLogFile() != null) {
+//					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
+//							tr("form.impex.import.progress.logfile"),
+//							table.elementAt(row, 3)).setStyleClass("link");
+//				}
+				
+				if (importXml.getStatus() != UploadStatus.PROCESSING) {
+					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.elementAt(row, 4));
+					clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 						public void notify(WMouseEvent a) {
-							importXml.setChecked(chk.isChecked());
+							int row = processList.indexOf(importXml);
+							table.deleteRow(row+1);
+							processList.remove(importXml);
+							if (importXml.getLogFile() != null) {
+								importXml.getLogFile().delete();
+							}
 						}
 					});
-					chk.setChecked(importXml.isChecked());
-				} else {
-					importXml.setChecked(false);
 				}
-				
-				if ( importXml.getStatus() == UploadStatus.PROCESSING ) {
-					running++;
-				}
+				row++;
 			}
 			
 			// Auto refresh progress table
-			if ( running == 0 ) {
-				if ( t.isActive() ) t.stop();
-			} else {
-				if ( !t.isActive() ) t.start();
+			if ( running == 0 && timer.isActive()) {
+				 timer.stop();
+			} 
+			else if (running > 0 && !timer.isActive()){
+				timer.start();
 			}
 		}
 	}

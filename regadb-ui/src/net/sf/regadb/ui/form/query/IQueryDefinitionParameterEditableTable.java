@@ -21,6 +21,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
     private QueryDefinition queryDefinition;
     private Transaction transaction;
     private static final String[] headers = {"editableTable.query.definition.parameters.colName.name", "editableTable.query.definition.parameters.colName.type"};
+    private static final int[] colWidths = {50,50};
     
     public IQueryDefinitionParameterEditableTable(FormWidget form, QueryDefinition queryDefinition)
     {
@@ -138,4 +139,8 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
     {
         transaction.flush();
     }
+
+	public int[] getColumnWidths() {
+		return colWidths;
+	}
 }

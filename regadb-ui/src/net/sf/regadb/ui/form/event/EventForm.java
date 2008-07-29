@@ -16,10 +16,10 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
+import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WEmptyEvent;
 import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
 import net.sf.witty.wt.i8n.WMessage;
 
 public class EventForm extends FormWidget {
@@ -27,7 +27,7 @@ public class EventForm extends FormWidget {
 	
 	// Frame
 	private WGroupBox mainFrameGroup_;
-	private WTable mainFrameTable_;
+	private FormTable mainFrameTable_;
 	private Label lblName, lblType;
 	private TextField txtName;
 	private ComboBox<ValueType> cmbValueType;
@@ -48,12 +48,12 @@ public class EventForm extends FormWidget {
 	
 	private void init() {
 		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
-		mainFrameTable_ = new WTable(mainFrameGroup_);
+		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
 		lblName = new Label(tr("form.event.edit.name"));
         txtName = new TextField(getInteractionState(), this);
         txtName.setMandatory(true);
-        addLineToTable(mainFrameTable_, lblName, txtName);
+        mainFrameTable_.addLineToTable(lblName, txtName);
 		
         lblType = new Label(tr("event.form.label.type"));
         cmbValueType = new ComboBox<ValueType>(getInteractionState(), this);
@@ -71,7 +71,7 @@ public class EventForm extends FormWidget {
         
         t.commit();
         
-        addLineToTable(mainFrameTable_, lblType, cmbValueType);
+        mainFrameTable_.addLineToTable(lblType, cmbValueType);
         
         nominalValuesGroup_= new WGroupBox(tr("event.form.frame.nominal"), this);
 		
