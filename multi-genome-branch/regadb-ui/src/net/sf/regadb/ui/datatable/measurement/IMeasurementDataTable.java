@@ -18,7 +18,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 {
 	private static String [] _colNames = {"dataTable.test.colName.date","dataTable.test.colName.testType","dataTable.test.colName.genome", 
 		"dataTable.test.colName.testName", "dataTable.test.colName.result"};
-	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", "testResult.test.testType.genome.organismName",
+	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", "case when genome is null then '' else genome.organismName end",
 		"testResult.test.description",	null };
 	
 	private static boolean [] sortable_ = {true, true, true, true, false};

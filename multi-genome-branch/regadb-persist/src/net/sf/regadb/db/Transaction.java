@@ -761,7 +761,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
-        String queryString = "from TestResult as testResult " +
+        String queryString = "select testResult from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " +
                             "and testResult.ntSequence is null";
@@ -771,7 +771,7 @@ public class Transaction {
     public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select count(testResult) " +
-                            "from TestResult as testResult " +
+                            "from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " + 
                             "and testResult.ntSequence is null";
@@ -1048,7 +1048,7 @@ public class Transaction {
 	
 	public long getTestCount(HibernateFilterConstraint filterConstraints) 
 	{
-		 String queryString = "select count(description) from Test as test ";
+		 String queryString = "select count(test) from Test as test left outer join test.testType.genome as genome ";
 	        
 	        if(!filterConstraints.clause_.equals(" "))
 	        {
