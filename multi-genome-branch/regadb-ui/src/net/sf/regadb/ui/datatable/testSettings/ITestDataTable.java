@@ -13,7 +13,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 public class ITestDataTable implements IDataTable<Test>
 {
 	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType", "dataTable.test.colName.genome" };
-	private static String[] filterVarNames_ = {"test.description", "test.testType.description", "test.testType.genome.organismName" };
+	private static String[] filterVarNames_ = {"test.description", "test.testType.description", "case when genome is null then '' else genome.organismName end" };
 
 	private IFilter[] filters_ = new IFilter[3];
 

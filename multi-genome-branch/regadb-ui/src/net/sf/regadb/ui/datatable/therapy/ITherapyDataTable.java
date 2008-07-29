@@ -23,7 +23,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 {
 	private static String [] _colNames = {"dataTable.therapy.colName.startDate","dataTable.therapy.colName.endDate", 
 		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment", "dataTable.therapy.colName.organismName"};
-	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment", "therapy.genome.organismName"};
+	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment", "case when genome is null then '' else genome.organismName end"};
 	
 	private IFilter[] filters_ = new IFilter[5];
 	

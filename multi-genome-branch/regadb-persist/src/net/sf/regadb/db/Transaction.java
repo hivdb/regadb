@@ -864,7 +864,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Therapy> getTherapies(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
-        String queryString = "from Therapy as therapy " +
+        String queryString = "select therapy from Therapy as therapy left outer join therapy.genome as genome " +
                             "where therapy.patient.id = " + patient.getPatientIi();
         return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
@@ -1022,7 +1022,7 @@ public class Transaction {
 	@SuppressWarnings("unchecked")
 	public List<TestType> getTestTypes(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) 
 	{
-		String queryString = "from TestType as testType ";
+		String queryString = "select testType from TestType as testType left outer join testType.genome as genome";
         
         return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
@@ -1068,7 +1068,7 @@ public class Transaction {
 	@SuppressWarnings("unchecked")
 	public List<Test> getTests(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
 	{
-		String queryString = "from Test as test ";
+		String queryString = "select test from Test as test left outer join test.testType.genome as genome";
         
         return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
