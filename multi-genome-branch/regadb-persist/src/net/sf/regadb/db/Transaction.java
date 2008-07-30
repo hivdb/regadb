@@ -889,7 +889,7 @@ public class Transaction {
     public long getTherapiesCount(Patient patient, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select count(therapy)" +
-                            "from Therapy as therapy " +
+                            "from Therapy as therapy left outer join therapy.genome as genome " +
                             "where therapy.patient.id = " + patient.getPatientIi();
         if(!filterConstraints.clause_.equals(" "))
         {
@@ -1029,7 +1029,7 @@ public class Transaction {
 
 	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
 	{
-		 String queryString = "select count(testType) from TestType as testType ";
+		 String queryString = "select count(testType) from TestType as testType left outer join testType.genome as genome ";
 	        
 	       	if(!filterConstraints.clause_.equals(" "))
 	        {
