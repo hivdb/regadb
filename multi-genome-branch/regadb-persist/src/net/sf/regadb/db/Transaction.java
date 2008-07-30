@@ -762,6 +762,7 @@ public class Transaction {
     public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select testResult from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
+                            "left outer join testResult.testNominalValue as testNominalValue "+
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " +
                             "and testResult.ntSequence is null";
@@ -772,6 +773,7 @@ public class Transaction {
     {
         String queryString = "select count(testResult) " +
                             "from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
+                            "left outer join testResult.testNominalValue as testNominalValue "+
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " + 
                             "and testResult.ntSequence is null";
