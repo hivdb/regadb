@@ -33,7 +33,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
 
     public void init()
     {
-        resistanceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.resistance"), this);
+        resistanceGroup_ = new WGroupBox(tr("viralIsolate.resistance.group"), this);
         
         WTable wrapper = new SimpleTable(resistanceGroup_);
         wrapper.elementAt(0, 0).setStyleClass("navigation");
@@ -41,7 +41,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
         
-        refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.elementAt(0, 0));
+        refreshButton_ = new WPushButton(tr("general.refresh"), wrapper.elementAt(0, 0));
         refreshButton_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a) 
@@ -50,7 +50,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                     }
                 });
         
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
+        showMutations_ = new WCheckBox(tr("viralIsolate.mutation.show"), wrapper.elementAt(0, 0));
         showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a)

@@ -8,7 +8,7 @@ public class ResRepTemplateSelectedItem extends GenericSelectedItem<ResistanceIn
 {
     public ResRepTemplateSelectedItem(WTreeNode parent) 
     {
-        super(parent, "menu.resistance.report.template.resRepTemplateSelectedItem", "{resRepTemplateSelectedItem}");
+        super(parent, "report.form", "{resRepTemplateSelectedItem}");
     }
 
     @Override

@@ -32,9 +32,9 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     private Label reportL;
     private FileUpload upload;
     
-    public ResistanceInterpretationTemplateForm(InteractionState interactionState, WMessage formName, ResistanceInterpretationTemplate resRepTemplate) 
+    public ResistanceInterpretationTemplateForm(InteractionState interactionState, WMessage formName, boolean literal, ResistanceInterpretationTemplate resRepTemplate) 
     {
-        super(formName, interactionState);
+        super(formName, interactionState, literal);
         resRepTemplate_ = resRepTemplate;
         
         init();
@@ -43,14 +43,14 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     
     private void init()
     {
-        templateGroup_ = new WGroupBox(tr("form.resistance.report.template.editView.general"), this);
+        templateGroup_ = new WGroupBox(tr("general.group.general"), this);
         templateTable_ = new FormTable(templateGroup_);
-        templateL = new Label(tr("form.resistance.report.template.editView.name"));
+        templateL = new Label(tr("general.name"));
         templateTF = new TextField(getInteractionState()==InteractionState.Editing?InteractionState.Viewing:getInteractionState(), this);
         templateTF.setMandatory(true);
         templateTable_.addLineToTable(templateL, templateTF);
         
-        reportL = new Label(tr("form.resistance.report.template.editView.report"));
+        reportL = new Label(tr("report.report"));
         final int row = templateTable_.numRows();
         templateTable_.putElementAt(row, 0, reportL);
         
@@ -122,11 +122,11 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         }
         else if(upload.getFileUpload().spoolFileName()==null)
         {
-            MessageBox.showWarningMessage(tr("form.resistance.report.template.warning.noFileSpecified"));
+            MessageBox.showWarningMessage(tr("message.report.noFileSpecified"));
         }
         else
         {
-            MessageBox.showWarningMessage(tr("form.resistance.report.template.warning.already.exists"));
+            MessageBox.showWarningMessage(tr("message.report.alreadyexists"));
         }
     }
     

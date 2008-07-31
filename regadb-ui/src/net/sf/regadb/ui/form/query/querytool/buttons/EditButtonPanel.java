@@ -43,14 +43,14 @@ public class EditButtonPanel extends WButtonPanel {
 	}
 	
 	private void init() {
-		cutButton_ = new WPushButton(tr("form.query.querytool.pushbutton.cut"));
-		copyButton_ = new WPushButton(tr("form.query.querytool.pushbutton.copy"));
-		pasteButton_ = new WPushButton(tr("form.query.querytool.pushbutton.paste"));
-		deleteButton_ = new WPushButton(tr("form.query.querytool.pushbutton.delete"));
-		unwrapButton_ = new WPushButton(tr("form.query.querytool.pushbutton.unwrap"));
-		wrapAndButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapand"));
-		wrapOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapor"));
-		wrapNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapnot"));
+		cutButton_ = new WPushButton(tr("general.cut"));
+		copyButton_ = new WPushButton(tr("general.copy"));
+		pasteButton_ = new WPushButton(tr("general.paste"));
+		deleteButton_ = new WPushButton(tr("general.delete"));
+		unwrapButton_ = new WPushButton(tr("query.querytool.edit.unwrap"));
+		wrapAndButton_ = new WPushButton(tr("query.querytool.edit.wrapand"));
+		wrapOrButton_ = new WPushButton(tr("query.querytool.edit.wrapor"));
+		wrapNotButton_ = new WPushButton(tr("query.querytool.edit.wrapnot"));
 		
 		copyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {

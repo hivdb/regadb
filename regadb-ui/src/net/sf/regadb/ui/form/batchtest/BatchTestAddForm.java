@@ -14,15 +14,15 @@ import net.sf.witty.wt.i8n.WMessage;
 public class BatchTestAddForm extends FormWidget {
 	private ComboBox<Test> cmbTest;
 	
-	public BatchTestAddForm(WMessage formName, InteractionState interactionState) {
-		super(formName, interactionState);
+	public BatchTestAddForm(WMessage formName, InteractionState interactionState, boolean literal) {
+		super(formName, interactionState, literal);
 		init();
 	}
 	
 	private void init()
     {
 		FormTable table = new FormTable(this);
-		Label testL = new Label(tr("form.batchtest.label.test"));
+		Label testL = new Label(tr("test.form"));
 		cmbTest = new ComboBox<Test>(getInteractionState(), this);
 		cmbTest.setMandatory(true);
 		table.addLineToTable(testL, cmbTest);

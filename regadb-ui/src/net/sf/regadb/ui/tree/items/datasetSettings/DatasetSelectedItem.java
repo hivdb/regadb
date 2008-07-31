@@ -9,7 +9,7 @@ public class DatasetSelectedItem extends GenericSelectedItem <Dataset>
 
 	public DatasetSelectedItem(WTreeNode parent) 
 	{
-		super(parent, "menu.datasetSettings.datasetSelectedItem", "{datasetSelectedItem}");
+		super(parent, "dataset.form", "{datasetSelectedItem}");
 		
 	}
 

@@ -16,8 +16,8 @@ import net.sf.regadb.util.date.DateUtils;
 
 public class IMeasurementDataTable implements IDataTable<TestResult>
 {
-	private static String [] _colNames = {"dataTable.test.colName.date","dataTable.test.colName.testType", 
-		"dataTable.test.colName.testName", "dataTable.test.colName.result"};
+	private static String [] _colNames = {"date","testType.form", 
+		"test.name", "test.result"};
 	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", 
 		"testResult.test.description",	null };
 	

@@ -11,7 +11,7 @@ public class SelectResRepTemplateForm extends SelectForm
     
     public SelectResRepTemplateForm()
     {
-        super(tr("form.resistance.report.template.selectResRepTemplateForm"));
+        super(tr("report.form"));
         init();
     }
 

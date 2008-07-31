@@ -20,7 +20,7 @@ public class IQueryDefinitionParameterEditableTable implements IEditableTable<Qu
     private FormWidget form;
     private QueryDefinition queryDefinition;
     private Transaction transaction;
-    private static final String[] headers = {"editableTable.query.definition.parameters.colName.name", "editableTable.query.definition.parameters.colName.type"};
+    private static final String[] headers = {"general.name", "general.type"};
     private static final int[] colWidths = {50,50};
     
     public IQueryDefinitionParameterEditableTable(FormWidget form, QueryDefinition queryDefinition)

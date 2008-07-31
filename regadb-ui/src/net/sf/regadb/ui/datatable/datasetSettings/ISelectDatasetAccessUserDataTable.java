@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUser>
 {
-    private static String [] _colNames = {"dataTable.settingsUser.colName.uid", "dataTable.settingsUser.colName.firstname","dataTable.settingsUser.colName.lastname"};
+    private static String [] _colNames = {"account.uid", "account.firstname","account.lastname"};
     
     private static String[] filterVarNames_ = { "settingsUser.uid", "settingsUser.firstName", "settingsUser.lastName"};
         

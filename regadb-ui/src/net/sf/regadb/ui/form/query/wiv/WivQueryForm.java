@@ -87,7 +87,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     public WivQueryForm(WMessage formName, WMessage description, WMessage filename){
-        super(formName,InteractionState.Viewing);
+        super(formName,InteractionState.Viewing, true);
         
         filename_ = filename.value();
         description_ = new WText(description);
@@ -96,22 +96,22 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     public void init(){
-        generalGroup_   = new WGroupBox(tr("form.query.wiv.group.general"), this);
-        parameterGroup_     = new WGroupBox(tr("form.query.wiv.group.parameters"), this);
-        resultGroup_     = new WGroupBox(tr("form.query.wiv.group.run"), this);
+        generalGroup_   = new WGroupBox(tr("query.group.info"), this);
+        parameterGroup_     = new WGroupBox(tr("query.group.parameters"), this);
+        resultGroup_     = new WGroupBox(tr("query.run"), this);
         
         generalTable_ = new WTable(generalGroup_);
         parameterTable_ = new FormTable(parameterGroup_);
         resultTable_ = new FormTable(resultGroup_);
 
-        runL_ = new Label(tr("form.query.wiv.label.run"));
-        run_ = new WPushButton(tr("form.query.wiv.pushbutton.run"));
+        runL_ = new Label(tr("query.run"));
+        run_ = new WPushButton(tr("query.run"));
 
-        linkL_ = new Label(tr("form.query.wiv.label.result"));
+        linkL_ = new Label(tr("query.results"));
         link_ = new WAnchor("dummy", lt(""));
         
-        statusL_ = new Label(tr("form.query.wiv.label.status"));
-        status_ = new WText(tr("form.query.wiv.label.status.initial"));
+        statusL_ = new Label(tr("general.status"));
+        status_ = new WText(lt(""));
 
 
         generalTable_.putElementAt(0, 0, description_);
@@ -126,7 +126,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     public void notify(WMouseEvent a) 
     {
         run_.disable();
-        status_.setText(tr("form.query.wiv.label.status.running"));
+        status_.setText(tr("general.status.running"));
 
         try{
             File csvFile =  getOutputFile();
@@ -134,14 +134,14 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
             process(csvFile);
             File output = postProcess(csvFile);
             setDownloadLink(output);
-            status_.setText(tr("form.query.wiv.label.status.finished"));
+            status_.setText(tr("general.status.finished"));
         }
         catch(EmptyResultException e){
-            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
+            status_.setText(tr("message.query.noresults"));
         }
         catch(Exception e){
             e.printStackTrace();
-            status_.setText(tr("form.query.wiv.label.status.failed"));
+            status_.setText(tr("general.status.failed"));
         }
         
         run_.enable();

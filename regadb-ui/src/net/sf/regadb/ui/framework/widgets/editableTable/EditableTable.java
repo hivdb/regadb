@@ -106,7 +106,7 @@ public class EditableTable<DataType> extends WContainerWidget
         
         if(lineToAdd)
         {
-            WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
+            WPushButton addButton = new WPushButton(tr("general.add"));
             itemTable_.putElementAt(rowNum, colIndex, addButton);
             itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
             addButton.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -119,7 +119,7 @@ public class EditableTable<DataType> extends WContainerWidget
         }
         else if (editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) {
 			final DataType toRemove = itemList_.get(rowNum - 1);
-        	RemoveButton removeButton_ = new RemoveButton(tr("editableDataTable.button.removeItem"), toRemove);
+        	RemoveButton removeButton_ = new RemoveButton(tr("general.remove"), toRemove);
             itemTable_.putElementAt(rowNum, colIndex, removeButton_);
             itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
         }
@@ -138,7 +138,7 @@ public class EditableTable<DataType> extends WContainerWidget
         }
         else
         {
-            MessageBox.showWarningMessage(tr("editableTable.add.warning.couldNotAdd"));
+            MessageBox.showWarningMessage(tr("message.editableTable.couldNotAdd"));
         }
     }
     
@@ -271,7 +271,7 @@ public class EditableTable<DataType> extends WContainerWidget
         }
         
         if(duplicates.size()>0)
-            return new WMessage("editableTable.add.warning.duplicatesRemoved");
+            return new WMessage("message.editableTable.duplicatesRemoved");
         else
             return null;
     }

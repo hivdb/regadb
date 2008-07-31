@@ -13,7 +13,7 @@ public class LogoutItem extends TreeMenuNode
 {
     public LogoutItem(WTreeNode root)
     {
-        super(tr("menu.myAccount.logout"), root);
+        super(tr("account.logout"), root);
     }
     
     @Override
@@ -23,7 +23,7 @@ public class LogoutItem extends TreeMenuNode
         {
             public void performAction(TreeMenuNode node) 
             {
-                final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("menu.myAccount.logout.warning"));
+                final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("message.account.logout"));
                 cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a) 

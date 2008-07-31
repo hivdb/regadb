@@ -13,7 +13,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefinitionRun>
 {
-    private static String [] _colNames = {"dataTable.queryDefinitionRun.colName.name", "dataTable.queryDefinitionRun.colName.query", "dataTable.queryDefinitionRun.colName.description", "dataTable.queryDefinitionRun.colName.status"};
+    private static String [] _colNames = {"general.name", "query.definition.form", "query.definition.run.description", "general.status"};
     
     private static String[] filterVarNames_ = {"queryDefinitionRun.name", "queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
         

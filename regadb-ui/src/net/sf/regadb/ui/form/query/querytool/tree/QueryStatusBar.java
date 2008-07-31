@@ -31,7 +31,7 @@ public class QueryStatusBar extends WStatusBar {
 		this.mainForm = mainForm;
 		runButtonPanel = new RunButtonPanel(mainForm);
 		setButtonPanel(runButtonPanel);
-		showMessage(tr("form.query.querytool.message.ok"), "warning");
+		showMessage(tr("message.query.ok"), "info");
 		showProgressBar(CatalogLoader.getInstance());
 	}
 	
@@ -44,29 +44,29 @@ public class QueryStatusBar extends WStatusBar {
 	public void update() {
 			catalogOk = true;
 			if (CatalogLoader.getStatus() == Status.FAILED) {
-				showMessage(tr("form.query.querytool.catalog.failed"), "error");
+				showMessage(tr("message.query.querytool.catalogfailed"), "error");
 				catalogOk = false;
 			}
 			else if(!mainForm.getSavable().isLoaded()) {
-				showMessage(tr("form.query.querytool.message.loadfailed"), "error");
+				showMessage(tr("message.query.querytool.loadfailed"), "error");
 			}
 			else {
 				boolean hasWarning = true;
 				Query query = mainForm.getEditorModel().getQueryEditor().getQuery();
 		        if (!query.isValid()) {
-		        	showMessage(tr("form.query.querytool.message.unassigned"), "error");
+		        	showMessage(tr("message.query.querytool.unassigned"), "error");
 		        }
 		        else if (!query.hasFromVariables()) {
-		        	showMessage(tr("form.query.querytool.message.noselection"), "warning");
+		        	showMessage(tr("message.query.querytool.noselection"), "warning");
 		        }
 		        else if (!query.getSelectList().isAnythingSelected()) {
-		        	showMessage(tr("form.query.querytool.message.emptyselection"), "error");
+		        	showMessage(tr("message.query.querytool.emptyselection"), "error");
 		        }
 		        else if (!query.isConnected()) {
-		        	showMessage(tr("form.query.querytool.message.cartesianproduct"), "error");
+		        	showMessage(tr("message.query.querytool.cartesianproduct"), "error");
 		        }
 		        else {
-		        	showMessage(tr("form.query.querytool.message.ok"), "info");
+		        	showMessage(tr("message.query.ok"), "info");
 		        	hasWarning = false;
 		        }
 				this.hasWarning = hasWarning;

@@ -10,7 +10,7 @@ public class AdministratorItem extends TreeMenuNode
 {
     public AdministratorItem(WTreeNode root)
     {
-        super(tr("menu.administrator.administrator"), root);
+        super(tr("account.administrator"), root);
     }
     
     @Override

@@ -19,7 +19,7 @@ import org.hibernate.Query;
 public class WivArcCd4Form extends WivIntervalQueryForm {
     
     public WivArcCd4Form(){
-        super(tr("menu.query.wiv.arc.cd4"),tr("form.query.wiv.label.arc.cd4"),tr("file.query.wiv.arc.cd4"));
+        super(tr("query.wiv.arc.cd4"),tr("query.wiv.arc.cd4.description"),tr("query.wiv.arc.cd4.file"));
         
         String query =  "select p.birthDate, tr, pav "+
 	        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +

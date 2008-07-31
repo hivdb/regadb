@@ -12,7 +12,7 @@ import net.sf.witty.wt.WWidget;
 public class IAttributeNominalValueDataList implements IEditableTable<AttributeNominalValue>
 {
     private FormWidget form_;
-    private static final String [] headers_ = {"editableTable.attributeNominvalValue.colName.name"};
+    private static final String [] headers_ = {"general.name"};
     private static final int[] colWidths = {100};
     
     private Attribute attribute_;

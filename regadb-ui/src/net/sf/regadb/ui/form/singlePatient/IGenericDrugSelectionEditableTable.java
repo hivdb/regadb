@@ -23,12 +23,12 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     private FormWidget form_;
     private Therapy therapy_;
     private Transaction transaction_;
-    private static final String [] headers_ = { "editableTable.drug.colName.drug",
-                                                "editableTable.drugGeneric.colName.dosage",
-                                                "editableTable.drugGeneric.colName.frequency",
-                                                "editableTable.drugGeneric.colName.frequency_type",
-                                                "editableTable.drugGeneric.colName.placebo",
-                                                "editableTable.drugGeneric.colName.blind"};
+    private static final String [] headers_ = { "drug.form",
+                                                "drug.generic.dosage",
+                                                "drug.frequency",
+                                                "drug.period",
+                                                "drug.placebo",
+                                                "drug.blind"};
 
     private static final int[] colWidths = {30,20,15,15,10,10};
     

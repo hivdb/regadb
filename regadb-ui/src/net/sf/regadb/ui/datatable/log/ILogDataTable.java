@@ -16,9 +16,9 @@ import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ILogDataTable implements IDataTable<File> {
-    private static String[] colNames_ = new String[]{"dataTable.log.colName.date",
-                                                     "dataTable.log.colName.name",
-                                                     "dataTable.log.colName.size"};
+    private static String[] colNames_ = new String[]{"date.modification",
+                                                     "general.name",
+                                                     "log.size"};
     
     private static int[] colWidths = {20,60,20};
 

@@ -11,7 +11,7 @@ public class SelectTherapyForm extends SelectForm
 	
 	public SelectTherapyForm()
 	{
-		super(tr("form.patient.selectTherapyForm"));
+		super(tr("therapy.form"));
         init();
 	}
 

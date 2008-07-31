@@ -11,7 +11,7 @@ import net.sf.regadb.util.date.DateUtils;
 public class WivArcDeathsForm extends WivIntervalQueryForm {
     
     public WivArcDeathsForm(){
-        super(tr("menu.query.wiv.arc.deaths"),tr("form.query.wiv.label.arc.deaths"),tr("file.query.wiv.arc.deaths"));
+        super(tr("query.wiv.arc.deaths"),tr("query.wiv.arc.deaths.description"),tr("query.wiv.arc.deaths.file"));
         setQuery("select p, pav from PatientImpl as p inner join p.patientAttributeValues pav " +
         		"where p.deathDate >= :var_start_date and p.deathDate <= :var_end_date " +
         		"and pav.attribute.name = 'PatCode' and p.patientIi in (" + getArcPatientQuery() +") "+

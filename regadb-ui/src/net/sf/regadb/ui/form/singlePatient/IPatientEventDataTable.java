@@ -15,10 +15,10 @@ import net.sf.regadb.util.date.DateUtils;
 
 public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	private static String [] _colNames = {
-		"dataTable.singlePatient.patientEvent.column.startDate",
-		"dataTable.singlePatient.patientEvent.column.endDate",
-		"dataTable.singlePatient.patientEvent.column.eventName",
-		"dataTable.singlePatient.patientEvent.column.value"};
+		"date.start",
+		"date.end",
+		"general.name",
+		"event.value"};
 	
 	private static String[] filterVarNames_ = {"patient_event_value.startDate", "patient_event_value.endDate", "event.name", null};
 	private static boolean [] sortable_ = {true, true, true, false};

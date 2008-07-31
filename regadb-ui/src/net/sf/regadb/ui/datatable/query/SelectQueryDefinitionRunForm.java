@@ -11,7 +11,7 @@ public class SelectQueryDefinitionRunForm extends SelectForm
     
     public SelectQueryDefinitionRunForm()
     {
-        super(tr("form.query.definition.run.select"));
+        super(tr("query.definition.run.form"));
         
         init();
     }

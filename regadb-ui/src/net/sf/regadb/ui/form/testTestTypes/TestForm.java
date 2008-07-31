@@ -74,9 +74,9 @@ public class TestForm extends FormWidget
     private IAnalysisDataEditableTable ianalysisDataET;
     //analysis data group -end-
   
-	public TestForm(InteractionState interactionState, WMessage formName, Test test ) 
+	public TestForm(InteractionState interactionState, WMessage formName, boolean literal, Test test ) 
 	{
-		super(formName, interactionState);
+		super(formName, interactionState, literal);
 		
 		test_ = test;
 		
@@ -87,20 +87,20 @@ public class TestForm extends FormWidget
 	private void init() 
 	{
         //main -start-
-		mainFrameGroup_= new WGroupBox(tr("form.testSettings.test.editView.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("general.group.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		testL = new Label(tr("form.testSettings.test.editView.test"));
+		testL = new Label(tr("test.form"));
         testTF = new TextField(getInteractionState(), this);
         testTF.setMandatory(true);
         mainFrameTable_.addLineToTable(testL, testTF);
         
-	    testTypeL=new Label(tr("form.testSettings.test.editView.testType"));
+	    testTypeL=new Label(tr("testType.form"));
 	    testTypeCB= new ComboBox<TestType>(getInteractionState(),this);
 	    testTypeCB.setMandatory(true);
 	    mainFrameTable_.addLineToTable(testTypeL, testTypeCB);
 	    
-	    analysisL = new Label(tr("form.testSettings.test.editView.analysis"));
+	    analysisL = new Label(tr("test.analysis"));
 	    analysisCK = new CheckBox(getInteractionState(),this);
 	    mainFrameTable_.addLineToTable(analysisL, analysisCK);
 	    
@@ -126,30 +126,30 @@ public class TestForm extends FormWidget
         //main -end-
      
         //analysis -start-
-        analysisGroup_= new WGroupBox(tr("form.testSettings.test.editView.analysisGroup"), this);
+        analysisGroup_= new WGroupBox(tr("test.analysis"), this);
         analysisTable_  = new FormTable(analysisGroup_);
         
-        analysisTypeL = new Label(tr("form.testSettings.test.editView.analysis.analysisType"));
+        analysisTypeL = new Label(tr("test.analysis.type"));
         analysisTypeCB = new ComboBox<AnalysisType>(getInteractionState(), this);
         analysisTypeCB.setMandatory(true);
         analysisTable_.addLineToTable(analysisTypeL, analysisTypeCB);
         
-        urlL = new Label(tr("form.testSettings.test.editView.analysis.URL"));
+        urlL = new Label(tr("test.analysis.url"));
         urlTF = new TextField(getInteractionState(), this);
         urlTF.setMandatory(true);
         analysisTable_.addLineToTable(urlL, urlTF);
         
-        serviceL = new Label(tr("form.testSettings.test.editView.analysis.service.name"));
+        serviceL = new Label(tr("test.analysis.service"));
         serviceTF = new TextField(getInteractionState(), this);
         serviceTF.setMandatory(true);
         analysisTable_.addLineToTable(serviceL, serviceTF);
         
-        accountL = new Label(tr("form.testSettings.test.editView.analysis.account"));
+        accountL = new Label(tr("account.uid"));
         accountTF= new TextField(getInteractionState(), this);
         accountTF.setMandatory(true);
         analysisTable_.addLineToTable(accountL, accountTF);
         
-        passwordL = new Label(tr("form.testSettings.test.editView.analysis.password"));
+        passwordL = new Label(tr("account.password"));
         passwordTF = new TextField(getInteractionState(), this);
         passwordTF.setEchomode(WLineEditEchoMode.Password);
         passwordTF.setMandatory(true);
@@ -157,8 +157,8 @@ public class TestForm extends FormWidget
         
         if(getInteractionState() == InteractionState.Editing || getInteractionState() == InteractionState.Adding)
         {
-            refreshButton = new WPushButton(tr("form.testSettings.test.editView.analysis.refreshButton"));
-            Label refreshL = new Label(tr("form.testSettings.test.editView.analysis.refreshButton"));
+            refreshButton = new WPushButton(tr("general.refresh"));
+            Label refreshL = new Label(tr("general.refresh"));
             
             refreshButton.clicked.addListener(new SignalListener<WMouseEvent>()
             {
@@ -170,17 +170,17 @@ public class TestForm extends FormWidget
             analysisTable_.addLineToTable(refreshL, refreshButton);
         }
         
-        baseInputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseInputFile"));
+        baseInputFileL = new Label(tr("test.analysis.baseInputFile"));
         baseInputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseInputFileCB.setMandatory(true);
         analysisTable_.addLineToTable(baseInputFileL, baseInputFileCB);
 
-        baseOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.baseOutputFile"));
+        baseOutputFileL = new Label(tr("test.analysis.baseOutputFile"));
         baseOutputFileCB= new ComboBox<String>(getInteractionState(), this);
         baseOutputFileCB.setMandatory(true);
         analysisTable_.addLineToTable(baseOutputFileL, baseOutputFileCB);
         
-        dataOutputFileL = new Label(tr("form.testSettings.test.editView.analysis.dataOutputFile"));
+        dataOutputFileL = new Label(tr("test.analysis.dataOutputFile"));
         dataOutputFileCB= new ComboBox<String>(getInteractionState(), this);
         analysisTable_.addLineToTable(dataOutputFileL, dataOutputFileCB);
         
@@ -196,7 +196,7 @@ public class TestForm extends FormWidget
         
         t.commit();
         
-        analysisDataGroup_ = new WGroupBox(tr("form.testSettings.test.editView.analysisDataGroup"),this);
+        analysisDataGroup_ = new WGroupBox(tr("test.analysis.group.data"),this);
         analysisDataGroup_.setHidden(true);
 	       
  	    addControlButtons();
@@ -526,7 +526,7 @@ public class TestForm extends FormWidget
 		}
 		else
 		{
-			MessageBox.showWarningMessage(tr("form.testSetting.test.warning"));
+			MessageBox.showWarningMessage(tr("message.test.incorrectinput"));
 		}
     }
     
@@ -566,7 +566,7 @@ public class TestForm extends FormWidget
     		t.clear();
     		t.rollback();
     		
-    		return tr("form.delete.restriction");
+    		return tr("message.general.inuse");
     	}
     }
 

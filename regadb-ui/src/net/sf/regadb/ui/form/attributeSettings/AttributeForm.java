@@ -45,9 +45,9 @@ public class AttributeForm extends FormWidget
     private EditableTable<AttributeNominalValue> nominalValuesList_;
     private IAttributeNominalValueDataList iNominalValuesList_;
     
-    public AttributeForm(InteractionState interactionState, WMessage formName, Attribute attribute)
+    public AttributeForm(InteractionState interactionState, WMessage formName, boolean literal, Attribute attribute)
     {
-        super(formName, interactionState);
+        super(formName, interactionState, literal);
         attribute_ = attribute;
         
         init();
@@ -57,23 +57,23 @@ public class AttributeForm extends FormWidget
     
     private void init()
     {
-        generalGroup_ = new WGroupBox(tr("form.attributeSettings.attribute.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("general.group.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        nameL = new Label(tr("form.attributeSettings.attribute.editView.name"));
+        nameL = new Label(tr("general.name"));
         nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
         generalGroupTable_.addLineToTable(nameL, nameTF);
-        valueTypeL = new Label(tr("form.attributeSettings.attribute.editView.valueType"));
+        valueTypeL = new Label(tr("general.valueType"));
         valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
         generalGroupTable_.addLineToTable(valueTypeL, valueTypeCB);
-        groupL = new Label(tr("form.attributeSettings.attribute.editView.group"));
+        groupL = new Label(tr("attributeGroups.form"));
         groupCB = new ComboBox<AttributeGroup>(getInteractionState(), this);
         groupCB.setMandatory(true);
         generalGroupTable_.addLineToTable(groupL, groupCB);
         if(getInteractionState()!=InteractionState.Adding)
         {
-            usageL = new Label(tr("form.attributeSettings.attribute.editView.usage"));
+            usageL = new Label(tr("attribute.usage"));
             usageTF = new TextField(InteractionState.Viewing, null);
             generalGroupTable_.addLineToTable(usageL, usageTF);
         }
@@ -97,7 +97,7 @@ public class AttributeForm extends FormWidget
 
         t.commit();
         
-        nominalValuesGroup_ = new WGroupBox(tr("form.attributeSettings.attribute.editView.nominalValues"), this);
+        nominalValuesGroup_ = new WGroupBox(tr("general.nominalValues"), this);
                 
         addControlButtons();
     }
@@ -237,7 +237,7 @@ public class AttributeForm extends FormWidget
         	t.clear();
         	t.rollback();
         	
-        	return tr("form.delete.restriction");
+        	return tr("message.general.inuse");
         }
     }
 

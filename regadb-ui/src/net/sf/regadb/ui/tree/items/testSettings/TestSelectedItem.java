@@ -8,7 +8,7 @@ public class TestSelectedItem extends GenericSelectedItem<Test>
 {
 	public TestSelectedItem(WTreeNode parent) 
 	{
-		super(parent, "menu.testSettings.testSelectedItem", "{testSelectedItem}");
+		super(parent, "test.form", "{testSelectedItem}");
 	}
 
     @Override

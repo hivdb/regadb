@@ -19,8 +19,8 @@ public class ImportFormRunning extends FormWidget {
 	private static ArrayList<ProcessXMLImport> processList = new ArrayList<ProcessXMLImport>();
 	private WTimer timer = new WTimer();
 	
-	public ImportFormRunning(WMessage formName, InteractionState interactionState) {
-		super(formName, interactionState);
+	public ImportFormRunning(WMessage formName, InteractionState interactionState, boolean literal) {
+		super(formName, interactionState, literal);
 		timer.setInterval(1000);
 		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
 			public void notify(WEmptyEvent a) {
@@ -33,7 +33,7 @@ public class ImportFormRunning extends FormWidget {
 	}
 	
 	private void init() {
-		WGroupBox progress = new WGroupBox(tr("form.impex.import.progress"), this);
+		WGroupBox progress = new WGroupBox(tr("general.status.progress"), this);
 		table = new SimpleTable(progress);
 		addControlButtons();
 	}
@@ -47,10 +47,10 @@ public class ImportFormRunning extends FormWidget {
 		if ( table != null ) {
 			table.clear();
 			
-			table.setHeaders( tr("form.impex.import.progress.header.user"),
-					tr("form.impex.import.progress.header.file"),
-					tr("form.impex.import.progress.header.dataset"),
-					tr("form.impex.import.progress.header.status"));
+			table.setHeaders( tr("account.user"),
+					tr("import.file"),
+					tr("dataset.form"),
+					tr("general.status"));
 			
 			table.setWidths(20,40,20,20);
 			table.elementAt(0, 4).setStyleClass("column-action");
@@ -68,14 +68,8 @@ public class ImportFormRunning extends FormWidget {
 				table.putElementAt(row, 3, new WText( importXml.getStatusName() ));
 				table.elementAt(row, 4).setStyleClass("column-action");				
 				
-//				if (importXml.getLogFile() != null) {
-//					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
-//							tr("form.impex.import.progress.logfile"),
-//							table.elementAt(row, 3)).setStyleClass("link");
-//				}
-				
 				if (importXml.getStatus() != UploadStatus.PROCESSING) {
-					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.elementAt(row, 4));
+					WPushButton clearButton = new WPushButton(tr("general.clear"), table.elementAt(row, 4));
 					clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 						public void notify(WMouseEvent a) {
 							int row = processList.indexOf(importXml);

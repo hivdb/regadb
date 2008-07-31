@@ -8,7 +8,7 @@ public class RootItem extends TreeMenuNode
 {
 	public RootItem(WContainerWidget root)
 	{
-		super(tr("menu.root.rootItem"));
+		super(tr("menu.root"));
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ public class SelectTestTypeForm extends SelectForm
     
     public SelectTestTypeForm()
     {
-        super(tr("form.testSetting.testType.selectTestTypeForm"));
+        super(tr("testType.form"));
         init();
     }
 

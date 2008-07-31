@@ -8,7 +8,7 @@ public class AttributeGroupSelectedItem extends GenericSelectedItem<AttributeGro
 {
     public AttributeGroupSelectedItem(WTreeNode parent)
     {
-        super(parent, "menu.attributeGroupSettings.attributeGroupSelectedItem", "{attributeGroupSelectedItem}");
+        super(parent, "attributeGroups.form", "{attributeGroupSelectedItem}");
     }
 
     @Override

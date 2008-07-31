@@ -11,7 +11,7 @@ public class SelectLogForm extends SelectForm {
     private ILogDataTable dataTableI_;
 
     public SelectLogForm(){
-        super(tr("form.log.selectLogForm"));
+        super(tr("log.form"));
         init();
     }
     

@@ -32,9 +32,9 @@ public class PasswordForm extends FormWidget
     private Label retypePasswordL;
     private TextField retypePasswordTF;
     
-    public PasswordForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
+    public PasswordForm(WMessage formName, InteractionState interactionState, boolean literal, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
-        super(formName, interactionState);
+        super(formName, interactionState, literal);
         selectNode_ = selectNode;
         expandNode_ = expandNode;
         administrator_ = admin;
@@ -57,26 +57,26 @@ public class PasswordForm extends FormWidget
     
     public void init()
     {
-        passwordGroup_ = new WGroupBox(tr("form.account.editView.general"));
+        passwordGroup_ = new WGroupBox(tr("acount.group.general"));
         passwordGroupTable = new FormTable(passwordGroup_);
         if(!administrator_)
         {
-            passwordL = new Label(tr("form.settings.user.label.password.old"));
+            passwordL = new Label(tr("account.password.old"));
         }
         else
         {
-            passwordL = new Label(tr("form.settings.user.label.password.administrator"));
+            passwordL = new Label(tr("account.password.administrator"));
         }
         passwordTF = new TextField(getInteractionState(), this);
         passwordTF.setMandatory(true);
         passwordTF.setEchomode(WLineEditEchoMode.Password);
         passwordGroupTable.addLineToTable(passwordL, passwordTF);
-        newPasswordL = new Label(tr("form.settings.user.label.password.new"));
+        newPasswordL = new Label(tr("account.password.new"));
         newPasswordTF = new TextField(getInteractionState(), this);
         newPasswordTF.setMandatory(true);
         newPasswordTF.setEchomode(WLineEditEchoMode.Password);
         passwordGroupTable.addLineToTable(newPasswordL, newPasswordTF);
-        retypePasswordL = new Label(tr("form.settings.user.label.password.retype.new"));
+        retypePasswordL = new Label(tr("account.password.retype.new"));
         retypePasswordTF = new TextField(getInteractionState(), this);
         retypePasswordTF.setMandatory(true);
         retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
@@ -131,7 +131,7 @@ public class PasswordForm extends FormWidget
             update(su_, t);
             t.commit();
             
-            MessageBox.showWarningMessage(tr("form.settings.user.password.message"));
+            MessageBox.showWarningMessage(tr("message.account.passwordchanged"));
             
             redirectToView(expandNode_, selectNode_);
         }

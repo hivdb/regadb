@@ -13,7 +13,7 @@ import net.sf.witty.wt.i8n.WMessage;
 public class WFormValidation 
 {
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
-    private WMessage warningText_ = WWidget.tr("form.validationProblem.warning.mainText");
+    private WMessage warningText_ = WWidget.tr("message.general.validationProblem");
     private WContainerWidget warningWidget_ = new WarningMessage(warningImage_, warningText_, MessageType.ERROR);
     
     public void init(WContainerWidget parent)

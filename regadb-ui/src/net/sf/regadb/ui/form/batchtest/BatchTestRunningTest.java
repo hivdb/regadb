@@ -53,6 +53,7 @@ public class BatchTestRunningTest extends Thread {
 				status = BatchTestStatus.DONE;
 			}
 		} catch ( Exception e ) {
+			System.err.println("global batch test failure");
 			e.printStackTrace();
 			status = BatchTestStatus.FAILED;
 		}
@@ -85,11 +86,11 @@ public class BatchTestRunningTest extends Thread {
 	public WMessage getStatusMessage() {
 		String key = "";
 		
-		if ( status == BatchTestStatus.RUNNING ) key = "form.batchtest.running.status.run";
-		else if ( status == BatchTestStatus.DONE ) key = "form.batchtest.running.status.done";
-		else if ( status == BatchTestStatus.FAILED ) key = "form.batchtest.running.status.failed";
-		else if ( status == BatchTestStatus.CANCELING ) key = "form.batchtest.running.status.canceling";
-		else if ( status == BatchTestStatus.CANCELED ) key = "form.batchtest.running.status.canceled";
+		if ( status == BatchTestStatus.RUNNING ) key = "general.status.running";
+		else if ( status == BatchTestStatus.DONE ) key = "general.status.done";
+		else if ( status == BatchTestStatus.FAILED ) key = "general.status.failed";
+		else if ( status == BatchTestStatus.CANCELING ) key = "general.status.canceling";
+		else if ( status == BatchTestStatus.CANCELED ) key = "general.status.canceled";
 		
 		return new WMessage(key);
 	}
@@ -104,17 +105,19 @@ public class BatchTestRunningTest extends Thread {
 		}
 		
 		public void run() {
-			
-			for ( int i=0; i<list.size(); i++ ) {
+			int i = 0;
+			while (i<list.size() && status == BatchTestStatus.RUNNING) {
 				percent = i * 100 / list.size();
 				
 				DataType t = list.get(i);
-				runSingleTest(t, copiedLogin);
-		        
-				if (status == BatchTestStatus.CANCELING) {
-					status = BatchTestStatus.CANCELED;
-					return;
-				}					
+				try {
+					runSingleTest(t, copiedLogin);
+				}
+				catch (Throwable e) {
+					System.err.println("single batch test failure");
+					status = BatchTestStatus.FAILED;
+				}
+				i++;
 			}
 		}
 		

@@ -50,7 +50,7 @@ public class ProcessXMLImport extends Thread {
 			String line = br.readLine().trim();
 			
 			if ( line == null ) {
-				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
+				ps.println(WResource.tr("message.import.invalidfile").value());
 				status = UploadStatus.FAILED;
 			} else if (line.contains("<patients>")) {
 				instance.importPatients(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
@@ -59,7 +59,7 @@ public class ProcessXMLImport extends Thread {
 				instance.importViralIsolates(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
 				status = UploadStatus.SUCCEEDED;
 			} else {
-				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
+				ps.println(WResource.tr("message.import.invalidfile").value());
 				status = UploadStatus.FAILED;
 			}
 			
@@ -90,7 +90,7 @@ public class ProcessXMLImport extends Thread {
 		return status;
 	}
 	public WMessage getStatusName() {
-		String key = "form.impex.import.progress.status.";
+		String key = "general.status.";
 		if ( status == UploadStatus.PROCESSING ) key += "processing";
 		else if ( status == UploadStatus.SUCCEEDED ) key += "done";
 		else if ( status == UploadStatus.FAILED ) key += "failed";

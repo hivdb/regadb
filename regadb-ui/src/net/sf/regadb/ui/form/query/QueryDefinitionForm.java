@@ -39,9 +39,9 @@ public class QueryDefinitionForm extends FormWidget
     private Label creatorL;
     private TextField creatorTF;
     
-    public QueryDefinitionForm(WMessage formName, InteractionState interactionState, QueryDefinition queryDefinition)
+    public QueryDefinitionForm(WMessage formName, InteractionState interactionState, boolean literal, QueryDefinition queryDefinition)
     {
-    	super(formName, interactionState);
+    	super(formName, interactionState, literal);
         
         this.queryDefinition = queryDefinition;
         
@@ -52,33 +52,33 @@ public class QueryDefinitionForm extends FormWidget
     
     public void init()
     {         
-    	queryDefinitionGroup_ = new WGroupBox(tr("form.query.definition.general"), this);
+    	queryDefinitionGroup_ = new WGroupBox(tr("general.group.general"), this);
     	
     	queryDefinitionGroupTable = new FormTable(queryDefinitionGroup_);
     	
-    	nameL = new Label(tr("form.query.definition.label.name"));
+    	nameL = new Label(tr("general.name"));
     	nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
         queryDefinitionGroupTable.addLineToTable(nameL, nameTF);
         
-        descriptionL = new Label(tr("form.query.definition.label.description"));
+        descriptionL = new Label(tr("general.description"));
         descriptionTA = new TextArea(getInteractionState(), this);
         descriptionTA.setMandatory(true);
         queryDefinitionGroupTable.addLineToTable(descriptionL, descriptionTA);
         
-        queryL = new Label(tr("form.query.definition.label.query"));
+        queryL = new Label(tr("query.form"));
         queryTA = new TextArea(getInteractionState(), this);
         queryTA.setMandatory(true);
         queryDefinitionGroupTable.addLineToTable(queryL, queryTA);
         
         if(getInteractionState() == InteractionState.Viewing)
         {
-        	creatorL = new Label(tr("form.query.definition.label.creator"));
+        	creatorL = new Label(tr("query.definition.creator"));
             creatorTF = new TextField(getInteractionState(), this);
             queryDefinitionGroupTable.addLineToTable( creatorL, creatorTF);
         }
         
-        queryDefinitionParameterGroup_ = new WGroupBox(tr("form.query.definition.editableTable.parameters"), this);
+        queryDefinitionParameterGroup_ = new WGroupBox(tr("query.group.parameters"), this);
     	
     	addControlButtons();
     }
@@ -167,7 +167,7 @@ public class QueryDefinitionForm extends FormWidget
     			}
     			else
     			{
-    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.null"));
+    				MessageBox.showWarningMessage(tr("message.query.definition.parameters.required"));
     				
     				return false;
     			}
@@ -203,14 +203,14 @@ public class QueryDefinitionForm extends FormWidget
     				}
     				else
     				{
-    					MessageBox.showWarningMessage(tr("form.query.validate.parameters.error"));
+    					MessageBox.showWarningMessage(tr("message.query.definition.parameters.error"));
     					
     					return false;
     				}
     			}
     			else
     			{
-    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.duplicate"));
+    				MessageBox.showWarningMessage(tr("message.query.definition.parameters.duplicate"));
     				
     				return false;
     			}

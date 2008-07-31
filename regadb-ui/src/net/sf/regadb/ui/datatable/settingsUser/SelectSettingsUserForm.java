@@ -11,7 +11,7 @@ public class SelectSettingsUserForm extends SelectForm
     
     public SelectSettingsUserForm(boolean enabled)
     {
-        super((enabled?tr("form.administrator.registeredUser.select"):tr("form.administrator.notRegisteredUser.select")));
+        super((enabled?tr("account.select.registered"):tr("account.select.unregistered")));
         init(enabled);
     }
     

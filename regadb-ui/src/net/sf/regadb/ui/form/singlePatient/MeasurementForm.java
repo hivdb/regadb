@@ -43,9 +43,9 @@ public class MeasurementForm extends FormWidget
     private FormField testResultField_;
     private WContainerWidget testResultC;
     
-	public MeasurementForm(InteractionState interactionState, WMessage formName, TestResult testResult)
+	public MeasurementForm(InteractionState interactionState, WMessage formName, boolean literal, TestResult testResult)
 	{
-		super(formName, interactionState);
+		super(formName, interactionState, literal);
 		testResult_ = testResult;
 		
 		init();
@@ -54,24 +54,24 @@ public class MeasurementForm extends FormWidget
 	public void init()
 	{
         //general group
-        generalGroup_ = new WGroupBox(tr("form.testResult.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("general.group.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        sampleIdL_ = new Label(tr("form.testResult.editView.sampleid"));
+        sampleIdL_ = new Label(tr("viralIsolate.sampleid"));
         sampleIdTF_ = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
-        dateL = new Label(tr("form.testResult.editView.date"));
+        dateL = new Label(tr("date"));
         dateTF = new DateField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(dateL, dateTF);
-        testTypeL = new Label(tr("form.testResult.editView.testType"));
+        testTypeL = new Label(tr("testType.form"));
         testTypeCB = new ComboBox<TestType>(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testTypeL, testTypeCB);
-        testNameL = new Label(tr("form.testResult.editView.testName"));
+        testNameL = new Label(tr("test.name"));
         testNameCB = new ComboBox<Test>(getInteractionState(), this);
         testNameCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testNameL, testNameCB);
-        testResultL = new Label(tr("form.testResult.editView.testResult"));
+        testResultL = new Label(tr("test.result"));
         testResultL.setLabelUIMandatory(this);
         testResultC = new WContainerWidget();
         int row = generalGroupTable_.numRows();

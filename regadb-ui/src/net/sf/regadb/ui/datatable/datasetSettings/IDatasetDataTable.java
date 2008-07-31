@@ -14,10 +14,10 @@ import net.sf.regadb.util.date.DateUtils;
 
 public class IDatasetDataTable implements IDataTable<Dataset> 
 {
-	private static String [] _colNames = {"dataTable.dataset.colName.description", 										 
-										  "dataTable.dataset.colName.creationDate",
-										  "dataTable.dataset.colName.closedDate", 
-										  "dataTable.dataset.colName.revision"};
+	private static String [] _colNames = {"general.description", 										 
+										  "date.creation",
+										  "date.closed", 
+										  "dataset.revision"};
 	private static String[] filterVarNames_ = {"dataset.description", 
 											   "dataset.creationDate",
 											   "dataset.closedDate",

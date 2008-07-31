@@ -50,19 +50,19 @@ public class ViralIsolateReportForm extends WContainerWidget
     
     public void init()
     {
-        reportGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.report"), this);
+        reportGroup_ = new WGroupBox(tr("viralIsolate.resistance.report"), this);
         reportGroup_.setStyleClass("groupbox");
         reportTable_ = new FormTable(reportGroup_);
-        algorithmL_ = new Label(tr("form.viralIsolate.editView.report.algorithm"));
+        algorithmL_ = new Label(tr("viralIsolate.algorithm"));
         algorithmCB_ = new ComboBox<Test>(InteractionState.Editing, viralIsolateForm_);
         reportTable_.addLineToTable(algorithmL_, algorithmCB_);
-        templateL_ = new Label(tr("form.viralIsolate.editView.report.template"));
+        templateL_ = new Label(tr("report.template"));
         resRepTemplateCB_ = new ComboBox<ResistanceInterpretationTemplate>(InteractionState.Editing, viralIsolateForm_);
         reportTable_.addLineToTable(templateL_, resRepTemplateCB_);
-        Label generateLabel = new Label(tr("form.viralIsolate.editView.report.label.generate"));
-        generateButton_ = new WPushButton(tr("form.viralIsolate.editView.report.generateButton"));
+        Label generateLabel = new Label(tr("viralIsolate.report.generate"));
+        generateButton_ = new WPushButton(tr("viralIsolate.report.generate"));
         reportTable_.addLineToTable(generateLabel, generateButton_);
-        reportL = new Label(tr("form.viralIsolate.editView.report.report"));
+        reportL = new Label(tr("viralIsolate.report.result"));
         reportA_ = new WAnchor("dummy", lt(""));
         reportA_.setStyleClass("link");
         reportTable_.addLineToTable(reportL, reportA_);

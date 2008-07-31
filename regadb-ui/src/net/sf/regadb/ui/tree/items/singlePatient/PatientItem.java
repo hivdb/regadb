@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
@@ -10,7 +9,7 @@ public class PatientItem extends TreeMenuNode
 {	
 	public PatientItem(WTreeNode root)
 	{
-		super(tr("menu.singlePatient.mainItem"), root);
+		super(tr("patient.plural"), root);
 	}
 
 	@Override

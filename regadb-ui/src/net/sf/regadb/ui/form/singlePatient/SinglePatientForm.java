@@ -66,9 +66,9 @@ public class SinglePatientForm extends FormWidget
     
     private Patient patient_;
     
-    public SinglePatientForm(InteractionState state, WMessage formName, Patient patient)
+    public SinglePatientForm(InteractionState state, WMessage formName, boolean literal, Patient patient)
 	{
-        super(formName, state);
+        super(formName, state, literal);
         patient_ = patient;
         init();
 	}
@@ -76,13 +76,13 @@ public class SinglePatientForm extends FormWidget
     public void init()
     {   
         //general group
-        generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("general.group.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
+        sourceDatasetL = new Label(tr("dataset.form"));
         sourceDatasetCB = new ComboBox<Dataset>(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         sourceDatasetCB.setMandatory(true);
         generalGroupTable_.addLineToTable(sourceDatasetL, sourceDatasetCB);
-        idL = new Label(tr("form.singlePatient.editView.patientId"));
+        idL = new Label(tr("general.id"));
         idTF = new TextField(getInteractionState(), this){
                 public boolean checkUniqueness(){
                     return checkPatientId(getFormText());
@@ -92,16 +92,16 @@ public class SinglePatientForm extends FormWidget
         idTF.setMandatory(true);
         idTF.setUnique(true);
         generalGroupTable_.addLineToTable(idL, idTF);
-        firstNameL = new Label(tr("form.singlePatient.editView.firstName"));
+        firstNameL = new Label(tr("account.firstname"));
         firstNameTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(firstNameL, firstNameTF);
-        lastNameL = new Label(tr("form.singlePatient.editView.lastName"));
+        lastNameL = new Label(tr("account.lastname"));
         lastNameTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(lastNameL, lastNameTF);
-        birthDateL = new Label(tr("form.singlePatient.editView.birthDate"));
+        birthDateL = new Label(tr("patient.birthdate"));
         birthDateTF = new DateField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(birthDateL, birthDateTF);
-        deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
+        deathDateL = new Label(tr("patient.deathdate"));
         deathDateTF = new DateField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(deathDateL, deathDateTF);
         /*WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
@@ -214,7 +214,7 @@ public class SinglePatientForm extends FormWidget
         
         if(groups.entrySet().size()>0)
         {
-            attributesGroup_ = new WGroupBox(tr("form.singlePatient.editView.attributes"), this);
+            attributesGroup_ = new WGroupBox(tr("attribute.plural"), this);
             attributesGroupTable_ = new WTable(attributesGroup_);
             attributesGroupTable_.setStyleClass("datatable");
             int rowToPlace;
@@ -226,7 +226,7 @@ public class SinglePatientForm extends FormWidget
             AttributeNominalValue selectedNominalVal;
             for(Map.Entry<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> entry : groups.entrySet())
             {
-                if(entry.getKey().equals("form.singlePatient.editView.generalAttribute"))
+                if(entry.getKey().equals("patient.generalAttribute"))
                 {
                     groupMessage = tr(entry.getKey());
                     rowToPlace = 0;
@@ -314,7 +314,7 @@ public class SinglePatientForm extends FormWidget
             groupName = attribute.getAttributeGroup();
             if(groupName==null)
             {
-                groupStr = "form.singlePatient.editView.generalAttribute";
+                groupStr = "patient.generalAttribute";
             }
             else
             {

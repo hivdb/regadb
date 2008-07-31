@@ -10,7 +10,7 @@ public class QueryItem extends TreeMenuNode
 {
     public QueryItem(WTreeNode root)
     {
-        super(tr("menu.query"), root);
+        super(tr("query.plural"), root);
     }
     
     public QueryItem(WMessage label, WTreeNode root)

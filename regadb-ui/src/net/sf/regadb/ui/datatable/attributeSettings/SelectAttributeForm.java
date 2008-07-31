@@ -11,7 +11,7 @@ public class SelectAttributeForm extends SelectForm
     
     public SelectAttributeForm()
     {
-        super(tr("form.attributes.attribute.selectAttributeForm"));
+        super(tr("attribute.form"));
         init();
     }
 

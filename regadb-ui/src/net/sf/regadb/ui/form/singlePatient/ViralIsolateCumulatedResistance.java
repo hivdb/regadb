@@ -28,8 +28,8 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     
     private Patient patient_;
     
-    public ViralIsolateCumulatedResistance(WMessage formName, Patient patient) {
-        super(formName, InteractionState.Viewing);
+    public ViralIsolateCumulatedResistance(WMessage formName, Patient patient, boolean literal) {
+        super(formName, InteractionState.Viewing, literal);
         patient_ = patient;
         
         init();
@@ -41,7 +41,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         wrapper.elementAt(0, 0).setStyleClass("navigation");
         wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 0));
+        showMutations_ = new WCheckBox(tr("viralIsolate.mutation.show"), wrapper.elementAt(0, 0));
         showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a)

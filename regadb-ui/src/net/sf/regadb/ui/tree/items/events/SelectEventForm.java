@@ -10,7 +10,7 @@ public class SelectEventForm extends SelectForm {
 	private IEventDataTable datatableI_;
 	
 	public SelectEventForm() {
-		super(tr("event.form.selectEvent"));
+		super(tr("event.form"));
         init();
 	}
 	

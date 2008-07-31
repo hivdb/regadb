@@ -12,7 +12,7 @@ public class SelectDatasetForm extends SelectForm
 
 	public SelectDatasetForm() 
 	{
-		super(tr("form.DatasetSettings.dataset.selectDatasetForm"));
+		super(tr("dataset.form"));
 		init();
 	}
 

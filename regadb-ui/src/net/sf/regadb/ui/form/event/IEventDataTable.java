@@ -11,7 +11,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 
 public class IEventDataTable implements IDataTable<Event> {
-	private static String [] _colNames = {"dataTable.event.column.name", "dataTable.event.column.valuetype"};
+	private static String [] _colNames = {"general.name", "general.valueType"};
 	private static String[] filterVarNames_ = {"event.name", "event.valueType"};
 	private static boolean [] sortable_ = {true, true};
 	private static int[] colWidths = {50,50};

@@ -30,9 +30,9 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
-	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
+	public ViralIsolateForm(InteractionState interactionState, WMessage formName, boolean literal, ViralIsolate viralIsolate)
 	{
-		super(formName, interactionState);
+		super(formName, interactionState, literal);
 		viralIsolate_ = viralIsolate;
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -57,15 +57,15 @@ public class ViralIsolateForm extends FormWidget
 	{
 		WTabbedPane tabs = new WTabbedPane(this);
 		_mainForm = new ViralIsolateMainForm(this);
-		tabs.addTab(tr("form.viralIsolate.editView.tab.viralIsolate"), _mainForm);
+		tabs.addTab(tr("viralIsolate.form"), _mainForm);
 		
         if(getInteractionState()==InteractionState.Viewing) {
 	        proteinForm_ = new ViralIsolateProteinForm(this);
-			tabs.addTab(tr("form.viralIsolate.editView.tab.proteins"), proteinForm_);
+			tabs.addTab(tr("viralIsolate.protein.plural"), proteinForm_);
 	        resistanceForm_ = new ViralIsolateResistanceForm(this);
-			tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
+			tabs.addTab(tr("viralIsolate.resistance.drugs"), resistanceForm_);
 	        reportForm_ = new ViralIsolateReportForm(this);
-			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+			tabs.addTab(tr("viralIsolate.resistance.report"), reportForm_);
         }
         
         fillData();
@@ -193,7 +193,7 @@ public class ViralIsolateForm extends FormWidget
     public void confirmAction()
     {
         if(!_mainForm.checkSampleId()){
-            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.confirm.duplicate.viralIsolate.sampleId"));
+            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("message.viralIsolate.duplicate"));
             cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
                     {
                 public void notify(WMouseEvent a) 

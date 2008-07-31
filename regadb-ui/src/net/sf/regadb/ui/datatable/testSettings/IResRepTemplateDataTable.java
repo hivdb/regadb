@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpretationTemplate>
 {
-    private static String [] _colNames = {"datatable.resistance.report.interpretation.colName.name"};
+    private static String [] _colNames = {"general.name"};
     private static String[] filterVarNames_ = {"resistanceInterpretationTemplate.name"};
     
     private IFilter[] filters_ = new IFilter[1];

@@ -43,8 +43,8 @@ public class LogForm extends FormWidget {
     private TextArea fileContentTA;
     
     
-    public LogForm(WMessage formName, InteractionState interactionState, File logFile) {
-        super(formName, interactionState);
+    public LogForm(WMessage formName, InteractionState interactionState, boolean literal, File logFile) {
+        super(formName, interactionState, literal);
         this.logFile = logFile;
         
         init();
@@ -53,25 +53,25 @@ public class LogForm extends FormWidget {
     }
     
     protected void init(){
-        propertiesGroup = new WGroupBox(tr("form.log.properties"),this);
-        contentGroup = new WGroupBox(tr("form.log.content"),this);
+        propertiesGroup = new WGroupBox(tr("log.properties"),this);
+        contentGroup = new WGroupBox(tr("log.content"),this);
         
         propertiesTable = new FormTable(propertiesGroup);
         contentTable = new WTable(contentGroup);
         
-        fileNameL = new Label(tr("form.log.name"));
+        fileNameL = new Label(tr("general.name"));
         fileNameTF = new TextField(getInteractionState(),this);
         propertiesTable.addLineToTable(fileNameL, fileNameTF);
 
-        fileDateL = new Label(tr("form.log.date"));
+        fileDateL = new Label(tr("date.modification"));
         fileDateDF = new DateField(InteractionState.Viewing,this);
         propertiesTable.addLineToTable(fileDateL, fileDateDF);
         
-        fileSizeL = new Label(tr("form.log.size"));
+        fileSizeL = new Label(tr("log.size"));
         fileSizeTF = new TextField(getInteractionState(),this);
         propertiesTable.addLineToTable(fileSizeL, fileSizeTF);
         
-        fileDownloadL = new Label(tr("form.log.download"));
+        fileDownloadL = new Label(tr("log.download"));
         fileDownloadA = new WAnchor();
         propertiesTable.addLineToTable(new WWidget[]{fileDownloadL, fileDownloadA});
 

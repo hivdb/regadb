@@ -25,10 +25,10 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 	}
 	
 	private void init() {
-		okButton = new WPushButton(tr("form.general.button.ok"));
+		okButton = new WPushButton(tr("general.ok"));
 		addButton(okButton);
 
-		cancelButton = new WPushButton(tr("form.general.button.cancel"));
+		cancelButton = new WPushButton(tr("general.cancel"));
 		addButton(cancelButton);
 
 		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {

@@ -8,7 +8,7 @@ public class ViralIsolateSelectedItem extends GenericSelectedItem<ViralIsolate>
 {
 	public ViralIsolateSelectedItem(WTreeNode parent)
 	{
-		super(parent, "menu.singlePatient.viralIsolates.viralIsolatesSelectedItem", "{viralIsolatesId}");
+		super(parent, "viralIsolate.form", "{viralIsolatesId}");
 	}
 
     @Override

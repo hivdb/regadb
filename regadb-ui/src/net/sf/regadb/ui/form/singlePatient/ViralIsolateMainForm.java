@@ -65,8 +65,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     private WPushButton cancelButton;
 
 	// NtSeq group
-	private WGroupBox ntSeqGroup_;
-	private FormTable ntSeqGroupTable_;
+//	private WGroupBox ntSeqGroup_;
+//	private FormTable ntSeqGroupTable_;
 	private Label seqLabel;
 	private TextField seqLabelTF;
 	private Label seqDateL;
@@ -95,13 +95,13 @@ public class ViralIsolateMainForm extends WContainerWidget
 	public void init()
 	{
 		// General group
-		generalGroup_ = new WGroupBox(tr("form.viralIsolate.editView.general"), this);
+		generalGroup_ = new WGroupBox(tr("general.group.general"), this);
 		generalGroupTable_ = new FormTable(generalGroup_);
-		sampleDateL = new Label(tr("form.viralIsolate.editView.sampleDate"));
+		sampleDateL = new Label(tr("date.sample"));
 		sampleDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		sampleDateTF.setMandatory(true);
 		generalGroupTable_.addLineToTable(sampleDateL, sampleDateTF);
-		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
+		sampleIdL = new Label(tr("viralIsolate.sampleid"));
 		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_){
 		    public boolean checkUniqueness(){
 		        return checkSampleId(getFormText());
@@ -111,39 +111,26 @@ public class ViralIsolateMainForm extends WContainerWidget
 		generalGroupTable_.addLineToTable(sampleIdL, sampleIdTF);
 
 		// Sequence group
-		sequenceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.sequence"), this);
+		sequenceGroup_ = new WGroupBox(tr("viralIsolate.ntseq.plural"), this);
 		FormTable sequenceSelectForm = new FormTable(sequenceGroup_);
-		Label currentSequenceL = new Label(tr("form.viralIsolate.label.currentSequence"));
+		Label currentSequenceL = new Label(tr("viralIsolate.ntseq"));
 		seqComboBox = new WComboBox();
 		sequenceSelectForm.addLineToTable(currentSequenceL, seqComboBox);
 		
-		if (viralIsolateForm_.isEditable()) {
-			Label addL = new Label(tr("form.viralIsolate.label.addSequence"));
-	        addButton = new WPushButton(tr("form.viralIsolate.addButton"));
-	        sequenceSelectForm.addLineToTable(addL, addButton);
-
-	        Label deleteL = new Label(tr("form.viralIsolate.label.deleteSequence"));
-	        deleteButton = new WPushButton(tr("form.viralIsolate.deleteButton"));
-	        sequenceSelectForm.addLineToTable(deleteL, deleteButton);
-			
-		}
-
 		// NtSeq group
-		ntSeqGroup_ = new WGroupBox(tr("form.viralIsolate.editView.ntSeq"), sequenceGroup_);
-		ntSeqGroupTable_ = new FormTable(ntSeqGroup_);
-		seqLabel = new Label(tr("form.viralIsolate.editView.seqLabel"));
+		seqLabel = new Label(tr("viralIsolate.ntseq.seqLabel"));
 		seqLabelTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         seqLabelTF.setMandatory(true);
-        ntSeqGroupTable_.addLineToTable(seqLabel, seqLabelTF);
-		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
+        sequenceSelectForm.addLineToTable(seqLabel, seqLabelTF);
+		seqDateL = new Label(tr("viralIsolate.ntseq.seqDate"));
 		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		ntSeqGroupTable_.addLineToTable(seqDateL, seqDateTF);
-        typeL = new Label(tr("form.viralIsolate.editView.HIVType"));
+		sequenceSelectForm.addLineToTable(seqDateL, seqDateTF);
+        typeL = new Label(tr("viralIsolate.ntseq.HIVType"));
         typeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        ntSeqGroupTable_.addLineToTable(typeL, typeTF);
-        subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
+        sequenceSelectForm.addLineToTable(typeL, typeTF);
+        subTypeL = new Label(tr("viralIsolate.ntseq.subType"));
         subTypeTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        ntSeqGroupTable_.addLineToTable(subTypeL, subTypeTF);
+        sequenceSelectForm.addLineToTable(subTypeL, subTypeTF);
         
         if(viralIsolateForm_.isEditable())
         {
@@ -151,14 +138,14 @@ public class ViralIsolateMainForm extends WContainerWidget
             typeTF.setHidden(true);
             subTypeL.setHidden(true);
             subTypeTF.setHidden(true);
-            WTable buttonTable = new WTable(ntSeqGroupTable_.elementAt(2, 1));
-            upLoadL = new Label(tr("form.viralIsolate.editView.uploadlabel"));
-            ntSeqGroupTable_.putElementAt(2, 0, upLoadL);
+            WTable uploadTable = new WTable();
             upload_ = new FileUpload(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-            buttonTable.putElementAt(1, 0, upload_);
-            autoFix_ = new WCheckBox(tr("formfield.ntfield.checkbox.autofixSequence"), buttonTable.elementAt(2, 0));
-            fastaLabel_ = new WText(buttonTable.elementAt(0, 0));
+            uploadTable.putElementAt(1, 0, upload_);
+            autoFix_ = new WCheckBox(tr("viralIsolate.ntseq.autofixSequence"), uploadTable.elementAt(2, 0));
+            fastaLabel_ = new WText(uploadTable.elementAt(0, 0));
             fastaLabel_.setStyleClass("viral-isolate-fasta-label");
+            upLoadL = new Label(tr("viralIsolate.ntseq.uploadlabel"));
+            sequenceSelectForm.addLineToTable(upLoadL, uploadTable);
             
             
             
@@ -177,19 +164,19 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                            
 	                       if(read.status_==FastaReadStatus.Invalid)
 	                       {
-	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.invalidFastaFile"));
+	                           MessageBox.showWarningMessage(tr("message.viralIsolate.invalidFastaFile"));
 	                       }
 	                       else if(read.status_==FastaReadStatus.FileNotFound)
 	                       {
-	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.fastaFileNotFound"));
+	                           MessageBox.showWarningMessage(tr("message.viralIsolate.fastaFileNotFound"));
 	                       }
 	                       else if(read.status_==FastaReadStatus.MultipleSequences)
 	                       {
-	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.multipleSequences"));
+	                           MessageBox.showWarningMessage(tr("message.viralIsolate.multipleSequences"));
 	                       }
 	                       else if (read.status_==FastaReadStatus.ValidButFixed)
 	                       {
-	                           MessageBox.showWarningMessage(tr("form.viralIsolate.warning.autoFixedSequence"));
+	                           MessageBox.showWarningMessage(tr("message.viralIsolate.autoFixedSequence"));
 	                           ntTF.setText(read.xna_);
 	                           seqComboBox.disable();
 	                           addButton.disable();
@@ -206,12 +193,22 @@ public class ViralIsolateMainForm extends WContainerWidget
                    }
             });
         }
-        ntL = new Label(tr("form.viralIsolate.editView.nucleotides"));
+        ntL = new Label(tr("viralIsolate.ntseq.nucleotides"));
         ntTF = new NucleotideField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         ntTF.setMandatory(true);
-        ntSeqGroupTable_.addLineToTable(ntL, ntTF);
+        sequenceSelectForm.addLineToTable(ntL, ntTF);
         
-        addButtons();
+    	if (viralIsolateForm_.isEditable()) {
+	        int row = sequenceSelectForm.numRows();
+	        int col = 0;
+	        sequenceSelectForm.elementAt(row, col).setColumnSpan(2);
+	        sequenceSelectForm.elementAt(row, col).setStyleClass("navigation");
+	        
+	        confirmButton = new WPushButton(tr("general.confirm"), sequenceSelectForm.elementAt(row, col));
+	        cancelButton = new WPushButton(tr("general.cancel"), sequenceSelectForm.elementAt(row, col));
+	        addButton = new WPushButton(tr("general.add"), sequenceSelectForm.elementAt(row, col));
+	        deleteButton = new WPushButton(tr("general.delete"), sequenceSelectForm.elementAt(row, col));
+    	}
 	}
 	
 	public void fillData(ViralIsolate vi)
@@ -259,7 +256,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    {
 	                        if(seqComboBox.count()==1)
 	                        {
-	                            MessageBox.showWarningMessage(tr("form.viralIsolate.warning.minimumOneSequence"));
+	                            MessageBox.showWarningMessage(tr("message.viralIsolate.minimumOneSequence"));
 	                        }
 	                        else
 	                        {
@@ -488,22 +485,6 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
     }
 
-    private void addButtons()
-    {
-    	if (viralIsolateForm_.isEditable()) {
-	        // confirm-cancel
-	        int numRow = ntSeqGroupTable_.numRows();
-	        WTable buttonsTable = new WTable(ntSeqGroupTable_.elementAt(numRow, 1));
-	        confirmButton = new WPushButton(tr("form.viralIsolate.confirmButton"), buttonsTable.elementAt(0, 0));
-	        cancelButton = new WPushButton(tr("form.viralIsolate.cancelButton"), buttonsTable.elementAt(0, 1));
-//	        sequenceGroupTable_.elementAt(3, 1).setContentAlignment(WHorizontalAlignment.AlignRight);
-	       
-	        boolean sensitivities = viralIsolateForm_.isEditable();
-	        confirmButton.setEnabled(sensitivities);
-	        cancelButton.setEnabled(sensitivities);
-    	}
-    }
-    
     private void setFieldListeners()
     {
         seqLabelTF.addChangeListener(new SignalListener<WEmptyEvent>()

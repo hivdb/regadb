@@ -11,7 +11,7 @@ public class SelectQueryDefinitionForm extends SelectForm
     
     public SelectQueryDefinitionForm()
     {
-        super(tr("form.query.definition.select"));
+        super(tr("query.definition.form"));
         
         init();
     }

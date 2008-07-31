@@ -8,7 +8,7 @@ public class MyAccountItem extends TreeMenuNode
 {
 	public MyAccountItem(WTreeNode root)
 	{
-		super(tr("menu.myAccount.myAccount"), root);
+		super(tr("menu.myAccount"), root);
 	}
 	
 	@Override

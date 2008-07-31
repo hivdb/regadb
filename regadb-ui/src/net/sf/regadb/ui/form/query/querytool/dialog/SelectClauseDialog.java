@@ -31,7 +31,7 @@ public class SelectClauseDialog extends WDialog {
 	private String focusGroup;
 	
 	public SelectClauseDialog(QueryTreeNode owner) {
-		super(tr("form.query.querytool.dialog.add"));
+		super(tr("query.querytool.dialog.add"));
 		this.owner = owner;
 		buttonPanel = new SelectClauseButtonPanel(owner, this);
 		setButtonPanel(buttonPanel);

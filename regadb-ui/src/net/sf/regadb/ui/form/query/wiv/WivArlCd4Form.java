@@ -12,7 +12,7 @@ import net.sf.regadb.util.date.DateUtils;
 public class WivArlCd4Form extends WivIntervalQueryForm {
     
     public WivArlCd4Form(){
-        super(tr("menu.query.wiv.arl.cd4"),tr("form.query.wiv.label.arl.cd4"),tr("file.query.wiv.arl.cd4"));
+        super(tr("query.wiv.arl.cd4"),tr("query.wiv.arl.cd4.description"),tr("query.wiv.arl.cd4.file"));
         
         String query =  "select tr, pav, fu.attributeNominalValue "+
                         "from TestResult tr join tr.patient p, PatientAttributeValue pav, PatientAttributeValue fu " +

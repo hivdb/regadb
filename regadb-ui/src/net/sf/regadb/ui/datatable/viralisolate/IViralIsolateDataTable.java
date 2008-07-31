@@ -20,9 +20,9 @@ import net.sf.regadb.util.date.DateUtils;
 
 public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 {
-	private static String [] _colNames = {"dataTable.viralIsolate.colName.sampleDate","dataTable.viralIsolate.colName.sampleId", 
-		"dataTable.viralIsolate.colName.protein", "dataTable.viralIsolate.colName.hivType"};
-	private static String[] filterVarNames_ = { "viralIsolate.sampleDate", "viralIsolate.sampleId", null, null};
+	private static String [] _colNames = {"date.sample","viralIsolate.sampleid", 
+		"viralIsolate.protein", "viralIsolate.ntseq.HIVType"};
+	private static String[] filterVarNames_ = { "viralIsolate.sampleDate", "viralIsolate.sampleid", null, null};
 	
 	private IFilter[] filters_ = new IFilter[4];
 	

@@ -10,7 +10,7 @@ public class SelectPatientEvent extends SelectForm {
 	private IPatientEventDataTable datatableI_;
 	
 	public SelectPatientEvent() {
-		super(tr("form.singlePatient.selectEvent"));
+		super(tr("event.form"));
         init();
 	}
 	

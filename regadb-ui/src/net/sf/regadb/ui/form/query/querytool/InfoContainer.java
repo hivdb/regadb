@@ -29,7 +29,7 @@ public class InfoContainer extends WContainerWidget {
 		
 		FormTable infoTable = new FormTable(this);
 		
-    	nameL = new Label(tr("form.query.definition.label.name"));
+    	nameL = new Label(tr("general.name"));
     	nameTF = new TextField(form.getInteractionState(), form);
         nameTF.setMandatory(true);
         infoTable.addLineToTable(nameL, nameTF);
@@ -39,7 +39,7 @@ public class InfoContainer extends WContainerWidget {
 			}
         });
         
-        descriptionL = new Label(tr("form.query.definition.label.description"));
+        descriptionL = new Label(tr("general.description"));
         descriptionTA = new TextArea(form.getInteractionState(), form);
         descriptionTA.setMandatory(true);
         infoTable.addLineToTable(descriptionL, descriptionTA);
@@ -51,7 +51,7 @@ public class InfoContainer extends WContainerWidget {
 		
         if(form.getInteractionState() == InteractionState.Viewing)
         {
-        	creatorL = new Label(tr("form.query.definition.label.creator"));
+        	creatorL = new Label(tr("query.definition.creator"));
             creatorTF = new TextField(form.getInteractionState(), form);
             infoTable.addLineToTable(creatorL, creatorTF);
         }	

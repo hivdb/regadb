@@ -33,22 +33,22 @@ public class ExportForm extends FormWidget {
 	private ComboBox<Dataset> datasets;
 	private File exportFile;
 	
-	public ExportForm(WMessage formName, InteractionState interactionState) {
-		super(formName, interactionState);
+	public ExportForm(WMessage formName, InteractionState interactionState, boolean literal) {
+		super(formName, interactionState, literal);
 		init();
 	}
 	
 	public void init() {
 		table_ = new FormTable(this);
 		
-		Label datasetsL = new Label(tr("form.impex.export.dataset"));;
+		Label datasetsL = new Label(tr("dataset.form"));;
 		datasets = new ComboBox<Dataset>(InteractionState.Editing, this);
 		fillData();
 		table_.addLineToTable(datasetsL, datasets);
 		
 		
-		WPushButton export = new WPushButton(tr("form.impex.export.title"));
-		Label exportL = new Label(tr("form.impex.export.title"));
+		WPushButton export = new WPushButton(tr("export.form"));
+		Label exportL = new Label(tr("export.form"));
 		WWidget[] widgets = {exportL, export};
 		table_.addLineToTable(widgets);
 		

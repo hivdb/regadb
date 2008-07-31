@@ -9,7 +9,7 @@ public class LogSelectedItem extends GenericSelectedItem<File>
 {
     public LogSelectedItem(WTreeNode parent) 
     {
-        super(parent, "menu.log.logSelectedItem", "{logSelectedItem}");
+        super(parent, "log.form", "{logSelectedItem}");
     }
 
     @Override

@@ -21,10 +21,10 @@ public class ModifyClauseButtonPanel extends WButtonPanel {
 	
 	
 	private void init() {
-		WPushButton okButton = new WPushButton(tr("form.general.button.ok"));
+		WPushButton okButton = new WPushButton(tr("general.ok"));
 		addButton(okButton);
 
-		WPushButton cancelButton = new WPushButton(tr("form.general.button.cancel"));
+		WPushButton cancelButton = new WPushButton(tr("general.cancel"));
 		addButton(cancelButton);
 
 		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {

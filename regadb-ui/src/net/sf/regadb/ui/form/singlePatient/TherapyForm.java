@@ -57,9 +57,9 @@ public class TherapyForm extends FormWidget
     private EditableTable<TherapyCommercial> drugCommercialList_;
     private ICommercialDrugSelectionEditableTable iCommercialDrugSelectionEditableTable_;
     
-	public TherapyForm(InteractionState interactionState, WMessage formName, Therapy therapy)
+	public TherapyForm(InteractionState interactionState, WMessage formName, boolean literal, Therapy therapy)
 	{
-		super(formName, interactionState);
+		super(formName, interactionState, literal);
 		therapy_ = therapy;
 		
 		if(interactionState==InteractionState.Adding && therapy != null){
@@ -74,13 +74,13 @@ public class TherapyForm extends FormWidget
 	public void init()
 	{
 		//general group
-        generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("general.group.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        startDateL = new Label(tr("form.therapy.editView.startDate"));
+        startDateL = new Label(tr("date.start"));
         startDateDF = new DateField(getInteractionState(), this);
         startDateDF.setMandatory(true);
         generalGroupTable_.addLineToTable(startDateL, startDateDF);
-        stopDateL = new Label(tr("form.therapy.editView.stopDate"));
+        stopDateL = new Label(tr("date.stop"));
         stopDateDF = new DateField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
@@ -92,14 +92,14 @@ public class TherapyForm extends FormWidget
             }
         });
         
-        motivationL = new Label(tr("form.therapy.editView.motivation"));
+        motivationL = new Label(tr("therapy.motivation"));
         motivationCB = new ComboBox<TherapyMotivation>(getInteractionState(), this);
         generalGroupTable_.addLineToTable( motivationL, motivationCB);
-        commentL = new Label(tr("form.therapy.editView.comment"));
+        commentL = new Label(tr("therapy.comment"));
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
-        genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
-        commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);
+        genericGroup_ = new WGroupBox(tr("drug.generic.plural"), this);
+        commercialGroup_ = new WGroupBox(tr("drug.commercial.plural"), this);
         
         addControlButtons();
 	}
@@ -256,7 +256,7 @@ public class TherapyForm extends FormWidget
 
         if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
         {
-            MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
+            MessageBox.showWarningMessage(tr("message.therapy.duplicatedrugs"));
         }
         else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
         {
@@ -264,11 +264,11 @@ public class TherapyForm extends FormWidget
         }
         else if(startDateExists)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
+            MessageBox.showWarningMessage(tr("message.therapy.duplicate"));
         }
         else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
+            MessageBox.showWarningMessage(tr("message.therapy.enddate"));
         }
         else
         {

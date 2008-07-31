@@ -9,7 +9,7 @@ public class DatasetAccessItem extends TreeMenuNode
 {
     public DatasetAccessItem(WTreeNode root)
     {
-        super(tr("menu.dataset.access"), root);
+        super(tr("datasetaccess.form"), root);
     }
     
     @Override

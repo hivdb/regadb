@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ITestDataTable implements IDataTable<Test>
 {
-	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType" };
+	private static String [] _colNames = {"general.description", "testType.form" };
 	private static String[] filterVarNames_ = {"test.description", "test.testType.description" };
 
 	private IFilter[] filters_ = new IFilter[2];

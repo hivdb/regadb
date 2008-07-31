@@ -37,8 +37,8 @@ public class EventForm extends FormWidget {
 	private EditableTable<EventNominalValue> nominalValuesList_;
 	private IEventNominalValueDataList iNominalValuesList_;
 	
-	public EventForm(InteractionState interactionState, WMessage formName, Event event) {
-		super(formName, interactionState);
+	public EventForm(InteractionState interactionState, WMessage formName, boolean literal, Event event) {
+		super(formName, interactionState, literal);
 		
 		event_ = event;
 		
@@ -47,15 +47,15 @@ public class EventForm extends FormWidget {
 	}
 	
 	private void init() {
-		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("general.group.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		lblName = new Label(tr("form.event.edit.name"));
+		lblName = new Label(tr("general.name"));
         txtName = new TextField(getInteractionState(), this);
         txtName.setMandatory(true);
         mainFrameTable_.addLineToTable(lblName, txtName);
 		
-        lblType = new Label(tr("event.form.label.type"));
+        lblType = new Label(tr("general.type"));
         cmbValueType = new ComboBox<ValueType>(getInteractionState(), this);
         
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -73,7 +73,7 @@ public class EventForm extends FormWidget {
         
         mainFrameTable_.addLineToTable(lblType, cmbValueType);
         
-        nominalValuesGroup_= new WGroupBox(tr("event.form.frame.nominal"), this);
+        nominalValuesGroup_= new WGroupBox(tr("general.nominalValues"), this);
 		
 		addControlButtons();
 	}
@@ -152,7 +152,7 @@ public class EventForm extends FormWidget {
     	} catch(Exception e) {
     		t.clear();
     		t.rollback();
-    		return tr("form.delete.restriction");
+    		return tr("message.general.inuse");
     	}
 	}
 	

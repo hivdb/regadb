@@ -12,8 +12,8 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class ISettingsUserDataTable implements IDataTable<SettingsUser>
 {
-    private static String [] _colNames = {"dataTable.settingsUser.colName.uid", "dataTable.settingsUser.colName.firstname","dataTable.settingsUser.colName.lastname", 
-        "dataTable.settingsUser.colName.email", "dataTable.settingsUser.colName.admin", "dataTable.settingsUser.colName.enabled"};
+    private static String [] _colNames = {"account.uid", "account.firstname","account.lastname", 
+        "account.email", "account.administrator", "general.enabled"};
     
     private static String[] filterVarNames_ = { "settingsUser.uid", "settingsUser.firstName", "settingsUser.lastName", "settingsUser.email", "settingsUser.admin", "settingsUser.enabled"};
         
