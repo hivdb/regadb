@@ -18,22 +18,22 @@ public class ImportFormAdd extends FormWidget {
 	private ComboBox<Dataset> datasetCB;
 	private FileUpload fileU;
 	
-	public ImportFormAdd(WMessage formName, InteractionState interactionState, boolean literal) {
-		super(formName, interactionState, literal);
+	public ImportFormAdd(WMessage formName, InteractionState interactionState) {
+		super(formName, interactionState);
 		init();
 	}
 	
 	private void init() {
-		WGroupBox add = new WGroupBox(tr("general.upload"), this);
+		WGroupBox add = new WGroupBox(tr("form.impex.import.addupload"), this);
 
 		addFileTable = new FormTable(add);
 
-		Label fileL = new Label(tr("import.file"));
+		Label fileL = new Label(tr("form.impex.import.select"));
 		fileU = new FileUpload(getInteractionState(), this);
 		fileU.setMandatory(true);
 		addFileTable.addLineToTable(fileL, fileU);
 		
-		Label datasetL = new Label(tr("dataset.form"));
+		Label datasetL = new Label(tr("form.impex.import.dataset"));
 		datasetCB = new ComboBox<Dataset>(getInteractionState(), this);
 		datasetCB.setMandatory(true);
 		addFileTable.addLineToTable(datasetL, datasetCB);

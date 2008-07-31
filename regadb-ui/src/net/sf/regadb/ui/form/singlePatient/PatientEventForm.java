@@ -38,8 +38,8 @@ public class PatientEventForm extends FormWidget
 	private ComboBox<Event> cmbEvents;
 	private DateField startDate, endDate;
 	
-	public PatientEventForm(InteractionState state, WMessage formName, boolean literal, PatientEventValue patientEvent) {
-		super(formName, state, literal);
+	public PatientEventForm(InteractionState state, WMessage formName, PatientEventValue patientEvent) {
+		super(formName, state);
 		
 		patientEvent_ = patientEvent;
 		
@@ -49,19 +49,19 @@ public class PatientEventForm extends FormWidget
 	
 	private void init()
 	{
-		mainFrameGroup_= new WGroupBox(tr("general.group.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		lblStartDate = new Label(tr("date.start"));
+		lblStartDate = new Label(tr("form.singlePatient.patientEvent.label.startDate"));
 		startDate = new DateField(getInteractionState(), this);
 		startDate.setMandatory(true);
 		mainFrameTable_.addLineToTable(lblStartDate, startDate);
 		
-		lblEndDate = new Label(tr("date.end"));
+		lblEndDate = new Label(tr("form.singlePatient.patientEvent.label.endDate"));
 		endDate = new DateField(getInteractionState(), this);
 		mainFrameTable_.addLineToTable(lblEndDate, endDate);
 		
-		lblEvent = new Label(tr("event.form"));
+		lblEvent = new Label(tr("form.singlePatient.patientEvent.label.event"));
 		cmbEvents = new ComboBox<Event>(getInteractionState(), this);
         cmbEvents.setMandatory(true);
         mainFrameTable_.addLineToTable(lblEvent, cmbEvents);
@@ -88,7 +88,7 @@ public class PatientEventForm extends FormWidget
         t.commit();
 		
         int row = mainFrameTable_.numRows();
-		lblValue = new Label(tr("event.value"));
+		lblValue = new Label(tr("form.singlePatient.patientEvent.label.value"));
 		lblValue.setLabelUIMandatory(this);
 		valueContainer = new WContainerWidget();
 		
@@ -189,7 +189,7 @@ public class PatientEventForm extends FormWidget
 		
 		if( endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
         {
-            MessageBox.showWarningMessage(tr("message.therapy.enddate"));
+            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
         }
         else
         {

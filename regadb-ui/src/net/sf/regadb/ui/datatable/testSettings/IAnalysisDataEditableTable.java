@@ -23,7 +23,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     private FormWidget form_;
     private Analysis analysis_;
     private Transaction transaction_;
-    private static final String[] headers = {"general.name", "test.analysis.content"};
+    private static final String[] headers = {"editableTable.analysis.analysisData.colName.name", "editableTable.analysis.analysisData.colName.file"};
     
     private static final int[] colWidths = {40,60};
     private ArrayList<String> inputFileNames_ = new ArrayList<String>();

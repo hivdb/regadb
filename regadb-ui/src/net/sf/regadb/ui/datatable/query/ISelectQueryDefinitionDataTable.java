@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 public abstract class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
 {
 	
-    private static String [] _colNames = {"general.name", "general.description", "query.definition.creator"};
+    private static String [] _colNames = {"dataTable.queryDefinition.colName.name", "dataTable.queryDefinition.colName.description", "dataTable.queryDefinition.colName.uid"};
     
     private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description", "queryDefinition.settingsUser.uid"};
         

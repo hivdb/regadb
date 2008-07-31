@@ -43,18 +43,18 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private boolean controlsEnabled;
     
 	
-	public QueryToolForm(WMessage title, InteractionState istate, boolean literal) {
-		this(title, istate, literal, new QueryDefinition(StandardObjects.getQueryToolQueryType()));
+	public QueryToolForm(WMessage title, InteractionState istate) {
+		this(title, istate, new QueryDefinition(StandardObjects.getQueryToolQueryType()));
 	}
     
-	public QueryToolForm(WMessage title, InteractionState istate, boolean literal, QueryDefinition query) {
-		super(title, istate, literal);
+	public QueryToolForm(WMessage title, InteractionState istate, QueryDefinition query) {
+		super(title, istate);
 		init(query);
 	}
 	
     public WMessage leaveForm() {
         if(isEditable() && queryTreeTab.getQueryEditor().isDirty()) {
-            return tr("message.general.stillEditing");
+            return tr("form.warning.stillEditing");
         } else {
             return null;
         }
@@ -74,11 +74,11 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         infoTab = new InfoContainer(this, this);
         statusbar = new QueryStatusBar(this);
 
-        queryGroup_ = new WGroupBox(tr("query.form"), this);
+        queryGroup_ = new WGroupBox(tr("form.query.querytool.group.query"), this);
         tabs = new WTabbedPane(queryGroup_);
-        tabs.addTab(tr("query.form"), queryTreeTab);
-        tabs.addTab(tr("query.querytool.group.fields"), selectionTab);
-        tabs.addTab(tr("query.group.info"), infoTab);
+        tabs.addTab(tr("form.query.querytool.group.query"), queryTreeTab);
+        tabs.addTab(tr("form.query.querytool.group.fields"), selectionTab);
+        tabs.addTab(tr("form.query.querytool.group.info"), infoTab);
         tabs.setStatusBar(statusbar);
         
 		runGroup_ = new RunGroupBox(queryTreeTab.getQueryEditor(), this);

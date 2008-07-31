@@ -38,22 +38,22 @@ import org.xml.sax.SAXException;
 
 public class UpdateForm extends FormWidget
 {
-    private WMessage progressText_ = tr("message.update.running");
+    private WMessage progressText_ = tr("form.update_central_server.running");
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
     
-    private WContainerWidget testGroup_ = new WGroupBox(tr("test.plural"));
-    private WContainerWidget attributesGroup_ = new WGroupBox(tr("attribute.plural"));
-    private WContainerWidget eventsGroup_ = new WGroupBox(tr("event.plural"));
-    private WContainerWidget drugsGroup_ = new WGroupBox(tr("drug.plural"));
+    private WContainerWidget testGroup_ = new WGroupBox(tr("form.update_central_server.test"));
+    private WContainerWidget attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
+    private WContainerWidget eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
+    private WContainerWidget drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
 
-    private WMessage drugClassTitle_ = tr("drug.class.plural");
-    private WMessage drugGenericsTitle_ = tr("drug.generic.plural");
-    private WMessage drugCommercialsTitle_ = tr("drug.commercial.plural");
+    private WMessage drugClassTitle_ = tr("form.admin.update_central_server.drugClass.title");
+    private WMessage drugGenericsTitle_ = tr("form.admin.update_central_server.drugGenerics.title");
+    private WMessage drugCommercialsTitle_ = tr("form.admin.update_central_server.drugCommercials.title");
 
     
-    public UpdateForm(WMessage formName, InteractionState interactionState, boolean literal)
+    public UpdateForm(WMessage formName, InteractionState interactionState)
     {
-        super(formName, interactionState, literal);
+        super(formName, interactionState);
         init();
     }
     

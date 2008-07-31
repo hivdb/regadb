@@ -12,7 +12,7 @@ public class SelectTestForm  extends SelectForm
 
 	public SelectTestForm() 
 	{
-		super(tr("test.form"));
+		super(tr("form.testSetting.test.selectTestForm"));
 		init();
 	}
 

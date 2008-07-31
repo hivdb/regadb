@@ -29,15 +29,15 @@ public class FileUpload extends WContainerWidget implements IFormField{
             public void notify(WEmptyEvent a) {
                 link.setHidden(uploadFile.clientFileName()==null);
                 uploadButton.setEnabled(true);
-                uploadButton.setText(tr("general.upload"));
+                uploadButton.setText(tr("form.general.button.upload"));
                 setAnchor(lt(uploadFile.clientFileName()), uploadFile.spoolFileName());
             }
         });
         
-        uploadButton = new WPushButton(tr("general.upload"), this);
+        uploadButton = new WPushButton(tr("form.general.button.upload"), this);
         uploadButton.clicked.addListener(new SignalListener<WMouseEvent>() {
             public void notify(WMouseEvent a) {
-                uploadButton.setText(tr("general.uploading"));
+                uploadButton.setText(tr("form.general.button.uploading"));
             	uploadFile.upload();
             }
         });

@@ -8,7 +8,7 @@ public class RegisteredUserSelectedItem extends GenericSelectedItem<SettingsUser
 {
     public RegisteredUserSelectedItem(WTreeNode parent) 
     {
-        super(parent, "account.select.registered", "{registeredUserSelectedItem}");
+        super(parent, "menu.administrator.registeredUserSelectedItem", "{registeredUserSelectedItem}");
     }
 
     @Override

@@ -61,10 +61,10 @@ public class QueryToolRunnable implements Runnable {
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
-		errors.put("write_error", new WMessage("message.general.ioerror").value());
-		errors.put("memory_error", new WMessage("message.query.toomanyresults").value());
-		errors.put("sql_error", new WMessage("message.query.sqlerror").value());
-		errors.put("type_error", new WMessage("message.query.typeerror").value());
+		errors.put("write_error", new WMessage("form.query.querytool.label.status.failed.writeerror").value());
+		errors.put("memory_error", new WMessage("form.query.querytool.label.status.failed.memoryerror").value());
+		errors.put("sql_error", new WMessage("form.query.querytool.label.status.failed.sqlerror").value());
+		errors.put("type_error", new WMessage("form.query.querytool.label.status.failed.typeerror").value());
 	}
 	
 	public boolean isDone() {
@@ -77,18 +77,18 @@ public class QueryToolRunnable implements Runnable {
 	
 	public WMessage getStatusText() {
 		if (status == Status.RUNNING) {
-			return new WMessage(new WMessage("general.status.running").value() + statusMsg, true);			
+			return new WMessage(new WMessage("form.query.querytool.label.status.running").value() + statusMsg, true);			
 		}
 		else if (status == Status.FINISHED) {
-			return new WMessage(new WMessage("query.querytool.downloadresult").value() + statusMsg, true);			
+			return new WMessage(new WMessage("form.query.querytool.link.result").value() + statusMsg, true);			
 		}
 		else if (status == Status.FAILED) {
-			return new WMessage(new WMessage("general.status.failed").value() + statusMsg, true);			
+			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + statusMsg, true);			
 		}
 		else if (status == Status.CANCELED) {
-			return new WMessage(new WMessage("general.status.canceling").value() + statusMsg, true);			
+			return new WMessage(new WMessage("form.query.querytool.label.status.canceling").value() + statusMsg, true);			
 		}
-		return new WMessage("general.status.initializing");
+		return new WMessage("form.query.querytool.label.status.initial");
 	}
 
 	public void run() {

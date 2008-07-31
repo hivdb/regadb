@@ -11,7 +11,7 @@ import net.sf.regadb.util.date.DateUtils;
 
 public class WivArlViralLoadForm extends WivIntervalQueryForm {
     public WivArlViralLoadForm(){
-        super(tr("query.wiv.arl.viralLoad"),tr("query.wiv.arl.viralLoad.description"),tr("query.wiv.arl.viralLoad.file"));
+        super(tr("menu.query.wiv.arl.viralLoad"),tr("form.query.wiv.label.arl.viralLoad"),tr("file.query.wiv.arl.viralLoad"));
         
         String query =  "select tr, pav, fu.attributeNominalValue "+
                         "from TestResult tr join tr.patient p, PatientAttributeValue pav, PatientAttributeValue fu " +

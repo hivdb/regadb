@@ -11,7 +11,7 @@ import net.sf.witty.wt.WWidget;
 
 public class IEventNominalValueDataList implements IEditableTable <EventNominalValue>{
 	private FormWidget form_;
-    private static final String [] headers_ = {"general.name"};
+    private static final String [] headers_ = {"editableTable.eventNominalValue.name"};
     private static final int[] colWidths = {100};
     
     private Event event_;

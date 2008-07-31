@@ -71,8 +71,8 @@ public class MessageBox extends WModalFloating
     
     public static MessageBox showWarningMessage(WMessage message)
     {
-        final MessageBox mb = new MessageBox(tr("message.general.warning"), message, new WImage("pics/dialog-warning.png"));
-        WPushButton ok = new WPushButton(tr("general.ok"));
+        final MessageBox mb = new MessageBox(tr("msg.warning"), message, new WImage("pics/dialog-warning.png"));
+        WPushButton ok = new WPushButton(tr("msg.warning.button.ok"));
         ok.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a) 

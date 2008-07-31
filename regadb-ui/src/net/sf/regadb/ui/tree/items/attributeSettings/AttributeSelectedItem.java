@@ -8,7 +8,7 @@ public class AttributeSelectedItem extends GenericSelectedItem<Attribute>
 {
     public AttributeSelectedItem(WTreeNode parent)
     {
-        super(parent, "attribute.form", "{attributeSelectedItem}");
+        super(parent, "menu.attributeSettings.attributeSelectedItem", "{attributeSelectedItem}");
     }
 
     @Override

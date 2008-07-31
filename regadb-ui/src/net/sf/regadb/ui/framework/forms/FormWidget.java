@@ -22,7 +22,6 @@ import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WMouseEvent;
 import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.i8n.WArgMessage;
 import net.sf.witty.wt.i8n.WMessage;
 
 public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
@@ -34,41 +33,17 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     private InteractionState interactionState_;
     
     //control buttons
-    private WPushButton _okButton = new WPushButton(tr("general.ok"));
-    private WPushButton _cancelButton = new WPushButton(tr("general.cancel"));
-    private WPushButton _helpButton = new WPushButton(tr("general.help"));
-    private WPushButton _deleteButton = new WPushButton(tr("general.delete"));
+    private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
+    private WPushButton _cancelButton = new WPushButton(tr("form.general.button.cancel"));
+    private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
+    private WPushButton _deleteButton = new WPushButton(tr("form.general.button.delete"));
     
-    public FormWidget(WMessage formName, InteractionState interactionState, boolean literal)
+    public FormWidget(WMessage formName, InteractionState interactionState)
 	{
-        super(parseFormName(formName, interactionState, literal));
+        super(formName);
         interactionState_ = interactionState;
         formValidation_.init(this);
 	}
-    
-    private static WMessage parseFormName(WMessage formName, InteractionState interactionState, boolean literal) {
-    	if (literal) {
-    		return formName;
-    	}
-    	
-    	WArgMessage msg = null;
-    	if (interactionState == InteractionState.Adding) {
-    		msg = new WArgMessage("general.form.add");
-    	}
-    	else if (interactionState == InteractionState.Deleting) {
-    		msg = new WArgMessage("general.form.delete");
-    	}
-    	else if (interactionState == InteractionState.Editing) {
-    		msg = new WArgMessage("general.form.edit");
-    	}
-    	else if (interactionState == InteractionState.Viewing) {
-    		msg = new WArgMessage("general.form.view");
-    	}
-    	
-    	msg.addArgument("{item}", formName.value());
-    	
-    	return msg;
-    }
     
     public String getNulled(String text)
     {
@@ -114,7 +89,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
             {
                 public void notify(WMouseEvent a) 
                 {
-                    final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("message.general.confirmdelete"));
+                    final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("msg.warning.delete"));
                     cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
                     {
                         public void notify(WMouseEvent a) 
@@ -263,7 +238,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     public WMessage leaveForm() {
         if(isEditable()) {
-            return tr("message.general.stillEditing");
+            return tr("form.warning.stillEditing");
         } else {
             return null;
         }

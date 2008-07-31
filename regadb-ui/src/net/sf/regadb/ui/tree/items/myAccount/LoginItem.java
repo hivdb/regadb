@@ -10,7 +10,7 @@ public class LoginItem extends TreeMenuNode
 {
 	public LoginItem(WTreeNode root)
 	{
-		super(tr("account.login"), root);
+		super(tr("menu.myAccount.login"), root);
 	}
 	
 	@Override

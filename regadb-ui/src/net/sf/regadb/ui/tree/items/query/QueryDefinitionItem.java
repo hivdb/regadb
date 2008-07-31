@@ -9,7 +9,7 @@ public class QueryDefinitionItem extends TreeMenuNode
 {
     public QueryDefinitionItem(WTreeNode root)
     {
-        super(tr("query.definition.plural"), root);
+        super(tr("menu.query.definition"), root);
     }
     
     @Override

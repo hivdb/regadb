@@ -10,7 +10,7 @@ public class PatientSelectItem extends TreeMenuNode
 {
 	public PatientSelectItem(WTreeNode root)
 	{
-		super(tr("general.select"), root);
+		super(tr("menu.singlePatient.patientSelectItem"), root);
 	}
 
 	@Override

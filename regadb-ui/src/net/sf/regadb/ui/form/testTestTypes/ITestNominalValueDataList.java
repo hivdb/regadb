@@ -12,7 +12,7 @@ import net.sf.witty.wt.WWidget;
 public class ITestNominalValueDataList implements IEditableTable <TestNominalValue>
 {
 	private FormWidget form_;
-    private static final String [] headers_ = {"general.name"};
+    private static final String [] headers_ = {"editableTable.testNominvalValue.colName.name"};
     private static final int[] colWidths = {100};
     
     private TestType testType_;

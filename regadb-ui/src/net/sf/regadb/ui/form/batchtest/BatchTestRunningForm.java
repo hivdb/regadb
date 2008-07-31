@@ -20,8 +20,8 @@ public class BatchTestRunningForm extends FormWidget {
 	private SimpleTable table;
 	private WTimer timer = new WTimer();
 	
-	public BatchTestRunningForm(WMessage formName, InteractionState interactionState, boolean literal) {
-		super(formName, interactionState, literal);
+	public BatchTestRunningForm(WMessage formName, InteractionState interactionState) {
+		super(formName, interactionState);
 		timer.setInterval(1000);
 		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
 			public void notify(WEmptyEvent a) {
@@ -33,16 +33,16 @@ public class BatchTestRunningForm extends FormWidget {
 	}
 	
 	public void init() {
-		WGroupBox runGroup = new WGroupBox(tr("batch.select"), this);
+		WGroupBox runGroup = new WGroupBox(tr("form.batchtest.running.title"), this);
 		table = new SimpleTable(runGroup);
 		addControlButtons();
 	}
 	
 	public void refreshRunning() {
 		table.clear();
-		table.setHeaders(tr("test.form"),
-				tr("general.status"),
-				tr("general.status.progress"));
+		table.setHeaders(tr("form.batchtest.running.head.test"),
+				tr("form.batchtest.running.head.status"),
+				tr("form.batchtest.running.head.progress"));
 		
 		table.setWidths(60,20,20);
 		table.elementAt(0, 3).setStyleClass("column-action");
@@ -62,27 +62,27 @@ public class BatchTestRunningForm extends FormWidget {
 			table.elementAt(row, 3).setStyleClass("column-action");
 			
 			if (run.getStatus() == BatchTestStatus.RUNNING) {
-				final WPushButton cancelButton = new WPushButton(tr("general.cancel"), table.elementAt(row, 3));
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.elementAt(row, 3));
 				cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 					public void notify(WMouseEvent a) {
 						if (run.isRunning()) {
 							run.cancel();
 							cancelButton.disable();
-							cancelButton.setText(tr("general.status.canceling"));
+							cancelButton.setText(tr("form.batchtest.running.control.canceling"));
 						}
 					}
 				});
 			}
 			
 			if (run.getStatus() == BatchTestStatus.CANCELING) {
-				final WPushButton cancelButton = new WPushButton(tr("general.status.canceling"), table.elementAt(row, 3));
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.canceling"), table.elementAt(row, 3));
 				cancelButton.disable();
 			}
 			
 			if (run.getStatus() == BatchTestStatus.DONE ||
 					run.getStatus() == BatchTestStatus.FAILED ||
 					run.getStatus() == BatchTestStatus.CANCELED) {
-				WPushButton clearButton = new WPushButton(tr("general.clear"), table.elementAt(row, 3));
+				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.elementAt(row, 3));
 				clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 					public void notify(WMouseEvent a) {
 						int row = runningList.indexOf(run);

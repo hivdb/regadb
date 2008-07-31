@@ -9,7 +9,7 @@ public class SelectQueryToolQueryForm extends SelectForm {
     private ISelectQueryDefinitionDataTable dataTableI_;
 
 	public SelectQueryToolQueryForm() {
-		super(tr("query.form"));
+		super(tr("form.query.querytool.select"));
 		init();
 	}
 	

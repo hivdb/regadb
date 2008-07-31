@@ -8,7 +8,7 @@ public class QueryDefinitionRunSelectedItem extends GenericSelectedItem<QueryDef
 {
     public QueryDefinitionRunSelectedItem(WTreeNode parent)
     {
-        super(parent, "query.definition.run.form", "{queryDefinitionRunSelectedItem}");
+        super(parent, "menu.query.definition.run.selectedItem", "{queryDefinitionRunSelectedItem}");
     }
 
     @Override

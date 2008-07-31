@@ -43,9 +43,9 @@ public class TestTypeForm extends FormWidget
     private EditableTable<TestNominalValue> nominalValuesList_;
     private ITestNominalValueDataList iNominalValuesList_;
 	
-	public TestTypeForm(InteractionState interactionState, WMessage formName, boolean literal, TestType testType ) 
+	public TestTypeForm(InteractionState interactionState, WMessage formName, TestType testType ) 
 	{
-		super(formName, interactionState, literal);
+		super(formName, interactionState);
 		
 		testType_ = testType;
 		
@@ -55,17 +55,17 @@ public class TestTypeForm extends FormWidget
 
 	private void init() 
 	{
-		mainFrameGroup_= new WGroupBox(tr("general.group.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("form.testSettings.testType.editView.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
-		testTypeL = new Label(tr("testType.form"));
+		testTypeL = new Label(tr("form.testSettings.testType.editView.testType"));
 		testTypeTF = new TextField(getInteractionState()==InteractionState.Editing?InteractionState.Viewing:getInteractionState(), this);
 	    testTypeTF.setMandatory(true);
 	    mainFrameTable_.addLineToTable(testTypeL, testTypeTF);
-	    valueTypeL = new Label(tr("general.valueType"));
+	    valueTypeL = new Label(tr("form.testSettings.testType.editView.valueType"));
         valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
         mainFrameTable_.addLineToTable(valueTypeL, valueTypeCB);
-	    testObjectL=new Label(tr("test.object"));
+	    testObjectL=new Label(tr("form.testSettings.testType.editView.testobject"));
 	    testObjectCB= new ComboBox<TestObject>(getInteractionState(),this);
 	    testObjectCB.setMandatory(true);
 	    mainFrameTable_.addLineToTable(testObjectL, testObjectCB);
@@ -86,7 +86,7 @@ public class TestTypeForm extends FormWidget
         valueTypeCB.sort();
         testObjectCB.selectIndex(0);
         
-        nominalValuesGroup_ = new WGroupBox(tr("general.nominalValues"), this);
+        nominalValuesGroup_ = new WGroupBox(tr("form.testSettings.testType.editView.nominalValues"), this);
                
         addControlButtons();
 	}
@@ -226,7 +226,7 @@ public class TestTypeForm extends FormWidget
         	t.clear();
         	t.rollback();
         	
-        	return tr("message.general.inuse");
+        	return tr("form.delete.restriction");
         }
     }
 

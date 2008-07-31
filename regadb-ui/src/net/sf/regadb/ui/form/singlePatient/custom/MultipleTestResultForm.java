@@ -41,8 +41,8 @@ public class MultipleTestResultForm extends FormWidget {
     private List<Test> tests_;
     private ActionItem lastItem_;
 
-    public MultipleTestResultForm(WMessage name, InteractionState state, boolean literal, List<String> tests, ActionItem lastItem) {
-        super(name, state, literal);
+    public MultipleTestResultForm(WMessage name, InteractionState state, List<String> tests, ActionItem lastItem) {
+        super(name, state);
         
         tests_ = new ArrayList<Test>();
         
@@ -60,13 +60,13 @@ public class MultipleTestResultForm extends FormWidget {
     }
     
     private void init() {
-        generalGroupBox_ = new WGroupBox(tr("general.group.general"), this);
+        generalGroupBox_ = new WGroupBox(tr("form.multipleTestResults.general"), this);
         generalGroupTable_ = new FormTable(generalGroupBox_);
-        dateL_ = new Label(tr("date.contact"));
+        dateL_ = new Label(tr("form.multipleTestResults.date"));
         dateTF_ = new DateField(getInteractionState(), this);
         dateTF_.setMandatory(true);
         generalGroupTable_.addLineToTable(dateL_, dateTF_);
-        sampleIdL_ = new Label(tr("viralIsolate.sampleid"));
+        sampleIdL_ = new Label(tr("form.multipleTestResults.sampleId"));
         sampleIdTF_ = new TextField(getInteractionState(), this, FieldType.ALFANUMERIC);
         generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         
@@ -162,7 +162,7 @@ public class MultipleTestResultForm extends FormWidget {
         }
         
         if(duplicateSampleId) {
-	        final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("message.multipleTestResults.duplicateSampleIdWarning"));
+	        final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.multipleTestResults.duplicateSampleIdWarning"));
 	        cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
 	                {
 	            public void notify(WMouseEvent a) 

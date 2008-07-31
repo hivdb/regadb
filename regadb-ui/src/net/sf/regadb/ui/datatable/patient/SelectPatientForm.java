@@ -13,7 +13,7 @@ public class SelectPatientForm extends SelectForm
 	
 	public SelectPatientForm()
 	{
-		super(tr("patient.form"));
+		super(tr("form.patient.selectPatientForm"));
         init();
 	}
 

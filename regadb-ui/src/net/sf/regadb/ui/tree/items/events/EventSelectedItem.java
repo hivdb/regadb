@@ -9,7 +9,7 @@ public class EventSelectedItem extends GenericSelectedItem<Event>
 {
 	public EventSelectedItem(WTreeNode parent)
 	{
-		super(parent, "event.form", "{eventName}");
+		super(parent, "menu.event.selected", "{eventName}");
 	}
 	
 	@Override

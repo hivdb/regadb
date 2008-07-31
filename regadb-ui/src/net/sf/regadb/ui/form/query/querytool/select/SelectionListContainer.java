@@ -55,11 +55,11 @@ public class SelectionListContainer extends WContainerWidget{
 		if (selections.isEmpty()) {
 			WText warning;
 			if (mainForm.getSavable().isLoaded()) {
-				warning = new WText(new WMessage("message.query.querytool.nofields"));
+				warning = new WText(new WMessage("form.query.querytool.message.nofields"));
 				warning.setStyleClass("warning");
 			}
 			else {
-				warning = new WText(new WMessage("message.query.querytool.selectionunverifiable"));
+				warning = new WText(new WMessage("form.query.querytool.message.selectionunverifiable"));
 				warning.setStyleClass("warning");
 			}
 			rootSelectorPanel.addWidget(warning);

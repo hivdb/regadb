@@ -21,9 +21,9 @@ public class AttributeGroupForm extends FormWidget
     private Label nameL;
     private TextField nameTF;
     
-    public AttributeGroupForm(InteractionState interactionState, WMessage formName, boolean literal, AttributeGroup attributeGroup)
+    public AttributeGroupForm(InteractionState interactionState, WMessage formName, AttributeGroup attributeGroup)
     {
-        super(formName, interactionState, literal);
+        super(formName, interactionState);
         attributeGroup_ = attributeGroup;
         
         init();
@@ -33,9 +33,9 @@ public class AttributeGroupForm extends FormWidget
     
     private void init() 
     {
-        generalGroup_ = new WGroupBox(tr("general.group.general"), this);
+        generalGroup_ = new WGroupBox(tr("form.attributeSettings.attributeGroup.editView.general"), this);
         generalGroupTable_= new FormTable(generalGroup_);
-        nameL = new Label(tr("general.name"));
+        nameL = new Label(tr("form.attributeSettings.attributeGroup.editView.groupName"));
         nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
         generalGroupTable_.addLineToTable(nameL, nameTF);
@@ -112,7 +112,7 @@ public class AttributeGroupForm extends FormWidget
         	t.clear();
         	t.rollback();
         	
-        	return tr("message.general.inuse");
+        	return tr("form.delete.restriction");
         }
         
     }

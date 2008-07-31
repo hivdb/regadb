@@ -28,7 +28,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     private Set<DatasetAccess> currentUserDatasetAccess;
     private SettingsUser currentUser_;
     
-    private static final String [] headers_ = {"dataset.form", "datasetaccess.rights", "datasetaccess.provider"};
+    private static final String [] headers_ = {"editableTable.datasetAccess.colName.dataset", "editableTable.datasetAccess.colName.rights", "editableTable.datasetAccess.colName.providerUser"};
     private static final int[] colWidths = {40,30,30};
     
     public IDatasetAccessSelectionEditableTable(FormWidget form, SettingsUser user)

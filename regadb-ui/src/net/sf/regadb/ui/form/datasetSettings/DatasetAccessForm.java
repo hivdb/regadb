@@ -24,9 +24,9 @@ public class DatasetAccessForm extends FormWidget
     private EditableTable<DatasetAccess> datasetList_;
     private IDatasetAccessSelectionEditableTable iDatasetAccessSelectionEditableTable_;
     
-    public DatasetAccessForm(InteractionState interactionState, WMessage formName, boolean literal, SettingsUser user)
+    public DatasetAccessForm(InteractionState interactionState, WMessage formName, SettingsUser user)
     {
-        super(formName, interactionState, literal);
+        super(formName, interactionState);
         user_ = user;
         
         init();
@@ -36,7 +36,7 @@ public class DatasetAccessForm extends FormWidget
     
     public void init()
     {
-        datasetGroup_ = new WGroupBox(tr("general.group.general"), this);
+        datasetGroup_ = new WGroupBox(tr("form.dataset.editView.general"), this);
         
         addControlButtons();
     }
@@ -68,7 +68,7 @@ public class DatasetAccessForm extends FormWidget
         }
         if(widgets.size() != datasets.size())
         {
-            MessageBox.showWarningMessage(tr("message.dataset.duplicate"));
+            MessageBox.showWarningMessage(tr("form.dataset.access.edit.warning"));
         }
         else
         {

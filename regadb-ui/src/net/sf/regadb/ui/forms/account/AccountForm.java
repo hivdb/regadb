@@ -71,9 +71,9 @@ public class AccountForm extends FormWidget
     private Label chartMutationL;
     private ComboBox<Test> chartMutationCB;
     
-    public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser, boolean literal)
+    public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
-        super(formName, interactionState, literal);
+        super(formName, interactionState);
         administrator_ = admin;
         selectNode_ = selectNode;
         expandNode_ = expandNode;
@@ -86,13 +86,13 @@ public class AccountForm extends FormWidget
     public void init()
     {
         //Account fields
-        accountGroup_ = new WGroupBox(tr("acount.group.general"));
+        accountGroup_ = new WGroupBox(tr("form.account.editView.general"));
         loginGroupTable = new FormTable(accountGroup_);
         
         //UserId
         if(getInteractionState()!=InteractionState.Adding)
         {
-            uidL = new Label(tr("account.uid"));
+            uidL = new Label(tr("form.settings.user.label.uid"));
             uidTF = new TextField(  su_!=null&&
                                     su_.getEnabled()==null&&
                                     getInteractionState()!=InteractionState.Viewing
@@ -100,7 +100,7 @@ public class AccountForm extends FormWidget
             uidTF.setMandatory(true);
             loginGroupTable.addLineToTable(uidL, uidTF);
             
-            datasetL = new Label(tr("dataset.form"));
+            datasetL = new Label(tr("form.settings.user.label.dataset"));
             datasetCB= new ComboBox<Dataset>(su_!=null&&
                                     su_.getEnabled()==null&&
                                     getInteractionState()!=InteractionState.Viewing
@@ -110,19 +110,19 @@ public class AccountForm extends FormWidget
         }
         
         //First name
-        firstNameL = new Label(tr("account.firstname"));
+        firstNameL = new Label(tr("form.settings.user.label.firstname"));
         firstNameTF = new TextField(getInteractionState(), this);
         firstNameTF.setMandatory(true);
         loginGroupTable.addLineToTable(firstNameL, firstNameTF);
         
         //Last name
-        lastNameL = new Label(tr("account.lastname"));
+        lastNameL = new Label(tr("form.settings.user.label.lastname"));
         lastNameTF = new TextField(getInteractionState(), this);
         lastNameTF.setMandatory(true);
         loginGroupTable.addLineToTable(lastNameL, lastNameTF);
         
         //E-mail address
-        emailL = new Label(tr("account.email"));
+        emailL = new Label(tr("form.settings.user.label.email"));
         emailTF = new TextField(getInteractionState(), this, FieldType.EMAIL);
         emailTF.setMandatory(true);
         loginGroupTable.addLineToTable(emailL, emailTF);
@@ -130,12 +130,12 @@ public class AccountForm extends FormWidget
         //New password & retype password
         if(getInteractionState()==InteractionState.Adding)
         {
-            newPasswordL = new Label(tr("account.password"));
+            newPasswordL = new Label(tr("form.settings.user.label.password"));
             newPasswordTF = new TextField(getInteractionState(), this);
             newPasswordTF.setMandatory(true);
             newPasswordTF.setEchomode(WLineEditEchoMode.Password);
             loginGroupTable.addLineToTable(newPasswordL, newPasswordTF);
-            retypePasswordL = new Label(tr("account.password.retype"));
+            retypePasswordL = new Label(tr("form.settings.user.label.password.retype"));
             retypePasswordTF = new TextField(getInteractionState(), this);
             retypePasswordTF.setMandatory(true);
             retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
@@ -145,10 +145,10 @@ public class AccountForm extends FormWidget
         //Administrator & enabled
         if(administrator_)
         {
-            administratorL = new Label(tr("account.administrator"));
+            administratorL = new Label(tr("form.settings.user.label.administrator"));
             administratorCB = new CheckBox(getInteractionState(), this);
             loginGroupTable.addLineToTable(administratorL, administratorCB);
-            registeredL = new Label(tr("general.enabled"));
+            registeredL = new Label(tr("form.settings.user.label.enabled"));
             registeredCB = new CheckBox(getInteractionState(), this);
             loginGroupTable.addLineToTable(registeredL, registeredCB);
         }
@@ -156,15 +156,15 @@ public class AccountForm extends FormWidget
         if(getInteractionState()!=InteractionState.Adding)
         {
             //Attribute fields
-            attributeGroup_ = new WGroupBox(tr("account.group.attributes"));
+            attributeGroup_ = new WGroupBox(tr("form.account.editView.attributes"));
             attributeGroupTable = new FormTable(attributeGroup_);
-            chartWidthL = new Label(tr("chart.width"));
+            chartWidthL = new Label(tr("form.settings.user.label.chartWidth"));
             chartWidthTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
             attributeGroupTable.addLineToTable(chartWidthL, chartWidthTF);
-            chartHeightL = new Label(tr("chart.height"));
+            chartHeightL = new Label(tr("form.settings.user.label.chartHeight"));
             chartHeightTF = new TextField(getInteractionState(), this, FieldType.INTEGER);
             attributeGroupTable.addLineToTable(chartHeightL, chartHeightTF);
-            chartMutationL = new Label(tr("chart.mutation"));
+            chartMutationL = new Label(tr("form.settings.user.label.chartMutation"));
             chartMutationCB = new ComboBox<Test>(getInteractionState(), this);
             attributeGroupTable.addLineToTable(chartMutationL, chartMutationCB);
         }
@@ -307,7 +307,7 @@ public class AccountForm extends FormWidget
             boolean nonExistingName = t.getSettingsUser(uidTF.text())==null;
             if(!nonExistingName)
             {
-                MessageBox.showWarningMessage(tr("message.account.duplicate"));
+                MessageBox.showWarningMessage(tr("form.administrator.notRegisteredUser.edit.uid.warning"));
                 return;
             }
         }
@@ -339,7 +339,7 @@ public class AccountForm extends FormWidget
             if(getInteractionState()==InteractionState.Adding)
             {
                 Login.createNewAccount(su_);
-                MessageBox.showWarningMessage(tr("message.account.created"));
+                MessageBox.showWarningMessage(tr("form.account.create.warning"));
             }
             else
             {                

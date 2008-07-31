@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class IAttributeDataTable implements IDataTable<Attribute>
 {
-    private static String [] _colNames = {"general.name","attributeGroups.form", "general.valueType"};
+    private static String [] _colNames = {"dataTable.attribute.colName.name","dataTable.attribute.colName.group", "dataTable.attribute.colName.valueType"};
     private static String[] filterVarNames_ = { "attribute.name", "attribute.attributeGroup.groupName", "attribute.valueType.description"};
     private static int[] colWidths = {33,34,33};
     

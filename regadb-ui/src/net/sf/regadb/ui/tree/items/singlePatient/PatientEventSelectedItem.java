@@ -8,7 +8,7 @@ public class PatientEventSelectedItem extends GenericSelectedItem<PatientEventVa
 {
 	public PatientEventSelectedItem(WTreeNode parent)
     {
-        super(parent, "event.form", "{patientEventID}");
+        super(parent, "menu.singlePatient.event.selected", "{patientEventID}");
     }
 	
 	@Override

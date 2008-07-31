@@ -21,7 +21,7 @@ public class AtomicClauseButtonPanel extends WButtonPanel {
 	}
 	
 	private void init() {
-		WPushButton modifyButton_ = new WPushButton(tr("general.edit"));
+		WPushButton modifyButton_ = new WPushButton(tr("form.query.querytool.pushbutton.modify"));
 		addButton(modifyButton_);
 		modifyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {

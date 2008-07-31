@@ -15,7 +15,7 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
 public class ModifyClauseDialog extends WDialog {
 	
 	public ModifyClauseDialog(QueryTreeNode node, QueryContext context, AtomicWhereClause clause) {
-		super(tr("query.querytool.dialog.modify"));
+		super(tr("form.query.querytool.dialog.modify"));
 		
         WComposedAWCSelectorPanel atomPanel =  null;
         List<AtomicWhereClause> clauses = DatabaseManager.getInstance().getAWCCatalog().getSimilarClauses(clause);

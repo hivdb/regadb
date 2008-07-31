@@ -173,7 +173,7 @@ public class DataTable<DataType> extends WTable
                                 }
                                 else
                                 {
-                                    MessageBox.showWarningMessage(tr("message.datatable.alreadySelected"));
+                                    MessageBox.showWarningMessage(tr("datatable.message.alreadySelected"));
                                 }
                             }
                         });

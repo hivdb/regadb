@@ -15,7 +15,7 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 public class WivArlEpidemiologyForm extends WivIntervalQueryForm {
     
     public WivArlEpidemiologyForm(){
-        super(tr("query.wiv.arl.epidemiology"),tr("query.wiv.arl.epidemiology.description"),tr("query.wiv.arl.epidemiology.file"));
+        super(tr("menu.query.wiv.arl.epidemiology"),tr("form.query.wiv.label.arl.epidemiology"),tr("file.query.wiv.arl.epidemiology"));
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }

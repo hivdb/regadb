@@ -13,7 +13,7 @@ public class PatientAddItem extends TreeMenuNode
 {
 	public PatientAddItem(WTreeNode root)
 	{
-		super(tr("general.add"), root);
+		super(tr("menu.singlePatient.patientAddItem"), root);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class PatientAddItem extends TreeMenuNode
 			public void performAction(TreeMenuNode node)
 			{
 				RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(null);
-                RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("patient.form"), false, new Patient()));
+                RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("form.singlePatient.add"), new Patient()));
 			}
 		};
 	}

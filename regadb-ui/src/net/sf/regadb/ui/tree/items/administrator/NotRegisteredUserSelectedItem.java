@@ -8,7 +8,7 @@ public class NotRegisteredUserSelectedItem extends GenericSelectedItem<SettingsU
 {
     public NotRegisteredUserSelectedItem(WTreeNode parent) 
     {
-        super(parent, "account.select.unregistered", "{notRegisteredUserSelectedItem}");
+        super(parent, "menu.administrator.notRegisteredUserSelectedItem", "{notRegisteredUserSelectedItem}");
     }
 
     @Override

@@ -11,9 +11,9 @@ public class ConfirmMessageBox extends MessageBox
     
     public ConfirmMessageBox(WMessage message)
     {
-        super(tr("message.general.warning"), message, new WImage("pics/dialog-warning.png"));
-        yes = new WPushButton(tr("general.yes"));
-        no = new WPushButton(tr("general.no"));
+        super(tr("msg.warning"), message, new WImage("pics/dialog-warning.png"));
+        yes = new WPushButton(tr("msg.warning.button.yes"));
+        no = new WPushButton(tr("msg.warning.button.no"));
         addButton(yes);
         addButton(no);
     }

@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 
 public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
 {
-    private static String [] _colNames = {"general.name"};
+    private static String [] _colNames = {"dataTable.attributeGroup.colName.groupName"};
     private static String[] filterVarNames_ = { "attributeGroup.groupName"};
     private static int[] colWidths = {100};
     

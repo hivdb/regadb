@@ -16,7 +16,7 @@ public class RunButtonPanel extends WButtonPanel {
 	}
 	
 	private void init(final QueryToolForm mainForm) {
-		WPushButton runButton = new WPushButton(tr("query.run"));
+		WPushButton runButton = new WPushButton(tr("form.query.querytool.pushbutton.run"));
 		runButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 			public void notify(WMouseEvent a) {
 				mainForm.runQuery();

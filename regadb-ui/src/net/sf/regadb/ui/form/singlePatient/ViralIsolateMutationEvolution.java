@@ -25,8 +25,8 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     private SimpleTable viralIsolatesTable_;
     
     
-    public ViralIsolateMutationEvolution(WMessage formName, boolean literal, Patient patient) {
-        super(formName, InteractionState.Viewing, literal);
+    public ViralIsolateMutationEvolution(WMessage formName, Patient patient) {
+        super(formName, InteractionState.Viewing);
         patient_ = patient;
 
         init();
@@ -37,11 +37,11 @@ public class ViralIsolateMutationEvolution extends FormWidget {
         viralIsolatesTable_.setStyleClass(viralIsolatesTable_.styleClass() + " viral-isolate-table");
         
         
-        viralIsolatesTable_.setHeaders(tr("viralIsolate.mutation.sample"),
-        		tr("viralIsolate.protein"),
-                tr("viralIsolate.mutation.region"),
-                tr("viralIsolate.mutation.plural"),
-                tr("viralIsolate.mutation.changes"));
+        viralIsolatesTable_.setHeaders(tr("form.viralIsolate.evolution.mutation.table.header.sampleIdDate"),
+        		tr("form.viralIsolate.evolution.mutation.table.header.protein"),
+                tr("form.viralIsolate.evolution.mutation.table.header.region"),
+                tr("form.viralIsolate.evolution.mutation.table.header.mutations"),
+                tr("form.viralIsolate.evolution.mutation.table.header.changes"));
         viralIsolatesTable_.setWidths(15,10,10,45,20);
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -62,7 +62,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             sampleId = new WText();
             sampleId.setText(lt(vis.get(i).getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis.get(i).getSampleDate())));
             viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
-            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
+            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(aaseqs.size());
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();

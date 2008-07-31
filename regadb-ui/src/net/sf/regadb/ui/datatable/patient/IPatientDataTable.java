@@ -46,11 +46,11 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	{
 	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
-	    addColumn("dataset.form", new DatasetFilter(t), "dataset.description", true,20);
-	    addColumn("general.id", new StringFilter(), "patient.patientId", true,20);
-	    addColumn("account.firstname", new StringFilter(), "patient.lastName", true,20);
-	    addColumn("account.lastname", new StringFilter(), "patient.firstName", true,20);
-	    addColumn("attribute.plural", getAttributeFilter(), "attributeValue.value", true,20);
+	    addColumn("dataTable.patient.colName.dataSet", new DatasetFilter(t), "dataset.description", true,20);
+	    addColumn("dataTable.patient.colName.patientId", new StringFilter(), "patient.patientId", true,20);
+	    addColumn("dataTable.patient.colName.name", new StringFilter(), "patient.lastName", true,20);
+	    addColumn("dataTable.patient.colName.surName", new StringFilter(), "patient.firstName", true,20);
+	    addColumn("dataTable.patient.colName.attribute", getAttributeFilter(), "attributeValue.value", true,20);
 	}
 	
 	public void addColumn(String colName, IFilter filter, String varName, boolean sortable, int width){

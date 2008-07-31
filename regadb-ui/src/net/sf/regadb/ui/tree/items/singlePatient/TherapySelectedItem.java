@@ -9,7 +9,7 @@ public class TherapySelectedItem extends GenericSelectedItem<Therapy>
 {
 	public TherapySelectedItem(WTreeNode parent)
 	{
-		super(parent, "therapy.form", "{therapyId}");
+		super(parent, "menu.singlePatient.therapies.therapySelectedItem", "{therapyId}");
 	}
 
     @Override

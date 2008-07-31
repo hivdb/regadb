@@ -92,7 +92,8 @@ html div.MODAL_FLOATING_FORE iframe {
 
 
 
-/* general layout */
+
+/* new css */
 
 body {
 	margin:0 auto;
@@ -137,7 +138,7 @@ td.header {
 }
 
 .main-tree-content {
-	width:19em;
+	width:15em;
 }
 
 .main-tree table {
@@ -171,8 +172,6 @@ td.header {
 
 .control-buttons {
 	margin-left:-1em;
-	margin-right:-1em;
-	margin-bottom:-1em;
 	padding:0.2em;
 	background-color:#ddd;	
 	border:1px solid #bbb;
@@ -193,7 +192,7 @@ table.datatable td {
 	overflow:hidden;
 }
 
-table.datatable td.tablewrapper, table.date-field td {
+table.datatable td.tablewrapper {
 	padding:0px;
 }
 
@@ -202,10 +201,9 @@ table.datatable-grid td{
 	border-right:1px solid #bbb;
 }
 
-table.datatable td.navigation{
+table.datatable-grid td.navigation{
 	border:1px solid #bbb;
 	background-color:#e5e5e5;
-	text-align:right !important;
 }
 
 table.datatable td.column-title, table.datatable td.table-expander {
@@ -256,15 +254,14 @@ table.datatable span.table-header {
 /* groups and headers */
 
 fieldset {
-	border:1px solid #bbb;
+	border:0px;
 	margin:1em 0em 0em;
-	padding:0.5em 1em 1em 1em !important;
+	padding:0.5em 0em 0em 1em !important;
 	text-align:left !important;
 }
 
 fieldset fieldset {
-	border:0px;
-	margin:1em 0em 0em 1em;
+	margin:1em 1em 0em;
 	padding:0.5em 1em 1em 0em !important;
 }
 
@@ -343,11 +340,10 @@ table.datatable td.form-label-area {
 
 table.date-field {
 	width:96%;	
-	max-width:8em;
 }
 
 table.date-field .textfield {
-	width:93%;	
+	width:99%;	
 }
 
 table.date-field td {
@@ -357,15 +353,12 @@ table.date-field td {
 .code-area, .log-area {
 	display:block;
 	overflow:auto;
+	font-family:monospace;
 	text-align:left;
 	width:40em;
 	max-height:20em;	
 	border:1px solid #bbb;
 	padding:0.2em;
-}
-
-.code-area, .log-area, .ntfield {
-	font-family:monospace;
 }
 
 /* links */
@@ -397,16 +390,14 @@ table.date-field td {
 
 /* drug resistance table */
 
+table.datatable-resistance td {
+	width:12%;	
+}
 
 table.datatable-resistance td.resistance-cell {
 	border:1px solid #bbb;
-	width:18%;
+	width:19%;
 }
-
-table.datatable-resistance td.form-label-area {
-	width:4% !important;	
-}
-
 
 table.datatable-resistance td.resistance-cell span {
 	display:block;
@@ -666,7 +657,7 @@ table.viral-isolate-table td {
 }
 
 .statusbar .statustext {
-	width:80%;	
+	width:90%;	
 	text-align:left;
 }
 

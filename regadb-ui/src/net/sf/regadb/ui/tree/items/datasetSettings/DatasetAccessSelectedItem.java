@@ -8,7 +8,7 @@ public class DatasetAccessSelectedItem extends GenericSelectedItem<SettingsUser>
 {
     public DatasetAccessSelectedItem(WTreeNode parent)
     {
-        super(parent, "datasetaccess.form", "{userSelectedItem}");
+        super(parent, "menu.dataset.acces.SelectedItem", "{userSelectedItem}");
     }
 
     @Override

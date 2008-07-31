@@ -11,7 +11,7 @@ public class SelectViralIsolateForm extends SelectForm
 	
 	public SelectViralIsolateForm()
 	{
-		super(tr("viralIsolate.form"));
+		super(tr("form.patient.selectViralIsolateForm"));
         init();
 	}
 

@@ -21,7 +21,7 @@ import org.hibernate.Query;
 public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 
     public WivArcTherapyAtcForm(){
-        super(tr("query.wiv.arc.therapyAtc"),tr("query.wiv.arc.therapyAtc.description"),tr("query.wiv.arc.therapyAtc.file"));
+        super(tr("menu.query.wiv.arc.therapyAtc"),tr("form.query.wiv.label.arc.therapyAtc"),tr("file.query.wiv.arc.therapyAtc"));
 
         String query = "select tp, pav "+
         "from Therapy tp inner join tp.patient p inner join p.patientAttributeValues pav "+

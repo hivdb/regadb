@@ -37,8 +37,8 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
     private WTable resistanceTable_;
     private WCheckBox showMutations_;
     
-    public ViralIsolateResistanceEvolutionForm(WMessage formName, boolean literal, Patient patient) {
-        super(formName, InteractionState.Viewing, literal);
+    public ViralIsolateResistanceEvolutionForm(WMessage formName, Patient patient) {
+        super(formName, InteractionState.Viewing);
         patient_ = patient;
 
         init();
@@ -46,7 +46,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 
     public void init()
     {
-    	WGroupBox algorithm = new WGroupBox(tr("viralIsolate.algorithm"), this);
+    	WGroupBox algorithm = new WGroupBox(tr("form.viralIsolate.evolution.group.algorithm"), this);
     	FormTable form = new FormTable(algorithm);
         asiCombo_ = new WComboBox();
         loadCombo();
@@ -55,11 +55,11 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
                 loadTable();
             }
         });
-        Label asiL = new Label(tr("viralIsolate.algorithm"));
+        Label asiL = new Label(tr("form.viralIsolate.editView.report.algorithm"));
         form.addLineToTable(asiL, asiCombo_);
         
     	
-    	WGroupBox resistanceGroup = new WGroupBox(tr("viralIsolate.resistance.evolution"), algorithm);
+    	WGroupBox resistanceGroup = new WGroupBox(tr("form.viralIsolate.evolution.group.resistance"), algorithm);
         WTable wrapper = new SimpleTable(resistanceGroup);
         wrapper.elementAt(0, 0).setStyleClass("navigation");
         wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
@@ -70,7 +70,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         resistanceTable_.setStyleClass("datatable datatable-resistance");
         
         
-        showMutations_ = new WCheckBox(tr("viralIsolate.mutation.show"), wrapper.elementAt(0, 0));
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.evolution.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
         showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
                 {
                     public void notify(WMouseEvent a)

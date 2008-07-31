@@ -2,6 +2,8 @@ package net.sf.regadb.ui.form.query;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,6 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -44,17 +45,19 @@ public class QueryDefinitionRunForm extends FormWidget
     private Label queryL;
     private TextArea queryTA;
     private Label startDateL;
-    private DateField startDateDF;
+    private TextField startDateDF;
     private Label endDateL;
-    private DateField endDateDF;
+    private TextField endDateDF;
     private Label statusL;
     private TextField statusTF;
     private Label resultL;
     private WAnchor resultLink;
     
-    public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, boolean literal, QueryDefinitionRun queryDefinitionRun)
+    private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    
+    public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
-        super(formName, interactionState, literal);
+        super(formName, interactionState);
         
         this.queryDefinitionRun = queryDefinitionRun;
         
@@ -72,43 +75,43 @@ public class QueryDefinitionRunForm extends FormWidget
         	queryDefinitionRun.setQueryDefinition(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.getSelectedItem());
         }
     	
-    	queryDefinitionRunGroup_ = new WGroupBox(tr("general.group.general"), this);
+    	queryDefinitionRunGroup_ = new WGroupBox(tr("form.query.definition.run.general"), this);
     	
     	queryDefinitionRunGroupTable = new FormTable(queryDefinitionRunGroup_);
     	
-    	nameL = new Label(tr("general.name"));
+    	nameL = new Label(tr("form.query.definition.run.label.name"));
     	nameTF = new TextField(getInteractionState(), this);
     	nameTF.setMandatory(true);
     	queryDefinitionRunGroupTable.addLineToTable(nameL, nameTF);
     	
-    	queryNameL = new Label(tr("query.definition.form"));
+    	queryNameL = new Label(tr("form.query.definition.run.label.query"));
     	queryNameTF = new TextField(InteractionState.Viewing, this);
     	queryDefinitionRunGroupTable.addLineToTable(queryNameL, queryNameTF);
         
-        descriptionL = new Label(tr("query.definition.run.description"));
+        descriptionL = new Label(tr("form.query.definition.run.label.description"));
         descriptionTA = new TextArea(InteractionState.Viewing, this);
         queryDefinitionRunGroupTable.addLineToTable(descriptionL, descriptionTA);
         
-        queryL = new Label(tr("query.form"));
+        queryL = new Label(tr("form.query.definition.label.query"));
         queryTA = new TextArea(InteractionState.Viewing, this);
         queryDefinitionRunGroupTable.addLineToTable(queryL, queryTA);
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateL = new Label(tr("query.definition.run.startTime"));
-            startDateDF = new DateField(getInteractionState(), this);
+        	startDateL = new Label(tr("form.query.definition.run.label.startTime"));
+            startDateDF = new TextField(getInteractionState(), this);
             queryDefinitionRunGroupTable.addLineToTable(startDateL, startDateDF);
             
-            endDateL = new Label(tr("query.definition.run.endTime"));
-            endDateDF = new DateField(getInteractionState(), this);
+            endDateL = new Label(tr("form.query.definition.run.label.endTime"));
+            endDateDF = new TextField(getInteractionState(), this);
             queryDefinitionRunGroupTable.addLineToTable(endDateL, endDateDF);
             
-            statusL = new Label(tr("general.status"));
+            statusL = new Label(tr("form.query.definition.run.label.status"));
             statusTF = new TextField(getInteractionState(), this);
             queryDefinitionRunGroupTable.addLineToTable(statusL, statusTF);
         }
         
-        queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("query.group.parameters"), this);
+        queryDefinitionRunParameterGroup = new QueryDefinitionRunParameterGroupBox(getInteractionState(), tr("form.query.definition.run.parameters"), this);
     }
     
     private void fillData()
@@ -122,14 +125,18 @@ public class QueryDefinitionRunForm extends FormWidget
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateDF.setDate(queryDefinitionRun.getStartdate());
-        	endDateDF.setDate(queryDefinitionRun.getEnddate());
+        	startDateDF.setText(formatter.format(queryDefinitionRun.getStartdate()));
+        	
+        	if(queryDefinitionRun.getEnddate() != null)
+        	{
+        		endDateDF.setText(formatter.format(queryDefinitionRun.getEnddate()));
+        	}
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
         	
         	int row = queryDefinitionRunGroupTable.numRows();
             
-            resultL = new Label(tr("query.results"));
+            resultL = new Label(tr("form.query.definition.run.label.result"));
             queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
             
             if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
@@ -174,7 +181,7 @@ public class QueryDefinitionRunForm extends FormWidget
     	}
     	else
     	{
-    		MessageBox.showWarningMessage(tr("message.query.definition.parameters.required"));
+    		MessageBox.showWarningMessage(tr("form.query.definition.run.validate.parameters.null"));
     	}
 	}
 

@@ -21,8 +21,8 @@ public abstract class WivIntervalQueryForm extends WivQueryForm{
         
         endDate.setDate(new Date());
         
-        super.addParameter("var_start_date", tr("query.wiv.parameter.after"), startDate);
-        super.addParameter("var_end_date", tr("query.wiv.parameter.before"), endDate);
+        super.addParameter("var_start_date", tr("form.query.wiv.label.startDate"), startDate);
+        super.addParameter("var_end_date", tr("form.query.wiv.label.endDate"), endDate);
     }
     
     public Date getStartDate(){

@@ -11,7 +11,7 @@ public class SelectDatasetAccessUserForm extends SelectForm
     
     public SelectDatasetAccessUserForm()
     {
-        super(tr("account.user"));
+        super(tr("form.dataset.access.select"));
         init();
     }
 

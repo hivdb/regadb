@@ -16,7 +16,7 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 public class WivArlConfirmedHivForm extends WivIntervalQueryForm {
     
     public WivArlConfirmedHivForm(){
-        super(tr("query.wiv.arl.confirmedHiv"),tr("query.wiv.arl.confirmedHiv.description"),tr("query.wiv.arl.confirmedHiv.file"));
+        super(tr("menu.query.wiv.arl.confirmedHiv"),tr("form.query.wiv.label.arl.confirmedHiv"),tr("file.query.wiv.arl.confirmedHiv"));
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.MONTH, -9));
     }

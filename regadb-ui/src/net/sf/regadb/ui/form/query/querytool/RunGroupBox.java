@@ -27,7 +27,7 @@ public class RunGroupBox extends WGroupContainer {
 	private WText warning;
 	
 	public RunGroupBox(QueryEditor editor, WContainerWidget parent) {
-		super(tr("query.results"), parent);
+		super(tr("form.query.querytool.group.run"), parent);
 		getStyleClasses().addStyle("resultfield");
 		this.editor = editor;
 		runningQueries = new ArrayList<QueryToolRunnable>();
@@ -53,7 +53,7 @@ public class RunGroupBox extends WGroupContainer {
 		}
 		
 		if (runningQueries.isEmpty() && warning == null) {
-			warning = new WText(tr("message.query.noresults"));
+			warning = new WText(tr("form.query.querytool.message.noresults"));
 			warning.setStyleClass("warning");
 			getContentPanel().addWidget(warning);
 		}
@@ -85,7 +85,7 @@ public class RunGroupBox extends WGroupContainer {
 					}
 					
 					if (qt.isRunning()) {
-						WPushButton cancelButton = new WPushButton(tr("general.cancel"));
+						WPushButton cancelButton = new WPushButton(tr("form.query.querytool.pushbutton.cancel"));
 						cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
 							public void notify(WMouseEvent a) {
 								qt.cancel();

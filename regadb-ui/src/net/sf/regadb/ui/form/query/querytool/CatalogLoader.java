@@ -42,10 +42,10 @@ public class CatalogLoader implements ProgressReporter {
 	public WMessage getMessage() {
 		Status st = CatalogLoader.getStatus();
 		if (st == Status.FAILED) {
-			return new WMessage("message.query.querytool.catalogfailed");
+			return new WMessage("form.query.querytool.catalog.failed");
 		}
 		else {
-			return new WMessage("message.query.querytool.catalogbusy");
+			return new WMessage("form.query.querytool.catalog.busy");
 		}
 	}
 

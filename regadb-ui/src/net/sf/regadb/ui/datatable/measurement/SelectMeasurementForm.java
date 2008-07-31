@@ -11,7 +11,7 @@ public class SelectMeasurementForm extends SelectForm
 	
 	public SelectMeasurementForm()
 	{
-		super(tr("measurement.form"));
+		super(tr("form.patient.selectTestForm"));
         init();
 	}
 	

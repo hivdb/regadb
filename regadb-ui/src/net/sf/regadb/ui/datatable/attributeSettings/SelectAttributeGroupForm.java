@@ -11,7 +11,7 @@ public class SelectAttributeGroupForm extends SelectForm
     
     public SelectAttributeGroupForm()
     {
-        super(tr("attributeGroups.form"));
+        super(tr("form.attributes.attributeGroups.selectAttributeGroupForm"));
         init();
     }
 

@@ -35,22 +35,22 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
     private WFormValidation formValidation_ = new WFormValidation();
     
 	//login group
-	private WGroupBox loginGroup_ = new WGroupBox(tr("account.login"));
-	private Label uidL = new Label(tr("account.uid"));
+	private WGroupBox loginGroup_ = new WGroupBox(tr("form.login.loginForm.login"));
+	private Label uidL = new Label(tr("form.login.label.uid"));
 	private TextField uidTF = new TextField(InteractionState.Editing, this);
-	private Label passwordL = new Label(tr("account.password"));
+	private Label passwordL = new Label(tr("form.login.label.password"));
 	private TextField passwordTF = new TextField(InteractionState.Editing, this);
     private Label proxyL;
     private ComboBox<Pair<String, String>> proxyCB;
-    private WText createAccountLink_ = new WText(tr("account.create"));
+    private WText createAccountLink_ = new WText(tr("form.login.link.create"));
 	
 	//control
-	private WPushButton _loginButton = new WPushButton(tr("account.login"));
-	private WPushButton _helpButton = new WPushButton(tr("general.help"));
+	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));
+	private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
 	
 	public LoginForm()
 	{
-		super(tr("account.login"));
+		super(tr("form.login.loginForm"));
         init();
 	}
     
@@ -72,7 +72,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         loginGroupTable.addLineToTable(passwordL, passwordTF);
         if(RegaDBSettings.getInstance().getProxyList().size() > 1)
         {
-            proxyL = new Label(tr("account.proxy"));
+            proxyL = new Label(tr("form.login.label.proxy"));
             proxyCB = new ComboBox<Pair<String, String>>(InteractionState.Editing, this);
             loginGroupTable.addLineToTable(proxyL, proxyCB);
             for(Pair<String,String> proxy : RegaDBSettings.getInstance().getProxyList())
@@ -169,6 +169,6 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
     }
 
     public WMessage leaveForm() {
-    	return null;
+        return tr("form.login.tree.warning");
     }
 }

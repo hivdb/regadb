@@ -35,9 +35,9 @@ public class DatasetForm extends FormWidget
 	private Label revisionL;
 	private TextField revisionTF;
 	
-	public DatasetForm(InteractionState interactionState, WMessage formName, boolean literal, Dataset dataset) 
+	public DatasetForm(InteractionState interactionState, WMessage formName,  Dataset dataset) 
 	{
-		super(formName, interactionState, literal);
+		super(formName, interactionState);
 		dataset_ = dataset;
 		init();
 		fillData();
@@ -45,21 +45,21 @@ public class DatasetForm extends FormWidget
 	
 	public void init()
     {
-	    datasetGroup_ = new WGroupBox(tr("general.group.general"), this);
+	    datasetGroup_ = new WGroupBox(tr("form.datasetForm.editView.general"), this);
 	    mainGroupTable_=new FormTable(datasetGroup_);
-		descriptionL = new Label(tr("general.description"));
+		descriptionL = new Label(tr("form.datasetForm.editView.description"));
 		descriptionTF = new TextField(getInteractionState(), this);
 		descriptionTF.setMandatory(true);
 		mainGroupTable_.addLineToTable(descriptionL, descriptionTF);
 		if (getInteractionState() != InteractionState.Adding && getInteractionState() != InteractionState.Editing)
 		{
-			creationDateL = new Label(tr("date.creation")) ;
+			creationDateL = new Label(tr("form.datasetForm.editView.creationDate")) ;
 			creationDateDF = new DateField(InteractionState.Viewing, this);
 			mainGroupTable_.addLineToTable(creationDateL, creationDateDF);
-			closedDateL = new Label(tr("date.closed"));
+			closedDateL = new Label(tr("form.datasetForm.editView.closedDate"));
 			closedDateDF = new DateField(InteractionState.Viewing, this);
 			mainGroupTable_.addLineToTable(closedDateL, closedDateDF);
-			revisionL = new Label(tr("dataset.revision"));
+			revisionL = new Label(tr("form.datasetForm.editView.revision"));
 			revisionTF = new TextField(InteractionState.Viewing, this);
 			mainGroupTable_.addLineToTable(revisionL, revisionTF);
 		}
@@ -157,11 +157,11 @@ public class DatasetForm extends FormWidget
             	t.clear();
             	t.rollback();
             	
-            	return tr("message.general.inuse");
+            	return tr("form.delete.restriction");
             }
     	}
     	else {
-    		return tr("message.general.inuse");
+    		return tr("form.delete.restriction");
     	}
 	}
 

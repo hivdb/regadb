@@ -9,7 +9,7 @@ public class MeasurementSelectedItem extends GenericSelectedItem<TestResult>
 {
 	public MeasurementSelectedItem(WTreeNode parent)
 	{
-		super(parent, "measurement.form", "{testResultId}");
+		super(parent, "menu.singlePatient.testResultSelectedItem", "{testResultId}");
 	}
 
     @Override
