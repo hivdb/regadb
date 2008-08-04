@@ -62,7 +62,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             sampleId = new WText();
             sampleId.setText(lt(vis.get(i).getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis.get(i).getSampleDate())));
             viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
-            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(aaseqs.size());
+            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();
