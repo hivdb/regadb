@@ -36,6 +36,9 @@ public class PreprocCpp {
         preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion(int",
         		"{}");
+        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WFileResource.C"),
+        		"WFileResource::streamResourceData",
+        		"{return true;}");
     }
     
     public PreprocCpp(){
