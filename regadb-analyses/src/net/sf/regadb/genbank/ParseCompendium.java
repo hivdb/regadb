@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.regadb.analysis.functions.FastaHelper;
+import net.sf.regadb.analysis.functions.FastaRead;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -16,17 +20,20 @@ public class ParseCompendium {
 	public static void main(String [] args) {
     	SAXBuilder builder = new SAXBuilder();
     	
-    	String sequenceToSelect = "B.FR.83.HXB2";
+    	String consensusSequenceToSelect = "MAC.US.-.239";
+    	String sequenceToSelect = "H2B.CI.-.EHO";
     	
-    	int start = 22;
+		FastaRead compareSeq = FastaHelper.readFastaFile(new File("/home/plibin0/projects/genbank/hiv2/U27200_eho.fasta"), false);
+    	
+    	int start = 4;
     	
     	int startCol = 26;
     	
+		List<Page> pages = new ArrayList<Page>();
+		
         Document doc;
 		try {
-			List<Page> pages = new ArrayList<Page>();
-			
-			File dir = new File("/home/plibin0/projects/genbank/compendium/compendium_hiv1_nt/text/rectangle");
+			File dir = new File("/home/plibin0/projects/genbank/compendium/compendium_hiv2_nt/text/rectangle");
 			File[] files = dir.listFiles();
 			Arrays.sort(files, new Comparator<File>() {
 				public int compare(File arg0, File arg1) {
@@ -40,7 +47,7 @@ public class ParseCompendium {
 				int fileNumber = getFileNumber(f);
 				
 				if(fileNumber>=start) {
-					System.err.println(fileNumber);
+					//System.err.println(fileNumber);
 					doc = builder.build(f);
 					Element root = doc.getRootElement();
 					Element textEl = root.getChild("TEXT");
@@ -52,12 +59,14 @@ public class ParseCompendium {
 							Page p = new Page();
 							pages.add(p);
 							if(val.startsWith(" ")) {
-								System.err.println(val.substring(26));
-								parseStartEndPos(p, val, startCol);
+								//System.err.println(val.substring(26));
+								//parseStartEndPos(p, val, startCol);
 							} else {
-								if(val.startsWith(sequenceToSelect)) {
-									p.seqs.put(sequenceToSelect, val);
+								if(val.startsWith(consensusSequenceToSelect)) {
+									p.seqs.put(consensusSequenceToSelect, val);
 									//System.err.println(val.substring(26));
+								} else if(val.startsWith(sequenceToSelect)) {
+									p.seqs.put(sequenceToSelect, val);
 								}
 							}
 						}
@@ -69,6 +78,44 @@ public class ParseCompendium {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		String consensus = "";
+		String sequence = "";
+		for(Page p : pages) {
+			for(Map.Entry<String, String> e : p.seqs.entrySet()) {
+				String seq = e.getValue();
+				seq = seq.substring(seq.indexOf(' '), seq.lastIndexOf(' ')).trim();
+				if(consensusSequenceToSelect.equals(e.getKey())) {
+					consensus += seq;
+				} else if(sequenceToSelect.equals(e.getKey())) {
+					sequence += seq;
+				}
+			}
+		}
+		
+		System.err.println(consensus.length() + "-" + sequence.length());
+		
+		consensus = consensus.replace("\n", "");
+		sequence = sequence.replace("\n", "");
+		
+		String sequenceComplete = "";
+		
+		for(int i = 0; i<consensus.length(); i++) {
+			if(sequence.charAt(i)=='-') {
+				sequenceComplete += consensus.charAt(i);
+			} else {
+				sequenceComplete += sequence.charAt(i);
+			}
+		}
+		
+		sequenceComplete = sequenceComplete.replaceAll("\\.", "-");
+		System.err.println(sequenceComplete.toUpperCase());
+		
+		sequenceComplete = sequenceComplete.replaceAll("\\-", "");
+		
+		System.err.println("complete seq: " + sequenceComplete.toLowerCase());
+		System.err.println("compare  seq: " + compareSeq.xna_);
+		System.err.println(sequenceComplete.toLowerCase().equals(compareSeq.xna_));
 	}
 	
 	public static void parseStartEndPos(Page p, String line, int startCol) {
