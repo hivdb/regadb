@@ -69,6 +69,8 @@ public class PreprocCpp {
         handleDefaultTemplateArg(sb);
         System.err.println("\t handle ImplementStateless");
         handleImplementStateless(sb);
+        System.err.println("\t handle bitset<>");
+        sb = new StringBuffer(sb.toString().replaceAll("std::bitset\\<[0-9]*\\>", "std::bitset"));
         
         writeFile(f, sb);
     }
