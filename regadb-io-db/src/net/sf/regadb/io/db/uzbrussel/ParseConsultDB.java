@@ -82,11 +82,11 @@ public class ParseConsultDB {
         try {
             doc = builder.build(consultDBXml);
         } catch (JDOMException e) {
-            ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
             e.printStackTrace();
+        	ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
         } catch (IOException e) {
-            ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
-            e.printStackTrace();
+        	e.printStackTrace();
+        	ConsoleLogger.getInstance().logError("Problem loading consult db xml file:" + consultDBXml.getAbsolutePath());
         }
 
         Element root = doc.getRootElement();
