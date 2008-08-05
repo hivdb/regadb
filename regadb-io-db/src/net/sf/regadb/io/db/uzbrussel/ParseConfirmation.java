@@ -233,6 +233,7 @@ public class ParseConfirmation {
             	handleWIVCountry("TRANCOUNTR", trancountr, p);
                 
             String child = getValue(i, "CHILD", sheet, colMapping);
+            if(!child.equals("C"))
                 handleWIVNominalAttribute("CHILD", child, p);
                 
             String profrisk = getValue(i, "PROFRISK", sheet, colMapping);
