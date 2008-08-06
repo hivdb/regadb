@@ -64,8 +64,6 @@ public class ViralIsolateMainForm extends WContainerWidget
     private WPushButton cancelButton;
 
 	// NtSeq group
-	private WGroupBox ntSeqGroup_;
-	private FormTable ntSeqGroupTable_;
 	private Label seqLabel;
 	private TextField seqLabelTF;
 	private Label seqDateL;
@@ -217,7 +215,8 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
 	}
 	
-	public void fillData(ViralIsolate vi)
+	@SuppressWarnings("unchecked")
+    public void fillData(ViralIsolate vi)
 	{
 		sampleDateTF.setDate(vi.getSampleDate());
 		sampleIdTF.setText(vi.getSampleId());
@@ -389,6 +388,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         return defaultSequenceLabel_ + (labelNumbers.size()!=0?(labelNumbers.get(labelNumbers.size()-1) + 1):1);
     }
     
+    @SuppressWarnings("unchecked")
     private void deleteSequence()
     {
         NtSequence currentSequence = ((DataComboMessage<NtSequence>)seqComboBox.currentText()).getValue();
