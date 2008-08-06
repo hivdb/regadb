@@ -22,6 +22,7 @@ public class ViralIsolateFormUtils {
                 return;
         }
         
+        //JWT: Possible jwt problem
         while (cell.children().size() > 0) {
         	cell.removeWidget(cell.children().get(0));
         }

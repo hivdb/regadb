@@ -103,20 +103,21 @@ public class BatchTestRunningTest extends Thread {
 			this.copiedLogin = copiedLogin;
 		}
 		
-		public void run() {
-			
-			for ( int i=0; i<list.size(); i++ ) {
-				percent = i * 100 / list.size();
-				
-				DataType t = list.get(i);
-				runSingleTest(t, copiedLogin);
-		        
-				if (status == BatchTestStatus.CANCELING) {
-					status = BatchTestStatus.CANCELED;
-					return;
-				}					
-			}
-		}
+        public void run() {
+            int i = 0;
+            while (i<list.size() && status == BatchTestStatus.RUNNING) {
+                percent = i * 100 / list.size();
+               
+                DataType t = list.get(i);
+                try {
+                    runSingleTest(t, copiedLogin);
+                }
+                catch (Throwable e) {
+                    status = BatchTestStatus.FAILED;
+                }
+                i++;
+            }
+        }
 		
 		public abstract void runSingleTest(DataType t, Login l);
 	}

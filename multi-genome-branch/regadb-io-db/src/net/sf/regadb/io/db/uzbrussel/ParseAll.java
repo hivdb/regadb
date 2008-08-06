@@ -1,10 +1,13 @@
 package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -27,7 +30,16 @@ public class ParseAll {
     		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile);
     	}
     	else{
-	    	exec(	"/home/plibin0/import/jette/import/cd/080418/",
+    		UZBrusselAutoImport.splitExcelFile("/home/plibin0/import/jette/import/cd/080420/");
+	    	try {
+				String patientdb = FileUtils.readFileToString(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"));
+				patientdb = patientdb.replace('é', 'e');
+				FileUtils.writeStringToFile(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"), patientdb);
+	    	} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		exec(	"/home/plibin0/import/jette/import/cd/080420/",
 	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
 	    			"www-proxy",
 	    			"3128",
