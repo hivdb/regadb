@@ -8,6 +8,11 @@ public class CreateAllScripts {
 		String scriptDirectory = args[1];
 		String ccparse = args[2];
 		
+		CreateAllScripts cas = new CreateAllScripts();
+		cas.run(srcDirectory, scriptDirectory, ccparse);
+	}
+	
+	public void run(String srcDirectory, String scriptDirectory, String ccparse) {
 		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt", scriptDirectory, ccparse);
 		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt/Ext", scriptDirectory, ccparse);
 		CreatePrettyBatchScript.run(srcDirectory + File.separatorChar + "Wt/Chart", scriptDirectory, ccparse);

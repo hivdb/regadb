@@ -1,9 +1,6 @@
 package ovid.preproc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,30 +10,35 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cpp2java.utils.Utils;
+
 public class PreprocCpp {
     private Map<String,Integer> templateClasses = new HashMap<String,Integer>();
     
     public static void main(String [] args) {
         PreprocCpp preproc = new PreprocCpp();
+        preproc.performChangesOnWitty(args[0]);
+    }
+    
+    public void performChangesOnWitty(String wtSrcDir) {
+        this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "Wt");
+        this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "Wt/Chart");
+        this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "Wt/Ext");
+        this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "web");
         
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt");
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt/Chart");
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "Wt/Ext");
-        preproc.performChangesOnFilesInDir(args[0] + File.separatorChar + "web");
-        
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
         		"WCalendar::dateForCell",
         		"{return date();}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
         		"WCalendar::renderMonth",
         		"{}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion",
         		"{return std::string();}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
         		"WEnvironment::libraryVersion(int",
         		"{}");
-        preproc.removeMethodContent(new File(args[0] + File.separatorChar + "Wt" + File.separatorChar + "WFileResource.C"),
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WFileResource.C"),
         		"WFileResource::streamResourceData",
         		"{return true;}");
     }
@@ -57,7 +59,7 @@ public class PreprocCpp {
     public void performChangesOnFile(File f) {
         System.err.println("Preprocess file: " + f.getAbsolutePath());
         
-        StringBuffer sb = readFileAsString(f.getAbsolutePath());
+        StringBuffer sb = Utils.readFileAsString(f.getAbsolutePath());
         
         System.err.println("\t handle includes");
         sb = handleIncludes(sb);
@@ -76,7 +78,7 @@ public class PreprocCpp {
     }
     
     public void removeMethodContent(File f, String methodName, String replacement) {
-    	StringBuffer fileContent = readFileAsString(f.getAbsolutePath());
+    	StringBuffer fileContent = Utils.readFileAsString(f.getAbsolutePath());
     	
     	int methodNamePos = fileContent.indexOf(methodName);
     	int firstBracket = fileContent.indexOf("{", methodNamePos);
@@ -283,30 +285,6 @@ public class PreprocCpp {
                 pos = fileContent.indexOf(p, pos+p.length());
             }
         }
-    }
-
-    
-    private static StringBuffer readFileAsString(String filePath) {
-        StringBuffer fileData = new StringBuffer(1000);
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(
-                    new FileReader(filePath));
-            char[] buf = new char[1024];
-            int numRead=0;
-            while((numRead=reader.read(buf)) != -1){
-                String readData = String.valueOf(buf, 0, numRead);
-                fileData.append(readData);
-                buf = new char[1024];
-            }
-            reader.close();
-            return fileData;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     void setTemplateClasses(Map<String,Integer> templateClasses) {

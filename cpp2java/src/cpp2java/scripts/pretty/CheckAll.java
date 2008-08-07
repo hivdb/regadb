@@ -7,6 +7,12 @@ public class CheckAll {
 	public static void main(String [] args) {
 		String srcDir = args[0];
 		String reportDir = args[1];
+		
+		CheckAll ca = new CheckAll();
+		ca.run(srcDir, reportDir);
+	}
+	
+	public void run(String srcDir, String reportDir) {
 		try {
 			CheckPrettyBatch.run(srcDir + File.separatorChar + "Wt", reportDir + File.separatorChar + "Wt.csv");
 			CheckPrettyBatch.run(srcDir + File.separatorChar + "web", reportDir+ File.separatorChar + "web.csv");
