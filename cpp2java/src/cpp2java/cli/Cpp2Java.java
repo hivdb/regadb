@@ -2,10 +2,10 @@ package cpp2java.cli;
 
 import java.io.File;
 
+import cpp2java.preproc.PreprocCpp;
 import cpp2java.scripts.pretty.CheckAll;
 import cpp2java.scripts.pretty.CreateAllScripts;
 
-import ovid.preproc.PreprocCpp;
 
 public class Cpp2Java {
 	public static void main(String [] args) {

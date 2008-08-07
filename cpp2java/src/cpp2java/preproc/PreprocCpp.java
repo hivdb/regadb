@@ -1,4 +1,4 @@
-package ovid.preproc;
+package cpp2java.preproc;
 
 import java.io.File;
 import java.io.FileWriter;
