@@ -12,6 +12,10 @@ import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.SplicingPosition;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportDrugs;
@@ -42,6 +46,7 @@ public class UpdateForm extends FormWidget
     private WMessage progressText_ = tr("form.update_central_server.running");
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
     
+    private WContainerWidget genomeGroup_ = new WGroupBox(tr("form.update_central_server.genome"));
     private WContainerWidget testGroup_ = new WGroupBox(tr("form.update_central_server.test"));
     private WContainerWidget attributesGroup_ = new WGroupBox(tr("form.update_central_server.attribute"));
     private WContainerWidget eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
@@ -65,6 +70,7 @@ public class UpdateForm extends FormWidget
             addWidget(new WarningMessage(warningImage_, progressText_, MessageType.INFO));
         }
         
+        addWidget(genomeGroup_);
         addWidget(testGroup_);
         addWidget(attributesGroup_);
         addWidget(eventsGroup_);
@@ -281,7 +287,6 @@ public class UpdateForm extends FormWidget
     
     private void handleGenomes(boolean simulate){
         Transaction t;
-        ArrayList<String> report;
         
         FileProvider fp = new FileProvider();
         
@@ -298,6 +303,8 @@ public class UpdateForm extends FormWidget
         
         ImportGenomes ig = new ImportGenomes(t,simulate);
         ig.importFromXml(genomesXml);
+                
+        new WLogText(genomeGroup_, lt(ig.getLog().toString()));
         
         t.commit();
     }
@@ -305,6 +312,56 @@ public class UpdateForm extends FormWidget
     private void showInstalledItems()
     {
         Transaction t;
+        
+        //Genomes
+        t = RegaDBMain.getApp().createTransaction();
+        List<Genome> genomes = t.getGenomes();
+        
+        for(Genome g : genomes)
+        {
+            List<List<String>> genomeDescriptions = new ArrayList<List<String>>();
+            List<String> genomeTitles = new ArrayList<String>();
+            genomeTitles.add("organism");
+            genomeTitles.add("description");
+            
+            ArrayList<String> row = new ArrayList<String>();
+            row.add(g.getOrganismName());
+            row.add(g.getOrganismDescription());
+            genomeDescriptions.add(row);
+            
+            handleFields(genomeGroup_, genomeTitles, genomeDescriptions);
+
+            List<List<String>> proteinDescriptions = new ArrayList<List<String>>();
+            List<String> proteinTitles = new ArrayList<String>();
+            proteinTitles.add("open reading frame");
+            proteinTitles.add("protein");
+            proteinTitles.add("full name");
+            proteinTitles.add("start position");
+            proteinTitles.add("stop position");
+            proteinTitles.add("splicing positions");            
+
+            for(OpenReadingFrame orf : g.getOpenReadingFrames()){
+                for(Protein p : orf.getProteins()){
+                    
+                    row = new ArrayList<String>();
+                    row.add(orf.getName());
+                    row.add(p.getAbbreviation());
+                    row.add(p.getFullName());
+                    row.add(""+p.getStartPosition());
+                    row.add(""+p.getStopPosition());
+                    
+                    String splicings = "";
+                    for(SplicingPosition sp : p.getSplicingPositions())
+                        splicings += sp.getPosition()+" ";
+                    row.add(splicings);
+                    
+                    proteinDescriptions.add(row);
+                }
+            }
+            handleFields(genomeGroup_, proteinTitles, proteinDescriptions);
+        }
+        
+        t.commit();
         
         //Tests
         t = RegaDBMain.getApp().createTransaction();
@@ -315,11 +372,13 @@ public class UpdateForm extends FormWidget
             ArrayList<String> row = new ArrayList<String>();
             row.add(test.getDescription());
             row.add(test.getTestType().getDescription());
+            row.add(test.getTestType().getGenome() == null ? "": test.getTestType().getGenome().getOrganismName());
             testDescriptions.add(row);
         }
         List<String> testTitles = new ArrayList<String>();
         testTitles.add("test");
         testTitles.add("test type");
+        testTitles.add("organism");
         
         handleFields(testGroup_, testTitles, testDescriptions);
         t.commit();

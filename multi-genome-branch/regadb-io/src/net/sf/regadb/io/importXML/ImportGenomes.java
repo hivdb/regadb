@@ -22,6 +22,10 @@ public class ImportGenomes {
     private Transaction transaction=null;
     private boolean simulate=true;
     
+    private StringBuilder log = new StringBuilder();
+    
+    public StringBuilder getLog(){ return log; }
+    
     public ImportGenomes(){
         
     }
@@ -62,16 +66,19 @@ public class ImportGenomes {
         
         String organismName = el.getAttributeValue("organismName");
         Genome g = getGenome(organismName);
-        if(g == null){
-            newObject = true;
-            g = new Genome();
-            g.setOrganismName(organismName);
+        newObject = g == null; 
+        
+        if(!isSimulate()){
+            if(newObject){
+                g = new Genome();
+                g.setOrganismName(organismName);
+            }
+            
+            g.setOrganismDescription(el.getAttributeValue("organismDescription"));
+            g.setGenbankNumber(el.getAttributeValue("genbankNumber"));
+            g.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
         logSync("genome "+ organismName, newObject);
-        
-        g.setOrganismDescription(el.getAttributeValue("organismDescription"));
-        g.setGenbankNumber(el.getAttributeValue("genbankNumber"));
-        g.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         
         for(Object child : el.getChildren("openReadingFrame"))
             toOpenReadingFrame(g, (Element)child, newObject);
@@ -89,21 +96,21 @@ public class ImportGenomes {
         if(!newObject)
             orf = getOpenReadingFrame(g, name);
 
-        if(orf == null){
-            newObject = true;
-            
-            orf = new OpenReadingFrame();
-            orf.setName(name);
-            
-            g.getOpenReadingFrames().add(orf);
-            orf.setGenome(g);
+        newObject = orf == null;
+        if(!isSimulate()){
+            if(newObject){
+                orf = new OpenReadingFrame();
+                orf.setName(name);
+                
+                g.getOpenReadingFrames().add(orf);
+                orf.setGenome(g);
+            }
+                
+            orf.setDescription(el.getAttributeValue("description"));
+            orf.setReferenceSequence(el.getAttributeValue("referenceSequence"));
+            orf.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
         logSync("open reading frame "+ name, newObject);
-        
-        
-        orf.setDescription(el.getAttributeValue("description"));
-        orf.setReferenceSequence(el.getAttributeValue("referenceSequence"));
-        orf.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         
         for(Object child : el.getChildren("protein"))
             toProtein(orf, (Element)child, newObject);
@@ -118,21 +125,22 @@ public class ImportGenomes {
         if(!newObject)
             p = getProtein(orf, abbreviation);
         
-        if(p == null){
-            newObject = true;
-            
-            p = new Protein();
-            p.setAbbreviation(el.getAttributeValue("abbreviation"));
-            
-            orf.getProteins().add(p);
-            p.setOpenReadingFrame(orf);
+        newObject = p == null;
+        if(!isSimulate()){
+            if(newObject){
+                p = new Protein();
+                p.setAbbreviation(el.getAttributeValue("abbreviation"));
+                
+                orf.getProteins().add(p);
+                p.setOpenReadingFrame(orf);
+            }
+        
+            p.setFullName(el.getAttributeValue("fullName"));
+            p.setStartPosition(Integer.parseInt(el.getAttributeValue("startPosition")));
+            p.setStopPosition(Integer.parseInt(el.getAttributeValue("stopPosition")));
+            p.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
         logSync("protein "+ abbreviation, newObject);
-        
-        p.setFullName(el.getAttributeValue("fullName"));
-        p.setStartPosition(Integer.parseInt(el.getAttributeValue("startPosition")));
-        p.setStopPosition(Integer.parseInt(el.getAttributeValue("stopPosition")));
-        p.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         
         for(Object child : el.getChildren("splicingPosition"))
             toSplicingPosition(p, (Element)child, newObject);
@@ -147,18 +155,19 @@ public class ImportGenomes {
         if(!newObject)
             sp = getSplicingPosition(p, position);
         
-        if(sp == null){
-            newObject = true;
-            
-            sp = new SplicingPosition();
-            sp.setPosition(position);
-            
-            p.getSplicingPositions().add(sp);
-            sp.setProtein(p);
+        newObject = sp == null;
+        if(!isSimulate()){
+            if(newObject){
+                sp = new SplicingPosition();
+                sp.setPosition(position);
+                
+                p.getSplicingPositions().add(sp);
+                sp.setProtein(p);
+            }
+        
+            sp.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
         logSync("splicing position "+ position, newObject);
-
-        sp.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         
         return sp;
     }
@@ -180,16 +189,17 @@ public class ImportGenomes {
     }
     
     public void logSync(String s, boolean newObject){
-        String m;
         if(newObject)
-            m = "Added ";
+            if(isSimulate())
+                log.append("Adding ");
+            else
+                log.append("Added ");
         else
-            m = "Synchronized ";
-        m += s;
-        if(isSimulate())
-            m += " (just faking it)";
-        
-        System.out.println(m);
+            if(isSimulate())
+                log.append("Synchronizing ");
+            else
+                log.append("Synchronized ");
+        log.append(s +"\n");
     }
     
     protected Genome getGenome(String organismName){
