@@ -48,6 +48,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    
 	/**
 	 * add the clauses for a given custom property
+     * @param index value of the index property
 	 * @param propertyName name of the custom property
 	 * @param valueType type of the custom properties. One of the types from the ValueType table.
 	 *                  currently supported: nominal value
@@ -66,10 +67,11 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	 * @param inputTable table to start from
 	 * @param idTableToInputTable path from the id table to the input table
 	 *                            null if they are the same table
-	 * @param customPropertiesTableNameProperty The attribute of the custom properties table that points to it's name
+     * @param customPropertiesTableIndexProperty The index property of the custom properties table
 	 */
-	private List<AtomicWhereClause> getCustomPropertyComparisonClauses(String propertyName, String valueType, DbObject customPropertiesTable, DbObject nominalValues, DbObject possibleIdTable, String idTableToCustomPropertiesTable, String idTableToNominalValuesTable, String nominalValuesTableToCustomPropertiesTable, DbObject inputTable, String idTableToInputTable, String customPropertiesTableNameProperty) {
-		List<AtomicWhereClause> result;
+	private List<AtomicWhereClause> getCustomPropertyComparisonClauses(Integer index, String propertyName,    String valueType,                       DbObject customPropertiesTable, DbObject nominalValues,                 DbObject possibleIdTable,           String idTableToCustomPropertiesTable,  String idTableToNominalValuesTable, String nominalValuesTableToCustomPropertiesTable,   DbObject inputTable,                String idTableToInputTable, String customPropertiesTableIndexProperty) {
+	                                //getCustomPropertyComparisonClauses(description,            type.getValueType().getDescription(),   catalog.getObject("TestType"),  catalog.getObject("TestNominalValue"),  catalog.getObject("TestResult"),    "test.testType",                        "testNominalValue",                 "testType",                                         catalog.getObject("TestResult"),    null,                       "description")
+	    List<AtomicWhereClause> result;
 		
     	String propertyStr = "value";			// regular value is always found in the value property
     	
@@ -86,7 +88,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		foreignTableToIdTable = idTableToNominalValuesTable;	
     		idTable = possibleIdTable;							// use the id table as the id 
     		inputTableToIdTable = idTableToInputTable;
-    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t" + nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName() + " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableNameProperty + "='" + propertyName + "'";
+    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t" + nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName() + " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'";
     	}
     	else if (valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
     		foreingTable = possibleIdTable;					// select from the single attribute table
@@ -103,7 +105,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	ObjectRelation relation = new ObjectRelation(inputTable, inputTableToIdTable, foreingTable, foreignTableToIdTable, idTable, invert, null);
 		DbObject propertyOrig = catalog.getObject(foreingTable.getTableName(), propertyStr);
 		DbObject property = new DbObject(propertyOrig.getTableName(), propertyOrig.getPropertyName(), propertyName, propertyOrig.getSqlAlias(), propertyName, propertyOrig.hasDropdown(), t);
-		result = addTypeRestrictionToNominalValueClause(getPropertyComparisonClauses(relation, property, suggestedValuesQuery),idTableToCustomPropertiesTable, propertyName, customPropertiesTableNameProperty, valueType);
+		result = addTypeRestrictionToNominalValueClause(getPropertyComparisonClauses(relation, property, suggestedValuesQuery),idTableToCustomPropertiesTable, index, customPropertiesTableIndexProperty, valueType);
     	
     	return result;
 	}
@@ -116,15 +118,15 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	 * @param clauses list of clauses
 	 * @param idTableToCustomPropertiesTable path from the id table (the first table (from or inputvariable) in the clauses)
 	 *                                       to the custom properties table
-	 * @param propertyName name of the custom property
-	 * @param customPropertiesTableNameProperty The attribute of the custom properties table that points to it's name
+	 * @param index value of the index property
+	 * @param customPropertiesTableIndexProperty The index property of the custom properties table
 	 * @param valueType type of the custom properties. One of the types from the ValueType table.
 	 *                  currently supported: nominal value
 	 *                                       string
 	 *                                       number
 	 *                                       limited number (<,=,>)
 	 */
-	private List<AtomicWhereClause> addTypeRestrictionToNominalValueClause(List<AtomicWhereClause> clauses, String idTableToCustomPropertiesTable, String propertyName, String customPropertiesTableNameProperty, String valueType) {
+	private List<AtomicWhereClause> addTypeRestrictionToNominalValueClause(List<AtomicWhereClause> clauses, String idTableToCustomPropertiesTable, Integer index, String customPropertiesTableIndexProperty, String valueType) {
 		for (AtomicWhereClause clause : clauses) {
 			//// add extra condition to where clause
 			//
@@ -144,7 +146,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    		aComposer.addFixedString(new FixedString(" AND\n\t"));
 	    		aComposer.addFromVariable(clause.getFromVariables().iterator().next());
 	    	}
-    		aComposer.addFixedString(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
+    		aComposer.addFixedString(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableIndexProperty + " = '" + index + "'"));
     		
     		//// wrap outputvariable when it should be interpreted as a number
     		//
@@ -156,7 +158,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
 	    			newWords.add(new FixedString("CASE WHEN "));
 	    			newWords.add(words.get(0));
-	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableIndexProperty + " = '" + index + "'"));
 	    			newWords.add(new FixedString("THEN cast ("));
 	    			newWords.addAll(words);
 	    			newWords.add(new FixedString(", big_decimal) ELSE 0 END"));
@@ -167,7 +169,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
 	    			newWords.add(new FixedString("CASE WHEN "));
 	    			newWords.add(words.get(0));
-	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "'"));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableIndexProperty + " = '" + index + "'"));
 	    			newWords.add(new FixedString(" THEN ("));
 	    			newWords.add(new FixedString("CASE WHEN substring("));
 	    			newWords.addAll(words);
@@ -187,7 +189,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	    			List<ConfigurableWord> newWords = new ArrayList<ConfigurableWord>();
 	    			newWords.add(new FixedString("CASE WHEN "));
 	    			newWords.add(words.get(0));
-	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableNameProperty + " = '" + propertyName + "' "));
+	    			newWords.add(new FixedString("." + idTableToCustomPropertiesTable + "." + customPropertiesTableIndexProperty + " = '" + index + "' "));
 	    			newWords.add(new FixedString("THEN (TO_DATE('01-01-1970', '" + DateUtils.getHQLdateFormatString() + "')"));
 	    			newWords.add(new FixedString(" + cast(cast("));
 	    			newWords.addAll(words);
@@ -1324,7 +1326,8 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addObject(new DbObject("TherapyMotivation", "value", "Motivation", "motivation", true));
         
         addRelations("PatientEventValue", "patient", "PatientImpl", null, false, "comes from",  "has an");
-        addRelations("Therapy", "patient", "PatientImpl", null, false, "was performed on a",  "has received");        
+        addRelations("Therapy", "patient", "PatientImpl", null, false, "was performed on a",  "has received");
+        addRelations("Therapy", "genome", "Genome", null, false, "is for",  "was treated with a");
         addRelations("ViralIsolate", "patient", "PatientImpl",  null, false, "comes from a ",  "has a");
         addRelation("PatientImpl", "id.patient", "Dataset", "id.dataset",  "PatientDataset", true, null);        
         
@@ -1420,7 +1423,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.Event");
     	for (int i = 0 ; i < result.size() ; i++) {
     		Event event = (Event) result.get(i, 0);
-    		catalog.addAll(getCustomPropertyComparisonClauses(event.getName(), event.getValueType().getDescription(), catalog.getObject("Event"), catalog.getObject("EventNominalValue"), catalog.getObject("PatientEventValue"), "event", "eventNominalValue", "event", catalog.getObject("PatientEventValue"), null, "name"));
+    		catalog.addAll(getCustomPropertyComparisonClauses(event.getEventIi(), event.getName(), event.getValueType().getDescription(), catalog.getObject("Event"), catalog.getObject("EventNominalValue"), catalog.getObject("PatientEventValue"), "event", "eventNominalValue", "event", catalog.getObject("PatientEventValue"), null, "eventIi"));
     	}
         
         catalog.addAll(getRelationClauses("PatientEventValue", "PatientImpl"));
@@ -1441,7 +1444,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from Attribute");
     	for (int i = 0 ; i < result.size() ; i++) {
     		Attribute attribute = (Attribute) result.get(i, 0);
-    		catalog.addAll(getCustomPropertyComparisonClauses(attribute.getName(), attribute.getValueType().getDescription(), catalog.getObject("Attribute"), catalog.getObject("AttributeNominalValue"), catalog.getObject("PatientAttributeValue"), "attribute", "attributeNominalValue", "attribute", catalog.getObject("PatientImpl"), "patient", "name"));
+    		catalog.addAll(getCustomPropertyComparisonClauses(attribute.getAttributeIi(), attribute.getName(), attribute.getValueType().getDescription(), catalog.getObject("Attribute"), catalog.getObject("AttributeNominalValue"), catalog.getObject("PatientAttributeValue"), "attribute", "attributeNominalValue", "attribute", catalog.getObject("PatientImpl"), "patient", "attributeIi"));
     	}
 
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("PatientImpl", "patientDatasets"), "number of"));
@@ -1479,6 +1482,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getRelationClauses("DrugCommercial", "Therapy"));
         catalog.addAll(getRelationClauses("TherapyCommercial", "Therapy"));
         catalog.addAll(getRelationClauses("TherapyGeneric", "Therapy"));
+        catalog.addAll(getRelationClauses("Therapy", "Genome"));
 
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyGenerics"), "number of"));
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyCommercials"), "number of"));
@@ -1665,7 +1669,11 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from TestType");
     	for (int i = 0 ; i < result.size() ; i++) {
     		TestType type = (TestType) result.get(i, 0);
-    		catalog.addAll(getCustomPropertyComparisonClauses(type.getDescription(), type.getValueType().getDescription(), catalog.getObject("TestType"), catalog.getObject("TestNominalValue"), catalog.getObject("TestResult"), "test.testType", "testNominalValue", "testType", catalog.getObject("TestResult"), null, "description"));
+    		String description = type.getDescription();
+    		Integer index = type.getTestTypeIi();
+    		if(type.getGenome() != null) description +=" ("+ type.getGenome().getOrganismName() +")";
+    		
+    		catalog.addAll(getCustomPropertyComparisonClauses(index, description, type.getValueType().getDescription(), catalog.getObject("TestType"), catalog.getObject("TestNominalValue"), catalog.getObject("TestResult"), "test.testType", "testNominalValue", "testType", catalog.getObject("TestResult"), null, "testTypeIi"));
     	}
     	
     }
