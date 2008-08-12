@@ -20,7 +20,7 @@ import org.jdom.input.SAXBuilder;
 
 public class ImportGenomes {
     private Transaction transaction=null;
-    private boolean simulate=true;
+    private boolean simulate=false;
     
     private StringBuilder log = new StringBuilder();
     
