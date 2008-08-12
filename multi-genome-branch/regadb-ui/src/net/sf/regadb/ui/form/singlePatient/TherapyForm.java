@@ -179,6 +179,8 @@ public class TherapyForm extends FormWidget
     }
 
 	private void copyTherapy(Therapy from, Therapy to){
+	    to.setGenome(from.getGenome());
+	    
 	    for(TherapyCommercial tc : from.getTherapyCommercials()){
             TherapyCommercial newtc = new TherapyCommercial(
                     new TherapyCommercialId(to,tc.getId().getDrugCommercial()),
