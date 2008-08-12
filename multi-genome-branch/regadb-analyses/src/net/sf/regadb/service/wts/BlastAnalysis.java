@@ -51,10 +51,7 @@ public class BlastAnalysis extends NtSequenceAnalysis{
     }
 
     public Genome getGenome(String blastResult){
-        if(blastResult.contains("K03455"))
-            return getGenomeMap().get("HIV-1");
-        
-        return null;
+        return getGenomeMap().get(blastResult.split("\n")[0].trim());
     }
     
     synchronized public Map<String, Genome> getGenomeMap(){

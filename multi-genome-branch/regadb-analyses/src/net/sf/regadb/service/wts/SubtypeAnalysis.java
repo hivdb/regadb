@@ -1,15 +1,10 @@
 package net.sf.regadb.service.wts;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 
-public class SubtypeAnalysis extends TestNtSequenceAnalysis{
-    private static Map<String, String> species = null;
-    
+public class SubtypeAnalysis extends TestNtSequenceAnalysis{    
     private Genome genome=null;
     
     public SubtypeAnalysis(NtSequence ntSequence, Test test, Genome genome) {
@@ -24,7 +19,7 @@ public class SubtypeAnalysis extends TestNtSequenceAnalysis{
     @Override
     protected void init() {
         super.init();
-        getInputs().put("species", getSpecies(getGenome()));
+        getInputs().put("species", getGenome().getOrganismName());
     }
 
     public void setGenome(Genome genome) {
@@ -33,19 +28,5 @@ public class SubtypeAnalysis extends TestNtSequenceAnalysis{
 
     public Genome getGenome() {
         return genome;
-    }
-    
-    synchronized public static String getSpecies(Genome genome){
-        if(species == null)
-            species = createSpeciesMap();
-        return species.get(genome.getOrganismName());
-    }
-    
-    private static Map<String, String> createSpeciesMap(){
-        Map<String, String> map = new HashMap<String, String>();
-        
-        map.put("HIV-1", "hiv");
-        
-        return map;
     }
 }

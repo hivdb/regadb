@@ -83,7 +83,7 @@ public class Utils {
             e.printStackTrace();
         }
         final ImportGenomes imp = new ImportGenomes();
-        return imp.importFromXml(genomesFile);
+        return imp.importFromXml(genomesFile, true);
     }
     
     public static Map<String, Genome> getGenomesMap(){
