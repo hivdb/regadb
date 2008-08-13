@@ -2,8 +2,12 @@ package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Map;
 
 import jxl.Cell;
@@ -12,11 +16,17 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ParseOldViralLoad {
 	Table oldVLToIgnoreTable;
+	
+	private static DateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy");
+	private static DateFormat dateFormatter2 = new SimpleDateFormat("dd MM yyyy");
 	
 	public static void main(String [] args) {
 		ParseOldViralLoad ovl = new ParseOldViralLoad();
@@ -52,6 +62,7 @@ public class ParseOldViralLoad {
 		int datumC = getColPos(s, "datum", "");
 		int vlC = getColPos(s, "q-rna", "copies/ml");
 		int vlLogC = getColPos(s, "q-rna", "log copies/ml");
+		int grC = getColPos(s, "g.r.", "");
 		for(int i = 0; i<s.getRows(); i++) {
 			String dossierNr = s.getCell(dossierNrC, i).getContents().trim();
 			if(!dossierNr.equals("") && !dossierNr.toLowerCase().equals("dossiernr")) {
@@ -61,12 +72,53 @@ public class ParseOldViralLoad {
 						ConsoleLogger.getInstance().logWarning("Cannot map dossierNr to patientId: " + dossierNr);
 					}
 				} else {
+					Patient p = patients.get(patientId);
 					String date = s.getCell(datumC, i).getContents().trim();
-					String vl = s.getCell(vlC, i).getContents().trim();
-					String vlLog = s.getCell(vlLogC, i).getContents().trim();
+					String vl = s.getCell(vlC, i).getContents().trim().replace(" ", "").replace("*", "");
+					String vlLog = s.getCell(vlLogC, i).getContents().trim().replace(" ", "").replace("*", "");
+					String gr = s.getCell(grC, i).getContents().trim();
+					
+					if(!vl.equals(""))
+						storeViralLoad(p, vl, date, StandardObjects.getGenericHiv1ViralLoadTest());
+					
+					if(!vlLog.equals(""))
+						storeViralLoad(p, vlLog, date, StandardObjects.getGenericHiv1ViralLoadLog10Test());
 				}
 			}
 		}
+	}
+	
+	public void storeViralLoad(Patient p, String val, String date, Test t) {
+        String vlVal = ParseConsultDB.parseViralLoad(val);
+        if(vlVal!=null) {
+        	Date d = parseDate(date);
+			if(d!=null) {
+	        	TestResult tr = p.createTestResult(t);
+	        	tr.setValue(vlVal);
+				tr.setTestDate(d);
+			} else {
+				ConsoleLogger.getInstance().logWarning("Cannot parse old vl date: " + date);
+			}
+        } else {
+        	ConsoleLogger.getInstance().logWarning("Cannot parse old vl val: " + val);
+        }
+	}
+	
+	public Date parseDate(String date) {
+		Date d = null;
+		
+		try {
+			d = dateFormatter.parse(date);
+		} catch (ParseException e) {
+		}
+		if(d==null) {
+			try {
+				d = dateFormatter2.parse(date);
+			} catch (ParseException e) {
+			}
+		}
+		
+		return d;
 	}
 	
 	public boolean ignoreViralLoad(String id) {
