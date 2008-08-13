@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +49,7 @@ public class ParseConsultDB {
     private Set<String> setset = new HashSet<String>();
     
     private Map<Integer, String> codepat_;
-    
+        
     public ParseConsultDB(String baseDir, Map<Integer, Patient> patients, ParseIds parseIds, String mappingBasePath, Map<Integer, String> codepat) {
         baseDir_ = baseDir;
         patients_ = patients;
@@ -108,12 +110,16 @@ public class ParseConsultDB {
     private void parsePatient(Element patientEl) {
         String consultId = text(patientEl, "PatientNo");
         Integer id = parseIds_.getPatientId(consultId);
+        
         if(id != null) {
-            Patient p = new Patient();
-            p.setPatientId(id+"");
-            patients_.put(id, p);
-            
-            p.createPatientAttributeValue(Items.getPatCodeAttribute()).setValue(codepat_.get(id));
+        	Patient p = patients_.get(id);
+        	if(p==null) {
+        		p = new Patient();
+                p.setPatientId(id+"");
+                patients_.put(id, p);
+                
+                p.createPatientAttributeValue(Items.getPatCodeAttribute()).setValue(codepat_.get(id));
+        	}
             
             String birthDate = text(patientEl, "BirthDate");
             String deathDate = text(patientEl, "DeathDate");
@@ -125,16 +131,22 @@ public class ParseConsultDB {
             String followup = text(patientEl, "Followup");
             
             if(followup!=null) {
-            	if(followup.equals("intern")) {
-            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
-            	} else if(followup.equals("extern")) {
-            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '3', p);
+            	if(Utils.getAttributeValue("FOLLOW-UP", p)==null) {
+	            	if(followup.equals("intern")) {
+	            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
+	            	} else if(followup.equals("extern")) {
+	            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '3', p);
+	            	} else {
+	            		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
+	            	}
             	} else {
-            		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
+            		if(followup.equals("intern"))
+            			Utils.getAttributeValue("FOLLOW-UP", p).setAttributeNominalValue(WivObjects.getANVFromAbbrev(Utils.getAttributeValue("FOLLOW-UP", p).getAttribute(), "1"));
             	}
             } else {
             	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
             }
+            
             if(birthDate!=null) {
                 try {
                     p.setBirthDate(dateFormatter.parse(birthDate));
@@ -151,7 +163,8 @@ public class ParseConsultDB {
             }
             if(sex!=null) {
                 sex = sex.toUpperCase().trim();
-                Utils.createPAV(genderNominal_, sex, p);
+                if(Utils.getAttributeValue(genderNominal_.attribute, p)==null)
+                	Utils.createPAV(genderNominal_, sex, p);
             }
             if(origin!=null) {
                 Utils.addCountryOrGeographicOrigin(countryOfOriginA, geographicOriginA, origin.replaceAll("\"",""), p);
