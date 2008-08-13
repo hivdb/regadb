@@ -133,7 +133,7 @@ public class WivObjects {
         return a.getName() +";"+ nominalValue;
     }
     
-    private static AttributeNominalValue getANVFromAbbrev(Attribute attribute, String abbrev) {
+    public static AttributeNominalValue getANVFromAbbrev(Attribute attribute, String abbrev) {
         for(AttributeNominalValue anv : attribute.getAttributeNominalValues()) {
             if(anv.getValue().startsWith(abbrev+":")) {
                 return anv;
