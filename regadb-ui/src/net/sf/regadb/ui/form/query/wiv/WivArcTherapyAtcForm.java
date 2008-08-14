@@ -64,7 +64,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         		"from PatientAttributeValue pav "+
         		"where pav.patient not in (" +
         			"select tp.patient from Therapy tp where " +
-        				" ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null )" +
+        				" not ((tp.startDate > :var_end_date and cast(:var_end_date as date) is null) or ( tp.stopDate < :var_start_date and tp.stopDate is null ))" +
         			") " +
         		"and pav.attribute.name = 'PatCode' and pav.patient.patientIi in ("+ getArcPatientQuery() +")");
         q.setDate("var_start_date", getStartDate());
