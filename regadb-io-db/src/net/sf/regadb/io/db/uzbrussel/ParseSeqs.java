@@ -28,17 +28,27 @@ public class ParseSeqs {
     private String basePath_;
     private File seqPath_;
     private Table patientIdsToIgnore;
+    private File seqMatchOldVl_;
     
-    public ParseSeqs(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
+    public ParseSeqs(String basePath, ParseIds parseIds, Map<Integer, Patient> patients, File seqMatchOldVl) {
         parseIds_ = parseIds;
         patients_ = patients;
         basePath_ = basePath;
         seqPath_ = new File(basePath_ + File.separatorChar + "labo" + File.separatorChar + "sequentions");
         patientIdsToIgnore = Utils.readTable(seqPath_.getAbsolutePath() + File.separatorChar + "seq_ignore.csv");
+        seqMatchOldVl_ = seqMatchOldVl;
     }
     
     public void exec() {
         File seqMapping = new File(seqPath_.getAbsolutePath() + File.separatorChar + "seq_match.csv");
+        int counter = handleSeqs(seqMapping);
+        counter += handleSeqs(seqMatchOldVl_);
+        seqMatchOldVl_.delete();
+        
+        System.err.println("Amount of succesfully imported sequences: "+ counter);
+    }
+    
+    public int handleSeqs(File seqMapping) {
         Table seqMappingTable = Utils.readTable(seqMapping.getAbsolutePath(), ';');
         int counter = 0;
         for(int i = 0; i<seqMappingTable.numRows(); i++) {
@@ -81,7 +91,7 @@ public class ParseSeqs {
             }
         }
         
-        System.err.println("Amount of succesfully imported sequences: "+ counter);
+        return counter;
     }
     
     private File getSequence(String seqId) {
@@ -92,6 +102,8 @@ public class ParseSeqs {
     			File seq = new File(dir.getAbsolutePath() + File.separatorChar +  getFileName(seqId)+".seq");
     			fileList.add(seq);
     			seq = new File(dir.getAbsolutePath() + File.separatorChar + "0"+seqId+".seq");
+    			fileList.add(seq);
+    			seq = new File(dir.getAbsolutePath() + File.separatorChar + getFileName(seqId));
     			fileList.add(seq);
     		}
     	}
