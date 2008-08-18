@@ -19,6 +19,7 @@ import net.sf.regadb.util.pair.Pair;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 
 /**
@@ -471,6 +472,20 @@ public class Transaction {
         q.setParameter("uid", login.getUid());
 
         return q.list();
+    }
+    
+    /**
+     * Returns all patients, checking access permissions.
+     */
+    @SuppressWarnings("unchecked")
+    public ScrollableResults getPatientsScrollable() {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                getPatientsQuery() + 
+                "group by patient");
+        q.setParameter("uid", login.getUid());
+
+        return q.scroll();
     }
     
     /**

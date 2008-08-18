@@ -36,10 +36,12 @@ public class AaMutInsertion implements Comparable<AaMutInsertion>
     
     public String getAaMutationString()
     {
+        String s;
         if(mutation_==null)
-            return insertion_.getAaInsertion();
+            s = insertion_.getAaInsertion();
         else
-            return mutation_.getAaMutation();
+            s = mutation_.getAaMutation();
+        return s==null?"":s;
     }
     
     public String getAaReferenceString()

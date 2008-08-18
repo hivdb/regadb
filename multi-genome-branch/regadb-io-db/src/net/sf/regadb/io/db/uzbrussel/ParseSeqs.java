@@ -28,17 +28,27 @@ public class ParseSeqs {
     private String basePath_;
     private File seqPath_;
     private Table patientIdsToIgnore;
+    private File seqMatchOldVl_;
     
-    public ParseSeqs(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
+    public ParseSeqs(String basePath, ParseIds parseIds, Map<Integer, Patient> patients, File seqMatchOldVl) {
         parseIds_ = parseIds;
         patients_ = patients;
         basePath_ = basePath;
         seqPath_ = new File(basePath_ + File.separatorChar + "labo" + File.separatorChar + "sequentions");
         patientIdsToIgnore = Utils.readTable(seqPath_.getAbsolutePath() + File.separatorChar + "seq_ignore.csv");
+        seqMatchOldVl_ = seqMatchOldVl;
     }
     
     public void exec() {
         File seqMapping = new File(seqPath_.getAbsolutePath() + File.separatorChar + "seq_match.csv");
+        int counter = handleSeqs(seqMapping);
+        counter += handleSeqs(seqMatchOldVl_);
+        seqMatchOldVl_.delete();
+        
+        System.err.println("Amount of succesfully imported sequences: "+ counter);
+    }
+    
+    public int handleSeqs(File seqMapping) {
         Table seqMappingTable = Utils.readTable(seqMapping.getAbsolutePath(), ';');
         int counter = 0;
         for(int i = 0; i<seqMappingTable.numRows(); i++) {
@@ -54,11 +64,10 @@ public class ParseSeqs {
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                     }
-                    File seq = new File(getSequencePath(seqPath_, d) + getFileName(seqId)+".seq");
-                    if(!seq.exists()) {
-                        seq = new File(getSequencePath(seqPath_, d) + "0"+seqId+".seq");
-                    }
-                    if(seq.exists()) {
+
+                    File seq = getSequence(seqId);
+                    
+                    if(seq != null) {
                         Patient p = getPatientForId(id);
                         if(p==null) {
                         	ConsoleLogger.getInstance().logWarning("Cannot find patient for sequence: " + id);
@@ -82,7 +91,30 @@ public class ParseSeqs {
             }
         }
         
-        System.err.println("Amount of succesfully imported sequences: "+ counter);
+        return counter;
+    }
+    
+    private File getSequence(String seqId) {
+    	List<File> fileList = new ArrayList<File>();
+    	
+    	for(File dir : seqPath_.listFiles()) {
+    		if(dir.isDirectory()) {
+    			File seq = new File(dir.getAbsolutePath() + File.separatorChar +  getFileName(seqId)+".seq");
+    			fileList.add(seq);
+    			seq = new File(dir.getAbsolutePath() + File.separatorChar + "0"+seqId+".seq");
+    			fileList.add(seq);
+    			seq = new File(dir.getAbsolutePath() + File.separatorChar + getFileName(seqId));
+    			fileList.add(seq);
+    		}
+    	}
+
+    	for(File f : fileList) {
+    		if(f.exists()) {
+    			return f;
+    		}
+    	}
+    	
+    	return null;
     }
     
     private boolean ignorePatientId(String id) {

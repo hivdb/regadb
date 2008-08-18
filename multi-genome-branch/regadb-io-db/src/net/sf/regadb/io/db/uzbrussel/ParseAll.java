@@ -19,15 +19,16 @@ public class ParseAll {
     		String baseDir = args[0];
     		String mappingDir = args[1];
     		String regadbXmlFile = args[2];
+    		String regadbVIXmlFile = args[3];
     		String proxyHost=null;
     		String proxyPort=null;
     		
-    		if(args.length >= 5){
-    			proxyHost = args[3];
-    			proxyPort = args[4];
+    		if(args.length >= 6){
+    			proxyHost = args[4];
+    			proxyPort = args[5];
     		}
     		
-    		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile);
+    		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile, regadbVIXmlFile);
     	}
     	else{
     		UZBrusselAutoImport.splitExcelFile("/home/plibin0/import/jette/import/cd/080420/");
@@ -43,11 +44,12 @@ public class ParseAll {
 	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
 	    			"www-proxy",
 	    			"3128",
-	    			"/home/plibin0/Desktop/" + File.separatorChar + "patients.xml");
+	    			"/home/plibin0/Desktop/" + File.separatorChar + "patients-uzbrussel.xml",
+	    			"/home/plibin0/Desktop/" + File.separatorChar + "vi-uzbrussel.xml");
     	}
     }
     
-    public static void exec(String baseDir, String mappingDir, String proxyHost, String proxyPort, String regadbXmlFile) {
+    public static void exec(String baseDir, String mappingDir, String proxyHost, String proxyPort, String regadbXmlFile, String viXmlFile) {
         if(proxyHost!=null) {
 	    	Properties props = System.getProperties();
 	        props.put("http.proxyHost", proxyHost);
@@ -69,10 +71,10 @@ public class ParseAll {
         ParseConfirmation pc = new ParseConfirmation(baseDir, parseIds, patients);
         pc.exec();
         
-        ParseSeqs parseSeqs = new ParseSeqs(baseDir,parseIds, patients);
+        ParseSeqs parseSeqs = new ParseSeqs(baseDir,parseIds, patients, povl.seqMathOldVL);
         parseSeqs.exec();
         
         IOUtils.exportPatientsXMLI(patients, regadbXmlFile, ConsoleLogger.getInstance());
-        IOUtils.exportViralIsolatesXMLFromPatientsI(patients, regadbXmlFile+"vi", ConsoleLogger.getInstance());
+        IOUtils.exportViralIsolatesXMLFromPatientsI(patients, viXmlFile, ConsoleLogger.getInstance());
     }
 }

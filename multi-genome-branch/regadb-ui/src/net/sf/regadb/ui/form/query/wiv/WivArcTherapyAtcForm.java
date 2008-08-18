@@ -25,7 +25,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 
         String query = "select tp, pav "+
         "from Therapy tp inner join tp.patient p inner join p.patientAttributeValues pav "+
-        "where ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null ) " +
+        "where not ((tp.startDate > :var_end_date and not cast(:var_end_date as date) is null) or ( tp.stopDate < :var_start_date and not tp.stopDate is null )) " +
         "and pav.attribute.name = 'PatCode' and p.patientIi in ("+ getArcPatientQuery() +")";
 
         setQuery(query);
@@ -64,9 +64,9 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         		"from PatientAttributeValue pav "+
         		"where pav.patient not in (" +
         			"select tp.patient from Therapy tp where " +
-        				" ( tp.startDate >= :var_start_date and tp.startDate <= :var_end_date and tp.stopDate is null )" +
+        				" not ((tp.startDate > :var_end_date and not cast(:var_end_date as date) is null) or ( tp.stopDate < :var_start_date and not tp.stopDate is null ))" +
         			") " +
-        		"and pav.attribute.name = 'PatCode'");
+        		"and pav.attribute.name = 'PatCode' and pav.patient.patientIi in ("+ getArcPatientQuery() +")");
         q.setDate("var_start_date", getStartDate());
         q.setDate("var_end_date", getEndDate());
         List<PatientAttributeValue> pavs = q.list();
