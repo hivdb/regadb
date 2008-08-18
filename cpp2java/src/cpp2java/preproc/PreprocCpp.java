@@ -41,6 +41,10 @@ public class PreprocCpp {
         this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WFileResource.C"),
         		"WFileResource::streamResourceData",
         		"{return true;}");
+        
+        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "Ext" + File.separatorChar + "TableView.C"),
+		        "parseNumberList",
+		        "{}");
     }
     
     public PreprocCpp(){
