@@ -2,28 +2,23 @@ package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.session.HibernateUtil;
-import net.sf.regadb.io.importXML.impl.ImportXML;
+import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.autoImport.AutoImport;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.util.xls.Xls2Csv;
+
+import org.xml.sax.SAXException;
 
 public class UZBrusselAutoImport {
 	public static void main(String [] args) {
-		//"/home/plibin0/import/jette/import/cd/080321/"
-		//String mappingBasePath = "/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings";
 		int obligatoryArguments = 4;
 		if(args.length<obligatoryArguments) {
 			System.err.println("Usage baseDir mappingDir user password [proxyHost proxyPort]");
@@ -37,41 +32,71 @@ public class UZBrusselAutoImport {
 			proxyPort = args[obligatoryArguments+1];
 		}
 		
-		File tmpXmlFile = null;
+		UZBrusselAutoImport ai = new UZBrusselAutoImport();
+		
 		try {
-			tmpXmlFile = File.createTempFile("regadb-patients", "xml");
-		} catch (IOException e) {
+			ai.run(args[0], args[1], args[2], args[3], proxyHost, proxyPort);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-		
-		splitExcelFile(args[0]);
-		
-		ParseAll.exec(args[0], args[1], proxyHost, proxyPort, tmpXmlFile.getAbsolutePath());
-		
-        Connection c = HibernateUtil.getJDBCConnection();
-        try {
-            c.createStatement().execute("truncate patient cascade");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-		try {
-			ImportXML instance = new ImportXML(args[2], args[3]);
-	        instance.importPatients(new InputSource(new FileReader(tmpXmlFile)), "UZBrussel");
-	        instance.login.closeSession();
 		} catch (WrongUidException e) {
 			e.printStackTrace();
 		} catch (WrongPasswordException e) {
 			e.printStackTrace();
 		} catch (DisabledUserException e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void run(String baseDir, String mappingDir, String user, String password, String proxyHost, String proxyPort) throws WrongUidException, WrongPasswordException, DisabledUserException, FileNotFoundException, SAXException, IOException {
+		File tempPatientsXmlFile = null;
+		File tempViralIsolatesXmlFile = null;
+		try {
+			tempPatientsXmlFile = File.createTempFile("regadb-patients", "xml");
+			tempViralIsolatesXmlFile = File.createTempFile("regadb-viralisolates", "xml");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		splitExcelFile(baseDir);
+		
+		ParseAll.exec(baseDir, mappingDir, proxyHost, proxyPort, tempPatientsXmlFile.getAbsolutePath(), tempViralIsolatesXmlFile.getAbsolutePath());
+		
+		Login login = Login.authenticate(user, password);
+		AutoImport auto = new AutoImport(login, ConsoleLogger.getInstance(), "UZBrussel");
+		
+		System.err.println("Start exporting former viral isolates");
+		File oldViralIsolates = auto.exportViralIsolates();
+		System.err.println(oldViralIsolates);
+		
+		System.err.println("Start removing former database");
+		auto.removeOldDatabase();
+		
+		System.err.println("Start importing new patients");
+		auto.importPatients(tempPatientsXmlFile);
+		
+		System.err.println("Start importing former viralisolates");
+		auto.importFormerViralIsolates(oldViralIsolates);
+		
+		System.err.println("Start importing new viralisolates");
+		auto.importNewViralIsolate(oldViralIsolates, tempViralIsolatesXmlFile, new AutoImport.ViralIsolateComparator() {
+			public boolean equals(ViralIsolate oldVI, ViralIsolate newVI) {
+				if(oldVI.getSampleId().equals(newVI.getSampleId()))
+					return true;
+				else
+					return false;
+			}
+		});
+		
+		login.closeSession();
+		
+		auto.cleanTempFiles();
+		
+		tempPatientsXmlFile.delete();
+		tempViralIsolatesXmlFile.delete();
 	}
 	
     public static void splitExcelFile(String baseDir) {
