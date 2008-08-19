@@ -31,21 +31,22 @@ public class ParseAll {
     		exec(baseDir,mappingDir,proxyHost,proxyPort,regadbXmlFile, regadbVIXmlFile);
     	}
     	else{
-    		UZBrusselAutoImport.splitExcelFile("/home/plibin0/import/jette/import/cd/080420/");
-	    	try {
-				String patientdb = FileUtils.readFileToString(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"));
-				patientdb = patientdb.replace('é', 'e');
-				FileUtils.writeStringToFile(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"), patientdb);
-	    	} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		exec(	"/home/plibin0/import/jette/import/cd/080420/",
-	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
-	    			"www-proxy",
-	    			"3128",
-	    			"/home/plibin0/Desktop/" + File.separatorChar + "patients-uzbrussel.xml",
-	    			"/home/plibin0/Desktop/" + File.separatorChar + "vi-uzbrussel.xml");
+    		System.err.println("Usage baseDir mappingDir patientXml viralIsolateXml [proxyHost proxyPort]");
+//    		UZBrusselAutoImport.splitExcelFile("/home/plibin0/import/jette/import/cd/080420/");
+//	    	try {
+//				String patientdb = FileUtils.readFileToString(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"));
+//				patientdb = patientdb.replace('é', 'e');
+//				FileUtils.writeStringToFile(new File("/home/plibin0/import/jette/import/cd/080420/emd/patientdb.xml"), patientdb);
+//	    	} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//    		exec(	"/home/plibin0/import/jette/import/cd/080420/",
+//	    			"/home/plibin0/myWorkspace/regadb-io-db/src/net/sf/regadb/io/db/uzbrussel/mappings",
+//	    			"www-proxy",
+//	    			"3128",
+//	    			"/home/plibin0/Desktop/" + File.separatorChar + "patients-uzbrussel.xml",
+//	    			"/home/plibin0/Desktop/" + File.separatorChar + "vi-uzbrussel.xml");
     	}
     }
     
