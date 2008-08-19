@@ -72,14 +72,23 @@ public class ParseSeqs {
                         if(p==null) {
                         	ConsoleLogger.getInstance().logWarning("Cannot find patient for sequence: " + id);
                         } else {
-                            ViralIsolate vi = p.createViralIsolate();
-
-                            vi.setSampleId(seqId);
-                            vi.setSampleDate(d);
-                            
-                            getNtSeqsFromFile(seq, vi);
-
-                            counter++;
+                        	if(checkUniqueSample(p, seqId)) {
+                        		Integer erroneousPatientId = usedForOtherPatient(seqId);
+                        		if(erroneousPatientId==null) {
+		                            ViralIsolate vi = p.createViralIsolate();
+		
+		                            vi.setSampleId(seqId);
+		                            vi.setSampleDate(d);
+		                            
+		                            getNtSeqsFromFile(seq, vi);
+		
+		                            counter++;
+                        		} else {
+                                    ConsoleLogger.getInstance().logError("Seqid was already used for patient(" +seqId + ")"+ erroneousPatientId + " - " + p.getPatientId() + "-" + seqDate);
+                        		}
+                        	} else {
+                                ConsoleLogger.getInstance().logWarning("Seqid was already loaded" + seqId);
+                        	}
                         }
                     } else {
                         ConsoleLogger.getInstance().logWarning("Cannot find sequenceFile for sequenceId - patientId: " + seqId + " - " +id);
@@ -92,6 +101,27 @@ public class ParseSeqs {
         }
         
         return counter;
+    }
+    
+    private boolean checkUniqueSample(Patient p, String sampleId) {
+    	for(ViralIsolate vi : p.getViralIsolates()) {
+    		if(vi.getSampleId().equals(sampleId)) 
+    			return false;
+    	}
+    	
+    	return true;
+    }
+    
+    private Integer usedForOtherPatient(String sampleId) {
+    	for(Map.Entry<Integer, Patient> e : patients_.entrySet()) {
+    		for(ViralIsolate vi : e.getValue().getViralIsolates()) {
+    			if(vi.getSampleId().equals(sampleId)) {
+    				return e.getKey();
+    			}
+    		}
+    	}
+    	
+    	return null;
     }
     
     private File getSequence(String seqId) {
