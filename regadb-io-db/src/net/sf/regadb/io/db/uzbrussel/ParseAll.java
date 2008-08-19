@@ -23,6 +23,8 @@ public class ParseAll {
     		String proxyHost=null;
     		String proxyPort=null;
     		
+    		UZBrusselAutoImport.splitExcelFile(baseDir);
+    		
     		if(args.length >= 6){
     			proxyHost = args[4];
     			proxyPort = args[5];
