@@ -18,7 +18,7 @@ public class ParseEadEmd {
     
     public void run(String eadEmdNameFile, String patientenFile) {
         Set<String> emd  = new HashSet<String>();
-        Table eadEmd = Utils.readTable(eadEmdNameFile);
+        Table eadEmd = Utils.readTable(eadEmdNameFile,ParseAll.getCharset(),ParseAll.getDelimiter());
         
         System.err.println("Non-unique emd's -------------------------");
         for(int i = 1; i<eadEmd.numRows(); i++) {
@@ -27,7 +27,7 @@ public class ParseEadEmd {
         }
         System.err.println("Non-unique emd's -------------------------");
         
-        Table patientFilemakerTable = Utils.readTable(patientenFile, ';');
+        Table patientFilemakerTable = Utils.readTable(patientenFile, ParseAll.getCharset(), ParseAll.getDelimiter());
         int CDossierNr = Utils.findColumn(patientFilemakerTable, "DossierNr");
         int CNaam = Utils.findColumn(patientFilemakerTable, "Naam");
         int CVoornaam = Utils.findColumn(patientFilemakerTable, "Voornaam");
@@ -45,7 +45,7 @@ public class ParseEadEmd {
                 }
             }
             if(!found) {
-                onlyInKWS.add(emdKWSValue + " " + eadEmd.valueAt(2, i) + " " + eadEmd.valueAt(3, i));
+                onlyInKWS.add(emdKWSValue); //+ " " + eadEmd.valueAt(2, i) + " " + eadEmd.valueAt(3, i));
             }
         }
         
@@ -79,6 +79,10 @@ public class ParseEadEmd {
         for(int i = 1; i<eadEmd.numRows(); i++) {
             String emdKWSValue = eadEmd.valueAt(1, i);
             String eadKWSValue = eadEmd.valueAt(0, i);
+            
+            if(eadKWSValue == null || eadKWSValue.trim().length() == 0)
+            	continue;
+            
             for(int j = 1; j<patientFilemakerTable.numRows(); j++) {
                 String emdFileMaker = patientFilemakerTable.valueAt(CDossierNr, j);
                 String patientID = patientFilemakerTable.valueAt(CPatientId, j);
@@ -92,6 +96,6 @@ public class ParseEadEmd {
     
     public static void main(String [] args) {
         ParseEadEmd parse = new ParseEadEmd();
-        parse.run("/home/simbre1/tmp/import/ghb/filemaker/ead_emd_name.csv","/home/simbre1/tmp/import/ghb/filemaker/patienten.csv");
+        parse.run("/home/simbre1/import/ghb/filemaker/ead_emd_name.csv","/home/simbre1/import/ghb/filemaker/patienten.csv");
     }
 }

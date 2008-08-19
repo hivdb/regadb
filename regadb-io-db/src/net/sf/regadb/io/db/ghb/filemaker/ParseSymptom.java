@@ -38,7 +38,7 @@ public class ParseSymptom {
         
         List<Event> regadbEvents = Utils.prepareRegaDBEvents();
         
-        Table symptomTable = Utils.readTable(f.getAbsolutePath(),';');
+        Table symptomTable = Utils.readTable(f.getAbsolutePath(), ParseAll.getCharset(), ParseAll.getDelimiter());
         Table adiMapTable = Utils.readTable(mapping.getAbsolutePath());
         
         NominalEvent aidsDefiningIllness    = new NominalEvent("Aids defining illness", adiMapTable, Utils.selectEvent("Aids defining illness", regadbEvents));

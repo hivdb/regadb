@@ -38,7 +38,7 @@ public class ParsePatient {
             System.err.println("Mapping file does not exist: "+ transmissionGroupMapFile.getAbsolutePath());
         }
         
-        Table patientTable = Utils.readTable(patientFile.getAbsolutePath(),"ISO-8859-15",';');
+        Table patientTable = Utils.readTable(patientFile.getAbsolutePath(),ParseAll.getCharset(),ParseAll.getDelimiter());
         
         int CPatientId = Utils.findColumn(patientTable, "Patient_ID");
         int CBirthDate = Utils.findColumn(patientTable, "Geboortedatum");

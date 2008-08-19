@@ -1,9 +1,5 @@
 package net.sf.regadb.io.db.ghb.filemaker;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
@@ -32,12 +28,7 @@ public class ParseContacts {
     }
         
     public void run(Map<String,Patient> patients, String contactenFile) {
-        Table contacts = null;
-        try {
-             contacts = new Table(new InputStreamReader(new BufferedInputStream(new FileInputStream(contactenFile))), false, ';');
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Table contacts = Utils.readTable(contactenFile, ParseAll.getCharset(), ParseAll.getDelimiter());
         
         int CHIVPos = Utils.findColumn(contacts, "HIV_Status_Staal");
         int CCD4 = Utils.findColumn(contacts, "CD4_Absoluut");
@@ -47,7 +38,7 @@ public class ParseContacts {
         int CViralLoad = Utils.findColumn(contacts, "Viral_Load_Absoluut");
         int CPatientId = Utils.findColumn(contacts, "Patient_ID");
         int CDate = Utils.findColumn(contacts, "Datum");
-        int CContact = Utils.findColumn(contacts, "AlleenContact");
+        //int CContact = Utils.findColumn(contacts, "AlleenContact");
         
         for(int i = 1; i<contacts.numRows(); i++) {
             String patientId = contacts.valueAt(CPatientId, i);
