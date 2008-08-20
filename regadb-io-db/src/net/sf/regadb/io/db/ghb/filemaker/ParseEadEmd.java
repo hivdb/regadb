@@ -34,7 +34,7 @@ public class ParseEadEmd {
         int CPatientId = Utils.findColumn(patientFilemakerTable, "Patient_ID");
         
         //only in kws
-        ArrayList<String> onlyInKWS = new ArrayList<String>();
+        HashSet<String> onlyInKWS = new HashSet<String>();
         for(int i = 1; i<eadEmd.numRows(); i++) {
             String emdKWSValue = eadEmd.valueAt(1, i);
             boolean found = false;
@@ -44,7 +44,8 @@ public class ParseEadEmd {
                     found = true;
                 }
             }
-            if(!found) {
+            if(!found&&!eadEmd.valueAt(2, i).equals("error")) {
+            	
                 onlyInKWS.add(emdKWSValue); //+ " " + eadEmd.valueAt(2, i) + " " + eadEmd.valueAt(3, i));
             }
         }

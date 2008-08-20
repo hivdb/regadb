@@ -109,7 +109,7 @@ public class ParseTherapy {
                 try {
                     patientId = Integer.parseInt(therapy.valueAt(CPatientId, i));
                 } catch(NumberFormatException e) {
-                    System.err.println("Invalid patientId on row " + i);
+                    System.err.println("Invalid patientId on row " + i +", value: "+ patientId);
                 }
                 String blind = therapy.valueAt(CBlind, i);
 

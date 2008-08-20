@@ -2,6 +2,7 @@ package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
@@ -39,6 +40,8 @@ public class ParseContacts {
         int CPatientId = Utils.findColumn(contacts, "Patient_ID");
         int CDate = Utils.findColumn(contacts, "Datum");
         //int CContact = Utils.findColumn(contacts, "AlleenContact");
+        
+        HashSet<String> setset = new HashSet<String>();
         
         for(int i = 1; i<contacts.numRows(); i++) {
             String patientId = contacts.valueAt(CPatientId, i);
@@ -99,7 +102,9 @@ public class ParseContacts {
                         }
                     }
                 } else {
-                    System.err.println("invalid patientId: " + patientId);
+                	if(setset.add(patientId)) {                    
+                		System.err.println("invalid patientId****: " + patientId);
+                	}
                 }
             } else {
                 System.err.println("Cannot parse contact, no date or wrong patientId");
