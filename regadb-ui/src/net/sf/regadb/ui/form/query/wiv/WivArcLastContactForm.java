@@ -8,11 +8,18 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.ui.form.query.wiv.WivQueryForm.EmptyResultException;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
 import org.hibernate.Query;
 
@@ -20,11 +27,6 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     
     public WivArcLastContactForm(){
         super(tr("menu.query.wiv.arc.lastContact"),tr("form.query.wiv.label.arc.lastContact"),tr("file.query.wiv.arc.lastContact"));
-        setQuery("select pav.value, max(tr.testDate) from PatientAttributeValue pav, TestResult tr " +
-                "where pav.patient = tr.patient and pav.attribute.name = 'PatCode' and pav.patient.patientIi in (" + getArcPatientQuery() +") "+
-                "and tr.test.description = '"+ StandardObjects.getContactTest().getDescription() +"' " +
-                "and :var_start_date < :var_end_date group by pav.value");
-        
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }
 
@@ -37,36 +39,71 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
             super.setQueryParameter(q, name, f);
     }
     
+    protected PatientAttributeValue getPav(Patient p, String attribute){
+    	for(PatientAttributeValue pav : p.getPatientAttributeValues())
+    		if(pav.getAttribute().getName().equals(attribute))
+    			return pav;
+    	
+    	return null;
+    }
+    protected List<TestResult> getTestResults(Patient p, Test test){
+    	List<TestResult> ret = new ArrayList<TestResult>();
+    	for(TestResult tr : p.getTestResults())
+    		if(Equals.isSameTest(tr.getTest(),test))
+    			ret.add(tr);
+    	
+    	return ret;
+    }
+    
     @Override
     @SuppressWarnings("unchecked")
     protected void process(File csvFile) throws Exception{
+    	Transaction t = createTransaction();
+    	
+        Date sdate = getStartDate();
+        Date edate = getEndDate();
+        
+        HibernateFilterConstraint hfc = new HibernateFilterConstraint();
+        hfc.setClause("patient.patientIi in ("+ getArcPatientQuery() +")");
+        List<Patient> patients = t.getPatients("",hfc);
+        
         ArrayList<String> row;
         Table out = new Table();
         
-        Transaction t = createTransaction();
-        Query q = createQuery(t);
-        
-        List<Object[]> list = q.list();
-        
-        if(list.size() < 1)
-            throw new EmptyResultException();
-        
-        for(Object[] o : list){
-        	String patcode = (String)o[0];
-        	Date d = (Date)o[1];
+        PatientAttributeValue pav;
+        for(Patient p : patients){
+        	pav = getPav(p, "PatCode");
+        	if(pav == null)
+        		continue;
+        	String patcode = pav.getValue();
         	
-            row = new ArrayList<String>();
-            
-            row.add(patcode);
-            row.add(getFormattedDate(d));
-            row.add(TypeOfInformationCode.LAST_CONTACT_DATE.getCode()+"");
-            row.add("");
-
-            out.addRow(row);
+        	List<TestResult> trs = getTestResults(p, StandardObjects.getContactTest());
+        	
+        	Date maxDate = sdate;
+        	for(TestResult tr : trs){
+        		Date d = tr.getTestDate();
+        		
+        		if(d != null && maxDate.before(d) && d.before(edate)){
+        			maxDate = d;
+        		}
+        	}
+        	if(maxDate != sdate){
+	            row = new ArrayList<String>();
+	            
+	            row.add(patcode);
+	            row.add(getFormattedDate(maxDate));
+	            row.add(TypeOfInformationCode.LAST_CONTACT_DATE.getCode()+"");
+	            row.add("");
+	
+	            out.addRow(row);
+        	}
         }
         
         t.commit();
         
-        out.exportAsCsv(new FileOutputStream(csvFile),';',false);
+        if(out.numRows() == 0)
+        	throw new EmptyResultException();
+        else
+        	out.exportAsCsv(new FileOutputStream(csvFile),';',false);
     }
 }
