@@ -31,7 +31,6 @@ import net.sf.regadb.io.util.StandardObjects;
 
 public class MergeLISFiles {
     public Map<String, Patient> patients = new HashMap<String, Patient>();
-    public Map<String, Set<String>> patientTestCodes = new HashMap<String, Set<String>>();
     
     private Date earliestDate = new Date(System.currentTimeMillis());
     
@@ -180,16 +179,6 @@ public class MergeLISFiles {
         }
     }
     
-    public boolean putTestCode(Patient p, Date testDate, String testCode){
-    	Set<String> testCodes = patientTestCodes.get(p.getPatientId());
-        if(testCodes == null){
-        	testCodes = new HashSet<String>();
-        	patientTestCodes.put(p.getPatientId(), testCodes);
-        }
-        String s = testCodes +":"+ testDate.getTime();
-        return testCodes.add(s);
-    }
-    
     public boolean containsAttribute(Attribute a, Patient p) {
         for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
             if(pav.getAttribute().getName().equals(a.getName())) {
@@ -235,8 +224,6 @@ public class MergeLISFiles {
                 String unit = line.get(headers.indexOf("eenheden"));
                 String testCode = line.get(headers.indexOf("testCode"));
 
-                if(!putTestCode(p, sampleDate, testCode))	//duplicate
-                	return;
 
 //                if(name.contains("Absolute T4-lymfocytose (bloed)oude code")){
 //                	StandardObjects.getGeneric;
@@ -422,6 +409,9 @@ public class MergeLISFiles {
     }
     
     private void storeCD4(double value, Date date, Patient p, String sampleId) {
+    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD4Test()))
+    		return;
+    	
         TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
         t.setValue(value+"");
         t.setTestDate(date);
@@ -432,6 +422,9 @@ public class MergeLISFiles {
     }
     
     private void storeCD8(double value, Date date, Patient p, String sampleId) {
+    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD8Test()))
+    		return;
+    	
         TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
         t.setValue(value+"");
         t.setTestDate(date);
@@ -442,6 +435,9 @@ public class MergeLISFiles {
     }
     
     private void storeViralLoad(String value, Date date, Patient p, String sampleId) {
+    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericHiv1ViralLoadTest()))
+    		return;
+    	
         TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
         t.setValue(value);
         t.setTestDate(date);
@@ -452,6 +448,9 @@ public class MergeLISFiles {
     }
     
     private void storeTest(Test test, String value, Date date, Patient p, String sampleId){
+    	if(duplicateTestResult(value+"", date, p, sampleId, test))
+    		return;
+    	
     	TestResult t = p.createTestResult(test);
     	String s = value;
     	TestNominalValue tnv=null;
@@ -520,5 +519,17 @@ public class MergeLISFiles {
 
     public Map<String, Patient> getPatients() {
         return patients;
+    }
+    
+    private boolean duplicateTestResult(String value, Date date, Patient p, String sampleId, Test test) {
+    	for(TestResult tr : p.getTestResults()) {
+    		if(tr.getTest().getDescription().equals(test.getDescription()) &&
+    				tr.getTestDate().equals(date) &&
+    				tr.getValue().equals(value) &&
+    				tr.getSampleId().equals(sampleId)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }
