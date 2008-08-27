@@ -25,26 +25,6 @@ public class PreprocCpp {
         this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "Wt/Chart");
         this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "Wt/Ext");
         this.performChangesOnFilesInDir(wtSrcDir + File.separatorChar + "web");
-        
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
-        		"WCalendar::dateForCell",
-        		"{return date();}");
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WCalendar.C"),
-        		"WCalendar::renderMonth",
-        		"{}");
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
-        		"WEnvironment::libraryVersion",
-        		"{return std::string();}");
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WEnvironment.C"),
-        		"WEnvironment::libraryVersion(int",
-        		"{}");
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "WFileResource.C"),
-        		"WFileResource::streamResourceData",
-        		"{return true;}");
-        
-        this.removeMethodContent(new File(wtSrcDir + File.separatorChar + "Wt" + File.separatorChar + "Ext" + File.separatorChar + "TableView.C"),
-		        "parseNumberList",
-		        "{}");
     }
     
     public PreprocCpp(){
@@ -78,19 +58,25 @@ public class PreprocCpp {
         System.err.println("\t handle bitset<>");
         sb = new StringBuffer(sb.toString().replaceAll("std::bitset\\<[0-9]*\\>", "std::bitset"));
         
+        removeMethodContent(f, "WCalendar.C", sb, "WCalendar::dateForCell", "{return date();}");
+        removeMethodContent(f, "WCalendar.C", sb, "WCalendar::renderMonth", "{}");
+        removeMethodContent(f, "WEnvironment.C", sb, "WEnvironment::libraryVersion", "{return std::string();}");
+        removeMethodContent(f, "WEnvironment.C", sb, "WEnvironment::libraryVersion(int", "{}");
+        removeMethodContent(f, "WFileResource.C", sb, "WFileResource::streamResourceData", "{return true;}");
+        removeMethodContent(f, "TableView.C", sb, "parseNumberList", "{}");
+        
         writeFile(f, sb);
     }
     
-    public void removeMethodContent(File f, String methodName, String replacement) {
-    	StringBuffer fileContent = Utils.readFileAsString(f.getAbsolutePath());
-    	
-    	int methodNamePos = fileContent.indexOf(methodName);
-    	int firstBracket = fileContent.indexOf("{", methodNamePos);
-    	int matchBracket = findMatchingBracket(fileContent, firstBracket);
-    	
-    	fileContent.replace(firstBracket, matchBracket+1, replacement);
-    	
-    	writeFile(f, fileContent);
+    public void removeMethodContent(File f, String fileName, StringBuffer fileContent, String methodName, String replacement) {
+    	if(f.getName().equals(fileName)) {
+	    	System.err.println("remove method contents in file: " + f.getAbsolutePath());
+    		int methodNamePos = fileContent.indexOf(methodName);
+	    	int firstBracket = fileContent.indexOf("{", methodNamePos);
+	    	int matchBracket = findMatchingBracket(fileContent, firstBracket);
+	    	
+	    	fileContent.replace(firstBracket, matchBracket+1, replacement);
+    	}
     }
     
     private void handleVoidTemplateArg(StringBuffer sb) {
@@ -297,5 +283,10 @@ public class PreprocCpp {
 
     Map<String,Integer> getTemplateClasses() {
         return templateClasses;
+    }
+    
+    public void copyFile(File in, File out) {
+    	StringBuffer sb = Utils.readFileAsString(in.getAbsolutePath());
+    	writeFile(out, sb);
     }
 }

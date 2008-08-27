@@ -14,12 +14,18 @@ public class Cpp2Java {
 		if(args.length==0) { 
 			System.err.println("Usage:");
 			System.err.println("preproc [C++ file/header]");
+			System.err.println("preproc-cp [C++ file/header input] [C++ file/header output]");
 			System.err.println("preproc-wt-src [wt-src-dir]");
 			System.err.println("generate-wt-pretty-batch-scripts [wt-src-dir] [script-dir] [ccparse command]");
 			System.err.println("check-wt-src [wt-src-dir] [report-dir]");
 		} else {
 			if(args[0].equals("preproc")) {
 				preproc.performChangesOnFile(new File(args[1]));
+			} else if(args[0].equals("preproc-cp")) {
+				File in = new File(args[1]);
+				File out = new File(args[2]);
+				preproc.copyFile(in, out);
+				preproc.performChangesOnFile(out);
 			} else if(args[0].equals("preproc-wt-src")) {
 				preproc.performChangesOnWitty(args[1]);
 			} else if(args[0].equals("check-wt-src")) {
