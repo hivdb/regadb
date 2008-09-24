@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -1053,6 +1054,8 @@ public class CsvTool {
 				}
 				
 				/* FIXME: assumes columns in increasing order. */
+				Collections.sort(removeColumns); //simple but correct?
+				
 				for (int i = removeColumns.size() - 1; i >= 0; --i) {
 					table.deleteColumn(((Integer)removeColumns.get(i)).intValue());
 				}
@@ -1071,9 +1074,17 @@ public class CsvTool {
 			System.out.print(i + ": " + table.valueAt(i, 0));
 			Map m = (Map) histogram.get(i);
 			
+			//calculate sum of values to be able to calculate %
+			Integer sum = 0; 
+			for (Iterator sumIterator = m.keySet().iterator(); sumIterator.hasNext();) {
+				String k = (String) sumIterator.next();
+				sum += (Integer) m.get(k);
+			}
+			
 			for (Iterator j = m.keySet().iterator(); j.hasNext();) {
 				String k = (String) j.next();
-				System.out.print(" " + k + "(" + m.get(k) + ")");
+				Integer number = (Integer) m.get(k);
+				System.out.print(" " + k + "(" + number + " - "+ ((((float) number)*100)/sum) +"%)");
 			}
 			System.out.println();
 		}
@@ -1083,7 +1094,7 @@ public class CsvTool {
 		System.err.println("usage:");
 		System.err.println();
 		System.err.println("csvtool (select-columns|not-columns|prune-columns|edit|arff|spss|histogram");
-		System.err.println("         |mutation|vd|sample|bootstrap|stratify|discretize) options");
+		System.err.println("         |mutation|vd|sample|bootstrap|stratify|discretize|concat|contingency) options");
 		System.err.println();
 		System.err.println("  general options:");
 		System.err.println("      -i,--in infile.csv");
@@ -1147,6 +1158,9 @@ public class CsvTool {
 		System.err.println("      -p,--pattern regexp");
 		System.err.println("      [-h,--headervalues] -c,--columns c");
 		System.err.println("      -y,--targetcolumn c");
+		System.err.println();
+		System.err.println("  contingency options:");
+		System.err.println("      [-h,--headervalues] -c,--columns c");		
 		System.exit(2);
 	}
 }
