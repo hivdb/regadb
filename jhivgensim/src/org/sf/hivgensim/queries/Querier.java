@@ -35,20 +35,20 @@ public class Querier {
 
 		QueryInput queryInput = null;
 
-		if((Boolean)cmdLineParser.getOptionValue(databaseOption))
+		if((Boolean)cmdLineParser.getOptionValue(databaseOption) != null)
 		{
 			String login = (String) cmdLineParser.getOptionValue(loginOption);
 			String password = (String) cmdLineParser.getOptionValue(passwordOption);
 			queryInput = new FromDatabase(login,password);
 		}
-		else if((Boolean)cmdLineParser.getOptionValue(xmlOption))
+		else if((Boolean)cmdLineParser.getOptionValue(xmlOption) != null)
 		{
 			String login = (String) cmdLineParser.getOptionValue(loginOption);
 			String password = (String) cmdLineParser.getOptionValue(passwordOption);
 			String file = (String) cmdLineParser.getOptionValue(inputOption);
 			queryInput = new FromXml(new File(file),login,password);
 		}
-		else if((Boolean)cmdLineParser.getOptionValue(snapshotOption)){
+		else if((Boolean)cmdLineParser.getOptionValue(snapshotOption) != null){
 			String file = (String) cmdLineParser.getOptionValue(inputOption);
 			queryInput = new FromSnapshot(new File(file));
 		}
