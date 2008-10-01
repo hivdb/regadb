@@ -21,6 +21,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 
+import org.hibernate.ScrollableResults;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -28,6 +29,32 @@ public abstract class QueryInfra {
 
 	public QueryInfra() {
 
+	}
+	
+	public void runOnDatabase(String loginname, String passwd){
+		Login login = null;
+		try
+		{
+			login = Login.authenticate(loginname,passwd);
+		}
+		catch (WrongUidException e)
+		{
+			e.printStackTrace();
+		}
+		catch (WrongPasswordException e)
+		{
+			e.printStackTrace();
+		} 
+        catch (DisabledUserException e) 
+        {
+            e.printStackTrace();
+        }
+        Transaction t = login.createTransaction();
+        ScrollableResults patients = t.getPatientsScrollable();
+        while(patients.next()){
+        	Object[] os = patients.get();
+            performQuery((Patient)os[0]);            
+        }
 	}
 
 	public void runOnSnapshot(File file, String loginname, String passwd){
@@ -43,6 +70,7 @@ public abstract class QueryInfra {
 		}
 		catch (EOFException e) 
 		{
+			System.err.println(e.getMessage());
 			//end of file reached but unexpected?
 			return;
 		}
