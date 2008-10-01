@@ -20,11 +20,17 @@ import org.jdom.output.XMLOutputter;
 
 
 public class GetXml {
+	
+	/*
+	 * @param args 	args[0] outputfile
+	 * 				args[1]	login
+	 * 				args[2] passwd
+	 */
 	public static void main(String [] args) {
 		Login login = null;
 		try
 		{
-			login = Login.authenticate("admin", "admin");
+			login = Login.authenticate(args[1], args[2]);
 		}
 		catch (WrongUidException e)
 		{
@@ -40,7 +46,7 @@ public class GetXml {
         }
         
         Transaction t = login.createTransaction();
-        exportPatientsToXml(t, new File("/home/plibin0/Desktop/patients-export.xml"));
+        exportPatientsToXml(t, new File(args[0]));
 	}
 	
 	public static void exportPatientsToXml(Transaction t, File exportXmlFile) {
@@ -49,9 +55,8 @@ public class GetXml {
         
         ScrollableResults patients = t.getPatientsScrollable();
         
-        
-        
-        while ( true ) {
+        int i=0;       
+        while ( i < 5000) { //smaller test set
             Element patient = new Element("patients-el");
             root.addContent(patient);
             if(patients.next()) {
@@ -60,7 +65,7 @@ public class GetXml {
             } else {
             	break;
             }
-            System.err.print(".");
+            System.err.println(i++);
         }
         
         System.err.println("done");
@@ -77,5 +82,5 @@ public class GetXml {
 	        } catch ( IOException e ) {
 	        	e.printStackTrace();
 	        }
-	}
+	}	
 }
