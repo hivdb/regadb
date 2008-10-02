@@ -5,6 +5,7 @@ import jargs.gnu.CmdLineParser.Option;
 
 import java.io.File;
 
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 
 public class Querier {
@@ -59,11 +60,11 @@ public class Querier {
 		String output = (String) cmdLineParser.getOptionValue(outputOption);
 		
 		long start = System.currentTimeMillis();
-		QueryImpl<Patient> q = new GetNaiveSequences(queryInput);
-		ToSnapshot<Patient> tss = new ToSnapshot<Patient>(q,new File(output+".snapshot"));
-		ToMutationTable tmt = new ToMutationTable(q,new File(output));
-		tss.generateOutput();
-		tmt.generateOutput();
+		QueryImpl<NtSequence,Patient> q = new GetLatestSequencePerPatient(new GetNaiveSequences(queryInput));
+		ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
+		ToMutationTable tmt = new ToMutationTable(new File(output));
+		tss.generateOutput(q);
+		tmt.generateOutput(q);
 		long stop = System.currentTimeMillis();
 		System.err.println("done in " + (stop - start) + " ms");
 	}

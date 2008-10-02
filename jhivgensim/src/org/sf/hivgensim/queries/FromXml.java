@@ -58,7 +58,6 @@ public class FromXml extends QueryInput {
 		{
 			r = new FileReader(file);
 			imp.readPatients(new InputSource(r), new ImportHandler<Patient>() {
-				@Override
 				public void importObject(Patient p) {
 					outputList.add(p);
 				}

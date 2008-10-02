@@ -3,9 +3,9 @@ package org.sf.hivgensim.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class QueryImpl<T> implements Query<T>{
+public abstract class QueryImpl<T,I> implements Query<T>{
 	
-	protected Query<T> inputQuery;
+	protected Query<I> inputQuery;
 	protected List<T> outputList;
 	protected abstract void populateOutputList();
 	

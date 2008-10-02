@@ -8,12 +8,12 @@ import java.io.ObjectOutputStream;
 
 public class ToSnapshot<T> extends QueryOutput<T> {
 	
-	public ToSnapshot(QueryImpl<T> query, File file){
-		super(query,file);
+	public ToSnapshot(File file){
+		super(file);
 	}
 	
 	@Override
-	public void generateOutput() {
+	public void generateOutput(Query<T> query) {
 		try 
 		{
 			ObjectOutputStream snapshotstream = new ObjectOutputStream(new FileOutputStream(file));

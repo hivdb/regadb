@@ -5,31 +5,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.ViralIsolate;
 
-public class ToMutationTable extends QueryOutput<Patient> {
+public class ToMutationTable extends QueryOutput<NtSequence> {
 
-	public ToMutationTable(QueryImpl<Patient> query, File file){
-		super(query,file);
+	public ToMutationTable(File file){
+		super(file);
 	}
 
-	@Override
-	public void generateOutput() {
+	public void generateOutput(Query<NtSequence> query) {
 		//old mutationtable code should be converted and come here
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream(file));
-			for(Patient p : query.getOutputList()){
-				for(ViralIsolate vi : p.getViralIsolates()){
-					for(NtSequence seq : vi.getNtSequences()){
-						out.println(p.getPatientId()+","+seq.getNucleotides());
-					}
-				}
+			for(NtSequence seq : query.getOutputList()){
+				out.println(seq.getNtSequenceIi()+","+seq.getNucleotides());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 }

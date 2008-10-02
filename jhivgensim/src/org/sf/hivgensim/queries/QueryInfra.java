@@ -113,7 +113,6 @@ public abstract class QueryInfra {
 		{
 			r = new FileReader(file);
 			imp.readPatients(new InputSource(r), new ImportHandler<Patient>() {
-				@Override
 				public void importObject(Patient p) {
 					performQuery(p);
 				}
