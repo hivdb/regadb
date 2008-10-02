@@ -60,7 +60,7 @@ public class Querier {
 		String output = (String) cmdLineParser.getOptionValue(outputOption);
 		
 		long start = System.currentTimeMillis();
-		QueryImpl<NtSequence,Patient> q = new GetLatestSequencePerPatient(new GetNaiveSequences(queryInput));
+		QueryImpl<NtSequence,Patient> q = new GetLatestSequencePerPatient(new GetNaivePatients(queryInput));
 		ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
 		ToMutationTable tmt = new ToMutationTable(new File(output));
 		tss.generateOutput(q);
