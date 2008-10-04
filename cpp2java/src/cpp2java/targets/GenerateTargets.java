@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class GenerateTargets {
 	            		javaFiles = filesInPackage.get(getCFile(fileName));
 	            	}
 	            	
-	            	javaFiles.add(enitityName+".java");
+	            	if(!javaFiles.contains(enitityName+".java"))
+	            		javaFiles.add(enitityName+".java");
 	            }
 	        }
 	        in.close();
@@ -54,9 +56,18 @@ public class GenerateTargets {
 	
 	private void printPackageRule(String packageName, Map<String, List<String>> packageMap) {
     	System.out.println("Package " +  packageName + ":\n");
+    	
+    	List<String> cFiles = new ArrayList<String>();
     	for(Map.Entry<String, List<String>> e2 : packageMap.entrySet()) {
-    		System.out.print("From " + e2.getKey() + ": ");
-    		for(String l : e2.getValue()) {
+    		cFiles.add(e2.getKey());
+    	}
+    	Collections.sort(cFiles);
+    	
+    	for(String cFile : cFiles) {
+    		System.out.print("From " + cFile + ": ");
+    		List<String> javaFiles = packageMap.get(cFile);
+    		Collections.sort(javaFiles);
+    		for(String l : javaFiles) {
     			System.out.print(l+" ");
     		}
     		System.out.println();
