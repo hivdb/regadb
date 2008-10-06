@@ -72,6 +72,11 @@ public class GenerateTargets {
     		}
     		System.out.println();
     	}
+    	
+    	if(packageName.equals("jwt")) {
+    		System.out.println("From WGlobal: AlignmentFlag.java AnchorTarget.java CharEncoding.java Cursor.java GlobalColor.java Icon.java Key.java KeyboardModifier.java Orientation.java PenCapStyle.java PenJoinStyle.java PenStyle.java PositionScheme.java SelectionBehavior.java SelectionMode.java SelectionUnit.java Side.java StandardButton.java TextFormat.java WBrushStyle.java"); 
+    	}
+    	
     	System.out.println();
 	}
 	
