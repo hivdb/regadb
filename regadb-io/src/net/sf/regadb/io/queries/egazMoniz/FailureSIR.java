@@ -12,7 +12,7 @@ public class FailureSIR {
 	public static void main(String [] args) {
 		List<Patient> pts = Utils.getPatients();
 		
-		String drugClass = "PI";
+		String drugClass = args[0];
 		
 		Map<String, Integer> headers = Utils.getSIRHeaders(drugClass);
 		String[] row = new String[headers.size()];
