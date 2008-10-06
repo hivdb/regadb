@@ -49,24 +49,22 @@ public class Utils {
 	}
 	
 	public static boolean therapiesContainClass(Set<Therapy> ts, String drugClass) {
-		boolean containsClass = false;
 		for(Therapy t : ts) {
+			for(TherapyGeneric tg : t.getTherapyGenerics()) {
+				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
+					return true;
+				}
+			}
 			for(TherapyCommercial tc : t.getTherapyCommercials()) {
 				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
 					if(dg.getDrugClass().getClassId().equals(drugClass)) {
-						containsClass = true;
+						return true;
 					}
-				}
-			}
-			
-			for(TherapyGeneric tg : t.getTherapyGenerics()) {
-				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
-					containsClass = true;
 				}
 			}
 		}
 		
-		return containsClass;
+		return false;
 	}
 	
 	public static ViralIsolate getViralIsolate(Patient p, Date d) {
