@@ -30,7 +30,6 @@ public class FromSnapshot extends QueryInput {
 		}
 		catch (EOFException e) 
 		{
-			System.err.println(e.getMessage());
 			//end of file reached but unexpected?
 			return;
 		}
