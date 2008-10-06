@@ -1,6 +1,7 @@
 package net.sf.regadb.io.queries.egazMoniz;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,7 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -23,7 +25,9 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 
 public class Utils {
-	public static List<Patient> getPatients() {
+	private static Transaction t;
+	
+	static {
 	    Login login = null;
 	    try
 	    {
@@ -42,7 +46,10 @@ public class Utils {
 	        e.printStackTrace();
 	    }
 	    
-	    Transaction t = login.createTransaction();
+	    t = login.createTransaction();
+	}
+	
+	public static List<Patient> getPatients() {
 	    List<Patient> l = t.getPatients();
 	    
 	    return l;
@@ -125,4 +132,45 @@ public class Utils {
 			}
 		}
 	}
+	
+	public static Map<String, Integer> getSIRHeaders(String drugClass) {
+		Map<String, Integer> header = new HashMap<String, Integer>();
+		
+		List<Test> gssTests = t.getTests(t.getTestType("Genotypic Susceptibility Score (GSS)"));
+		
+		List<DrugGeneric> genericDrugs = t.getDrugGenericSortedOnResistanceRanking(t.getDrugClass(drugClass));
+		
+		int counter = 0;
+		for(Test gssTest : gssTests) {
+			for(DrugGeneric dg : genericDrugs) {
+				header.put(dg.getGenericId() + " (" + gssTest.getDescription() + ")", counter);
+				counter++;
+			}
+		}
+		
+		return header;
+	}
+	
+    public static String getFixedGenericId(TestResult tr) {
+        String genericId = tr.getDrugGeneric().getGenericId();
+        if(genericId.startsWith("APV"))
+            return genericId.replace("APV", "FPV");
+        else
+            return genericId;
+    }
+    
+    public static String getSIR(String gssS) {
+    	double gss = Double.parseDouble(gssS);
+        if(gss == 0.0) {
+            return "R";
+        }
+        else if(gss == 0.5 || gss == 0.75) {
+            return "I";
+        }
+        else if(gss == 1.0 || gss == 1.5) {
+            return "S";
+        } else {
+        	return "CANNOT INTERPRETE";
+        }
+    }
 }
