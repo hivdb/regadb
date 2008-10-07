@@ -17,7 +17,7 @@ public class NaiveWorstCase {
 		List<Patient> pts = Utils.getPatients();
 		List<DrugClass> dcs = Utils.getDrugClasses();
 		
-		System.out.print("patient id, sequence date ");
+		System.out.print("patient id, sequence date, number of therapies ");
 		for(DrugClass dc : dcs){
 			System.out.print(","+dc.getClassId());
 		}
@@ -41,7 +41,8 @@ public class NaiveWorstCase {
 				}
 			
 			System.out.print(p.getPatientId() +",");
-			System.out.print(vi.getSampleId());
+			System.out.print(vi.getSampleId()+",");
+			System.out.print(p.getTherapies().size());
 			for(DrugClass dc : dcs){
 				Double d = dm.get(dc.getClassId());
 				System.out.print(","+(d==null?"NA":Utils.getSIR(d+""))+"");
