@@ -1,5 +1,6 @@
 package net.sf.regadb.io.queries.egazMoniz;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,9 +75,17 @@ public class Utils {
 		return false;
 	}
 	
-	public static ViralIsolate getViralIsolate(Patient p, Date d) {
+	public static ViralIsolate getViralIsolate(Patient p, Date d, int dayInterval) {
 		for(ViralIsolate vi : p.getViralIsolates()) {
-			if(vi.getSampleDate().equals(d)) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(d);
+			c.add(Calendar.DATE, dayInterval);
+			Date xDaysMore = c.getTime();
+			c.setTime(d);
+			c.add(Calendar.DATE, -dayInterval);
+			Date xDaysLess = c.getTime();
+						
+			if(vi.getSampleDate().after(xDaysLess) && vi.getSampleDate().before(xDaysMore)) {
 				return vi;
 			}
 		}
@@ -101,10 +110,12 @@ public class Utils {
 		
 		for(TestResult tr : p.getTestResults()) {
 			if(tr.getTest().getTestType().getDescription().equals("Therapy Failure")) {
-				if(mostRecentTherapyFailure==null) {
-					mostRecentTherapyFailure = tr;
-				} else if(tr.getTestDate().after(mostRecentTherapyFailure.getTestDate())) {
-					mostRecentTherapyFailure = tr;
+				if(tr.getTestNominalValue().getValue().equals("Positive")) {
+					if(mostRecentTherapyFailure==null) {
+						mostRecentTherapyFailure = tr;
+					} else if(tr.getTestDate().after(mostRecentTherapyFailure.getTestDate())) {
+						mostRecentTherapyFailure = tr;
+					}
 				}
 			}
 		}

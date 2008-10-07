@@ -57,17 +57,22 @@ public class PIFailureMutPrevalence {
 		
 		Map<String, Integer> mutPrevalence = new HashMap<String, Integer>();
 		
+		
+		int seqCounter = 0;
+		
 		for(Patient p : pts) {
 			if(Utils.therapiesContainClass(p.getTherapies(), "PI")) {
 				TestResult mostRecentTherapyFailure = Utils.getMostRecentTherapyFailure(p);
 				if(mostRecentTherapyFailure!=null) {
-					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate());
+					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate(), 20);
 					if(vi==null) {
-						System.err.println("No viral isolate for most recent Therapy Failure: " + p.getPatientId() + " vi's -> " + p.getViralIsolates().size());
+						//if(p.getViralIsolates().size()!=0)
+						//	System.err.println("No viral isolate for most recent Therapy Failure: " + p.getPatientId() + " vi's -> " + p.getViralIsolates().size());
 					} else {
 						AaSequence pro = Utils.getAaSequence(p, vi, "PRO");
 						if(pro!=null) {
 							Utils.calculatePrevalence(mutations, mutPrevalence, pro);
+							seqCounter++;
 						} else {
 							System.err.println("no aaseqs for p " + p.getPatientId());
 						}
@@ -75,6 +80,8 @@ public class PIFailureMutPrevalence {
 				}
 			}
 		}
+		
+		System.err.println("seqCounter: " + seqCounter);
 		
 		for(String mut : mutations) {
 			System.err.println(mut + ": " + mutPrevalence.get(mut));

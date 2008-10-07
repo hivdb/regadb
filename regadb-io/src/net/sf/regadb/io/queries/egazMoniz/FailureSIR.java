@@ -33,9 +33,10 @@ public class FailureSIR {
 			if(Utils.therapiesContainClass(p.getTherapies(), drugClass)) {
 				TestResult mostRecentTherapyFailure = Utils.getMostRecentTherapyFailure(p);
 				if(mostRecentTherapyFailure!=null) {
-					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate());
+					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate(), 20);
 					if(vi==null) {
-						System.err.println("No viral isolate for most recent Therapy Failure: " + p.getPatientId() + " vi's -> " + p.getViralIsolates().size());
+						//if(p.getViralIsolates().size()!=0)
+							//System.err.println("No viral isolate for most recent Therapy Failure: " + p.getPatientId() + " vi's -> " + p.getViralIsolates().size());
 					} else {
 						for(int i = 0; i<row.length; i++) {
 							row[i] = "NA";
@@ -45,13 +46,12 @@ public class FailureSIR {
 							if(tr.getTest().getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)")) {
 								DrugGeneric dg = tr.getDrugGeneric();
 								if(dg.getDrugClass().getClassId().equals(drugClass)) {
-									try {
-									int pos = headers.get(Utils.getFixedGenericId(tr) + " (" + tr.getTest().getDescription() + ")");
-									row[pos] = Utils.getSIR(tr.getValue());
-									} catch (NullPointerException e) {
-										int pos = headers.get(Utils.getFixedGenericId(tr) +"/r"+ " (" + tr.getTest().getDescription() + ")");
+									Integer pos = headers.get(Utils.getFixedGenericId(tr) + " (" + tr.getTest().getDescription() + ")");
+									if(pos!=null)
 										row[pos] = Utils.getSIR(tr.getValue());
-									}
+									pos = headers.get(Utils.getFixedGenericId(tr) +"/r"+ " (" + tr.getTest().getDescription() + ")");
+									if(pos!=null)	
+										row[pos] = Utils.getSIR(tr.getValue());
 								}
 							}
 						}
