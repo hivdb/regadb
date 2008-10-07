@@ -1,5 +1,6 @@
 package net.sf.regadb.io.queries.egazMoniz;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.StringTokenizer;
 
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -24,6 +26,7 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class Utils {
 	private static Transaction t;
@@ -93,6 +96,33 @@ public class Utils {
 		return null;
 	}
 	
+	public static List<DrugClass> getDrugClasses(){
+		return t.getDrugClassesSortedOnResistanceRanking();
+	}
+	
+	public static List<ViralIsolate> getViralIsolatesSortedOnDate(Patient p){
+		return t.getViralIsolatesSortedOnDate(p);
+	}
+	public static List<Therapy> getTherapiesSortedOnDate(Patient p){
+		return t.getTherapiesSortedOnDate(p);
+	}
+	
+	public static List<ViralIsolate> getNaiveViralIsolates(Patient p){
+		List<ViralIsolate> vis = getViralIsolatesSortedOnDate(p);
+		List<Therapy> ts = getTherapiesSortedOnDate(p);
+
+		List<ViralIsolate> nvis = new ArrayList<ViralIsolate>();
+		if(ts.size() > 0){
+			Therapy ft = ts.get(0);
+			
+			for(ViralIsolate vi : vis){
+				if(vi.getSampleDate() != null && vi.getSampleDate().before(ft.getStartDate()))
+					nvis.add(vi);
+			}
+		}
+		return nvis;
+	}
+	
 	public static AaSequence getAaSequence(Patient p, ViralIsolate vi, String protein) {
 		for(NtSequence ntseq : vi.getNtSequences()) {
 			for(AaSequence aaseq : ntseq.getAaSequences()) {
@@ -147,7 +177,7 @@ public class Utils {
 	public static Map<String, Integer> getSIRHeaders(String drugClass) {
 		Map<String, Integer> header = new HashMap<String, Integer>();
 		
-		List<Test> gssTests = t.getTests(t.getTestType("Genotypic Susceptibility Score (GSS)"));
+		List<Test> gssTests = t.getTests(t.getTestType(StandardObjects.getGssId()));
 		
 		List<DrugGeneric> genericDrugs = t.getDrugGenericSortedOnResistanceRanking(t.getDrugClass(drugClass));
 		

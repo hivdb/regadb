@@ -7,6 +7,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class FailureSIR {
 	public static void main(String [] args) {
@@ -43,7 +44,7 @@ public class FailureSIR {
 						}
 						
 						for(TestResult tr : vi.getTestResults()) {
-							if(tr.getTest().getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)")) {
+							if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId())) {
 								DrugGeneric dg = tr.getDrugGeneric();
 								if(dg.getDrugClass().getClassId().equals(drugClass)) {
 									Integer pos = headers.get(Utils.getFixedGenericId(tr) + " (" + tr.getTest().getDescription() + ")");
