@@ -40,7 +40,7 @@ public class GenerateTargets {
 	            		javaFiles = filesInPackage.get(getCFile(fileName));
 	            	}
 	            	
-	            	if(!javaFiles.contains(enitityName+".java"))
+	            	if(!javaFiles.contains(enitityName+".java") && !enitityName.equals("DummyClass"))
 	            		javaFiles.add(enitityName+".java");
 	            }
 	        }
