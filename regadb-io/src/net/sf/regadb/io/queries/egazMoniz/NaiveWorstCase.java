@@ -36,7 +36,7 @@ public class NaiveWorstCase {
 					DrugClass dc = tr.getDrugGeneric().getDrugClass();
 					
 					double d = Double.parseDouble(tr.getValue());
-					if(!dm.containsKey(dc.getClassId()) || dm.get(dc) < d)
+					if(!dm.containsKey(dc.getClassId()) || dm.get(dc) > d)
 						dm.put(dc.getClassId(), d);
 				}
 			}
