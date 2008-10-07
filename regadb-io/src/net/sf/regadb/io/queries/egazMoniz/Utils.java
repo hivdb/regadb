@@ -107,24 +107,27 @@ public class Utils {
 		return t.getTherapiesSortedOnDate(p);
 	}
 	
-	public static List<ViralIsolate> getNaiveViralIsolates(Patient p){
-		List<ViralIsolate> vis = getViralIsolatesSortedOnDate(p);
-		List<Therapy> ts = getTherapiesSortedOnDate(p);
-
-		
-		if(ts.size() > 0){
-			List<ViralIsolate> nvis = new ArrayList<ViralIsolate>();
-			
-			Therapy ft = ts.get(0);
-			
-			for(ViralIsolate vi : vis){
-				if(vi.getSampleDate() != null && vi.getSampleDate().before(ft.getStartDate()))
-					nvis.add(vi);
+	public static ViralIsolate getNaiveViralIsolate(Patient p){
+		ViralIsolate first = null;
+		for(ViralIsolate vi : p.getViralIsolates()) {
+			if(first==null) {
+				first = vi;
+			} else if (vi.getSampleDate().before(first.getSampleDate())){
+				first = vi;
 			}
-			
-			return nvis;
+		}
+		
+		if(first!=null) {
+			if(p.getTherapies().size()==0)
+				return first;
+			for(Therapy t : p.getTherapies()) {
+				if(t.getStartDate().equals(first.getSampleDate()) || t.getStartDate().before(first.getSampleDate())) {
+					return null;
+				}
+			} 
+			return first;
 		} else {
-			return vis;
+			return null;
 		}
 	}
 	

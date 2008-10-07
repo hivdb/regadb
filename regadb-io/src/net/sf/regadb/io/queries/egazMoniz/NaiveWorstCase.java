@@ -23,13 +23,12 @@ public class NaiveWorstCase {
 		}
 		System.out.println();
 		
+		Map<String, Double> dm = new HashMap<String, Double>();
+		
 		for(Patient p : pts){
-			List<ViralIsolate> vis = Utils.getNaiveViralIsolates(p);
-			if(vis.size() < 1)
+			ViralIsolate vi = Utils.getNaiveViralIsolate(p);
+			if(vi==null)
 				continue;
-			
-			ViralIsolate vi = vis.get(0);
-			Map<String, Double> dm = new HashMap<String, Double>();
 			
 				for(TestResult tr : vi.getTestResults()){
 					if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId())) {
@@ -48,6 +47,7 @@ public class NaiveWorstCase {
 				System.out.print(","+(d==null?"NA":Utils.getSIR(d+""))+"");
 			}
 			System.out.println();
+			dm.clear();
 		}
 	}
 }
