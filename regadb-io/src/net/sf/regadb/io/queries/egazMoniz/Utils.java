@@ -111,16 +111,21 @@ public class Utils {
 		List<ViralIsolate> vis = getViralIsolatesSortedOnDate(p);
 		List<Therapy> ts = getTherapiesSortedOnDate(p);
 
-		List<ViralIsolate> nvis = new ArrayList<ViralIsolate>();
+		
 		if(ts.size() > 0){
+			List<ViralIsolate> nvis = new ArrayList<ViralIsolate>();
+			
 			Therapy ft = ts.get(0);
 			
 			for(ViralIsolate vi : vis){
 				if(vi.getSampleDate() != null && vi.getSampleDate().before(ft.getStartDate()))
 					nvis.add(vi);
 			}
+			
+			return nvis;
+		} else {
+			return vis;
 		}
-		return nvis;
 	}
 	
 	public static AaSequence getAaSequence(Patient p, ViralIsolate vi, String protein) {
