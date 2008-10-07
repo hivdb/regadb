@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.DrugClass;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
@@ -18,7 +17,7 @@ public class NaiveWorstCase {
 		List<Patient> pts = Utils.getPatients();
 		List<DrugClass> dcs = Utils.getDrugClasses();
 		
-		System.out.print("patient id,squences,");
+		System.out.print("patient id, sequence date ");
 		for(DrugClass dc : dcs){
 			System.out.print(","+dc.getClassId());
 		}
@@ -43,9 +42,7 @@ public class NaiveWorstCase {
 			}
 			
 			System.out.print(p.getPatientId() +",");
-			for(NtSequence seq : vi.getNtSequences()){
-				System.out.print(seq.getLabel()+": "+ seq.getNucleotides() +" ");
-			}			
+			System.out.print(vi.getSampleId() +",");
 			for(DrugClass dc : dcs){
 				System.out.print(","+Utils.getSIR(dm.get(dc.getClassId())+""));
 			}
