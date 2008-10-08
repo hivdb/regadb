@@ -64,6 +64,7 @@ public class PreprocCpp {
         removeMethodContent(f, "WEnvironment.C", sb, "WEnvironment::libraryVersion(int", "{}");
         removeMethodContent(f, "WFileResource.C", sb, "WFileResource::streamResourceData", "{return true;}");
         removeMethodContent(f, "TableView.C", sb, "parseNumberList", "{}");
+        removeMethodContent(f, "WLogger.C", sb, "WLogger::setFile", "{return true;}");
         
         writeFile(f, sb);
     }
