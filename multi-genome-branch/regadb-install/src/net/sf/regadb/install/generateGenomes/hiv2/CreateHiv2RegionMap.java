@@ -42,7 +42,7 @@ public class CreateHiv2RegionMap {
         	mapping.append("\n");
         	
         	for(Protein p : orf.getProteins()){
-        		mapping.append(p.getAbbreviation() +","+ p.getFullName() +",");
+        		mapping.append(p.getFullName() +","+ p.getAbbreviation() +",");
         		mapping.append(translateRegions(getRegions(p,hiv2benGen), alignedRefSeq));
         		mapping.append("\n");
         	}
