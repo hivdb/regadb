@@ -21,6 +21,7 @@ public class GenerateGenome {
     private Genome genome;
 
     private Collection<RegionValue<OpenReadingFrame>> orfRegions;
+    private Collection<RegionValue<Protein>> proteinRegions;
     
     public static void main(String[] args){
         
@@ -82,6 +83,7 @@ public class GenerateGenome {
         setGenome(createGenome(organismName,organismDescription,genbankNumber));
         
         orfRegions = new TreeSet<RegionValue<OpenReadingFrame>>();
+        proteinRegions = new TreeSet<RegionValue<Protein>>();
     }
     
     public OpenReadingFrame addOpenReadingFrame(String name, String description, int[][] regions){
@@ -122,6 +124,7 @@ public class GenerateGenome {
         Protein p = createProtein(orf,name,abbr,0,0);
         
         for(Region r : regions){
+        	proteinRegions.add(new RegionValue<Protein>(r, p));
             if(pLength == 0)
                 pOffset = r.getStart();
             else
@@ -301,6 +304,10 @@ public class GenerateGenome {
 
     public Collection<RegionValue<OpenReadingFrame>> getOrfRegions() {
         return orfRegions;
+    }
+    
+    public Collection<RegionValue<Protein>> getProteinRegions() {
+        return proteinRegions;
     }
 
     public class RegionValue<T> extends Region{
