@@ -9,8 +9,8 @@ public abstract class QueryImpl<T,I> implements Query<T>{
 	protected List<T> outputList;
 	protected abstract void populateOutputList();
 	
-	protected QueryImpl(){
-		
+	public QueryImpl(Query<I> inputQuery){
+		this.inputQuery = inputQuery;
 	}	
 	
 	public List<T> getOutputList(){

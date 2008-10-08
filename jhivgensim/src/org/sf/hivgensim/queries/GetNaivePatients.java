@@ -12,8 +12,8 @@ import net.sf.regadb.db.TherapyGeneric;
 public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	
 	
-	protected GetNaivePatients(Query<Patient> query){
-		this.inputQuery = query;
+	public GetNaivePatients(Query<Patient> query){
+		super(query);
 	}
 	
 	@Override

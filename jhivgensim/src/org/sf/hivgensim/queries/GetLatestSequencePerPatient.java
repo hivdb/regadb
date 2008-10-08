@@ -6,8 +6,8 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class GetLatestSequencePerPatient extends QueryImpl<NtSequence,Patient> {
 	
-	protected GetLatestSequencePerPatient(Query<Patient> query){
-		this.inputQuery = query;
+	public GetLatestSequencePerPatient(Query<Patient> query){
+		super(query);
 	}
 	
 	@Override

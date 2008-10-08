@@ -6,8 +6,8 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class GetAllSequences extends QueryImpl<NtSequence,Patient> {
 	
-	protected GetAllSequences(Query<Patient> query){
-		this.inputQuery = query;
+	public GetAllSequences(Query<Patient> query){
+		super(query);
 	}
 
 	@Override

@@ -61,9 +61,9 @@ public class Querier {
 		
 		long start = System.currentTimeMillis();
 		QueryImpl<NtSequence,Patient> q = new GetLatestSequencePerPatient(new GetNaivePatients(queryInput));
-		ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
+		//ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
 		ToMutationTable tmt = new ToMutationTable(new File(output));
-		tss.generateOutput(q);
+		//tss.generateOutput(q);
 		tmt.generateOutput(q);
 		long stop = System.currentTimeMillis();
 		System.err.println("done in " + (stop - start) + " ms");
