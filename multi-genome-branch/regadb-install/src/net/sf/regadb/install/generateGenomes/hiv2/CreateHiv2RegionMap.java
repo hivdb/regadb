@@ -33,6 +33,8 @@ public class CreateHiv2RegionMap {
         	mapping.append("orf");
         	mapping.append(orf.getName() + "," + orf.getDescription() + ",");
         	List<RegionValue<OpenReadingFrame>> values = getRegionValues(orf, hiv2benGen);
+        	
+        	StringBuilder seq = new StringBuilder();
         	for(RegionValue<OpenReadingFrame> rv : values) {
         		int addToStartPos = countCharBeforePos(benAlignedRefSeq, rv.getStart(), '-');
 //        		/addToStartPos += countCharBetween(benAlignedRefSeq, rv.getStart()+addToStartPos, '-');
@@ -41,9 +43,10 @@ public class CreateHiv2RegionMap {
         		addToEndPos += countChar(strNoCorrectEnding, '-');
 //        		System.err.println(benAlignedRefSeq.substring(rv.getStart()+addToStartPos, rv.getEnd()+addToEndPos));
 //        		System.err.println(orf.getReferenceSequence());
-        		System.err.println(orf.getName());
-        		System.err.println(equalsIgnoreMinus(benAlignedRefSeq.substring(rv.getStart()+addToStartPos-1, rv.getEnd()+addToEndPos-1),orf.getReferenceSequence()));
+        		seq.append(benAlignedRefSeq.substring(rv.getStart()+addToStartPos-1, rv.getEnd()+addToEndPos-1));
         	}
+    		System.err.println(orf.getName());
+        	System.err.println(equalsIgnoreMinus(seq.toString(),orf.getReferenceSequence()));
         }
 	}
 	
