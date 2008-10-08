@@ -67,7 +67,7 @@ public class CreateHiv2RegionMap {
 	//this function does not count at the pos location!!!
 	private int countCharBeforePos(String alignedSeq, int pos, char c) {
 		int minusCounter = 0;
-		for(int i = 0; i<pos; i++) {
+		for(int i = 0; i<(pos+minusCounter); i++) {
 			if(alignedSeq.charAt(i)==c) 
 				minusCounter++;
 		}
