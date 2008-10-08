@@ -12,6 +12,12 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 
+/**
+ * This query returns of summary of the types of therapies used and their frequencies.
+ * 
+ * @author gbehey0
+ *
+ */
 public class GetTherapySummary extends QueryOutput<Patient> {
 	
 	

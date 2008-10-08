@@ -4,6 +4,13 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 
+/**
+ * This query returns the latest isolated sequence of each given patient.
+ * 
+ * @author gbehey0
+ *
+ */
+
 public class GetLatestSequencePerPatient extends QueryImpl<NtSequence,Patient> {
 	
 	public GetLatestSequencePerPatient(Query<Patient> query){

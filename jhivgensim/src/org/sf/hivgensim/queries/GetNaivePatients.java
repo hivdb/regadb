@@ -11,9 +11,15 @@ import net.sf.regadb.db.TherapyGeneric;
 
 public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	
+	private String[] therapyTypes = new String[]{"PI"};
 	
 	public GetNaivePatients(Query<Patient> query){
 		super(query);
+	}
+	
+	public GetNaivePatients(Query<Patient> query, String[] therapyTypes){
+		super(query);
+		this.therapyTypes = therapyTypes;		
 	}
 	
 	@Override
@@ -23,8 +29,10 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 		Set<Patient> temp = new HashSet<Patient>();
 		for(Patient p : inputQuery.getOutputList()){
 			for(Therapy t : p.getTherapies()) {
-				if(!hasClassExperience("PI", t)) {
-					temp.add(p);					
+				for(String tT : therapyTypes){
+					if(!hasClassExperience(tT, t)) {
+						temp.add(p);					
+					}
 				}
 			}		
 		}
@@ -40,7 +48,7 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 			}
 		}
 		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			if(tg.getId().getDrugGeneric().getDrugClass().getClassName().equals(drugClass)) {
+			if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
 				return true;
 			}
 		}

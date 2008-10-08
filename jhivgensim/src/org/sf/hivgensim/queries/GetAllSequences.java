@@ -4,6 +4,11 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 
+/**
+ * This query returns all the sequences of the given patients
+ * @author gbehey0
+ *
+ */
 public class GetAllSequences extends QueryImpl<NtSequence,Patient> {
 	
 	public GetAllSequences(Query<Patient> query){
