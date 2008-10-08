@@ -61,7 +61,7 @@ public class PIFailureMutPrevalence {
 		int seqCounter = 0;
 		
 		for(Patient p : pts) {
-			if(Utils.therapiesContainClass(p.getTherapies(), "PI")) {
+			if(Utils.therapiesContainClass(p.getTherapies(), "PI").size()>0) {
 				TestResult mostRecentTherapyFailure = Utils.getMostRecentTherapyFailure(p);
 				if(mostRecentTherapyFailure!=null) {
 					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate(), 20);

@@ -2,6 +2,7 @@ package net.sf.regadb.io.queries.egazMoniz;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
@@ -18,7 +19,7 @@ public class FailureSIR {
 		Map<String, Integer> headers = Utils.getSIRHeaders(drugClass);
 		String[] row = new String[headers.size()];
 		
-		System.out.print("PatientID"+","+"SampleID"+","+"SampleDate"+",");
+		System.out.print("PatientID"+","+"SampleID"+","+"SampleDate"+","+"AmountOfDrugsInThisClass"+",");
 		for(Map.Entry<String, Integer> e : headers.entrySet()) {
 			row[e.getValue()] = e.getKey();
 		}
@@ -31,7 +32,8 @@ public class FailureSIR {
 		System.out.println();
 		
 		for(Patient p : pts) {
-			if(Utils.therapiesContainClass(p.getTherapies(), drugClass)) {
+			Set<String> drugs = Utils.therapiesContainClass(p.getTherapies(), drugClass);
+			if(drugs.size()>0) {
 				TestResult mostRecentTherapyFailure = Utils.getMostRecentTherapyFailure(p);
 				if(mostRecentTherapyFailure!=null) {
 					ViralIsolate vi = Utils.getViralIsolate(p, mostRecentTherapyFailure.getTestDate(), 20);
@@ -57,7 +59,7 @@ public class FailureSIR {
 							}
 						}
 						
-						System.out.print(p.getPatientId()+","+vi.getSampleId()+","+vi.getSampleDate()+",");
+						System.out.print(p.getPatientId()+","+vi.getSampleId()+","+vi.getSampleDate()+"," +drugs.size()+",");
 						for(int i = 0; i<row.length; i++) {
 							System.out.print(row[i]);
 							if(i<row.length-1) {

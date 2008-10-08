@@ -1,9 +1,9 @@
 package net.sf.regadb.io.queries.egazMoniz;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,23 +59,25 @@ public class Utils {
 	    return l;
 	}
 	
-	public static boolean therapiesContainClass(Set<Therapy> ts, String drugClass) {
+	public static Set<String> therapiesContainClass(Set<Therapy> ts, String drugClass) {
+		Set<String> drugs = new HashSet<String>();
+		
 		for(Therapy t : ts) {
 			for(TherapyGeneric tg : t.getTherapyGenerics()) {
 				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
-					return true;
+					drugs.add(tg.getId().getDrugGeneric().getGenericId());
 				}
 			}
 			for(TherapyCommercial tc : t.getTherapyCommercials()) {
 				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
 					if(dg.getDrugClass().getClassId().equals(drugClass)) {
-						return true;
+						drugs.add(dg.getGenericId());
 					}
 				}
 			}
 		}
 		
-		return false;
+		return drugs;
 	}
 	
 	public static ViralIsolate getViralIsolate(Patient p, Date d, int dayInterval) {

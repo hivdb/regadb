@@ -33,10 +33,12 @@ public class NaiveWorstCase {
 				for(TestResult tr : vi.getTestResults()){
 					if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId())) {
 						DrugClass dc = tr.getDrugGeneric().getDrugClass();
+						if(!(dc.getClassId().equals("PI") && tr.getTest().getDescription().equals("ANRS 2006.07"))) {
 							double d = Double.parseDouble(tr.getValue());
 							Double currentValue = dm.get(dc.getClassId());
 							if(currentValue==null || d<currentValue)
 								dm.put(dc.getClassId(), d);
+						}
 					}
 				}
 			
