@@ -11,7 +11,7 @@ import net.sf.regadb.db.TherapyGeneric;
 
 public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	
-	private String[] therapyTypes = new String[]{"PI"};
+	private String[] drugclasses = new String[]{"Unknown","PI","NRTI","NNRTI","INI","EI"};
 	
 	public GetNaivePatients(Query<Patient> query){
 		super(query);
@@ -19,7 +19,7 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	
 	public GetNaivePatients(Query<Patient> query, String[] therapyTypes){
 		super(query);
-		this.therapyTypes = therapyTypes;		
+		this.drugclasses = therapyTypes;		
 	}
 	
 	@Override
@@ -29,20 +29,24 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 		Set<Patient> temp = new HashSet<Patient>();
 		for(Patient p : inputQuery.getOutputList()){
 			for(Therapy t : p.getTherapies()) {
-				for(String tT : therapyTypes){
-					if(!hasClassExperience(tT, t)) {
-						temp.add(p);					
+				boolean naive = true;
+				for(String tT : drugclasses){
+					if(hasClassExperience(tT, t)) {
+						naive = false;					
 					}
+				}
+				if(naive){
+					temp.add(p);
 				}
 			}		
 		}
 		outputList.addAll(temp);		
 	}
 	
-	public boolean hasClassExperience(String drugClass, Therapy t) {
+	private boolean hasClassExperience(String drugClass, Therapy t) {
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				if(dg.getDrugClass().getClassName().equals(drugClass)) {
+				if(dg.getDrugClass().getClassId().equals(drugClass)) {
 					return true;
 				}
 			}

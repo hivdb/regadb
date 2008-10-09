@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.drugResistance.MutationList;
 
 public class ToMutationTable extends QueryOutput<NtSequence> {
 

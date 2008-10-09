@@ -17,57 +17,63 @@ import net.sf.regadb.db.ViralIsolate;
  * This query returns a list of NtSequences
  * Each sequence is the latest of a therapy that included a drug class in therapyTypes
  * 
+ * 
  * @author gbehey0
  *
  */
 
 public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 
-	private String[] therapyTypes = new String[]{"PI"};
+	private String[] druggenerics = new String[]{"AZT","3TC"};
 
 	public GetExperiencedSequences(Query<Patient> inputQuery) {
 		super(inputQuery);
 	}
 
-	public GetExperiencedSequences(Query<Patient> query, String[] therapyTypes){
+	public GetExperiencedSequences(Query<Patient> query, String[] druggenerics){
 		super(query);
-		this.therapyTypes = therapyTypes;		
+		this.druggenerics = druggenerics;		
 	}
 
 	@Override
 	protected void populateOutputList() {
 		Set<NtSequence> temp = new HashSet<NtSequence>();
 		for(Patient p : inputQuery.getOutputList()){
-			for(Therapy t : p.getTherapies()) {
-				for(String tT : therapyTypes){
-					if(hasClassExperience(tT, t)) {
-						Set<NtSequence> seqs = getLatestExperiencedSequence(p,t);
-						if(seqs != null)
-							temp.addAll(getLatestExperiencedSequence(p,t));					
+			Therapy t = getFirstLineTherapy(p);
+			if(t != null){
+				boolean experienced = true;
+				for(String drug : druggenerics){
+					if(!hasDrugExperience(drug, t)) {
+						experienced = false;											
 					}
 				}
-			}		
-		}
+				if(experienced){
+					Set<NtSequence> seqs = getLatestExperiencedSequences(p,t);
+					if(seqs != null)
+						temp.addAll(getLatestExperiencedSequences(p,t));
+				}
+			}
+		}		
 		outputList.addAll(temp);
 	}
 
-	private boolean hasClassExperience(String drugClass, Therapy t) {
+	private boolean hasDrugExperience(String drugClass, Therapy t) {
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				if(dg.getDrugClass().getClassName().equals(drugClass)) {
+				if(dg.getGenericId().equals(drugClass)) {
 					return true;
 				}
 			}
 		}
 		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
+			if(tg.getId().getDrugGeneric().getGenericId().equals(drugClass)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private Set<NtSequence> getLatestExperiencedSequence(Patient p, Therapy t){
+	private Set<NtSequence> getLatestExperiencedSequences(Patient p, Therapy t){
 		Date stop = t.getStopDate();
 		Date start = t.getStartDate();
 		Date sampleDate;
@@ -84,9 +90,29 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 		return latestVi == null ? null : latestVi.getNtSequences(); 
 	}
 
+	private Therapy getFirstLineTherapy(Patient p){
+		Therapy result = null;
+		for(Therapy t : p.getTherapies()){
+			if(result == null || t.getStartDate().before(result.getStartDate())){
+				result = t;
+			}
+		}
+		return result;
+	}
+	
+	private boolean isGoodExperienceTherapy(Patient p, Therapy t){
+		boolean result = true;
+		for(Therapy other : p.getTherapies()){
+			if(other.getStartDate().before(t.getStartDate())){
+				
+			}
+		}
+		return result;
+	}
+
 	public static void main(String[] args){
 		QueryInput qi = new FromDatabase("gbehey0","bla123");
-		Query<NtSequence> q = new GetExperiencedSequences(qi,new String[]{"NRTI","NNRTI"});
+		Query<NtSequence> q = new GetExperiencedSequences(qi,new String[]{"AZT","3TC"});
 		QueryOutput<NtSequence> qo = new ToMutationTable(new File("/home/gbehey0/queries/test2"));
 		qo.generateOutput(q);
 	}
