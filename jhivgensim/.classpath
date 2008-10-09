@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
-	<classpathentry kind="lib" path="/home/gbehey0/workspace/jhivgensim/lib/jargs.jar"/>
+	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
