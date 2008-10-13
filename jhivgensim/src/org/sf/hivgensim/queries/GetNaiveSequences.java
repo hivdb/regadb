@@ -2,12 +2,9 @@ package org.sf.hivgensim.queries;
 
 import java.util.Date;
 
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 
 public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
@@ -38,7 +35,7 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 								(t.getStartDate().equals(sampleDate) && t.getStopDate().equals(sampleDate))
 							){ 
 							for(String dc : drugclasses){
-								if(hasClassExperience(dc,t)){
+								if(QueryInfra.hasClassExperience(dc,t)){
 									seqIsNaive = false;
 								}
 							}
@@ -51,22 +48,5 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 				}
 			}
 		}
-	}
-	
-	private boolean hasClassExperience(String drugClass, Therapy t) {
-		for(TherapyCommercial tc : t.getTherapyCommercials()) {
-			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				if(dg.getDrugClass().getClassId().equals(drugClass)) {
-					return true;
-				}
-			}
-		}
-		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	}	
 }

@@ -3,11 +3,8 @@ package org.sf.hivgensim.queries;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.TherapyGeneric;
 
 public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	
@@ -31,7 +28,7 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 			for(Therapy t : p.getTherapies()) {
 				boolean naive = true;
 				for(String tT : drugclasses){
-					if(hasClassExperience(tT, t)) {
+					if(QueryInfra.hasClassExperience(tT, t)) {
 						naive = false;					
 					}
 				}
@@ -41,21 +38,5 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 			}		
 		}
 		outputList.addAll(temp);		
-	}
-	
-	private boolean hasClassExperience(String drugClass, Therapy t) {
-		for(TherapyCommercial tc : t.getTherapyCommercials()) {
-			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				if(dg.getDrugClass().getClassId().equals(drugClass)) {
-					return true;
-				}
-			}
-		}
-		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
-				return true;
-			}
-		}
-		return false;
 	}	
 }
