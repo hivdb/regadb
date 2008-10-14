@@ -111,6 +111,7 @@ create table dual_viral_isolate_viral_isolate_ii_seq (zero integer);
 insert into dual_viral_isolate_viral_isolate_ii_seq values (0);
 create sequence viral_isolate_viral_isolate_ii_seq start with 1 increment by 1;
 create table commercial_generic (generic_ii integer not null, commercial_ii integer not null, primary key (commercial_ii, generic_ii));
+create table genome_drug_generic (genome_ii integer not null, generic_ii integer not null, primary key (generic_ii, genome_ii));
 create table public.aa_insertion (insertion_position smallint not null, aa_sequence_ii integer not null, insertion_order smallint not null, version integer not null, aa_insertion varchar(30) not null, nt_insertion_codon varchar(3) not null, primary key (insertion_position, aa_sequence_ii, insertion_order));
 create table public.aa_mutation (mutation_position smallint not null, aa_sequence_ii integer not null, version integer not null, aa_reference varchar(1) not null, aa_mutation varchar(30), nt_reference_codon varchar(3) not null, nt_mutation_codon varchar(3), primary key (mutation_position, aa_sequence_ii));
 create table public.aa_sequence (aa_sequence_ii integer not null, version integer not null, nt_sequence_ii integer not null, protein_ii integer not null, first_aa_pos smallint not null, last_aa_pos smallint not null, primary key (aa_sequence_ii));
@@ -159,6 +160,8 @@ create table public.value_type (value_type_ii integer not null, version integer 
 create table public.viral_isolate (viral_isolate_ii integer not null, version integer not null, patient_ii integer not null, sample_id varchar(50), sample_date date, primary key (viral_isolate_ii));
 alter table commercial_generic add constraint FK4E6E81E219F977A8 foreign key (generic_ii) references public.drug_generic;
 alter table commercial_generic add constraint FK4E6E81E2A152DB96 foreign key (commercial_ii) references public.drug_commercial;
+alter table genome_drug_generic add constraint FKCA02968019F977A8 foreign key (generic_ii) references public.drug_generic;
+alter table genome_drug_generic add constraint FKCA0296805A4F23B6 foreign key (genome_ii) references public.genome;
 alter table public.aa_insertion add constraint FKE54E0D50CBB9BE97 foreign key (aa_sequence_ii) references public.aa_sequence;
 alter table public.aa_mutation add constraint FK33795BE8CBB9BE97 foreign key (aa_sequence_ii) references public.aa_sequence;
 create index aa_sequence_protein_ii_idx on public.aa_sequence (protein_ii);

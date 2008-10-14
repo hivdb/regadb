@@ -27,6 +27,14 @@
     <property name="atcCode" type="string">
       <column name="atc_code" length="50" />
     </property>
+    <set name="genomes" inverse="false" table="genome_drug_generic" cascade="all">
+      <key>
+        <column name="generic_ii" not-null="true" />
+      </key>
+      <many-to-many entity-name="net.sf.regadb.db.Genome">
+        <column name="genome_ii" not-null="true" />
+      </many-to-many>
+    </set>
     <set name="drugCommercials" inverse="false" table="commercial_generic" cascade="all">
       <key>
         <column name="generic_ii" not-null="true" />

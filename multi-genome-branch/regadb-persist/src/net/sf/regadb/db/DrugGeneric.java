@@ -25,6 +25,8 @@ public class DrugGeneric implements java.io.Serializable {
 
     private String atcCode;
 
+    private Set<Genome> genomes = new HashSet<Genome>(0);
+
     private Set<DrugCommercial> drugCommercials = new HashSet<DrugCommercial>(0);
 
     // Constructors
@@ -43,12 +45,13 @@ public class DrugGeneric implements java.io.Serializable {
     /** full constructor */
     public DrugGeneric(DrugClass drugClass, String genericId,
             String genericName, Integer resistanceTableOrder, String atcCode,
-            Set<DrugCommercial> drugCommercials) {
+            Set<Genome> genomes, Set<DrugCommercial> drugCommercials) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
         this.resistanceTableOrder = resistanceTableOrder;
         this.atcCode = atcCode;
+        this.genomes = genomes;
         this.drugCommercials = drugCommercials;
     }
 
@@ -107,6 +110,14 @@ public class DrugGeneric implements java.io.Serializable {
 
     public void setAtcCode(String atcCode) {
         this.atcCode = atcCode;
+    }
+
+    public Set<Genome> getGenomes() {
+        return this.genomes;
+    }
+
+    public void setGenomes(Set<Genome> genomes) {
+        this.genomes = genomes;
     }
 
     public Set<DrugCommercial> getDrugCommercials() {

@@ -37,6 +37,7 @@ create sequence user_attribute_user_attribute_ii_seq;
 create sequence value_type_value_type_ii_seq;
 create sequence viral_isolate_viral_isolate_ii_seq;
 create table commercial_generic (generic_ii integer  not null, commercial_ii integer  not null, primary key (commercial_ii, generic_ii));
+create table genome_drug_generic (genome_ii integer  not null, generic_ii integer  not null, primary key (generic_ii, genome_ii));
 create table public.aa_insertion (insertion_position int2 not null, aa_sequence_ii integer  not null, insertion_order int2 not null, version integer  not null, aa_insertion varchar(30) not null, nt_insertion_codon varchar(3) not null, primary key (insertion_position, aa_sequence_ii, insertion_order));
 create table public.aa_mutation (mutation_position int2 not null, aa_sequence_ii integer  not null, version integer  not null, aa_reference varchar(1) not null, aa_mutation varchar(30), nt_reference_codon varchar(3) not null, nt_mutation_codon varchar(3), primary key (mutation_position, aa_sequence_ii));
 create table public.aa_sequence (aa_sequence_ii integer default nextval('aa_sequence_aa_sequence_ii_seq'), version integer  not null, nt_sequence_ii integer  not null, protein_ii integer  not null, first_aa_pos int2 not null, last_aa_pos int2 not null, primary key (aa_sequence_ii));
@@ -85,6 +86,8 @@ create table public.value_type (value_type_ii integer default nextval('value_typ
 create table public.viral_isolate (viral_isolate_ii integer default nextval('viral_isolate_viral_isolate_ii_seq'), version integer  not null, patient_ii integer  not null, sample_id varchar(50), sample_date date, primary key (viral_isolate_ii));
 alter table commercial_generic add constraint "FK_commercial_generic_drug_generic" foreign key (generic_ii) references public.drug_generic(generic_ii) ON UPDATE CASCADE;
 alter table commercial_generic add constraint "FK_commercial_generic_drug_commercial" foreign key (commercial_ii) references public.drug_commercial(commercial_ii) ON UPDATE CASCADE;
+alter table genome_drug_generic add constraint "FK_genome_drug_generic_drug_generic" foreign key (generic_ii) references public.drug_generic(generic_ii) ON UPDATE CASCADE;
+alter table genome_drug_generic add constraint "FK_genome_drug_generic_genome" foreign key (genome_ii) references public.genome(genome_ii) ON UPDATE CASCADE;
 alter table public.aa_insertion add constraint "FK_aa_insertion_aa_sequence" foreign key (aa_sequence_ii) references public.aa_sequence(aa_sequence_ii) ON UPDATE CASCADE;
 alter table public.aa_mutation add constraint "FK_aa_mutation_aa_sequence" foreign key (aa_sequence_ii) references public.aa_sequence(aa_sequence_ii) ON UPDATE CASCADE;
 create index aa_sequence_protein_ii_idx on public.aa_sequence (protein_ii);

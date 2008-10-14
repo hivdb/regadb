@@ -21,6 +21,14 @@
     <property name="genbankNumber" type="string">
       <column name="genbank_number" length="50" />
     </property>
+    <set name="drugGenerics" inverse="false" table="genome_drug_generic" cascade="all">
+      <key>
+        <column name="genome_ii" not-null="true" />
+      </key>
+      <many-to-many entity-name="net.sf.regadb.db.DrugGeneric">
+        <column name="generic_ii" not-null="true" />
+      </many-to-many>
+    </set>
     <set name="openReadingFrames" inverse="false" cascade="all">
       <key>
         <column name="genome_ii" not-null="true" />

@@ -21,6 +21,8 @@ public class Genome implements java.io.Serializable {
 
     private String genbankNumber;
 
+    private Set<DrugGeneric> drugGenerics = new HashSet<DrugGeneric>(0);
+
     private Set<OpenReadingFrame> openReadingFrames = new HashSet<OpenReadingFrame>(
             0);
 
@@ -38,10 +40,12 @@ public class Genome implements java.io.Serializable {
 
     /** full constructor */
     public Genome(String organismName, String organismDescription,
-            String genbankNumber, Set<OpenReadingFrame> openReadingFrames) {
+            String genbankNumber, Set<DrugGeneric> drugGenerics,
+            Set<OpenReadingFrame> openReadingFrames) {
         this.organismName = organismName;
         this.organismDescription = organismDescription;
         this.genbankNumber = genbankNumber;
+        this.drugGenerics = drugGenerics;
         this.openReadingFrames = openReadingFrames;
     }
 
@@ -84,6 +88,14 @@ public class Genome implements java.io.Serializable {
 
     public void setGenbankNumber(String genbankNumber) {
         this.genbankNumber = genbankNumber;
+    }
+
+    public Set<DrugGeneric> getDrugGenerics() {
+        return this.drugGenerics;
+    }
+
+    public void setDrugGenerics(Set<DrugGeneric> drugGenerics) {
+        this.drugGenerics = drugGenerics;
     }
 
     public Set<OpenReadingFrame> getOpenReadingFrames() {
