@@ -17,25 +17,16 @@ public class DBToCsv {
 	
 	private IConnectionProvider connectionProvider_;
 
-	/*public static void main(String[] args) {
-		String input,output;
-		DBToCsv a2c = new DBToCsv();
-		
-		if(args.length > 0){
-			input = args[0];
-			if(args.length > 1){
-				output = args[1];
-				
-				a2c.createCsv(new File(input),new File(output));
-			}
-			else{
-				a2c.createCsv(new File(input));
-			}
+	public static void main(String[] args) {
+		if(args.length<3) {
+			System.err.println("Usage: db-type db outputdir");
+			return;
 		}
-		else{
-			System.out.println("Usage: AccessToCsv <database_input_file> [<csv_output_path>]");
+		if(args[0].equals("access")) {
+	        DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(args[1])));
+	        a2c.createCsv(new File(args[2]));
 		}
-	}*/
+	}
 			 
 	public DBToCsv(IConnectionProvider connectionProvider){
 		connectionProvider_ = connectionProvider;
