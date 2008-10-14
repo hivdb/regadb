@@ -81,8 +81,8 @@ public class PreprocCpp {
     }
     
     private void handleVoidTemplateArg(StringBuffer sb) {
-        String [] toReplace = {"<void>"};
-        String [] toReplaceWith = {"<DummyClass>"};
+        String [] toReplace = {"Signal<void>", "Signal<>"};
+        String [] toReplaceWith = {"Signal0", "Signal0"};
     
         replaceStrings(toReplace, toReplaceWith, sb);
     }
@@ -254,7 +254,7 @@ public class PreprocCpp {
         
         return fileContent;
     }
-    
+
     public void replaceStrings(String [] toReplace, String [] toReplaceWith, StringBuffer fileContent) {
         for(int i = 0; i<toReplace.length; i++) {
             int pos = fileContent.indexOf(toReplace[i], 0);
