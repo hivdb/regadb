@@ -1,11 +1,6 @@
 package org.sf.hivgensim.queries;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
@@ -19,7 +14,6 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 
 	public GetSequenceSummary(File file) {
 		super(file);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -69,9 +63,6 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 
 
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		QueryInput qi = new FromSnapshot(new File("/home/gbehey0/queries/database.snapshot"));
 		GetSequenceSummary gss = new GetSequenceSummary(new File("/home/gbehey0/queries/summaryseq"));
