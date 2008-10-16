@@ -360,180 +360,185 @@ public class ImportUcsc
     		Patient p = patientMap.get(patientID);
     		
     		if(p == null)
+    		{
     			ConsoleLogger.getInstance().logWarning("No patient with id "+patientID+" found.");
+    		}
     		
-    		//CD3
-    		if(method.equals("CD3 (?L)"))
+    		if(p != null)
     		{
-	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3Test());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("CD3 (%)"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3PercentTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    			
-    		//CD4
-    		if(method.equals("CD4 (?L)"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("CD4 (%)"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		 
-    		//CD8
-    		if(method.equals("CD8 (?L)"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("CD8 (%)"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		 
-    		//Viral Load
-    		if(method.equals("HIV-RNA"))
-    		{
-	    		if(Utils.checkColumnValueForEmptiness("HIV RNA test result", result, i, patientID) && Utils.checkColumnValueForEmptiness("date ofHIV RNA test result", analysisDate, i, patientID))
-	    		{
-	    			 try
-	    			 {
-			    		 TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
+    			//CD3
+        		if(method.equals("CD3 (?L)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3Test());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("CD3 (%)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD3 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD3PercentTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        			
+        		//CD4
+        		if(method.equals("CD4 (?L)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("CD4 (%)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD4 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		 
+        		//CD8
+        		if(method.equals("CD8 (?L)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (�L)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("CD8 (%)"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("CD8 test result (%)", result, i, patientID) && Utils.checkCDValue(result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		 
+        		//Viral Load
+        		if(method.equals("HIV-RNA"))
+        		{
+    	    		if(Utils.checkColumnValueForEmptiness("HIV RNA test result", result, i, patientID) && Utils.checkColumnValueForEmptiness("date ofHIV RNA test result", analysisDate, i, patientID))
+    	    		{
+    	    			 try
+    	    			 {
+    			    		 TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
 
-			    		 String value = null;
-			    		 
-			    		 double limit = 50.0;
-			    		 
-			    		 if(Double.parseDouble(result) <= limit)
-			    			 value = "<"+ limit;
-			    		 else
-			    			 value = "=";
-			    		 
-			    		 value += result;
-			    		 
-			    		 t.setValue(value.replace(',', '.'));
-			    		 t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    			 }
-	    			 catch(Exception e)
-	    			 {
-	    				 
-	    			 }
-	    		}
-    		}
-    		
-    		//Toxo
-    		if(method.equals("Toxo IgG"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("Toxo IgG", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgGTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("Toxo IgM"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("Toxo IgM", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgMTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		
-    		//HAV
-    		if(method.equals("HAV IgG"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("HAV IgG", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgGTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("HAV IgM"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("HAV IgM", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgMTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		
-    		//HAV
-    		if(method.equals("HBeAg"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("HBeAg", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericHBeAgTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		if(method.equals("HBsAg"))
-    		{
-	    		if (Utils.checkColumnValueForEmptiness("HBsAg", result, i, patientID)) 
-	    		{
-	                TestResult t = p.createTestResult(StandardObjects.getGenericHBsAgTest());
-	                t.setValue(result.replace(',', '.'));
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-	    		}
-    		}
-    		
-    		//Drug tests not used yet
-    		/*if(labor.equals("FARMACOLOGIA"))
-    		{
-    			for(int j = 0; j < regaDrugGenerics.size(); j++)
-    			{
-    				String name = regaDrugGenerics.get(j).getGenericName();
-    				
-    				if(name.equals(method.toLowerCase()))
-    				{	
-    					if (Utils.checkColumnValueForEmptiness("Drug testing for "+name+"", result, i, patientID)) 
-    		    		{
-    						//TODO: Wait for Pieter to fix it within the repository
-    		                TestResult t = p.createTestResult(StandardObjects.getGenericDrugTesting());
-    		                t.setValue(result.replace(',', '.'));
-    		                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
-    		    		}
-    					
-    					break;
-    				}
-    			}
-    		}*/
-    	}
+    			    		 String value = null;
+    			    		 
+    			    		 double limit = 50.0;
+    			    		 
+    			    		 if(Double.parseDouble(result) <= limit)
+    			    			 value = "<"+ limit;
+    			    		 else
+    			    		 {
+    			    			 value = "="+ result;
+    			    		 }
+    			    		 
+    			    		 t.setValue(value.replace(',', '.'));
+    			    		 t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    			 }
+    	    			 catch(Exception e)
+    	    			 {
+    	    				 
+    	    			 }
+    	    		}
+        		}
+        		
+        		//Toxo
+        		if(method.equals("Toxo IgG"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("Toxo IgG", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgGTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("Toxo IgM"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("Toxo IgM", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericToxoIgMTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		
+        		//HAV
+        		if(method.equals("HAV IgG"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("HAV IgG", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgGTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("HAV IgM"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("HAV IgM", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericHAVIgMTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		
+        		//HAV
+        		if(method.equals("HBeAg"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("HBeAg", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericHBeAgTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		if(method.equals("HBsAg"))
+        		{
+    	    		if (Utils.checkColumnValueForEmptiness("HBsAg", result, i, patientID)) 
+    	    		{
+    	                TestResult t = p.createTestResult(StandardObjects.getGenericHBsAgTest());
+    	                t.setValue(result.replace(',', '.'));
+    	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+    	    		}
+        		}
+        		
+        		//Drug tests not used yet
+        		/*if(labor.equals("FARMACOLOGIA"))
+        		{
+        			for(int j = 0; j < regaDrugGenerics.size(); j++)
+        			{
+        				String name = regaDrugGenerics.get(j).getGenericName();
+        				
+        				if(name.equals(method.toLowerCase()))
+        				{	
+        					if (Utils.checkColumnValueForEmptiness("Drug testing for "+name+"", result, i, patientID)) 
+        		    		{
+        						//TODO: Wait for Pieter to fix it within the repository
+        		                TestResult t = p.createTestResult(StandardObjects.getGenericDrugTesting());
+        		                t.setValue(result.replace(',', '.'));
+        		                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+        		    		}
+        					
+        					break;
+        				}
+        			}
+        		}*/
+        	}	
+    	}		
     }
     
     private void handleEvent()
