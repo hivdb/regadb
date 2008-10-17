@@ -13,16 +13,13 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-public class ParseGenBankXml {
-    public static void main(String[] args) {
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
-        
+public class ParseGenBankXml {    
+    public static GBOrganism parseOrganism(String genbankId) {
         File organism = null;
         try {
             organism = File.createTempFile("organism-genbank", ".xml");
             System.err.println(organism.getAbsolutePath());
-            efetchGenbankXmlFile(args[0], "nucleotide", organism);
+            efetchGenbankXmlFile(genbankId, "nucleotide", organism);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -63,24 +60,7 @@ public class ParseGenBankXml {
             e.printStackTrace();
         }
         
-        for(GBORF orf : organismGB.orfs) {
-        	System.err.println(orf.name);
-        	//System.err.println(orf.sequence);
-//        	if(orf.name.contains("pol ")) {
-//        		String gagseq = null;
-//        		for(GBORF orf2 : organismGB.orfs) {
-//        			if(orf2.name.contains("gag ")) {
-//        				gagseq = orf2.sequence;
-//        			}
-//        		}
-//        		String seq = HivGenome.getHxb2().getPol().getSequence().seqString();
-//        		System.err.println("koen:" + seq);
-//        		System.err.println("genbank:" + orf.sequence);
-//        		if(!orf.sequence.equals(seq)) {
-//        			System.err.println("SHIT");
-//        		}
-//        	}
-        }
+        return organismGB;
     }
     
     public static List<GBORF> getOrfs(String genome, String location, String name, String protein_id) {
