@@ -18,7 +18,7 @@ public class ParseGenBankXml {
         File organism = null;
         try {
             organism = File.createTempFile("organism-genbank", ".xml");
-            System.err.println(organism.getAbsolutePath());
+            //System.err.println(organism.getAbsolutePath());
             efetchGenbankXmlFile(genbankId, "nucleotide", organism);
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -81,6 +81,10 @@ public class ParseGenBankXml {
         
         for(int i = 0; i<locations.size(); i++) {
             String [] positions = locations.get(i).split("\\.\\.");
+            for(int j = 0; j<positions.length; j++) {
+            	positions[j] = positions[j].replace(">", "");
+            	positions[j] = positions[j].replace("<", "");
+            }
             GBORF orf = new GBORF();
             orf.name = name + " ORF " + (i+1);
             orf.sequence = genome.substring(Integer.parseInt(positions[0])-1, Integer.parseInt(positions[1]));
@@ -119,6 +123,15 @@ public class ParseGenBankXml {
         genbankEfetchUrl = genbankEfetchUrl.replace("$database", database);
         genbankEfetchUrl = genbankEfetchUrl.replace("$id", id);
         
-        HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        boolean done = HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        while(!done) {
+        	try {
+				Thread.sleep(1000*5);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.err.println("retrying");
+        	done = HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        }
     }
 }
