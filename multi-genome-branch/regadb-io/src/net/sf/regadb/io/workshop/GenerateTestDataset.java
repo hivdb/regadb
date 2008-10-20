@@ -129,7 +129,7 @@ public class GenerateTestDataset {
         }*/
     }
     
-    private static void writeXMLFile(Element root, File xmlFile) {
+    static void writeXMLFile(Element root, File xmlFile) {
         Document n = new Document(root);
         XMLOutputter outputter = new XMLOutputter();
         outputter.setFormat(Format.getPrettyFormat());

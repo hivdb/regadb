@@ -54,7 +54,7 @@ public class Utils {
     
     public static Table readTable(String filename, String charset, char delim) {
         try {
-        return Table.readTable(filename, Charset.defaultCharset().name(), delim);
+        	return Table.readTable(filename, charset, delim);
         } catch(FileNotFoundException e) {
             ConsoleLogger.getInstance().logError("File '"+filename+"' not found.");
         } catch (UnsupportedEncodingException e) {

@@ -433,8 +433,10 @@ public class ImportUcsc
 
 			    		 String value = null;
 			    		 
-			    		 if(Double.parseDouble(result) <= 50)
-			    			 value = "<";
+			    		 double limit = 50.0;
+			    		 
+			    		 if(Double.parseDouble(result) <= limit)
+			    			 value = "<"+ limit;
 			    		 else
 			    			 value = "=";
 			    		 

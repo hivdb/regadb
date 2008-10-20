@@ -30,8 +30,8 @@ public class ExportDB {
     private String outputPath=null;
     
     public static void main(String[] args){
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
+        /*System.setProperty("http.proxyHost", "www-proxy");
+        System.setProperty("http.proxyPort", "3128");*/
         ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3], args[4]);
         edb.run();
     }

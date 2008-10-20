@@ -26,7 +26,6 @@ import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
-import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.file.ILineHandler;
 import net.sf.regadb.io.db.util.file.ProcessFile;
@@ -86,12 +85,7 @@ public class ParseTherapy {
                     }
                 });
         
-        Table therapy = null;
-        try {
-            therapy = new Table(new BufferedInputStream(new FileInputStream(therapyCsv)), false);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Table therapy = Utils.readTable(therapyCsv.getAbsolutePath(), ParseAll.getCharset(), ParseAll.getDelimiter());
         //Patient_ID    Datum   Medicatie   Dosis   Aantal_Dosissen Frekwentie
         int CPatientId = Utils.findColumn(therapy, "Patient_ID");
         int CDate = Utils.findColumn(therapy, "Datum");
@@ -115,11 +109,12 @@ public class ParseTherapy {
                 try {
                     patientId = Integer.parseInt(therapy.valueAt(CPatientId, i));
                 } catch(NumberFormatException e) {
-                    System.err.println("Invalid patientId on row " + i);
+                    System.err.println("Invalid patientId on row " + i +", value: "+ patientId);
                 }
                 String blind = therapy.valueAt(CBlind, i);
 
-                String medication = mapDrug(therapy.valueAt(CMedication, i));
+                String drug = therapy.valueAt(CMedication, i).replace("®", "");
+                String medication = mapDrug(drug);
                 if(!drugsToIgnore.contains(medication)) /*is haart*/ {
                     if(medication.toLowerCase().startsWith("ziagen/epivir")) {
                         medication = "Kivexa";

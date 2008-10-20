@@ -1558,6 +1558,19 @@ public class Transaction {
         
         return q.list();
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Therapy> getTherapiesSortedOnDate(Patient p) {
+        String queryString = 
+            " select t " +
+            " from Therapy as t " +
+            " where t.patient.id = " + p.getPatientIi() +
+            " order by t.startDate";
+        
+        Query q = session.createQuery(queryString);
+        
+        return q.list();
+    }
 
     public void flush() 
     {

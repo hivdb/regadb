@@ -12,8 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import net.sf.regadb.analysis.functions.NtSequenceHelper;
@@ -29,6 +31,8 @@ public class GetViralIsolates {
     private Map<String, List<TestResult>> excellList;
     private Table spreadSampleIds;
     private Table samplesToBeIgnored;
+    
+    private Set<String> sampleIds = new HashSet<String>();
     
     public Map<String, Patient> eadPatients;
     
@@ -139,16 +143,18 @@ public class GetViralIsolates {
                 if(res.getSampleId().equals(id)) {
                     Patient p = eadPatients.get(es.getKey());
                     if(p!=null) {
-                        ViralIsolate vi = eadPatients.get(es.getKey()).createViralIsolate();
-                        vi.setSampleDate(res.getTestDate());
-                        vi.setSampleId(res.getSampleId());
-                        NtSequence ntseq = new NtSequence();
-                        ntseq.setViralIsolate(vi);
-                        vi.getNtSequences().add(ntseq);
-                        ntseq.setLabel("Sequence 1");
-                        ntseq.setSequenceDate(res.getTestDate());
-                        ntseq.setNucleotides(seq);
-                        return true; 
+                    	if(sampleIds.add(res.getSampleId())){
+	                        ViralIsolate vi = eadPatients.get(es.getKey()).createViralIsolate();
+	                        vi.setSampleDate(res.getTestDate());
+	                        vi.setSampleId(res.getSampleId());
+	                        NtSequence ntseq = new NtSequence();
+	                        ntseq.setViralIsolate(vi);
+	                        vi.getNtSequences().add(ntseq);
+	                        ntseq.setLabel("Sequence 1");
+	                        ntseq.setSequenceDate(res.getTestDate());
+	                        ntseq.setNucleotides(seq);
+	                        return true;
+                    	}
                     } else {
                         System.err.println("No patient with ead " + es.getKey() + " for id " + id);
                         return false;
@@ -159,6 +165,7 @@ public class GetViralIsolates {
         for(Entry<String, Patient> es : eadPatients.entrySet()) {
             for(TestResult res : es.getValue().getTestResults()) {
                 if(res.getSampleId().equals(id)) {
+                	if(sampleIds.add(res.getSampleId())){
                         ViralIsolate vi = eadPatients.get(es.getKey()).createViralIsolate();
                         vi.setSampleDate(res.getTestDate());
                         vi.setSampleId(res.getSampleId());
@@ -169,6 +176,7 @@ public class GetViralIsolates {
                         ntseq.setSequenceDate(res.getTestDate());
                         ntseq.setNucleotides(seq);
                         return true;
+                	}
                 }
             }
         }
