@@ -16,11 +16,20 @@ import org.jdom.output.XMLOutputter;
 
 public class ExportGenome {
     public static void main(String[] args){
-        GenerateGenome hiv1gen = new GenerateGenome("HIV-1","K03455.1|HIVHXB2CG Human immunodeficiency virus type 1 (HXB2)","genbank 1",GenerateGenome.getReferenceSequence("k03455.fasta"));
-        Genome hiv1 = hiv1gen.generateFromFile("k03455.genome");
         Collection<Genome> genomes = new ArrayList<Genome>();
+
+        GenerateGenome hiv1gen = new GenerateGenome("HIV-1","K03455.1|HIVHXB2CG Human immunodeficiency virus type 1 (HXB2)","K03455",GenerateGenome.getReferenceSequence("k03455.fasta"));
+        Genome hiv1 = hiv1gen.generateFromFile("k03455.genome");
         genomes.add(hiv1);
         
+        GenerateGenome hiv2rodGen = new GenerateGenome("HIV-2A","ROD Human immunodeficiency virus type 2A","M15390",GenerateGenome.getReferenceSequence("hiv2rod.fasta"));
+        Genome hiv2rod = hiv2rodGen.generateFromFile("hiv2rod.genome");
+        genomes.add(hiv2rod);
+        
+        GenerateGenome hiv2ehoGen = new GenerateGenome("HIV-2B","EHO Human immunodeficiency virus type 2B","U27200",GenerateGenome.getReferenceSequence("hiv2eho.fasta"));
+        Genome hiv2eho = hiv2ehoGen.generateFromFile("hiv2eho.genome");
+        genomes.add(hiv2eho);
+
         String fileName = "genomes.xml";
         ExportGenome export = new ExportGenome();
         export.exportToXml(genomes, fileName);
