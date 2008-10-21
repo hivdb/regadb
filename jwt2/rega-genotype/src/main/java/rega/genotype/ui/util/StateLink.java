@@ -1,25 +1,23 @@
 package rega.genotype.ui.util;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WArgMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public abstract class StateLink extends WText {
-	String varName;
-	
-	public StateLink(String text, WContainerWidget parent, String varName) {
-		super(new WArgMessage(text), parent);
-		this.varName = varName;
+
+	public StateLink(WString ws, WContainerWidget parent) {
+		super(ws, parent);
 		
-		((WArgMessage)text()).addArgument(varName, "");
+		text().arg("");
 		
 		this.setStyleClass("non-link");
 		
-		this.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
-				String value = ((WArgMessage)text()).getArgument(StateLink.this.varName);
+		this.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent a) {
+				String value = text().args().get(0);
 				if(!value.equals("")) {
 					clickAction(value);
 				}
@@ -28,8 +26,10 @@ public abstract class StateLink extends WText {
 	}
 	
 	public void setVarValue(String value) {
-		WArgMessage m = ((WArgMessage)text());
-		m.changeArgument(varName, value);
+		text().args().clear();
+		text().args().add(value);
+		
+		text().refresh();
 		
 		if(value.equals("")) {
 			this.setStyleClass("non-link");

@@ -3,17 +3,15 @@ package rega.genotype.ui.viruses.nrv;
 import java.io.File;
 import java.io.IOException;
 
-import net.sf.witty.wt.WBreak;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WArgMessage;
-import net.sf.witty.wt.i8n.WMessage;
 import rega.genotype.ui.data.OrganismDefinition;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.forms.IDetailsForm;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.WBreak;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class NrvSequenceAssignmentForm extends IDetailsForm {
 	public NrvSequenceAssignmentForm() {
@@ -58,27 +56,27 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 
 		block = new WContainerWidget(this);
 
-		WArgMessage refSeq = new WArgMessage("defaultSequenceAssignment.referenceSequence");
-		refSeq.addArgument("${start}", start);
-		refSeq.addArgument("${end}", end);
-		refSeq.addArgument("${refSeq}", p.getValue("genotype_result.sequence.result['blast'].refseq"));
+		WString refSeq = tr("defaultSequenceAssignment.referenceSequence");
+		refSeq.arg(start);
+		refSeq.arg(end);
+		refSeq.arg(p.getValue("genotype_result.sequence.result['blast'].refseq"));
 		WText refSeqWidget = new WText(refSeq);
 		refSeqWidget.setStyleClass("refseq");
 		block.addWidget(refSeqWidget);
 	}
 
 	@Override
-	public WMessage getComment() {
+	public WString getComment() {
 		return null;
 	}
 
 	@Override
-	public WMessage getTitle() {
+	public WString getTitle() {
 		return tr("defaultSequenceAssignment.title");
 	}
 
 	@Override
-	public WMessage getExtraComment() {
+	public WString getExtraComment() {
 		return null;
 	}
 }

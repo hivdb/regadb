@@ -2,13 +2,6 @@ package rega.genotype.ui.framework;
 
 import java.io.File;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WApplication;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
 import rega.genotype.ui.data.OrganismDefinition;
 import rega.genotype.ui.forms.AbstractJobOverview;
 import rega.genotype.ui.forms.ContactUsForm;
@@ -24,6 +17,12 @@ import rega.genotype.ui.i18n.resources.GenotypeResourceManager;
 import rega.genotype.ui.util.GenotypeLib;
 import rega.genotype.ui.util.Settings;
 import rega.genotype.ui.util.StateLink;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WText;
 
 public class GenotypeWindow extends WContainerWidget
 {
@@ -72,7 +71,7 @@ public class GenotypeWindow extends WContainerWidget
 	private void loadI18nResources()
 	{
 		resourceManager = new GenotypeResourceManager("/rega/genotype/ui/i18n/resources/common_resources.xml", od.getOrganismDirectory()+"resources.xml");
-		WApplication.instance().messageResourceBundle().useResource(resourceManager);
+		WApplication.instance().setLocalizedStrings(resourceManager);
 	}
 
 	public void init() {
@@ -96,21 +95,21 @@ public class GenotypeWindow extends WContainerWidget
 
 		
 		start = new WText(tr("main.navigation.start"), navigation);
-		start.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
+		start.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent a) {
 				startForm();
 			}
 		});
 		start.setStyleClass("link");
-		monitor = new StateLink("main.navigation.monitor", navigation, "${jobId}"){
+		monitor = new StateLink(tr("main.navigation.monitor"), navigation){
 			public void clickAction(String value) {
 				monitorForm(new File(Settings.getInstance().getJobDir().getAbsolutePath()+File.separatorChar+value));
 			}
 		};
 		howToCite = new WText(tr("main.navigation.howToCite"), navigation);
 		howToCite.setStyleClass("link");
-		howToCite.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
+		howToCite.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent a) {
 				if(howToCiteForm==null)
 					howToCiteForm = new HowToCiteForm(GenotypeWindow.this);
 				setForm(howToCiteForm);
@@ -118,8 +117,8 @@ public class GenotypeWindow extends WContainerWidget
 		});
 		tutorial = new WText(tr("main.navigation.tutorial"), navigation);
 		tutorial.setStyleClass("link");
-		tutorial.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
+		tutorial.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent a) {
 				if(tutorialForm==null)
 					tutorialForm = new TutorialForm(GenotypeWindow.this);
 				setForm(tutorialForm);
@@ -127,8 +126,8 @@ public class GenotypeWindow extends WContainerWidget
 		});
 		decisionTrees = new WText(tr("main.navigation.decisionTrees"), navigation);
 		decisionTrees.setStyleClass("link");
-		decisionTrees.clicked.addListener(new SignalListener<WMouseEvent>(){
-			public void notify(WMouseEvent a) {
+		decisionTrees.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent a) {
 				if(decisionTreesForm==null)
 					decisionTreesForm = new DecisionTreesForm(GenotypeWindow.this);
 				setForm(decisionTreesForm);
@@ -136,8 +135,8 @@ public class GenotypeWindow extends WContainerWidget
 		});
 		subtypingProcess = new WText(tr("main.navigation.subtypingProcess"), navigation);
 		subtypingProcess.setStyleClass("link");
-		subtypingProcess.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		subtypingProcess.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				if(subtypingProcessForm==null)
 					subtypingProcessForm = new SubtypingProcessForm(GenotypeWindow.this);
 				setForm(subtypingProcessForm);
@@ -145,8 +144,8 @@ public class GenotypeWindow extends WContainerWidget
 		});
 		exampleSequences = new WText(tr("main.navigation.exampleSequences"), navigation);
 		exampleSequences.setStyleClass("link");
-		exampleSequences.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		exampleSequences.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				if(exampleSequencesForm==null)
 					exampleSequencesForm = new ExampleSequencesForm(GenotypeWindow.this);
 				setForm(exampleSequencesForm);
@@ -154,8 +153,8 @@ public class GenotypeWindow extends WContainerWidget
 		});
 		contactUs = new WText(tr("main.navigation.contactUs"), navigation);
 		contactUs.setStyleClass("link");
-		contactUs.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		contactUs.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				if(contactUsForm==null) 
 					contactUsForm = new ContactUsForm(GenotypeWindow.this);
 				setForm(contactUsForm);

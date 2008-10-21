@@ -4,15 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import net.sf.witty.wt.WBreak;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WArgMessage;
-import net.sf.witty.wt.i8n.WMessage;
 import rega.genotype.ui.data.OrganismDefinition;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.forms.IDetailsForm;
 import rega.genotype.ui.recombination.RecombinationPlot;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.WBreak;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class DefaultRecombinationDetailsForm extends IDetailsForm {
 
@@ -49,24 +48,24 @@ public class DefaultRecombinationDetailsForm extends IDetailsForm {
 		addWidget(new WText(lt(", ")));
 		addWidget(GenotypeLib.getAnchor(" PDF ", "application/pdf", RecombinationPlot.getRecombinationPDF(jobDir, p.getSequenceIndex(), type, p.getValue(path+".data"), od)));
 		addWidget(new WBreak());
-		WArgMessage m = new WArgMessage("defaultRecombinationAnalyses.bootscanAnalysis");
-		m.addArgument("${window}", p.getValue(path+".window"));
-		m.addArgument("${step}", p.getValue(path+".step"));
+		WString m = tr("defaultRecombinationAnalyses.bootscanAnalysis");
+		m.arg(p.getValue(path+".window"));
+		m.arg(p.getValue(path+".step"));
 		addWidget(new WText(m));
 	}
 	
 	@Override
-	public WMessage getComment() {
+	public WString getComment() {
 		return tr("defaultRecombinationAnalyses.comment");
 	}
 
 	@Override
-	public WMessage getTitle() {
+	public WString getTitle() {
 		return tr("defaultRecombinationAnalyses.title");
 	}
 
 	@Override
-	public WMessage getExtraComment() {
+	public WString getExtraComment() {
 		return null;
 	}
 }

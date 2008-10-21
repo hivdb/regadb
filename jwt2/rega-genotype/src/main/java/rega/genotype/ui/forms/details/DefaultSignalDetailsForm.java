@@ -2,14 +2,14 @@ package rega.genotype.ui.forms.details;
 
 import java.io.File;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
 import rega.genotype.ui.data.OrganismDefinition;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.forms.IDetailsForm;
 import rega.genotype.ui.framework.widgets.WListContainerWidget;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class DefaultSignalDetailsForm extends IDetailsForm {
 
@@ -25,17 +25,17 @@ public class DefaultSignalDetailsForm extends IDetailsForm {
 	}
 	
 	@Override
-	public WMessage getComment() {
+	public WString getComment() {
 		return tr("defaultSignalAnalysis.comment");
 	}
 
 	@Override
-	public WMessage getTitle() {
+	public WString getTitle() {
 		return tr("defaultSignalAnalysis.title");
 	}
 
 	@Override
-	public WMessage getExtraComment() {
+	public WString getExtraComment() {
 		return tr("defaultSignalAnalysis.extraComment");
 	}
 }

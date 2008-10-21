@@ -4,18 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.forms.AbstractJobOverview;
 import rega.genotype.ui.framework.GenotypeWindow;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 
 public class NrvJobOverview extends AbstractJobOverview {
-	private List<WMessage> headers = new ArrayList<WMessage>();
+	private List<WString> headers = new ArrayList<WString>();
 	private List<WWidget> data = new ArrayList<WWidget>();
 	
 	public NrvJobOverview(GenotypeWindow main) {
@@ -39,8 +39,8 @@ public class NrvJobOverview extends AbstractJobOverview {
 		WText report = new WText(lt("Report"));
 		report.setStyleClass("link");
 		final int index = p.getSequenceIndex();
-		report.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		report.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				getMain().detailsForm(jobDir, index);
 			}
 		});
@@ -63,7 +63,7 @@ public class NrvJobOverview extends AbstractJobOverview {
 	}
 
 	@Override
-	public List<WMessage> getHeaders() {
+	public List<WString> getHeaders() {
 		return headers;
 	}
 
