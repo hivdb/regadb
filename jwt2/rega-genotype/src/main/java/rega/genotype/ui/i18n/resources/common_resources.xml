@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<common-settings>
+	<resource name="sequenceInput.uploadFile">Upload file</resource>
+	<resource name="sequenceInput.uploadingFile">Uploading file</resource>
+  	<resource name="sequenceInput.run">Run</resource>
+  	<resource name="sequenceInput.clear">Clear</resource>
+  	<resource name="sequenceInput.inputSequenceInFastaFormat">Enter your input data in FASTA format. </resource>
+  	
+  	<resource name="startForm.provideJobId">Monitor a running or finished job by providing the job-id.</resource>
+  	<resource name="startForm.jobId">Job-id:</resource>
+  	<resource name="startForm.monitor">Monitor</resource>
+  	<resource name="startForm.errorJobId">Invalid job id.</resource>
+  	<resource name="startForm.errorSequence">Too many sequences.</resource>
+  	
+  	<resource name="monitorForm.analysisInProgress">
+  		Analysis in progress... (Showing partial results). <br/>
+  		This page will be automatically updated every ${monitorForm.analysisInProgress.updateTime} seconds...<br/>
+  	</resource>
+	<resource name="monitorForm.downloadResults">Download results:</resource>
+	<resource name="monitorForm.csvTable">CSV Table</resource>
+	<resource name="monitorForm.xmlFile">XML File</resource>
+	<resource name="monitorForm.downloadJob">Download all job files:</resource>
+	<resource name="monitorForm.jobFile">ZIP</resource>
+	
+	<resource name="main.navigation.start">Start!</resource>
+	<resource name="main.navigation.monitor">Monitor job [${jobId}]</resource>
+	<resource name="main.navigation.details">Analysis details [${sequenceId}]</resource>
+	<resource name="main.navigation.howToCite">How to cite</resource>
+	<resource name="main.navigation.tutorial">Tutorial</resource>
+	<resource name="main.navigation.decisionTrees">Decision trees</resource>
+	<resource name="main.navigation.subtypingProcess">Subtyping process</resource>
+	<resource name="main.navigation.exampleSequences">Example sequences</resource>
+	<resource name="main.navigation.contactUs">Contact us</resource>
+	
+	<resource name="defaultSequenceAssignment.title">Sequence Assignment</resource>
+	<resource name="defaultSequenceAssignment.sequenceName">Sequence name: </resource>
+	<resource name="defaultSequenceAssignment.sequenceLength">Length: </resource>
+	<resource name="defaultSequenceAssignment.assignment">Assignment: </resource>
+	<resource name="defaultSequenceAssignment.bootstrap">Bootstrap: </resource>
+	<resource name="defaultSequenceAssignment.motivation">Motivation: </resource>
+	<resource name="defaultSequenceAssignment.referenceSequence">Your sequence starts at position ${start} and finishes at position ${end} in the ${refSeq} genome.</resource>
+	
+	
+	<resource name="details.analysisDetails">Analysis details</resource>
+	
+	<resource name="defaultPhylogeneticAnalyses.title">Phylogenetic analyses</resource>
+	<resource name="defaultPhylogeneticAnalyses.comment">
+		This section contains the alignments, inferred phylogenetic trees, and detailed results of the evolutionary analysis.
+	</resource>
+	
+	<resource name="defaultRecombinationAnalyses.title">Recombination analyses</resource>
+	<resource name="defaultRecombinationAnalyses.comment">
+		This section contains the recombination plots, and data from which they were derived.
+	</resource>
+	<resource name="defaultRecombinationAnalyses.sequenceName">Sequence name:</resource>
+	<resource name="defaultRecombinationAnalyses.bootscanClusterSupport">Bootscan cluster support:</resource>
+	<resource name="defaultRecombinationAnalyses.download">Download: </resource>
+	<resource name="defaultRecombinationAnalyses.bootscanAnalysis">Bootscan analysis performed with window size ${window} and step size ${step}.</resource>
+
+	<resource name="defaultSignalAnalysis.title">Phylogenetic signal analysis</resource>
+	<resource name="defaultSignalAnalysis.comment">This section contains details of the phylogenetic signal analysis.</resource>
+	<resource name="defaultSignalAnalysis.extraComment">Recombination Analyses are only performed for sequences with more than 800 bp.</resource>
+	<resource name="defaultSignalAnalysis.signalValue">Phylogenetic signal:</resource>
+	<resource name="defaultSignalAnalysis.signalComment">
+		Alignments with phylogenetic signal higher than 0.9 are considered suitable for the REGA subtype analysis. View the quartets mapped to the triangle.
+	</resource>
+	<resource name="defaultSignalAnalysis.extraComment">
+		Recombination Analyses are only performed for sequences with more than 800 bp.
+	</resource>	
+</common-settings>
