@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class HttpDownload {
-    public static void download(String urlAdress, String localFileName) {
+    public static boolean download(String urlAdress, String localFileName) {
         OutputStream out = null;
         URLConnection conn = null;
         InputStream in = null;
@@ -25,9 +25,10 @@ public class HttpDownload {
                 out.write(buffer, 0, numRead);
                 numWritten += numRead;
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        } finally {
+        } catch (IOException e) {
+        	if(e.getMessage().contains("502")) 
+        		return false;
+		}  finally {
             try {
                 if (in != null) {
                     in.close();
@@ -38,5 +39,7 @@ public class HttpDownload {
             } catch (IOException ioe) {
             }
         }
+		
+		return true;
     }
 }
