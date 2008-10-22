@@ -42,7 +42,7 @@ public abstract class AbstractJobOverview extends IForm {
 	public AbstractJobOverview(GenotypeWindow main) {
 		super(main, "monitor-form");
 	
-		WString aipm = new WString("monitorForm.analysisInProgress");
+		WString aipm = tr("monitorForm.analysisInProgress");
 		aipm.arg(getMain().getOrganismDefinition().getUpdateInterval()/1000);
 		analysisInProgress = new WText(aipm, this);
 		analysisInProgress.setStyleClass("analysisProgress");
