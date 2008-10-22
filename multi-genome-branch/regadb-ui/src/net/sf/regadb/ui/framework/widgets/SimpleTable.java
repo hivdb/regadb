@@ -10,6 +10,8 @@ import net.sf.witty.wt.i8n.WMessage;
 
 public class SimpleTable extends WTable{
 	int currentRow;
+	int maxColumns = 0;
+	int headerColumns = 0;
 	
 	public SimpleTable(WContainerWidget parent) {
 		super(parent);
@@ -18,12 +20,13 @@ public class SimpleTable extends WTable{
 	}
 	public void setHeaders(WMessage... titles) {
         int row = 0;
-        int col = 0;
+        headerColumns = 0;
         for (WMessage title : titles) {
-        	putElementAt(row, col, new TableHeader(title));
-        	elementAt(row, col).setStyleClass("column-title");
-        	col++;
+        	putElementAt(row, headerColumns, new TableHeader(title));
+        	elementAt(row, headerColumns).setStyleClass("column-title");
+        	headerColumns++;
         }
+        maxColumns = Math.max(maxColumns, headerColumns);
 	}
 	
 	public void setWidths(int... widths) {
@@ -41,17 +44,26 @@ public class SimpleTable extends WTable{
 			col++;
 		}
 		currentRow++;
+		
+		maxColumns = Math.max(maxColumns, col);
 	}
 	
 	/**
 	 * make all columns equally width
 	 */
 	public void distributeWidths() {
-    	int[] widths = new int[numColumns()];
-    	for (int i = 0 ; i < numColumns() - 1; i++) {
-    		widths[i] = (int) Math.floor(100/numColumns());
+    	int[] widths = new int[maxColumns];
+    	for (int i = 0 ; i < maxColumns - 1; i++) {
+    		widths[i] = (int) Math.floor(100/maxColumns);
     	}
-    	widths[numColumns() - 1] = 100 - ((int) Math.floor(100/numColumns())) * (numColumns()-1);	
+    	widths[maxColumns - 1] = 100 - ((int) Math.floor(100/maxColumns)) * (maxColumns-1);	
     	setWidths(widths);
+	}
+	
+	public void spanHeaders(){
+	    int colspan = maxColumns - headerColumns +1;
+	    if(colspan > 1){
+	        elementAt(0,headerColumns-1).setColumnSpan(colspan);
+	    }
 	}
 }

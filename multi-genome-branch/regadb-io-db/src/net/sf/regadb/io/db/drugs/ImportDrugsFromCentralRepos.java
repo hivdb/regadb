@@ -19,7 +19,7 @@ public class ImportDrugsFromCentralRepos {
         File drugClasses = File.createTempFile("DrugClasses", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugClasses.xml", drugClasses);
+            fp.getFile("regadb-drugs", "DrugClasses-genomes.xml", drugClasses);
         } 
         catch (RemoteException e) 
         {
@@ -31,7 +31,7 @@ public class ImportDrugsFromCentralRepos {
         File drugGenerics = File.createTempFile("DrugGenerics", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugGenerics.xml", drugGenerics);
+            fp.getFile("regadb-drugs", "DrugGenerics-genomes.xml", drugGenerics);
         } 
         catch (RemoteException e) 
         {
@@ -43,7 +43,7 @@ public class ImportDrugsFromCentralRepos {
         File drugCommercials = File.createTempFile("DrugCommercials", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugCommercials.xml", drugCommercials);
+            fp.getFile("regadb-drugs", "DrugCommercials-genomes.xml", drugCommercials);
         } 
         catch (RemoteException e) 
         {

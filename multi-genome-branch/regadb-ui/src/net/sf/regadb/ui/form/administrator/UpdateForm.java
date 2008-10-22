@@ -31,6 +31,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
+import net.sf.witty.wt.WBreak;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WGroupBox;
 import net.sf.witty.wt.WImage;
@@ -239,10 +240,10 @@ public class UpdateForm extends FormWidget
         
         FileProvider fp = new FileProvider();
         
-        File drugClasses = RegaDBMain.getApp().createTempFile("DrugClasses", "xml");
+        File drugClasses = RegaDBMain.getApp().createTempFile("DrugClasses-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugClasses.xml", drugClasses);
+            fp.getFile("regadb-drugs", "DrugClasses-genomes.xml", drugClasses);
         } 
         catch (RemoteException e) 
         {
@@ -254,10 +255,10 @@ public class UpdateForm extends FormWidget
         drugClasses.delete();
         t.commit();
 
-        File drugGenerics = RegaDBMain.getApp().createTempFile("DrugGenerics", "xml");
+        File drugGenerics = RegaDBMain.getApp().createTempFile("DrugGenerics-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugGenerics.xml", drugGenerics);
+            fp.getFile("regadb-drugs", "DrugGenerics-genomes.xml", drugGenerics);
         } 
         catch (RemoteException e) 
         {
@@ -269,10 +270,10 @@ public class UpdateForm extends FormWidget
         drugGenerics.delete();
         t.commit();
         
-        File drugCommercials = RegaDBMain.getApp().createTempFile("DrugCommercials", "xml");
+        File drugCommercials = RegaDBMain.getApp().createTempFile("DrugCommercials-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugCommercials.xml", drugCommercials);
+            fp.getFile("regadb-drugs", "DrugCommercials-genomes.xml", drugCommercials);
         } 
         catch (RemoteException e) 
         {
@@ -323,10 +324,12 @@ public class UpdateForm extends FormWidget
             List<String> genomeTitles = new ArrayList<String>();
             genomeTitles.add("organism");
             genomeTitles.add("description");
+            genomeTitles.add("genbank number");
             
             ArrayList<String> row = new ArrayList<String>();
             row.add(g.getOrganismName());
             row.add(g.getOrganismDescription());
+            row.add(g.getGenbankNumber());
             genomeDescriptions.add(row);
             
             handleFields(genomeGroup_, genomeTitles, genomeDescriptions);
@@ -359,6 +362,27 @@ public class UpdateForm extends FormWidget
                 }
             }
             handleFields(genomeGroup_, proteinTitles, proteinDescriptions);
+            
+            List<String> gdTitles = new ArrayList<String>();
+            List<List<String>> gds = new ArrayList<List<String>>();
+            int columns = 8;
+            gdTitles.add("generic drugs");
+            
+            DrugGeneric dgArray[] = new DrugGeneric[g.getDrugGenerics().size()];
+            g.getDrugGenerics().toArray(dgArray);
+            
+            for(int i=0; i<dgArray.length; i+=columns){
+                row = new ArrayList<String>();
+                for(int j=0; j<columns; ++j){
+                    if(i+j < dgArray.length)
+                        row.add(dgArray[i+j].getGenericId());
+                    else
+                        row.add("");
+                }
+                gds.add(row);
+            }
+            handleFields(genomeGroup_, gdTitles, gds);
+            genomeGroup_.addWidget(new WBreak());
         }
         
         t.commit();
@@ -478,7 +502,6 @@ public class UpdateForm extends FormWidget
         
         SimpleTable table = new SimpleTable(parent);
         table.setHeaders(messages);
-        table.distributeWidths();
         
         for (List<String> dataRow : data) {
             WText[] txt = new WText[dataRow.size()];
@@ -487,6 +510,9 @@ public class UpdateForm extends FormWidget
             }           
             table.addRow(txt);
         }
+        
+        table.distributeWidths();
+        table.spanHeaders();
     }
     
     private void handleFields(WContainerWidget parent, WMessage title, ArrayList<String> report) {
