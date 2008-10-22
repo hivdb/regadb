@@ -45,8 +45,15 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getMotivation(p, "ORF2")))));
 		}
 		
-		int start = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].start"));
-		int end = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].end"));
+		int start = 0;
+		int end = 0;
+		try {
+			start = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].start"));
+			end = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].end"));
+		} catch (NumberFormatException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		try {
 			WImage genome = GenotypeLib.getWImageFromFile(od.getGenome().getGenomePNG(jobDir, p.getSequenceIndex(), "-", start, end, 0, "nrv", null));

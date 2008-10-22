@@ -128,6 +128,7 @@ public class StartForm extends IForm {
 	
 	private void startJob(final String fastaContent) {
 		final File thisJobDir = GenotypeLib.createJobDir();
+
 		Thread analysis = new Thread(new Runnable(){
 			public void run() {
 				try {

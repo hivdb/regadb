@@ -1,44 +1,42 @@
 package rega.genotype.ui.util;
 
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
-public abstract class StateLink extends WText {
+public class StateLink extends WAnchor {
 
-	public StateLink(WString ws, WContainerWidget parent) {
-		super(ws, parent);
-		
+	private String baseUrl;
+
+	public StateLink(WString ws, String url, WContainerWidget parent) {
+		super("", ws, parent);
+
 		text().arg("");
 		
 		this.setStyleClass("non-link");
-		
-		this.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
-			public void trigger(WMouseEvent a) {
-				String value = text().args().get(0);
-				if(!value.equals("")) {
-					clickAction(value);
-				}
-			}
-		});
+		this.baseUrl = url;
+		this.setRefInternalPath(baseUrl);
 	}
 	
 	public void setVarValue(String value) {
+		/*
+		 * Update link text
+		 */
 		text().args().clear();
 		text().args().add(value);
 		
-		text().refresh();
-		
-		if(value.equals("")) {
+		if (value.equals("")) {
+			setRefInternalPath(baseUrl);
 			this.setStyleClass("non-link");
 		} else {
+			setRefInternalPath(baseUrl + '/' + value);
 			this.setStyleClass("link");
 		}
 		
 		refresh();
 	}
-	
-	public abstract void clickAction(String value);
 }

@@ -9,6 +9,7 @@ import rega.genotype.ui.forms.AbstractJobOverview;
 import rega.genotype.ui.framework.GenotypeWindow;
 import rega.genotype.ui.util.GenotypeLib;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
@@ -36,14 +37,7 @@ public class NrvJobOverview extends AbstractJobOverview {
 		data.add(new WText(lt(p.getValue("genotype_result.sequence[name]"))));
 		data.add(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
 		
-		WText report = new WText(lt("Report"));
-		report.setStyleClass("link");
-		final int index = p.getSequenceIndex();
-		report.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a) {
-				getMain().detailsForm(jobDir, index);
-			}
-		});
+		WAnchor report = createReportLink(p);
 		data.add(report);
 
 		data.add(new WText(lt(NrvResults.getConclusion(p, "ORF1"))));
@@ -56,6 +50,8 @@ public class NrvJobOverview extends AbstractJobOverview {
 					Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].end")),
 					0, "", null)));
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
 		

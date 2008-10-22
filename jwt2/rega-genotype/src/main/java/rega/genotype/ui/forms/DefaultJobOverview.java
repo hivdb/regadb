@@ -8,6 +8,7 @@ import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.framework.GenotypeWindow;
 import rega.genotype.ui.util.GenotypeLib;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
@@ -35,17 +36,11 @@ public class DefaultJobOverview extends AbstractJobOverview {
 		data.add(new WText(lt(p.getValue("genotype_result.sequence[name]"))));
 		data.add(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
 		
-		WText report = new WText(lt("Report"));
-		report.setStyleClass("link");
-		report.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a) {
-				getMain().detailsForm(jobDir, p.getSequenceIndex());
-			}
-		});
+		WAnchor report = createReportLink(p);
 		data.add(report);
-		
+
 		String id;
-		if(!p.elementExists("genotype_result.sequence.conclusion")) {
+		if (!p.elementExists("genotype_result.sequence.conclusion")) {
 			id = "-";
 			data.add(new WText(lt("NA")));
 			data.add(new WText(lt("NA")));

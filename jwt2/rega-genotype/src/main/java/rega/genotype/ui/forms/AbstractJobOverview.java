@@ -11,10 +11,12 @@ import java.util.List;
 
 import rega.genotype.ui.data.AbstractCsvGenerator;
 import rega.genotype.ui.data.SaxParser;
+import rega.genotype.ui.framework.GenotypeMain;
 import rega.genotype.ui.framework.GenotypeWindow;
 import rega.genotype.ui.util.GenotypeLib;
 import eu.webtoolkit.jwt.AnchorTarget;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -58,6 +60,23 @@ public abstract class AbstractJobOverview extends IForm {
 		if(updater!=null) {
 			updater.start();
 		}
+		
+		GenotypeMain.getApp().internalPathChanged.addListener(this, new Signal1.Listener<String>() {
+
+			public void trigger(String basePath) {
+				if (basePath.equals(GenotypeWindow.jobPath(jobDir) + '/')) {
+					try {
+						String id = GenotypeMain.getApp().internalPathNextPart(basePath);
+						if (!id.equals("")) {
+							int sequenceIndex = Integer.valueOf(id);
+							getMain().detailsForm(jobDir, sequenceIndex);
+						}
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+				}
+			} });
+
 	}
 	
 	public void init(File jobDir) {
@@ -186,4 +205,11 @@ public abstract class AbstractJobOverview extends IForm {
 	public abstract List<WString> getHeaders();
 	
 	public abstract List<WWidget> getData(SaxParser p);
+
+	protected WAnchor createReportLink(final SaxParser p) {
+		WAnchor report = new WAnchor("", lt("Report"));
+		report.setStyleClass("link");
+		report.setRefInternalPath(GenotypeWindow.reportPath(jobDir, p.getSequenceIndex()));
+		return report;
+	}
 }
