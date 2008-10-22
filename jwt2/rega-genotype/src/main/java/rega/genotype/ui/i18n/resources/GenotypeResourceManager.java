@@ -15,6 +15,7 @@ import org.jdom.input.SAXBuilder;
 import eu.webtoolkit.jwt.WLocalizedStrings;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 public class GenotypeResourceManager extends WLocalizedStrings {
 	private Map<String, String> resources = new HashMap<String, String>();
@@ -35,13 +36,17 @@ public class GenotypeResourceManager extends WLocalizedStrings {
 	private Element processDoc(String xmlName) {
 		SAXBuilder builder = new SAXBuilder();
 		Document doc = null;
+		String name;
+		String value;
 		try {
 			doc = builder.build(this.getClass().getResourceAsStream(xmlName));
 			Element root = doc.getRootElement();
 			for(Object o : root.getChildren()) {
 				Element e = (Element)o;
 				if(e.getName().equals("resource")) {
-					resources.put(e.getAttributeValue("name"), extractFormattedText(e));
+					name = e.getAttributeValue("name");
+					value = extractFormattedText(e);
+					resources.put(name, value);
 				}
 			}
 			return root;
@@ -87,9 +92,9 @@ public class GenotypeResourceManager extends WLocalizedStrings {
 		for(Object o : child.getContent()) {
 			if(o instanceof Text) {
 				if(noTrim)
-					textToReturn.append(((Text)o).getText());
+					textToReturn.append(StringUtils.escapeText(((Text)o).getText(), false));
 				else
-					textToReturn.append(((Text)o).getTextTrim());
+					textToReturn.append(StringUtils.escapeText(((Text)o).getTextTrim(), false));
 			} else {
 				Element e = (Element)o;
 				textToReturn.append("<"+e.getName());
