@@ -1,41 +1,41 @@
-generic_ii,generic_id,class_ii,generic_name,atc_code
-1,APV,1,amprenavir,J05AE05
-3,IDV,1,indinavir,J05AE02
-5,NFV,1,nelfinavir,J05AE04
-6,RTV,1,ritonavir,J05AE03
-7,SQV,1,saquinavir,J05AE01
-8,ABC,2,abacavir,J05AF06
-9,DDI,2,didanosine,J05AF02
-10,FTC,2,emtricitabine,J05AF09
-11,3TC,2,lamivudine,J05AF05
-12,D4T,2,stavudine,J05AF04
-13,TDF,2,tenofovir,J05AF07
-14,DDC,2,zalcitabine,J05AF03
-15,AZT,2,zidovudine,J05AF01
-16,DLV,3,delavirdine,J05AG02
-17,EFV,3,efavirenz,J05AG03
-18,NVP,3,nevirapine,J05AG01
-19,T20,4,enfuvirtide,J05AX07
-20,TPV,1,tipranavir,J05AE09
-2,ATV,1,atazanavir,J05AE08
-21,FPV,1,fosamprenavir,J05AE07
-22,ATV/r,1,atazanavir/r,J05AE08+J05AE03
-23,TPV/r,1,tipranavir/r,J05AE09+J05AE03
-24,PI,1,unknown PI,
-25,NNRTI,3,unknown NNRTI,
-26,NRTI,2,unknown NRTI,
-27,Unknown,5,Unknown,
-28,ADV,2,Adefovir,J05AF08
-29,R82913,3,TIBO R82913,
-30,aAPA,3,alpha-APA R 95845,
-31,LPV/r,1,lopinavir/r,J05AE06+J05AE03
-32,SQV/r,1,saquinavir/r,J05AE01+J05AE03
-33,IDV/r,1,indinavir/r,J05AE02+J05AE03
-34,APV/r,1,amprenavir/r,J05AE05+J05AE03
-35,DRV,1,darunavir,J05AE10
-36,DRV/r,1,darunavir/r,J05AE10+J05AE03
-37,FPV/r,1,fosamprenavir/r,J05AE07+J05AE03
-38,ETV,3,etravirine,J05AG-ETV
-39,RTG,6,raltegravir,J05AX08
-40,MVC,4,maraviroc,J05AX09
-41,CPV,3,capravirine,J05AG-CPV
+generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
+1,APV,1,amprenavir,J05AE05,HIV-1
+3,IDV,1,indinavir,J05AE02,HIV-1
+5,NFV,1,nelfinavir,J05AE04,HIV-1
+6,RTV,1,ritonavir,J05AE03,HIV-1
+7,SQV,1,saquinavir,J05AE01,HIV-1
+8,ABC,2,abacavir,J05AF06,HIV-1
+9,DDI,2,didanosine,J05AF02,HIV-1
+10,FTC,2,emtricitabine,J05AF09,HIV-1
+11,3TC,2,lamivudine,J05AF05,HIV-1
+12,D4T,2,stavudine,J05AF04,HIV-1
+13,TDF,2,tenofovir,J05AF07,HIV-1
+14,DDC,2,zalcitabine,J05AF03,HIV-1
+15,AZT,2,zidovudine,J05AF01,HIV-1
+16,DLV,3,delavirdine,J05AG02,HIV-1
+17,EFV,3,efavirenz,J05AG03,HIV-1
+18,NVP,3,nevirapine,J05AG01,HIV-1
+19,T20,4,enfuvirtide,J05AX07,HIV-1
+20,TPV,1,tipranavir,J05AE09,HIV-1
+2,ATV,1,atazanavir,J05AE08,HIV-1
+21,FPV,1,fosamprenavir,J05AE07,HIV-1
+22,ATV/r,1,atazanavir/r,J05AE08+J05AE03,HIV-1
+23,TPV/r,1,tipranavir/r,J05AE09+J05AE03,HIV-1
+24,PI,1,unknown PI,,HIV-1
+25,NNRTI,3,unknown NNRTI,,HIV-1
+26,NRTI,2,unknown NRTI,,HIV-1
+27,Unknown,5,Unknown,,HIV-1
+28,ADV,2,Adefovir,J05AF08,HIV-1
+29,R82913,3,TIBO R82913,,HIV-1
+30,aAPA,3,alpha-APA R 95845,,HIV-1
+31,LPV/r,1,lopinavir/r,J05AE06+J05AE03,HIV-1
+32,SQV/r,1,saquinavir/r,J05AE01+J05AE03,HIV-1
+33,IDV/r,1,indinavir/r,J05AE02+J05AE03,HIV-1
+34,APV/r,1,amprenavir/r,J05AE05+J05AE03,HIV-1
+35,DRV,1,darunavir,J05AE10,HIV-1
+36,DRV/r,1,darunavir/r,J05AE10+J05AE03,HIV-1
+37,FPV/r,1,fosamprenavir/r,J05AE07+J05AE03,HIV-1
+38,ETV,3,etravirine,J05AG-ETV,HIV-1
+39,RTG,6,raltegravir,J05AX08,HIV-1
+40,MVC,4,maraviroc,J05AX09,HIV-1
+41,CPV,3,capravirine,J05AG-CPV,HIV-1
