@@ -7,6 +7,7 @@ import rega.genotype.ui.data.OrganismDefinition;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.forms.IDetailsForm;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
@@ -33,15 +34,15 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 		String blastConclusion = NrvResults.getBlastConclusion(p);
 		if (!blastConclusion.equals(NrvResults.NA)) {
 			block.addWidget(new WText(lt("Assignment: " + blastConclusion + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + NrvResults.getBlastMotivation(p))));
+			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getBlastMotivation(p)))));
 		} else {
 			block.addWidget(new WText(lt("ORF1 assignment: " + NrvResults.getConclusion(p, "ORF1") + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + NrvResults.getMotivation(p, "ORF1"))));
+			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getMotivation(p, "ORF1")))));
 
 			block = new WContainerWidget(this);
 
 			block.addWidget(new WText(lt("ORF2 assignment: " + NrvResults.getConclusion(p, "ORF2") + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + NrvResults.getMotivation(p, "ORF2"))));
+			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getMotivation(p, "ORF2")))));
 		}
 		
 		int start = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].start"));
