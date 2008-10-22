@@ -125,6 +125,10 @@ public class FixHbmFiles
                         {
                             e.getAttribute("inverse").setValue("true");
                         }
+                        if((e.getAttributeValue("name").equals("drugGenerics")&& a.getKey().equals("net.sf.regadb.db.Genome")))
+                        {
+                            e.getAttribute("inverse").setValue("true");
+                        }
                     }
                     if(e.getName().equals("id") )
                     {

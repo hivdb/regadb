@@ -21,7 +21,7 @@
     <property name="genbankNumber" type="string">
       <column name="genbank_number" length="50" />
     </property>
-    <set name="drugGenerics" inverse="false" table="genome_drug_generic" cascade="all">
+    <set name="drugGenerics" inverse="true" table="genome_drug_generic" cascade="all">
       <key>
         <column name="genome_ii" not-null="true" />
       </key>
