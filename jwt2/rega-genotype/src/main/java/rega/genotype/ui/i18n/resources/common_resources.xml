@@ -13,8 +13,10 @@
   	<resource name="startForm.errorSequence">Too many sequences.</resource>
   	
   	<resource name="monitorForm.analysisInProgress">
-  		Analysis in progress... (Showing partial results). <br/>
-  		This page will be automatically updated every {1} seconds...<br/>
+  		Analysis in progress... (Showing partial results).
+  	</resource>
+  	<resource name="monitorForm.willBeUpdated">
+  	  	This page will be automatically updated every {1} seconds...
   	</resource>
 	<resource name="monitorForm.downloadResults">Download results:</resource>
 	<resource name="monitorForm.csvTable">CSV Table</resource>
