@@ -197,6 +197,8 @@ public class ParseConfirmation {
 
             String virload = getValue(i, "VIRLOAD", sheet, colMapping);
                 setTest(StandardObjects.getGenericHiv1ViralLoadTest(), ParseConsultDB.parseViralLoad(virload), testDate, p);
+                handleWIVStringAttribute("VIRLOAD", virload, p);
+                
             
             String nation = getValue(i, "NATION", sheet, colMapping);
             	handleWIVCountry("NATION", nation, p);
@@ -253,6 +255,8 @@ public class ParseConfirmation {
                         ConsoleLogger.getInstance().logWarning("Cannot parse confirmations CD4 value: " + lympho);
                     }
                 }
+                handleWIVStringAttribute("LYMPHO", lympho, p);
+                
             
             String stad_clin = getValue(i, "STAD_CLIN", sheet, colMapping);
                 handleWIVNominalAttribute("STAD_CLIN", stad_clin, p);

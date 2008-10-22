@@ -51,6 +51,9 @@ public class WivObjects {
         a = createAttribute("ORIGIN",nom);
         createAttributeNominalValues(a, countryCodes);
         
+        createAttribute("LYMPHO", str);
+        createAttribute("VIRLOAD", str);
+        
         createAttribute("RESID_B",num);
         createAttribute("ARRIVAL_B",dat);
         createAttribute("SEXCONTACT",nom,new String[]{"A: Other sex","B: Same sex","C: Both","D: None"});
