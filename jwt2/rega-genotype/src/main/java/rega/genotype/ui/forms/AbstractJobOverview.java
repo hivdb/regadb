@@ -1,8 +1,10 @@
 package rega.genotype.ui.forms;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import rega.genotype.ui.data.AbstractCsvGenerator;
 import rega.genotype.ui.data.SaxParser;
 import rega.genotype.ui.framework.GenotypeWindow;
 import rega.genotype.ui.util.GenotypeLib;
+import eu.webtoolkit.jwt.AnchorTarget;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WBreak;
@@ -114,6 +117,7 @@ public abstract class AbstractJobOverview extends IForm {
 			WText downloadResult = new WText(tr("monitorForm.downloadResults"), downloadContainer);
 			WAnchor xmlFileDownload = new WAnchor("", tr("monitorForm.xmlFile"), downloadContainer);
 			xmlFileDownload.setStyleClass("link");
+			xmlFileDownload.setTarget(AnchorTarget.TargetNewWindow);
 			WResource xmlResource = new WFileResource("application/xml", jobDir.getAbsolutePath() + File.separatorChar + "result.xml");
 			xmlResource.suggestFileName("result.xml");
 			xmlFileDownload.setRef(xmlResource.generateUrl());
@@ -122,6 +126,7 @@ public abstract class AbstractJobOverview extends IForm {
 			
 			WAnchor csvTableDownload = new WAnchor("", tr("monitorForm.csvTable"), downloadContainer);
 			csvTableDownload.setStyleClass("link");
+			csvTableDownload.setTarget(AnchorTarget.TargetNewWindow);
 			WResource csvResource = new WResource() {
 				@Override
 				public String resourceMimeType() {
@@ -130,9 +135,11 @@ public abstract class AbstractJobOverview extends IForm {
 				// TODO Auto-generated catch block
 
 				@Override
-				protected boolean streamResourceData(Writer stream, HashMap<String, String> arguments) throws IOException {
-					AbstractCsvGenerator acsvgen = AbstractJobOverview.this.getMain().getOrganismDefinition().getCsvGenerator(stream);
+				protected boolean streamResourceData(OutputStream stream, HashMap<String, String> arguments) throws IOException {
+					Writer w = new OutputStreamWriter(stream, "UTF-8");
+					AbstractCsvGenerator acsvgen = AbstractJobOverview.this.getMain().getOrganismDefinition().getCsvGenerator(w);
 					acsvgen.parseFile(new File(jobDir.getAbsolutePath()));
+					w.flush();
 					return true;
 				}
 				
@@ -146,9 +153,10 @@ public abstract class AbstractJobOverview extends IForm {
 			final File jobArchive = GenotypeLib.getZipArchiveFileName(jobDir);
 			WAnchor jobFileDownload = new WAnchor("", tr("monitorForm.jobFile"), downloadContainer);
 			jobFileDownload.setStyleClass("link");
+			jobFileDownload.setTarget(AnchorTarget.TargetNewWindow);
 			WResource jobResource = new WFileResource("application/zip", jobArchive.getAbsolutePath()) {
 				@Override
-				protected boolean streamResourceData(Writer stream, HashMap<String, String> arguments) {
+				protected boolean streamResourceData(OutputStream stream, HashMap<String, String> arguments) {
 					GenotypeLib.zip(jobDir, jobArchive);
 					super.streamResourceData(stream, arguments);
 					return true;

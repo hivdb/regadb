@@ -35,6 +35,7 @@ import rega.genotype.GenotypeTool;
 import rega.genotype.PhyloClusterAnalysis;
 import rega.genotype.SequenceAlign;
 import rega.genotype.ui.data.OrganismDefinition;
+import eu.webtoolkit.jwt.AnchorTarget;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFileResource;
@@ -177,6 +178,10 @@ public class GenotypeLib {
 	public static WImage getWImageFromFile(final File f) {
 		System.out.println("*** getWImageFromFile: "+ f.getAbsolutePath());
 		WImage chartImage = new WImage(new WResource() {
+			
+			{
+				suggestFileName("x.png");
+			}
 
             @Override
             public String resourceMimeType() {
@@ -184,7 +189,7 @@ public class GenotypeLib {
             }
 
             @Override
-            protected boolean streamResourceData(Writer stream, HashMap<String, String> arguments) throws IOException {
+            protected boolean streamResourceData(OutputStream stream, HashMap<String, String> arguments) throws IOException {
 				try {
 					FileInputStream fis = new FileInputStream(f);
 	                try {
@@ -215,7 +220,7 @@ public class GenotypeLib {
                 return "image/"+fileName.substring(fileName.lastIndexOf('.')+1);
             }
             @Override
-            protected boolean streamResourceData(Writer stream, HashMap<String, String> arguments) throws IOException {
+            protected boolean streamResourceData(OutputStream stream, HashMap<String, String> arguments) throws IOException {
             	InputStream is = this.getClass().getResourceAsStream(od.getOrganismDirectory()+fileName);
                 try {
                     IOUtils.copy(is, stream);
@@ -238,6 +243,7 @@ public class GenotypeLib {
 	public static WAnchor getAnchor(String text, String fileType, File f) {
 		WAnchor anchor = new WAnchor("", WContainerWidget.lt(text));
 		anchor.setStyleClass("link");
+		anchor.setTarget(AnchorTarget.TargetNewWindow);
 		WResource fr = new WFileResource(fileType, f.getAbsolutePath());
 		fr.suggestFileName(f.getName());
 		anchor.setRef(fr.generateUrl());

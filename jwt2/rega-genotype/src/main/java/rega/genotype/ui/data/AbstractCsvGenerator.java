@@ -1,6 +1,8 @@
 package rega.genotype.ui.data;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public abstract class AbstractCsvGenerator extends SaxParser {

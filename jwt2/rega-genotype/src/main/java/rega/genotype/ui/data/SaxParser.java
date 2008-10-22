@@ -88,14 +88,14 @@ public abstract class SaxParser extends DefaultHandler {
         xmlReader.setContentHandler(this);
         xmlReader.setErrorHandler(this);
         try {
-        xmlReader.parse(source);
+        	xmlReader.parse(source);
         } catch (SAXParseException spe) {
         	if(!spe.getMessage().equals("XML document structures must start and end within the same entity."))
         		spe.printStackTrace();
         }
     }
-    
-    public void parseFile(File jobDir) {
+
+	public void parseFile(File jobDir) {
     	File resultFile = new File(jobDir.getAbsolutePath()+File.separatorChar+"result.xml");
     	
     	if(resultFile.exists()) {

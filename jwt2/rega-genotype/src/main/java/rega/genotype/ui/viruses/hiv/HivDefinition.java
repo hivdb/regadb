@@ -2,6 +2,7 @@ package rega.genotype.ui.viruses.hiv;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,8 @@ public class HivDefinition implements OrganismDefinition {
 		return "/rega/genotype/ui/viruses/hiv/";
 	}
 
-	public AbstractCsvGenerator getCsvGenerator(Writer ps) throws IOException {
-		return new DefaultCsvGenerator(ps);
+	public AbstractCsvGenerator getCsvGenerator(Writer w) throws IOException {
+		return new DefaultCsvGenerator(w);
 	}
 
 	public Genome getGenome() {
