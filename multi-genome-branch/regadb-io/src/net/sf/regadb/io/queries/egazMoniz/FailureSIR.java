@@ -46,7 +46,7 @@ public class FailureSIR {
 						}
 						
 						for(TestResult tr : vi.getTestResults()) {
-							if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId())) {
+							if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssDescription())) {
 								DrugGeneric dg = tr.getDrugGeneric();
 								if(dg.getDrugClass().getClassId().equals(drugClass)) {
 									Integer pos = headers.get(Utils.getFixedGenericId(tr) + " (" + tr.getTest().getDescription() + ")");

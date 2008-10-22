@@ -187,7 +187,7 @@ public class Utils {
 	public static Map<String, Integer> getSIRHeaders(String drugClass) {
 		Map<String, Integer> header = new HashMap<String, Integer>();
 		
-		List<Test> gssTests = t.getTests(t.getTestType(StandardObjects.getGssId()));
+		List<Test> gssTests = t.getTests(t.getTestType(StandardObjects.getGssDescription(), StandardObjects.getHiv1Genome().getOrganismName()));
 		
 		List<DrugGeneric> genericDrugs = t.getDrugGenericSortedOnResistanceRanking(t.getDrugClass(drugClass));
 		

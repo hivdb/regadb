@@ -31,7 +31,7 @@ public class NaiveWorstCase {
 				continue;
 			
 				for(TestResult tr : vi.getTestResults()){
-					if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId())) {
+					if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssDescription())) {
 						DrugClass dc = tr.getDrugGeneric().getDrugClass();
 						if(tr.getTest().getDescription().contains("HIVDB")) {
 							double d = Double.parseDouble(tr.getValue());
