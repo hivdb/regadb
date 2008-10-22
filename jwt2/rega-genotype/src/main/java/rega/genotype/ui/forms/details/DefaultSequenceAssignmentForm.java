@@ -38,27 +38,27 @@ public class DefaultSequenceAssignmentForm extends IDetailsForm {
 		if(!p.elementExists("genotype_result.sequence.conclusion")) {
 			id = "-";
 		} else {
-			id = p.getValue("genotype_result.sequence.conclusion.assigned.id");
+			id = p.getEscapedValue("genotype_result.sequence.conclusion.assigned.id");
 		}
 			
 		text.clear();
 		text.addWidget(new WText(tr("defaultSequenceAssignment.sequenceName")));
-		text.addWidget(new WText(lt(p.getValue("genotype_result.sequence[name]")+", ")));
+		text.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence[name]")+", ")));
 		text.addWidget(new WText(tr("defaultSequenceAssignment.sequenceLength")));
-		text.addWidget(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
+		text.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence[length]"))));
 		text.addWidget(new WBreak());
 		text.addWidget(new WText(tr("defaultSequenceAssignment.assignment")));
 		if(!p.elementExists("genotype_result.sequence.conclusion")) {
 			text.addWidget(new WText(lt(" Sequence error")));
 		} else {
-			text.addWidget(new WText(lt(" " +p.getValue("genotype_result.sequence.conclusion.assigned.name"))));
+			text.addWidget(new WText(lt(" " +p.getEscapedValue("genotype_result.sequence.conclusion.assigned.name"))));
 		}
 		text.addWidget(new WText(lt(", ")));
 		text.addWidget(new WText(tr("defaultSequenceAssignment.bootstrap")));
 		if(!p.elementExists("genotype_result.sequence.conclusion.assigned.support")) {
 			text.addWidget(new WText(lt(" NA")));
 		} else {
-			text.addWidget(new WText(lt(" " +p.getValue("genotype_result.sequence.conclusion.assigned.support")+"%")));
+			text.addWidget(new WText(lt(" " +p.getEscapedValue("genotype_result.sequence.conclusion.assigned.support")+"%")));
 		}
 		
 		int start = Integer.parseInt(p.getValue("genotype_result.sequence.result['blast'].start"));
@@ -82,7 +82,7 @@ public class DefaultSequenceAssignmentForm extends IDetailsForm {
 			WString refSeq = tr("defaultSequenceAssignment.referenceSequence");
 			refSeq.arg(start);
 			refSeq.arg(end);
-			refSeq.arg(p.getValue("genotype_result.sequence.result['blast'].refseq"));
+			refSeq.arg(p.getEscapedValue("genotype_result.sequence.result['blast'].refseq"));
 			WText refSeqWidget = new WText(refSeq);
 			refSeqWidget.setStyleClass("refseq");
 			motivation.addWidget(refSeqWidget);
@@ -90,9 +90,9 @@ public class DefaultSequenceAssignmentForm extends IDetailsForm {
 			motivation.addWidget(new WBreak());
 			motivation.addWidget(new WText(tr("defaultSequenceAssignment.motivation")));
 			if(!p.elementExists("genotype_result.sequence.conclusion")) {
-				motivation.addWidget(new WText(lt(p.getValue("genotype_result.sequence.error"))));
+				motivation.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence.error"))));
 			} else {
-				motivation.addWidget(new WText(lt(p.getValue("genotype_result.sequence.conclusion.motivation"))));
+				motivation.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence.conclusion.motivation"))));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

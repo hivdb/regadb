@@ -56,7 +56,7 @@ public class NrvDefinition implements OrganismDefinition {
 			WString title = WString.lt("Phylogenetic analyses (" + region + ")");
 			forms.add(new DefaultPhylogeneticDetailsForm(phyloResult, title, title));
 
-			String bestGenotype = p.getValue(phyloResult + ".best.id");
+			String bestGenotype = p.getEscapedValue(phyloResult + ".best.id");
 			
 			String variantResult = result + "['phylo-" + region + "-" + bestGenotype + "']";
 			if (p.elementExists(variantResult)) {

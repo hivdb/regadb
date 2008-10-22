@@ -24,9 +24,9 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 		block.setStyleClass("assignment");
 
 		block.addWidget(new WText(tr("defaultSequenceAssignment.sequenceName")));
-		block.addWidget(new WText(lt(p.getValue("genotype_result.sequence[name]")+", ")));
+		block.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence[name]")+", ")));
 		block.addWidget(new WText(tr("defaultSequenceAssignment.sequenceLength")));
-		block.addWidget(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
+		block.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence[length]"))));
 		block.addWidget(new WBreak());
 
 		block = new WContainerWidget(this);
@@ -34,15 +34,15 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 		String blastConclusion = NrvResults.getBlastConclusion(p);
 		if (!blastConclusion.equals(NrvResults.NA)) {
 			block.addWidget(new WText(lt("Assignment: " + blastConclusion + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getBlastMotivation(p)))));
+			block.addWidget(new WText(lt("Motivation: " + NrvResults.getBlastMotivation(p))));
 		} else {
 			block.addWidget(new WText(lt("ORF1 assignment: " + NrvResults.getConclusion(p, "ORF1") + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getMotivation(p, "ORF1")))));
+			block.addWidget(new WText(lt("Motivation: " + NrvResults.getMotivation(p, "ORF1"))));
 
 			block = new WContainerWidget(this);
 
 			block.addWidget(new WText(lt("ORF2 assignment: " + NrvResults.getConclusion(p, "ORF2") + "<br />")));
-			block.addWidget(new WText(lt("Motivation: " + escapeText(NrvResults.getMotivation(p, "ORF2")))));
+			block.addWidget(new WText(lt("Motivation: " + NrvResults.getMotivation(p, "ORF2"))));
 		}
 		
 		int start = 0;
@@ -67,7 +67,7 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 		WString refSeq = tr("defaultSequenceAssignment.referenceSequence");
 		refSeq.arg(start);
 		refSeq.arg(end);
-		refSeq.arg(p.getValue("genotype_result.sequence.result['blast'].refseq"));
+		refSeq.arg(p.getEscapedValue("genotype_result.sequence.result['blast'].refseq"));
 		WText refSeqWidget = new WText(refSeq);
 		refSeqWidget.setStyleClass("refseq");
 		block.addWidget(refSeqWidget);

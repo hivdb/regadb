@@ -34,8 +34,8 @@ public class NrvJobOverview extends AbstractJobOverview {
 	public List<WWidget> getData(final SaxParser p) {
 		data.clear();
 		
-		data.add(new WText(lt(p.getValue("genotype_result.sequence[name]"))));
-		data.add(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
+		data.add(new WText(lt(p.getEscapedValue("genotype_result.sequence[name]"))));
+		data.add(new WText(lt(p.getEscapedValue("genotype_result.sequence[length]"))));
 		
 		WAnchor report = createReportLink(p);
 		data.add(report);

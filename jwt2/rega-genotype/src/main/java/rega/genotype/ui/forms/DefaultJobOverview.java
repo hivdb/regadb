@@ -33,8 +33,8 @@ public class DefaultJobOverview extends AbstractJobOverview {
 	public List<WWidget> getData(final SaxParser p) {
 		data.clear();
 		
-		data.add(new WText(lt(p.getValue("genotype_result.sequence[name]"))));
-		data.add(new WText(lt(p.getValue("genotype_result.sequence[length]"))));
+		data.add(new WText(lt(p.getEscapedValue("genotype_result.sequence[name]"))));
+		data.add(new WText(lt(p.getEscapedValue("genotype_result.sequence[length]"))));
 		
 		WAnchor report = createReportLink(p);
 		data.add(report);
@@ -45,10 +45,10 @@ public class DefaultJobOverview extends AbstractJobOverview {
 			data.add(new WText(lt("NA")));
 			data.add(new WText(lt("NA")));
 		} else {
-			id = p.getValue("genotype_result.sequence.conclusion.assigned.id");
-			data.add(new WText(lt(p.getValue("genotype_result.sequence.conclusion.assigned.name"))));
+			id = p.getEscapedValue("genotype_result.sequence.conclusion.assigned.id");
+			data.add(new WText(lt(p.getEscapedValue("genotype_result.sequence.conclusion.assigned.name"))));
 			
-			String support = p.getValue("genotype_result.sequence.conclusion.assigned.support");
+			String support = p.getEscapedValue("genotype_result.sequence.conclusion.assigned.support");
 			if(support==null) {
 				support = "NA";
 			}
