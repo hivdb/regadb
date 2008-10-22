@@ -1,6 +1,7 @@
 package rega.genotype.ui.forms;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -29,7 +30,6 @@ public abstract class AbstractJobOverview extends IForm {
 	protected File jobDir;
 
 	private WText analysisInProgress;
-	private WText willBeUpdated;
 	private WTable jobTable;
 	
 	private WTimer updater;
@@ -42,15 +42,10 @@ public abstract class AbstractJobOverview extends IForm {
 	public AbstractJobOverview(GenotypeWindow main) {
 		super(main, "monitor-form");
 	
-		
-		analysisInProgress = new WText(tr("monitorForm.analysisInProgress"), this);
-		analysisInProgress.setStyleClass("analysisProgress");
-		new WBreak(this);
-		WString aipm = tr("monitorForm.willBeUpdated");
+		WString aipm = new WString("monitorForm.analysisInProgress");
 		aipm.arg(getMain().getOrganismDefinition().getUpdateInterval()/1000);
-		willBeUpdated = new WText(aipm, this);
-		willBeUpdated.setStyleClass("analysisProgress");
-		new WBreak(this);
+		analysisInProgress = new WText(aipm, this);
+		analysisInProgress.setStyleClass("analysisProgress");
 		
 		new WBreak(this);
 		
@@ -81,12 +76,10 @@ public abstract class AbstractJobOverview extends IForm {
 		downloadContainer.clear();
 
 		analysisInProgress.setHidden(true);
-		willBeUpdated.setHidden(true);
 		
 		File jobDone = new File(jobDir.getAbsolutePath() + File.separatorChar + "DONE");
 		if (!jobDone.exists()) {
 			analysisInProgress.setHidden(false);
-			willBeUpdated.setHidden(false);
 
 			updater = new WTimer();
 			updater.setInterval(getMain().getOrganismDefinition().getUpdateInterval());
@@ -120,7 +113,6 @@ public abstract class AbstractJobOverview extends IForm {
 			if(updater!=null)
 				updater.stop();
 			analysisInProgress.setHidden(true);
-			willBeUpdated.setHidden(true);
 
 			WText downloadResult = new WText(tr("monitorForm.downloadResults"), downloadContainer);
 			WAnchor xmlFileDownload = new WAnchor("", tr("monitorForm.xmlFile"), downloadContainer);
