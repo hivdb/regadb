@@ -21,7 +21,7 @@ public class NrvSequenceAssignmentForm extends IDetailsForm {
 	@Override
 	public void fillForm(SaxParser p, final OrganismDefinition od, File jobDir) {
 		WContainerWidget block = new WContainerWidget(this);
-		block.setStyleClass("assignment");
+		block.setStyleClass("dsa-text");
 
 		block.addWidget(new WText(tr("defaultSequenceAssignment.sequenceName")));
 		block.addWidget(new WText(lt(p.getEscapedValue("genotype_result.sequence[name]")+", ")));
