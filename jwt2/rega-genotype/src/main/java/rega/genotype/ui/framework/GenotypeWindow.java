@@ -120,7 +120,7 @@ public class GenotypeWindow extends WContainerWidget
 						setForm(f);
 				} else if (basePath.equals("/job/")) {
 					String jobId = GenotypeMain.getApp().internalPathNextPart(basePath);
-					monitorForm(new File(Settings.getInstance().getJobDir().getAbsolutePath()+File.separatorChar+jobId));
+					monitorForm(new File(Settings.getInstance().getJobDir().getAbsolutePath()+File.separatorChar+jobId), false);
 				}
 			} });
 
@@ -145,12 +145,18 @@ public class GenotypeWindow extends WContainerWidget
 		}
 	}
 	
-	public void monitorForm(File jobDir) {
+	public void monitorForm(File jobDir, boolean setUrl) {
 		if (monitorForm==null)
 			monitorForm = od.getJobOverview(this);
 		monitorForm.init(jobDir);
-		monitor.setVarValue(jobId(jobDir));		
-		WApplication.instance().setInternalPath(monitor.ref());
+		monitor.setVarValue(jobId(jobDir));
+		
+		if (setUrl) {
+			WApplication app = WApplication.instance();
+			app.setInternalPath(monitor.ref());
+			if (!app.environment().ajax())
+				app.redirect(app.bookmarkUrl(monitor.ref()));
+		}
 
 		setForm(monitorForm);
 	}

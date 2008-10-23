@@ -103,7 +103,7 @@ public class StartForm extends IForm {
 				File jobDir = new File(Settings.getInstance().getJobDir().getAbsolutePath()+File.separatorChar+jobIdTF.text());
 				if(jobDir.exists()) {
 					setValid(jobIdTF, errorJobId);
-					getMain().monitorForm(jobDir);
+					getMain().monitorForm(jobDir, true);
 				} else {
 					setInvalid(jobIdTF, errorJobId);
 				}
@@ -148,7 +148,7 @@ public class StartForm extends IForm {
 		});
 		analysis.start();
 		
-		getMain().monitorForm(thisJobDir);
+		getMain().monitorForm(thisJobDir, true);
 	}
 
 	public void init() {

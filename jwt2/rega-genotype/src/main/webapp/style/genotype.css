@@ -1,15 +1,5 @@
 @CHARSET "UTF-8";
 
-/*	fixes for browser bugs */
-
-/* ie does not support position:fixed
-   position this element manually */
-* html #feedback {
-	position:absolute !important;
-	top:expression(document.body.scrollTop + "px"); 
-	right:0px;
-}
-
 /* general layout */
 
 
@@ -20,7 +10,8 @@ body {
 	padding-left: 2em;
 	padding-right: 2em;
 	width: 80%;
-	font-family: serif;
+	font-family:  arial,sans-serif;
+	font-size: 80%;
 }
 
 div.imgDiv, div.downloadContainer{
@@ -197,8 +188,7 @@ a, .link{
 	cursor: pointer;
 }
 
-*.navigation *{
-	font-size: 80%;
+*.navigation a {
 	display: block;
 	width: 12%;
 	float: left;
