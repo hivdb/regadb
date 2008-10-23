@@ -54,7 +54,7 @@ public class StartForm extends IForm {
 		new WBreak(seqinput);
 		
 		ta = new WTextArea(seqinput);
-		ta.setColumns(100);
+		ta.setColumns(83);
 		ta.setRows(15);
 		new WBreak(seqinput);
 	

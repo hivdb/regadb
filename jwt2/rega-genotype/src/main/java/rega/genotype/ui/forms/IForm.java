@@ -17,7 +17,7 @@ public abstract class IForm extends WContainerWidget {
 		this.main = main;
 		this.title = new WText(main.getResourceManager().getOrganismValue(title, "title"), this);
 		this.title.setStyleClass("header-mainTitle");
-		this.setStyleClass(cssClass);
+		this.setStyleClass(cssClass + " form");
 		new WBreak(this);
 	}
 	
