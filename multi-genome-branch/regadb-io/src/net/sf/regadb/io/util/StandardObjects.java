@@ -36,6 +36,8 @@ public class StandardObjects {
     private static String gssDescription = "Genotypic Susceptibility Score (GSS)";
     
     private static Genome hiv1Genome;
+    private static Genome hiv2aGenome;
+    private static Genome hiv2bGenome;
     
     private static TestObject patientTestObject;
     private static TestObject resistanceTestObject;
@@ -105,6 +107,8 @@ public class StandardObjects {
 
     static {
         hiv1Genome = new Genome("HIV-1", "");
+        hiv2aGenome = new Genome("HIV-2A", "");
+        hiv2bGenome = new Genome("HIV-2B", "");
         
         numberValueType         = new ValueType("number");
         limitedNumberValueType  = new ValueType("limited number (<,=,>)");
@@ -150,6 +154,8 @@ public class StandardObjects {
         standardGenomeTestTypes.add(tt);
         
         createStandardGenomeTests(getHiv1Genome());
+        createStandardGenomeTests(getHiv2AGenome());
+        createStandardGenomeTests(getHiv2BGenome());
         
         
         genericCD4Test          = new Test(new TestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
@@ -248,6 +254,12 @@ public class StandardObjects {
     
     public static Genome getHiv1Genome(){
         return hiv1Genome;
+    }
+    public static Genome getHiv2AGenome(){
+        return hiv2aGenome;
+    }
+    public static Genome getHiv2BGenome(){
+        return hiv2bGenome;
     }
 
 
