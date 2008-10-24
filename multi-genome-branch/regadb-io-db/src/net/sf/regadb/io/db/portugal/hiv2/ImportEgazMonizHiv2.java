@@ -134,7 +134,8 @@ public class ImportEgazMonizHiv2 {
 				//TODO
 				if(!institute.equals("")) {
 					if(!findInstitute(institute)) {
-						//s.add(institute);
+						s.add(institute);
+						//give someone a listing of the unrecognized institutes
 					}
 				}
 				if(!coinfection.equals("")) {
@@ -154,15 +155,17 @@ public class ImportEgazMonizHiv2 {
 			}
 			
 			
-			//TODO names -> how to split
-			//TODO what is this???
+			//TODO names -> how to split, first part -> first name, the rest -> last name
+			//TODO what is this??? -> this should be stored as the clinical file number
 			String processNr = patientInfo.valueAt(ProcessNrID, i);
-			//TODO InitialsID should we import this?
+			//TODO InitialsID should we import this? -> as a new attribute
 		}
 		
+		System.err.println("set:");
 		for(String ss : s) {
-			System.err.println("set:" + ss);
+			System.err.println(ss+",");
 		}
+		System.err.println("set:");
 	}
 	
 	public void parseAnalyses(File dir) throws FileNotFoundException, UnsupportedEncodingException {
