@@ -1,7 +1,6 @@
 package net.sf.regadb.io.db.portugal.hiv2;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +9,14 @@ import java.util.Map;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.regadb.analysis.functions.FastaHelper;
+import net.sf.regadb.analysis.functions.FastaRead;
+import net.sf.regadb.analysis.functions.FastaReadStatus;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
-
-import org.apache.commons.io.FileUtils;
+import net.sf.regadb.io.db.util.Utils;
 
 public class ImportEgazMonizHiv2Sequences {
 	public void run(Map<String, Patient> patientMap, File seqDir) throws BiffException, IOException {
@@ -33,13 +36,30 @@ public class ImportEgazMonizHiv2Sequences {
 						File fasta = getFastaFromSampleID(fastas, sampleID);
 						if(fasta==null) {
 							ConsoleLogger.getInstance().logWarning("Cannot retrieve fasta for sample with ID"+sampleID);
-						}
-						if(p==null) {
-							p = new Patient();
-							p.setPatientId(patientID);
-							patientMap.put(patientID, p);
-							//TODO
-							//processnumber -> clinical file number
+						} else {
+							if(p==null) {
+								p = new Patient();
+								p.setPatientId(patientID);
+								patientMap.put(patientID, p);
+								//TODO
+								//processnumber -> clinical file number
+							}
+				            FastaRead fr = FastaHelper.readFastaFile(fasta, true);
+				            if(fr.status_ == FastaReadStatus.Valid || fr.status_ == FastaReadStatus.ValidButFixed) {
+				            	String nucleotides = fr.seq_.seqString();
+				            	nucleotides = Utils.clearNucleotides(nucleotides);
+			                    ViralIsolate vi = p.createViralIsolate();
+			                    //TODO sampledate
+			                    //vi.setSampleDate(sampleID);
+			                    vi.setSampleId(sampleID);
+
+			                    NtSequence nts = new NtSequence(vi);
+			                    vi.getNtSequences().add(nts);
+			                    nts.setNucleotides(nucleotides);
+			                    nts.setLabel("Sequence 1");
+				            } else {
+								ConsoleLogger.getInstance().logWarning("Bad fasta file "+fasta + " ->" + fr.status_);
+				            }
 						}
 					}
 				}
