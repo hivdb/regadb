@@ -2,6 +2,7 @@ package net.sf.regadb.io.db.portugal.hiv2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import jxl.read.biff.BiffException;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
@@ -43,7 +46,7 @@ public class ImportEgazMonizHiv2 {
 	
 	private String mappingPath;
     
-	public static void main(String [] args) throws FileNotFoundException, UnsupportedEncodingException {
+	public static void main(String [] args) throws BiffException, IOException {
 		ImportEgazMonizHiv2 imp = new ImportEgazMonizHiv2(args[0]);
 		imp.run(new File(args[1]));
 	}
@@ -54,9 +57,11 @@ public class ImportEgazMonizHiv2 {
 		regadbEvents = Utils.prepareRegaDBEvents();
 	}
 	
-	public void run(File dir) throws FileNotFoundException, UnsupportedEncodingException {
-		parsePatientInfo(dir);
-		parseAnalyses(dir);
+	public void run(File dir) throws BiffException, IOException {
+		parsePatientInfo(new File(dir.getAbsolutePath()+File.separatorChar+"access"));
+		parseAnalyses(new File(dir.getAbsolutePath()+File.separatorChar+"access"));
+		ImportEgazMonizHiv2Sequences seqs = new ImportEgazMonizHiv2Sequences();
+		seqs.run(patientMap, new File(dir.getAbsolutePath()+File.separatorChar+"seqs"));
 	}
 	
 	public void parsePatientInfo(File dir) throws FileNotFoundException, UnsupportedEncodingException {
