@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import jxl.read.biff.BiffException;
-
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -29,7 +28,7 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ImportEgazMonizHiv2 {
-	private Map<String, Patient> patientMap = new HashMap<String, Patient>();
+	Map<String, Patient> patientMap = new HashMap<String, Patient>();
 	
     private NominalAttribute countryOfOriginA;
     private NominalAttribute geographicOriginA;
@@ -40,9 +39,11 @@ public class ImportEgazMonizHiv2 {
 	private List<Attribute> regadbAttributes;
 	private List<Event> regadbEvents;
 	
+	Attribute clinicalFileNumberA;
+	
 	private Table instituteTable;
 	
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy");
+	SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy");
 	
 	private String mappingPath;
     
@@ -55,13 +56,14 @@ public class ImportEgazMonizHiv2 {
 		this.mappingPath = mappingPath;
 		regadbAttributes = Utils.prepareRegaDBAttributes();
 		regadbEvents = Utils.prepareRegaDBEvents();
+		clinicalFileNumberA = Utils.selectAttribute("Clinical File Number", regadbAttributes);
 	}
 	
 	public void run(File dir) throws BiffException, IOException {
 		parsePatientInfo(new File(dir.getAbsolutePath()+File.separatorChar+"access"));
 		parseAnalyses(new File(dir.getAbsolutePath()+File.separatorChar+"access"));
 		ImportEgazMonizHiv2Sequences seqs = new ImportEgazMonizHiv2Sequences();
-		seqs.run(patientMap, new File(dir.getAbsolutePath()+File.separatorChar+"seqs"));
+		seqs.run(this, new File(dir.getAbsolutePath()+File.separatorChar+"seqs"));
 	}
 	
 	public void parsePatientInfo(File dir) throws FileNotFoundException, UnsupportedEncodingException {
@@ -80,6 +82,7 @@ public class ImportEgazMonizHiv2 {
 		this.geographicOriginA = new NominalAttribute("Geographic origin", Table.readTable(mappingPath+File.separatorChar+"geographic_origin.mapping"), regadb, Utils.selectAttribute("Geographic origin", regadbAttributes));
 		this.countryOfOriginA = new NominalAttribute("Country of origin", Table.readTable(mappingPath+File.separatorChar+"country_of_origin.mapping"), regadb, Utils.selectAttribute("Country of origin", regadbAttributes));
 		
+		
 		NominalAttribute genderA = new NominalAttribute("Gender", GenderID, new String[] { "M", "F" },
                 new String[] { "male", "female" } );
     	genderA.attribute.setAttributeGroup(regadb);
@@ -91,6 +94,11 @@ public class ImportEgazMonizHiv2 {
     	Attribute commentA = new Attribute();
     	commentA.setValueType(new ValueType("string"));
     	commentA.setName("Comment");
+    	commentA.setAttributeGroup(pt_group);
+    	
+    	Attribute initialsA = new Attribute();
+    	commentA.setValueType(new ValueType("string"));
+    	commentA.setName("Initials");
     	commentA.setAttributeGroup(pt_group);
 		
     	HashSet<String> s = new HashSet<String>();
@@ -104,13 +112,30 @@ public class ImportEgazMonizHiv2 {
 			String institute = patientInfo.valueAt(InstituteID, i).trim();
 			String coinfection = patientInfo.valueAt(HIV1CoinfectionID, i).trim();
 			String comments = patientInfo.valueAt(CommentsID, i).trim();
+			String initials = patientInfo.valueAt(InitialsID, i).trim();
+			String processNr = patientInfo.valueAt(ProcessNrID, i).trim();
 			
 			if(!patientNr.equals("") && patientMap.get(patientNr)==null) {
 				Patient p = new Patient();
 				patientMap.put(patientNr, p);
 				
 				p.setPatientId(patientNr);
-				p.setLastName(name);
+				
+				//patient names
+				String[] nameParts = name.split(" ");
+				String firstName = "";
+				String lastName = "";
+				for(int n = 0; n<nameParts.length; n++) {
+					if(n==0) {
+						firstName = nameParts[n];
+					} else {
+						lastName += nameParts[n];
+					}
+				}
+				p.setFirstName(firstName);
+				p.setLastName(lastName);
+				//patient names
+				
 				if(!gender.equals("")) {
             		AttributeNominalValue vv = genderA.nominalValueMap.get(gender.toUpperCase());
                     if (vv != null) {
@@ -150,22 +175,24 @@ public class ImportEgazMonizHiv2 {
 				if(!comments.equals("")) {
 					p.createPatientAttributeValue(commentA).setValue(comments);
 				}
+				if(!initials.equals("")) {
+					p.createPatientAttributeValue(initialsA).setValue(initials);
+				} 
+				if(!processNr.equals("")) {
+					p.createPatientAttributeValue(clinicalFileNumberA).setValue(processNr);
+				} else {
+					System.err.println("ERR: No processNr for PatientNr=" + patientNr);
+				}
 			} else {
 				System.err.println("ERR: PatientNr=" + patientNr);
 			}
-			
-			
-			//TODO names -> how to split, first part -> first name, the rest -> last name
-			//TODO what is this??? -> this should be stored as the clinical file number
-			String processNr = patientInfo.valueAt(ProcessNrID, i);
-			//TODO InitialsID should we import this? -> as a new attribute
 		}
 		
-		System.err.println("set:");
-		for(String ss : s) {
-			System.err.println(ss+",");
-		}
-		System.err.println("set:");
+//		System.err.println("set:");
+//		for(String ss : s) {
+//			System.err.println(ss+",");
+//		}
+//		System.err.println("set:");
 	}
 	
 	public void parseAnalyses(File dir) throws FileNotFoundException, UnsupportedEncodingException {
