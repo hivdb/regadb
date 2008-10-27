@@ -25,6 +25,7 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ImportEgazMonizHiv2 {
@@ -64,6 +65,9 @@ public class ImportEgazMonizHiv2 {
 		parseAnalyses(new File(dir.getAbsolutePath()+File.separatorChar+"access"));
 		ImportEgazMonizHiv2Sequences seqs = new ImportEgazMonizHiv2Sequences();
 		seqs.run(this, new File(dir.getAbsolutePath()+File.separatorChar+"seqs"));
+		
+        IOUtils.exportPatientsXML(patientMap, dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap, dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"viralIsolates.xml", ConsoleLogger.getInstance());
 	}
 	
 	public void parsePatientInfo(File dir) throws FileNotFoundException, UnsupportedEncodingException {
