@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Analysis;
@@ -60,8 +61,13 @@ public class PrepareCentralRepos
         
         export = new ExportToXML();
         //Tests
-        export.writeTopTest(StandardObjects.getGenericHiv1ViralLoadTest(), tests);
-        export.writeTopTest(StandardObjects.getGenericHiv1ViralLoadLog10Test(), tests);
+        
+        //export all standard genome-related tests for every genome
+        for(Map.Entry<String, Map<String, Test>> me : StandardObjects.getStandardGenomeTests().entrySet()){
+            for(Map.Entry<String, Test> meme : me.getValue().entrySet())
+                export.writeTopTest(meme.getValue(), tests);
+        }
+        
         export.writeTopTest(StandardObjects.getGenericCD4Test(), tests);
         export.writeTopTest(StandardObjects.getGenericCD4PercentageTest(), tests);
         export.writeTopTest(StandardObjects.getGenericCD8Test(), tests);
@@ -72,9 +78,6 @@ public class PrepareCentralRepos
         
         export.writeTopTest(StandardObjects.getFollowUpTest(), tests);
         
-        export.writeTopTest(StandardObjects.getHiv1SeroconversionTest(), tests);
-        export.writeTopTest(StandardObjects.getGenericHiv1SeroStatusTest(), tests);
-
         export.writeTopTest(StandardObjects.getGenericHBVViralLoadTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHCVViralLoadTest(), tests);
 

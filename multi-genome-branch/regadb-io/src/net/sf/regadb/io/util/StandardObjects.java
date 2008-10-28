@@ -196,6 +196,9 @@ public class StandardObjects {
         aidsDefiningIllnessEvent = createAidsDefiningIllnessEvent();
     }
     
+    public static Map<String, Map<String, Test>> getStandardGenomeTests(){
+        return standardGenomeTests;
+    }
     private static void createStandardGenomeTests(Genome g){
         Map<String, Test> map = standardGenomeTests.get(g.getOrganismName());
         if(map == null){
