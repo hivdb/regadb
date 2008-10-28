@@ -101,9 +101,9 @@ public class ImportEgazMonizHiv2 {
     	commentA.setAttributeGroup(pt_group);
     	
     	Attribute initialsA = new Attribute();
-    	commentA.setValueType(new ValueType("string"));
-    	commentA.setName("Initials");
-    	commentA.setAttributeGroup(pt_group);
+    	initialsA.setValueType(new ValueType("string"));
+    	initialsA.setName("Initials");
+    	initialsA.setAttributeGroup(pt_group);
 		
     	HashSet<String> s = new HashSet<String>();
     	
@@ -133,7 +133,7 @@ public class ImportEgazMonizHiv2 {
 					if(n==0) {
 						firstName = nameParts[n];
 					} else {
-						lastName += nameParts[n];
+						lastName += " " +nameParts[n];
 					}
 				}
 				p.setFirstName(firstName);
@@ -182,7 +182,7 @@ public class ImportEgazMonizHiv2 {
 				if(!initials.equals("")) {
 					p.createPatientAttributeValue(initialsA).setValue(initials);
 				} 
-				if(!processNr.equals("")) {
+				if(!processNr.equals("") && !processNr.equals("0")) {
 					p.createPatientAttributeValue(clinicalFileNumberA).setValue(processNr);
 				} else {
 					System.err.println("ERR: No processNr for PatientNr=" + patientNr);

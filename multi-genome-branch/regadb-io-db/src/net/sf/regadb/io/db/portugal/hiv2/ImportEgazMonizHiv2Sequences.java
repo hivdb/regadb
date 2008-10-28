@@ -45,10 +45,10 @@ public class ImportEgazMonizHiv2Sequences {
 								p = new Patient();
 								p.setPatientId(patientID);
 								mainImport.patientMap.put(patientID, p);
-								if(!processNr.equals("")) {
+								if(!processNr.equals("") && !processNr.equals("0")) {
 									p.createPatientAttributeValue(mainImport.clinicalFileNumberA).setValue(processNr);
 								} else {
-									System.err.println("ERR: No processNr for PatientNr=" + patientID);
+									System.err.println("ERR(seqs): No processNr for PatientNr=" + patientID);
 								}
 							}
 				            FastaRead fr = FastaHelper.readFastaFile(fasta, true);
