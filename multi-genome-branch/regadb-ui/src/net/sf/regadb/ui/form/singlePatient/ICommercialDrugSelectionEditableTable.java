@@ -1,17 +1,17 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.util.List;
-
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.DrugCommercialComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
@@ -90,7 +90,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
 
     public WWidget[] getWidgets(TherapyCommercial tc)
     {
-        ComboBox<DrugCommercial> combo = new ComboBox<DrugCommercial>(InteractionState.Viewing, form_);
+        DrugCommercialComboBox combo = new DrugCommercialComboBox(InteractionState.Viewing, form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         CheckBox cb_placebo = new CheckBox(form_.getInteractionState(), form_);
         CheckBox cb_blind = new CheckBox(form_.getInteractionState(), form_);
@@ -98,13 +98,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
-        for(DrugCommercial dc: commercialDrugs)
-        {
-            combo.addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
-        }
-        combo.sort();
-        
+        combo.fill(t, StandardObjects.getHiv1Genome());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];
@@ -121,7 +115,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
             {
                 tf.setText(tc.getDayDosageUnits()+"");
             }
-            combo.selectItem(tc.getId().getDrugCommercial().getName());
+            combo.selectItem(tc.getId().getDrugCommercial());
             
             cb_placebo.setChecked(tc.isPlacebo());
             cb_blind.setChecked(tc.isBlind());
@@ -139,7 +133,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
 
     public WWidget[] addRow() 
     {
-        ComboBox<DrugCommercial> combo = new ComboBox<DrugCommercial>(form_.getInteractionState(), form_);
+        DrugCommercialComboBox combo = new DrugCommercialComboBox(form_.getInteractionState(), form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         CheckBox cb_placebo = new CheckBox(form_.getInteractionState(), form_);
         CheckBox cb_blind = new CheckBox(form_.getInteractionState(), form_);
@@ -147,12 +141,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        List<DrugCommercial> commercialDrugs = t.getCommercialDrugs();
-        for(DrugCommercial dc: commercialDrugs)
-        {
-            combo.addItem(new DataComboMessage<DrugCommercial>(dc, dc.getName()));
-        }
-        combo.sort();
+        combo.fill(t, StandardObjects.getHiv1Genome());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];

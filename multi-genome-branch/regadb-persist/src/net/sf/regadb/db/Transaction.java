@@ -346,11 +346,38 @@ public class Transaction {
         Query q = session.createQuery("from DrugGeneric");
         return q.list();
     }
+    @SuppressWarnings("unchecked")
+    public List<DrugGeneric> getGenericDrugsSorted() 
+    {
+        Query q = session.createQuery("from DrugGeneric dg order by dg.genericName");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugGeneric> getGenericDrugsSorted(Genome g)
+    {
+        Query q = session.createQuery("select dg from DrugGeneric dg join dg.genomes g where g.organismName = :organismName order by dg.genericName");
+        q.setString("organismName", g.getOrganismName());
+        return q.list();
+    }
     
     @SuppressWarnings("unchecked")
     public List<DrugCommercial> getCommercialDrugs() 
     {
         Query q = session.createQuery("from DrugCommercial");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugCommercial> getCommercialDrugsSorted() 
+    {
+        Query q = session.createQuery("from DrugCommercial dc order by dc.name");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugCommercial> getCommercialDrugsSorted(Genome genome) 
+    {
+        Query q = session.createQuery("select dc from DrugCommercial dc join dc.drugGenerics dg join dg.genomes g where g.organismName = :organismName " +
+        		"group by dc.commercialIi, dc.name, dc.atcCode, dc.version order by dc.name");
+        q.setString("organismName", genome.getOrganismName());
         return q.list();
     }
     
@@ -1471,6 +1498,11 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Genome> getGenomes(){
         return session.createQuery("from Genome").list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Genome> getGenomesSorted(){
+        return session.createQuery("from Genome g order by g.organismName").list();
     }
     
     public Genome getGenome(String organismName){
