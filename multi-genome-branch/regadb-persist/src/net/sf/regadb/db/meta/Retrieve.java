@@ -14,6 +14,7 @@ import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
@@ -30,7 +31,9 @@ public class Retrieve {
     }	
 	
     public static Test retrieve(Transaction t, Test test) {
-        return t.getTest(test.getDescription());
+        TestType tt = test.getTestType();
+        Genome g = tt.getGenome();
+        return t.getTest(test.getDescription(), tt.getDescription(), (g==null ? "":g.getOrganismName()));
     }
 
     public static TestObject retrieve(Transaction t, TestObject testObject) {

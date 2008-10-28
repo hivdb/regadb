@@ -41,7 +41,7 @@ public class Equals {
 
     public static boolean isSameTest(Test o1, Test o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()));
+        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()) && isSameTestType(o1.getTestType(),o2.getTestType()));
     }
 
     public static boolean isSameTestNominalValue(TestNominalValue o1, TestNominalValue o2) {

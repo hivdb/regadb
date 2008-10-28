@@ -1258,12 +1258,32 @@ public class Transaction {
             
             return ((Long)q.uniqueResult()).longValue();
     }
-    
+
+    //ambiguous
     public Test getTest(String testDescription, String testTypeDescription)
     {
         String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription";
         
         Query q = session.createQuery(queryString);
+        q.setParameter("testDescription", testDescription);
+        q.setParameter("testTypeDescription", testTypeDescription);
+        
+        return (Test)q.uniqueResult();
+    }
+
+    public Test getTest(String testDescription, String testTypeDescription, String organismName)
+    {
+        Query q;
+        String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription and ";
+        if(organismName == null || organismName.length() == 0){
+            queryString += "(test.testType.genome is not null) and (test.testType.genome.organismName = :organismName)";
+            q = session.createQuery(queryString);
+            q.setParameter("organismName", organismName);
+        }
+        else{
+            queryString += "(test.testType.genome is null)";
+            q = session.createQuery(queryString);
+        }
         q.setParameter("testDescription", testDescription);
         q.setParameter("testTypeDescription", testTypeDescription);
         
