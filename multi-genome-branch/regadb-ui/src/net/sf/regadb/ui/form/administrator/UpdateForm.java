@@ -104,7 +104,7 @@ public class UpdateForm extends FormWidget
         File testsFile = RegaDBMain.getApp().createTempFile("tests", "xml");
         try 
         {
-            fp.getFile("regadb-tests", "tests.xml", testsFile);
+            fp.getFile("regadb-tests", "tests-genomes.xml", testsFile);
         }
         catch (RemoteException e) 
         {
