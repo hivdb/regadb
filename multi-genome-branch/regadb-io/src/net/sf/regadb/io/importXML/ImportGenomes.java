@@ -67,8 +67,10 @@ public class ImportGenomes {
         String organismName = el.getAttributeValue("organismName");
         Genome g = getGenome(organismName);
         newObject = g == null; 
-        
-        if(!isSimulate()){
+
+        //creating a new root genome object will not affect Transaction.commit()
+        //unless it's explicitly added to the transaction
+        if(!isSimulate() || newObject){
             if(newObject){
                 g = new Genome();
                 g.setOrganismName(organismName);
@@ -78,6 +80,7 @@ public class ImportGenomes {
             g.setGenbankNumber(el.getAttributeValue("genbankNumber"));
             g.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
+        
         logSync("genome "+ organismName, newObject);
         
         for(Object child : el.getChildren("openReadingFrame"))
@@ -96,9 +99,12 @@ public class ImportGenomes {
         if(!newObject)
             orf = getOpenReadingFrame(g, name);
 
-        newObject = orf == null;
-        if(!isSimulate()){
-            if(newObject){
+        boolean thisNewObject = orf == null;
+        
+        //don't add these in case of simulation, since the genome object could exist
+        //in which case the added 
+        if(!isSimulate() || newObject){
+            if(thisNewObject){
                 orf = new OpenReadingFrame();
                 orf.setName(name);
                 
@@ -110,10 +116,10 @@ public class ImportGenomes {
             orf.setReferenceSequence(el.getAttributeValue("referenceSequence"));
             orf.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
-        logSync("open reading frame "+ name, newObject);
+        logSync("open reading frame "+ name, thisNewObject);
         
         for(Object child : el.getChildren("protein"))
-            toProtein(orf, (Element)child, newObject);
+            toProtein(orf, (Element)child, thisNewObject);
         
         return orf;
     }
@@ -125,9 +131,9 @@ public class ImportGenomes {
         if(!newObject)
             p = getProtein(orf, abbreviation);
         
-        newObject = p == null;
-        if(!isSimulate()){
-            if(newObject){
+        boolean thisNewObject = p == null;
+        if(!isSimulate() || newObject){
+            if(thisNewObject){
                 p = new Protein();
                 p.setAbbreviation(el.getAttributeValue("abbreviation"));
                 
@@ -140,10 +146,10 @@ public class ImportGenomes {
             p.setStopPosition(Integer.parseInt(el.getAttributeValue("stopPosition")));
             p.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
-        logSync("protein "+ abbreviation, newObject);
+        logSync("protein "+ abbreviation, thisNewObject);
         
         for(Object child : el.getChildren("splicingPosition"))
-            toSplicingPosition(p, (Element)child, newObject);
+            toSplicingPosition(p, (Element)child, thisNewObject);
         
         return p;
     }
@@ -155,9 +161,9 @@ public class ImportGenomes {
         if(!newObject)
             sp = getSplicingPosition(p, position);
         
-        newObject = sp == null;
-        if(!isSimulate()){
-            if(newObject){
+        boolean thisNewObject = sp == null;
+        if(!isSimulate() || newObject){
+            if(thisNewObject){
                 sp = new SplicingPosition();
                 sp.setPosition(position);
                 
@@ -167,7 +173,7 @@ public class ImportGenomes {
         
             sp.setVersion(Integer.parseInt(el.getAttributeValue("version")));
         }
-        logSync("splicing position "+ position, newObject);
+        logSync("splicing position "+ position, thisNewObject);
         
         return sp;
     }

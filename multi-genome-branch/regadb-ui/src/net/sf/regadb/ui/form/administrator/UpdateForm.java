@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugClass;
@@ -56,6 +58,8 @@ public class UpdateForm extends FormWidget
     private WMessage drugClassTitle_ = tr("form.admin.update_central_server.drugClass.title");
     private WMessage drugGenericsTitle_ = tr("form.admin.update_central_server.drugGenerics.title");
     private WMessage drugCommercialsTitle_ = tr("form.admin.update_central_server.drugCommercials.title");
+    
+    private Collection<Genome> genomes_ = null;
 
     
     public UpdateForm(WMessage formName, InteractionState interactionState)
@@ -90,7 +94,7 @@ public class UpdateForm extends FormWidget
         }
         else
         {
-            handleGenomes(true);
+            genomes_ = handleGenomes(true);
             handleAttributes(true);
             handleEvents(true);
             handleTests(true);
@@ -115,6 +119,8 @@ public class UpdateForm extends FormWidget
         {
             final Transaction t = RegaDBMain.getApp().createTransaction();
             imp.loadDatabaseObjects(t);
+            if(simulate)
+                imp.setGenomes(genomes_);
             imp.readTests(new InputSource(new FileReader(testsFile)), new ImportHandler<Test>()
                     {
                         public void importObject(Test object) 
@@ -286,7 +292,7 @@ public class UpdateForm extends FormWidget
         t.commit();
     }
     
-    private void handleGenomes(boolean simulate){
+    private Collection<Genome> handleGenomes(boolean simulate){
         Transaction t;
         
         FileProvider fp = new FileProvider();
@@ -303,11 +309,12 @@ public class UpdateForm extends FormWidget
         t = RegaDBMain.getApp().createTransaction();
         
         ImportGenomes ig = new ImportGenomes(t,simulate);
-        ig.importFromXml(genomesXml);
+        Collection<Genome> ret = ig.importFromXml(genomesXml);
                 
         new WLogText(genomeGroup_, lt(ig.getLog().toString()));
         
         t.commit();
+        return ret;
     }
 
     private void showInstalledItems()

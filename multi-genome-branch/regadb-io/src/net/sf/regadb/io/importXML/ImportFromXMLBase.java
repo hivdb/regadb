@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
     private Map<String, TherapyMotivation> therapyMotivations;
-    private Map<String, Genome> genomes;
+    private Map<String, Genome> genomes = null;
     private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
     
     protected StringBuffer log = new StringBuffer();
@@ -176,8 +177,8 @@ public class ImportFromXMLBase extends DefaultHandler{
             return result;
     }
     protected Genome resolveGenome(String value) throws SAXException {
-        Genome result = getGenomes().get(value.toUpperCase());
-        if (result == null)
+        Genome result;
+        if (getGenomes() == null || (result = getGenomes().get(value.toUpperCase())) == null)
             throw new SAXException(new ImportException("Could not resolve genome: '" + value + "'"));
         else
             return result;
@@ -247,12 +248,10 @@ public class ImportFromXMLBase extends DefaultHandler{
             }
         }
         
-        setGenomes(new TreeMap<String, Genome>());
-        if(t!=null){
-            for(Genome g : t.getGenomes()){
-                getGenomes().put(g.getOrganismName(), g);
-            }
-        }
+        if(t!=null)
+            setGenomes(t.getGenomes());
+        else
+            setGenomes(new TreeMap<String, Genome>());
     }    
 
     protected boolean equals(Date o1, Date o2) {
@@ -318,6 +317,13 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public Map<String, AnalysisType> getAnalysisTypes() {
         return analysisTypes;
+    }
+    
+    public void setGenomes(Collection<Genome> genomes) {
+        setGenomes(new TreeMap<String, Genome>());
+        for(Genome g : genomes){
+            getGenomes().put(g.getOrganismName(), g);
+        }
     }
 
     public void setGenomes(Map<String, Genome> genomes) {

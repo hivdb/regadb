@@ -126,11 +126,15 @@ public class ImportDrugs
                         dg.setAtcCode(atcCode);
                         dg.setResistanceTableOrder(resistanceTableOrderI);
                         
-                        for(Object el : drugEl.getChildren()){
+                        for(Object el : drugEl.getChild("genomes").getChildren()){
                             Genome g = t.getGenome(((Element)el).getText());
                             if(g != null){
                                 g.getDrugGenerics().add(dg);
                                 dg.getGenomes().add(g);
+                                
+                                String msg = "Adding relation: "+ id +" - "+ g.getOrganismName();
+                                System.out.println(msg);
+                                report.add(msg);
                             }
                         }
                         
@@ -181,8 +185,8 @@ public class ImportDrugs
 	                        }
 	                    }
                     }
+                    t.save(dg);
                 }
-                t.save(dg);
             }
         } 
         catch (Exception e) 
