@@ -408,17 +408,6 @@ public class Transaction {
         return q.list();
     }
     
-    public Map<String, Protein> getProteinMap() {
-        List<Protein> proteins = getProteins();
-        Map<String, Protein> result = new HashMap<String, Protein>();
-        
-        for (Protein p:proteins)
-            result.put(p.getAbbreviation(), p);
-        
-
-        return result;
-    }
-    
     /*
      * Dataset queries
      */
