@@ -23,11 +23,13 @@ public class AlignmentAnalysis implements IAnalysis
     private Date startTime_;
     private Date endTime_;
     private String user_;
+    private String organismName_;
     
-    public AlignmentAnalysis(Integer ntseq, String user)
+    public AlignmentAnalysis(Integer ntseq, String user, String organismName)
     {
         seqIi_ = ntseq;
         user_ = user;
+        organismName_ = organismName;
     }
 
     public Date getEndTime() 
@@ -60,7 +62,7 @@ public class AlignmentAnalysis implements IAnalysis
         startTime_ = new Date(System.currentTimeMillis());
         
         Transaction t = sessionSafeLogin.createTransaction();
-        Genome g = t.getGenome("HIV-1");
+        Genome g = t.getGenome(organismName_);
         
         Aligner aligner = new Aligner(new LocalAlignmentService());
         

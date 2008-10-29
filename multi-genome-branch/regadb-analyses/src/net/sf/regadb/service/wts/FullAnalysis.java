@@ -61,7 +61,7 @@ public class FullAnalysis implements IAnalysis {
                 {
                     if(ntseq.getAaSequences().size()==0)
                     {
-                        AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), sessionSafeLogin.getUid()), sessionSafeLogin);
+                        AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), sessionSafeLogin.getUid(), genome.getOrganismName()), sessionSafeLogin);
                         AnalysisPool.getInstance().launchAnalysis(new SubtypeAnalysis(   ntseq,
                                                                                             subTypeTest,
                                                                                             genome,
