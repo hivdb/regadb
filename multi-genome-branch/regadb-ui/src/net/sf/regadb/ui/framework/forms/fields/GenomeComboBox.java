@@ -14,9 +14,17 @@ public class GenomeComboBox extends ComboBox<Genome>{
 
     public void fill(Transaction t){
         for(Genome genome : t.getGenomes()){
-            addItem(new DataComboMessage<Genome>(genome, genome.getOrganismName()));
+            addItem(new DataComboMessage<Genome>(genome, getLabel(genome)));
         }
         sort();
         addNoSelectionItem();
+    }
+    
+    public void selectItem(Genome genome){
+        selectItem(getLabel(genome));
+    }
+    
+    String getLabel(Genome genome){
+        return genome.getOrganismName();
     }
 }
