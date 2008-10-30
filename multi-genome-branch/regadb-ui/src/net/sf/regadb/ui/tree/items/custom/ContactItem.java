@@ -25,19 +25,34 @@ public class ContactItem extends ActionItem {
     public ActionItem lastContact;
     public ActionItem addContact;
     
-    private static List<String> contactTests = new ArrayList<String>();
+    public static class TestItem{
+        public TestItem(){
+        }
+        public TestItem(String d){
+            description = d;
+        }
+        public TestItem(String d, String o){
+            description = d;
+            organism = o;
+        }
+        public String description = null;
+        public String organism = null;
+    }
+    
+    private static List<TestItem> contactTests = new ArrayList<TestItem>();
     
     static {
     	Element root = RegaDBSettings.getInstance().getCustomSettings("form.multipleTestResults.contact");
     	if(root != null){
             Element tests = (Element)root.getChild("tests");
-            for(Object o : tests.getChildren())
-            	contactTests.add(((Element)o).getAttributeValue("description"));
+            for(Object o : tests.getChildren()){
+            	contactTests.add(new TestItem(((Element)o).getAttributeValue("description"),((Element)o).getAttributeValue("organism")));
+            }
     	}
     	else{
-	        contactTests.add(StandardObjects.getGenericCD4Test().getDescription());
-	        contactTests.add(StandardObjects.getGenericCD8Test().getDescription());
-	        contactTests.add(StandardObjects.getGenericHiv1ViralLoadTest().getDescription());
+	        contactTests.add(new TestItem(StandardObjects.getGenericCD4Test().getDescription()));
+	        contactTests.add(new TestItem(StandardObjects.getGenericCD8Test().getDescription()));
+	        contactTests.add(new TestItem(StandardObjects.getGenericHiv1ViralLoadTest().getDescription(), StandardObjects.getHiv1Genome().getOrganismName()));
     	}
     }
     

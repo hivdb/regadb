@@ -339,6 +339,18 @@ public class Transaction {
         
         return (Test) getTestQuery.uniqueResult();
     }
+    public Test getTestByGenome(String description, String organismName) {
+        Query q;
+        if(organismName == null || organismName.length() == 0)
+            q = session.createQuery("select t from Test t where t.description = :description and t.testType.genome is null order by t.description");
+        else{
+            q = session.createQuery("select t from Test t join t.testType tt where t.description = :description and tt.genome is not null and tt.genome.organismName = :organismName order by t.description");
+            q.setParameter("organismName", organismName);
+        }
+        q.setParameter("description", description);
+        
+        return (Test) q.uniqueResult();
+    }
 
     @SuppressWarnings("unchecked")
     public List<DrugGeneric> getGenericDrugs() 

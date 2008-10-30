@@ -18,9 +18,11 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
+import net.sf.regadb.ui.tree.items.custom.ContactItem.TestItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.witty.wt.SignalListener;
@@ -41,14 +43,14 @@ public class MultipleTestResultForm extends FormWidget {
     private List<Test> tests_;
     private ActionItem lastItem_;
 
-    public MultipleTestResultForm(WMessage name, InteractionState state, List<String> tests, ActionItem lastItem) {
+    public MultipleTestResultForm(WMessage name, InteractionState state, List<TestItem> tests, ActionItem lastItem) {
         super(name, state);
         
         tests_ = new ArrayList<Test>();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        for(String description : tests){
-        	Test test = t.getTest(description);
+        for(TestItem ti : tests){
+        	Test test = t.getTestByGenome(ti.description, ti.organism);
         	if(test != null)
         		tests_.add(test);
         }
@@ -71,7 +73,7 @@ public class MultipleTestResultForm extends FormWidget {
         generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         
         for(Test t : tests_) {
-            Label l = new Label(lt(t.getDescription()));
+            Label l = new Label(lt(TestComboBox.getLabel(t)));
             FormField testResultField;
             if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
                 testResultField = new ComboBox(getInteractionState(), this);
