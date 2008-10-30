@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -15,8 +14,8 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
-import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
@@ -38,12 +37,10 @@ public class MeasurementForm extends FormWidget
     private TextField sampleIdTF_;
     private Label dateL;
     private DateField dateTF;
-    private Label genomeL;
-    private GenomeComboBox genomeCB;
     private Label testTypeL;
     private TestTypeComboBox testTypeCB;
     private Label testNameL;
-    private ComboBox<Test> testNameCB;
+    private TestComboBox testNameCB;
     private Label testResultL;
     private FormField testResultField_;
     private WContainerWidget testResultC;
@@ -67,18 +64,13 @@ public class MeasurementForm extends FormWidget
         dateL = new Label(tr("form.testResult.editView.date"));
         dateTF = new DateField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(dateL, dateTF);
-        
-        genomeL = new Label(tr("form.testResult.editView.genome"));
-        genomeCB = new GenomeComboBox(getInteractionState(), this);
-        generalGroupTable_.addLineToTable(genomeL, genomeCB);
-        
         testTypeL = new Label(tr("form.testResult.editView.testType"));
         testTypeCB = new TestTypeComboBox(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testTypeL, testTypeCB);
         testNameL = new Label(tr("form.testResult.editView.testName"));
-        testNameCB = new ComboBox<Test>(getInteractionState(), this);
+        testNameCB = new TestComboBox(getInteractionState(), this);
         testNameCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testNameL, testNameCB);
         testResultL = new Label(tr("form.testResult.editView.testResult"));
@@ -89,6 +81,13 @@ public class MeasurementForm extends FormWidget
         generalGroupTable_.putElementAt(row, 1, testResultC);
         generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
         
+        //set the comboboxes
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        testTypeCB.fill(t, true);
+        testTypeCB.selectIndex(0);
+
+        t.commit();
+        
         fillData();
         
         addControlButtons();
@@ -96,27 +95,17 @@ public class MeasurementForm extends FormWidget
 	
 	private void fillData()
 	{
-        Transaction t = RegaDBMain.getApp().createTransaction();
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
-		    genomeCB.fill(t);
-		    genomeCB.selectItem(testResult_.getTest().getTestType().getGenome());
-		    
-		    testTypeCB.fill(t, testResult_.getTest().getTestType().getGenome(), true);
 	       	testTypeCB.selectItem(testResult_.getTest().getTestType());
-		    
-	        testNameCB.selectItem(testResult_.getTest().getDescription());
+	        testNameCB.selectItem(testResult_.getTest());
 	        
 	        dateTF.setDate(testResult_.getTestDate());
             
             sampleIdTF_.setText(testResult_.getSampleId());
 		}
-		else{
-	        genomeCB.fill(t);
-	        testTypeCB.fill(t, null, true);
-	        testTypeCB.selectIndex(0);
-		}
         
+        Transaction t = RegaDBMain.getApp().createTransaction();
         TestType type = testTypeCB.currentValue();
         setTestCombo(t, type);
         t.commit();
@@ -138,46 +127,26 @@ public class MeasurementForm extends FormWidget
                 testResultField_.setText(testResult_.getValue());
             }
         }
+		
         testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
                 {
-                    public void notify(WEmptyEvent a)
-                    {
+        			public void notify(WEmptyEvent a)
+        			{
                         TestType testType = testTypeCB.currentValue();
                         
-                        Transaction t = RegaDBMain.getApp().createTransaction();
-                        setTestCombo(t, testType);
-                        t.commit();
+        				Transaction t = RegaDBMain.getApp().createTransaction();
+        				setTestCombo(t, testType);
+        				t.commit();
                         
                         setResultField(testType.getValueType(), testType);
-                    }
-                });
-        
-        genomeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
-                {
-                    public void notify(WEmptyEvent a)
-                    {
-                        Genome g = genomeCB.currentValue();
-                        
-                        testTypeCB.clearItems();
-                        Transaction t = RegaDBMain.getApp().createTransaction();
-                        testTypeCB.fill(t, g, true);
-                        testTypeCB.selectIndex(0);
-                        setTestCombo(t, testTypeCB.currentValue());
-                        t.commit();
-                    }
+        			}
                 });
 	}
 	
 	private void setTestCombo(Transaction t, TestType testType)
 	{
 		testNameCB.clearItems();
-		
-        for(Test test : t.getTests(testType))
-        {
-        	testNameCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
-        }
-        testNameCB.sort();
-        
+		testNameCB.fill(t, testType);
         testNameCB.selectIndex(0);
 	}
     

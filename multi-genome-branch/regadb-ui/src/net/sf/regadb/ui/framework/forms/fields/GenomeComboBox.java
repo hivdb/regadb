@@ -24,7 +24,7 @@ public class GenomeComboBox extends ComboBox<Genome>{
         selectItem(getLabel(genome));
     }
     
-    String getLabel(Genome genome){
+    public static String getLabel(Genome genome){
         return genome.getOrganismName();
     }
 }

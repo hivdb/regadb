@@ -35,7 +35,7 @@ public class TestTypeComboBox extends ComboBox<TestType>{
         selectItem(getLabel(testType));
     }
     
-    public String getLabel(TestType testType){
+    public static String getLabel(TestType testType){
         String label = testType.getDescription();
         if(testType.getGenome() != null)
             label += " ("+ testType.getGenome().getOrganismName() +")";
