@@ -89,14 +89,6 @@ public class MeasurementForm extends FormWidget
         generalGroupTable_.putElementAt(row, 1, testResultC);
         generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
         
-        //set the comboboxes
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        genomeCB.fill(t);
-        testTypeCB.fill(t, null, true);
-        testTypeCB.selectIndex(0);
-
-        t.commit();
-        
         fillData();
         
         addControlButtons();
@@ -104,18 +96,27 @@ public class MeasurementForm extends FormWidget
 	
 	private void fillData()
 	{
+        Transaction t = RegaDBMain.getApp().createTransaction();
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
+		    genomeCB.fill(t);
 		    genomeCB.selectItem(testResult_.getTest().getTestType().getGenome());
+		    
+		    testTypeCB.fill(t, testResult_.getTest().getTestType().getGenome(), true);
 	       	testTypeCB.selectItem(testResult_.getTest().getTestType());
+		    
 	        testNameCB.selectItem(testResult_.getTest().getDescription());
 	        
 	        dateTF.setDate(testResult_.getTestDate());
             
             sampleIdTF_.setText(testResult_.getSampleId());
 		}
+		else{
+	        genomeCB.fill(t);
+	        testTypeCB.fill(t, null, true);
+	        testTypeCB.selectIndex(0);
+		}
         
-        Transaction t = RegaDBMain.getApp().createTransaction();
         TestType type = testTypeCB.currentValue();
         setTestCombo(t, type);
         t.commit();
@@ -137,6 +138,19 @@ public class MeasurementForm extends FormWidget
                 testResultField_.setText(testResult_.getValue());
             }
         }
+        testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
+                {
+                    public void notify(WEmptyEvent a)
+                    {
+                        TestType testType = testTypeCB.currentValue();
+                        
+                        Transaction t = RegaDBMain.getApp().createTransaction();
+                        setTestCombo(t, testType);
+                        t.commit();
+                        
+                        setResultField(testType.getValueType(), testType);
+                    }
+                });
         
         genomeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
                 {
@@ -147,22 +161,10 @@ public class MeasurementForm extends FormWidget
                         testTypeCB.clearItems();
                         Transaction t = RegaDBMain.getApp().createTransaction();
                         testTypeCB.fill(t, g, true);
+                        testTypeCB.selectIndex(0);
+                        setTestCombo(t, testTypeCB.currentValue());
                         t.commit();
                     }
-                });
-		
-        testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
-                {
-        			public void notify(WEmptyEvent a)
-        			{
-                        TestType testType = testTypeCB.currentValue();
-                        
-        				Transaction t = RegaDBMain.getApp().createTransaction();
-        				setTestCombo(t, testType);
-        				t.commit();
-                        
-                        setResultField(testType.getValueType(), testType);
-        			}
                 });
 	}
 	
