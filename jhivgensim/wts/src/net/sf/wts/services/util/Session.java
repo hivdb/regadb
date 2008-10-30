@@ -9,7 +9,7 @@ public class Session {
 	
 	public Session(String sessionTicket_){
 		this.sessionTicket_ = sessionTicket_;
-		sessionKey_ = Encryption.getNewSessionKey();	
+		sessionKey_ = Encrypt.getNewSessionKey();	
 	}
 	
 	public Key getSessionKey(){

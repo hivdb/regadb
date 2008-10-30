@@ -3,7 +3,7 @@ package net.sf.wts.services;
 import java.io.File;
 import java.rmi.RemoteException;
 
-import net.sf.wts.services.util.Encryption;
+import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -26,6 +26,6 @@ public class MonitorLogTailImpl
         if(!monitorFile.exists())
             throw new RemoteException("There is no monitor file available");
         
-        return Encryption.encrypt(sessionTicket, Tail.getTail(monitorFile, numberLines));
+        return Encrypt.encrypt(sessionTicket, Tail.getTail(monitorFile, numberLines));
     }
 }

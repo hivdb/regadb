@@ -19,7 +19,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import sun.misc.BASE64Encoder;
 
-public class Encryption {
+public class Encrypt {
 
 	static {
 		Security.addProvider(new BouncyCastleProvider());

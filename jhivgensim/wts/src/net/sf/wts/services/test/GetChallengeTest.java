@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import net.sf.wts.services.GetChallengeImpl;
 import net.sf.wts.services.LoginImpl;
 import net.sf.wts.services.util.Authentication;
-import net.sf.wts.services.util.Encryption;
+import net.sf.wts.services.util.Encrypt;
 
 public class GetChallengeTest {
     public static void main(String [] args)
@@ -29,12 +29,12 @@ public class GetChallengeTest {
         
         System.err.println(s);
         System.err.println(s.length());
-        String hashedPw = Encryption.encryptMD5("Vitabis1");
+        String hashedPw = Encrypt.encryptMD5("Vitabis1");
         try {
             //System.err.println("a" + Authentication.authenticate(s, Encrypt.encryptMD5(hashedPw+s), "kdforc0"));
             
             LoginImpl login = new LoginImpl();
-            login.exec("kdforc0", s, Encryption.encryptMD5(hashedPw+s), "regadb-align");
+            login.exec("kdforc0", s, Encrypt.encryptMD5(hashedPw+s), "regadb-align");
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             System.err.println(e.getMessage());
@@ -52,7 +52,7 @@ public class GetChallengeTest {
         }
         
         try {
-            System.err.println("b" + Authentication.authenticate(s, Encryption.encryptMD5("Vitabis1"+s), "kdforc0"));
+            System.err.println("b" + Authentication.authenticate(s, Encrypt.encryptMD5("Vitabis1"+s), "kdforc0"));
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             System.err.println(e.getMessage());
@@ -69,7 +69,7 @@ public class GetChallengeTest {
         }
         
         try {
-            System.err.println("c" + Authentication.authenticate(s, Encryption.encryptMD5(hashedPw+s), "ishmael"));
+            System.err.println("c" + Authentication.authenticate(s, Encrypt.encryptMD5(hashedPw+s), "ishmael"));
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             System.err.println(e.getMessage());
