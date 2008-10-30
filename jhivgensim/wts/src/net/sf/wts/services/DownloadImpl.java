@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import net.sf.wts.services.util.Encryption;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -45,7 +46,7 @@ public class DownloadImpl
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
             if(outputFile.exists())
-            return FileUtils.readFileToByteArray(outputFile);
+            	return Encryption.encrypt(sessionTicket, FileUtils.readFileToByteArray(outputFile));
             else throw new RemoteException("Service \"" + serviceName + "\" doesn't have outputfiles with name \""+ fileName +"\"");
         } 
         catch (IOException e) 

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,6 +219,19 @@ public class Settings
             if(u.userName_.equals(userName))
             {
                 return u.password_;
+            }
+        }
+        
+        return null;
+    }
+    
+    public static PublicKey getPublicKey(String userName)
+    {
+    	for(User u : userSettings_)
+        {
+            if(u.userName_.equals(userName))
+            {
+                return u.publicKey_;
             }
         }
         

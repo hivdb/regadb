@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import net.sf.wts.services.util.Encryption;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -44,7 +45,8 @@ public class UploadImpl
         
         try 
         {
-            FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), file);
+        	byte[] decryptedFile = Encryption.decrypt(sessionTicket, file);
+            FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), decryptedFile);
         } 
         catch (IOException e) 
         {

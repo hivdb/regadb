@@ -1,11 +1,12 @@
 package net.sf.wts.services.util;
 
 import java.io.File;
+import java.security.Key;
 import java.util.ArrayList;
 
 public class Sessions 
 {
-    private static ArrayList<String> sessions_ = new ArrayList<String>();
+    private static ArrayList<Session> sessions_ = new ArrayList<Session>();
     
     private static ArrayList<Job> processes_ = new ArrayList<Job>();
     
@@ -19,10 +20,10 @@ public class Sessions
             {
                 unique = serviceName + "_" + userName + "_" + System.currentTimeMillis();
             }
-            while(sessions_.contains(unique));
+            while(!isUniqueSessionTicket(unique));
             
             
-            sessions_.add(unique);
+            sessions_.add(new Session(unique));
         }
         
         File sessionPath = new File(Settings.getWtsPath()+File.separatorChar+"sessions"+File.separatorChar+unique);
@@ -55,12 +56,30 @@ public class Sessions
     {
         synchronized(sessions_)
         {
-                sessions_.remove(sessionTicket);
+                sessions_.remove(new Session(sessionTicket));
         }
     }
 
     public static ArrayList<Job> getProcesses()
     {
         return processes_;
+    }
+    
+    public static boolean isUniqueSessionTicket(String sessionTicket){
+    	for(Session s : sessions_){
+    		if(s.sessionTicket_.equals(sessionTicket)){
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    public static Key getSessionKey(String sessionTicket){
+    	for(Session s : sessions_){
+    		if(s.sessionTicket_.equals(sessionTicket)){
+    			return s.getSessionKey();
+    		}
+    	}
+    	return null;
     }
 }

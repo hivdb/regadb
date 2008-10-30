@@ -9,5 +9,5 @@ public class Job
     }
     
     public Process process_;
-    public String sessionTicket_;
+    public String sessionTicket_;    
 }

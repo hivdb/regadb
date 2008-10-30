@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import net.sf.wts.services.util.Encryption;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -29,7 +30,7 @@ public class MonitorLogFileImpl
         
         try 
         {
-            return FileUtils.readFileToByteArray(monitorFile);
+            return Encryption.encrypt(sessionTicket, FileUtils.readFileToByteArray(monitorFile));
         } 
         catch (IOException e) 
         {
