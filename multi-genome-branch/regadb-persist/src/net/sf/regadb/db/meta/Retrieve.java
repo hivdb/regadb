@@ -33,7 +33,7 @@ public class Retrieve {
     public static Test retrieve(Transaction t, Test test) {
         TestType tt = test.getTestType();
         Genome g = tt.getGenome();
-        return t.getTest(test.getDescription(), tt.getDescription(), (g==null ? "":g.getOrganismName()));
+        return t.getTest(test.getDescription(), tt.getDescription(), (g==null ? null:g.getOrganismName()));
     }
 
     public static TestObject retrieve(Transaction t, TestObject testObject) {

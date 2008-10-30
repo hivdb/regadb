@@ -1264,7 +1264,7 @@ public class Transaction {
     {
         Query q;
         String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription and ";
-        if(organismName == null || organismName.length() == 0){
+        if(organismName != null && organismName.length() > 0){
             queryString += "(test.testType.genome is not null) and (test.testType.genome.organismName = :organismName)";
             q = session.createQuery(queryString);
             q.setParameter("organismName", organismName);
