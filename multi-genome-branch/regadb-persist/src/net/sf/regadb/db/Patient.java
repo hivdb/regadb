@@ -193,11 +193,7 @@ public class Patient implements Serializable {
     }
     
     public Therapy createTherapy(Date startDate){
-        return createTherapy(startDate, null);
-    }
-    public Therapy createTherapy(Date startDate, Genome genome) {
         Therapy result = new Therapy(patient, startDate);
-        result.setGenome(genome);
         getTherapies().add(result);
         return result;
     }
