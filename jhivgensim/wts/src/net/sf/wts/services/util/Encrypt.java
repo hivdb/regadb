@@ -6,6 +6,7 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 
@@ -114,11 +115,11 @@ public class Encrypt {
 		throw new Error();
 	}
 
-	public static String encrypt(String message, PublicKey key){
+	public static String decrypt(byte[] message, PrivateKey key){
 		try {
-			Cipher encryptCipher = getEncryptCipher(key);
-			byte[] b = encryptCipher.doFinal(message.getBytes());
-			return (new BASE64Encoder()).encode(b);
+			Cipher decryptCipher = getDecryptCipher(key);
+			byte[] b = decryptCipher.doFinal(message);
+			return new String(b);
 		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
 			System.err.println("message too long");
@@ -126,7 +127,20 @@ public class Encrypt {
 			e.printStackTrace();
 		} 
 		throw new Error();
-
+	}
+	
+	public static byte[] encrypt(String message, PublicKey key){
+		try {
+			Cipher encryptCipher = getEncryptCipher(key);
+			byte[] b = encryptCipher.doFinal(message.getBytes());
+			return b;
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+			System.err.println("message too long");
+		} catch (BadPaddingException e) {
+			e.printStackTrace();
+		} 
+		throw new Error();
 	}
 
 	public static synchronized String encryptMD5(String plaintext) {

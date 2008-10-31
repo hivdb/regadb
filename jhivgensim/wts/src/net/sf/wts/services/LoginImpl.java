@@ -2,6 +2,8 @@ package net.sf.wts.services;
 
 import java.rmi.RemoteException;
 
+import sun.misc.BASE64Encoder;
+
 import net.sf.wts.services.util.Authentication;
 import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Sessions;
@@ -9,13 +11,16 @@ import net.sf.wts.services.util.Settings;
 
 public class LoginImpl 
 {
-    public String exec(String userName, String challenge, String hashedChallenge, String serviceName) throws RemoteException
+    public byte[] exec(String userName, String challenge, String signedChallenge, String serviceName) throws RemoteException
     {
-        boolean valid = Authentication.authenticate(challenge, hashedChallenge, userName);
+        boolean valid = Authentication.authenticate(challenge, signedChallenge, userName);
         if(valid)
         {
             String sessionTicket = Sessions.createNewSession(serviceName, userName);
-            String sessionKey = new String(Sessions.getSessionKey(sessionTicket).getEncoded());
+            String sessionKey = (new BASE64Encoder()).encode(Sessions.getSessionKey(sessionTicket).getEncoded());
+            //string return?
+            //return Encrypt.encrypt(sessionTicket + "_" + sessionKey, Settings.getPublicKey(userName));
+            //byte return
             return Encrypt.encrypt(sessionTicket + "_" + sessionKey, Settings.getPublicKey(userName));
         }
         else
