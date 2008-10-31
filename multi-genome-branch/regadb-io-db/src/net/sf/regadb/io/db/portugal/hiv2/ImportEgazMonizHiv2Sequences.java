@@ -48,7 +48,7 @@ public class ImportEgazMonizHiv2Sequences {
 								if(!processNr.equals("") && !processNr.equals("0")) {
 									p.createPatientAttributeValue(mainImport.clinicalFileNumberA).setValue(processNr);
 								} else {
-									System.err.println("ERR(seqs): No processNr for PatientNr=" + patientID);
+									//System.err.println("ERR(seqs): No processNr for PatientNr=" + patientID);
 								}
 							}
 				            FastaRead fr = FastaHelper.readFastaFile(fasta, true);
@@ -79,11 +79,11 @@ public class ImportEgazMonizHiv2Sequences {
 			}
 		}
 		
-		System.err.println("=======fastas not in excell========");
-		for(File f : fastas) {
-			System.err.println(f.getAbsolutePath());
-		}
-		System.err.println("=======fastas not in excell========");
+//		System.err.println("=======fastas not in excell========");
+//		for(File f : fastas) {
+//			System.err.println(f.getAbsolutePath());
+//		}
+//		System.err.println("=======fastas not in excell========");
 	}
 	
 	private File getFastaFromSampleID(List<File> fastaList, String sampleID) {

@@ -46,6 +46,8 @@ public class ImportEgazMonizHiv2 {
 	
 	SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy");
 	
+	private Map<String, String> institutesMapping = new HashMap<String, String>();
+	
 	private String mappingPath;
     
 	public static void main(String [] args) throws BiffException, IOException {
@@ -58,6 +60,17 @@ public class ImportEgazMonizHiv2 {
 		regadbAttributes = Utils.prepareRegaDBAttributes();
 		regadbEvents = Utils.prepareRegaDBEvents();
 		clinicalFileNumberA = Utils.selectAttribute("Clinical File Number", regadbAttributes);
+		
+		try {
+			Table institutesMappingT = Table.readTable(mappingPath + File.separatorChar + "institutes.mapping");
+			for(int i = 1; i<institutesMappingT.numRows(); i++) {
+				institutesMapping.put(institutesMappingT.valueAt(0, i), institutesMappingT.valueAt(1, i));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void run(File dir) throws BiffException, IOException {
@@ -86,7 +99,6 @@ public class ImportEgazMonizHiv2 {
 		this.geographicOriginA = new NominalAttribute("Geographic origin", Table.readTable(mappingPath+File.separatorChar+"geographic_origin.mapping"), regadb, Utils.selectAttribute("Geographic origin", regadbAttributes));
 		this.countryOfOriginA = new NominalAttribute("Country of origin", Table.readTable(mappingPath+File.separatorChar+"country_of_origin.mapping"), regadb, Utils.selectAttribute("Country of origin", regadbAttributes));
 		
-		
 		NominalAttribute genderA = new NominalAttribute("Gender", GenderID, new String[] { "M", "F" },
                 new String[] { "male", "female" } );
     	genderA.attribute.setAttributeGroup(regadb);
@@ -104,6 +116,11 @@ public class ImportEgazMonizHiv2 {
     	initialsA.setValueType(new ValueType("string"));
     	initialsA.setName("Initials");
     	initialsA.setAttributeGroup(pt_group);
+    	
+    	Attribute instituteA = new Attribute();
+    	instituteA.setValueType(new ValueType("nominal value"));
+    	instituteA.setName("Institute");
+    	instituteA.setAttributeGroup(pt_group);
 		
     	HashSet<String> s = new HashSet<String>();
     	
@@ -160,11 +177,23 @@ public class ImportEgazMonizHiv2 {
 				if(!origin.equals("")) {
 					Utils.addCountryOrGeographicOrigin(countryOfOriginA, geographicOriginA, origin.toUpperCase(), p);
 				}
-				//TODO
 				if(!institute.equals("")) {
 					if(!findInstitute(institute)) {
-						s.add(institute);
-						//give someone a listing of the unrecognized institutes
+						String instituteM = institutesMapping.get(institute);
+						if(instituteM==null || instituteM.trim().equals("") || !findInstitute(instituteM)) {
+							s.add("Cannot map/find institute " + institute + " | " + instituteM);
+							institute = null;
+						} else {
+							institute = instituteM;
+						}
+					}
+					if(institute!=null) {
+						AttributeNominalValue anv = Utils.getNominalValue(instituteA, institute);
+						if(anv==null) {
+							instituteA.getAttributeNominalValues().add(new AttributeNominalValue(instituteA, institute));
+						}
+						anv = Utils.getNominalValue(instituteA, institute);
+						p.createPatientAttributeValue(instituteA).setAttributeNominalValue(anv);
 					}
 				}
 				if(!coinfection.equals("")) {
@@ -185,18 +214,18 @@ public class ImportEgazMonizHiv2 {
 				if(!processNr.equals("") && !processNr.equals("0")) {
 					p.createPatientAttributeValue(clinicalFileNumberA).setValue(processNr);
 				} else {
-					System.err.println("ERR: No processNr for PatientNr=" + patientNr);
+					//System.err.println("ERR: No processNr for PatientNr=" + patientNr);
 				}
 			} else {
 				System.err.println("ERR: PatientNr=" + patientNr);
 			}
 		}
 		
-//		System.err.println("set:");
-//		for(String ss : s) {
-//			System.err.println(ss+",");
-//		}
-//		System.err.println("set:");
+		System.err.println("set:");
+		for(String ss : s) {
+			System.err.println(ss+",");
+		}
+		System.err.println("set:");
 	}
 	
 	public void parseAnalyses(File dir) throws FileNotFoundException, UnsupportedEncodingException {
