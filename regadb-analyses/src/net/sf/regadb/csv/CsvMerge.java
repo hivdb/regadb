@@ -16,11 +16,11 @@ public class CsvMerge {
 
 	public static void main(String[] args) {
 		if (args.length != 5) {
-			System.err.println("Usage: csvmerge (inner|outer) file1 file2 key1 key2");
+			System.err.println("Usage: csvmerge (inner|outer|inverse) file1 file2 key1 key2");
 			System.exit(-1);
 		}
 
-		boolean innerJoin = args[0].equals("inner");
+		String type = args[0];
 		String file1 = args[1];
 		String file2 = args[2];
 		int key1 = Integer.parseInt(args[3]);
@@ -34,7 +34,11 @@ public class CsvMerge {
 			table2 = new Table(new BufferedInputStream(new FileInputStream(file2)), false);
 
 			System.err.println("Merging...");
-			table1.merge(table2, key1, key2, innerJoin);
+			if(type.equals("inverse")){
+				table1.inverseMerge(table2, key1, key2);
+			}else{
+				table1.merge(table2, key1, key2, type.equals("inner"));
+			}
 
 			System.err.println("Saving...");
 			table1.exportAsCsv(new BufferedOutputStream(System.out));
