@@ -1327,7 +1327,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         
         addRelations("PatientEventValue", "patient", "PatientImpl", null, false, "comes from",  "has an");
         addRelations("Therapy", "patient", "PatientImpl", null, false, "was performed on a",  "has received");
-        addRelations("Therapy", "genome", "Genome", null, false, "is for",  "was treated with a");
         addRelations("ViralIsolate", "patient", "PatientImpl",  null, false, "comes from a ",  "has a");
         addRelation("PatientImpl", "id.patient", "Dataset", "id.dataset",  "PatientDataset", true, null);        
         
@@ -1482,7 +1481,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getRelationClauses("DrugCommercial", "Therapy"));
         catalog.addAll(getRelationClauses("TherapyCommercial", "Therapy"));
         catalog.addAll(getRelationClauses("TherapyGeneric", "Therapy"));
-        catalog.addAll(getRelationClauses("Therapy", "Genome"));
 
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyGenerics"), "number of"));
    		catalog.addAll(getCollectionSizeClauses(catalog.getObject("Therapy", "therapyCommercials"), "number of"));

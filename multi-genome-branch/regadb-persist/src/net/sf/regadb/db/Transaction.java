@@ -909,7 +909,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Therapy> getTherapies(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
-        String queryString = "select therapy from Therapy as therapy left outer join therapy.genome as genome " +
+        String queryString = "select therapy from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
         return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
@@ -934,7 +934,7 @@ public class Transaction {
     public long getTherapiesCount(Patient patient, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select count(therapy)" +
-                            "from Therapy as therapy left outer join therapy.genome as genome " +
+                            "from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
         if(!filterConstraints.clause_.equals(" "))
         {

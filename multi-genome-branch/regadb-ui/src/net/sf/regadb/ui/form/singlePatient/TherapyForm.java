@@ -18,7 +18,6 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
@@ -47,9 +46,6 @@ public class TherapyForm extends FormWidget
     private ComboBox<TherapyMotivation> motivationCB;
     private Label commentL;
     private TextField commentTF;
-    
-    private Label genomeL;
-    private GenomeComboBox genomeCB;
 
     
     //generic drugs group
@@ -103,10 +99,6 @@ public class TherapyForm extends FormWidget
         commentL = new Label(tr("form.therapy.editView.comment"));
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
-        
-        genomeL = new Label(tr("form.therapy.editView.genome"));
-        genomeCB = new GenomeComboBox(getInteractionState(), this);
-        generalGroupTable_.addLineToTable(genomeL, genomeCB);
         
         genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
         commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);
@@ -179,8 +171,6 @@ public class TherapyForm extends FormWidget
     }
 
 	private void copyTherapy(Therapy from, Therapy to){
-	    to.setGenome(from.getGenome());
-	    
 	    for(TherapyCommercial tc : from.getTherapyCommercials()){
             TherapyCommercial newtc = new TherapyCommercial(
                     new TherapyCommercialId(to,tc.getId().getDrugCommercial()),
@@ -221,13 +211,6 @@ public class TherapyForm extends FormWidget
             }
         }
         motivationCB.setEnabled(stopDateDF.getDate()!=null);
-        
-        genomeCB.fill(t);
-        if(therapy_.getGenome() != null)
-            genomeCB.selectItem(therapy_.getGenome().getOrganismName());
-        else
-            genomeCB.selectIndex(0);
-        
         
         t.commit();
     }
@@ -309,8 +292,6 @@ public class TherapyForm extends FormWidget
             {
                 therapy_.setTherapyMotivation(null);
             }
-            
-            therapy_.setGenome(genomeCB.currentValue());
             
             therapy_.setComment(getNulled(commentTF.text()));
             

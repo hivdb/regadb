@@ -22,13 +22,13 @@ import net.sf.regadb.util.date.DateUtils;
 public class ITherapyDataTable implements IDataTable<Therapy>
 {
 	private static String [] _colNames = {"dataTable.therapy.colName.startDate","dataTable.therapy.colName.endDate", 
-		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment", "dataTable.therapy.colName.organismName"};
-	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment", "case when genome is null then '' else genome.organismName end"};
+		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment"};
+	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment"};
 	
-	private IFilter[] filters_ = new IFilter[5];
+	private IFilter[] filters_ = new IFilter[4];
 	
-	private static boolean [] sortable_ = {true, true, false, true, true};
-	private static int[] colWidths = {20,20,25,25,10};
+	private static boolean [] sortable_ = {true, true, false, true};
+	private static int[] colWidths = {20,20,25,25};
 	public String[] getColNames()
 	{
 		return _colNames;
@@ -58,7 +58,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public String[] getRowData(Therapy type)
 	{
-		String [] row = new String[5];
+		String [] row = new String[4];
 		
 		row[0] = DateUtils.getEuropeanFormat(type.getStartDate());
 		row[1] = DateUtils.getEuropeanFormat(type.getStopDate());
@@ -90,8 +90,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 		row[2] = genericDrugList.toString();
 		
 		row[3] = type.getComment();
-		
-		row[4] = (type.getGenome() == null? "":type.getGenome().getOrganismName());
+
 		return row;
 	}
 
@@ -101,7 +100,6 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 		filters_[1] = new DateFilter();
 		filters_[2] = null;
 		filters_[3] = new StringFilter();
-		filters_[4] = new StringFilter();
 	}
 
 	public void selectAction(Therapy selectedItem)

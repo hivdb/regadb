@@ -311,7 +311,7 @@ public class ImportIrsicaixa {
                     String drugs = therapyTable_.valueAt(CDrugs, i);
                     HashMap<TherapyDrug,Double> drugsList = processDrugs(drugs);
                     
-                    Therapy t = p.createTherapy(startDate, StandardObjects.getHiv1Genome());
+                    Therapy t = p.createTherapy(startDate);
                     t.setStopDate(endDate);
 
                     for (TherapyDrug td : drugsList.keySet()){
