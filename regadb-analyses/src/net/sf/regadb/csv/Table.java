@@ -235,7 +235,6 @@ public class Table {
                             current.append(s.charAt(i));
             }
         }
-        
         results.add(new String(current));
 
         return results;
@@ -261,7 +260,7 @@ public class Table {
 	}
 	
 	public void exportAsCsv(OutputStream output){
-	    exportAsCsv(output,',',true);
+	    exportAsCsv(output,',',false);
 	}
 	
 	public void exportAsCsv(OutputStream output, char delimiter, boolean quotes) {
