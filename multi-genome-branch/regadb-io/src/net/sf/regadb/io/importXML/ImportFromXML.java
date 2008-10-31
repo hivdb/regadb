@@ -153,7 +153,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAaInsertion_aaInsertion;
     private String fieldAaInsertion_ntInsertionCodon;
     private TherapyMotivation fieldTherapy_therapyMotivation;
-    private Genome fieldTherapy_genome;
     private Date fieldTherapy_startDate;
     private Date fieldTherapy_stopDate;
     private String fieldTherapy_comment;
@@ -338,7 +337,6 @@ public class ImportFromXML extends ImportFromXMLBase {
         } else if ("therapys-el".equals(qName)|| "therapies-el".equals(qName)) {
             pushState(ParseState.stateTherapy);
             fieldTherapy_therapyMotivation = null;
-            fieldTherapy_genome = null;
             fieldTherapy_startDate = nullValueDate();
             fieldTherapy_stopDate = nullValueDate();
             fieldTherapy_comment = nullValueString();
@@ -1549,9 +1547,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elTherapy.setTherapyMotivation(fieldTherapy_therapyMotivation);
                 }
                 {
-                    elTherapy.setGenome(fieldTherapy_genome);
-                }
-                {
                     elTherapy.setStartDate(fieldTherapy_startDate);
                 }
                 {
@@ -1578,8 +1573,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("therapyMotivation".equals(qName)) {
                 fieldTherapy_therapyMotivation = resolveTherapyMotivation(value == null ? null : value.toString());
-            } else if ("genome".equals(qName)) {
-                fieldTherapy_genome = resolveGenome(value == null ? null : value.toString());
             } else if ("startDate".equals(qName)) {
                 fieldTherapy_startDate = parseDate(value == null ? null : value.toString());
             } else if ("stopDate".equals(qName)) {
@@ -3879,14 +3872,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setTherapyMotivation(o.getTherapyMotivation());
                 log.append(Describe.describe(o) + ": changed therapyMotivation\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getGenome(), o.getGenome())) {
-                if (!simulate)
-                    dbo.setGenome(o.getGenome());
-                log.append(Describe.describe(o) + ": changed genome\n");
                 changed = true;
             }
         }

@@ -8,8 +8,8 @@ import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.QueryDefinitionParameterType;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.SplicingPosition;
 import net.sf.regadb.db.CombinedQuery;
@@ -981,12 +981,6 @@ public class ExportToXML
 			Element therapyMotivationvar = new Element("therapyMotivation");
 			parentNode.addContent(therapyMotivationvar);
 			therapyMotivationvar.addContent(Therapyvar.getTherapyMotivation().getValue());
-		}
-		if(Therapyvar.getGenome()!=null &&Therapyvar.getGenome().getOrganismName()!=null)
-		{
-			Element genomevar = new Element("genome");
-			parentNode.addContent(genomevar);
-			genomevar.addContent(Therapyvar.getGenome().getOrganismName());
 		}
 		if(Therapyvar.getStartDate()!=null)
 		{

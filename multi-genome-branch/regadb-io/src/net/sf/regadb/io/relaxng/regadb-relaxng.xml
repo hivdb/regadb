@@ -673,11 +673,6 @@
       </element>
     </optional>
     <optional>
-      <element name="genome">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
       <element name="startDate">
         <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
       </element>
