@@ -14,8 +14,8 @@ import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -28,8 +28,6 @@ import org.jdom.output.XMLOutputter;
 
 public class PrepareCentralRepos
 {
-    private static TestType resistanceTestType = StandardObjects.getGssTestType();
-    
     public static void main(String [] args)
     {
         String outputDir = args[0];
@@ -98,14 +96,21 @@ public class PrepareCentralRepos
         export.writeTopTest(StandardObjects.getGenericHAVIgMTest(), tests);
         
         //Resistance tests
-        Test anrs_2006_07 = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
-        export.writeTopTest(anrs_2006_07, tests);
-        Test hivdb_429 = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9");
-        export.writeTopTest(hivdb_429, tests);
-        Test rega_641 = createResistanceTest("RegaV6.4.1.xml", "REGA v6.4.1");
-        export.writeTopTest(rega_641, tests);
-        Test rega_71 = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
-        export.writeTopTest(rega_71, tests);
+        Test resTest;
+        resTest = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("RegaV6.4.1.xml", "REGA v6.4.1", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
+        
+        resTest = createResistanceTest("RegaHIV2V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("RegaHIV2V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2BGenome());
+        export.writeTopTest(resTest, tests);
+
         
         File testsFile = new File(outputDir +File.separatorChar+"tests-genomes.xml");
         writeXMLFile(testsFile, tests);
@@ -184,9 +189,9 @@ public class PrepareCentralRepos
         }
     }
     
-    private static Test createResistanceTest(String baseFileName, String algorithm)
+    private static Test createResistanceTest(String baseFileName, String algorithm, Genome genome)
     {
-        Test resistanceTest = new Test(resistanceTestType, algorithm);
+        Test resistanceTest = new Test(StandardObjects.getGssTestType(genome), algorithm);
         
         Analysis analysis = new Analysis();
         analysis.setUrl(RegaDBWtsServer.getUrl());

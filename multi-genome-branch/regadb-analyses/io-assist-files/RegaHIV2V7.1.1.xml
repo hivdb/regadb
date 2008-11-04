@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE ALGORITHM SYSTEM "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+<!-- Rega algorithm in XML format -->
+<!-- 
+History:
+08-SEP-O4 TFL updated
+13-JAN-04 TFL updated
+13-NOV-03 TFL updated
+27-NOV-01 BBE Creation
+-->
+<ALGORITHM>
+    <ALGNAME>Rega HIV-2 v7.1.1</ALGNAME>
+    <ALGVERSION>7.1.1</ALGVERSION>
+
+    <DEFINITIONS>
+        <LEVEL_DEFINITION>
+            <ORDER>1</ORDER>
+            <ORIGINAL>Probably Susceptible GSS 1</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>2</ORDER>
+            <ORIGINAL>Probably Susceptible GSS 1.5</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>3</ORDER>
+            <ORIGINAL>Possibly Resistant 0.75</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>4</ORDER>
+            <ORIGINAL>Possibly Resistant GSS 0.5</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>5</ORDER>
+            <ORIGINAL>Probably Resistant GSS 0</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>6</ORDER>
+            <ORIGINAL>Not Active GSS 0</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+
+        <DRUGCLASS>
+            <NAME>PI</NAME>
+            <DRUGLIST>RTV,IDV,IDV/r,SQV,SQV/r,NFV,fAPV,fAPV/r,LPV/r,ATV,ATV/r,TPV/r</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NRTI</NAME>
+            <DRUGLIST>AZT,DDI,D4T,3TC,ABC,TDF</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NNRTI</NAME>
+            <DRUGLIST>NVP,EFV</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>EI</NAME>
+            <DRUGLIST>T20</DRUGLIST>
+        </DRUGCLASS>
+    </DEFINITIONS>
+
+<!-- ********** Begin NRTI drugs ********** -->
+
+    <DRUG>
+        <NAME>AZT</NAME>
+        <RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (70NRS,151M,219D)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>4</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG>   <!-- END AZT -->
+
+    <DRUG>
+        <NAME>DDI</NAME>
+        <RULE>
+            <CONDITION>
+                65R
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>5</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (62V,69S,184V,151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>4</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END DDI -->
+  
+	<DRUG>
+        <NAME>D4T</NAME>
+        <RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (65R,70NRS,151M,219D)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>4</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG>   <!-- END D4T -->
+
+    <DRUG>
+        <NAME>3TC</NAME>
+        <RULE>
+            <CONDITION>
+                 184V
+            </CONDITION>
+            <ACTIONS>
+                 <LEVEL>5</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (65R,151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>4</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END 3TC -->
+  
+    <DRUG>
+        <NAME>ABC</NAME>
+        <RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (70N,151M,184V)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>4</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END ABC -->
+	
+    
+    <DRUG>
+        <NAME>TDF</NAME>
+        <RULE>
+            <CONDITION>
+                65R
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>5</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 5 FROM (70R,115F,151M,214L,223R)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>            
+	        (111I AND 151M)
+            </CONDITION>
+            <ACTIONS>
+		<LEVEL>5</LEVEL>
+	    </ACTIONS>
+        </RULE>
+    </DRUG><!-- END TDF -->
+
+	<!-- ********** Begin NNRTI drugs ********** -->
+
+    <DRUG>
+        <NAME>NVP</NAME>
+        <RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END NVP -->
+  
+    
+    <DRUG>
+        <NAME>EFV</NAME>
+        <RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END EFV -->
+
+<!-- ********** Begin PI drugs ********** -->
+
+    <DRUG>
+        <NAME>RTV</NAME>
+        <RULE>
+            <CONDITION>
+	         54M AND 82F
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>5</LEVEL>
+	</ACTIONS>
+	</RULE>
+	<RULE>
+            <CONDITION>
+	         SELECT ATLEAST 1 FROM (47A,54M,82F)
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>4</LEVEL>
+	</ACTIONS>
+	</RULE>
+    </DRUG>    <!-- END RTV -->
+
+    <DRUG>
+        <NAME>IDV</NAME>
+        <RULE>
+            <CONDITION>
+	         47A
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>5</LEVEL>
+	</ACTIONS>
+	</RULE>
+	<RULE>
+            <CONDITION>
+	         54M AND 82F
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>5</LEVEL>
+	</ACTIONS>
+	</RULE>
+	<RULE>
+            <CONDITION>
+	         SELECT ATLEAST 1 FROM (54M,62A,71I,82FM,84V,99F)
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>4</LEVEL>
+	</ACTIONS>
+	</RULE>
+     </DRUG>    <!-- END IDV --> 
+
+<DRUG>
+        <NAME>IDV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>        
+	<RULE>
+            <CONDITION>
+	         47A
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>5</LEVEL>
+	</ACTIONS>
+	</RULE>
+	<RULE>
+            <CONDITION>
+	         54M AND 82F
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>5</LEVEL>
+	</ACTIONS>
+	</RULE>
+	<RULE>
+            <CONDITION>
+	         SELECT ATLEAST 1 FROM (54M,62A,71I,82FM,84V,99F)
+	    </CONDITION>
+	    <ACTIONS>
+		<LEVEL>3</LEVEL>
+	</ACTIONS>
+	</RULE>
+     </DRUG>    <!-- END IDV/r --> 
+
+    <DRUG>
+        <NAME>SQV</NAME>
+        <RULE>
+	    <CONDITION> 
+                 SELECT ATLEAST 1 FROM (63K,74A,84V,90M)
+	    </CONDITION>
+            <ACTIONS>
+                 <LEVEL>4</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END SQV -->
+
+<DRUG>
+        <NAME>SQV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>          
+	<RULE>
+	    <CONDITION>
+                 SELECT ATLEAST 1 FROM (63K,74A,84V,90M)
+	    </CONDITION>
+            <ACTIONS>
+                 <LEVEL>3</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END SQV/r -->
+
+    <DRUG>
+        <NAME>NFV</NAME>
+	<RULE>
+	    <CONDITION>
+	         54M AND 82F
+	    </CONDITION>
+	    <ACTIONS>
+                 <LEVEL>5</LEVEL>
+            </ACTIONS>
+	</RULE>
+	<RULE>
+	    <CONDITION>
+	         SELECT ATLEAST 1 FROM (54LM,62A,71I,82F,90M,99F)
+	    </CONDITION>
+	    <ACTIONS>
+                 <LEVEL>4</LEVEL>
+            </ACTIONS>
+	</RULE>
+    </DRUG>    <!-- END NFV -->
+
+    <DRUG>
+        <NAME>fAPV</NAME>
+        <RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                 <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END fAPV -->
+
+<DRUG>
+        <NAME>fAPV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>          
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                 <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END fAPV/r -->
+
+	<DRUG>
+	<NAME>LPV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>  	
+	<RULE>
+		<CONDITION>
+		47A
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		62A AND 99F
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		SELECT ATLEAST 2 FROM (50V,54M,82LF)
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		SELECT ATLEAST 1 FROM (48A,50V,54M,64V,82LF)
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>3</LEVEL>
+		</ACTIONS>
+	</RULE>
+	</DRUG>    <!-- END LPV/r -->
+
+    <DRUG>
+        <NAME>ATV</NAME>
+        <RULE>
+		<CONDITION>
+		50L
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		54M AND 82F
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		SELECT ATLEAST 1 FROM (54M,82F)
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>4</LEVEL>
+		</ACTIONS>
+	</RULE>
+       </DRUG>    <!-- END ATV -->
+
+<DRUG>
+        <NAME>ATV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>          
+	<RULE>
+		<CONDITION>
+		50L
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		54M AND 82F
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		SELECT ATLEAST 1 FROM (54M,82F)
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>3</LEVEL>
+		</ACTIONS>
+	</RULE>
+       </DRUG>    <!-- END ATV/r -->
+<DRUG>
+	<NAME>TPV/r</NAME>
+	<RULE>
+		    <CONDITION>
+			SELECT ATLEAST 0 FROM (1P)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>  	
+	<RULE>
+		<CONDITION>
+		54M AND 82F
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		82L
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>5</LEVEL>
+		</ACTIONS>
+	</RULE>
+	<RULE>
+		<CONDITION>
+		SELECT ATLEAST 1 FROM (54M,82F)
+		</CONDITION>
+		<ACTIONS>
+			<LEVEL>3</LEVEL>
+		</ACTIONS>
+	</RULE>
+	</DRUG>	<!-- END TPV/r -->
+
+        <!-- ********** Begin EI drugs ********** -->
+
+    <DRUG>
+        <NAME>T20</NAME>
+        <RULE>
+		    <CONDITION>
+			SELECT 0 FROM (1T)
+			</CONDITION>
+            <ACTIONS>
+                <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END T20 -->
+
+</ALGORITHM>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 
 import net.sf.regadb.analysis.functions.GenerateReport;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.Test;
@@ -95,19 +96,23 @@ public class ViralIsolateReportForm extends WContainerWidget
     private void filldata()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
-        TestType testType = t.getTestType(StandardObjects.getGssTestType());
         
-        for(Test test : t.getTests(testType))
-        {
-            algorithmCB_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
+        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate());
+        if(genome != null){
+            TestType testType = t.getTestType(StandardObjects.getGssTestType(genome));
+            
+            for(Test test : t.getTests(testType))
+            {
+                algorithmCB_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
+            }
+            algorithmCB_.sort();
+            
+            for(ResistanceInterpretationTemplate rit : t.getResRepTemplates())
+            {
+                resRepTemplateCB_.addItem(new DataComboMessage<ResistanceInterpretationTemplate>(rit, rit.getName()));
+            }
+            resRepTemplateCB_.sort();
         }
-        algorithmCB_.sort();
-        
-        for(ResistanceInterpretationTemplate rit : t.getResRepTemplates())
-        {
-            resRepTemplateCB_.addItem(new DataComboMessage<ResistanceInterpretationTemplate>(rit, rit.getName()));
-        }
-        resRepTemplateCB_.sort();
         
         t.commit();
     }

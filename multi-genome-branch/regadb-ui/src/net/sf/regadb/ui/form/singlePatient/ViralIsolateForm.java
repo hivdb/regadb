@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
@@ -105,15 +106,18 @@ public class ViralIsolateForm extends FormWidget
         _mainForm.saveData(t);
         
         //remove resistance tests
-        for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
-        {
-            TestResult test = i.next();
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTest().getTestType()))
+        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolate_);
+        if(genome != null){
+            for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
             {
-                if(test.getTest().getAnalysis()!=null)
+                TestResult test = i.next();
+                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTest().getTestType()))
                 {
-                    i.remove();
-                    t.delete(test);
+                    if(test.getTest().getAnalysis()!=null)
+                    {
+                        i.remove();
+                        t.delete(test);
+                    }
                 }
             }
         }
@@ -132,11 +136,15 @@ public class ViralIsolateForm extends FormWidget
     
     private void startViralIsolateAnalysis(Transaction t)
     {
+        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolate_);
+        if(genome != null)
+            return;
+        
         List<Test> tests = t.getTests();
         String uid = RegaDBMain.getApp().getLogin().getUid();
         for(Test test : tests)
         {
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()))
+            if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
             {
                 if(test.getAnalysis()!=null)
                 {

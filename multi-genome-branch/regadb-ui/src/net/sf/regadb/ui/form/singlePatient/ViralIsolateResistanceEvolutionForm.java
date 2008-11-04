@@ -87,7 +87,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         for(Test test : t.getTests()) {
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType())){
+            if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())){
                 asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
             }
         }

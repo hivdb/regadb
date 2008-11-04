@@ -10,7 +10,6 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -62,7 +61,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         Set<ViralIsolate> vis = patient_.getViralIsolates();
         
         for(Test test : t.getTests()) {
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(), test.getTestType())) {
+            if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())) {
                 Map<String, TestResult> cumulatedTestResultsForOneAlgorithm = new HashMap<String, TestResult>();
                 for(ViralIsolate vi : vis) {
                     for(TestResult tr : vi.getTestResults()) {

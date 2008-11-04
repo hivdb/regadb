@@ -7,6 +7,7 @@
 package net.sf.regadb.io.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 
 public class StandardObjects {
-    private static List<TestType> standardGenomeTestTypes = new ArrayList<TestType>();
+    private static Map<String, Map<String, TestType>> standardGenomeTestTypes = new HashMap<String, Map<String, TestType>>();
     private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
 
     
@@ -35,6 +36,7 @@ public class StandardObjects {
     private static String seroconversionDescription = "Seroconversion";
     private static String gssDescription = "Genotypic Susceptibility Score (GSS)";
     
+    private static List<Genome> genomes = new ArrayList<Genome>();
     private static Genome hiv1Genome;
     private static Genome hiv2aGenome;
     private static Genome hiv2bGenome;
@@ -60,8 +62,6 @@ public class StandardObjects {
     private static Attribute clinicalFileNumberAttribute;
 //    private static Attribute countryOfOriginAttribute;
     
-    private static TestType gssTestType;
-
     private static Test followUpTest;
     private static Test contactTest;
     private static Test pregnancy;
@@ -107,8 +107,13 @@ public class StandardObjects {
 
     static {
         hiv1Genome = new Genome("HIV-1", "");
+        genomes.add(hiv1Genome);
+        
         hiv2aGenome = new Genome("HIV-2A", "");
+        genomes.add(hiv2aGenome);
+        
         hiv2bGenome = new Genome("HIV-2B", "");
+        genomes.add(hiv2bGenome);
         
         numberValueType         = new ValueType("number");
         limitedNumberValueType  = new ValueType("limited number (<,=,>)");
@@ -132,31 +137,37 @@ public class StandardObjects {
         viralIsolateAnalysisTestObject = new TestObject("Viral Isolate analysis", 4);
         
         TestType tt;
+        List<TestType> genomeTestTypes = new ArrayList<TestType>();
         
         tt = new TestType(patientTestObject, getSeroconversionDescription());
         tt.setGenome(null);
         tt.setValueType(nominalValueType);
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Positive"));
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
-        standardGenomeTestTypes.add(tt);
+        genomeTestTypes.add(tt);
         
         tt = new TestType(patientTestObject, getSeroStatusDescription());
         tt.setGenome(null);
         tt.setValueType(nominalValueType);
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Positive"));
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
-        standardGenomeTestTypes.add(tt);
+        genomeTestTypes.add(tt);
         
         tt = new TestType(limitedNumberValueType, null, patientTestObject, getViralLoadDescription(), new TreeSet<TestNominalValue>());
-        standardGenomeTestTypes.add(tt);
+        genomeTestTypes.add(tt);
         
         tt = new TestType(limitedNumberValueType, null, patientTestObject, getViralLoadLog10Description(), new TreeSet<TestNominalValue>());
-        standardGenomeTestTypes.add(tt);
+        genomeTestTypes.add(tt);
+                
+        createStandardGenomeTestTypes(genomes,genomeTestTypes,true);
+
+        //create test types without a generic test 
+        genomeTestTypes.clear();
+        tt = new TestType(numberValueType, null, resistanceTestObject, getGssDescription(), new TreeSet<TestNominalValue>());
+        genomeTestTypes.add(tt);
         
-        createStandardGenomeTests(getHiv1Genome());
-        createStandardGenomeTests(getHiv2AGenome());
-        createStandardGenomeTests(getHiv2BGenome());
-        
+        createStandardGenomeTestTypes(genomes,genomeTestTypes,false);
+
         
         genericCD4Test          = new Test(new TestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
         genericCD4PercentageTest= new Test(new TestType(numberValueType, null, patientTestObject, "CD4 Count (%)", new TreeSet<TestNominalValue>()), "CD4 Count % (generic)");
@@ -184,9 +195,7 @@ public class StandardObjects {
         genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), null, getPatientTestObject());
         
         seroconversionTest = createSeroconversionTest();
-        pregnancy = createPregnancyTest();
-        
-        gssTestType = new TestType(numberValueType, null, resistanceTestObject, getGssDescription(), new TreeSet<TestNominalValue>());
+        pregnancy = createPregnancyTest();     
         
 //        anrs200607Test = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
 //        hivdb429Test = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9");
@@ -196,17 +205,31 @@ public class StandardObjects {
         aidsDefiningIllnessEvent = createAidsDefiningIllnessEvent();
     }
     
+    public static List<Genome> getGenomes(){
+        return genomes;
+    }
+    
     public static Map<String, Map<String, Test>> getStandardGenomeTests(){
         return standardGenomeTests;
     }
-    private static void createStandardGenomeTests(Genome g){
-        Map<String, Test> map = standardGenomeTests.get(g.getOrganismName());
-        if(map == null){
-            map = new HashMap<String, Test>();
-            standardGenomeTests.put(g.getOrganismName(), map);
+    
+    private static void createStandardGenomeTestTypes(Collection<Genome> genomes, Collection<TestType> testTypes, boolean genericTest){
+        for(Genome g : genomes)
+            createStandardGenomeTestTypes(g, testTypes, genericTest);
+    }
+    private static void createStandardGenomeTestTypes(Genome g, Collection<TestType> testTypes, boolean genericTest){
+        Map<String, TestType> ttmap = standardGenomeTestTypes.get(g.getOrganismName());
+        if(ttmap == null){
+            ttmap = new HashMap<String, TestType>();
+            standardGenomeTestTypes.put(g.getOrganismName(), ttmap);
+        }
+        Map<String, Test> tmap = standardGenomeTests.get(g.getOrganismName());
+        if(tmap == null){
+            tmap = new HashMap<String, Test>();
+            standardGenomeTests.put(g.getOrganismName(), tmap);
         }
         
-        for(TestType tt : standardGenomeTestTypes){
+        for(TestType tt : testTypes){
             TestType ntt = new TestType(tt.getTestObject(), tt.getDescription());
             ntt.setGenome(g);
             ntt.setValueType(tt.getValueType());
@@ -215,9 +238,12 @@ public class StandardObjects {
                 ntt.getTestNominalValues().add(new TestNominalValue(ntt, tnv.getValue()));
             }
             
-            Test nt = new Test(ntt, ntt.getDescription() +" (generic)");
+            ttmap.put(ntt.getDescription(), ntt);
             
-            map.put(ntt.getDescription(), nt);
+            if(genericTest){
+                Test nt = new Test(ntt, ntt.getDescription() +" (generic)");
+                tmap.put(ntt.getDescription(), nt);
+            }
         }
     }
     
@@ -228,8 +254,10 @@ public class StandardObjects {
         return map.get(testTypeDescription);
     }
     public static TestType getTestType(String testTypeDescription, Genome genome){
-        Test t = getGenericTest(testTypeDescription, genome);
-        return (t == null ? null : t.getTestType());
+        Map<String, TestType> map = standardGenomeTestTypes.get(genome.getOrganismName());
+        if(map == null)
+            return null;
+        return map.get(testTypeDescription);
     }
     
     private static Test createGenericTest(String name, ValueType valueType, Genome genome, TestObject testObject){
@@ -690,9 +718,10 @@ public class StandardObjects {
         return clinicalFileNumber;
     }
 
-    public static TestType getGssTestType() {
-        return gssTestType;
+    public static TestType getGssTestType(Genome genome) {
+        return getTestType(getGssDescription(), genome);
     }
+
    
     
 //    private static Attribute createCountryOfOrigin()

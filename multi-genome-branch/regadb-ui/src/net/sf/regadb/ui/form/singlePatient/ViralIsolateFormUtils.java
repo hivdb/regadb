@@ -1,17 +1,23 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import static net.sf.witty.wt.WObject.lt;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.witty.wt.WTableCell;
 import net.sf.witty.wt.WText;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import static net.sf.witty.wt.WResource.lt;
 
 public class ViralIsolateFormUtils {
     public static void putResistanceTableResult(TestResult tr, final WTableCell cell, boolean onlyIfCurrentValueIsNA, final boolean canShowMutations)
@@ -99,5 +105,18 @@ public class ViralIsolateFormUtils {
             return genericId.replace("APV", "FPV");
         else
             return genericId;
+    }
+    
+    public static Genome getGenome(ViralIsolate vi){
+        if(vi != null){
+            Set<NtSequence> ntseqs = vi.getNtSequences();
+            if(ntseqs != null && ntseqs.size() > 0){
+                Set<AaSequence> aaseqs = ntseqs.iterator().next().getAaSequences();
+                if(aaseqs != null && aaseqs.size() > 0){
+                    return aaseqs.iterator().next().getProtein().getOpenReadingFrame().getGenome();
+                }
+            }
+        }
+        return null;
     }
 }

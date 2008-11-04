@@ -9,7 +9,6 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -38,7 +37,7 @@ public class ViralIsolateResistanceTable extends WTable {
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()) && test.getAnalysis()!=null)
+            if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
             {
                 col = numColumns();
                 putElementAt(0, col, new TableHeader(lt(test.getDescription())));

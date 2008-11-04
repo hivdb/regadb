@@ -12,12 +12,14 @@ import java.util.List;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
@@ -187,13 +189,20 @@ public class GenerateReport
     private List<TestResult> getGssTestResults(ViralIsolate vi, Test algorithm)
     {
         List<TestResult> testResults = new ArrayList<TestResult>();
-        
-        for(TestResult tr : vi.getTestResults())
-        {
-            if(Equals.isSameTestType(tr.getTest().getTestType(), StandardObjects.getGssTestType()) 
-                    && tr.getTest().getDescription().equals(algorithm.getDescription())) {
-                testResults.add(tr);
+        try{
+            Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+            TestType gssTestType = StandardObjects.getGssTestType(g);
+            
+            for(TestResult tr : vi.getTestResults())
+            {
+                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType) 
+                        && tr.getTest().getDescription().equals(algorithm.getDescription())) {
+                    testResults.add(tr);
+                }
             }
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
         
         return testResults;

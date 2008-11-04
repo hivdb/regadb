@@ -224,7 +224,7 @@ public class AccountForm extends FormWidget
                 
                 for(Test test : t.getTests())
                 {
-                    if(Equals.isSameTestType(StandardObjects.getGssTestType(),test.getTestType()))
+                    if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription()))
                     {
                         chartMutationCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
                     }

@@ -8,7 +8,6 @@ import net.sf.regadb.db.QueryDefinitionParameterTypes;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
@@ -66,7 +65,6 @@ public class InitRegaDB
         AnalysisType wts = initAnalysisTypes(session);
         initQueryDefinitionParameterTypes(session);
         initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
-        initGssTestType(resistanceTestObject, valueTypes, session);
         
         session.getTransaction().commit();
         session.close();
@@ -227,24 +225,6 @@ public class InitRegaDB
         session.save(subType.getTestType());
         session.save(subType.getAnalysis());
         session.save(subType);
-    }
-    
-    private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
-    {
-        TestType gss = StandardObjects.getGssTestType();
-        
-        ValueType numberVT = null;
-        for(ValueType vt : valueTypes)
-        {
-            if(vt.getDescription().equals("number"))
-            {
-                numberVT = vt;
-            }
-        }
-        
-        gss.setValueType(numberVT);
-        
-        session.save(gss);
     }
 
 	public SettingsUser getSu_() {

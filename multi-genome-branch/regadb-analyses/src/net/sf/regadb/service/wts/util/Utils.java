@@ -13,7 +13,6 @@ import java.util.Map;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.io.util.StandardObjects;
@@ -40,7 +39,7 @@ public class Utils {
             ArrayList<Test> toRemove = new ArrayList<Test>();
             for(Test resTest : resistanceTests)
             {
-                if(!Equals.isSameTestType(resTest.getTestType(),StandardObjects.getGssTestType()))
+                if(!resTest.getTestType().getDescription().equals(StandardObjects.getGssDescription()))
                 {
                     toRemove.add(resTest);
                 }
