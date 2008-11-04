@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import net.sf.wts.client.WtsClient;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.wts.client.IWtsClient;
 
 public class WtsServiceTestClient extends TestCase{
     WtsServiceTestClient testClient_;
@@ -100,7 +101,7 @@ public class WtsServiceTestClient extends TestCase{
     }
 
     public void testService(String serviceName, Map<String,byte[]> inputs, Map<String,IOutputValidator> outputs, int timeout) throws Exception{
-        WtsClient wtsClient = new WtsClient(getUrl());
+        IWtsClient wtsClient = WtsClientFactory.getWtsClient(getUrl());
         String challenge = wtsClient.getChallenge(getUserName());
         String sessionTicket = wtsClient.login(getUserName(), challenge, getPassword(), serviceName);
         

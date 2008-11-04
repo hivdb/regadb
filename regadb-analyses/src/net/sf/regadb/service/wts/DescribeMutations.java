@@ -3,11 +3,12 @@ package net.sf.regadb.service.wts;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
-import net.sf.wts.client.WtsClient;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.wts.client.IWtsClient;
 
 public class DescribeMutations {
     public static byte[] describeMutations(byte[] asi) {
-        WtsClient client_ = new WtsClient(RegaDBWtsServer.url_);
+        IWtsClient client_ = WtsClientFactory.getWtsClient(RegaDBWtsServer.url_);
 
         String challenge;
         String ticket = null;

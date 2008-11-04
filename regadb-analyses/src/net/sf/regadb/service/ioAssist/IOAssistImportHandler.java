@@ -29,10 +29,10 @@ import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
 import net.sf.regadb.service.wts.util.Utils;
-import net.sf.wts.client.WtsClient;
+import net.sf.wts.client.IWtsClient;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -193,7 +193,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public static TestResult ntSeqAnalysis(NtSequence ntseq, Test test)
     {
-        WtsClient client_ = new WtsClient(test.getAnalysis().getUrl());
+        IWtsClient client_ = WtsClientFactory.getWtsClient(test.getAnalysis().getUrl());
         
         String input = '>' + ntseq.getLabel() + '\n' + ntseq.getNucleotides();
         byte[] resultArray = null;

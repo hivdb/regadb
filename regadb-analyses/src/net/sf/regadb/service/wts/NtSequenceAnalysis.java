@@ -12,7 +12,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
-import net.sf.wts.client.WtsClient;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.wts.client.IWtsClient;
 
 public class NtSequenceAnalysis implements IAnalysis
 {
@@ -73,7 +74,7 @@ public class NtSequenceAnalysis implements IAnalysis
         NtSequence ntseq = t.getSequence(seq_ii_);
         Test test = t.getTest(test_ii_);
         
-        WtsClient client_ = new WtsClient(test.getAnalysis().getUrl());
+        IWtsClient client_ = WtsClientFactory.getWtsClient(test.getAnalysis().getUrl());
         
         t.commit();
         

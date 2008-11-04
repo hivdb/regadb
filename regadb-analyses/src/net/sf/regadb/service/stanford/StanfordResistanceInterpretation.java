@@ -23,15 +23,15 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
-import net.sf.wts.client.WtsClient;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.wts.client.IWtsClient;
 
 public class StanfordResistanceInterpretation 
 {
     public void calculate(final File algorithmFile, ViralIsolate vi, final File resultFile) {
-        WtsClient client = new WtsClient(RegaDBWtsServer.url_);
+        IWtsClient client = WtsClientFactory.getWtsClient(RegaDBWtsServer.url_);
         try {
             String challenge = client.getChallenge("public");
             String serviceName = "stanford-hiv-resist";
