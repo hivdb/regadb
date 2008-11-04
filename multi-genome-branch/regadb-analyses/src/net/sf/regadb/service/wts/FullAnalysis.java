@@ -1,6 +1,7 @@
 package net.sf.regadb.service.wts;
 
 import java.util.Date;
+import java.util.List;
 
 import net.sf.regadb.db.AnalysisStatus;
 import net.sf.regadb.db.Genome;
@@ -8,7 +9,9 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.regadb.service.align.AlignmentAnalysis;
@@ -68,6 +71,21 @@ public class FullAnalysis implements IAnalysis {
                                                                                             sessionSafeLogin.getUid()), sessionSafeLogin); 
                     }
                 }
+                
+                t = sessionSafeLogin.createTransaction();
+                List<Test> tests = t.getTests();
+                String uid = sessionSafeLogin.getUid();
+                for(Test test : tests)
+                {
+                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
+                    {
+                        if(test.getAnalysis()!=null)
+                        {
+                            AnalysisPool.getInstance().launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
+                        }
+                    }
+                }
+                t.commit();
             }
         }
         

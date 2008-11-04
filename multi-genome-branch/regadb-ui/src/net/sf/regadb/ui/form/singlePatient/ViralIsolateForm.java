@@ -1,19 +1,15 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.Iterator;
-import java.util.List;
 
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -123,36 +119,13 @@ public class ViralIsolateForm extends FormWidget
         }
         
         update(viralIsolate_, t);
-        
-        startViralIsolateAnalysis(t);
-        
         t.commit();
         
         _mainForm.startAnalysis();
-                
+             
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
 	}
-    
-    private void startViralIsolateAnalysis(Transaction t)
-    {
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolate_);
-        if(genome != null)
-            return;
-        
-        List<Test> tests = t.getTests();
-        String uid = RegaDBMain.getApp().getLogin().getUid();
-        for(Test test : tests)
-        {
-            if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
-            {
-                if(test.getAnalysis()!=null)
-                {
-                    AnalysisPool.getInstance().launchAnalysis(new ResistanceInterpretationAnalysis(viralIsolate_, test, uid), RegaDBMain.getApp().getLogin());
-                }
-            }
-        }
-    }
     
     @Override
     public void cancel()
