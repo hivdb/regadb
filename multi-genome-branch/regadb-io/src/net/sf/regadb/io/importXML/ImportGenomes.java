@@ -41,7 +41,7 @@ public class ImportGenomes {
     public Collection<Genome> importFromXml(File xmlFile, boolean newObjects){
         SAXBuilder builder = new SAXBuilder();
         try {
-            Document doc = builder.build(xmlFile.getAbsolutePath());
+            Document doc = builder.build(xmlFile);
             return importFromXml(doc, newObjects);
             
         } catch (JDOMException e) {
