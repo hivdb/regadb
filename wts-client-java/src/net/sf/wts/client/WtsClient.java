@@ -10,7 +10,7 @@ import net.sf.wts.client.util.Encrypt;
 
 import org.apache.commons.io.FileUtils;
 
-public class WtsClient 
+public class WtsClient implements IWtsClient
 {
     private String url_;
     private AxisClient axisService = new AxisClient();
