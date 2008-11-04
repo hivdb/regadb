@@ -64,6 +64,7 @@ public class ExportDB {
             
             logInfo("Generating xml");
             IOUtils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+            IOUtils.exportNTXMLFromPatients(patients, getOutputPath() + File.separatorChar + "viralIsolates.xml", ConsoleLogger.getInstance());
             
             logInfo("Done");
         }
