@@ -146,11 +146,11 @@ public class LocalWtsClient implements IWtsClient {
     }
     
     public void closeSession(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException {
-//    	try {
-//			FileUtils.deleteDirectory(myTmpDir);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+    	try {
+			FileUtils.deleteDirectory(myTmpDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     public void stop(String sessionTicket, String serviceName) throws RemoteException, MalformedURLException {
