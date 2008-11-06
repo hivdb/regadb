@@ -18,9 +18,6 @@ public class LoginImpl
         {
             String sessionTicket = Sessions.createNewSession(serviceName, userName);
             String sessionKey = (new BASE64Encoder()).encode(Sessions.getSessionKey(sessionTicket).getEncoded());
-            //string return?
-            //return Encrypt.encrypt(sessionTicket + "_" + sessionKey, Settings.getPublicKey(userName));
-            //byte return
             return Encrypt.encrypt(sessionTicket + "_" + sessionKey, Settings.getPublicKey(userName));
         }
         else

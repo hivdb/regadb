@@ -1,15 +1,26 @@
 package net.sf.wts.services.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
 
+import javax.crypto.spec.SecretKeySpec;
+
 import net.sf.wts.services.GetChallengeImpl;
 import net.sf.wts.services.LoginImpl;
+import net.sf.wts.services.UploadImpl;
 import net.sf.wts.services.util.Encrypt;
+
+import org.apache.commons.io.FileUtils;
+
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 public class GetChallengeTest {
 
@@ -48,16 +59,37 @@ public class GetChallengeTest {
 			byte[] signedChallenge = sign.sign();
 
 			LoginImpl login = new LoginImpl();
-			login.exec(testUser, s, signedChallenge, "regadb-align");
+			byte[] answer = login.exec(testUser, s, signedChallenge, "regadb-align");
+
+			//decrypt answer
+			String decryptedAnswer = Encrypt.decrypt(answer,pk);
+
+			//retrieve sessionkey and store it
+			String encodedSessionKey = decryptedAnswer.substring(decryptedAnswer.lastIndexOf("_")+1, decryptedAnswer.length());
+
+
+			Key sessionKey = new SecretKeySpec((new BASE64Decoder()).decodeBuffer(encodedSessionKey),"AES");
+
+
+			String sessionTicket = decryptedAnswer.substring(0, decryptedAnswer.lastIndexOf("_"));
+			byte[] file = FileUtils.readFileToByteArray(new File("/home/gbehey0/wts/input2"));
+			byte[] enc = Encrypt.encrypt(sessionKey, file);
+			(new UploadImpl()).exec(sessionTicket, "regadb-align", "region", enc);
+			System.out.println((new BASE64Encoder()).encode(sessionKey.getEncoded()));
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		} catch (SignatureException e) {
 			e.printStackTrace();
 		}
+
+
 	}
 }

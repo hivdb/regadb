@@ -26,6 +26,6 @@ public class MonitorLogTailImpl
         if(!monitorFile.exists())
             throw new RemoteException("There is no monitor file available");
         
-        return Encrypt.encrypt(sessionTicket, Tail.getTail(monitorFile, numberLines));
+        return Encrypt.encrypt(Sessions.getSessionKey(sessionTicket), Tail.getTail(monitorFile, numberLines));
     }
 }

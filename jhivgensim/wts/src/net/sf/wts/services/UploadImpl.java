@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.security.Key;
 import java.util.Iterator;
 
 import javax.xml.soap.AttachmentPart;
@@ -19,6 +20,8 @@ import net.sf.wts.services.util.Status;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.commons.io.FileUtils;
+
+import sun.misc.BASE64Encoder;
 
 
 public class UploadImpl 
@@ -53,10 +56,11 @@ public class UploadImpl
         
         try 
         {
-        	byte[] decryptedFile = Encrypt.decrypt(sessionTicket, file);
-            FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), decryptedFile);
+        	byte[] decryptedFile = Encrypt.decrypt(Sessions.getSessionKey(sessionTicket), file);
+        	FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), decryptedFile);
+        	
         } 
-        catch (IOException e) 
+        catch (Exception e) 
         {
             e.printStackTrace();
         }

@@ -30,7 +30,7 @@ public class MonitorLogFileImpl
         
         try 
         {
-            return Encrypt.encrypt(sessionTicket, FileUtils.readFileToByteArray(monitorFile));
+            return Encrypt.encrypt(Sessions.getSessionKey(sessionTicket), FileUtils.readFileToByteArray(monitorFile));
         } 
         catch (IOException e) 
         {

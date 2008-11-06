@@ -1,7 +1,10 @@
 package net.sf.wts.services.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -20,6 +23,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
@@ -41,7 +45,7 @@ public class Encrypt {
 	public static final String ASYMMETRIC_ALGORITHM_NAME = "RSA";
 	public static final String SYMMETRIC_ALGORITHM_NAME = "AES";
 	public static final String ASYMMETRIC_CIPHER_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
-	public static final String SYMMETRIC_CIPHER_TRANSFORMATION = "AES";
+	public static final String SYMMETRIC_CIPHER_TRANSFORMATION = "AES/ECB/PKCS5Padding";
 	public static final int LENGTH_OF_GENERATED_ASYMMETRIC_KEYS = 2048;
 	public static final int LENGTH_OF_GENERATED_SYMMETRIC_KEYS = 128;
 	
@@ -160,29 +164,39 @@ public class Encrypt {
 		return c;
 	}
 
-	public static final byte[] encrypt(String sessionTicket, byte[] input){
+	public static synchronized final byte[] encrypt(Key sessionKey, byte[] input){
 		try {
-			return getEncryptCipher(Sessions.getSessionKey(sessionTicket)).doFinal(input);
+			return getEncryptCipher(sessionKey).doFinal(input);
 		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		}
-		throw new Error();
+		return null;
 	}
 
-	public static final byte[] decrypt(String sessionTicket, byte[] input){
+	public static synchronized final byte[] decrypt(Key sessionKey, byte[] input){
 		try {
-			return getDecryptCipher(Sessions.getSessionKey(sessionTicket)).doFinal(input);
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
+			Cipher c = getDecryptCipher(sessionKey);
+			InputStream is = new CipherInputStream(new ByteArrayInputStream(input),c);
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			int read = 0;
+			while((read = is.read()) >= 0){
+				os.write(read);
+			}
+			return os.toByteArray();
+//			return getDecryptCipher(sessionKey).doFinal(input);
+//		} catch (IllegalBlockSizeException e) {
+//			e.printStackTrace();
+//		} catch (BadPaddingException e) {
+//			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		throw new Error();
 	}
 	
-	public static String decrypt(byte[] message, PrivateKey key){
+	public static synchronized String decrypt(byte[] message, PrivateKey key){
 		try {
 			Cipher decryptCipher = getDecryptCipher(key);
 			byte[] b = decryptCipher.doFinal(message);
@@ -193,10 +207,10 @@ public class Encrypt {
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} 
-		throw new Error();
+		return null;
 	}
 	
-	public static byte[] encrypt(String message, PublicKey key){
+	public static synchronized byte[] encrypt(String message, PublicKey key){
 		try {
 			Cipher encryptCipher = getEncryptCipher(key);
 			byte[] b = encryptCipher.doFinal(message.getBytes());
@@ -207,7 +221,7 @@ public class Encrypt {
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} 
-		throw new Error();
+		return null;
 	}	
 
 	public static synchronized String encryptMD5(String plaintext) {

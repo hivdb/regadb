@@ -8,6 +8,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
 
 import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Service;
@@ -15,6 +16,8 @@ import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
 import net.sf.wts.services.util.Status;
 
+import org.apache.axis.Message;
+import org.apache.axis.MessageContext;
 import org.apache.commons.io.FileUtils;
 
 public class DownloadImpl 
@@ -61,15 +64,15 @@ public class DownloadImpl
 //            	
 //            	response.addAttachmentPart(ap);
 //            	response.saveChanges();
-            	return Encrypt.encrypt(sessionTicket, FileUtils.readFileToByteArray(outputFile));
+            	byte[] temp = FileUtils.readFileToByteArray(outputFile);            	
+            	return Encrypt.encrypt(Sessions.getSessionKey(sessionTicket), temp);
             }
             else throw new RemoteException("Service \"" + serviceName + "\" doesn't have outputfiles with name \""+ fileName +"\"");
-        } 
-        catch (IOException e) 
-        {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        
+//        } catch (SOAPException e) {
+//			e.printStackTrace();
+		}        
         return new byte[0];
     }
 }
