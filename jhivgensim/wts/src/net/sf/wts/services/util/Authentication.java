@@ -9,6 +9,8 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import sun.misc.BASE64Encoder;
+
 
 public class Authentication 
 {
@@ -36,7 +38,7 @@ public class Authentication
 		return (int)(fraction + aLowerLimit);
 	}
 
-	public static boolean authenticate(String challenge, String signedChallenge, String userName) throws java.rmi.RemoteException
+	public static boolean authenticate(String challenge, byte[] signedChallenge, String userName) throws java.rmi.RemoteException
 	{
 		synchronized(Settings.mutex_)
 		{
@@ -83,7 +85,7 @@ public class Authentication
 					verify.initVerify(pk);
 					verify.update(challenge.getBytes());
 					
-					if(verify.verify(signedChallenge.getBytes()))
+					if(verify.verify(signedChallenge))
 					{
 						return true;
 					}

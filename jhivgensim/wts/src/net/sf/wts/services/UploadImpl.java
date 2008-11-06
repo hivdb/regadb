@@ -1,8 +1,14 @@
 package net.sf.wts.services;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.util.Iterator;
+
+import javax.xml.soap.AttachmentPart;
 
 import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Service;
@@ -10,6 +16,8 @@ import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
 import net.sf.wts.services.util.Status;
 
+import org.apache.axis.Message;
+import org.apache.axis.MessageContext;
 import org.apache.commons.io.FileUtils;
 
 
@@ -52,5 +60,31 @@ public class UploadImpl
         {
             e.printStackTrace();
         }
+        
+//        MessageContext msgContext= MessageContext.getCurrentContext();
+//        Message request = msgContext.getRequestMessage();
+//        
+//        Iterator iterator = request.getAttachments();
+//        
+//        while (iterator.hasNext()) {
+//        	try {
+//        		AttachmentPart ap = (AttachmentPart)iterator.next();
+//        		
+//        		InputStream is = ap.getDataHandler().getDataSource().getInputStream();
+//        		
+//        		OutputStream os = new FileOutputStream(toWrite);
+//        		
+//        		byte[] buffer = new byte[4096];
+//        		
+//        		int read = 0;
+//        		
+//        		while ((read = is.read(buffer)) > 0) {
+//        			os.write(buffer, 0, read);
+//        		}
+//    		}
+//        	catch (Exception e) {
+//    			//e.printStackTrace();
+//    		}
+//        }
     }
 }

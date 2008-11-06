@@ -96,7 +96,7 @@ public class Settings
                 User u = new User();
                 indexOfSemiCol = thisLine.indexOf(':');
                 u.userName_ = thisLine.substring(0, indexOfSemiCol);
-                u.password_ = thisLine.substring(indexOfSemiCol+1);
+                u.publicKey_ = Encrypt.restorePublicKey(thisLine.substring(indexOfSemiCol+1));
                 userSettings_.add(u);
             }
         }
@@ -210,19 +210,6 @@ public class Settings
     public static boolean isInitiated()
     {
         return initiated_;
-    }
-    
-    public static String getHashedPassword(String userName)
-    {
-        for(User u : userSettings_)
-        {
-            if(u.userName_.equals(userName))
-            {
-                return u.password_;
-            }
-        }
-        
-        return null;
     }
     
     public static PublicKey getPublicKey(String userName)

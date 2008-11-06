@@ -1,14 +1,22 @@
 package net.sf.wts.services.util;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -17,7 +25,10 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PasswordFinder;
 
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 public class Encrypt {
@@ -33,6 +44,62 @@ public class Encrypt {
 	public static final String SYMMETRIC_CIPHER_TRANSFORMATION = "AES";
 	public static final int LENGTH_OF_GENERATED_ASYMMETRIC_KEYS = 2048;
 	public static final int LENGTH_OF_GENERATED_SYMMETRIC_KEYS = 128;
+	
+	public static PrivateKey restorePrivateKey(String key){
+//	public static PrivateKey restorePrivateKey(String key, final String passphrase){
+//		KeyPair keys = null;
+//		try {
+//			PasswordFinder pf = new PasswordFinder(){
+//
+//				public char[] getPassword() {
+//					return passphrase.toCharArray();
+//				}
+//
+//			};
+//			PEMReader pr = new PEMReader(new StringReader(key),pf);
+////			PEMReader pr = new PEMReader(new FileReader(filename),pf,SECURITY_PROVIDER_STRING);
+//			keys = (KeyPair) pr.readObject();
+//			pr.close();
+//			return keys.getPrivate();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e){
+//			if(keys.getPrivate().getAlgorithm().equals("DSA")){
+//				System.err.println("You can't use DSA keys for encryption");
+//			}else{
+//				throw e;
+//			}			
+//		}
+//		return null;
+		
+		PrivateKey k = null;
+		try {
+			byte[] encodedKey = (new BASE64Decoder()).decodeBuffer(key);
+			k = (KeyFactory.getInstance("RSA")).generatePrivate(new PKCS8EncodedKeySpec(encodedKey));			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return k;
+	}
+	
+	public static PublicKey restorePublicKey(String key){
+		PublicKey k = null;
+		try {
+			byte[] encodedKey = (new BASE64Decoder()).decodeBuffer(key);
+			k = (KeyFactory.getInstance("RSA")).generatePublic(new X509EncodedKeySpec(encodedKey));			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return k;
+	}
 
 	public static final Key getNewSessionKey(){
 		try {
@@ -49,7 +116,7 @@ public class Encrypt {
 		return null;	
 	}
 
-	private static final Cipher getEncryptCipher(Key k){
+	public static final Cipher getEncryptCipher(Key k){
 		Cipher c = null;
 		try {
 			if(k.getAlgorithm().equals(ASYMMETRIC_ALGORITHM_NAME)){
@@ -71,7 +138,7 @@ public class Encrypt {
 		return c;
 	}
 
-	private static final Cipher getDecryptCipher(Key k){
+	public static final Cipher getDecryptCipher(Key k){
 		Cipher c = null;
 		try {
 			if(k.getAlgorithm().equals(ASYMMETRIC_ALGORITHM_NAME)){
@@ -114,7 +181,7 @@ public class Encrypt {
 		}
 		throw new Error();
 	}
-
+	
 	public static String decrypt(byte[] message, PrivateKey key){
 		try {
 			Cipher decryptCipher = getDecryptCipher(key);
@@ -141,7 +208,7 @@ public class Encrypt {
 			e.printStackTrace();
 		} 
 		throw new Error();
-	}
+	}	
 
 	public static synchronized String encryptMD5(String plaintext) {
 		return encrypt(plaintext, "MD5");

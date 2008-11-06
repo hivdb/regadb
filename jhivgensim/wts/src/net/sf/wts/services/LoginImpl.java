@@ -11,7 +11,7 @@ import net.sf.wts.services.util.Settings;
 
 public class LoginImpl 
 {
-    public byte[] exec(String userName, String challenge, String signedChallenge, String serviceName) throws RemoteException
+    public byte[] exec(String userName, String challenge, byte[] signedChallenge, String serviceName) throws RemoteException
     {
         boolean valid = Authentication.authenticate(challenge, signedChallenge, userName);
         if(valid)

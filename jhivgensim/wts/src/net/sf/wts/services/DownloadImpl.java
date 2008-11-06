@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.xml.soap.AttachmentPart;
+
 import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
@@ -45,8 +50,19 @@ public class DownloadImpl
         try 
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
-            if(outputFile.exists())
+            if(outputFile.exists()){
+//            	DataSource ds = new FileDataSource(outputFile);
+//            	DataHandler dh = new DataHandler(ds);
+//            	
+//            	MessageContext msgContext= MessageContext.getCurrentContext();
+//            	Message response = msgContext.getResponseMessage();
+//            	AttachmentPart ap = response.createAttachmentPart();
+//            	ap.setDataHandler(dh);
+//            	
+//            	response.addAttachmentPart(ap);
+//            	response.saveChanges();
             	return Encrypt.encrypt(sessionTicket, FileUtils.readFileToByteArray(outputFile));
+            }
             else throw new RemoteException("Service \"" + serviceName + "\" doesn't have outputfiles with name \""+ fileName +"\"");
         } 
         catch (IOException e) 
