@@ -19,6 +19,7 @@ import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
@@ -90,7 +91,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
             doSubtypeAnalysis(ntseq, subType_, genome);
         }
         
-        calculateRI(object);
+        calculateRI(object, genome);
         
         Element parent = new Element("viralIsolates-el");
         export_.writeViralIsolate(object, parent);
@@ -119,61 +120,63 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         }
     }
     
-    private void calculateRI(ViralIsolate object) {
+    private void calculateRI(ViralIsolate object, Genome genome) {
         for(final Test resistanceTest : resistanceTests_)
         {
-            byte[] result = ViralIsolateAnalysisHelper.run(object, resistanceTest, 500);
-            final ViralIsolate isolate = object;
-            ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
-            {
-                @Override
-                public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
+            if(Equals.isSameGenome(genome, resistanceTest.getTestType().getGenome())){
+                byte[] result = ViralIsolateAnalysisHelper.run(object, resistanceTest, 500);
+                final ViralIsolate isolate = object;
+                ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
                 {
-                    TestResult resistanceInterpretation = new TestResult();
-                    resistanceInterpretation.setViralIsolate(isolate);
-                    resistanceInterpretation.setDrugGeneric(new DrugGeneric(null, drug, ""));
-                    resistanceInterpretation.setValue(gss+"");
-                    resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
-                    resistanceInterpretation.setTest(resistanceTest);
-                    
-                    StringBuffer data = new StringBuffer();
-                    data.append("<interpretation><score><drug>");
-                    data.append(drug);
-                    data.append("</drug><level>");
-                    data.append(level);
-                    data.append("</level><description>");
-                    data.append(description);
-                    data.append("</description><sir>");
-                    data.append(sir);
-                    data.append("</sir><gss>");
-                    data.append(gss);
-                    data.append("</gss><mutations>");
-                    int size = mutations.size();
-                    for(int i = 0; i<size; i++)
+                    @Override
+                    public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
                     {
-                        data.append(mutations.get(i));
-                        if(i!=size-1)
-                            data.append(' ');
+                        TestResult resistanceInterpretation = new TestResult();
+                        resistanceInterpretation.setViralIsolate(isolate);
+                        resistanceInterpretation.setDrugGeneric(new DrugGeneric(null, drug, ""));
+                        resistanceInterpretation.setValue(gss+"");
+                        resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
+                        resistanceInterpretation.setTest(resistanceTest);
+                        
+                        StringBuffer data = new StringBuffer();
+                        data.append("<interpretation><score><drug>");
+                        data.append(drug);
+                        data.append("</drug><level>");
+                        data.append(level);
+                        data.append("</level><description>");
+                        data.append(description);
+                        data.append("</description><sir>");
+                        data.append(sir);
+                        data.append("</sir><gss>");
+                        data.append(gss);
+                        data.append("</gss><mutations>");
+                        int size = mutations.size();
+                        for(int i = 0; i<size; i++)
+                        {
+                            data.append(mutations.get(i));
+                            if(i!=size-1)
+                                data.append(' ');
+                        }
+                        data.append("</mutations><remarks>");
+                        data.append(remarks);
+                        data.append("</remarks></score></interpretation>");
+                        resistanceInterpretation.setData(data.toString().getBytes());
+                        
+                        isolate.getTestResults().add(resistanceInterpretation);
                     }
-                    data.append("</mutations><remarks>");
-                    data.append(remarks);
-                    data.append("</remarks></score></interpretation>");
-                    resistanceInterpretation.setData(data.toString().getBytes());
-                    
-                    isolate.getTestResults().add(resistanceInterpretation);
+                };
+                try 
+                {
+                    inp.parse(new InputSource(new ByteArrayInputStream(result)));
+                } 
+                catch (SAXException e) 
+                {
+                    e.printStackTrace();
+                } 
+                catch (IOException e) 
+                {
+                    e.printStackTrace();
                 }
-            };
-            try 
-            {
-                inp.parse(new InputSource(new ByteArrayInputStream(result)));
-            } 
-            catch (SAXException e) 
-            {
-                e.printStackTrace();
-            } 
-            catch (IOException e) 
-            {
-                e.printStackTrace();
             }
         }
     }
