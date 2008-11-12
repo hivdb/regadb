@@ -6,11 +6,10 @@ import java.rmi.RemoteException;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 
-import net.sf.wts.services.util.Encrypt;
+import net.sf.wts.services.util.EncryptedFileDataSource;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -18,7 +17,6 @@ import net.sf.wts.services.util.Status;
 
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
-import org.apache.commons.io.FileUtils;
 
 public class DownloadImpl 
 {
@@ -54,24 +52,24 @@ public class DownloadImpl
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
             if(outputFile.exists()){
-//            	DataSource ds = new FileDataSource(outputFile);
-//            	DataHandler dh = new DataHandler(ds);
-//            	
-//            	MessageContext msgContext= MessageContext.getCurrentContext();
-//            	Message response = msgContext.getResponseMessage();
-//            	AttachmentPart ap = response.createAttachmentPart();
-//            	ap.setDataHandler(dh);
-//            	
-//            	response.addAttachmentPart(ap);
-//            	response.saveChanges();
-            	byte[] temp = FileUtils.readFileToByteArray(outputFile);            	
-            	return Encrypt.encrypt(Sessions.getSessionKey(sessionTicket), temp);
+            	DataSource ds = new EncryptedFileDataSource(outputFile,sessionTicket);
+            	DataHandler dh = new DataHandler(ds);
+            	
+            	MessageContext msgContext= MessageContext.getCurrentContext();
+            	Message response = msgContext.getResponseMessage();
+            	AttachmentPart ap = response.createAttachmentPart();
+            	ap.setDataHandler(dh);
+            	
+            	response.addAttachmentPart(ap);
+            	response.saveChanges();
+//            	byte[] temp = FileUtils.readFileToByteArray(outputFile);            	
+//            	return Encrypt.encrypt(Sessions.getSessionKey(sessionTicket), temp);
             }
             else throw new RemoteException("Service \"" + serviceName + "\" doesn't have outputfiles with name \""+ fileName +"\"");
         } catch (IOException e) {
             e.printStackTrace();
-//        } catch (SOAPException e) {
-//			e.printStackTrace();
+        } catch (SOAPException e) {
+			e.printStackTrace();
 		}        
         return new byte[0];
     }

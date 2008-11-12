@@ -9,9 +9,6 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import sun.misc.BASE64Encoder;
-
-
 public class Authentication 
 {
 	private static ArrayList<Challenge> challenges_ = new ArrayList<Challenge>();
