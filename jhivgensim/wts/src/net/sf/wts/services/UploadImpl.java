@@ -72,15 +72,16 @@ public class UploadImpl
         		AttachmentPart ap = (AttachmentPart)iterator.next();
         		InputStream is = ap.getDataHandler().getDataSource().getInputStream();
         		OutputStream os = new CipherOutputStream(new FileOutputStream(toWrite),Encrypt.getDecryptCipher(Sessions.getSessionKey(sessionTicket)));
-        		
+        		System.out.println("ok");
         		byte[] buffer = new byte[4096];
         		int read = 0;
         		while ((read = is.read(buffer)) > 0) {
+        			System.out.println("write");
         			os.write(buffer, 0, read);
         		}
     		}
         	catch (Exception e) {
-    			//e.printStackTrace();
+    			e.printStackTrace();
     		}
         }
     }

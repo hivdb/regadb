@@ -13,22 +13,16 @@ public class EncryptedFileDataSource extends FileDataSource {
 
 	private Cipher encryptCipher;	
 
-	public EncryptedFileDataSource(File file, String sessionTicket){
+	public EncryptedFileDataSource(File file, Key key){
 		super(file);
-		encryptCipher = Encrypt.getEncryptCipher(Sessions.getSessionKey(sessionTicket));		
+		encryptCipher = Encrypt.getEncryptCipher(key);		
 	}
 
-	public EncryptedFileDataSource(String filename, String sessionTicket){
+	public EncryptedFileDataSource(String filename, Key key){
 		super(filename);
-		encryptCipher = Encrypt.getEncryptCipher(Sessions.getSessionKey(sessionTicket));	
+		encryptCipher = Encrypt.getEncryptCipher(key);	
 	}
-
-	//for testing
-//	public EncryptedFileDataSource(File file, Key key){
-//		super(file);
-//		encryptCipher= Encrypt.getEncryptCipher(key);	
-//	}
-
+	
 	public InputStream getInputStream() throws IOException{
 		System.out.println("getInputStream");
 		return new CipherInputStream(super.getInputStream(),encryptCipher);

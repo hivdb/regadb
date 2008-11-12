@@ -52,7 +52,7 @@ public class DownloadImpl
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
             if(outputFile.exists()){
-            	DataSource ds = new EncryptedFileDataSource(outputFile,sessionTicket);
+            	DataSource ds = new EncryptedFileDataSource(outputFile,Sessions.getSessionKey(sessionTicket));
             	DataHandler dh = new DataHandler(ds);
             	
             	MessageContext msgContext= MessageContext.getCurrentContext();

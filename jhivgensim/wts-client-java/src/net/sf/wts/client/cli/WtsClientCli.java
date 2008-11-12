@@ -137,7 +137,7 @@ public class WtsClientCli {
 					}
 				}
 				
-				WtsClient wtsClient = new WtsClient(url);
+				WtsClient wtsClient = new WtsClient(url, null);
 				WtsMetaClient wtsMetaClient = new WtsMetaClient(url);
 				
 				if (cmd.hasOption(servicesOption.getLongOpt())) {
@@ -177,7 +177,7 @@ public class WtsClientCli {
 						try {
 							String challenge = wtsClient.getChallenge(userName);
 							
-							String sessionTicket = wtsClient.login(userName, challenge, password, serviceName);
+							String sessionTicket = wtsClient.login(userName, challenge, serviceName);
 							
 							System.out.println("Session Ticket: " + sessionTicket);
 						}
