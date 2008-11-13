@@ -163,8 +163,11 @@ public class WtsClient
 				byte[] buffer = new byte[4096];
 				int read = 0;
 				while ((read = is.read(buffer)) > 0) {
+					System.out.println(read);
 					os.write(buffer, 0, read);
+					os.flush();
 				}
+				os.close();
 			}
 			catch (Exception e) {
 				//e.printStackTrace();
