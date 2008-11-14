@@ -83,6 +83,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         if(genome == null){
             System.err.println("Unknown organism for viral isolate: "+ object.getSampleId());
             return;
+        } else {
+        	System.err.println(genome.getOrganismDescription());
         }
         
         for(final NtSequence ntseq : object.getNtSequences()) {
