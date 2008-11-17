@@ -15,14 +15,14 @@ public class ImportViralIsolatesFromXML
 {
     public static void main(String[] args) throws SAXException, IOException, WrongUidException, WrongPasswordException, DisabledUserException 
     {
-        if(args.length<4)
+        if(args.length<3)
         {
-            System.err.println("Provide a ViralIsolate xml input file as input parameter, a user, a password and a dataset");
+            System.err.println("Usage: <viral_isolates.xml> <regadb user> <regadb password> [dataset]");
         }
         else
         {
             ImportXML instance = new ImportXML(args[1], args[2]);
-            instance.importViralIsolates(new InputSource(new FileReader(new File(args[0]))), args[3]);
+            instance.importViralIsolates(new InputSource(new FileReader(new File(args[0]))), (args.length > 3 ? args[3] : null));
             instance.login.closeSession();
         }
     }
