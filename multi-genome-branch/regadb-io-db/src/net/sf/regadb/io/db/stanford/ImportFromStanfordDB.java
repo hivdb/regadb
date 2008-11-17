@@ -70,7 +70,7 @@ public class ImportFromStanfordDB {
 		importSequenceFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
 
 		IOUtils.exportPatientsXML(patients, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
-		IOUtils.exportNTXMLFromPatients(patients, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
+		IOUtils.exportNTXMLFromPatients(patients, dataPath + File.separatorChar + "viral_isolates_stanford.xml", ConsoleLogger.getInstance());
 
 	}
 
