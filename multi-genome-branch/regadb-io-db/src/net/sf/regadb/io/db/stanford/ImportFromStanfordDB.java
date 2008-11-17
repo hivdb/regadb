@@ -41,7 +41,7 @@ public class ImportFromStanfordDB {
 	public static void main(String[] args){
 		System.setProperty("http.proxyHost", "www-proxy");
 		System.setProperty("http.proxyPort", "3128");
-		String dataPath = "/home/gbehey0/stanford/NONB/data";
+		String dataPath = "/home/gbehey0/stanford";
 		String mappingsPath = "/home/gbehey0/workspace/regadb-io-db/src/net/sf/regadb/io/db/stanford/mappings";
 		ImportFromStanfordDB imp = new ImportFromStanfordDB(dataPath,mappingsPath);
 		imp.run();
@@ -59,8 +59,24 @@ public class ImportFromStanfordDB {
 	}
 
 	public void run(){
+		importTherapyFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "PatientsRx.txt"));
+		importTherapyFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "PatientsRx.txt"));
+
+		//important to FIRST import PR and then RT because the sequences are concatenated
+		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumPR.txt"));
+		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
+
+		importSequenceFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "BelgimumPR.txt"));
+		importSequenceFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
+
+		IOUtils.exportPatientsXML(patients, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
+		IOUtils.exportNTXMLFromPatients(patients, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
+
+	}
+
+	private void importTherapyFile(File file){
 		try {
-			Scanner s = new Scanner(new File(dataPath + File.separator + "PatientsRx.txt"));
+			Scanner s = new Scanner(file);
 
 			String patientId;
 			Date startDate;
@@ -75,27 +91,24 @@ public class ImportFromStanfordDB {
 				stopDate = Utils.parseEnglishAccessDate(s.next());
 				drugs = s.nextLine();
 
-				p = getPatient(patientId);
-				t = new Therapy();
-				t.setStartDate(startDate);
-				t.setStopDate(stopDate);
-				for(DrugGeneric dg : parseDrugGenerics(drugs)){
-					t.getTherapyGenerics().add(new TherapyGeneric(new TherapyGenericId(t, dg), false, false));
-				}
-				if(t.getTherapyGenerics().size() == 0 && !drugs.trim().equalsIgnoreCase("none")){
-					System.err.println("therapy generic(s) not added to therapy of patient: "+patientId+" "+drugs);
-				}
-				if(t.getTherapyGenerics().size() > 0){ //do not add therapy if drugs are "none"
-					p.addTherapy(t);
-					patients.put(p.getPatientId(), p);
+				if(!therapyAlreadyAdded(patientId, startDate)){
+					p = getPatient(patientId);
+					t = new Therapy();
+					t.setStartDate(startDate);
+					t.setStopDate(stopDate);
+					for(DrugGeneric dg : parseDrugGenerics(drugs)){
+						t.getTherapyGenerics().add(new TherapyGeneric(new TherapyGenericId(t, dg), false, false));
+					}
+					if(t.getTherapyGenerics().size() == 0 && !drugs.trim().equalsIgnoreCase("none")){
+						System.err.println("therapy generic(s) not added to therapy of patient: "+patientId+" "+drugs);
+					}
+					if(t.getTherapyGenerics().size() > 0){ //do not add therapy if drugs is equal to "none"
+						p.addTherapy(t);
+						patients.put(p.getPatientId(), p);
+					}
 				}
 			}
 			s.close();
-
-			importSequenceFile(new File(dataPath + File.separator + "BelgimumPR.txt"));
-			importSequenceFile(new File(dataPath + File.separator + "BelgimumRT.txt"));
-			
-			IOUtils.exportPatientsXML(patients, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -120,11 +133,18 @@ public class ImportFromStanfordDB {
 				nucleotides = s.nextLine().trim();
 
 				v = getViralIsolate(patientId,sampleId, sampleDate);
-				n = new NtSequence(v);
-				n.setSequenceDate(sampleDate);				
-				n.setNucleotides(nucleotides);
-				n.setLabel("Sequence "+(v.getNtSequences().size()+1));
-				v.getNtSequences().add(n);								
+				if(v.getNtSequences().size() == 0){
+					//new sequence
+					n = new NtSequence(v);
+					n.setNucleotides(Utils.clearNucleotides(nucleotides));
+					n.setSequenceDate(sampleDate);	
+					n.setLabel("Sequence 1");
+					v.getNtSequences().add(n);
+				}else{
+					//append RT sequence to PR sequence 
+					n = v.getNtSequences().iterator().next();
+					n.setNucleotides(n.getNucleotides()+Utils.clearNucleotides(nucleotides));
+				}
 			}
 			s.close();
 		} catch (FileNotFoundException e) {
@@ -143,7 +163,7 @@ public class ImportFromStanfordDB {
 
 	private ViralIsolate getViralIsolate(String patientId, String sampleId, Date sampleDate){
 		Set<ViralIsolate> viralIsolates = getPatient(patientId).getViralIsolates();
-		Comparator<Date> c = Utils.getSameDayComparator(); 
+		Comparator<Date> c = Utils.getDayComparator(); 
 		for(ViralIsolate v : viralIsolates){
 			if(c.compare(v.getSampleDate(), sampleDate) == 0){
 				return v;
@@ -163,6 +183,16 @@ public class ImportFromStanfordDB {
 				result = dg;
 		}
 		return result;
+	}
+
+	private boolean therapyAlreadyAdded(String patientId, Date therapyStartDate){
+		Comparator<Date> c = Utils.getDayComparator();
+		for(Therapy t : getPatient(patientId).getTherapies()){
+			if(c.compare(t.getStartDate(), therapyStartDate) == 0){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Set<DrugGeneric> parseDrugGenerics(String therapyGenerics){

@@ -150,7 +150,7 @@ public class Utils {
         }
     }
     
-    public static Comparator<Date> getSameDayComparator(){
+    public static Comparator<Date> getDayComparator(){
     	return new Comparator<Date>(){
 
 			public int compare(Date o1, Date o2) {
