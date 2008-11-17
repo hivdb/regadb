@@ -25,7 +25,7 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 	}
 
 	@Override
-	protected void populateOutputList() {
+	public void populateOutputList() {
 		Date sampleDate;
 		for(Patient p : inputQuery.getOutputList()){
 			for(ViralIsolate vi : p.getViralIsolates()){

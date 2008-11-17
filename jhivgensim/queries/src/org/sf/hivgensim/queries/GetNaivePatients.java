@@ -24,7 +24,7 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 	}
 	
 	@Override
-	protected void populateOutputList() {
+	public void populateOutputList() {
 		//we use a set to avoid having duplicate patients
 		//caused by the "joins/loops" in the query
 		Set<Patient> temp = new HashSet<Patient>();

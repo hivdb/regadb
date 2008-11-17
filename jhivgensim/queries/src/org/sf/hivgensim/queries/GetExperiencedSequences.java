@@ -39,7 +39,7 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 	}
 
 	@Override
-	protected void populateOutputList() {
+	public void populateOutputList() {
 		Set<NtSequence> temp = new HashSet<NtSequence>();
 		for(Patient p : inputQuery.getOutputList()){
 			Therapy latestGoodExperienceTherapy = null;

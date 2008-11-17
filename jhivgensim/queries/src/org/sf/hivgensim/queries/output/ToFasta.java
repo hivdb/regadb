@@ -22,7 +22,6 @@ public class ToFasta extends QueryOutput<NtSequence> {
 	public void generateOutput(Query<NtSequence> query) {
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream(file));
-			System.out.println(query.getOutputList().size());
 			for(NtSequence seq : query.getOutputList()){
 				out.println(">" + seq.getNtSequenceIi());
 				out.println(seq.getNucleotides());

@@ -21,7 +21,7 @@ public class GetLatestSequencePerPatient extends QueryImpl<NtSequence,Patient> {
 	}
 	
 	@Override
-	protected void populateOutputList() {
+	public void populateOutputList() {
 		NtSequence latestSequenceForThisPatient = null; 
 		for(Patient p : inputQuery.getOutputList()){
 			for(ViralIsolate vi : p.getViralIsolates()){

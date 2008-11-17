@@ -19,7 +19,7 @@ public class GetAllSequences extends QueryImpl<NtSequence,Patient> {
 	}
 
 	@Override
-	protected void populateOutputList() {
+	public void populateOutputList() {
 		for(Patient p : inputQuery.getOutputList()){
 			for(ViralIsolate vi : p.getViralIsolates()){
 				for(NtSequence seq : vi.getNtSequences()){

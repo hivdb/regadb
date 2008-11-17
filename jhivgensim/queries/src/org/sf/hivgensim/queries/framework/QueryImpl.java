@@ -7,11 +7,13 @@ public abstract class QueryImpl<T,I> implements Query<T>{
 	
 	protected Query<I> inputQuery;
 	protected List<T> outputList;
-	protected abstract void populateOutputList();
+	
 	
 	protected QueryImpl(Query<I> inputQuery){
 		this.inputQuery = inputQuery;
-	}	
+	}
+	
+	public abstract void populateOutputList();
 	
 	public List<T> getOutputList(){
 		if(outputList == null){
@@ -20,6 +22,8 @@ public abstract class QueryImpl<T,I> implements Query<T>{
 		}
 		return outputList;
 	}
+	
+	
 	
 	
 	
