@@ -1,18 +1,18 @@
 orf
-gag,gag,1103-2669
-p17,p17,1103-1508
-p24,p24,1508-2198
+group-specific antigen,gag,1103-2669
+matrix,p17,1103-1508
+capsid,p24,1508-2198
 p2,p2,2198-2249
 p7,p7,2249-2396
 p1,p1,2396-2438
 p6,p6,2438-2669
 
 orf
-pol,pol,2395-5755
-prot,prot,2638-2935
-RT,p51 RT,2935-4252
+polymerase,pol,2395-5755
+protease,PR,2638-2935
+reverse transcriptase,RT,2935-4252
 p15,p15,4252-4612
-integrase,p31 int,4612-5755
+integrase,IN,4612-5755
 
 orf
 vif,vif,5423-6071
@@ -35,9 +35,9 @@ rev,rev,6628-6698+8861-9103
 rev,rev,6628-6698+8861-9103
 
 orf
-env,env,6704-9287
-gp120,gp120,6704-8228
-gp41,gp41,8228-9286
+envelope,env,6704-9287
+surface,gp120,6704-8228
+transmembrane,gp41,8228-9286
 
 orf
 nef,nef,9120-9894

@@ -7,10 +7,10 @@ nef,nef,8557-9331
 nef,nef,8557-9331
 
 orf
-pol,pol,1838-5201
-integrase,p31 int,4058-5201
-RT,p51 RT,2381-3698
-prot,prot,2084-2381
+polymerase,pol,1838-5201
+integrase,IN,4058-5201
+reverse transcriptase,RT,2381-3698
+protease,PR,2084-2381
 p15,p15,3698-4058
 
 orf
@@ -18,21 +18,21 @@ tat,tat,5845-6141+8307-8404
 tat,tat,5845-6141+8307-8404
 
 orf
-env,env,6147-8724
-gp120,gp120,6147-7674
-gp41,gp41,7674-8723
+envelope,env,6147-8724
+surface,gp120,6147-7674
+transmembrane,gp41,7674-8723
 
 orf
 vif,vif,4869-5517
 vif,vif,4869-5517
 
 orf
-gag,gag,546-2115
+group-specific antigen,gag,546-2115
 p6,p6,1881-2115
-p17,p17,546-951
+matrix,p17,546-951
 p7,p7,1692-1839
 p1,p1,1839-1881
-p24,p24,951-1641
+capsid,p24,951-1641
 p2,p2,1641-1692
 
 orf
