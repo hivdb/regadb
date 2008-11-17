@@ -3,7 +3,6 @@ package net.sf.regadb.io.db.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -13,11 +12,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.csv.Table;
@@ -33,17 +32,11 @@ import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
-import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -157,6 +150,25 @@ public class Utils {
         }
     }
     
+    public static Comparator<Date> getSameDayComparator(){
+    	return new Comparator<Date>(){
+
+			public int compare(Date o1, Date o2) {
+				Calendar c1,c2;
+				(c1 = Calendar.getInstance()).setTime(o1);
+				(c2 = Calendar.getInstance()).setTime(o2);
+				if(c1.get(Calendar.YEAR) != c2.get(Calendar.YEAR)){
+					return ((Integer) c1.get(Calendar.YEAR)).compareTo((Integer) c2.get(Calendar.YEAR));
+				}
+				if(c1.get(Calendar.MONTH) != c2.get(Calendar.MONTH)){
+					return ((Integer) c1.get(Calendar.MONTH)).compareTo((Integer) c2.get(Calendar.MONTH));
+				}
+				return ((Integer) c1.get(Calendar.DAY_OF_MONTH)).compareTo((Integer) c2.get(Calendar.DAY_OF_MONTH));
+			}
+			
+		};
+    }
+
      public static boolean checkColumnValueForExistance(String columnName, String value, int row, String patientID)
      {
     	 if(value != null)
