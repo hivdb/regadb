@@ -8,7 +8,9 @@ import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
@@ -22,7 +24,7 @@ public class ViralIsolateResistanceTable extends WTable {
         this.setStyleClass("datatable datatable-resistance");
     }
     
-    public void loadTable(boolean showMutations, Set<TestResult> testResults) {
+    public void loadTable(boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
         clear();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -37,7 +39,9 @@ public class ViralIsolateResistanceTable extends WTable {
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
-            if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription()) && test.getAnalysis()!=null)
+            if(test.getAnalysis()!=null
+                    && (( gssTestType != null && Equals.isSameTestType(gssTestType, test.getTestType()) ))
+                        || (gssTestType == null && StandardObjects.getGssDescription().equals(test.getTestType().getDescription())))
             {
                 col = numColumns();
                 putElementAt(0, col, new TableHeader(lt(test.getDescription())));

@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.witty.wt.SignalListener;
@@ -71,7 +73,10 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     private void refreshTable() {
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
-        resistanceTable_.loadTable(showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults());
+        
+        TestType gssTestType = StandardObjects.getTestType(StandardObjects.getGssDescription(), ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate()));
+        resistanceTable_.loadTable(showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
+        
         t.commit();
     }
 }

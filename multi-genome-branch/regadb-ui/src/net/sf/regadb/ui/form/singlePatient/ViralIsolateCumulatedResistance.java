@@ -79,7 +79,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
             }
         }
         
-        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults);
+        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, null);
         
         t.commit();
     }
