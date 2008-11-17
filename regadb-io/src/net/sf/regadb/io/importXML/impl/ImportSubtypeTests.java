@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 public class ImportSubtypeTests {
     public static void main(String[] args) throws SAXException, IOException, WrongUidException, WrongPasswordException, DisabledUserException 
     {
-        if(args.length<4)
+        if(args.length<3)
         {
             System.err.println("Provide a ViralIsolate xml input file (with *only* subtype tests) as input parameter, a user, a password and a dataset (optional)");
         }
