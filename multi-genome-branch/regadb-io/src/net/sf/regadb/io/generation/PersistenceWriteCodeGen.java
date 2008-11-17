@@ -46,9 +46,11 @@ public class PersistenceWriteCodeGen {
 		while(!queue.isEmpty()){
 			System.out.println("queue size: "+queue.size()+" done size: "+done.size());
 			String shortClassName = null;
-			
+			if(queue.get(0).equals("TestResult") && queue.size() > 1){
+				 shortClassName = queue.get(1);
+			}else{
 				shortClassName = queue.get(0);
-			
+			}
 			total+= "private void write(" + shortClassName + " " + toObjectName(shortClassName) + "){\n";
 			Class c = null;
 			try {
