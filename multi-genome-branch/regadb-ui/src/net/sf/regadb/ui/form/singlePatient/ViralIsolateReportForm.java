@@ -114,6 +114,12 @@ public class ViralIsolateReportForm extends WContainerWidget
             resRepTemplateCB_.sort();
         }
         
+        if(algorithmCB_.size() == 0){
+            algorithmCB_.setEnabled(false);
+            resRepTemplateCB_.setEnabled(false);
+            generateButton_.setEnabled(false);
+        }
+        
         t.commit();
     }
     

@@ -280,4 +280,11 @@ public class ComboBox<ComboDataType> extends FormField
             return getViewWidget().isHidden();
         }
     }
+    
+    public int size(){
+        return fieldEdit_.count();
+    }
+    public int count(){
+        return size();
+    }
 }
