@@ -1,7 +1,9 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.input;
 
 
 import java.io.File;
+
+import org.sf.hivgensim.queries.output.ToSnapshot;
 
 
 /**
@@ -13,7 +15,7 @@ import java.io.File;
  * 
  */
 
-public class GetSnapshot {
+public class CreateSnapshot {
 	
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();

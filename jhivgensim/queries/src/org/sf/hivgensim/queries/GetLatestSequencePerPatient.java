@@ -1,5 +1,8 @@
 package org.sf.hivgensim.queries;
 
+import org.sf.hivgensim.queries.framework.Query;
+import org.sf.hivgensim.queries.framework.QueryImpl;
+
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;

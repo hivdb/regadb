@@ -1,9 +1,16 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.framework;
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.Option;
 
 import java.io.File;
+
+import org.sf.hivgensim.queries.GetLatestSequencePerPatient;
+import org.sf.hivgensim.queries.GetNaivePatients;
+import org.sf.hivgensim.queries.input.FromDatabase;
+import org.sf.hivgensim.queries.input.FromSnapshot;
+import org.sf.hivgensim.queries.input.FromXml;
+import org.sf.hivgensim.queries.output.ToMutationTable;
 
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;

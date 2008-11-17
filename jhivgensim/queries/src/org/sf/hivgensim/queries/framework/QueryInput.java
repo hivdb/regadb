@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.framework;
 
 import java.util.ArrayList;
 import java.util.List;

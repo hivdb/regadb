@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.input;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,7 +19,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 
-public class GetXml {
+public class CreateXml {
 	
 	/*
 	 * @param args 	args[0] outputfile

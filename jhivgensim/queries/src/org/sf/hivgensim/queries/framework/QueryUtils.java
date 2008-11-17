@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.framework;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +15,9 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 
-public abstract class QueryInfra {
+public abstract class QueryUtils {
 
-	static boolean hasClassExperience(String drugClass, Therapy t) {
+	public static boolean hasClassExperience(String drugClass, Therapy t) {
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
 				if(dg.getDrugClass().getClassId().equals(drugClass)) {
@@ -33,7 +33,7 @@ public abstract class QueryInfra {
 		return false;
 	}
 
-	static boolean hasDrugExperience(String drug, Therapy t) {
+	public static boolean hasDrugExperience(String drug, Therapy t) {
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
 				if(dg.getGenericId().equals(drug)) {
@@ -49,7 +49,7 @@ public abstract class QueryInfra {
 		return false;
 	}
 
-	static List<Therapy> sortTherapies(List<Therapy> therapies){
+	public static List<Therapy> sortTherapies(List<Therapy> therapies){
 		Comparator<Therapy> c = new Comparator<Therapy>(){
 			public int compare(Therapy o1, Therapy o2) {
 				if(o1.getStartDate().before(o2.getStartDate()))
@@ -64,7 +64,7 @@ public abstract class QueryInfra {
 		return therapies;
 	}
 
-	static List<Therapy> sortTherapies(Set<Therapy> t){
+	public static List<Therapy> sortTherapies(Set<Therapy> t){
 		List<Therapy> result = new ArrayList<Therapy>(t.size());
 		result.addAll(t);
 
@@ -81,7 +81,7 @@ public abstract class QueryInfra {
 		return result;
 	}
 
-	static Set<NtSequence> getLatestExperiencedSequences(Patient p, Therapy t){
+	public static Set<NtSequence> getLatestExperiencedSequences(Patient p, Therapy t){
 		Date stop = t.getStopDate();
 		Date start = t.getStartDate();
 		Date sampleDate;
@@ -98,18 +98,18 @@ public abstract class QueryInfra {
 		return latestVi == null ? null : latestVi.getNtSequences(); 
 	}
 
-	static boolean isGoodExperienceTherapy(Therapy t, String[] druggenerics){
+	public static boolean isGoodExperienceTherapy(Therapy t, String[] druggenerics){
 		boolean result = true;
 		//check if all wanted drugs are included in the therapy
 		for(String drug : druggenerics){
-			if(!QueryInfra.hasDrugExperience(drug, t)) {
+			if(!QueryUtils.hasDrugExperience(drug, t)) {
 				result = false;											
 			}
 		}		
 		return result;
 	}
 
-	static boolean isGoodPreviousTherapy(Therapy t, String[] druggenerics){
+	public static boolean isGoodPreviousTherapy(Therapy t, String[] druggenerics){
 		boolean ok = true;
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) { //for every commercial drug, get all generic drugs

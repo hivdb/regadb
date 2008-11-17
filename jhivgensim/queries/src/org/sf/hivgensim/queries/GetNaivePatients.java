@@ -3,6 +3,10 @@ package org.sf.hivgensim.queries;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.sf.hivgensim.queries.framework.Query;
+import org.sf.hivgensim.queries.framework.QueryImpl;
+import org.sf.hivgensim.queries.framework.QueryUtils;
+
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -28,7 +32,7 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 			for(Therapy t : p.getTherapies()) {
 				boolean naive = true;
 				for(String tT : drugclasses){
-					if(QueryInfra.hasClassExperience(tT, t)) {
+					if(QueryUtils.hasClassExperience(tT, t)) {
 						naive = false;					
 					}
 				}

@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.input;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +14,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 
+import org.sf.hivgensim.queries.framework.QueryInput;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 

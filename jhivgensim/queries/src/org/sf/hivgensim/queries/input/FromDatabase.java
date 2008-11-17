@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package org.sf.hivgensim.queries.input;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -8,6 +8,7 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 
 import org.hibernate.ScrollableResults;
+import org.sf.hivgensim.queries.framework.QueryInput;
 
 public class FromDatabase extends QueryInput {
 	
