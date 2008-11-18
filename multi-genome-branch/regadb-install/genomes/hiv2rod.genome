@@ -7,7 +7,7 @@ nef,nef,8557-9331
 nef,nef,8557-9331
 
 orf
-polymerase,pol,1838-5201
+pol,polymerase,1838-5201
 integrase,IN,4058-5201
 reverse transcriptase,RT,2381-3698
 protease,PR,2084-2381
@@ -18,26 +18,26 @@ tat,tat,5845-6141+8307-8404
 tat,tat,5845-6141+8307-8404
 
 orf
-envelope,env,6147-8724
+env,envelope,6147-8724
 surface,gp120,6147-7674
 transmembrane,gp41,7674-8723
 
 orf
-vif,vif,4869-5517
-vif,vif,4869-5517
+vif,viral infectivity factor,4869-5517
+viral infectivity factor,vif,4869-5517
 
 orf
-group-specific antigen,gag,546-2115
+gag,group-specific antigen,546-2115
 p6,p6,1881-2115
 matrix,p17,546-951
-p7,p7,1692-1839
+nucleocapsid,p7,1692-1839
 p1,p1,1839-1881
 capsid,p24,951-1641
 p2,p2,1641-1692
 
 orf
-vpr,vpr,5682-5946
-vpr,vpr,5682-5946
+vpr,viral protein R,5682-5946
+viral protein R,vpr,5682-5946
 
 orf
 vpx,vpx,5344-5683

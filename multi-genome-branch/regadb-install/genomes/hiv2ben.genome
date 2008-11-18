@@ -1,30 +1,30 @@
 orf
-group-specific antigen,gag,1103-2669
+gag,group-specific antigen,1103-2669
 matrix,p17,1103-1508
 capsid,p24,1508-2198
 p2,p2,2198-2249
-p7,p7,2249-2396
+nucleocapsid,p7,2249-2396
 p1,p1,2396-2438
 p6,p6,2438-2669
 
 orf
-polymerase,pol,2395-5755
+pol,polymerase,2395-5755
 protease,PR,2638-2935
 reverse transcriptase,RT,2935-4252
 p15,p15,4252-4612
 integrase,IN,4612-5755
 
 orf
-vif,vif,5423-6071
-vif,vif,5423-6071
+vif,viral infectivity factor,5423-6071
+viral infectivity factor,vif,5423-6071
 
 orf
 vpx,vpx,5898-6240
 vpx,vpx,5898-6240
 
 orf
-vpr,vpr,6239-6503
-vpr,vpr,6239-6503
+vpr,viral protein R,6239-6503
+viral protein R,vpr,6239-6503
 
 orf
 tat,tat,6402-6698+8861-8958
@@ -35,7 +35,7 @@ rev,rev,6628-6698+8861-9103
 rev,rev,6628-6698+8861-9103
 
 orf
-envelope,env,6704-9287
+env,envelope,6704-9287
 surface,gp120,6704-8228
 transmembrane,gp41,8228-9286
 
