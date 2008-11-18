@@ -8,6 +8,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.util.settings.Filter;
 
 public class DrugGenericComboBox extends ComboBox<DrugGeneric> {
 
@@ -15,11 +16,12 @@ public class DrugGenericComboBox extends ComboBox<DrugGeneric> {
         super(state, form);
     }
 
-    public void fill(Transaction t, Genome genome){     
-        if(genome != null){
-            addItems(t.getGenericDrugsSorted(genome));
+    public void fill(Transaction t, Filter organismFilter){     
+        if(organismFilter != null){
+            addItems(t.getGenericDrugsSorted(organismFilter));
+        } else {
+        	addItems(t.getGenericDrugsSorted());
         }
-        addItems(t.getGenericDrugsSorted());
     }
     
     private void addItems(Collection<DrugGeneric> items){
@@ -33,20 +35,6 @@ public class DrugGenericComboBox extends ComboBox<DrugGeneric> {
     }
     
     public String getLabel(DrugGeneric dg){
-        StringBuffer sb = new StringBuffer();
-        sb.append(dg.getGenericName());
-        if(dg.getGenomes().size() > 0){
-            boolean first=true;
-            sb.append(" (");
-            for(Genome g : dg.getGenomes()){
-                if(!first)
-                    sb.append(", ");
-                else
-                    first = false;
-                sb.append(g.getOrganismName());
-            }
-            sb.append(")");
-        }
-        return sb.toString();
+    	return dg.getGenericName();
     }
 }

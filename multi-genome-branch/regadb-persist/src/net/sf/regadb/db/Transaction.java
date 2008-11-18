@@ -8,13 +8,12 @@ package net.sf.regadb.db;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.regadb.util.settings.Filter;
 
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
@@ -365,10 +364,10 @@ public class Transaction {
         return q.list();
     }
     @SuppressWarnings("unchecked")
-    public List<DrugGeneric> getGenericDrugsSorted(Genome g)
+    public List<DrugGeneric> getGenericDrugsSorted(Filter genomeFilter)
     {
-        Query q = session.createQuery("select dg from DrugGeneric dg join dg.genomes g where g.organismName = :organismName order by dg.genericName");
-        q.setString("organismName", g.getOrganismName());
+        Query q = session.createQuery("select dg from DrugGeneric dg join dg.genomes g where g.organismName like :organismFilter group by dg.id, dg.version, dg.genericName, dg.drugClass.id, dg.genericId, dg.resistanceTableOrder, dg.atcCode order by dg.genericName");
+        q.setString("organismFilter", genomeFilter.getHqlString());
         return q.list();
     }
     
@@ -385,11 +384,11 @@ public class Transaction {
         return q.list();
     }
     @SuppressWarnings("unchecked")
-    public List<DrugCommercial> getCommercialDrugsSorted(Genome genome) 
+    public List<DrugCommercial> getCommercialDrugsSorted(Filter genomeFilter) 
     {
-        Query q = session.createQuery("select dc from DrugCommercial dc join dc.drugGenerics dg join dg.genomes g where g.organismName = :organismName " +
+        Query q = session.createQuery("select dc from DrugCommercial dc join dc.drugGenerics dg join dg.genomes g where g.organismName like :organismFilter " +
         		"group by dc.commercialIi, dc.name, dc.atcCode, dc.version order by dc.name");
-        q.setString("organismName", genome.getOrganismName());
+        q.setString("organismFilter", genomeFilter.getHqlString());
         return q.list();
     }
     

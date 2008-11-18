@@ -16,6 +16,7 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.WWidget;
 
 public class ICommercialDrugSelectionEditableTable implements IEditableTable<TherapyCommercial>
@@ -98,7 +99,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        combo.fill(t, StandardObjects.getHiv1Genome());
+        combo.fill(t, RegaDBSettings.getInstance().getFilterValue("organism"));
         t.commit();
         
         WWidget[] widgets = new WWidget[6];
@@ -141,7 +142,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        combo.fill(t, StandardObjects.getHiv1Genome());
+        combo.fill(t, RegaDBSettings.getInstance().getFilterValue("organism"));
         t.commit();
         
         WWidget[] widgets = new WWidget[6];

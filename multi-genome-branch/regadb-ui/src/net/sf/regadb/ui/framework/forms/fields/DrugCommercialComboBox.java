@@ -11,6 +11,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.util.settings.Filter;
 
 public class DrugCommercialComboBox extends ComboBox<DrugCommercial> {
 
@@ -19,11 +20,12 @@ public class DrugCommercialComboBox extends ComboBox<DrugCommercial> {
         // TODO Auto-generated constructor stub
     }
 
-    public void fill(Transaction t, Genome genome){     
-        if(genome != null){
-            addItems(t.getCommercialDrugsSorted(new Genome("HIV-2A","")));
+    public void fill(Transaction t, Filter organismFilter){ 
+        if(organismFilter != null){
+            addItems(t.getCommercialDrugsSorted(organismFilter));
+        } else {
+        	addItems(t.getCommercialDrugsSorted());
         }
-        addItems(t.getCommercialDrugsSorted());
     }
     
     private void addItems(Collection<DrugCommercial> items){
@@ -37,25 +39,6 @@ public class DrugCommercialComboBox extends ComboBox<DrugCommercial> {
     }
     
     public String getLabel(DrugCommercial dc){
-        Set<String> genomes = new HashSet<String>();
-        for(DrugGeneric dg : dc.getDrugGenerics())
-            for(Genome g : dg.getGenomes())
-                genomes.add(g.getOrganismName());
-        
-        StringBuffer sb = new StringBuffer();
-        sb.append(dc.getName());
-        if(genomes.size() > 0){
-            boolean first=true;
-            sb.append(" (");
-            for(String s : genomes){
-                if(!first)
-                    sb.append(", ");
-                else
-                    first = false;
-                sb.append(s);
-            }
-            sb.append(")");
-        }
-        return sb.toString();
+        return dc.getName();
     }
 }

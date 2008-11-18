@@ -22,6 +22,7 @@ public class RegaDBSettings {
 
     private Map<String, String> settingsMap_ = new HashMap<String, String>();
     private Map<String, String> defaultsMap_ = new HashMap<String, String>();
+    private Map<String, Filter> filtersMap_ = new HashMap<String, Filter>();
     
     private ArrayList<Pair<String, String>> proxyList_ = new ArrayList<Pair<String, String>>();
 
@@ -60,6 +61,10 @@ public class RegaDBSettings {
     public String getDefaultValue(String name)
     {
         return defaultsMap_.get(name);
+    }
+    
+    public Filter getFilterValue(String name) {
+    	return filtersMap_.get(name);
     }
 
     public static RegaDBSettings getInstance()
@@ -171,6 +176,13 @@ public class RegaDBSettings {
             defaultsMap_.put(name, dft.getTextTrim());
         }
         
+        List filters = root.getChildren("filter");
+        Element filterE;
+        for(Object o : filters){
+        	filterE = ((Element) o);
+            name = filterE.getAttributeValue("name");
+            filtersMap_.put(name, new Filter(filterE.getTextTrim()));
+        }
     }
     
     public ArrayList<Pair<String, String>> getProxyList()
