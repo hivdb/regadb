@@ -20,7 +20,7 @@ tat,tat,6373-6663+8823-8920
 orf
 env,envelope,6669-9228
 surface,gp120,6669-8190
-transmembrane,gp41,8190-9227
+transmembrane,gp41,8190-9228
 
 orf
 vif,viral infectivity factor,5394-6045

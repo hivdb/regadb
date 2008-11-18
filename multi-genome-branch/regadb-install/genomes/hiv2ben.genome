@@ -37,7 +37,7 @@ rev,rev,6628-6698+8861-9103
 orf
 env,envelope,6704-9287
 surface,gp120,6704-8228
-transmembrane,gp41,8228-9286
+transmembrane,gp41,8228-9287
 
 orf
 nef,nef,9120-9894
