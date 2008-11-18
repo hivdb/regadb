@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE ALGORITHM SYSTEM "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE ALGORITHM SYSTEM 
+  "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+
 <!-- Rega algorithm in XML format -->
 <!-- 
 History:
@@ -8,6 +10,7 @@ History:
 13-NOV-03 TFL updated
 27-NOV-01 BBE Creation
 -->
+
 <ALGORITHM>
     <ALGNAME>Rega HIV-2 v7.1.1</ALGNAME>
     <ALGVERSION>7.1.1</ALGVERSION>
@@ -263,7 +266,7 @@ History:
         <NAME>NVP</NAME>
         <RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>6</LEVEL>
@@ -276,7 +279,7 @@ History:
         <NAME>EFV</NAME>
         <RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>6</LEVEL>
@@ -338,7 +341,7 @@ History:
         <NAME>IDV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -386,7 +389,7 @@ History:
         <NAME>SQV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -426,7 +429,7 @@ History:
         <NAME>fAPV</NAME>
         <RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                  <LEVEL>6</LEVEL>
@@ -438,7 +441,7 @@ History:
         <NAME>fAPV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -446,7 +449,7 @@ History:
         </RULE>          
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                  <LEVEL>6</LEVEL>
@@ -458,7 +461,7 @@ History:
 	<NAME>LPV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -530,7 +533,7 @@ History:
         <NAME>ATV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -565,7 +568,7 @@ History:
 	<NAME>TPV/r</NAME>
 	<RULE>
 		    <CONDITION>
-			SELECT ATLEAST 0 FROM (1P)
+			SELECT ATLEAST 0 FROM (1P,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>2</LEVEL>
@@ -603,7 +606,7 @@ History:
         <NAME>T20</NAME>
         <RULE>
 		    <CONDITION>
-			SELECT 0 FROM (1T)
+			SELECT ATLEAST 0 FROM (1T,2A)
 			</CONDITION>
             <ACTIONS>
                 <LEVEL>6</LEVEL>
@@ -611,4 +614,4 @@ History:
         </RULE>
     </DRUG>    <!-- END T20 -->
 
-</ALGORITHM>
+</ALGORITHM>	
