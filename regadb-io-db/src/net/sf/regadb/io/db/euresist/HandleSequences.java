@@ -23,7 +23,8 @@ public class HandleSequences {
 			
 			while(rs.next()) {
 				int patientId = rs.getInt("patientID");
-				int sampleId = rs.getInt("originalID");
+				int sequenceId = rs.getInt("sequenceID");
+				int originalId = rs.getInt("originalID");
 				Date sequenceDate = rs.getDate("sequence_date");
 				String sequence = rs.getString("raw_sequence");
 				
@@ -31,17 +32,17 @@ public class HandleSequences {
 				if(p!=null) {
 	                ViralIsolate vi = p.createViralIsolate();
 	                vi.setSampleDate(sequenceDate);
-	                vi.setSampleId(sampleId+"");
+	                vi.setSampleId(sequenceId+"");
 	                
 	                NtSequence ntseq = new NtSequence();
-	                ntseq.setLabel("Sequence 1");
+	                ntseq.setLabel(originalId+"");
 	                ntseq.setSequenceDate(sequenceDate);
 	                ntseq.setNucleotides(Utils.clearNucleotides(sequence));
 	                
 	                vi.getNtSequences().add(ntseq);
 				} else {
                     ConsoleLogger.getInstance().logWarning(
-                            "No patient with id " + patientId + " for viral isolate with id " + sampleId);
+                            "No patient with id " + patientId + " for viral isolate with sequence id " + sequenceId);
 				}
 			}
 			
