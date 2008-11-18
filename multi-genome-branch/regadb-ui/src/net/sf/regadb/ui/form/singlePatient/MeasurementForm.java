@@ -20,6 +20,7 @@ import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.witty.wt.SignalListener;
 import net.sf.witty.wt.WContainerWidget;
 import net.sf.witty.wt.WEmptyEvent;
@@ -83,7 +84,7 @@ public class MeasurementForm extends FormWidget
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
-        testTypeCB.fill(t, true);
+        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getFilter("organism"));
         testTypeCB.selectIndex(0);
 
         t.commit();

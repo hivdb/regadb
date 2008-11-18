@@ -63,7 +63,7 @@ public class RegaDBSettings {
         return defaultsMap_.get(name);
     }
     
-    public Filter getFilterValue(String name) {
+    public Filter getFilter(String name) {
     	return filtersMap_.get(name);
     }
 
