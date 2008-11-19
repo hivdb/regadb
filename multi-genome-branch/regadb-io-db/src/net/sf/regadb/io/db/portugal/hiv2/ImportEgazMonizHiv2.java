@@ -143,18 +143,18 @@ public class ImportEgazMonizHiv2 {
 				p.setPatientId(patientNr);
 				
 				//patient names
-				String[] nameParts = name.split(" ");
-				String firstName = "";
-				String lastName = "";
-				for(int n = 0; n<nameParts.length; n++) {
-					if(n==0) {
-						firstName = nameParts[n];
-					} else {
-						lastName += " " +nameParts[n];
-					}
-				}
-				p.setFirstName(firstName);
-				p.setLastName(lastName);
+//				String[] nameParts = name.split(" ");
+//				String firstName = "";
+//				String lastName = "";
+//				for(int n = 0; n<nameParts.length; n++) {
+//					if(n==0) {
+//						firstName = nameParts[n];
+//					} else {
+//						lastName += " " +nameParts[n];
+//					}
+//				}
+//				p.setFirstName(firstName);
+//				p.setLastName(lastName);
 				//patient names
 				
 				if(!gender.equals("")) {
@@ -208,9 +208,9 @@ public class ImportEgazMonizHiv2 {
 				if(!comments.equals("")) {
 					p.createPatientAttributeValue(commentA).setValue(comments);
 				}
-				if(!initials.equals("")) {
-					p.createPatientAttributeValue(initialsA).setValue(initials);
-				} 
+//				if(!initials.equals("")) {
+//					p.createPatientAttributeValue(initialsA).setValue(initials);
+//				} 
 				if(!processNr.equals("") && !processNr.equals("0")) {
 					p.createPatientAttributeValue(clinicalFileNumberA).setValue(processNr);
 				} else {
