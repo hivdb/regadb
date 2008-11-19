@@ -100,7 +100,7 @@ public class Transaction {
         getGenomeQuery = session.createQuery("from Genome g where g.organismName = :organismName");
         getOpenReadingFrameQuery = session.createQuery("from OpenReadingFrame orf where orf.genome = :genome and orf.name = :name");
         getProteinQuery = session.createQuery("from Protein p where p.openReadingFrame = :openReadingFrame and p.abbreviation = :abbreviation");
-        getSplicingPositionQuery = session.createQuery("from SplicingPosition sp where sp.protein = :protein and sp.position = :position");
+        getSplicingPositionQuery = session.createQuery("from SplicingPosition sp where sp.protein = :protein and sp.ntPosition = :ntPosition");
     }
     
     private void begin() {
@@ -1542,9 +1542,9 @@ public class Transaction {
         return (Protein)getProteinQuery.uniqueResult();
     }
     
-    public SplicingPosition getSplicingPosition(Protein protein, int position){
+    public SplicingPosition getSplicingPosition(Protein protein, int ntPosition){
         getSplicingPositionQuery.setParameter("protein", protein);
-        getSplicingPositionQuery.setParameter("position", position);
+        getSplicingPositionQuery.setParameter("ntPosition", ntPosition);
         return (SplicingPosition)getSplicingPositionQuery.uniqueResult();
     }
 
