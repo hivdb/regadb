@@ -75,10 +75,11 @@ public class ImportGenomes {
                 g = new Genome();
                 g.setOrganismName(organismName);
             }
-            
-            g.setOrganismDescription(el.getAttributeValue("organismDescription"));
-            g.setGenbankNumber(el.getAttributeValue("genbankNumber"));
-            g.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            if(g != null){
+                g.setOrganismDescription(el.getAttributeValue("organismDescription"));
+                g.setGenbankNumber(el.getAttributeValue("genbankNumber"));
+                g.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            }
         }
         
         logSync("genome "+ organismName, newObject);
@@ -111,10 +112,11 @@ public class ImportGenomes {
                 g.getOpenReadingFrames().add(orf);
                 orf.setGenome(g);
             }
-                
-            orf.setDescription(el.getAttributeValue("description"));
-            orf.setReferenceSequence(el.getAttributeValue("referenceSequence"));
-            orf.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            if(orf != null){
+                orf.setDescription(el.getAttributeValue("description"));
+                orf.setReferenceSequence(el.getAttributeValue("referenceSequence"));
+                orf.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            }
         }
         logSync("open reading frame "+ name, thisNewObject);
         
@@ -140,11 +142,12 @@ public class ImportGenomes {
                 orf.getProteins().add(p);
                 p.setOpenReadingFrame(orf);
             }
-        
-            p.setFullName(el.getAttributeValue("fullName"));
-            p.setStartPosition(Integer.parseInt(el.getAttributeValue("startPosition")));
-            p.setStopPosition(Integer.parseInt(el.getAttributeValue("stopPosition")));
-            p.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            if(p != null){
+                p.setFullName(el.getAttributeValue("fullName"));
+                p.setStartPosition(Integer.parseInt(el.getAttributeValue("startPosition")));
+                p.setStopPosition(Integer.parseInt(el.getAttributeValue("stopPosition")));
+                p.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            }
         }
         logSync("protein "+ abbreviation, thisNewObject);
         
@@ -170,8 +173,10 @@ public class ImportGenomes {
                 p.getSplicingPositions().add(sp);
                 sp.setProtein(p);
             }
-        
-            sp.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            
+            if(sp != null){
+                sp.setVersion(Integer.parseInt(el.getAttributeValue("version")));
+            }
         }
         logSync("splicing position "+ position, thisNewObject);
         
