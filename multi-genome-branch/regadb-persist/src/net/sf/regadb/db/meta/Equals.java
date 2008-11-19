@@ -23,6 +23,7 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Protein;
@@ -205,7 +206,14 @@ public class Equals {
 
 	public static boolean isSameProtein(Protein protein, Protein protein2) {
 		return protein == protein2 
-		|| (protein != null && protein2 != null && protein.getProteinIi().equals(protein2.getProteinIi()));
+		|| (protein != null && protein2 != null && protein.getAbbreviation().equals(protein2.getAbbreviation())
+		        && isSameOpenReadingFrame(protein.getOpenReadingFrame(), protein2.getOpenReadingFrame()));
+	}
+	
+	public static boolean isSameOpenReadingFrame(OpenReadingFrame orf, OpenReadingFrame orf2) {
+	    return orf == orf2 
+        || (orf != null && orf2 != null && orf.getName().equals(orf2.getName())
+                && isSameGenome(orf.getGenome(),orf2.getGenome()));
 	}
 
 	public static boolean isSameDrugCommercial(DrugCommercial drugCommercial,
