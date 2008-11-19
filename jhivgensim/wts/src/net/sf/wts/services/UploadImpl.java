@@ -22,7 +22,7 @@ import org.apache.axis.MessageContext;
 
 public class UploadImpl 
 {
-	public void exec(String sessionTicket, String serviceName, String fileName, byte[] file) throws RemoteException
+	public void exec(String sessionTicket, String serviceName, String fileName) throws RemoteException
 	{
 		File sessionPath = Sessions.getSessionPath(sessionTicket);
 		if(sessionPath==null)

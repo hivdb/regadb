@@ -167,8 +167,7 @@ public class WtsClient
 				OutputStream os = new FileOutputStream(toWrite);
 				byte[] buffer = new byte[4096];
 				int read = 0;
-				while ((read = is.read(buffer)) > 0) {
-					System.out.println(new String(buffer));
+				while ((read = is.read(buffer)) > 0) {					
 					os.write(buffer, 0, read);
 					os.flush();
 				}

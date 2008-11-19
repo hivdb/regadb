@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 
@@ -53,8 +52,8 @@ public class DownloadImpl
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
             if(outputFile.exists()){
-//            	DataSource ds = new FileDataSource(outputFile,Sessions.getSessionKey(sessionTicket));
-            	DataSource ds = new FileDataSource(outputFile);
+            	DataSource ds = new EncryptedFileDataSource(outputFile,Sessions.getSessionKey(sessionTicket));
+//            	DataSource ds = new FileDataSource(outputFile);
             	DataHandler dh = new DataHandler(ds);
             	
             	MessageContext msgContext= MessageContext.getCurrentContext();
