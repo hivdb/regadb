@@ -109,7 +109,7 @@ public class ExportGenome {
     
     public Element toXml(SplicingPosition sp){
         Element spEl = new Element("splicingPosition");
-        spEl.setAttribute("position",sp.getPosition()+"");
+        spEl.setAttribute("ntPosition",sp.getNtPosition()+"");
         spEl.setAttribute("version",sp.getVersion()+"");
         return spEl;
     }

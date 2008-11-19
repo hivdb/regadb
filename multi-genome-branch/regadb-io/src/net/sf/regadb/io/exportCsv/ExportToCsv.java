@@ -311,7 +311,7 @@ return DatasetLine;
 
 public String getCsvContentLine(SplicingPosition SplicingPositionvar) {
 String SplicingPositionLine = "";
-SplicingPositionLine += String.valueOf(SplicingPositionvar.getPosition());
+SplicingPositionLine += String.valueOf(SplicingPositionvar.getNtPosition());
 SplicingPositionLine += ",";
 return SplicingPositionLine;
 }
@@ -660,7 +660,7 @@ return DatasetLine;
 
 public String getCsvHeaderLineSplicingPosition() {
 String SplicingPositionLine = "";
-SplicingPositionLine += "SplicingPosition.position,";
+SplicingPositionLine += "SplicingPosition.ntPosition,";
 return SplicingPositionLine;
 }
 

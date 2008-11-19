@@ -341,7 +341,7 @@ public class GenerateGenome {
                 
                 if(p.getSplicingPositions().size() > 0){
                     for(SplicingPosition sp : p.getSplicingPositions())
-                        ts.add(sp.getPosition());
+                        ts.add(sp.getNtPosition());
                     
                     ts.add(1);
                     for(Integer sp : ts){

@@ -14,7 +14,7 @@ public class SplicingPosition implements java.io.Serializable {
 
     private Protein protein;
 
-    private int position;
+    private int ntPosition;
 
     // Constructors
 
@@ -23,9 +23,9 @@ public class SplicingPosition implements java.io.Serializable {
     }
 
     /** full constructor */
-    public SplicingPosition(Protein protein, int position) {
+    public SplicingPosition(Protein protein, int ntPosition) {
         this.protein = protein;
-        this.position = position;
+        this.ntPosition = ntPosition;
     }
 
     // Property accessors
@@ -53,12 +53,12 @@ public class SplicingPosition implements java.io.Serializable {
         this.protein = protein;
     }
 
-    public int getPosition() {
-        return this.position;
+    public int getNtPosition() {
+        return this.ntPosition;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public void setNtPosition(int ntPosition) {
+        this.ntPosition = ntPosition;
     }
 
 }

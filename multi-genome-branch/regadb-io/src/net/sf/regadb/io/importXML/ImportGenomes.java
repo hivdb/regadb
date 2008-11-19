@@ -158,7 +158,7 @@ public class ImportGenomes {
     }
     
     public SplicingPosition toSplicingPosition(Protein p, Element el, boolean newObject){
-        int position = Integer.parseInt(el.getAttributeValue("position"));
+        int position = Integer.parseInt(el.getAttributeValue("ntPosition"));
         SplicingPosition sp = null;
         
         if(!newObject)
@@ -168,7 +168,7 @@ public class ImportGenomes {
         if(!isSimulate() || newObject){
             if(thisNewObject){
                 sp = new SplicingPosition();
-                sp.setPosition(position);
+                sp.setNtPosition(position);
                 
                 p.getSplicingPositions().add(sp);
                 sp.setProtein(p);

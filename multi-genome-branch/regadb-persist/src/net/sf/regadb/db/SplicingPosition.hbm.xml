@@ -15,8 +15,8 @@
     <many-to-one name="protein" class="net.sf.regadb.db.Protein" fetch="select" cascade="save-update" index="splicing_position_protein_ii_idx">
       <column name="protein_ii" not-null="true" />
     </many-to-one>
-    <property name="position" type="int">
-      <column name="position" not-null="true" />
+    <property name="ntPosition" type="int">
+      <column name="nt_position" not-null="true" />
     </property>
   </class>
 </hibernate-mapping>

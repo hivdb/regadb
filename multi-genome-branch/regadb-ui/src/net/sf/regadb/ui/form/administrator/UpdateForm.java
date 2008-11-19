@@ -362,7 +362,7 @@ public class UpdateForm extends FormWidget
                     
                     String splicings = "";
                     for(SplicingPosition sp : p.getSplicingPositions())
-                        splicings += sp.getPosition()+" ";
+                        splicings += sp.getNtPosition()+" ";
                     row.add(splicings);
                     
                     proteinDescriptions.add(row);
