@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 
@@ -20,7 +21,7 @@ import org.apache.axis.MessageContext;
 
 public class DownloadImpl 
 {
-    public byte[] exec(String sessionTicket, String serviceName, String fileName) throws RemoteException
+    public void exec(String sessionTicket, String serviceName, String fileName) throws RemoteException
     {
         File sessionPath = Sessions.getSessionPath(sessionTicket);
         if(sessionPath==null)
@@ -52,7 +53,8 @@ public class DownloadImpl
         {
             File outputFile = new File(sessionPath.getAbsolutePath()+File.separatorChar+"outputs"+File.separatorChar+fileName);
             if(outputFile.exists()){
-            	DataSource ds = new EncryptedFileDataSource(outputFile,Sessions.getSessionKey(sessionTicket));
+//            	DataSource ds = new FileDataSource(outputFile,Sessions.getSessionKey(sessionTicket));
+            	DataSource ds = new FileDataSource(outputFile);
             	DataHandler dh = new DataHandler(ds);
             	
             	MessageContext msgContext= MessageContext.getCurrentContext();
@@ -70,7 +72,6 @@ public class DownloadImpl
             e.printStackTrace();
         } catch (SOAPException e) {
 			e.printStackTrace();
-		}        
-        return new byte[0];
+		}
     }
 }

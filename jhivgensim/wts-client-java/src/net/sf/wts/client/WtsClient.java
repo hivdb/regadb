@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.SecretKeySpec;
 import javax.mail.util.ByteArrayDataSource;
@@ -27,6 +28,7 @@ import net.sf.wts.client.util.AxisClient;
 import net.sf.wts.client.util.Encrypt;
 import net.sf.wts.client.util.EncryptedFileDataSource;
 import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 public class WtsClient 
 {
@@ -87,6 +89,7 @@ public class WtsClient
 
 		try {
 			sessionKey = new SecretKeySpec((new BASE64Decoder()).decodeBuffer(encodedSessionKey),"AES");
+			System.out.println((new BASE64Encoder()).encode(sessionKey.getEncoded()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -157,25 +160,26 @@ public class WtsClient
 
 		while (iterator.hasNext()) {
 			try {
-				AttachmentPart ap = (AttachmentPart)iterator.next();
+				AttachmentPart ap = (AttachmentPart) iterator.next();
+				System.out.println("attach");
 				InputStream is = ap.getDataHandler().getDataSource().getInputStream();
-				OutputStream os = new CipherOutputStream(new FileOutputStream(toWrite),Encrypt.getDecryptCipher(sessionKey));
+//				OutputStream os = new CipherOutputStream(new FileOutputStream(toWrite),Encrypt.getDecryptCipher(sessionKey));
+				OutputStream os = new FileOutputStream(toWrite);
 				byte[] buffer = new byte[4096];
 				int read = 0;
 				while ((read = is.read(buffer)) > 0) {
-					System.out.println(read);
+					System.out.println(new String(buffer));
 					os.write(buffer, 0, read);
 					os.flush();
 				}
 				os.close();
 			}
 			catch (Exception e) {
-				//e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}
 
-	// datahandler or -source should take care of encryption? 
 	public void upload(String sessionTicket, String serviceName, String fileName, DataHandler dh) throws RemoteException, MalformedURLException
 	{
 		axisService.removeParameters();
@@ -235,7 +239,7 @@ public class WtsClient
 //		}
 //		upload(sessionTicket, serviceName, fileName, Encrypt.encrypt(sessionKey, array));
 
-		DataSource ds = new EncryptedFileDataSource(localLocation,sessionKey);
+		DataSource ds = new FileDataSource(localLocation);
 		DataHandler dh = new DataHandler(ds);
 		upload(sessionTicket, serviceName, fileName, dh);
 	}
@@ -405,18 +409,11 @@ public class WtsClient
 			wc.start(sessionTicket, serviceName);
 			String status = wc.monitorStatus(sessionTicket, serviceName);			
 			while (!status.equals("ENDED_SUCCES")) {
-				status = wc.monitorStatus(sessionTicket, serviceName);				
+				status = wc.monitorStatus(sessionTicket, serviceName);			
 			}
-
-			try {
-				Thread.sleep(1500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			
 			wc.download(sessionTicket, serviceName, outputFileName, toWrite);			
-			wc.closeSession(sessionTicket, serviceName);
+//			wc.closeSession(sessionTicket, serviceName);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

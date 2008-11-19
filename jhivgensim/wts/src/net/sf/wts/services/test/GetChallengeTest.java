@@ -12,6 +12,7 @@ import java.security.SignatureException;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import net.sf.wts.services.CloseSessionImpl;
 import net.sf.wts.services.GetChallengeImpl;
 import net.sf.wts.services.LoginImpl;
 import net.sf.wts.services.UploadImpl;
@@ -72,10 +73,12 @@ public class GetChallengeTest {
 
 
 			String sessionTicket = decryptedAnswer.substring(0, decryptedAnswer.lastIndexOf("_"));
-			byte[] file = FileUtils.readFileToByteArray(new File("/home/gbehey0/wts/input2"));
-			byte[] enc = Encrypt.encrypt(sessionKey, file);
-			(new UploadImpl()).exec(sessionTicket, "regadb-align", "region", enc);
+//			byte[] file = FileUtils.readFileToByteArray(new File("/home/gbehey0/wts/input2"));
+//			byte[] enc = Encrypt.encrypt(sessionKey, file);
+//			(new UploadImpl()).exec(sessionTicket, "regadb-align", "region", enc);
 			System.out.println((new BASE64Encoder()).encode(sessionKey.getEncoded()));
+			
+			(new CloseSessionImpl()).exec(sessionTicket,"regadb-align");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
