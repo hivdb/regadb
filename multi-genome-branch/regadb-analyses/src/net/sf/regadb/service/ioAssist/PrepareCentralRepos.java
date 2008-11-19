@@ -108,9 +108,6 @@ public class PrepareCentralRepos
         
         resTest = createResistanceTest("RegaHIV2V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("RegaHIV2V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2BGenome());
-        export.writeTopTest(resTest, tests);
-
         
         File testsFile = new File(outputDir +File.separatorChar+"tests-genomes.xml");
         writeXMLFile(testsFile, tests);
