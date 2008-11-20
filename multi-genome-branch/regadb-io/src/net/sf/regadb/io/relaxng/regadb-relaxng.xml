@@ -583,7 +583,12 @@
   <define name="net.sf.regadb.db.AaSequence">
     <optional>
       <element name="protein">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.Protein" />
+        </optional>
       </element>
     </optional>
     <optional>
@@ -610,6 +615,39 @@
         </element>
       </zeroOrMore>
     </element>
+  </define>
+  <define name="net.sf.regadb.db.Protein">
+    <optional>
+      <element name="openReadingFrame">
+        <element name="reference">
+          <data type="int" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+        </element>
+        <optional>
+          <ref name="net.sf.regadb.db.OpenReadingFrame" />
+        </optional>
+      </element>
+    </optional>
+    <optional>
+      <element name="abbreviation">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
+  </define>
+  <define name="net.sf.regadb.db.OpenReadingFrame">
+    <optional>
+      <element name="genome">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
+      </element>
+    </optional>
+    <optional>
+      <element name="name">
+        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <param name="maxLength">50</param>
+        </data>
+      </element>
+    </optional>
   </define>
   <define name="net.sf.regadb.db.AaMutation">
     <element name="mutationPosition">

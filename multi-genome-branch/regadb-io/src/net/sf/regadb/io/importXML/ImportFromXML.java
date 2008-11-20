@@ -7,7 +7,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.IOException;
 
 public class ImportFromXML extends ImportFromXMLBase {
-    enum ParseState { TopLevel, statePatient, stateDataset, stateTestResult, stateTest, stateAnalysis, stateAnalysisData, statePatientEventValue, stateTestType, stateTestObject, stateTestNominalValue, statePatientAttributeValue, stateAttribute, stateAttributeGroup, stateAttributeNominalValue, stateViralIsolate, stateNtSequence, stateAaSequence, stateEvent, stateAaMutation, stateAaInsertion, stateTherapy, stateTherapyCommercial, stateTherapyGeneric, stateValueType, stateEventNominalValue };
+    enum ParseState { TopLevel, statePatient, stateDataset, stateTestResult, stateTest, stateAnalysis, stateAnalysisData, statePatientEventValue, stateTestType, stateTestObject, stateTestNominalValue, statePatientAttributeValue, stateAttribute, stateAttributeGroup, stateAttributeNominalValue, stateViralIsolate, stateNtSequence, stateAaSequence, stateEvent, stateProtein, stateOpenReadingFrame, stateAaMutation, stateAaInsertion, stateTherapy, stateTherapyCommercial, stateTherapyGeneric, stateValueType, stateEventNominalValue };
 
     public ImportFromXML() {
         parseStateStack.add(ParseState.TopLevel);
@@ -61,6 +61,12 @@ public class ImportFromXML extends ImportFromXMLBase {
     private Map<String, Event> refEventMap = new HashMap<String, Event>();
     private String referenceEvent = null;
     private Set<Event> syncedEventSet = new HashSet<Event>();
+    private Map<String, Protein> refProteinMap = new HashMap<String, Protein>();
+    private String referenceProtein = null;
+    private Set<Protein> syncedProteinSet = new HashSet<Protein>();
+    private Map<String, OpenReadingFrame> refOpenReadingFrameMap = new HashMap<String, OpenReadingFrame>();
+    private String referenceOpenReadingFrame = null;
+    private Set<OpenReadingFrame> syncedOpenReadingFrameSet = new HashSet<OpenReadingFrame>();
     private Map<String, ValueType> refValueTypeMap = new HashMap<String, ValueType>();
     private String referenceValueType = null;
     private Set<ValueType> syncedValueTypeSet = new HashSet<ValueType>();
@@ -143,6 +149,10 @@ public class ImportFromXML extends ImportFromXMLBase {
     private ValueType fieldEvent_valueType;
     private String fieldEvent_name;
     private Set<EventNominalValue> fieldEvent_eventNominalValues;
+    private OpenReadingFrame fieldProtein_openReadingFrame;
+    private String fieldProtein_abbreviation;
+    private Genome fieldOpenReadingFrame_genome;
+    private String fieldOpenReadingFrame_name;
     private short fieldAaMutation_mutationPosition;
     private String fieldAaMutation_aaReference;
     private String fieldAaMutation_aaMutation;
@@ -318,6 +328,18 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldEvent_valueType = null;
             fieldEvent_name = nullValueString();
             fieldEvent_eventNominalValues = new HashSet<EventNominalValue>();
+        } else if ("Protein".equals(qName)) {
+        } else if ("proteins-el".equals(qName)|| "protein".equals(qName)) {
+            pushState(ParseState.stateProtein);
+            referenceProtein = null;
+            fieldProtein_openReadingFrame = null;
+            fieldProtein_abbreviation = nullValueString();
+        } else if ("OpenReadingFrame".equals(qName)) {
+        } else if ("openReadingFrames-el".equals(qName)|| "openReadingFrame".equals(qName)) {
+            pushState(ParseState.stateOpenReadingFrame);
+            referenceOpenReadingFrame = null;
+            fieldOpenReadingFrame_genome = null;
+            fieldOpenReadingFrame_name = nullValueString();
         } else if ("AaMutation".equals(qName)) {
         } else if ("aaMutations-el".equals(qName)|| "aaMutations-el".equals(qName)) {
             pushState(ParseState.stateAaMutation);
@@ -1354,7 +1376,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                         topLevelObjects.add(elAaSequence);
                 }
             } else if ("protein".equals(qName)) {
-                fieldAaSequence_protein = resolveProtein(value == null ? null : value.toString());
             } else if ("firstAaPos".equals(qName)) {
                 fieldAaSequence_firstAaPos = parseshort(value == null ? null : value.toString());
             } else if ("lastAaPos".equals(qName)) {
@@ -1420,6 +1441,109 @@ public class ImportFromXML extends ImportFromXMLBase {
             } else if ("eventNominalValues".equals(qName)) {
             } else if ("reference".equals(qName)) {
                 referenceEvent = (value == null ? null : value.toString());
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("Protein".equals(qName)) {
+        } else if (currentState() == ParseState.stateProtein) {
+            if ("proteins-el".equals(qName)|| "protein".equals(qName)) {
+                popState();
+                Protein elProtein = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == Protein.class) {
+                        elProtein = new Protein();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateAaSequence) {
+                    if (referenceProtein != null) { 
+                        elProtein = refProteinMap.get(referenceProtein);
+                        referenceResolved = elProtein != null;
+                    }
+                    if (!referenceResolved) {
+                        elProtein = new Protein();
+                        if (referenceProtein!= null)
+                            refProteinMap.put(referenceProtein, elProtein);
+                    }
+                    fieldAaSequence_protein = elProtein;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldProtein_openReadingFrame != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elProtein.setOpenReadingFrame(fieldProtein_openReadingFrame);
+                }
+                if (referenceResolved && fieldProtein_abbreviation != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elProtein.setAbbreviation(fieldProtein_abbreviation);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elProtein);
+                    else
+                        topLevelObjects.add(elProtein);
+                }
+            } else if ("openReadingFrame".equals(qName)) {
+            } else if ("abbreviation".equals(qName)) {
+                fieldProtein_abbreviation = parseString(value == null ? null : value.toString());
+            } else if ("reference".equals(qName)) {
+                referenceProtein = (value == null ? null : value.toString());
+            } else {
+                //throw new SAXException(new ImportException("Unrecognized element: " + qName));
+                System.err.println("Unrecognized element: " + qName);
+            }
+        } else if ("OpenReadingFrame".equals(qName)) {
+        } else if (currentState() == ParseState.stateOpenReadingFrame) {
+            if ("openReadingFrames-el".equals(qName)|| "openReadingFrame".equals(qName)) {
+                popState();
+                OpenReadingFrame elOpenReadingFrame = null;
+                boolean referenceResolved = false;
+                if (currentState() == ParseState.TopLevel) {
+                    if (topLevelClass == OpenReadingFrame.class) {
+                        elOpenReadingFrame = new OpenReadingFrame();
+                    } else {
+                        throw new SAXException(new ImportException("Unexpected top level object: " + qName));
+                    }
+                } else if (currentState() == ParseState.stateProtein) {
+                    if (referenceOpenReadingFrame != null) { 
+                        elOpenReadingFrame = refOpenReadingFrameMap.get(referenceOpenReadingFrame);
+                        referenceResolved = elOpenReadingFrame != null;
+                    }
+                    if (!referenceResolved) {
+                        elOpenReadingFrame = new OpenReadingFrame();
+                        if (referenceOpenReadingFrame!= null)
+                            refOpenReadingFrameMap.put(referenceOpenReadingFrame, elOpenReadingFrame);
+                    }
+                    fieldProtein_openReadingFrame = elOpenReadingFrame;
+                } else {
+                    throw new SAXException(new ImportException("Nested object problem: " + qName));
+                }
+                if (referenceResolved && fieldOpenReadingFrame_genome != null)
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elOpenReadingFrame.setGenome(fieldOpenReadingFrame_genome);
+                }
+                if (referenceResolved && fieldOpenReadingFrame_name != nullValueString())
+                    throw new SAXException(new ImportException("Cannot modify resolved reference"));
+                if (!referenceResolved) {
+                    elOpenReadingFrame.setName(fieldOpenReadingFrame_name);
+                }
+                if (currentState() == ParseState.TopLevel) {
+                    if (importHandler != null)
+                        importHandler.importObject(elOpenReadingFrame);
+                    else
+                        topLevelObjects.add(elOpenReadingFrame);
+                }
+            } else if ("genome".equals(qName)) {
+                fieldOpenReadingFrame_genome = resolveGenome(value == null ? null : value.toString());
+            } else if ("name".equals(qName)) {
+                fieldOpenReadingFrame_name = parseString(value == null ? null : value.toString());
+            } else if ("reference".equals(qName)) {
+                referenceOpenReadingFrame = (value == null ? null : value.toString());
             } else {
                 //throw new SAXException(new ImportException("Unrecognized element: " + qName));
                 System.err.println("Unrecognized element: " + qName);
@@ -1979,6 +2103,22 @@ public class ImportFromXML extends ImportFromXMLBase {
     @SuppressWarnings("unchecked")
     public List<Event> readEvents(InputSource source, ImportHandler<Event> handler) throws SAXException, IOException {
         topLevelClass = Event.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Protein> readProteins(InputSource source, ImportHandler<Protein> handler) throws SAXException, IOException {
+        topLevelClass = Protein.class;
+        importHandler = handler;
+        parse(source);
+        return topLevelObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<OpenReadingFrame> readOpenReadingFrames(InputSource source, ImportHandler<OpenReadingFrame> handler) throws SAXException, IOException {
+        topLevelClass = OpenReadingFrame.class;
         importHandler = handler;
         parse(source);
         return topLevelObjects;
@@ -3565,12 +3705,44 @@ public class ImportFromXML extends ImportFromXMLBase {
         boolean changed = false;
         if (o == null)
             return changed;
-        if (dbo != null) {
-            if (!equals(dbo.getProtein(), o.getProtein())) {
-                if (!simulate)
-                    dbo.setProtein(o.getProtein());
-                log.append(Describe.describe(o) + ": changed protein\n");
-                changed = true;
+        {
+            Protein dbf = null;
+            if (dbo == null) {
+                if (o.getProtein() != null)
+                    dbf = Retrieve.retrieve(t, o.getProtein());
+            } else {
+                if (Equals.isSameProtein(o.getProtein(), dbo.getProtein()))
+                    dbf = dbo.getProtein();
+                else
+                    dbf = Retrieve.retrieve(t, o.getProtein());
+            }
+            if (o.getProtein() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getProtein()) + "\n");
+                    syncPair(t, o.getProtein(), (Protein)null, syncMode, simulate);
+                    changed = true;
+                    dbf = o.getProtein();
+                } else {
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (syncPair(t, o.getProtein(), dbf, syncMode, true)) {
+                            throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
+                        }
+                    } else
+                    if (syncPair(t, o.getProtein(), dbf, syncMode, simulate)) changed = true;
+                }
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setProtein(dbf);
+                }
+            } else {
+                if (dbf != dbo.getProtein()) {
+                    if (!simulate)
+                        dbo.setProtein(dbf);
+                    log.append(Describe.describe(o) + ": changed protein\n");
+                    changed = true;
+                }
             }
         }
         if (dbo != null) {
@@ -3772,6 +3944,92 @@ public class ImportFromXML extends ImportFromXMLBase {
                         t.delete(dbe);
                     }
                 }
+            }
+        }
+        return changed;
+    }
+
+    public boolean syncPair(Transaction t, Protein o, Protein dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedProteinSet.contains(o))
+            return false;
+        else
+            syncedProteinSet.add(o);
+        boolean changed = false;
+        if (o == null)
+            return changed;
+        {
+            OpenReadingFrame dbf = null;
+            if (dbo == null) {
+                if (o.getOpenReadingFrame() != null)
+                    dbf = Retrieve.retrieve(t, o.getOpenReadingFrame());
+            } else {
+                if (Equals.isSameOpenReadingFrame(o.getOpenReadingFrame(), dbo.getOpenReadingFrame()))
+                    dbf = dbo.getOpenReadingFrame();
+                else
+                    dbf = Retrieve.retrieve(t, o.getOpenReadingFrame());
+            }
+            if (o.getOpenReadingFrame() != null) {
+                if (dbf == null) {
+                    log.append("New " + Describe.describe(o.getOpenReadingFrame()) + "\n");
+                    syncPair(t, o.getOpenReadingFrame(), (OpenReadingFrame)null, syncMode, simulate);
+                    changed = true;
+                    dbf = o.getOpenReadingFrame();
+                } else {
+                    if (syncMode == SyncMode.Update || syncMode == SyncMode.Clean) {
+                        if (syncPair(t, o.getOpenReadingFrame(), dbf, syncMode, true)) {
+                            throw new ImportException("Imported " + Describe.describe(o) + " is different, synchronize them first !");
+                        }
+                    } else
+                    if (syncPair(t, o.getOpenReadingFrame(), dbf, syncMode, simulate)) changed = true;
+                }
+            }
+            if (dbo == null) {
+                if (dbf != null) {
+                    if (!simulate)
+                        o.setOpenReadingFrame(dbf);
+                }
+            } else {
+                if (dbf != dbo.getOpenReadingFrame()) {
+                    if (!simulate)
+                        dbo.setOpenReadingFrame(dbf);
+                    log.append(Describe.describe(o) + ": changed openReadingFrame\n");
+                    changed = true;
+                }
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getAbbreviation(), o.getAbbreviation())) {
+                if (!simulate)
+                    dbo.setAbbreviation(o.getAbbreviation());
+                log.append(Describe.describe(o) + ": changed abbreviation\n");
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    public boolean syncPair(Transaction t, OpenReadingFrame o, OpenReadingFrame dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        if (syncedOpenReadingFrameSet.contains(o))
+            return false;
+        else
+            syncedOpenReadingFrameSet.add(o);
+        boolean changed = false;
+        if (o == null)
+            return changed;
+        if (dbo != null) {
+            if (!equals(dbo.getGenome(), o.getGenome())) {
+                if (!simulate)
+                    dbo.setGenome(o.getGenome());
+                log.append(Describe.describe(o) + ": changed genome\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.getName(), o.getName())) {
+                if (!simulate)
+                    dbo.setName(o.getName());
+                log.append(Describe.describe(o) + ": changed name\n");
+                changed = true;
             }
         }
         return changed;

@@ -15,6 +15,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
@@ -27,7 +28,7 @@ import net.sf.regadb.db.ValueType;
 public class Retrieve {
 
     public static Protein retrieve(Transaction t, Protein p) {
-        return t.getProtein(p.getProteinIi());
+        return t.getProtein(retrieve(t,p.getOpenReadingFrame()),p.getAbbreviation());
     }	
 	
     public static Test retrieve(Transaction t, Test test) {
@@ -86,5 +87,14 @@ public class Retrieve {
 
     public static DrugCommercial retrieve(Transaction t, DrugCommercial o) {
         return t.getCommercialDrug(o.getName());
+    }
+
+    public static OpenReadingFrame retrieve(Transaction t,
+            OpenReadingFrame openReadingFrame) {
+        return t.getOpenReadingFrame(retrieve(t,openReadingFrame.getGenome()), openReadingFrame.getName());
+    }
+
+    public static Genome retrieve(Transaction t, Genome genome) {
+        return t.getGenome(genome.getOrganismName());
     }
 }

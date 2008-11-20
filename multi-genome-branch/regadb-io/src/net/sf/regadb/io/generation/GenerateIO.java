@@ -121,10 +121,22 @@ public class GenerateIO
         rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"TestNominalValue", "testType"));
         rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Analysis", "tests"));
         rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"AnalysisData", "analysis"));
+
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"DrugGeneric", "genomes"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Genome", "drugGenerics"));
+        
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"OpenReadingFrame", "referenceSequence"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"OpenReadingFrame", "description"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"OpenReadingFrame", "proteins"));
+        
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Protein", "fullName"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Protein", "splicingPositions"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Protein", "startPosition"));
+        rules.fieldsToBeIgnored_.add(new Pair<String, String>(dbPackage+"Protein", "stopPosition"));
         
         rules.stringRepresentedFields_.add(dbPackage + "DrugGeneric");
         rules.stringRepresentedFields_.add(dbPackage + "DrugCommercial");
-        rules.stringRepresentedFields_.add(dbPackage + "Protein");
+        //rules.stringRepresentedFields_.add(dbPackage + "Protein");
         rules.stringRepresentedFields_.add(dbPackage + "AnalysisType");
         rules.stringRepresentedFields_.add(dbPackage + "TherapyMotivation");
         rules.stringRepresentedFields_.add(dbPackage + "Genome");
@@ -155,6 +167,10 @@ public class GenerateIO
         rules.nominalValues_.add(dbPackage + "TestNominalValue");
         rules.nominalValues_.add(dbPackage + "AttributeNominalValue");
         rules.nominalValues_.add(dbPackage + "EventNominalValue");
+        
+        rules.pointerClasses_.add(dbPackage + "Protein");
+        rules.pointerClasses_.add(dbPackage + "OpenReadingFrame");
+        rules.pointerClasses_.add(dbPackage + "Genome");
         
         return rules;
     }
