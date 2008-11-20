@@ -265,13 +265,13 @@ public class ImportEgazMonizHiv2 {
 					}
                     if (!vl.equals("") && !vl.equals("0")) {
                         TestResult t = p.createTestResult(StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome()));
-                        t.setValue(vl);
+                        t.setValue("="+ vl);
                         t.setTestDate(d);
                         t.setSampleId(sampleId);
                     }
                     if (!vl_log10.equals("") && !vl_log10.equals("0")) {
                         TestResult t = p.createTestResult(StandardObjects.getGenericTest(StandardObjects.getViralLoadLog10Description(), StandardObjects.getHiv2AGenome()));
-                        t.setValue(vl_log10);
+                        t.setValue("="+ vl_log10);
                         t.setTestDate(d);
                         t.setSampleId(sampleId);
                     }
