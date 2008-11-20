@@ -89,6 +89,7 @@ public class ParseAll {
         
         ParsePatient parsePatient = new ParsePatient();
         parsePatient.parse( new File(patientenFile),
+        					new File(eclipseFileMakerMappingDir + "country_of_origin.mapping"),
                             new File(eclipseFileMakerMappingDir + "geographic_origin.mapping"),
                             new File(eclipseFileMakerMappingDir + "transmission_group.mapping"), patientIdPatients);
         

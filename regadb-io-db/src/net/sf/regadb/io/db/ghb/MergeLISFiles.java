@@ -115,7 +115,7 @@ public class MergeLISFiles {
                 
         File[] files = dir.listFiles();
         for(final File f : files) {
-            if(f.getAbsolutePath().endsWith(".txt")) {
+            if(f.getAbsolutePath().endsWith(".txt") && f.getName().startsWith("GHB")){
                 pf.process(f, new ILineHandler() {
                     public void handleLine(String line, int counter) {
                         if(!line.startsWith("EADnr\tEMDnr") && line.length()!=0) {
@@ -162,11 +162,15 @@ public class MergeLISFiles {
         char sex = line.get(headers.indexOf("geslacht")).toUpperCase().charAt(0);
         String nation = line.get(headers.indexOf("nation")).toUpperCase();
         
+        
         Patient p = patients.get(ead);
         if(p==null){
             p = new Patient();
             p.setPatientId(ead);
             patients.put(ead, p);
+            
+            p.setFirstName(line.get(headers.indexOf("p.voornaam")));
+            p.setLastName(line.get(headers.indexOf("p.naam")));
         }
         
         p.setBirthDate(birthDate);
@@ -214,16 +218,16 @@ public class MergeLISFiles {
             }
             uniqueTests.add(line.get(headers.indexOf("aanvraagTestNaam")));
             
+            String value = line.get(headers.indexOf("reeel"));
+            String result = line.get(headers.indexOf("resultaat"));
+            
             //work with a mapping files
-            if(!line.get(headers.indexOf("reeel")).equals("")) {
+            if(!value.equals("") || !result.equals("")) {
                 //TODO change this to handle all tests from the moment the LIS query returns only HIV infected patients
                 
                 String name = line.get(headers.indexOf("aanvraagTestNaam"));
-                String value = line.get(headers.indexOf("reeel"));
                 String sign = line.get(headers.indexOf("relatie"));
                 String unit = line.get(headers.indexOf("eenheden"));
-                String testCode = line.get(headers.indexOf("testCode"));
-
 
 //                if(name.contains("Absolute T4-lymfocytose (bloed)oude code")){
 //                	StandardObjects.getGeneric;
@@ -315,7 +319,9 @@ public class MergeLISFiles {
                 	if(unit.contains("log"))
                 		storeTest(StandardObjects.getGenericHiv1ViralLoadLog10Test(), value, sampleDate, p, correctId);
                 	else if(unit.contains("copies"))
-                		storeViralLoad(line.get(headers.indexOf("relatie")) + Double.parseDouble(value), sampleDate, p, correctId);
+                		storeViralLoad(sign + Double.parseDouble(value), sampleDate, p, correctId);
+                	else if(result.contains("geen HIV RNA gedetecteerd (<50 copies/mL)"))
+                		storeViralLoad("<50", sampleDate, p, correctId);
                 }
                 if(name.contains("HIV-confirmatieserologie")){//result?
 //                	storeTest(StandardObjects.getHiv1SeroconversionTest(),
@@ -448,17 +454,26 @@ public class MergeLISFiles {
     }
     
     private void storeTest(Test test, String value, Date date, Patient p, String sampleId){
+    	if(value == null || value.trim().length() == 0)
+    		return;
+    	
     	if(duplicateTestResult(value+"", date, p, sampleId, test))
     		return;
     	
+ 	
     	TestResult t = p.createTestResult(test);
     	String s = value;
     	TestNominalValue tnv=null;
     	
     	ValueTypes vt = ValueTypes.getValueType(test.getTestType().getValueType()); 
     	if(vt == ValueTypes.NUMBER){
-    		s = s.replace("<", "").replace(">", "").replace("=", "");
-    		s = Double.parseDouble(s) +"";
+    		try{
+	    		s = s.replace("<", "").replace(">", "").replace("=", "");
+	    		s = ""+ Double.parseDouble(s);
+    		}
+    		catch(Exception e){
+    			return;
+    		}
     	}
     	else if(vt == ValueTypes.LIMITED_NUMBER){
     	}
