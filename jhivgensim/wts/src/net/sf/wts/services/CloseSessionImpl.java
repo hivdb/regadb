@@ -35,8 +35,7 @@ public class CloseSessionImpl
         catch (IOException e) 
         {
             e.printStackTrace();
-        }
-        
+        }        
         Sessions.removeSessionTicket(sessionTicket);
     }
 }

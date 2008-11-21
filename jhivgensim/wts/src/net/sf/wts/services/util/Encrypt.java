@@ -240,5 +240,10 @@ public class Encrypt {
 		byte raw[] = md.digest();
 		String hash = (new BASE64Encoder()).encode(raw);
 		return hash;
-	}	
+	}
+	
+	public static void main(String args[]){
+		System.out.println(Encrypt.encryptMD5("admin"));
+		System.out.println(Encrypt.encryptMD5("bla123"));
+	}
 }

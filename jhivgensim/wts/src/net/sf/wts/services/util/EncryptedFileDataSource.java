@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.Key;
 
 import javax.activation.FileDataSource;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 
 public class EncryptedFileDataSource extends FileDataSource {
 

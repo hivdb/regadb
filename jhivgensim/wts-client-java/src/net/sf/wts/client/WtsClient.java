@@ -17,10 +17,8 @@ import java.util.Iterator;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.SecretKeySpec;
-import javax.mail.util.ByteArrayDataSource;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPMessage;
 
@@ -98,46 +96,8 @@ public class WtsClient
 		return decryptedAnswer.substring(0, decryptedAnswer.lastIndexOf("_"));
 	}	
 
-	@Deprecated //uses byte arrays
-	public byte[] download(String sessionTicket, String serviceName, String fileName) throws RemoteException, MalformedURLException
-	{
-		axisService.removeParameters();
-		axisService.setServiceUrl(url_, "Download");
-
-		axisService.addParameter(sessionTicket);
-		axisService.addParameter(serviceName);
-		axisService.addParameter(fileName);
-
-		byte[] array = null;
-		try 
-		{
-			array = axisService.callAndGetByteArrayResult();
-		} 
-		catch (RemoteException e) 
-		{
-			e.printStackTrace();
-		}
-		return Encrypt.decrypt(sessionKey, array);
-	}
-
 	public void download(String sessionTicket, String serviceName, String fileName, File toWrite) throws RemoteException, MalformedURLException
 	{
-		//		byte[] array = download(sessionTicket, serviceName, fileName);
-		//		
-		//		if(array!=null)
-		//		{
-		//			try 
-		//			{
-		//				
-		//				FileUtils.writeByteArrayToFile(toWrite, Encrypt.decrypt(sessionKey, array));
-		//				
-		//			} 
-		//			catch (IOException e) 
-		//			{
-		//				e.printStackTrace();
-		//			}
-		//		}		
-
 		axisService.removeParameters();
 		axisService.setServiceUrl(url_, "Download");
 
@@ -161,10 +121,9 @@ public class WtsClient
 		while (iterator.hasNext()) {
 			try {
 				AttachmentPart ap = (AttachmentPart) iterator.next();
-				System.out.println("attach");
 				InputStream is = ap.getDataHandler().getDataSource().getInputStream();
-//				OutputStream os = new CipherOutputStream(new FileOutputStream(toWrite),Encrypt.getDecryptCipher(sessionKey));
-				OutputStream os = new FileOutputStream(toWrite);
+				OutputStream os = new CipherOutputStream(new FileOutputStream(toWrite),Encrypt.getDecryptCipher(sessionKey));
+				
 				byte[] buffer = new byte[4096];
 				int read = 0;
 				while ((read = is.read(buffer)) > 0) {					
@@ -199,46 +158,9 @@ public class WtsClient
 		}
 	}
 
-	//encrypt file[] or through data source
-	public void upload(String sessionTicket, String serviceName, String fileName, byte[] file) throws RemoteException, MalformedURLException
-	{
-		//		axisService.removeParameters();
-		//		axisService.setServiceUrl(url_, "Upload");
-		//
-		//		axisService.addParameter(sessionTicket);
-		//		axisService.addParameter(serviceName);
-		//		axisService.addParameter(fileName);
-		//		axisService.addParameter(Encrypt.encrypt(sessionKey, file));
-		//
-		//		try 
-		//		{
-		//			axisService.call();
-		//		} 
-		//		catch (RemoteException e) 
-		//		{
-		//			e.printStackTrace();
-		//		}
-
-
-		DataSource ds = new ByteArrayDataSource(file, null);
-		DataHandler dh = new DataHandler(ds);
-		upload(sessionTicket, serviceName, fileName, dh);
-	}
-
 	public void upload(String sessionTicket, String serviceName, String fileName, File localLocation) throws RemoteException, MalformedURLException
 	{
-//		byte[] array = null;
-//		try 
-//		{
-//			array = FileUtils.readFileToByteArray(localLocation);;
-//		} 
-//		catch (IOException e) 
-//		{
-//			e.printStackTrace();
-//		}
-//		upload(sessionTicket, serviceName, fileName, Encrypt.encrypt(sessionKey, array));
-
-		DataSource ds = new FileDataSource(localLocation);
+		DataSource ds = new EncryptedFileDataSource(localLocation,sessionKey);
 		DataHandler dh = new DataHandler(ds);
 		upload(sessionTicket, serviceName, fileName, dh);
 	}

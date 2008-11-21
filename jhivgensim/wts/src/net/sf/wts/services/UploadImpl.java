@@ -50,18 +50,6 @@ public class UploadImpl
 		if(!found)
 			throw new RemoteException("Service \"" + serviceName + "\" does not accept inputfile with name \""+ fileName +"\"");
 
-		//        try 
-		//        {
-		//        	byte[] decryptedFile = Encrypt.decrypt(Sessions.getSessionKey(sessionTicket), file);
-		//        	FileUtils.writeByteArrayToFile(new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName), decryptedFile);
-		//        } 
-		//        catch (Exception e) 
-		//        {
-		//            e.printStackTrace();
-		//        }
-
-	
-
 		File toWrite = new File(sessionPath.getAbsolutePath()+File.separatorChar+"inputs"+File.separatorChar+fileName);
 
 		MessageContext msgContext= MessageContext.getCurrentContext();
