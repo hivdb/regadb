@@ -1602,7 +1602,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         
         ///////////////////////////////////////
         // splicing position
-        catalog.addAll(getPropertyComparisonClauses("SplicingPosition", "position"));
+        catalog.addAll(getPropertyComparisonClauses("SplicingPosition", "ntPosition"));
         catalog.addAll(getRelationClauses("SplicingPosition", "Protein"));
         
 
