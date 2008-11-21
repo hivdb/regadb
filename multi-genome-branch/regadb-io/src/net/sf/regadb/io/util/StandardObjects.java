@@ -423,7 +423,7 @@ public class StandardObjects {
     public static TestType getHiv1ViralLoadLog10TestType() {
         return getGenericHiv1ViralLoadLog10Test().getTestType();
     }
-    public static boolean isHiv1ViralLoad(TestType tt) {
+    public static boolean isViralLoad(TestType tt) {
         return getViralLoadDescription().equals(tt.getDescription());
     }
     
