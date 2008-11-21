@@ -1,9 +1,11 @@
-package org.sf.hivgensim.queries.framework;
+package net.sf.hivgensim.queries.framework;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -81,7 +83,7 @@ public abstract class QueryUtils {
 		return result;
 	}
 
-	public static Set<NtSequence> getLatestExperiencedSequences(Patient p, Therapy t){
+	public static Set<NtSequence> getLatestSequencesDuringTherapy(Patient p, Therapy t){
 		Date stop = t.getStopDate();
 		Date start = t.getStartDate();
 		Date sampleDate;
@@ -97,7 +99,35 @@ public abstract class QueryUtils {
 		}		
 		return latestVi == null ? null : latestVi.getNtSequences(); 
 	}
-
+	
+	public static Set<NtSequence> getAllSequencesDuringTherapy(Patient p, Therapy t){
+		Set<NtSequence> result = new HashSet<NtSequence>();
+		Date stop = t.getStopDate();
+		Date start = t.getStartDate();
+		Date sampleDate;
+		for(ViralIsolate vi : p.getViralIsolates()){
+			sampleDate = vi.getSampleDate();
+			if(sampleDate != null && start != null && stop!=null 
+					&& sampleDate.after(start) && !sampleDate.after(stop) // sample is taken during therapy
+//					&& (sampleDate.after(start) || start.equals(stop)) // check if sample is not taken in begin of therapy 
+			){// maybe later add a certain interval but what to do with start=stop
+				result.addAll(vi.getNtSequences());
+			}
+		}		
+		return result; 
+	}
+	
+	public static boolean isGoodExperienceTherapy(Therapy t, String[] druggenerics, Set<String> history){
+		boolean result = true;
+		//check if all wanted drugs are included in the therapy or in the history
+		for(String drug : druggenerics){
+			if(!history.contains(drug)) {
+				result=false;															
+			}
+		}		
+		return result && isGoodPreviousTherapy(t,druggenerics);
+	}
+	
 	public static boolean isGoodExperienceTherapy(Therapy t, String[] druggenerics){
 		boolean result = true;
 		//check if all wanted drugs are included in the therapy
@@ -106,7 +136,7 @@ public abstract class QueryUtils {
 				result = false;											
 			}
 		}		
-		return result;
+		return result && isGoodPreviousTherapy(t,druggenerics);
 	}
 
 	public static boolean isGoodPreviousTherapy(Therapy t, String[] druggenerics){
@@ -132,6 +162,10 @@ public abstract class QueryUtils {
 			}
 		}
 		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+			//not a good therapy if we don't know the therapy:
+			if(tg.getId().getDrugGeneric().getGenericId().equals("Unknown")){
+				return false;
+			}
 			for(DrugGeneric dg2 : tg.getId().getDrugGeneric().getDrugClass().getDrugGenerics()){ // for every generic drug, get all generic drugs belonging to the same class
 				for(String dgcheck : druggenerics){
 					if(dg2.getGenericId().equals(dgcheck)){ 
@@ -148,7 +182,7 @@ public abstract class QueryUtils {
 						return false;
 				}
 			}
-		}
+		}		
 		return ok;
 	}
 

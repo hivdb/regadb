@@ -1,10 +1,10 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryImpl;
 
 public class GetPatientsFromDataset extends QueryImpl<Patient, Patient> {
 	

@@ -1,11 +1,11 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
 import java.util.Date;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryImpl;
-import org.sf.hivgensim.queries.framework.QueryUtils;
 
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryImpl;
+import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -15,11 +15,11 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 	
 	String[] drugclasses = new String[]{"Unknown","PI","NRTI","NNRTI","INI","EI"};
 
-	protected GetNaiveSequences(Query<Patient> inputQuery) {
+	public GetNaiveSequences(Query<Patient> inputQuery) {
 		super(inputQuery);
 	}
 
-	protected GetNaiveSequences(Query<Patient> inputQuery, String[] drugclasses) {
+	public GetNaiveSequences(Query<Patient> inputQuery, String[] drugclasses) {
 		super(inputQuery);
 		this.drugclasses = drugclasses;
 	}
@@ -37,7 +37,10 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 								//what to do if start == stop == sample ???
 								//for now consider them non-naive 
 								(t.getStartDate().equals(sampleDate) && t.getStopDate().equals(sampleDate))
-							){ 
+							){
+							if(QueryUtils.hasClassExperience("Unknown", t)){
+								seqIsNaive = false;
+							}
 							for(String dc : drugclasses){
 								if(QueryUtils.hasClassExperience(dc,t)){
 									seqIsNaive = false;
@@ -47,6 +50,7 @@ public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
 					}
 					if(seqIsNaive){
 						//how to avoid having seqs from same patient?
+						//not necessary for the moment
 						outputList.add(seq);
 					}
 				}

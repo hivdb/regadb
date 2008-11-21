@@ -1,9 +1,10 @@
-package org.sf.hivgensim.queries.input;
+package net.sf.hivgensim.queries.input;
 
 
 import java.io.File;
 
-import org.sf.hivgensim.queries.output.ToSnapshot;
+import net.sf.hivgensim.queries.output.ToSnapshot;
+
 
 
 /**

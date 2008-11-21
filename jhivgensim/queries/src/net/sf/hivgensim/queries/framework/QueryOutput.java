@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries.framework;
+package net.sf.hivgensim.queries.framework;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries.input;
+package net.sf.hivgensim.queries.input;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -1,20 +1,21 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryImpl;
-import org.sf.hivgensim.queries.framework.QueryUtils;
-import org.sf.hivgensim.queries.framework.QueryInput;
-import org.sf.hivgensim.queries.framework.QueryOutput;
-import org.sf.hivgensim.queries.input.FromDatabase;
-import org.sf.hivgensim.queries.output.ToMutationTable;
-
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryImpl;
+import net.sf.hivgensim.queries.framework.QueryInput;
+import net.sf.hivgensim.queries.framework.QueryOutput;
+import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
+import net.sf.hivgensim.queries.output.ToMutationTable;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyGeneric;
+
 
 /**
  * This query returns a list of NtSequences
@@ -27,7 +28,7 @@ import net.sf.regadb.db.Therapy;
 
 public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 
-	private String[] druggenerics = new String[]{"AZT","3TC"};
+	private String[] druggenerics = new String[]{};
 
 	public GetExperiencedSequences(Query<Patient> inputQuery) {
 		super(inputQuery);
@@ -40,12 +41,18 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 
 	@Override
 	public void populateOutputList() {
-		Set<NtSequence> temp = new HashSet<NtSequence>();
+//		Set<NtSequence> temp = new HashSet<NtSequence>();
+		Set<String> history = new HashSet<String>();
 		for(Patient p : inputQuery.getOutputList()){
-			Therapy latestGoodExperienceTherapy = null;
+//			Therapy latestGoodExperienceTherapy = null;
+			history = new HashSet<String>();
 			for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
-				if(QueryUtils.isGoodExperienceTherapy(t, druggenerics)){
-					latestGoodExperienceTherapy = t;
+				for(TherapyGeneric tg : t.getTherapyGenerics()){
+					history.add(tg.getId().getDrugGeneric().getGenericId());
+				}			
+				if(QueryUtils.isGoodExperienceTherapy(t,druggenerics,history)){
+//					latestGoodExperienceTherapy = t;
+					outputList.addAll(QueryUtils.getAllSequencesDuringTherapy(p, t));					
 				}else{
 					//check if this therapy uses drugs in same drug class of
 					//wanted drug combination
@@ -57,13 +64,13 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 				}
 
 			}
-			if(latestGoodExperienceTherapy != null){
-				Set<NtSequence> seqs = QueryUtils.getLatestExperiencedSequences(p,latestGoodExperienceTherapy);
-				if(seqs != null)
-					temp.addAll(seqs);
-			}						
+//			if(latestGoodExperienceTherapy != null){
+//				Set<NtSequence> seqs = QueryUtils.getLatestSequencesDuringTherapy(p,latestGoodExperienceTherapy);
+//				if(seqs != null)
+//					temp.addAll(seqs);
+//			}						
 		}
-		outputList.addAll(temp);
+//		outputList.addAll(temp);
 	}
 
 	public static void main(String[] args){

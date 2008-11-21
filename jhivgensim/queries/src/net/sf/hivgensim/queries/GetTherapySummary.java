@@ -1,4 +1,4 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryOutput;
 
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;

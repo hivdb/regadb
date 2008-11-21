@@ -1,12 +1,12 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryImpl;
-import org.sf.hivgensim.queries.framework.QueryUtils;
 
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryImpl;
+import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -31,6 +31,9 @@ public class GetNaivePatients extends QueryImpl<Patient,Patient>{
 		for(Patient p : inputQuery.getOutputList()){
 			for(Therapy t : p.getTherapies()) {
 				boolean naive = true;
+				if(QueryUtils.hasClassExperience("Unknown", t)){
+						naive = false;
+				}
 				for(String tT : drugclasses){
 					if(QueryUtils.hasClassExperience(tT, t)) {
 						naive = false;					

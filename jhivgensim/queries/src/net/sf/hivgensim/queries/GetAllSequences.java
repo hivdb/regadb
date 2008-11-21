@@ -1,8 +1,8 @@
-package org.sf.hivgensim.queries;
+package net.sf.hivgensim.queries;
 
-import org.sf.hivgensim.queries.framework.Query;
-import org.sf.hivgensim.queries.framework.QueryImpl;
 
+import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
@@ -26,8 +26,7 @@ public class GetAllSequences extends QueryImpl<NtSequence,Patient> {
 					outputList.add(seq);
 				}
 			}
-		}
-		
+		}		
 	}
 	
 
