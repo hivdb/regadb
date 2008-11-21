@@ -180,7 +180,7 @@ public class ImportEgazMonizHiv2 {
 				if(!institute.equals("")) {
 					if(!findInstitute(institute)) {
 						String instituteM = institutesMapping.get(institute);
-						if(instituteM==null || instituteM.trim().equals("") || !findInstitute(instituteM)) {
+						if(instituteM==null || instituteM.trim().equals("")) {
 							s.add("Cannot map/find institute " + institute + " | " + instituteM);
 							institute = null;
 						} else {
