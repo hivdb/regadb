@@ -1216,7 +1216,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // splicing position
         catalog.addObject(new DbObject("SplicingPosition", null, "splicing_position", "splicing position"));
         catalog.addObject(new DbObject("SplicingPosition", "splicingPositionIi", "index", "index"));
-        catalog.addObject(new DbObject("SplicingPosition", "position", "position", "position"));
+        catalog.addObject(new DbObject("SplicingPosition", "ntPosition", "nt_position", "position"));
 
         // aa sequence
         catalog.addObject(new DbObject("AaSequence", null, "aa_sequence", "amino acid sequence"));
