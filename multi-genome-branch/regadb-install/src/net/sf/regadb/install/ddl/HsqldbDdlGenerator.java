@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.util.reflection.PackageUtils;
 
@@ -93,6 +96,23 @@ public class HsqldbDdlGenerator
 		}
 		catch (IOException e) 
         {
+			e.printStackTrace();
+		}
+		
+        try {
+            String line;
+            LineNumberReader in = new LineNumberReader(new FileReader(fileName));
+            List<String> toSort = new ArrayList<String>();
+			while((line = in.readLine())!=null) {
+				toSort.add(line);
+			}
+			java.util.Collections.sort(toSort);
+			toWrite = "";
+			for(String l : toSort) {
+				toWrite += l + "\n";
+			}
+			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
