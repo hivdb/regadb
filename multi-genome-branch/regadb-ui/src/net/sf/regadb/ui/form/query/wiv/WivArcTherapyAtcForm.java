@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugGeneric;
@@ -36,6 +38,8 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
     @SuppressWarnings("unchecked")
     @Override
     protected void process(File csvFile) throws Exception{
+        Map<String,HashSet<String>> patcodeAtcs = new HashMap<String,HashSet<String>>();
+        
         Transaction t = createTransaction();
         Query q = createQuery(t);
         List<Object[]> res = q.list();
@@ -56,9 +60,23 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
             if(pav != null){
                 patcode = pav.getValue();
             }
-
-            addTherapy(out,tp,patcode,date);
+            HashSet<String> atcs = patcodeAtcs.get(patcode);
+            if(atcs == null){
+                atcs = new HashSet<String>();
+                patcodeAtcs.put(patcode, atcs);
+            }
+            addTherapy(atcs,tp);
         }
+        for(Map.Entry<String, HashSet<String>> me : patcodeAtcs.entrySet()){
+            for(String s : me.getValue()){
+                String atc = s;
+                if(atc == null || atc.length() == 0)
+                    atc = "9999";
+    
+                addRow(out, me.getKey(), date, atc);
+            }
+        }
+
         
         q = t.createQuery("select pav "+
         		"from PatientAttributeValue pav "+
@@ -79,8 +97,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
        	t.commit();
     }
 
-    private void addTherapy(Table table, Therapy tp, String patcode, String date){
-        HashSet<String> atcs = new HashSet<String>();
+    private void addTherapy(HashSet<String> atcs, Therapy tp){
 
         for(TherapyGeneric tg : tp.getTherapyGenerics()){
             atcs.add(tg.getId().getDrugGeneric().getAtcCode());
@@ -89,15 +106,8 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
             for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
             	String ss[] = dg.getAtcCode().split("[+]");
             	for(String s : ss)
-            		atcs.add(s);
+            		atcs.add(s.trim());
             }
-        }
-        for(String s : atcs){
-            String atc = s;
-            if(atc == null || atc.length() == 0)
-                atc = "9999";
-
-            addRow(table, patcode, date, atc);
         }
     }
     

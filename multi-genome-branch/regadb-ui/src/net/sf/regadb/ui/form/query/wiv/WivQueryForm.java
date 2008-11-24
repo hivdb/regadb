@@ -672,8 +672,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         table.add("PROFRISK",                   "PROFRISK",     1,  FillerType.UNKNOWN);
         table.add("PROBYEAR",                   "PROBYEAR",     1,  FillerType.UNKNOWN);
         table.add("PROBCOUNTR",                 "PROBCOUNTR",   3,  FillerType.COUNTRYCODE);
-        table.add("CD4.TestResult.value",       "LYMPHO",       4);
-        table.add("VL.TestResult.value",        "VIRLOAD",      4);
+        table.add("LYMPHO",                     "LYMPHO",       4);
+        table.add("VIRLOAD",                    "VIRLOAD",      4);
         table.add("STAD_CLIN",                  "STAD_CLIN",    1,  FillerType.UNKNOWN);
         table.add("REASONTEST",                 "REASONTEST",   1,  FillerType.UNKNOWN);
         table.add("FORM_OUT",                   "FORM_OUT",     8);
@@ -707,17 +707,17 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
                 
 	            row[table.getPosition("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
-	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
-	            if(tr != null){
-	            	row[table.getPosition("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
-	            }
-	            
-	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
-	            if(tr != null){
-	            	row[table.getPosition("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
-	            }
-	            else
-	            	row[table.getPosition("CD4.TestResult.value")] = "U";
+//	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
+//	            if(tr != null){
+//	            	row[table.getPosition("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
+//	            }
+//	            
+//	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
+//	            if(tr != null){
+//	            	row[table.getPosition("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
+//	            }
+//	            else
+//	            	row[table.getPosition("CD4.TestResult.value")] = "U";
 	            
 	            tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
                 if(tr != null){

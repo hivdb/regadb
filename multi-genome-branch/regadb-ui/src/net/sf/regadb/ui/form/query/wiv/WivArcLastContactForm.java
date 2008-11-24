@@ -15,7 +15,6 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.ui.form.query.wiv.WivQueryForm.EmptyResultException;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.util.date.DateUtils;
@@ -90,6 +89,8 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         	if(maxDate != sdate){
 	            row = new ArrayList<String>();
 	            
+	            row.add(getCentreName());
+	            row.add(OriginCode.ARC.getCode()+"");
 	            row.add(patcode);
 	            row.add(getFormattedDate(maxDate));
 	            row.add(TypeOfInformationCode.LAST_CONTACT_DATE.getCode()+"");

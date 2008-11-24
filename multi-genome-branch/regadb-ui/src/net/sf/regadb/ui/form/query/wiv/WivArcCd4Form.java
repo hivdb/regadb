@@ -22,11 +22,11 @@ public class WivArcCd4Form extends WivIntervalQueryForm {
         super(tr("menu.query.wiv.arc.cd4"),tr("form.query.wiv.label.arc.cd4"),tr("file.query.wiv.arc.cd4"));
         
         String query =  "select p.birthDate, tr, pav "+
-	        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
-	        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-	        "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
-	        "or tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
-	        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and pav.patient.patientIi in ("+ getArcPatientQuery() +") ";
+            "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
+            "where pav.patient = p and pav.attribute.name = 'PatCode' "+
+            "and (tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
+            "or tr.test.testType.description = '"+ StandardObjects.getCd4PercentageTestType().getDescription() +"') "+ 
+            "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and pav.patient.patientIi in ("+ getArcPatientQuery() +") ";
 
         setQuery(query);
         
