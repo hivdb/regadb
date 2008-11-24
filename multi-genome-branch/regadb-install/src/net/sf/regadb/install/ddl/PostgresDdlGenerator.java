@@ -103,20 +103,41 @@ public class PostgresDdlGenerator
 
         try {
             String line;
+            List<String> createTables = new ArrayList<String>();
+            List<String> createSequences = new ArrayList<String>();
+            List<String> createIndices = new ArrayList<String>();
+            List<String> alterTables = new ArrayList<String>();
             LineNumberReader in = new LineNumberReader(new FileReader(fileName));
-            List<String> toSort = new ArrayList<String>();
 			while((line = in.readLine())!=null) {
-				toSort.add(line);
+				if(line.startsWith("create table")) {
+					createTables.add(line);
+				} else if(line.startsWith("create sequence")) {
+					createSequences.add(line);
+				} else if(line.startsWith("create index")) {
+					createIndices.add(line);
+				} else {
+					alterTables.add(line);
+				}
 			}
-			java.util.Collections.sort(toSort);
-			toWrite = "";
-			for(String l : toSort) {
-				toWrite += l + "\n";
-			}
+			
+			toWrite = sortAndReturn(createTables);
+			toWrite += sortAndReturn(createSequences);
+			toWrite += sortAndReturn(createIndices);
+			toWrite += sortAndReturn(alterTables);
+			
 			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+    }
+
+    private static String sortAndReturn(List<String> list) {
+    	java.util.Collections.sort(list);
+    	String toReturn = "";
+    	for(String l : list) {
+    		toReturn += l + "\n";
+    	}
+    	return toReturn;
     }
 
     private String processString(String str) 
