@@ -65,7 +65,7 @@ public class ParseOldViralLoad {
 		
 		try {
 			seqMathOldVL = File.createTempFile("seq_match_old_vl", "csv");
-			FileUtils.writeStringToFile(seqMathOldVL, old_vl_seq_map);
+			FileUtils.writeStringToFile(seqMathOldVL, old_vl_seq_map, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
