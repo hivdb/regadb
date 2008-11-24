@@ -13,10 +13,9 @@ public class WivArlViralLoadForm extends WivIntervalQueryForm {
     public WivArlViralLoadForm(){
         super(tr("menu.query.wiv.arl.viralLoad"),tr("form.query.wiv.label.arl.viralLoad"),tr("file.query.wiv.arl.viralLoad"));
         
-        String query =  "select tr, pav, fu.attributeNominalValue "+
-                        "from TestResult tr join tr.patient p, PatientAttributeValue pav, PatientAttributeValue fu " +
+        String query =  "select tr, pav" +
+                        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
                         "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-                        "and fu.patient = p and fu.attribute.name = 'FOLLOW-UP' "+
                         "and tr.test.testType.description = '"+ StandardObjects.getHiv1ViralLoadTestType().getDescription() +"' "+
                         "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
         setQuery(query);
