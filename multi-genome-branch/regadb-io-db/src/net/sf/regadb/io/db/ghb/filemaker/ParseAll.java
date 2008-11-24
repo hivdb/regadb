@@ -15,22 +15,22 @@ import net.sf.regadb.io.util.IOUtils;
 
 
 // Files needed from filemaker pro are:
-//	- contacten.MER
-//	- eadnr_emdnr.MER
-//	- med_final.MER
-//	- patienten.MER
-//	- symptomen.MER
+//  - contacten.MER
+//  - eadnr_emdnr.MER
+//  - med_final.MER
+//  - patienten.MER
+//  - symptomen.MER
 //
 // export them using this format:
-//	- Merge
-//	- formatted
-//	- windows ansi charset
+//  - Merge
+//  - formatted
+//  - windows ansi charset
 //
 
 public class ParseAll {
-	private static String charset = "ISO-8859-15";
-	private static char delimiter = ';';
-	
+    private static String charset = "ISO-8859-15";
+    private static char delimiter = ';';
+    
     public static void main(String [] args) {
         String eclipseFileMakerMappingDir;
         String eadEmdNameFile;
@@ -54,7 +54,7 @@ public class ParseAll {
             eclipseFileMakerMappingDir  = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
             eadEmdNameFile              = importDir + "/import/ghb/filemaker/eadnr_emdnr.MER";
             patientenFile               = importDir + "/import/ghb/filemaker/patienten.MER";
-            symptomenFile				= importDir + "/import/ghb/filemaker/symptomen.MER";
+            symptomenFile               = importDir + "/import/ghb/filemaker/symptomen.MER";
             lisNationMappingFile        = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
             lisWorkingDir               = importDir + "/import/ghb/";
             stalenLeuvenFile            = importDir + "/import/ghb/seqs/Stalen Leuven.csv";
@@ -89,6 +89,7 @@ public class ParseAll {
         
         ParsePatient parsePatient = new ParsePatient();
         parsePatient.parse( new File(patientenFile),
+                            new File(eclipseFileMakerMappingDir + "country_of_origin.mapping"),
                             new File(eclipseFileMakerMappingDir + "geographic_origin.mapping"),
                             new File(eclipseFileMakerMappingDir + "transmission_group.mapping"), patientIdPatients);
         
@@ -120,19 +121,19 @@ public class ParseAll {
         IOUtils.exportNTXMLFromPatients(eadPatients, outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     }
 
-	public static void setCharset(String charset) {
-		ParseAll.charset = charset;
-	}
+    public static void setCharset(String charset) {
+        ParseAll.charset = charset;
+    }
 
-	public static String getCharset() {
-		return charset;
-	}
+    public static String getCharset() {
+        return charset;
+    }
 
-	public static void setDelimiter(char delimiter) {
-		ParseAll.delimiter = delimiter;
-	}
+    public static void setDelimiter(char delimiter) {
+        ParseAll.delimiter = delimiter;
+    }
 
-	public static char getDelimiter() {
-		return delimiter;
-	}
+    public static char getDelimiter() {
+        return delimiter;
+    }
 }

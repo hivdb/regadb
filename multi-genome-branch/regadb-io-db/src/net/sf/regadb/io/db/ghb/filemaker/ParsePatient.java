@@ -18,18 +18,13 @@ import net.sf.regadb.io.util.StandardObjects;
 
 public class ParsePatient {
 
-    public static void main(String [] args) {
-        ParsePatient parsePatient = new ParsePatient();
-        parsePatient.parse( new File("/home/simbre0/import/ghb/filemaker/patienten.csv"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/geographic_origin.mapping"),
-                            new File("/home/simbre0/import/ghb/filemaker/mappings/transmission_group.mapping"), null);
-
-    }
-    
-    public void parse(File patientFile, File geographicOriginMapFile, File transmissionGroupMapFile, Map<String,Patient> patientIdPatients){
+    public void parse(File patientFile, File countryOfOriginMapFile, File geographicOriginMapFile, File transmissionGroupMapFile, Map<String,Patient> patientIdPatients){
         
         if(!patientFile.exists() && !patientFile.isFile()){
             System.err.println("File does not exist: "+ patientFile.getAbsolutePath());
+        }
+        if(!countryOfOriginMapFile.exists() && !countryOfOriginMapFile.isFile()){
+            System.err.println("Mapping file does not exist: "+ countryOfOriginMapFile.getAbsolutePath());
         }
         if(!geographicOriginMapFile.exists() && !geographicOriginMapFile.isFile()){
             System.err.println("Mapping file does not exist: "+ geographicOriginMapFile.getAbsolutePath());
@@ -45,6 +40,7 @@ public class ParsePatient {
         int CDeathDate = Utils.findColumn(patientTable, "Overleden");
         int CFirstName = Utils.findColumn(patientTable, "Voornaam");
         int CLastName  = Utils.findColumn(patientTable, "Naam");
+        int CCountryOfOrigin = Utils.findColumn(patientTable, "Herkomst_Land");
         
         int CTransmissionGroup = Utils.findColumn(patientTable, "Besmettingsbron");
         int CGeographicOrigin = Utils.findColumn(patientTable, "herkomst");
@@ -61,23 +57,25 @@ public class ParsePatient {
         patCodeAttribute.setAttributeGroup(ghbAttributeGroup);
         patCodeAttribute.setValueType(StandardObjects.getStringValueType());
         
-//        Table countryOfOriginTable = Utils.readTable(countryOfOriginMapFile.getAbsolutePath());
+        Table countryOfOriginTable = Utils.readTable(countryOfOriginMapFile.getAbsolutePath());
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
         Table transmissionGroupTable = Utils.readTable(transmissionGroupMapFile.getAbsolutePath());
         
-//        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryOfOriginTable, regadbAttributeGroup, Utils.selectAttribute("Country of origin", regadbAttributes));
+        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryOfOriginTable, regadbAttributeGroup, Utils.selectAttribute("Country of origin", regadbAttributes));
         NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, Utils.selectAttribute("Geographic origin", regadbAttributes));
         NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, Utils.selectAttribute("Transmission group", regadbAttributes));
         NominalAttribute genderA = new NominalAttribute("Gender", CGender, new String[] { "M", "V" },
                 new String[] { "male", "female" } );
         genderA.attribute.setAttributeGroup(regadbAttributeGroup);
         
+       
         for(int i=1; i<patientTable.numRows(); ++i){
             String SPatientId   = patientTable.valueAt(CPatientId,i);
 
             if(!isEmpty(SPatientId)){
                 Date birthDate = parseDate(patientTable.valueAt(CBirthDate,i));
-                Date deathDate = parseDate(patientTable.valueAt(CDeathDate,i));
+                String sDeathDate = patientTable.valueAt(CDeathDate,i);
+                Date deathDate = parseDate(sDeathDate);
                 
                 String SFirstName = patientTable.valueAt(CFirstName,i);
                 String SLastName  = patientTable.valueAt(CLastName,i);
@@ -85,9 +83,9 @@ public class ParsePatient {
                 String STransmissionGroup = patientTable.valueAt(CTransmissionGroup,i);
                 String SGeographicOrigin  = patientTable.valueAt(CGeographicOrigin,i);
                 String SPatCode           = patientTable.valueAt(CPatCode,i);
-                
+                               
                 String SGender = patientTable.valueAt(CGender,i);
-//                String SCountryOfOrigin = patientTable.valueAt(CCountryOfOrigin,i);
+                String SCountryOfOrigin = patientTable.valueAt(CCountryOfOrigin,i);
                 
                 Patient p = patientIdPatients.get(SPatientId);
 
@@ -100,13 +98,17 @@ public class ParsePatient {
                     }
                     
                     if(!isEmpty(SPatCode)){
-                    	PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
-                    	pav.setValue(SPatCode);
+                        PatientAttributeValue pav = p.createPatientAttributeValue(patCodeAttribute);
+                        pav.setValue(SPatCode);
                     }
                     
                     //p.setFirstName(SFirstName);
                     //p.setLastName(SLastName);
-                    
+
+                    if(Utils.checkColumnValueForExistance("country of origin", SCountryOfOrigin, i, SPatientId))
+                    {
+                        Utils.handlePatientAttributeValue(countryOfOriginA, SCountryOfOrigin, p);
+                    }
                     if(Utils.checkColumnValueForExistance("geographic origin", SGeographicOrigin, i, SPatientId))
                     {
                         Utils.handlePatientAttributeValue(geographicOriginA, SGeographicOrigin, p);
@@ -115,13 +117,6 @@ public class ParsePatient {
                     {
                         Utils.handlePatientAttributeValue(transmissionGroupA, STransmissionGroup, p);
                     }
-//                    if(Utils.checkColumnValue(SCountryOfOrigin, i, SPatientId))
-//                    {
-//                        if(Utils.getAttributeValue("Country of origin", p) == null){
-//                            SCountryOfOrigin = trimCountryOfOrigin(SCountryOfOrigin);
-//                            Utils.handlePatientAttributeValue(countryOfOriginA, SCountryOfOrigin, p);
-//                        }
-//                    }
                     if(Utils.checkColumnValueForEmptiness("gender", SGender, i, SPatientId))
                     {
                         if(Utils.getAttributeValue("Gender", p) == null)

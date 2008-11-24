@@ -115,7 +115,7 @@ public class MergeLISFiles {
                 
         File[] files = dir.listFiles();
         for(final File f : files) {
-            if(f.getAbsolutePath().endsWith(".txt")) {
+            if(f.getAbsolutePath().endsWith(".txt") && f.getName().startsWith("GHB")){
                 pf.process(f, new ILineHandler() {
                     public void handleLine(String line, int counter) {
                         if(!line.startsWith("EADnr\tEMDnr") && line.length()!=0) {
@@ -150,8 +150,8 @@ public class MergeLISFiles {
     }
     
     private void handlePatient(List<String> headers, String ead, List<String> line) {
-    	if(ead == null || ead.length() == 0)
-    		return;
+        if(ead == null || ead.length() == 0)
+            return;
         String emd = line.get(headers.indexOf("EMDnr"));
         Date birthDate = null;
         try {
@@ -162,11 +162,15 @@ public class MergeLISFiles {
         char sex = line.get(headers.indexOf("geslacht")).toUpperCase().charAt(0);
         String nation = line.get(headers.indexOf("nation")).toUpperCase();
         
+        
         Patient p = patients.get(ead);
         if(p==null){
             p = new Patient();
             p.setPatientId(ead);
             patients.put(ead, p);
+            
+            //p.setFirstName(line.get(headers.indexOf("p.voornaam")));
+            //p.setLastName(line.get(headers.indexOf("p.naam")));
         }
         
         p.setBirthDate(birthDate);
@@ -198,9 +202,9 @@ public class MergeLISFiles {
     }
     
     private void handleTest(List<String> headers, String ead, List<String> line) {
-    	if(ead == null || ead.length() == 0)
-    		return;
-    	
+        if(ead == null || ead.length() == 0)
+            return;
+        
         Patient p = patients.get(ead);
         if(p == null)
             return;
@@ -214,193 +218,195 @@ public class MergeLISFiles {
             }
             uniqueTests.add(line.get(headers.indexOf("aanvraagTestNaam")));
             
+            String value = line.get(headers.indexOf("reeel"));
+            String result = line.get(headers.indexOf("resultaat"));
+            
             //work with a mapping files
-            if(!line.get(headers.indexOf("reeel")).equals("")) {
+            if(!value.equals("") || !result.equals("")) {
                 //TODO change this to handle all tests from the moment the LIS query returns only HIV infected patients
                 
                 String name = line.get(headers.indexOf("aanvraagTestNaam"));
-                String value = line.get(headers.indexOf("reeel"));
                 String sign = line.get(headers.indexOf("relatie"));
                 String unit = line.get(headers.indexOf("eenheden"));
-                String testCode = line.get(headers.indexOf("testCode"));
-
 
 //                if(name.contains("Absolute T4-lymfocytose (bloed)oude code")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Bicarbonaat (plasma)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD3/CD4-plot (BAL) oude code")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD3/CD4-plot (bloed) OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD3/CD8-plot (BAL) oude code")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD3/CD8-plot (bloed) OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD4 en CD8 T cellen (BAL)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD4 en CD8 T cellen (bloed) oude code")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
                 
                 if(name.contains("CD4(+) T cellen")){
-                	if(unit.contains("%"))
-                		storeTest(StandardObjects.getGenericCD4PercentageTest(), value, sampleDate, p, correctId);
-                	else
-                		storeCD4(Double.parseDouble(value), sampleDate, p, correctId);
+                    if(unit.contains("%"))
+                        storeTest(StandardObjects.getGenericCD4PercentageTest(), value, sampleDate, p, correctId);
+                    else
+                        storeCD4(Double.parseDouble(value), sampleDate, p, correctId);
                 }
                 
 //                if(name.contains("CD4/CD8 op T lymfocyten (BAL) oude code")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD4/CD8 op T lymfocyten (Bloed)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("CD4/CD8 op T lymfocyten (bloed) OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
                 
                 if(name.contains("CD8(+) T cellen")){
-                	if(unit.contains("%"))
-                		storeTest(StandardObjects.getGenericCD8PercentageTest(), value, sampleDate, p, correctId);
-                	else
-                		storeCD8(Double.parseDouble(value), sampleDate, p, correctId);
+                    if(unit.contains("%"))
+                        storeTest(StandardObjects.getGenericCD8PercentageTest(), value, sampleDate, p, correctId);
+                    else
+                        storeCD8(Double.parseDouble(value), sampleDate, p, correctId);
                 }
                 
                 if(name.contains("CMV IgG")){//nominal instead of number
-//                	storeTest(StandardObjects.getGenericCMVIgGTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericCMVIgGTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("CMV IgM")){//nominal instead of number
-//                	storeTest(StandardObjects.getGenericCMVIgMTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericCMVIgMTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("CMV IgM (Axsym)")){//nominal instead of number
-//                	storeTest(StandardObjects.getGenericCMVIgMTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericCMVIgMTest(), value, sampleDate, p, correctId);
                 }
                 
 //                if(name.contains("Cholesterol (plasma)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Glucose (plasma)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("HCV conclusie")){
-//                	StandardObjects.getGenericHCV
+//                  StandardObjects.getGenericHCV
 //                }
 //                if(name.contains("HCV confirmatie (Inno-LIA)")){
-//                	StandardObjects.getGenericHCV
+//                  StandardObjects.getGenericHCV
 //                }
 //                if(name.contains("HDL-Cholesterol")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("HIV PCR")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
                 if(name.contains("HIV conclusie")){
-                	//StandardObjects.getGeneric
-                	//Positieve HIV-1 serologie
+                    //StandardObjects.getGeneric
+                    //Positieve HIV-1 serologie
 
                 }
 //                if(name.contains("HIV-1 & 2")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
                 
                 if(name.contains("HIV-1 viral load")){
-                	if(unit.contains("log"))
-                		storeTest(StandardObjects.getGenericHiv1ViralLoadLog10Test(), value, sampleDate, p, correctId);
-                	else if(unit.contains("copies"))
-                		storeViralLoad(line.get(headers.indexOf("relatie")) + Double.parseDouble(value), sampleDate, p, correctId);
+                    if(unit.contains("log"))
+                        storeTest(StandardObjects.getGenericHiv1ViralLoadLog10Test(), value, sampleDate, p, correctId);
+                    else if(unit.contains("copies"))
+                        storeViralLoad(sign + Double.parseDouble(value), sampleDate, p, correctId);
+                    else if(result.contains("geen HIV RNA gedetecteerd (<50 copies/mL)"))
+                        storeViralLoad("<50", sampleDate, p, correctId);
                 }
                 if(name.contains("HIV-confirmatieserologie")){//result?
-//                	storeTest(StandardObjects.getHiv1SeroconversionTest(),
+//                  storeTest(StandardObjects.getHiv1SeroconversionTest(),
                 }
                 if(name.contains("Hepatitis A antistoffen (HAV AS)")){//nominal
-                	//storeTest(StandardObjects.getGenericHAVIgGTest(), value, sampleDate, p, correctId);
+                    //storeTest(StandardObjects.getGenericHAVIgGTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis B core IgM (HBc IgM)")){//nominal
-//                	storeTest(StandardObjects.getGenericHBcAbTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericHBcAbTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis B core antistoffen (aHBc)")){//nominal
-//                	storeTest(StandardObjects.getGenericHBcAbTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericHBcAbTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis B surface antigeen (HBsAg)")){//nominal
-//                	storeTest(StandardObjects.getGenericHBsAgTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericHBsAgTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis B surface antistoffen (aHBs)")){//limited number
-                	if(unit.contains("IU/L"))
-                		storeTest(StandardObjects.getGenericHBsAbTest(), sign+value, sampleDate, p, correctId);
+                    if(unit.contains("IU/L"))
+                        storeTest(StandardObjects.getGenericHBsAbTest(), sign+value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis C AS (Monolisa)")){//nominal
-//                	storeTest(StandardObjects.getGenericHCVAbTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericHCVAbTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Hepatitis C antistoffen (HCV AS)")){//nominal
-//                	storeTest(StandardObjects.getGenericHCVAbTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericHCVAbTest(), value, sampleDate, p, correctId);
                 }
                 
 //                if(name.contains("Herpes simplex Virus IgG (serum)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Herpes simplex Virus IgM (serum)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Lactaat")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Monolisa Anti-HCV Plus OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syfilis serologie : TPHA (OUD)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syfilis serologie : VDRL OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syfilis serologie: RPR")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syfilis serologie: RPR (CSV)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syfilis serologie: VDRL oud")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syphilis")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syphilis (CSV)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Syphilis (CSV) oud")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("T lymfocyten subpopulaties (bloed) OUD")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 
                 if(name.contains("Toxoplasma IgG")){//limited
-                	storeTest(StandardObjects.getGenericToxoIgGTest(), sign+value, sampleDate, p, correctId);
+                    storeTest(StandardObjects.getGenericToxoIgGTest(), sign+value, sampleDate, p, correctId);
                 }
                 if(name.contains("Toxoplasma IgM")){//nominal
-//                	storeTest(StandardObjects.getGenericToxoIgMTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericToxoIgMTest(), value, sampleDate, p, correctId);
                 }
                 if(name.contains("Toxoplasma IgM IMx (oud)")){//nominal
-//                	storeTest(StandardObjects.getGenericToxoIgMTest(), value, sampleDate, p, correctId);
+//                  storeTest(StandardObjects.getGenericToxoIgMTest(), value, sampleDate, p, correctId);
                 }
                 
 //                if(name.contains("Triglyceriden (plasma)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Varicella Zoster Virus IgG (serum)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
 //                if(name.contains("Varicella Zoster Virus IgM (serum)")){
-//                	StandardObjects.getGeneric;
+//                  StandardObjects.getGeneric;
 //                }
             }
         } catch (ParseException e) {
@@ -409,9 +415,9 @@ public class MergeLISFiles {
     }
     
     private void storeCD4(double value, Date date, Patient p, String sampleId) {
-    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD4Test()))
-    		return;
-    	
+        if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD4Test()))
+            return;
+        
         TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
         t.setValue(value+"");
         t.setTestDate(date);
@@ -422,9 +428,9 @@ public class MergeLISFiles {
     }
     
     private void storeCD8(double value, Date date, Patient p, String sampleId) {
-    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD8Test()))
-    		return;
-    	
+        if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericCD8Test()))
+            return;
+        
         TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
         t.setValue(value+"");
         t.setTestDate(date);
@@ -435,9 +441,9 @@ public class MergeLISFiles {
     }
     
     private void storeViralLoad(String value, Date date, Patient p, String sampleId) {
-    	if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericHiv1ViralLoadTest()))
-    		return;
-    	
+        if(duplicateTestResult(value+"", date, p, sampleId, StandardObjects.getGenericHiv1ViralLoadTest()))
+            return;
+        
         TestResult t = p.createTestResult(StandardObjects.getGenericHiv1ViralLoadTest());
         t.setValue(value);
         t.setTestDate(date);
@@ -448,31 +454,40 @@ public class MergeLISFiles {
     }
     
     private void storeTest(Test test, String value, Date date, Patient p, String sampleId){
-    	if(duplicateTestResult(value+"", date, p, sampleId, test))
-    		return;
-    	
-    	TestResult t = p.createTestResult(test);
-    	String s = value;
-    	TestNominalValue tnv=null;
-    	
-    	ValueTypes vt = ValueTypes.getValueType(test.getTestType().getValueType()); 
-    	if(vt == ValueTypes.NUMBER){
-    		s = s.replace("<", "").replace(">", "").replace("=", "");
-    		s = Double.parseDouble(s) +"";
-    	}
-    	else if(vt == ValueTypes.LIMITED_NUMBER){
-    	}
-    	else if(vt == ValueTypes.NOMINAL_VALUE){
-    		tnv = Utils.getNominalValue(test.getTestType(), s);
-    	}
-    	
-    	if(tnv != null)
-    		t.setTestNominalValue(tnv);
-    	else
-    		t.setValue(s);
-    	
-    	t.setTestDate(date);
-    	t.setSampleId(sampleId);
+        if(value == null || value.trim().length() == 0)
+            return;
+        
+        if(duplicateTestResult(value+"", date, p, sampleId, test))
+            return;
+        
+    
+        TestResult t = p.createTestResult(test);
+        String s = value;
+        TestNominalValue tnv=null;
+        
+        ValueTypes vt = ValueTypes.getValueType(test.getTestType().getValueType()); 
+        if(vt == ValueTypes.NUMBER){
+            try{
+                s = s.replace("<", "").replace(">", "").replace("=", "");
+                s = ""+ Double.parseDouble(s);
+            }
+            catch(Exception e){
+                return;
+            }
+        }
+        else if(vt == ValueTypes.LIMITED_NUMBER){
+        }
+        else if(vt == ValueTypes.NOMINAL_VALUE){
+            tnv = Utils.getNominalValue(test.getTestType(), s);
+        }
+        
+        if(tnv != null)
+            t.setTestNominalValue(tnv);
+        else
+            t.setValue(s);
+        
+        t.setTestDate(date);
+        t.setSampleId(sampleId);
     }
     
     private String getCorrectSampleId(List<String> headers, List<String> line) {
@@ -522,14 +537,14 @@ public class MergeLISFiles {
     }
     
     private boolean duplicateTestResult(String value, Date date, Patient p, String sampleId, Test test) {
-    	for(TestResult tr : p.getTestResults()) {
-    		if(tr.getTest().getDescription().equals(test.getDescription()) &&
-    				tr.getTestDate().equals(date) &&
-    				tr.getValue().equals(value) &&
-    				tr.getSampleId().equals(sampleId)) {
-    			return true;
-    		}
-    	}
-    	return false;
+        for(TestResult tr : p.getTestResults()) {
+            if(tr.getTest().getDescription().equals(test.getDescription()) &&
+                    tr.getTestDate().equals(date) &&
+                    tr.getValue().equals(value) &&
+                    tr.getSampleId().equals(sampleId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

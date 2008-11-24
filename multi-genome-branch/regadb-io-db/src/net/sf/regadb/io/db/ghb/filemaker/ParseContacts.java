@@ -7,8 +7,10 @@ import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -54,8 +56,8 @@ public class ParseContacts {
             if(!"".equals(patientId) && date!=null) {
                 Patient p = patients.get(patientId);
                 if(p!=null) {
-                	storeContact(date, p);
-                	
+                    storeContact(date, p);
+                    
                     if(!contacts.valueAt(CCD4, i).equals("")) {
                         try{
                         double cd4 = Double.parseDouble(contacts.valueAt(CCD4, i).replace(',', '.'));
@@ -102,9 +104,9 @@ public class ParseContacts {
                         }
                     }
                 } else {
-                	if(setset.add(patientId)) {                    
-                		System.err.println("invalid patientId****: " + patientId);
-                	}
+                    if(setset.add(patientId)) {                    
+                        System.err.println("invalid patientId****: " + patientId);
+                    }
                 }
             } else {
                 System.err.println("Cannot parse contact, no date or wrong patientId");
@@ -112,45 +114,42 @@ public class ParseContacts {
         }
     }
     
-    private void storeCD4(Date date, double value, String sampleId, Patient p) {
-        if(date.before(firstCd4_)) {
-            TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
-            t.setValue(value+"");
-            t.setTestDate(date);
-            t.setSampleId(sampleId);
+    private boolean hasTestResultOnDate(Patient p, Test t, Date d){
+        for(TestResult tr : p.getTestResults())
+            if(d.equals(tr.getTestDate()) && Equals.isSameTest(tr.getTest(), t))
+                return true;                
+        return false;
+    }
+    
+    private void storeTestResult(Date startLis, Test t, Date date, double value, String sampleId, Patient p){
+        if(date.before(startLis) || !hasTestResultOnDate(p, t, date)){
+            TestResult tr = p.createTestResult(t);
+            tr.setValue(value+"");
+            tr.setTestDate(date);
+            tr.setSampleId(sampleId); 
         }
+    }
+    
+    private void storeCD4(Date date, double value, String sampleId, Patient p) {
+        storeTestResult(firstCd4_, StandardObjects.getGenericCD4Test(), date, value, sampleId, p);
     }
     
     private void storeCD8(Date date, double value, String sampleId, Patient p) {
-        if(date.before(firstCd8_)) {
-            TestResult t = p.createTestResult(StandardObjects.getGenericCD8Test());
-            t.setValue(value+"");
-            t.setTestDate(date);
-            t.setSampleId(sampleId);
-        }
+        storeTestResult(firstCd8_, StandardObjects.getGenericCD8Test(), date, value, sampleId, p);
     }
+    
     private void storeCD4Percent(Date date, double value, String sampleId, Patient p) {
-        if(date.before(firstCd4_)) {
-            TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
-            t.setValue(value+"");
-            t.setTestDate(date);
-            t.setSampleId(sampleId);
-        }
+        storeTestResult(firstCd4_, StandardObjects.getGenericCD4PercentageTest(), date, value, sampleId, p);
     }
     
     private void storeCD8Percent(Date date, double value, String sampleId, Patient p) {
-        if(date.before(firstCd8_)) {
-            TestResult t = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
-            t.setValue(value+"");
-            t.setTestDate(date);
-            t.setSampleId(sampleId);
-        }
+        storeTestResult(firstCd8_, StandardObjects.getGenericCD8PercentageTest(), date, value, sampleId, p);
     }
     
     private void storeContact(Date date, Patient p){
-    	TestResult t = p.createTestResult(StandardObjects.getContactTest());
-    	t.setValue(date.getTime()+"");
-    	t.setTestDate(date);
+        TestResult t = p.createTestResult(StandardObjects.getContactTest());
+        t.setValue(date.getTime()+"");
+        t.setTestDate(date);
     }
     
     private void storePosSero(Date date, String sampleId, Patient p) {
@@ -178,10 +177,10 @@ public class ParseContacts {
 
         try {
             if(sensChar==' ') {
-                parsedValue = Double.parseDouble(removeCharsFromString(value,' ')) + "";
+                parsedValue = "="+ Double.parseDouble(removeCharsFromString(value,' '));
             }
             else {
-                parsedValue = Character.toString(sensChar) + Double.parseDouble(removeCharsFromString(value.substring(1, value.length()), ' ')) + "";
+                parsedValue = Character.toString(sensChar) + Double.parseDouble(removeCharsFromString(value.substring(1, value.length()), ' '));
                 if(sensChar == '>' || sensChar == '<' || sensChar=='=') {
                     
                 } else {
