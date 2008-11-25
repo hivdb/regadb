@@ -134,7 +134,7 @@ public class ParseMedication {
         	
         	for(Medication m : meds){
         		if( m.start.equals(a)
-        		        || (m.start.before(a) && (b == null || m.stop == null || m.stop.after(b)))){
+        		        || (m.start.before(a) && (b == null || m.stop == null || (m.stop.after(b) || m.stop.equals(b) )))){
         			addDrugsToTherapy(t,m.dc,m.dg);
         		}
         	}
