@@ -111,22 +111,19 @@ public class ParseMedication {
         SortedSet<Date> timeline = new TreeSet<Date>();
         
         for(Medication m : meds){
-        	if(m.start != null && !timeline.contains(m.start))
+        	if(m.start != null)
         		timeline.add(m.start);
-        	if(m.stop != null && !timeline.contains(m.stop))
+        	if(m.stop != null)
         		timeline.add(m.stop);
         }
-
+        
         Therapy t=null;
         for(Date d : timeline){
-        	if(t == null){
-        		t = p.createTherapy(d);
-        		therapies.add(t);
-        	}
-        	else{
-        		t.setStopDate(d);
-        		t= null;
-        	}
+            if(t != null)
+                t.setStopDate(d);
+            
+            t = p.createTherapy(d);
+       		therapies.add(t);
         }
 
         Iterator<Therapy> it = therapies.iterator();
@@ -136,7 +133,8 @@ public class ParseMedication {
         	Date b = t.getStopDate();
         	
         	for(Medication m : meds){
-        		if(m.start.equals(a) || intervalsOverlap(a,b,m.start,m.stop)){
+        		if( m.start.equals(a)
+        		        || (m.start.before(a) && (b == null || m.stop == null || m.stop.after(b)))){
         			addDrugsToTherapy(t,m.dc,m.dg);
         		}
         	}
@@ -148,16 +146,6 @@ public class ParseMedication {
         }
         
         return therapies;
-    }
-    
-    private static boolean intervalsOverlap(Date a1, Date b1, Date a2, Date b2){
-    	if(b2 != null && a1.after(b2))
-    		return false;
-    	
-    	if(b1 != null && a2.after(b1))
-    		return false;
-    	
-    	return true;
     }
     
 	private static void addDrugsToTherapy(Therapy t, DrugCommercial dc, DrugGeneric dg){
