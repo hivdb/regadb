@@ -12,7 +12,7 @@ public class DateUtils
     	return "DD-MM-YYYY";
     }
     
-    public static Date parserEuropeanDate(String europeanDate)
+    public static Date parseEuropeanDate(String europeanDate)
     {
     	if (europeanDate.trim().equals("")) {
     		return null;
