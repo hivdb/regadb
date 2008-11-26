@@ -35,6 +35,6 @@ public class DrugGenericComboBox extends ComboBox<DrugGeneric> {
     }
     
     public String getLabel(DrugGeneric dg){
-    	return dg.getGenericName();
+    	return dg.getGenericName() + " ("+dg.getGenericId()+")";
     }
 }
