@@ -201,7 +201,7 @@ public class MeasurementForm extends FormWidget
         }
 		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
 		{
-		    testResult_.setValue(DateUtils.parserEuropeanDate(testResultField_.text()).getTime()+"");
+		    testResult_.setValue(DateUtils.parseEuropeanDate(testResultField_.text()).getTime()+"");
 		    testResult_.setTestNominalValue(null);
 		}
 		else

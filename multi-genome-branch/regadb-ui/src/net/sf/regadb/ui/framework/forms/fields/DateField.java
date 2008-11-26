@@ -94,7 +94,7 @@ public class DateField extends FormField
     
     public Date getDate()
     {
-    	return DateUtils.parserEuropeanDate(text());
+    	return DateUtils.parseEuropeanDate(text());
     }
     
     public void addChangeListener(SignalListener<WEmptyEvent> listener)

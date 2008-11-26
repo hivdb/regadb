@@ -67,12 +67,12 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public Object getFirstDate()
 	{
-		return DateUtils.parserEuropeanDate(getDateField1().text());
+		return DateUtils.parseEuropeanDate(getDateField1().text());
 	}
 	
 	public Object getSecondDate()
 	{
-		return DateUtils.parserEuropeanDate(getDateField2().text());
+		return DateUtils.parseEuropeanDate(getDateField2().text());
 	}
 	
 	public WMessage getComboState()
