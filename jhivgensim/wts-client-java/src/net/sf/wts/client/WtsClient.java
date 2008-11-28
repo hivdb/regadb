@@ -26,7 +26,6 @@ import net.sf.wts.client.util.AxisClient;
 import net.sf.wts.client.util.Encrypt;
 import net.sf.wts.client.util.EncryptedFileDataSource;
 import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 public class WtsClient 
 {
@@ -34,9 +33,18 @@ public class WtsClient
 	private AxisClient axisService = new AxisClient();
 	private Key sessionKey;
 	private PrivateKey privateKey; 
-
-	public WtsClient(String url, PrivateKey privateKey)
-	{
+	
+	public WtsClient(String url){
+		this.url_ = url;
+		this.privateKey = Encrypt.restorePrivateKey("MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMz1OALfr/CLLt20vxBJ/xvbwu9CUXY0CnV8YIigfIHUr7w5fPgBA4YavcVavqqqHeQgXRXV5luOLczBRnYNv6y3HBddZ5UvjLa/zr8/37OUMURhkqyB66lU8FOrV5ONslf/+1zs1Dpi83y0Yxhx0PRYub75JW7WyoVCpGz0qDELAgMBAAECgYBSk/ZmSgPUMe/HCfz1Lisn6UpIJfs2Wc9g+KTYR3kCwlOvzaXJMndd/8Y4DtDFaFc0w8ldc9olR0qytaiTBgUUc94UA+MtOM4aOjd0u9MrD59mGCG3MO1+ojjn9PMiPmXlj4QIdbu0CkWnwStrUkFr80sgUvHXSW09sM/YRj6x6QJBAOz8fO//IGO8xEnfhRIryvjHj/dnM7rYX2QMoYYvrd0Nvdxyr3t6qTEEkgNeimBmfZuG2ULn787V8fUoZUX2bS0CQQDdZuSHEbZ7GN+jq2QRh5fgsxcHSn460aM8Y9C5mN9r+w3Tq1j4qcvtrDu+ltwFInc8fEiSjQNx0jR712fi5yoXAkANp36LVWfIV1f36akBIwTO0LC60HdqjIzydsfXs2eRFPmbegAiXS7iZCEFkKzoYP9btqlN8Y8fm7QVK/6pyUkBAkEA0ImW3QY5DC88jqvjoINH8dSd7zciOIK3Ly2RLw+n+cxJlMMDFYzRUTd2Oqlb6dYx2x3xOWBrCy2EU9Vru5Qi1wJBAKPjEQW8ZSrVeys3p2x5kmcmGebz+M1u1dkEgNegBiglI3DnW3oxLD2JhdOHzFyZ1hEJDFfCEuOPhGaIkmaXJqA=");
+	}
+	
+	public WtsClient(String url, String encodedPrivateKey){
+		this.url_ = url;
+		this.privateKey = Encrypt.restorePrivateKey(encodedPrivateKey);
+	}
+	
+	public WtsClient(String url, PrivateKey privateKey){
 		this.url_ = url;
 		this.privateKey = privateKey;
 	}
@@ -86,12 +94,10 @@ public class WtsClient
 		String encodedSessionKey = decryptedAnswer.substring(decryptedAnswer.lastIndexOf("_")+1, decryptedAnswer.length());
 
 		try {
-			sessionKey = new SecretKeySpec((new BASE64Decoder()).decodeBuffer(encodedSessionKey),"AES");
-			System.out.println((new BASE64Encoder()).encode(sessionKey.getEncoded()));
+			sessionKey = new SecretKeySpec((new BASE64Decoder()).decodeBuffer(encodedSessionKey),"AES");			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		//return sessionTicket
 		return decryptedAnswer.substring(0, decryptedAnswer.lastIndexOf("_"));
 	}	
@@ -150,7 +156,7 @@ public class WtsClient
 
 		try 
 		{
-			axisService.callAndGetStringResult();
+			axisService.call();
 		} 
 		catch (RemoteException e) 
 		{
@@ -298,46 +304,5 @@ public class WtsClient
 	public String getUrl() 
 	{
 		return url_;
-	}
-
-	public static void main(String[] args) {
-		String url = "http://localhost:8080/wts/services/";
-		String testPrivateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMz1OALfr/CLLt20vxBJ/xvbwu9CUXY0CnV8YIigfIHUr7w5fPgBA4YavcVavqqqHeQgXRXV5luOLczBRnYNv6y3HBddZ5UvjLa/zr8/37OUMURhkqyB66lU8FOrV5ONslf/+1zs1Dpi83y0Yxhx0PRYub75JW7WyoVCpGz0qDELAgMBAAECgYBSk/ZmSgPUMe/HCfz1Lisn6UpIJfs2Wc9g+KTYR3kCwlOvzaXJMndd/8Y4DtDFaFc0w8ldc9olR0qytaiTBgUUc94UA+MtOM4aOjd0u9MrD59mGCG3MO1+ojjn9PMiPmXlj4QIdbu0CkWnwStrUkFr80sgUvHXSW09sM/YRj6x6QJBAOz8fO//IGO8xEnfhRIryvjHj/dnM7rYX2QMoYYvrd0Nvdxyr3t6qTEEkgNeimBmfZuG2ULn787V8fUoZUX2bS0CQQDdZuSHEbZ7GN+jq2QRh5fgsxcHSn460aM8Y9C5mN9r+w3Tq1j4qcvtrDu+ltwFInc8fEiSjQNx0jR712fi5yoXAkANp36LVWfIV1f36akBIwTO0LC60HdqjIzydsfXs2eRFPmbegAiXS7iZCEFkKzoYP9btqlN8Y8fm7QVK/6pyUkBAkEA0ImW3QY5DC88jqvjoINH8dSd7zciOIK3Ly2RLw+n+cxJlMMDFYzRUTd2Oqlb6dYx2x3xOWBrCy2EU9Vru5Qi1wJBAKPjEQW8ZSrVeys3p2x5kmcmGebz+M1u1dkEgNegBiglI3DnW3oxLD2JhdOHzFyZ1hEJDFfCEuOPhGaIkmaXJqA=";
-
-		WtsClient wc = new WtsClient(url,Encrypt.restorePrivateKey(testPrivateKey));
-
-		try {
-			String serviceName = "regadb-align";
-
-			String userName = "gbehey0";
-			String password = "bla123";
-
-			String inputFileName = "nt_sequences";
-			String inputFileName2 = "region";
-			String outputFileName = "aa_sequences";
-
-			File localLocation = new File("/home/gbehey0/wts/input");
-			File localLocation2 = new File("/home/gbehey0/wts/input2");
-			File toWrite = new File("/home/gbehey0/wts/output");
-
-			String challenge = wc.getChallenge(userName);
-			String sessionTicket = wc.login(userName, challenge, serviceName);
-
-
-			wc.upload(sessionTicket, serviceName, inputFileName, localLocation);
-			wc.upload(sessionTicket, serviceName, inputFileName2, localLocation2);
-
-			wc.start(sessionTicket, serviceName);
-			String status = wc.monitorStatus(sessionTicket, serviceName);			
-			while (!status.equals("ENDED_SUCCES")) {
-				status = wc.monitorStatus(sessionTicket, serviceName);			
-			}
-			
-			wc.download(sessionTicket, serviceName, outputFileName, toWrite);			
-//			wc.closeSession(sessionTicket, serviceName);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	}	
 }

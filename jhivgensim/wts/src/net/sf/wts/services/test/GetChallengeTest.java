@@ -1,6 +1,5 @@
 package net.sf.wts.services.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.InvalidKeyException;
@@ -15,11 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import net.sf.wts.services.CloseSessionImpl;
 import net.sf.wts.services.GetChallengeImpl;
 import net.sf.wts.services.LoginImpl;
-import net.sf.wts.services.UploadImpl;
 import net.sf.wts.services.util.Encrypt;
-
-import org.apache.commons.io.FileUtils;
-
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 

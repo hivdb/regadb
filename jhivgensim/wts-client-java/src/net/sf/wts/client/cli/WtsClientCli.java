@@ -137,7 +137,7 @@ public class WtsClientCli {
 					}
 				}
 				
-				WtsClient wtsClient = new WtsClient(url, null);
+				WtsClient wtsClient = new WtsClient(url);
 				WtsMetaClient wtsMetaClient = new WtsMetaClient(url);
 				
 				if (cmd.hasOption(servicesOption.getLongOpt())) {

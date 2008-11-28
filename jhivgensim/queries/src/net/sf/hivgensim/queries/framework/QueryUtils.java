@@ -100,6 +100,7 @@ public abstract class QueryUtils {
 		return latestVi == null ? null : latestVi.getNtSequences(); 
 	}
 	
+	
 	public static Set<NtSequence> getAllSequencesDuringTherapy(Patient p, Therapy t){
 		Set<NtSequence> result = new HashSet<NtSequence>();
 		Date stop = t.getStopDate();

@@ -23,7 +23,8 @@ public class ToFasta extends QueryOutput<NtSequence> {
 		try {
 			PrintStream out = new PrintStream(new FileOutputStream(file));
 			for(NtSequence seq : query.getOutputList()){
-				out.println(seq.getLabel());
+				out.println(">"+seq.getLabel());
+				out.println(seq.getNucleotides());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -2,15 +2,15 @@ package net.sf.wts.services;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
+import javax.crypto.CipherOutputStream;
 import javax.xml.soap.AttachmentPart;
 
+import net.sf.wts.services.util.Encrypt;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -56,12 +56,11 @@ public class UploadImpl
 		Message request = msgContext.getRequestMessage();
 
 		Iterator iterator = request.getAttachments();
-		
 		while (iterator.hasNext()) {
 			try {
 				AttachmentPart ap = (AttachmentPart) iterator.next();
 				InputStream is = ap.getDataHandler().getDataSource().getInputStream();
-				OutputStream os = new FileOutputStream(toWrite);
+				OutputStream os = new CipherOutputStream( new FileOutputStream(toWrite),Encrypt.getDecryptCipher(Sessions.getSessionKey(sessionTicket)));
 				byte[] buffer = new byte[4096];
 				int read = 0;
 				while ((read = is.read(buffer)) > 0) {
@@ -73,6 +72,6 @@ public class UploadImpl
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}		
 	}
 }
