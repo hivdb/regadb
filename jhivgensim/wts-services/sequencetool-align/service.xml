@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+	<description>
+	Align sequences to one reference sequence
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		reference.fasta	
+		</name>
+		<description>
+		A fasta file containing the reference sequence
+		</description>
+	</input>
+        <input>
+		<name>
+		sequences.fasta
+		</name>
+		<description>
+		A fasta file containing the sequences to be aligned
+		</description>
+	</input>														
+</inputs>
+
+<outputs>
+	<output>
+		<name>
+		aligned.sequences.fasta
+		</name>
+		<description>
+		A fasta file containing the aligned sequences 
+		</description>
+	</output>
+</outputs>
+</service>
