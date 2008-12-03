@@ -26,6 +26,7 @@ public class FastaScanner {
 	public FastaSequence nextSequence(){
 		String nucleotides = "";
 		String line;
+		
 		while(s.hasNextLine()){
 			line = s.nextLine();
 			if(line.contains(">")){ //new sequence

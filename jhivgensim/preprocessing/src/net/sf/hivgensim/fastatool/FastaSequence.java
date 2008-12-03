@@ -2,8 +2,8 @@ package net.sf.hivgensim.fastatool;
 
 public class FastaSequence {
 	
-	String id;
-	String sequence;
+	private String id;
+	private String sequence;
 	
 	public FastaSequence(String id, String sequence){
 		setId(id);

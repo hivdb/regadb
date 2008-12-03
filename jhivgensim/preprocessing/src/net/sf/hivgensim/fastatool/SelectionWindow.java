@@ -1,7 +1,5 @@
 package net.sf.hivgensim.fastatool;
 
-import net.sf.regadb.db.Genome;
-import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 
 public class SelectionWindow {
