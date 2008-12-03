@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import net.sf.hivgensim.fastatool.FastaScanner;
 import net.sf.hivgensim.fastatool.FastaSequence;
 import net.sf.hivgensim.fastatool.SelectionWindow;
-import net.sf.regadb.align.AlignmentResult;
 import net.sf.regadb.align.Mutation;
+import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
 
 import org.biojava.bio.BioException;
@@ -20,6 +20,7 @@ import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
+ * needs to be changed to use the regadb algorithm fully
  * 
  * 
  * @author gbehey0
@@ -53,12 +54,13 @@ public class MutationTable extends Table {
 			ids.add("SeqId");
 			addColumn(ids, 0);
 			
+			LocalAlignmentService las = new LocalAlignmentService();
 			while (scan.hasNextSequence()) {
 				fs = scan.nextSequence();
 				alignedTarget = DNATools.createDNA(fs.getSequence());
 				System.out.println(fs.getId());
 				addRow(createNewRow(fs.getId()));
-				for(Mutation m : processSequence(alignedRef,alignedTarget).getMutations()){
+				for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
 					for(SelectionWindow sw : windows){
 						if(mutationInWindow(m,sw)){
 							String protein = sw.getProtein().getAbbreviation();
@@ -115,57 +117,6 @@ public class MutationTable extends Table {
 			newrow.add("n");						
 		}
 		return newrow;		
-	}
-
-	private AlignmentResult processSequence(SymbolList alignedRef, SymbolList alignedTarget) {
-		AlignmentResult result = new AlignmentResult();
-
-		int ins = -1;
-		result.setFirstAa((firstNonGap(alignedTarget) - 1) / 3 + 1);
-		result.setLastAa((lastNonGap(alignedTarget) - 1) / 3 + 1);
-		int refAaPos = result.getFirstAa() - 1;
-
-		for (int i = result.getFirstAa(); i <= result.getLastAa(); ++i) {
-			int codonStart = (i - 1) * 3 + 1;
-			int codonEnd = i * 3;
-			SymbolList refCodon = alignedRef.subList(codonStart, codonEnd);
-			SymbolList targetCodon = alignedTarget.subList(codonStart, codonEnd);
-
-			if (refCodon.seqString().equals("---"))
-				++ins;
-			else {
-				ins = -1;
-				++refAaPos;
-			}
-
-
-			if (ins >= 0)
-				result
-				.addMutation(new Mutation(refAaPos, ins,
-						targetCodon));
-			else {
-				result.addMutation(new Mutation(refAaPos, refCodon,
-						targetCodon));
-			}
-
-		}
-		return result;
-	}
-
-	private int lastNonGap(SymbolList alignedTarget) {
-		for (int j = alignedTarget.length(); j >= 1; --j) {
-			if (alignedTarget.symbolAt(j) != alignedTarget.getAlphabet().getGapSymbol())
-				return j;
-		}
-		return -1;
-	}
-
-	private int firstNonGap(SymbolList alignedTarget) {
-		for (int j = 1; j <= alignedTarget.length(); ++j) {
-			if (alignedTarget.symbolAt(j) != alignedTarget.getAlphabet().getGapSymbol())
-				return j;
-		}
-		return alignedTarget.length() + 1;
 	}
 	
 	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
