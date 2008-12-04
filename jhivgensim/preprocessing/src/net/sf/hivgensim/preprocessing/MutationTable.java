@@ -69,7 +69,7 @@ public class MutationTable extends Table {
 								String mutString = protein + position + aatok.tokenizeSymbol(aa);
 								int nbCol = findInRow(0, mutString);
 								if(nbCol == -1){ //new mut
-									addColumn(createNewColumn(mutString,numRows()-1),findOrderedPosition(mutString));
+									addColumn(createNewColumn(mutString,numRows()-1));
 								}else{ //adjust mut
 									setValue(nbCol, numRows()-1, "y");									
 								}
@@ -85,16 +85,6 @@ public class MutationTable extends Table {
 		} catch (BioException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private int findOrderedPosition(String mutString){
-		ArrayList<String> header = getRow(0);
-		for(int i = 1 ; i<numColumns();i++){
-			if(mutString.compareTo(header.get(i)) == -1){
-				return i;
-			}
-		}
-		return numColumns();
 	}
 	
 	private ArrayList<String> createNewColumn(String mut, int index){
