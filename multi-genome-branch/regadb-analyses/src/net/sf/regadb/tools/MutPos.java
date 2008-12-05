@@ -58,7 +58,7 @@ public class MutPos {
 		for(String position : allPositions){
 			Map<String,Integer> prevalencesOnThisPosition = new HashMap<String,Integer>();
 			for(String mutation : prevalences.keySet()){
-				if(mutation.startsWith(position)){
+				if(mutation.matches(position+"[A-Z*]")){
 					prevalencesOnThisPosition.put(mutation,prevalences.get(mutation));
 				}
 			}

@@ -265,7 +265,7 @@ public class Table {
 	}
 
 	public void exportAsCsv(OutputStream output){
-		exportAsCsv(output,',',true);
+		exportAsCsv(output,',',false);
 	}
 
 	public void exportAsCsv(OutputStream output, char delimiter, boolean quotes) {

@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -422,7 +423,6 @@ public class CsvTool {
 							outputVd.flush();
 							outputIdt.flush();
 						} catch (IOException e3) {
-							// TODO Auto-generated catch block
 							e3.printStackTrace();
 						}
 					} catch (FileNotFoundException e2) {
@@ -644,7 +644,6 @@ public class CsvTool {
 			try {
 				output.flush();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 		} catch (NumberFormatException e) {
@@ -919,6 +918,7 @@ public class CsvTool {
 			AttributeValue other = (AttributeValue) arg0;
 			
 			return (count - other.count) * 1000	+ (tie - other.tie);
+			
 		}
 	}
 
@@ -930,64 +930,110 @@ public class CsvTool {
 			int numColumnsRemoved = 0;
 			
 			if (lumpValues == null) {
-				boolean hasDeleted = false;
-				int numRowsRemoved = 0;
+				
+				/*
+				 * 05 December 2008
+				 * because of disappearing wild types under certain circumstances involving mixtures
+				 * I (gbehey0) tried to put a threshold without lumpValues. However this part of the code
+				 * seemed broken (the index went out of bounds) and I wasn't able to quickly fix the old code.
+				 * I re-wrote this part (the old code is still commented a few lines down). 
+				 * 
+				 * problem before (threshold 2%):
+				 * RT65K (WT) n : 1.95 % => deleted
+				 * RT65R y : 2.4 % => not deleted
+				 * RT65E y : 0.02 % => deleted
+				 * 
+				 * problem : wild type got deleted but mutation remained due to mixtures.
+				 * solution: only delete column when occurrence of 'y' < threshold.
+				 * 
+				 * new possible problem: (threshold 2% - no mixtures): 
+				 * RT65K (WT) 	n : 5 % => ok
+				 * RT65R 		y : 4 % => ok
+				 * RT65E 		y : 1 % => deleted
+				 * 
+				 * what to do with the 1% rows containing RT65E = y ? delete rows?
+				 */
+				ArrayList<Integer> colIndicesToBeRemoved = new ArrayList<Integer>();
+				for(int i = 0; i < columns.size();i++){
+					int colindex = ((Integer)columns.get(i)).intValue();
+					Map m = (Map) histogram.get(colindex);
+					for (Iterator j = m.keySet().iterator(); j.hasNext();) {
+						String k = (String) j.next();
+						int c = ((Integer) m.get(k)).intValue();
 
-				int numIterations = 1;
-				do {
-					hasDeleted = false;
-					System.err.print("(" + numIterations + ") ");
-
-					for (int ii = 0; ii < columns.size(); ++ii) {
-						int i = ((Integer)columns.get(ii)).intValue();
-
-						Map m = (Map) histogram.get(i);
-						ArrayList smaller = new ArrayList();
-
-						for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-							String k = (String) j.next();
-							int c = ((Integer) m.get(k)).intValue();
-
-							if ((double) c / (table.numRows() - 1)
-								< threshold.doubleValue()) {
-								smaller.add(k);
-							}
+						if ((double) c / (table.numRows() - 1)
+							< threshold.doubleValue() && k.equals("y")) {
+							colIndicesToBeRemoved.add(colindex);
 						}
-
-						if (smaller.size() == m.size() - 1) {
-							table.deleteColumn(i);
-							columns.remove(ii);
-							--ii;
-							++numColumnsRemoved;
-							System.err.print("c");
-						} else {
-							for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-								String k = (String) j.next();
-								int c = ((Integer) m.get(k)).intValue();
-
-								if ((double) c / (table.numRows() - 1)
-									< threshold.doubleValue()) {
-									numRowsRemoved
-										+= table.deleteRowsWithValue(i, k);
-									hasDeleted = true;
-									System.err.print("r");
-								}
-							}
-						}
-					}
-
-					if (hasDeleted)
-						histogram = table.histogram();
-					System.err.println();
-					++numIterations;
-				} while (hasDeleted);
-
-				System.err.println(
-					"Deleted "
-						+ numRowsRemoved
-						+ " rows, "
-						+ numColumnsRemoved
-						+ " columns");
+					}					
+				}
+				
+				Collections.sort(colIndicesToBeRemoved);
+				for(int i = colIndicesToBeRemoved.size() - 1; i >= 0 ; i--){
+					table.deleteColumn(colIndicesToBeRemoved.get(i));
+				}
+				
+				//OLD CODE
+				
+//				boolean hasDeleted = false;
+//				int numRowsRemoved = 0;
+//
+//				int numIterations = 1;
+//				do {
+//					hasDeleted = false;
+//					System.err.print("(" + numIterations + ") ");
+//
+//					for (int ii = 0; ii < columns.size(); ++ii) {
+//						int i = ((Integer)columns.get(ii)).intValue();
+//
+//						Map m = (Map) histogram.get(i);
+//						ArrayList smaller = new ArrayList();
+//
+//						for (Iterator j = m.keySet().iterator(); j.hasNext();) {
+//							String k = (String) j.next();
+//							int c = ((Integer) m.get(k)).intValue();
+//
+//							if ((double) c / (table.numRows() - 1)
+//								< threshold.doubleValue()) {
+//								smaller.add(k);
+//							}
+//						}
+//
+//						if (smaller.size() == m.size() - 1) {
+//							table.deleteColumn(i);
+//							columns.remove(ii);
+//							--ii;
+//							++numColumnsRemoved;
+//							System.err.print("c");
+//						} else {
+//							for (Iterator j = m.keySet().iterator(); j.hasNext();) {
+//								String k = (String) j.next();
+//								int c = ((Integer) m.get(k)).intValue();
+//
+//								if ((double) c / (table.numRows() - 1)
+//									< threshold.doubleValue()) {
+//									numRowsRemoved
+//										+= table.deleteRowsWithValue(i, k);
+//									hasDeleted = true;
+//									System.err.print("r");
+//								}
+//							}
+//						}
+//					}
+//
+//					if (hasDeleted)
+//						histogram = table.histogram();
+//					System.err.println();
+//					++numIterations;
+//				} while (hasDeleted);
+//
+//				System.err.println(
+//					"Deleted "
+//						+ numRowsRemoved
+//						+ " rows, "
+//						+ numColumnsRemoved
+//						+ " columns");
+					
 			} else {
 				/*
 				 * For every attribute, we sort the values in ascending frequency order,
@@ -1053,6 +1099,7 @@ public class CsvTool {
 				}
 				
 				/* FIXME: assumes columns in increasing order. */
+				Collections.sort(removeColumns);
 				for (int i = removeColumns.size() - 1; i >= 0; --i) {
 					table.deleteColumn(((Integer)removeColumns.get(i)).intValue());
 				}
@@ -1071,9 +1118,17 @@ public class CsvTool {
 			System.out.print(i + ": " + table.valueAt(i, 0));
 			Map m = (Map) histogram.get(i);
 			
+			//calculate sum of values to be able to calculate %
+			Integer sum = 0; 
+			for (Iterator sumIterator = m.keySet().iterator(); sumIterator.hasNext();) {
+				String k = (String) sumIterator.next();
+				sum += (Integer) m.get(k);
+			}
+			
 			for (Iterator j = m.keySet().iterator(); j.hasNext();) {
 				String k = (String) j.next();
-				System.out.print(" " + k + "(" + m.get(k) + ")");
+				Integer number = (Integer) m.get(k);
+				System.out.print(" " + k + "(" + number + " - "+ ((((float) number)*100)/sum) +"%)");
 			}
 			System.out.println();
 		}
@@ -1116,7 +1171,7 @@ public class CsvTool {
 		System.err.println("      -p,--pattern regexp");
 		System.err.println("      [-h,--headervalues] -c,--columns c1,c2,c3,c4,...");
 		System.err.println("      -t,--threshold threshold");
-		System.err.println("      -l,--lump");
+		System.err.println("      [-l,--lump]");
 		System.err.println();
 		System.err.println("  mutation options:");
 		System.err.println("      -r,--range first-last");
