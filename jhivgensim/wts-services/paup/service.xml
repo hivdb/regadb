@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+	<description>
+	Build a tree file from a nexus file
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		phylo.fasta	
+		</name>
+		<description>
+		A fasta file containing the sequences 
+		</description>
+	</input>        														
+</inputs>
+
+<outputs>
+	<output>
+		<name>
+		tree.phy
+		</name>
+		<description>
+		A tree file containg the resulting tree 
+		</description>
+	</output>
+</outputs>
+</service>
