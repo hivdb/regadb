@@ -1,7 +1,7 @@
 package net.sf.hivgensim.queries.framework;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -18,6 +18,20 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 
 public abstract class QueryUtils {
+	
+	public static Set<NtSequence> getLatestNtSequence(Set<NtSequence> sequences){
+		ViralIsolate latest = null;
+		for(NtSequence seq : sequences){
+			if(latest == null || seq.getViralIsolate().getSampleDate().after(latest.getSampleDate())){
+				latest = seq.getViralIsolate();
+			}
+		}
+		if(latest != null){
+			return latest.getNtSequences();
+		}
+		return null;
+	}
+	
 
 	public static boolean hasClassExperience(String drugClass, Therapy t) {
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
@@ -61,7 +75,7 @@ public abstract class QueryUtils {
 				return 0;
 			}			
 		};
-
+		
 		Collections.sort(therapies,c);
 		return therapies;
 	}
@@ -91,7 +105,7 @@ public abstract class QueryUtils {
 		for(ViralIsolate vi : p.getViralIsolates()){
 			sampleDate = vi.getSampleDate();
 			if(sampleDate != null && start != null && stop!=null 
-					&& !sampleDate.before(start) && !sampleDate.after(stop)){ // sample is taken during therapy
+					&& !sampleDate.before(start) && !sampleDate.after(getWindowEndDateFor(stop))){ // sample is taken during therapy
 				if(latestVi == null || vi.getSampleDate().after(latestVi.getSampleDate())){
 					latestVi = vi;
 				}
@@ -185,6 +199,13 @@ public abstract class QueryUtils {
 			}
 		}		
 		return ok;
+	}
+	
+	public static Date getWindowEndDateFor(Date therapyStop){
+		Calendar c = Calendar.getInstance();
+		c.setTime(therapyStop);
+		c.add(Calendar.MONTH, 1); // <= edit the window time here
+		return c.getTime();
 	}
 
 }

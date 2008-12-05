@@ -11,15 +11,15 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
 
-public class GetNaiveSequences extends QueryImpl<NtSequence, Patient> {
+public class GetDrugClassNaiveSequences extends QueryImpl<NtSequence, Patient> {
 	
 	String[] drugclasses = new String[]{"Unknown","PI","NRTI","NNRTI","INI","EI"};
 
-	public GetNaiveSequences(Query<Patient> inputQuery) {
+	public GetDrugClassNaiveSequences(Query<Patient> inputQuery) {
 		super(inputQuery);
 	}
 
-	public GetNaiveSequences(Query<Patient> inputQuery, String[] drugclasses) {
+	public GetDrugClassNaiveSequences(Query<Patient> inputQuery, String[] drugclasses) {
 		super(inputQuery);
 		this.drugclasses = drugclasses;
 	}

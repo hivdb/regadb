@@ -4,10 +4,10 @@ import java.io.File;
 
 import net.sf.hivgensim.queries.GetAllSequences;
 import net.sf.hivgensim.queries.GetExperiencedSequences;
-import net.sf.hivgensim.queries.GetNaiveSequences;
+import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.GetSequenceSummary;
 import net.sf.hivgensim.queries.input.FromSnapshot;
-import net.sf.hivgensim.queries.output.ToFasta;
+import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 

@@ -11,7 +11,7 @@ import net.sf.hivgensim.queries.GetNaivePatients;
 import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.hivgensim.queries.input.FromXml;
-import net.sf.hivgensim.queries.output.ToMutationTable;
+import net.sf.hivgensim.queries.output.SequencesToCsv;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 
@@ -69,7 +69,7 @@ public class Querier {
 		long start = System.currentTimeMillis();
 		QueryImpl<NtSequence,Patient> q = new GetLatestSequencePerPatient(new GetNaivePatients(queryInput));
 		//ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
-		ToMutationTable tmt = new ToMutationTable(new File(output));
+		SequencesToCsv tmt = new SequencesToCsv(new File(output));
 		//tss.generateOutput(q);
 		tmt.generateOutput(q);
 		long stop = System.currentTimeMillis();

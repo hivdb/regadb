@@ -10,7 +10,7 @@ import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.input.FromDatabase;
-import net.sf.hivgensim.queries.output.ToMutationTable;
+import net.sf.hivgensim.queries.output.SequencesToCsv;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -76,7 +76,7 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 	public static void main(String[] args){
 		QueryInput qi = new FromDatabase("gbehey0","bla123");
 		Query<NtSequence> q = new GetExperiencedSequences(qi,new String[]{"AZT","3TC"});
-		QueryOutput<NtSequence> qo = new ToMutationTable(new File("/home/gbehey0/queries/test2"));
+		QueryOutput<NtSequence> qo = new SequencesToCsv(new File("/home/gbehey0/queries/test2"));
 		qo.generateOutput(q);
 	}
 
