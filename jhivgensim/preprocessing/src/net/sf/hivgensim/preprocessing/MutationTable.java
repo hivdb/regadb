@@ -3,6 +3,7 @@ package net.sf.hivgensim.preprocessing;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import net.sf.hivgensim.fastatool.FastaScanner;
 import net.sf.hivgensim.fastatool.FastaSequence;
@@ -15,12 +16,11 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.seq.ProteinTools;
 import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
- * needs to be changed to use the regadb algorithm fully
+ * needs to be changed to use the regadb alignment algorithm fully
  * 
  * 
  * @author gbehey0
@@ -28,87 +28,142 @@ import org.biojava.bio.symbol.SymbolList;
  */
 public class MutationTable extends Table {
 
-	SelectionWindow[] windows;
-	File fastafile;
-
-	public MutationTable(String fastaFilename, SelectionWindow[] windows) {
+	/**
+	 * create new mutationtable from fastafile
+	 * @param fastaFilename
+	 * @param windows
+	 * @throws BioException
+	 * @throws FileNotFoundException
+	 */
+	public MutationTable(String fastaFilename, SelectionWindow[] windows) throws BioException, FileNotFoundException {
 		super();
-		this.windows = windows;
-		this.fastafile = new File(fastaFilename);
-		init();
-	}
-	
-	private void init() {
-		try {
-			SymbolTokenization aatok = ProteinTools.getTAlphabet().getTokenization("token"); 
-			FastaScanner scan = new FastaScanner(fastafile);
-			if (!scan.hasNextSequence()) {
-				return; // empty file
+		createIdColumn();
+
+		FastaScanner scan = new FastaScanner(new File(fastaFilename));
+		if (!scan.hasNextSequence()) {
+			return; // empty file
+		}
+
+		SymbolTokenization aatok = ProteinTools.getTAlphabet().getTokenization("token"); 
+		SymbolList alignedRef = DNATools.createDNA(scan.nextSequence().getSequence());
+		SymbolList alignedTarget;
+		LocalAlignmentService las = new LocalAlignmentService();
+
+		FastaSequence fs;
+		while (scan.hasNextSequence()) {
+			fs = scan.nextSequence();
+			alignedTarget = DNATools.createDNA(fs.getSequence());
+			createNewRow(fs.getId());
+			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
+				for(SelectionWindow sw : windows){
+					if(mutationInWindow(m,sw)){
+						String protein = sw.getProtein().getAbbreviation();
+						int position = m.getAaPos()-(sw.getProtein().getStartPosition()/3);
+						for(Symbol aa : m.getTargetAminoAcids()){
+							String mutString = protein + position + aatok.tokenizeSymbol(aa);
+							addMutation(mutString);
+						}
+						//break; //already added so we don't need to check the mutation for other windows
+					}
+				}
 			}
-			SymbolList alignedRef = DNATools.createDNA(scan.nextSequence().getSequence());
-			SymbolList alignedTarget;
-			FastaSequence fs;
-			
-			//create id column
-			ArrayList<String> ids = new ArrayList<String>();
-			ids.add("SeqId");
-			addColumn(ids, 0);
-			
-			LocalAlignmentService las = new LocalAlignmentService();
-			while (scan.hasNextSequence()) {
-				fs = scan.nextSequence();
-				alignedTarget = DNATools.createDNA(fs.getSequence());
-				System.out.println(fs.getId());
-				addRow(createNewRow(fs.getId()));
-				for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
-					for(SelectionWindow sw : windows){
-						if(mutationInWindow(m,sw)){
-							String protein = sw.getProtein().getAbbreviation();
-							int position = m.getAaPos()-(sw.getProtein().getStartPosition()/3);
-							for(Symbol aa : m.getTargetAminoAcids()){
-								String mutString = protein + position + aatok.tokenizeSymbol(aa);
-								int nbCol = findInRow(0, mutString);
-								if(nbCol == -1){ //new mut
-									addColumn(createNewColumn(mutString,numRows()-1));
-								}else{ //adjust mut
-									setValue(nbCol, numRows()-1, "y");									
-								}
+		}				
+	}
+
+	/**
+	 * Creates a new MutationTable from a csvfile with 2 columns.
+	 * The first column contains the ids.
+	 * The second column contains the mutations seperated by commas.
+	 * 
+	 * A mutation contains of 
+	 * one char wild type AA followed by
+	 * the position in the protein followed by
+	 * one char AA mutation (optionally) followed by
+	 * /one or more (other) AA mutation(s)
+	 * 
+	 * @param csvfile
+	 */
+
+
+	public MutationTable(File csvfile){
+		super();
+		createIdColumn();
+
+		Scanner s = null;
+		try {
+			s = new Scanner(csvfile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		s.nextLine(); // ignore header
+
+		while(s.hasNextLine()){
+			String[] columns = s.nextLine().split("\t");
+			if(columns.length == 2){
+				String patientId = columns[0];
+				String[] mutations = columns[1].split(",");
+								
+				createNewRow(patientId);
+				for(String mutString : mutations){
+					if(mutString.matches("[A-Z][0-9]{1,3}[A-Z](/[A-Z])*")){
+						mutString = mutString.replaceFirst(((Character)mutString.charAt(0)).toString(), "PR");
+						String allmuts[] = mutString.split("/");
+
+						String posString = "";
+						for(String mut : allmuts){
+							mut = mut.trim();
+							if(mut.length() == 1){
+								mut = posString + mut;
+							}else{
+								posString = mut.substring(0,mut.length()-1);						
 							}
+							addMutation(mut);			
 						}
 					}
 				}
 			}
-		} catch (IllegalSymbolException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (BioException e) {
-			e.printStackTrace();
 		}
 	}
-	
-	private ArrayList<String> createNewColumn(String mut, int index){
+
+	private void createIdColumn(){
+		//create id column
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.add("id");
+		addColumn(ids, 0);
+	}
+
+	private void addMutation(String mutationString) {
+		int nbCol = findInRow(0, mutationString);
+		if(nbCol == -1){ //new mut
+			createNewColumn(mutationString);
+		}else{ //adjust mut
+			setValue(nbCol, numRows()-1, "y");									
+		}
+	}
+
+	private void createNewColumn(String mutation){
 		ArrayList<String> newcol = new ArrayList<String>(numRows());
-		newcol.add(mut);
+		newcol.add(mutation);
 		for(int i = 1;i<numRows();i++){
-			if(i != index){
+			if(i != numRows()-1){
 				newcol.add("n");
 			}else{
 				newcol.add("y");
 			}			
 		}
-		return newcol;		
+		addColumn(newcol);		
 	}
-	
-	private ArrayList<String> createNewRow(String seqid){
+
+	private void createNewRow(String id){
 		ArrayList<String> newrow = new ArrayList<String>(numColumns());
-		newrow.add(seqid);
+		newrow.add(id);
 		for(int i = 1;i<numColumns();i++){
 			newrow.add("n");						
 		}
-		return newrow;		
+		addRow(newrow);		
 	}
-	
+
 	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
 		return m.getAaPos() >= (sw.getStartCheck()/3)+1
 		&& m.getAaPos() <= (sw.getStopCheck()/3)+1;
