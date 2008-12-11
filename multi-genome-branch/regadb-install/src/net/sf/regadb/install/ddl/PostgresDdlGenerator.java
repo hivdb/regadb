@@ -1,147 +1,27 @@
 package net.sf.regadb.install.ddl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.regadb.util.reflection.PackageUtils;
 
-import org.apache.commons.io.FileUtils;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-
-public class PostgresDdlGenerator 
+public class PostgresDdlGenerator extends DdlGenerator
 {
-    public static void main(String [] args) 
+    public PostgresDdlGenerator() {
+		super("org.hibernate.dialect.PostgreSQLDialect", "org.postgresql.Driver");
+	}
+
+	public static void main(String [] args) 
     {
         String fileName = PackageUtils.getDirectoryPath("net.sf.regadb.install.ddl.schema", "regadb-install");
         PostgresDdlGenerator gen = new PostgresDdlGenerator();
-        gen.createDdl(fileName+File.separatorChar+"postgresSchema.sql");
+        gen.generate(fileName+File.separatorChar+"postgresSchema.sql");
     }
-    
-    public void createDdl(String fileName)
+
+    protected String processLine(String str) 
     {
-        Configuration config = new Configuration().configure();
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        config.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-        SchemaExport export = new SchemaExport(config);
-        export.setOutputFile(fileName);
-        export.create(true, false); 
-        
-        byte[] array = null;
-        
-        try 
-        {
-            array = FileUtils.readFileToByteArray(new File(fileName));
-        }
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        StringBuffer buffer = new StringBuffer(new String(array));
-        
-        int indexOfCreate = buffer.indexOf("create");
-        int indexOfCreateSequence = buffer.indexOf("create sequence");
-        
-        String toWrite = buffer.substring(indexOfCreateSequence).concat(buffer.substring(indexOfCreate, indexOfCreateSequence)).replaceAll(" int4", " integer ");
-        
-        try 
-        {
-            FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
-        }
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        try 
-        {
-            array = FileUtils.readFileToByteArray(new File(fileName));
-        }
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        try 
-        {
-                BufferedReader in = new BufferedReader(new FileReader(fileName));
-                
-                String str;
-                
-                buffer = new StringBuffer();
-                
-                while ((str = in.readLine()) != null) 
-                {
-                    str = processString(str);
-                    buffer.append(str+";\n");
-                }
-                
-                in.close();
-        }
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-            
-        try 
-        {
-            toWrite = buffer.toString();
-            toWrite = toWrite.replaceAll("varchar\\(255\\)", "text");
-            FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
-        }
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-        
-
-        try {
-            String line;
-            List<String> createTables = new ArrayList<String>();
-            List<String> createSequences = new ArrayList<String>();
-            List<String> createIndices = new ArrayList<String>();
-            List<String> alterTables = new ArrayList<String>();
-            LineNumberReader in = new LineNumberReader(new FileReader(fileName));
-			while((line = in.readLine())!=null) {
-				if(line.startsWith("create table")) {
-					createTables.add(line);
-				} else if(line.startsWith("create sequence")) {
-					createSequences.add(line);
-				} else if(line.startsWith("create index")) {
-					createIndices.add(line);
-				} else {
-					alterTables.add(line);
-				}
-			}
-			
-			toWrite = sortAndReturn(createTables);
-			toWrite += sortAndReturn(createSequences);
-			toWrite += sortAndReturn(createIndices);
-			toWrite += sortAndReturn(alterTables);
-			
-			FileUtils.writeByteArrayToFile(new File(fileName), toWrite.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-
-    private static String sortAndReturn(List<String> list) {
-    	java.util.Collections.sort(list);
-    	String toReturn = "";
-    	for(String l : list) {
-    		toReturn += l + "\n";
-    	}
-    	return toReturn;
-    }
-
-    private String processString(String str) 
-    {
+    	str = str.replaceAll(" int4", " integer ")
+    			 .replaceAll("varchar\\(255\\)", "text");
+    	
         if(str.startsWith("create table"))
         {
             return processCreateTable(str);
