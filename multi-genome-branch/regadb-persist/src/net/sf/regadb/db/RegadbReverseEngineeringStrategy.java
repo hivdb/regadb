@@ -32,7 +32,7 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
 
     @Override
     public String getTableIdentifierStrategyName(TableIdentifier id) {
-        return "sequence";
+        return "native";
     }
 
     @Override
