@@ -19,6 +19,8 @@ public class MsSqlDdlGenerator extends DdlGenerator
 
 	@Override
 	protected String processLine(String line) {
-		return line;
+		return line.replaceAll(" unique,",",")
+					.replaceAll("varchar\\(255\\)","text")
+					.replaceAll("varbinary\\(255\\)","varbinary(MAX)");
 	}
 }
