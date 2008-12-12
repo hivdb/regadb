@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.TestType" table="test_type" schema="public">
+  <class name="net.sf.regadb.db.TestType" table="test_type" schema="regadbschema">
     <id name="testTypeIi" type="java.lang.Integer">
       <column name="test_type_ii" />
-      <generator class="sequence">
+      <generator class="native">
         <param name="sequence">test_type_test_type_ii_seq</param>
       </generator>
     </id>

@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.AttributeNominalValue" table="attribute_nominal_value" schema="public">
+  <class name="net.sf.regadb.db.AttributeNominalValue" table="attribute_nominal_value" schema="regadbschema">
     <id name="nominalValueIi" type="java.lang.Integer">
       <column name="nominal_value_ii" />
-      <generator class="sequence">
+      <generator class="native">
         <param name="sequence">attribute_nominal_value_attribute_nominal_value_ii_seq</param>
       </generator>
     </id>

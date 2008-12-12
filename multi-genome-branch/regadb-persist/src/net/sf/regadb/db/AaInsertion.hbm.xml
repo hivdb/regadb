@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.AaInsertion" table="aa_insertion" schema="public">
+  <class name="net.sf.regadb.db.AaInsertion" table="aa_insertion" schema="regadbschema">
     <composite-id name="id" class="net.sf.regadb.db.AaInsertionId">
       <key-property name="insertionPosition" type="short">
         <column name="insertion_position" />
