@@ -16,6 +16,7 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -131,7 +132,8 @@ public class ParseConsultDB {
             String followup = text(patientEl, "Followup");
             
             if(followup!=null) {
-            	if(Utils.getAttributeValue("FOLLOW-UP", p)==null) {
+                PatientAttributeValue pav = Utils.getAttributeValue("FOLLOW-UP", p); 
+            	if(pav==null) {
 	            	if(followup.equals("intern")) {
 	            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
 	            	} else if(followup.equals("extern")) {
@@ -141,7 +143,7 @@ public class ParseConsultDB {
 	            	}
             	} else {
             		if(followup.equals("intern"))
-            			Utils.getAttributeValue("FOLLOW-UP", p).setAttributeNominalValue(WivObjects.getANVFromAbbrev(Utils.getAttributeValue("FOLLOW-UP", p).getAttribute(), "1"));
+            			pav.setAttributeNominalValue(WivObjects.getANVFromAbbrev(pav.getAttribute(), "1"));
             	}
             } else {
             	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
