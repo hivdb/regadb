@@ -43,36 +43,49 @@ public class PostgresDdlGenerator extends DdlGenerator
     
     private String processCreateTable(String str)
     {
-        String strBackup = str;
-        
-        int indexOfPrimaryKey = strBackup.indexOf("primary key");
-        
-        StringBuffer lineBuffer = null;
-        
+        String [] words = str.split(" ");
+        String s = schema+".";
+        String tableName = words[2];
+
+        StringBuffer lineBuffer = new StringBuffer(str);
+
+        //for m-n relations such as commercial_generic, the schema name is omitted
+        if(tableName.indexOf(s) == -1){
+            lineBuffer.insert(str.indexOf(tableName), s);
+        }
+        tableName = tableName.substring(tableName.lastIndexOf('.')+1);
+
+        int indexOfPrimaryKey = lineBuffer.indexOf("primary key");
         if(indexOfPrimaryKey!=-1)
         {
-            String primaryKeyArgs = strBackup.substring(indexOfPrimaryKey, strBackup.indexOf(')',indexOfPrimaryKey));
+            String primaryKeyArgs = lineBuffer.substring(indexOfPrimaryKey, lineBuffer.indexOf(")",indexOfPrimaryKey));
                 
             if(!primaryKeyArgs.contains(",") && primaryKeyArgs.contains("_ii"))
             {
-                String s = schema+".";
-                String tableName = str.substring(str.indexOf(s) + s.length(), str.indexOf(' ', str.indexOf(s)));
-                
-                lineBuffer = new StringBuffer(str);
                 int endOfPrimKeyName = str.indexOf(' ', str.indexOf('('));
                 int endOfPrimKeyArgs = str.indexOf(',', endOfPrimKeyName);
-                
+
                 lineBuffer.delete(endOfPrimKeyName, endOfPrimKeyArgs);
                 lineBuffer.insert(endOfPrimKeyName, " integer default nextval('" + tableName + "_" + tableName + "_ii_seq')");
             }
         }
         
-        return lineBuffer != null ? lineBuffer.toString() : strBackup;
+        return lineBuffer.toString();
     }
     
     private String processAlterTable(String str)
     {
         String strBackup = str;
+        String s = schema+'.';
+        
+        String [] words = str.split(" ");
+        String tableName = words[2];
+        if(tableName.indexOf(s) == -1)
+            strBackup = strBackup.replace("alter table ", "alter table "+s);
+        else
+            tableName = tableName.substring(tableName.lastIndexOf('.')+1);
+            
+        
 
         int indexOfForeignKey = strBackup.indexOf("foreign key");
         if(indexOfForeignKey!=-1)
@@ -81,9 +94,8 @@ public class PostgresDdlGenerator extends DdlGenerator
             String key = strBackup.substring(firstBracket+1, strBackup.indexOf(')', firstBracket));
             strBackup += "("+key+") ON UPDATE CASCADE";
             
-            String alterTablePublic = "alter table public.";
+            String alterTablePublic = "alter table "+ s;
             String alterTable = "alter table ";
-            String tableName = null;
             if(strBackup.indexOf(alterTablePublic)!=-1)
             {
                 alterTable = alterTablePublic;
@@ -91,7 +103,7 @@ public class PostgresDdlGenerator extends DdlGenerator
             
             if(strBackup.indexOf("add constraint ")!=-1)
             {
-                tableName = strBackup.substring(strBackup.indexOf(alterTable)+alterTable.length(),strBackup.indexOf(" ", strBackup.indexOf(alterTable)+alterTable.length()));
+                //tableName = strBackup.substring(strBackup.indexOf(alterTable)+alterTable.length(),strBackup.indexOf(" ", strBackup.indexOf(alterTable)+alterTable.length()));
                 int referenceIndex = strBackup.indexOf("references")+"references".length();
                 String referencingTable = strBackup.substring(referenceIndex, strBackup.indexOf('(', referenceIndex));
                 referencingTable = referencingTable.trim();
@@ -113,8 +125,6 @@ public class PostgresDdlGenerator extends DdlGenerator
         if(fk.length() > maxLength){
             System.err.print("truncated '"+ fk +"'("+fk.length()+") to '");
             
-            //try removing schema name
-            table = table.replace(schema+".", "");
             fk = "FK_"+ truncate(maxLength - 3, "_", table, refTable);
             
             System.err.println(fk +"'("+fk.length()+")");
