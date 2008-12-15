@@ -48,6 +48,7 @@ public abstract class DdlGenerator {
 			opOrder.add("alter");			
 
 			typeOrder = new ArrayList<String>();
+			typeOrder.add("schema");
 			typeOrder.add("sequence");
 			typeOrder.add("table");
 			typeOrder.add("index");

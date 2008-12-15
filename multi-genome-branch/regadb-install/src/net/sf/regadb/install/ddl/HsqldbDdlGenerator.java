@@ -1,18 +1,8 @@
 package net.sf.regadb.install.ddl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.regadb.util.reflection.PackageUtils;
-
-import org.apache.commons.io.FileUtils;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 public class HsqldbDdlGenerator extends DdlGenerator
 {
