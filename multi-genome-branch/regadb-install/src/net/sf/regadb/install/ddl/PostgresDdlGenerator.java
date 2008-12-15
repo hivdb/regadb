@@ -51,7 +51,7 @@ public class PostgresDdlGenerator extends DdlGenerator
 
         //for m-n relations such as commercial_generic, the schema name is omitted
         if(tableName.indexOf(s) == -1){
-            lineBuffer.insert(str.indexOf(tableName), s);
+            //lineBuffer.insert(str.indexOf(tableName), s);
         }
         tableName = tableName.substring(tableName.lastIndexOf('.')+1);
 
@@ -80,9 +80,9 @@ public class PostgresDdlGenerator extends DdlGenerator
         
         String [] words = str.split(" ");
         String tableName = words[2];
-        if(tableName.indexOf(s) == -1)
-            strBackup = strBackup.replace("alter table ", "alter table "+s);
-        else
+        if(tableName.indexOf(s) == -1){
+            //strBackup = strBackup.replace("alter table ", "alter table "+s);
+        }else
             tableName = tableName.substring(tableName.lastIndexOf('.')+1);
             
         
