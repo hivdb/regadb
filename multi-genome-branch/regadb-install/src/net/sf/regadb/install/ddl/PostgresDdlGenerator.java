@@ -1,11 +1,18 @@
 package net.sf.regadb.install.ddl;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.regadb.util.reflection.PackageUtils;
 
 public class PostgresDdlGenerator extends DdlGenerator
 {
+    private String schema = "regadbschema";
+    private int maxLength = 63;
+    
+    private Set<String> foreignKeys = new HashSet<String>();
+    
     public PostgresDdlGenerator() {
 		super("org.hibernate.dialect.PostgreSQLDialect", "org.postgresql.Driver");
 	}
@@ -48,7 +55,8 @@ public class PostgresDdlGenerator extends DdlGenerator
                 
             if(!primaryKeyArgs.contains(",") && primaryKeyArgs.contains("_ii"))
             {
-                String tableName = str.substring(str.indexOf("public.") + "public.".length(), str.indexOf(' ', str.indexOf("public.")));
+                String s = schema+".";
+                String tableName = str.substring(str.indexOf(s) + s.length(), str.indexOf(' ', str.indexOf(s)));
                 
                 lineBuffer = new StringBuffer(str);
                 int endOfPrimKeyName = str.indexOf(' ', str.indexOf('('));
@@ -87,8 +95,8 @@ public class PostgresDdlGenerator extends DdlGenerator
                 int referenceIndex = strBackup.indexOf("references")+"references".length();
                 String referencingTable = strBackup.substring(referenceIndex, strBackup.indexOf('(', referenceIndex));
                 referencingTable = referencingTable.trim();
-                referencingTable = referencingTable.replaceAll("public.", "");
-                String fk_name = "\"FK_"+tableName+"_"+referencingTable+'\"';
+                referencingTable = referencingTable.replaceAll(schema+".", "");
+                String fk_name = '"'+ getForeignKey(tableName, referencingTable) +'"';
                 StringBuffer strBuffer = new StringBuffer(strBackup);
                 int indexOfAddConstraint = strBuffer.indexOf("add constraint ")+"add constraint ".length();
                 strBuffer.delete(indexOfAddConstraint, strBackup.indexOf(" ", indexOfAddConstraint));
@@ -98,5 +106,22 @@ public class PostgresDdlGenerator extends DdlGenerator
         }
         
         return strBackup;
+    }
+    
+    private String getForeignKey(String table, String refTable){
+        String fk = "FK_"+table+"_"+refTable;
+        if(fk.length() > maxLength){
+            System.err.print("truncated '"+ fk +"'("+fk.length()+") to '");
+            
+            //try removing schema name
+            table = table.replace(schema+".", "");
+            fk = "FK_"+ truncate(maxLength - 3, "_", table, refTable);
+            
+            System.err.println(fk +"'("+fk.length()+")");
+        }
+        
+        if(!foreignKeys.add(fk))
+            System.out.println("duplicate foreign key: "+ fk);
+        return fk;
     }
 }

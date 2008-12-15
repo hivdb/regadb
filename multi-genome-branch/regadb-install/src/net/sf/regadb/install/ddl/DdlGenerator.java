@@ -160,4 +160,29 @@ public abstract class DdlGenerator {
 	public String getDriver() {
 		return driver;
 	}
+	
+    public static String truncate(int max, String delim, String s1, String s2){
+        String ret=s1 +"_"+ s2;
+        
+        if(ret.length() > max){
+            String [] w1 = s1.split(delim);
+            String [] w2 = s2.split(delim);
+            
+            int i=0;
+            int j=Math.min(w1.length, w2.length);
+            while(i < j && w1[i].equals(w2[i]))
+                ++i;
+            
+            ret = "";
+            for(j=0; j<i; ++j)
+                ret += delim+w1[j];
+            for(j = i; j < w1.length; ++j)
+                ret += delim+w1[j];
+            for(j = i; j < w2.length; ++j)
+                ret += delim+w2[j];
+            
+            ret = ret.substring(1);
+        }
+        return ret;
+    }
 }
