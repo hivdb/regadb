@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -152,7 +151,7 @@ public class CsvTool {
 				result.exportAsCsv(output);
 			} else if (command.equals("select-columns")) {
 				Table table = new Table(input, true);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 
 				table.readSelectedColumns(input, selected, output);
 		
@@ -165,18 +164,18 @@ public class CsvTool {
 			} else if (command.equals("not-columns") || command.equals("prune-columns")) {
 				Table table = new Table(input, true);
 
-				ArrayList selected = null;
+				ArrayList<Integer> selected = null;
 				if (command.equals("prune-columns")) {
 					selected = selectPruneColumns(table);
 				} else {
 					selected = selectColumns(table, range, pattern, columns, headerValue);
 				}
 
-				ArrayList inverse = new ArrayList();		
+				ArrayList<Integer> inverse = new ArrayList<Integer>();		
 				for (int ii = 0; ii < table.numColumns(); ++ii) {
 					boolean found = false;
 					for (int i = 0; i < selected.size(); ++i) {
-						int c = ((Integer) selected.get(i)).intValue();
+						int c = selected.get(i);
 						if (c == ii) {
 							found = true;
 							break;
@@ -192,14 +191,14 @@ public class CsvTool {
 				boolean invertSelection = command.equals("not-rows");
 				Table table = new Table(input, false);
 
-				ArrayList selected = selectColumns(table, null, null, whereColumn, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, null, null, whereColumn, headerValue);
 
 				if (selected.size() != 1) {
 					System.err.println("cvstool select-rows -w: Only one column may be selected.");
 					System.exit(1);
 				}
 				
-				int c = ((Integer) selected.get(0)).intValue();
+				int c = selected.get(0);
 				
 				Table result = new Table();
 				result.rows.add(table.rows.get(0));
@@ -221,19 +220,19 @@ public class CsvTool {
 					printUsageAndExit();
 
 				Table table = new Table(input, false);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 				Pattern p = Pattern.compile(value);
 				Pattern sp = null;
 
 				int whereColumnId = -1;
 
 				if (whereColumn != null && selectValue != null) {
-					ArrayList whereColumns = selectColumns(table, null, null, whereColumn, headerValue);
+					ArrayList<Integer> whereColumns = selectColumns(table, null, null, whereColumn, headerValue);
 					if (whereColumns.size() != 1) {
 						System.err.println("cvstool edit -w: only column may be selected.");
 						System.exit(1);
 					}
-					whereColumnId = ((Integer) whereColumns.get(0)).intValue();
+					whereColumnId = whereColumns.get(0);
 					sp = Pattern.compile(selectValue);
 				}
 
@@ -246,7 +245,7 @@ public class CsvTool {
 					
 					if (matches) {
 						for (int i = 0; i < selected.size(); ++i) {
-							int c = ((Integer) selected.get(i)).intValue();
+							int c = selected.get(i);
 							Matcher m = p.matcher(table.valueAt(c, j));
 						
 							if (m.matches()) {
@@ -279,10 +278,10 @@ public class CsvTool {
 					sampleCount = (int) sampleSize.doubleValue();
 				System.err.println("SampleCount: " + sampleCount);
 
-				Iterator i = null;
+				Iterator<String> i = null;
 				for (;;) {
-					ArrayList resultRows = new ArrayList();
-					ArrayList alternativeRows = new ArrayList();
+					ArrayList<Integer> resultRows = new ArrayList<Integer>();
+					ArrayList<Integer> alternativeRows = new ArrayList<Integer>();
 					int count;
 
 					if (stratificationColumn != null) {
@@ -290,7 +289,7 @@ public class CsvTool {
 						 * sample within each stratum: for each value of stratification column.
 						 */
 						int stratificationC = getColumn(table, headerValue, stratificationColumn);
-						Map stratHistogam = table.histogram(stratificationC);
+						Map<String,Integer> stratHistogam = table.histogram(stratificationC);
 
 						if (i == null)
 							i = stratHistogam.keySet().iterator();
@@ -298,7 +297,7 @@ public class CsvTool {
 						if (!i.hasNext())
 							break;
 
-						String value2 = (String) i.next();
+						String value2 = i.next();
 						for (int j = 1; j < table.numRows(); ++j) {
 							if (table.valueAt(stratificationC, j).equals(value2)) {
 								resultRows.add(new Integer(j));
@@ -320,7 +319,7 @@ public class CsvTool {
 					}
 				
 					for (int j = 0; j < resultRows.size(); ++j) {
-						int k = ((Integer) resultRows.get(j)).intValue();
+						int k = resultRows.get(j);
 
 						//System.err.println(k);
 					
@@ -329,7 +328,7 @@ public class CsvTool {
 
 					if (result2 != null) {
 						for (int j = 0; j < alternativeRows.size(); ++j) {
-							int k = ((Integer) alternativeRows.get(j)).intValue();
+							int k = alternativeRows.get(j);
 
 							//System.err.println(k);
 					
@@ -355,11 +354,11 @@ public class CsvTool {
 					 * resample within each stratum: for each value of stratification column.
 					 */
 					int stratificationC = getColumn(table, headerValue, stratificationColumn);
-					Map stratHistogam = table.histogram(stratificationC);
+					Map<String,Integer> stratHistogam = table.histogram(stratificationC);
 
-					for (Iterator i = stratHistogam.keySet().iterator(); i.hasNext();) {
-						String value2 = (String) i.next();
-						int count = ((Integer) stratHistogam.get(value2)).intValue();
+					for (Iterator<String> i = stratHistogam.keySet().iterator(); i.hasNext();) {
+						String value2 = i.next();
+						int count = stratHistogam.get(value2);
 						int rows[] = new int[count];
 						
 						int r = 0;
@@ -401,7 +400,7 @@ public class CsvTool {
 				table.exportAsSpss(output);
 			} else if (command.equals("histogram")) {
 				Table table = new Table(input, false);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 				histogram(selected, table, output, threshold, lumpValues);
 			} else if (command.equals("stratify")) {
 				Table table = new Table(input, false);
@@ -432,14 +431,14 @@ public class CsvTool {
 				}
 			} else if (command.equals("concat")) {
 				Table table = new Table(input, false);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 
-				ArrayList concatenated = new ArrayList();
+				ArrayList<String> concatenated = new ArrayList<String>();
 				concatenated.add(targetColumn);
 				for (int i = 1; i < table.numRows(); ++i) {
 					String v = "";
 					for (int j = 0; j < selected.size(); ++j) {
-						int c = ((Integer) selected.get(j)).intValue();
+						int c = selected.get(j);
 						if (j != 0)
 							v += "_";
 						v += table.valueAt(c, i);		
@@ -452,18 +451,18 @@ public class CsvTool {
 				table.exportAsCsv(output);
 			} else if (command.equals("contingency")) {
 				Table table = new Table(input, false);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 
-				ArrayList histogram = table.histogram();
+				ArrayList<Map<String,Integer>> histogram = table.histogram();
 
-				int i1 = ((Integer) selected.get(0)).intValue();
-				int i2 = ((Integer) selected.get(1)).intValue();
+				int i1 = selected.get(0);
+				int i2 = selected.get(1);
 				int i3 = -1;
 				if (selected.size() > 2)
-					i3 = ((Integer) selected.get(2)).intValue();
-				ArrayList entries1 = new ArrayList(((Map) histogram.get(i1)).keySet());
-				ArrayList entries2 = new ArrayList(((Map) histogram.get(i2)).keySet());
-				ArrayList entries3 = (i3 != -1 ? new ArrayList(((Map) histogram.get(i3)).keySet()) : null);
+					i3 = selected.get(2);
+				ArrayList<String> entries1 = new ArrayList<String>(histogram.get(i1).keySet());
+				ArrayList<String> entries2 = new ArrayList<String>(histogram.get(i2).keySet());
+				ArrayList<String> entries3 = (i3 != -1 ? new ArrayList<String>(histogram.get(i3).keySet()) : null);
 
 				for (int j = 0; j < entries2.size(); ++j) {
 					System.out.print("\t" + entries2.get(j));
@@ -474,7 +473,7 @@ public class CsvTool {
 					printContingencyTable(table, i1, i2, entries1, entries2, -1, null);				
 				} else {
 					for (int j = 0; j < entries3.size(); ++j) {
-						String v3 = (String) entries3.get(j);
+						String v3 = entries3.get(j);
 						System.out.println(table.valueAt(i3, 0) + "=" + v3 + ":");
 
 						printContingencyTable(table, i1, i2, entries1, entries2, i3, v3);
@@ -482,26 +481,26 @@ public class CsvTool {
 				}
 			} else if (command.equals("mutation")) {
 				Table table = new Table(input, false);
-				ArrayList selected = selectColumns(table, range, pattern, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, range, pattern, columns, headerValue);
 				
-				ArrayList histogram = table.histogram();
+				ArrayList<Map<String,Integer>> histogram = table.histogram();
 
 				for (int i = 0; i < selected.size(); ++i) {
-					int c = ((Integer) selected.get(i)).intValue();
+					int c = selected.get(i);
 					
-					Map m = (Map) histogram.get(c);
-					Map corrected = new HashMap();
+					Map<String,Integer> m = histogram.get(c);
+					Map<String,Integer> corrected = new HashMap<String,Integer>();
 
 					/**
 					 * Make a corrected map with decomposed counts.
 					 */
-					for (Iterator it = m.keySet().iterator(); it.hasNext();) {
-						String v = (String) it.next();
-						int count = ((Integer) m.get(v)).intValue();
+					for (Iterator<String> it = m.keySet().iterator(); it.hasNext();) {
+						String v = it.next();
+						int count = m.get(v);
 						
 						if (v.length() == 1) {
 							if (corrected.containsKey(v))
-								count += ((Integer) corrected.get(v)).intValue();
+								count += corrected.get(v);
 							
 							corrected.put(v, new Integer(count));
 						} else {
@@ -510,7 +509,7 @@ public class CsvTool {
 								int dcount = count;
 
 								if (corrected.containsKey(d))
-									dcount += ((Integer) corrected.get(d)).intValue();
+									dcount += corrected.get(d);
 								
 								corrected.put(d, new Integer(dcount));
 							}
@@ -520,11 +519,11 @@ public class CsvTool {
 					/**
 					 * Sort the decomposed counts.
 					 */
-					SortedSet values = new TreeSet();
+					SortedSet <AttributeValue> values = new TreeSet<AttributeValue>();
 					int l = 0;
-					for (Iterator j = corrected.keySet().iterator(); j.hasNext(); ++l) {					
-						String k = (String) j.next();
-						int count = ((Integer) corrected.get(k)).intValue();
+					for (Iterator<String> j = corrected.keySet().iterator(); j.hasNext(); ++l) {					
+						String k = j.next();
+						int count = corrected.get(k);
 						values.add(new AttributeValue(k, count, l));
 					}
 
@@ -551,8 +550,8 @@ public class CsvTool {
 								/*
 								 * lookup the count of 'd', and compare it with the threshold
 								 */
-								for (Iterator it = values.iterator(); it.hasNext();) {
-									AttributeValue attvalue = (AttributeValue) it.next();
+								for (Iterator<AttributeValue> it = values.iterator(); it.hasNext();) {
+									AttributeValue attvalue = it.next();
 									if (attvalue.name.equals(d)) {
 										if (bestFreq >= count_threshold) {
 											if ((attvalue.count >= count_threshold)
@@ -583,14 +582,14 @@ public class CsvTool {
 				
 				Table table = new Table(input, false);
 
-				ArrayList selected = selectColumns(table, null, null, columns, headerValue);
+				ArrayList<Integer> selected = selectColumns(table, null, null, columns, headerValue);
 
 				if (selected.size() != 1) {
 					System.err.println("discretize: only one column can be discretized");
 					System.exit(1);
 				}
 				
-				int column = ((Integer) selected.get(0)).intValue();
+				int column = selected.get(0);
 				
 				double minValue = Double.MAX_VALUE;
 				double maxValue = Double.MIN_VALUE;
@@ -607,7 +606,7 @@ public class CsvTool {
 				
 				System.err.println("range: " + minValue + " - " + maxValue);
 				
-				ArrayList levels = new ArrayList();
+				ArrayList<String> levels = new ArrayList<String>();
 				double levelSize = (maxValue - minValue) / (numLevels.doubleValue());
 				
 				NumberFormat format = NumberFormat.getInstance();
@@ -622,7 +621,7 @@ public class CsvTool {
 				}
 				System.err.println();
 				
-				ArrayList discretized = new ArrayList();
+				ArrayList<String> discretized = new ArrayList<String>();
 				discretized.add(targetColumn);
 				for (int j = 1; j < table.numRows(); ++j) {
 					if (!table.valueAt(column, j).equals("")) {
@@ -651,8 +650,8 @@ public class CsvTool {
 		}
 	}
 
-	private static void printContingencyTable(Table table, int i1, int i2, ArrayList entries1,
-											  ArrayList entries2, int i3, String v3) {
+	private static void printContingencyTable(Table table, int i1, int i2, ArrayList<String> entries1,
+											  ArrayList<String> entries2, int i3, String v3) {
 		int contingency[][] = new int[entries1.size()][entries2.size()];
 
 		for (int j = 1; j < table.numRows(); ++j) {
@@ -690,15 +689,15 @@ public class CsvTool {
 		 * 
 		 * Randomly delete rows within each stratificationC.
 		 */
-		HashMap stratValues = new HashMap(); // in it a pair of ArrayLists, with row ids of 'value' and 'non-value' rows.
+		HashMap<String,ArrayList<Integer>[]> stratValues = new HashMap<String,ArrayList<Integer>[]>(); // in it a pair of ArrayLists, with row ids of 'value' and 'non-value' rows.
 		
 		for (int j = 1; j < table.numRows(); ++j) {
 			String stratV = table.valueAt(stratificationC, j);
 			String targetV = table.valueAt(targetC, j);
 			
-			ArrayList al[] = (ArrayList[]) stratValues.get(stratV);
+			ArrayList<Integer> al[] = stratValues.get(stratV);
 			if (al == null) {
-				al = new ArrayList[] { new ArrayList(), new ArrayList() };
+				al = new ArrayList[]{ new ArrayList<Integer>(), new ArrayList<Integer>()};
 			}
 
 			al[targetV.equals(value) ? 0 : 1].add(new Integer(j));
@@ -708,10 +707,10 @@ public class CsvTool {
 		
 		double minValueFrac = 1.;
 
-		for (Iterator i = stratValues.keySet().iterator(); i.hasNext();) {
-			String stratV = (String) i.next();
+		for (Iterator<String> i = stratValues.keySet().iterator(); i.hasNext();) {
+			String stratV = i.next();
 			
-			ArrayList al[] = (ArrayList[]) stratValues.get(stratV);
+			ArrayList<Integer> al[] = stratValues.get(stratV);
 			
 			double valueFrac = (double) al[0].size() / (al[0].size() + al[1].size());
 			
@@ -723,10 +722,10 @@ public class CsvTool {
 		Table result = new Table();
 		result.rows.add(table.rows.get(0));
 
-		for (Iterator i = stratValues.keySet().iterator(); i.hasNext();) {
-			String stratV = (String) i.next();
+		for (Iterator<String> i = stratValues.keySet().iterator(); i.hasNext();) {
+			String stratV = i.next();
 			
-			ArrayList al[] = (ArrayList[]) stratValues.get(stratV);
+			ArrayList<Integer> al[] = stratValues.get(stratV);
 
 			double valueFrac = (double) al[0].size() / (al[0].size() + al[1].size());
 			
@@ -749,7 +748,7 @@ public class CsvTool {
 			for (int j = 0; j < value0Keep; ++j) {
 				int k = (int) (Math.random() * al[0].size());
 				//System.err.println(k);
-				int r = ((Integer) al[0].get(k)).intValue();
+				int r = al[0].get(k);
 
 				result.rows.add(table.rows.get(r));
 				al[0].remove(k);
@@ -757,7 +756,7 @@ public class CsvTool {
 
 			for (int j = 0; j < value1Keep; ++j) {
 				int k = (int) (Math.random() * al[1].size());
-				int r = ((Integer) al[1].get(k)).intValue();
+				int r = al[1].get(k).intValue();
 
 				result.rows.add(table.rows.get(r));
 				al[1].remove(k);
@@ -785,31 +784,31 @@ public class CsvTool {
 		}
 	}
 
-	private static ArrayList selectPruneColumns(Table table) {
-		ArrayList result = new ArrayList();
+	private static ArrayList<Integer> selectPruneColumns(Table table) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
 
-		ArrayList histogram = table.histogram();
-		Map posMap = new HashMap(); // of ArrayList with indexes
+		ArrayList<Map<String, Integer>> histogram = table.histogram();
+		Map<String,ArrayList<Integer>> posMap = new HashMap<String,ArrayList<Integer>>(); // of ArrayList with indexes
 		
 		for (int i = 0; i < table.numColumns(); ++i) {
 			String cName = table.valueAt(i, 0);
 			String posName = cName.substring(0, cName.length() - 1);
 			
 			if (!posMap.containsKey(posName))
-				posMap.put(posName, new ArrayList());
+				posMap.put(posName, new ArrayList<Integer>());
 
-			((ArrayList) posMap.get(posName)).add(new Integer(i));
+			posMap.get(posName).add(new Integer(i));
 		}
 
-		for (Iterator j = posMap.keySet().iterator(); j.hasNext();) {
-			String posName = (String) j.next();
-			ArrayList ii = (ArrayList) posMap.get(posName);
+		for (Iterator<String> j = posMap.keySet().iterator(); j.hasNext();) {
+			String posName = j.next();
+			ArrayList<Integer> ii = posMap.get(posName);
 			
 			if (ii.size() != 2)
 				continue;
 			
-			float f1 = computeEntropy((Map) histogram.get(((Integer) ii.get(0)).intValue()), table.numRows() - 1);
-			float f2 = computeEntropy((Map) histogram.get(((Integer) ii.get(1)).intValue()), table.numRows() - 1);
+			float f1 = computeEntropy(histogram.get(ii.get(0)), table.numRows() - 1);
+			float f2 = computeEntropy(histogram.get(ii.get(1)), table.numRows() - 1);
 			
 			if (f1 > f2)
 				result.add(ii.get(1));
@@ -820,22 +819,21 @@ public class CsvTool {
 		return result;
 	}
 
-	private static float computeEntropy(Map map, int size) {
+	private static float computeEntropy(Map<String,Integer> map, int size) {
 		float result = 0;
 
-		for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+		for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 			String k = (String) i.next();
-			float p = ((float) ((Integer) map.get(k)).intValue()) / size;
+			float p = ((float) map.get(k)) / size;
 			result += -p * Math.log(p)/Math.log(2);
 		}
-		
 		return result;
 	}
 
-	private static ArrayList selectColumns(Table table,
+	private static ArrayList<Integer> selectColumns(Table table,
 									  	   String range, String pattern, String columns,
 									  	   Boolean headerValue) {
-		ArrayList result = new ArrayList();
+		ArrayList<Integer> result = new ArrayList<Integer>();
 		if (range != null) {
 			if (pattern != null || columns != null) {
 				System.err.println("-r cannot be combined with -c or -p");
@@ -903,231 +901,39 @@ public class CsvTool {
 		return result;
 	}
 
-	private static class AttributeValue implements Comparable {
-		String name;
-		int count;
-		int tie;
-		
-		AttributeValue(String name, int count, int tie) {
-			this.name = name;
-			this.count = count;
-			this.tie = tie;
-		}
+	
 
-		public int compareTo(Object arg0) {
-			AttributeValue other = (AttributeValue) arg0;
-			
-			return (count - other.count) * 1000	+ (tie - other.tie);
-			
-		}
-	}
-
-	private static void histogram(ArrayList columns, Table table, OutputStream output,
+	private static void histogram(ArrayList<Integer> columns, Table table, OutputStream output,
 								  Double threshold, Boolean lumpValues) {
-		ArrayList histogram = table.histogram();
+		ArrayList<Map<String,Integer>> histogram = table.histogram();
 
 		if (threshold != null) {
-			int numColumnsRemoved = 0;
-			
 			if (lumpValues == null) {
-				
-				/*
-				 * 05 December 2008
-				 * because of disappearing wild types under certain circumstances involving mixtures
-				 * I (gbehey0) tried to put a threshold without lumpValues. However this part of the code
-				 * seemed broken (the index went out of bounds) and I wasn't able to quickly fix the old code.
-				 * I re-wrote this part (the old code is still commented a few lines down). 
-				 * 
-				 * problem before (threshold 2%):
-				 * RT65K (WT) n : 1.95 % => deleted
-				 * RT65R y : 2.4 % => not deleted
-				 * RT65E y : 0.02 % => deleted
-				 * 
-				 * problem : wild type got deleted but mutation remained due to mixtures.
-				 * solution: only delete column when occurrence of 'y' < threshold.
-				 * 
-				 * new possible problem: (threshold 2% - no mixtures): 
-				 * RT65K (WT) 	n : 5 % => ok
-				 * RT65R 		y : 4 % => ok
-				 * RT65E 		y : 1 % => deleted
-				 * 
-				 * what to do with the 1% rows containing RT65E = y ? delete rows?
-				 */
-				ArrayList<Integer> colIndicesToBeRemoved = new ArrayList<Integer>();
-				for(int i = 0; i < columns.size();i++){
-					int colindex = ((Integer)columns.get(i)).intValue();
-					Map m = (Map) histogram.get(colindex);
-					for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-						String k = (String) j.next();
-						int c = ((Integer) m.get(k)).intValue();
-
-						if ((double) c / (table.numRows() - 1)
-							< threshold.doubleValue() && k.equals("y")) {
-							colIndicesToBeRemoved.add(colindex);
-						}
-					}					
-				}
-				
-				Collections.sort(colIndicesToBeRemoved);
-				for(int i = colIndicesToBeRemoved.size() - 1; i >= 0 ; i--){
-					table.deleteColumn(colIndicesToBeRemoved.get(i));
-				}
-				
-				//OLD CODE
-				
-//				boolean hasDeleted = false;
-//				int numRowsRemoved = 0;
-//
-//				int numIterations = 1;
-//				do {
-//					hasDeleted = false;
-//					System.err.print("(" + numIterations + ") ");
-//
-//					for (int ii = 0; ii < columns.size(); ++ii) {
-//						int i = ((Integer)columns.get(ii)).intValue();
-//
-//						Map m = (Map) histogram.get(i);
-//						ArrayList smaller = new ArrayList();
-//
-//						for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-//							String k = (String) j.next();
-//							int c = ((Integer) m.get(k)).intValue();
-//
-//							if ((double) c / (table.numRows() - 1)
-//								< threshold.doubleValue()) {
-//								smaller.add(k);
-//							}
-//						}
-//
-//						if (smaller.size() == m.size() - 1) {
-//							table.deleteColumn(i);
-//							columns.remove(ii);
-//							--ii;
-//							++numColumnsRemoved;
-//							System.err.print("c");
-//						} else {
-//							for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-//								String k = (String) j.next();
-//								int c = ((Integer) m.get(k)).intValue();
-//
-//								if ((double) c / (table.numRows() - 1)
-//									< threshold.doubleValue()) {
-//									numRowsRemoved
-//										+= table.deleteRowsWithValue(i, k);
-//									hasDeleted = true;
-//									System.err.print("r");
-//								}
-//							}
-//						}
-//					}
-//
-//					if (hasDeleted)
-//						histogram = table.histogram();
-//					System.err.println();
-//					++numIterations;
-//				} while (hasDeleted);
-//
-//				System.err.println(
-//					"Deleted "
-//						+ numRowsRemoved
-//						+ " rows, "
-//						+ numColumnsRemoved
-//						+ " columns");
-					
-			} else {
-				/*
-				 * For every attribute, we sort the values in ascending frequency order,
-				 * and lump the last value together with the preceding one until the last
-				 * one is above the threshold
-				 */
-				ArrayList removeColumns = new ArrayList();
-
-				for (int ii = 0; ii < columns.size(); ++ii) {
-					int i = ((Integer)columns.get(ii)).intValue();
-
-					Map m = (Map) histogram.get(i);
-
-					SortedSet values = new TreeSet();
-					int l = 0;
-					for (Iterator j = m.keySet().iterator(); j.hasNext(); ++l) {					
-						String k = (String) j.next();
-						int c = ((Integer) m.get(k)).intValue();
-						values.add(new AttributeValue(k, c, l));
-					}
-					
-					boolean again = false;
-					do {
-						again = false;
-						Iterator it = values.iterator();
-						AttributeValue v = (AttributeValue) it.next();
-
-						if ((double) v.count / (table.numRows() - 1)
-							< threshold.doubleValue()) {
-                            if (it.hasNext()) {                            
-                                /*
-							     * lump together with next value.
-							     */
-							  AttributeValue v2 = (AttributeValue) it.next();
-
-							  values.remove(v);
-							  values.remove(v2);
-
-							  v2.count += v.count;
-							  String oldv2name = v2.name;
-							  v2.name = v2.name + "/" + v.name;
-
-							  values.add(v2);
-
-							  for (int j = 1; j < table.numRows(); ++j) {
-								  if (table.valueAt(i, j).equals(v.name)
-									  || table.valueAt(i, j).equals(oldv2name)) {
-									  table.setValue(i, j, v2.name);
-								  }
-							  }
-
-							  System.err.print(".");
-
-							  again = true;
-                            }
-						}
-					} while (again);
-					
-					if (values.size() == 1) {
-						removeColumns.add(new Integer(i));
-						System.err.print("c");					
-					}
-				}
-				
-				/* FIXME: assumes columns in increasing order. */
-				Collections.sort(removeColumns);
-				for (int i = removeColumns.size() - 1; i >= 0; --i) {
-					table.deleteColumn(((Integer)removeColumns.get(i)).intValue());
-				}
-
-				System.err.println();
-				System.err.println("Removed " + removeColumns.size() + " columns.");
-				histogram = table.histogram();
-			}
+				table.removeLowPrevalenceMutations(threshold, false);
+			}else{
+				table.removeLowPrevalenceMutations(threshold, true);
+			}			
 			table.exportAsCsv(output);
-		} else
+		} else {
 			printHistogram(table, histogram);
+		}
 	}
 
-	private static void printHistogram(Table table, ArrayList histogram) {
+	private static void printHistogram(Table table, ArrayList<Map<String,Integer>> histogram) {
 		for (int i = 0; i < histogram.size(); ++i) {
 			System.out.print(i + ": " + table.valueAt(i, 0));
-			Map m = (Map) histogram.get(i);
+			Map<String,Integer> m = histogram.get(i);
 			
 			//calculate sum of values to be able to calculate %
 			Integer sum = 0; 
-			for (Iterator sumIterator = m.keySet().iterator(); sumIterator.hasNext();) {
-				String k = (String) sumIterator.next();
-				sum += (Integer) m.get(k);
+			for (Iterator<String> sumIterator = m.keySet().iterator(); sumIterator.hasNext();) {
+				String k = sumIterator.next();
+				sum += m.get(k);
 			}
 			
-			for (Iterator j = m.keySet().iterator(); j.hasNext();) {
-				String k = (String) j.next();
-				Integer number = (Integer) m.get(k);
+			for (Iterator<String> j = m.keySet().iterator(); j.hasNext();) {
+				String k = j.next();
+				Integer number = m.get(k);
 				System.out.print(" " + k + "(" + number + " - "+ ((((float) number)*100)/sum) +"%)");
 			}
 			System.out.println();
@@ -1138,7 +944,7 @@ public class CsvTool {
 		System.err.println("usage:");
 		System.err.println();
 		System.err.println("csvtool (select-columns|not-columns|prune-columns|edit|arff|spss|histogram");
-		System.err.println("         |mutation|vd|sample|bootstrap|stratify|discretize) options");
+		System.err.println("         |mutation|vd|sample|bootstrap|stratify|discretize|concat|contingency) options");
 		System.err.println();
 		System.err.println("  general options:");
 		System.err.println("      -i,--in infile.csv");
@@ -1202,6 +1008,9 @@ public class CsvTool {
 		System.err.println("      -p,--pattern regexp");
 		System.err.println("      [-h,--headervalues] -c,--columns c");
 		System.err.println("      -y,--targetcolumn c");
+		System.err.println();
+		System.err.println("  contingency options:");
+		System.err.println("      [-h,--headervalues] -c,--columns c");
 		System.exit(2);
 	}
 }
