@@ -1,0 +1,33 @@
+<project name="hivgensim" default="run" basedir=".">
+	<description>
+        	build file for main hivgensim script
+    	</description>
+
+	<path id="classp">
+        <fileset dir="/usr/share/regadb/regadb-persist">
+	    	<include name="*.jar"/>		 
+	    </fileset>
+		<fileset dir="/usr/share/regadb/jhivgensim-queries">
+	  		<include name="*.jar"/>		 
+		</fileset>
+		<fileset dir="/home/gbehey0/xerces">
+			<include name="*.jar"/>
+        </fileset>
+      	</path>
+
+	<target name="compile" description="compile the source">
+    		<javac srcdir="." destdir=".">  		    	
+			<classpath refid="classp"/>
+			</javac>
+	</target>
+
+	<target name="run" description="run" depends="compile">
+		<java classname="Main">
+			<classpath refid="classp" />
+		</java>
+	</target>
+
+	<target name="clean" description="remove class files">
+		<delete file="Main.class" />
+	</target>
+</project>
