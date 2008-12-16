@@ -1,6 +1,7 @@
 package net.sf.hivgensim.preprocessing;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -29,7 +30,80 @@ import org.biojava.bio.symbol.SymbolList;
 public class MutationTable extends Table {
 
 	/**
-	 * create new mutationtable from fastafile
+	 * Creates a new MutationTable from a csvfile with 2 columns.
+	 * The first column contains the ids.
+	 * The second column contains the mutations separated by commas.
+	 * 
+	 * A mutation contains of 
+	 * one char wild type AA followed by
+	 * the position in the protein followed by
+	 * one char AA mutation (optionally) followed by
+	 * /one or more (other) AA mutation(s)
+	 * 
+	 * @param csvfile
+	 */
+
+	public static MutationTable parseMutationTable(File csvfile){
+		MutationTable mt = new MutationTable();
+		mt.createIdColumn();
+
+		Scanner s = null;
+		try {
+			s = new Scanner(csvfile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		s.nextLine(); // ignore header
+
+		while(s.hasNextLine()){
+			String[] columns = s.nextLine().split("\t");
+			if(columns.length == 2){
+				String patientId = columns[0];
+				String[] mutations = columns[1].split(",");
+
+				mt.createNewRow(patientId);
+				for(String mutString : mutations){
+					if(mutString.matches("[A-Z][0-9]{1,3}[A-Z](/[A-Z])*")){
+						mutString = mutString.replaceFirst(((Character)mutString.charAt(0)).toString(), "PR");
+						String allmuts[] = mutString.split("/");
+
+						String posString = "";
+						for(String mut : allmuts){
+							mut = mut.trim();
+							if(mut.length() == 1){
+								mut = posString + mut;
+							}else{
+								posString = mut.substring(0,mut.length()-1);						
+							}
+							mt.addMutation(mut);			
+						}
+					}
+				}
+			}
+		}
+		return mt;
+	}
+	
+	/**
+	 * default constructor
+	 */
+	private MutationTable() {
+		super();
+	}
+
+	/**
+	 * create a new mutationtable from a  csv-exported mutationtable
+	 * 
+	 * @param file
+	 * @throws FileNotFoundException
+	 */
+	public MutationTable(File file) throws FileNotFoundException{
+		super(new FileInputStream(file),false);	
+	}
+
+	/**
+	 * create new mutationtable from a fastafile
 	 * @param fastaFilename
 	 * @param windows
 	 * @throws BioException
@@ -69,63 +143,21 @@ public class MutationTable extends Table {
 			}
 		}				
 	}
-
+	
 	/**
-	 * Creates a new MutationTable from a csvfile with 2 columns.
-	 * The first column contains the ids.
-	 * The second column contains the mutations seperated by commas.
-	 * 
-	 * A mutation contains of 
-	 * one char wild type AA followed by
-	 * the position in the protein followed by
-	 * one char AA mutation (optionally) followed by
-	 * /one or more (other) AA mutation(s)
-	 * 
-	 * @param csvfile
+	 * remove all columns representing an insertion
 	 */
-
-
-	public MutationTable(File csvfile){
-		super();
-		createIdColumn();
-
-		Scanner s = null;
-		try {
-			s = new Scanner(csvfile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		s.nextLine(); // ignore header
-
-		while(s.hasNextLine()){
-			String[] columns = s.nextLine().split("\t");
-			if(columns.length == 2){
-				String patientId = columns[0];
-				String[] mutations = columns[1].split(",");
-								
-				createNewRow(patientId);
-				for(String mutString : mutations){
-					if(mutString.matches("[A-Z][0-9]{1,3}[A-Z](/[A-Z])*")){
-						mutString = mutString.replaceFirst(((Character)mutString.charAt(0)).toString(), "PR");
-						String allmuts[] = mutString.split("/");
-
-						String posString = "";
-						for(String mut : allmuts){
-							mut = mut.trim();
-							if(mut.length() == 1){
-								mut = posString + mut;
-							}else{
-								posString = mut.substring(0,mut.length()-1);						
-							}
-							addMutation(mut);			
-						}
-					}
-				}
-			}
-		}
+	public void removeInsertions(){
+		deleteColumns(".*ins.*");
 	}
 
+	/**
+	 * remove all columns with unknown AA-mutation
+	 */
+	public void removeUnknownMutations(){
+		deleteColumns("[A-Za-z]+[0-9]+\\*");
+	}
+	
 	private void createIdColumn(){
 		//create id column
 		ArrayList<String> ids = new ArrayList<String>();
@@ -167,5 +199,6 @@ public class MutationTable extends Table {
 	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
 		return m.getAaPos() >= (sw.getStartCheck()/3)+1
 		&& m.getAaPos() <= (sw.getStopCheck()/3)+1;
-	}
+	}	
+
 }
