@@ -26,6 +26,9 @@ import net.sf.regadb.csv.Table;
  */
 public class MutPos {
 	public static void main(String[] args) throws FileNotFoundException {
+		if(args.length != 4){
+			System.err.println("Usage: mutpos mutationtable.input.csv mutations.out positions.out wildtypes.out");
+		}
 		Table t = new Table(new BufferedInputStream(new FileInputStream(args[0])), false);
 		
 		ArrayList<String> selectedPositions = new ArrayList<String>();
