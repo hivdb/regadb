@@ -19,22 +19,22 @@ import net.sf.regadb.db.TherapyGeneric;
 
 /**
  * This query returns a list of NtSequences
- * Each sequence is the latest of a therapy that included a drug class in therapyTypes
+ * Each sequence has been treated with a therapy that included a drug in druggenerics
  * 
  * 
  * @author gbehey0
  *
  */
 
-public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
+public class GetTreatedSequences extends QueryImpl<NtSequence, Patient> {
 
 	private String[] druggenerics = new String[]{};
 
-	public GetExperiencedSequences(Query<Patient> inputQuery) {
+	public GetTreatedSequences(Query<Patient> inputQuery) {
 		super(inputQuery);
 	}
 
-	public GetExperiencedSequences(Query<Patient> query, String[] druggenerics){
+	public GetTreatedSequences(Query<Patient> query, String[] druggenerics){
 		super(query);
 		this.druggenerics = druggenerics;		
 	}
@@ -75,7 +75,7 @@ public class GetExperiencedSequences extends QueryImpl<NtSequence, Patient> {
 
 	public static void main(String[] args){
 		QueryInput qi = new FromDatabase("gbehey0","bla123");
-		Query<NtSequence> q = new GetExperiencedSequences(qi,new String[]{"AZT","3TC"});
+		Query<NtSequence> q = new GetTreatedSequences(qi,new String[]{"AZT","3TC"});
 		QueryOutput<NtSequence> qo = new SequencesToCsv(new File("/home/gbehey0/queries/test2"));
 		qo.generateOutput(q);
 	}

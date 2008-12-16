@@ -44,7 +44,7 @@ public class GetLongitudinalSequencePairs extends QueryImpl<SequencePair,Patient
 
 	@Override
 	public void populateOutputList() {
-		GetExperiencedSequences exp = new GetExperiencedSequences(inputQuery,drugs);
+		GetTreatedSequences exp = new GetTreatedSequences(inputQuery,drugs);
 		GetDrugNaiveSequences nai = new GetDrugNaiveSequences(inputQuery,drugs);
 		for(Patient p : inputQuery.getOutputList()){
 			Set<NtSequence> expFromPatient = new HashSet<NtSequence>();

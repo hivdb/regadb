@@ -35,8 +35,9 @@ public class GetDrugClassNaiveSequences extends QueryImpl<NtSequence, Patient> {
 					for(Therapy t : p.getTherapies()){
 						if(t.getStartDate().before(sampleDate) ||
 								//what to do if start == stop == sample ???
+								//or stop == null?
 								//for now consider them non-naive 
-								(t.getStartDate().equals(sampleDate) && t.getStopDate().equals(sampleDate))
+								(t.getStartDate().equals(sampleDate) && t.getStopDate() != null && t.getStopDate().equals(sampleDate))								
 							){
 							if(QueryUtils.hasClassExperience("Unknown", t)){
 								seqIsNaive = false;
