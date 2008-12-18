@@ -121,10 +121,10 @@ public class ModXml {
             ttd.setText(replaceTestType(ttdval));
         }
         
-        es = getElements("//Therapy");
-        for(Element e : es){
-            addGenome(e, "HIV-1");
-        }
+//        es = getElements("//Therapy");
+//        for(Element e : es){
+//            addGenome(e, "HIV-1");
+//        }
         
         log("Writing...");
         try{
