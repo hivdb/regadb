@@ -66,6 +66,10 @@ public class RegaDBSettings {
     public Filter getFilter(String name) {
     	return filtersMap_.get(name);
     }
+    
+    public String getDateFormat() {
+    	return "dd/MM/yyyy";
+    }
 
     public static RegaDBSettings getInstance()
     {

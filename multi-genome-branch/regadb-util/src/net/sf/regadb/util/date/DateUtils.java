@@ -4,9 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+
+//TODO
+//rethink these mechanisms
 public class DateUtils 
 {
-    private static SimpleDateFormat europeanDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private static SimpleDateFormat europeanDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     
     public static String getHQLdateFormatString() {
     	return "DD-MM-YYYY";
