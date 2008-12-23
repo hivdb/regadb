@@ -14,9 +14,9 @@ import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateResistanceTable extends WTable {
     public ViralIsolateResistanceTable(WContainerWidget parent) {
@@ -33,9 +33,9 @@ public class ViralIsolateResistanceTable extends WTable {
         //drug names - column position
         HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
         int col = 0;
-        putElementAt(0, col, new WText(lt("")));
-        col = numColumns();
-        putElementAt(0, col, new WText(lt("")));
+        elementAt(0, col).addWidget(new WText(lt("")));
+        col = columnCount();
+        elementAt(0, col).addWidget(new WText(lt("")));
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
@@ -43,8 +43,8 @@ public class ViralIsolateResistanceTable extends WTable {
                     && (( gssTestType != null && Equals.isSameTestType(gssTestType, test.getTestType()) ))
                         || (gssTestType == null && StandardObjects.getGssDescription().equals(test.getTestType().getDescription())))
             {
-                col = numColumns();
-                putElementAt(0, col, new TableHeader(lt(test.getDescription())));
+                col = columnCount();
+                elementAt(0, col).addWidget(new TableHeader(lt(test.getDescription())));
                 elementAt(0, col).setStyleClass("column-title");
                 
                 algoColumn.put(test.getDescription(), col);
@@ -64,23 +64,23 @@ public class ViralIsolateResistanceTable extends WTable {
             firstGenericDrugInThisClass = true;
             for(DrugGeneric dg : genericDrugs)
             {
-                row = numRows();
+                row = rowCount();
                 if(firstGenericDrugInThisClass)
                 {
-                    putElementAt(row, 0, new TableHeader(lt(dc.getClassId()+ ":")));
+                	elementAt(row, 0).addWidget(new TableHeader(lt(dc.getClassId()+ ":")));
                     firstGenericDrugInThisClass = false;
                     elementAt(row, 0).setStyleClass("form-label-area");
                 }
-                putElementAt(row, 1, new TableHeader(lt(dg.getGenericId())));
+                elementAt(row, 1).addWidget(new TableHeader(lt(dg.getGenericId())));
                 drugColumn.put(dg.getGenericId(), row);
                 elementAt(row, 1).setStyleClass("form-label-area");
             }
         }
         
         //clear table
-        for(int i = 1; i < numRows(); i++)
+        for(int i = 1; i < rowCount(); i++)
         {
-            for(int j = 2; j< numColumns(); j++)
+            for(int j = 2; j< columnCount(); j++)
             {
                 ViralIsolateFormUtils.putResistanceTableResult(null, elementAt(i, j), false, showMutations);
             }

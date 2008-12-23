@@ -17,10 +17,9 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class EventForm extends FormWidget {
 	private Event event_;
@@ -37,7 +36,7 @@ public class EventForm extends FormWidget {
 	private EditableTable<EventNominalValue> nominalValuesList_;
 	private IEventNominalValueDataList iNominalValuesList_;
 	
-	public EventForm(InteractionState interactionState, WMessage formName, Event event) {
+	public EventForm(InteractionState interactionState, WString formName, Event event) {
 		super(formName, interactionState);
 		
 		event_ = event;
@@ -91,9 +90,9 @@ public class EventForm extends FormWidget {
         }
 		
 		setNominalValuesGroup();
-		cmbValueType.addComboChangeListener(new SignalListener<WEmptyEvent>()
+		cmbValueType.addComboChangeListener(new Signal.Listener()
 				{
-					public void notify(WEmptyEvent a)
+					public void trigger()
 					{
 						setNominalValuesGroup();
 					}
@@ -142,7 +141,7 @@ public class EventForm extends FormWidget {
 	}
 	
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
     	
     	try {

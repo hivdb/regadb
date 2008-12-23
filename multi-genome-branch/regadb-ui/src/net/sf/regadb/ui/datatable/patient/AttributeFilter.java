@@ -6,26 +6,26 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.datatable.FilterTools;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.TimestampFilter;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class AttributeFilter extends WContainerWidget implements IFilter 
 {
-    private static WMessage noAttribute = lt("No attribute");
+    private static WString noAttribute = lt("No attribute");
     
     private Attribute attribute_=null;
     private IFilter filter_=null;
     private Transaction transaction_;
     
-    private WComboBox attributeCombo_;
+    private MyComboBox attributeCombo_;
     
     public AttributeFilter(Transaction transaction, Attribute attribute)
     {
@@ -40,7 +40,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         Transaction t = getTransaction();
         List<Attribute> l = t.getAttributes();
         
-        setAttributeCombo(new WComboBox());
+        setAttributeCombo(new MyComboBox());
         addWidget(getAttributeCombo());
         
         for(Attribute a : l){
@@ -54,9 +54,9 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         else
             getAttributeCombo().setCurrentItem(noAttribute);
         
-        getAttributeCombo().changed.addListener(new SignalListener<WEmptyEvent>()
+        getAttributeCombo().changed.addListener(this, new Signal.Listener()
                 {
-            public void notify(WEmptyEvent a)
+            public void trigger()
             {
                 changeAttribute(getAttributeCombo().currentText().value());
                 FilterTools.findDataTable(getAttributeCombo()).applyFilter();
@@ -100,7 +100,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             ValueTypes vt = ValueTypes.getValueType(attribute_.getValueType());
                 
             if(vt == ValueTypes.DATE){
-                filter_ = new TimestampFilter();
+                filter_ = new TimestampFilter(RegaDBSettings.getInstance().getDateFormat());
             }
             if(vt == ValueTypes.LIMITED_NUMBER || vt == ValueTypes.STRING){
                 filter_ = new StringFilter();
@@ -127,11 +127,11 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         return transaction_;
     }
     
-    private void setAttributeCombo(WComboBox attributeCombo_) {
+    private void setAttributeCombo(MyComboBox attributeCombo_) {
         this.attributeCombo_ = attributeCombo_;
     }
 
-    private WComboBox getAttributeCombo() {
+    private MyComboBox getAttributeCombo() {
         return attributeCombo_;
     }
 
@@ -152,7 +152,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         }
         
         @Override
-        public void setComboBox(WComboBox combo)
+        public void setComboBox(MyComboBox combo)
         {
             for(AttributeNominalValue anv : getAttribute().getAttributeNominalValues())
             {

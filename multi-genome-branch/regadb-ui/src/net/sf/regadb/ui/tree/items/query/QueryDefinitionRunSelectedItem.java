@@ -2,13 +2,13 @@ package net.sf.regadb.ui.tree.items.query;
 
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class QueryDefinitionRunSelectedItem extends GenericSelectedItem<QueryDefinitionRun>
 {
     public QueryDefinitionRunSelectedItem(WTreeNode parent)
     {
-        super(parent, "menu.query.definition.run.selectedItem", "{queryDefinitionRunSelectedItem}");
+        super(parent, "menu.query.definition.run.selectedItem");
     }
 
     @Override

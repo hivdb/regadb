@@ -3,14 +3,13 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 import java.util.List;
 import java.util.Vector;
 
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class WComposedWordConfigurer extends WComboBox implements ComposedWordConfigurer  {
+public class WComposedWordConfigurer extends MyComboBox implements ComposedWordConfigurer  {
 
 	private Vector<WordConfigurer> vars;
 	
@@ -22,7 +21,7 @@ public class WComposedWordConfigurer extends WComboBox implements ComposedWordCo
 	}
 	
 	private void addItem(WordConfigurer confy) {
-		this.addItem(new WMessage(confy.toString(), true));
+		this.addItem(lt(confy.toString()));
 		vars.add(confy);
 	}
 	

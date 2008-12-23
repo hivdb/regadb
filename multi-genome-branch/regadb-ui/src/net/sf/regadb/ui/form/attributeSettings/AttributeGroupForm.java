@@ -8,8 +8,8 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class AttributeGroupForm extends FormWidget 
 {
@@ -21,7 +21,7 @@ public class AttributeGroupForm extends FormWidget
     private Label nameL;
     private TextField nameTF;
     
-    public AttributeGroupForm(InteractionState interactionState, WMessage formName, AttributeGroup attributeGroup)
+    public AttributeGroupForm(InteractionState interactionState, WString formName, AttributeGroup attributeGroup)
     {
         super(formName, interactionState);
         attributeGroup_ = attributeGroup;
@@ -95,7 +95,7 @@ public class AttributeGroupForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

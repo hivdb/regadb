@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class ColumnHeader extends WContainerWidget
 {
@@ -13,7 +13,7 @@ public class ColumnHeader extends WContainerWidget
     private WImage descendingSort_;
     private WImage noSort_;
 	
-	public ColumnHeader(WMessage intlName, WContainerWidget parent)
+	public ColumnHeader(WString intlName, WContainerWidget parent)
 	{
 		super(parent);
 		

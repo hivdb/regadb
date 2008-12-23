@@ -4,7 +4,11 @@ import net.sf.regadb.util.date.DateUtils;
 
 
 public class TimestampFilter extends DateFilter {
-    public Object getFirstDate()
+    public TimestampFilter(String dateFormat) {
+		super(dateFormat);
+	}
+
+	public Object getFirstDate()
     {
         return DateUtils.parseEuropeanDate(getDateField1().text()).getTime()+"";
     }

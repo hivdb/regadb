@@ -37,20 +37,21 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.hibernate.Query;
 
-public abstract class WivQueryForm extends FormWidget implements SignalListener<WMouseEvent>{
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
+
+public abstract class WivQueryForm extends FormWidget implements Signal1.Listener<WMouseEvent>{
     private WGroupBox generalGroup_;
     private WGroupBox parameterGroup_;
     private WGroupBox resultGroup_;
@@ -86,7 +87,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         
     }
     
-    public WivQueryForm(WMessage formName, WMessage description, WMessage filename){
+    public WivQueryForm(WString formName, WString description, WString filename){
         super(formName,InteractionState.Viewing);
         
         filename_ = filename.value();
@@ -114,16 +115,16 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         status_ = new WText(tr("form.query.wiv.label.status.initial"));
 
 
-        generalTable_.putElementAt(0, 0, description_);
+        generalTable_.elementAt(0, 0).addWidget(description_);
         
         resultTable_.addLineToTable(new WWidget[]{runL_,run_});
         resultTable_.addLineToTable(new WWidget[]{statusL_,status_});
         resultTable_.addLineToTable(new WWidget[]{linkL_,link_});
         
-        run_.clicked.addListener(this);
+        run_.clicked.addListener(this, this);
     }
     
-    public void notify(WMouseEvent a) 
+    public void trigger(WMouseEvent a) 
     {
         run_.disable();
         status_.setText(tr("form.query.wiv.label.status.running"));
@@ -276,7 +277,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         query_ = query;
     }
     
-    public void addParameter(String name, WMessage l, IFormField f){
+    public void addParameter(String name, WString l, IFormField f){
     	parameterTable_.addLineToTable(new Label(l), f);
         parameters_.put(name, f);
     }
@@ -296,7 +297,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }    
      
     public void setDownloadLink(File file){
-        link_.label().setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
+        link_.setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
         link_.setRef(new WFileResource("application/csv", file.getAbsolutePath()).generateUrl());
     }
 
@@ -306,7 +307,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 

@@ -1,15 +1,14 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WLineEdit;
-import net.sf.witty.wt.validation.WValidator;
-import net.sf.witty.wt.validation.WValidatorState;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WKeyEvent;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WValidator;
 
 public class FilterTF extends WLineEdit
 {
-	private WValidatorState initialState_;
+	private WValidator.State initialState_;
 	
 	public FilterTF(WValidator validator)
 	{
@@ -23,25 +22,25 @@ public class FilterTF extends WLineEdit
 		
 		setEnabled(false);
 		
-		changed.addListener(new SignalListener<WEmptyEvent>()
+		changed.addListener(this, new Signal.Listener()
 		{
-			public void notify(WEmptyEvent a)
+			public void trigger()
 			{
 				inputChanged();
 			}
 		});
 	
-		keyWentUp.addListener(new SignalListener<WKeyEvent>()
+		keyWentUp.addListener(this, new Signal1.Listener<WKeyEvent>()
 		{
-			public void notify(WKeyEvent a)
+			public void trigger(WKeyEvent a)
 			{
 				inputChanged();
 			}
 		});
 		
-		enterPressed.addListener(new SignalListener<WEmptyEvent>()
+		enterPressed.addListener(this, new Signal.Listener()
 				{
-					public void notify(WEmptyEvent a) 
+					public void trigger() 
 					{
 						FilterTools.findDataTable(FilterTF.this).applyFilter();
 					}
@@ -50,11 +49,11 @@ public class FilterTF extends WLineEdit
 	
 	private void inputChanged()
 	{
-		WValidatorState state = validate();
+		WValidator.State state = validate();
 
 		if (state != initialState_)
 		{
-			setStyle(state == WValidatorState.Valid);
+			setStyle(state == WValidator.State.Valid);
 
 			initialState_ = state;
 		}

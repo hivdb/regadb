@@ -1,8 +1,7 @@
 package net.sf.regadb.ui.form.query.querytool.configurers;
 
 
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
@@ -10,7 +9,7 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.InputVariableController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class WInputVariableConfigurer extends WComboBox implements WordConfigurer {
+public class WInputVariableConfigurer extends MyComboBox implements WordConfigurer {
     private InputVariable var;
     private InputVariableController controller;
     private OutputVariable[] outputVars;
@@ -32,7 +31,7 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
         outputVars = controller.getCompatibleOutputVariables(input).toArray(new OutputVariable[0]);
         
         for (OutputVariable ovar : outputVars) {
-        	this.addItem(new WMessage(ovar.toString(), true));
+        	this.addItem(lt(ovar.toString()));
         }
         
         if (isUseless()) {

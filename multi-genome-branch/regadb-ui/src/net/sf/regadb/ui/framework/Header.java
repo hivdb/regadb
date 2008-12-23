@@ -1,11 +1,11 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class Header extends WTable
 {
@@ -34,7 +34,7 @@ public class Header extends WTable
 		  editionHeader_.setStyleClass("header-subTitle");
 	}
 	
-	private WMessage getEditionText()
+	private WString getEditionText()
 	{
 		switch(edition_)
 		{

@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugClass;
@@ -33,20 +32,21 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
-import net.sf.witty.wt.WBreak;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTextFormatting;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import eu.webtoolkit.jwt.TextFormat;
+import eu.webtoolkit.jwt.WBreak;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+
 public class UpdateForm extends FormWidget
 {
-    private WMessage progressText_ = tr("form.update_central_server.running");
+    private WString progressText_ = tr("form.update_central_server.running");
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
     
     private WContainerWidget genomeGroup_ = new WGroupBox(tr("form.update_central_server.genome"));
@@ -55,14 +55,14 @@ public class UpdateForm extends FormWidget
     private WContainerWidget eventsGroup_ = new WGroupBox(tr("form.update_central_server.event"));
     private WContainerWidget drugsGroup_ = new WGroupBox(tr("form.update_central_server.drug"));
 
-    private WMessage drugClassTitle_ = tr("form.admin.update_central_server.drugClass.title");
-    private WMessage drugGenericsTitle_ = tr("form.admin.update_central_server.drugGenerics.title");
-    private WMessage drugCommercialsTitle_ = tr("form.admin.update_central_server.drugCommercials.title");
+    private WString drugClassTitle_ = tr("form.admin.update_central_server.drugClass.title");
+    private WString drugGenericsTitle_ = tr("form.admin.update_central_server.drugGenerics.title");
+    private WString drugCommercialsTitle_ = tr("form.admin.update_central_server.drugCommercials.title");
     
     private Collection<Genome> genomes_ = null;
 
     
-    public UpdateForm(WMessage formName, InteractionState interactionState)
+    public UpdateForm(WString formName, InteractionState interactionState)
     {
         super(formName, interactionState);
         init();
@@ -502,7 +502,7 @@ public class UpdateForm extends FormWidget
     
     private void handleFields(WContainerWidget parent, List<String> titles, List<List<String>> data)
     {
-        WMessage[] messages = new WMessage[titles.size()];
+    	WString[] messages = new WString[titles.size()];
         for (int i = 0 ; i < titles.size() ; i++) {
             messages[i] = lt(titles.get(i));
         }
@@ -522,7 +522,7 @@ public class UpdateForm extends FormWidget
         table.spanHeaders();
     }
     
-    private void handleFields(WContainerWidget parent, WMessage title, ArrayList<String> report) {
+    private void handleFields(WContainerWidget parent, WString title, ArrayList<String> report) {
         WGroupBox group = new WGroupBox(title, parent);
         
         String field = "";
@@ -554,7 +554,7 @@ public class UpdateForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         return null;
     }
@@ -566,9 +566,9 @@ public class UpdateForm extends FormWidget
     }
     
     private class WLogText extends WText {
-        public WLogText(WContainerWidget parent, WMessage msg) {
+        public WLogText(WContainerWidget parent, WString msg) {
             super(parent);
-            setFormatting(WTextFormatting.PlainFormatting);
+            setTextFormat(TextFormat.PlainText);
             setText(msg);
             setStyleClass("log-area");
         }

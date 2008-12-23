@@ -18,6 +18,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
@@ -41,7 +42,7 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
     public void init(){
         super.init();
 
-        dateField = new DateField(InteractionState.Editing,this);
+        dateField = new DateField(InteractionState.Editing, this, RegaDBSettings.getInstance().getDateFormat());
         dateField.setDate(new Date());
         super.addParameter("var_date", tr("form.query.wiv.label.therapyDate"), dateField);
     }

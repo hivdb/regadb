@@ -5,18 +5,15 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WArgMessage;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class DataTable<DataType> extends WTable
 {
@@ -36,12 +33,12 @@ public class DataTable<DataType> extends WTable
     private WPushButton nextScroll_;
     private WPushButton lastScroll_;
     private WText labelScroll_;
-    private WArgMessage labelMsg_;
+    private WString labelMsg_;
 	
 	private int currentPage_ = 0;
 	private int amountOfPages_ = 0;
     
-    private final static WMessage emptyLiteral_ = new WMessage("", true);
+    private final static WString emptyLiteral_ = lt("");
     
     private ColumnHeader[] colHeaders_;
     
@@ -70,17 +67,17 @@ public class DataTable<DataType> extends WTable
 			elementAt(row, col).setColumnSpan(dataTableInterface_.getColumnWidths().length);
 	        elementAt(row, col).setStyleClass("navigation");
 			showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
-			showHideFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
+			showHideFilter_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
-				public void notify(WMouseEvent e)
+				public void trigger(WMouseEvent e)
 				{
 					showHideFilters();
 				}
 			});
 			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
-			applyFilter_.clicked.addListener(new SignalListener<WMouseEvent>()
+			applyFilter_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
-				public void notify(WMouseEvent me)
+				public void trigger(WMouseEvent me)
 				{
 					applyFilter();
 				}
@@ -94,7 +91,7 @@ public class DataTable<DataType> extends WTable
 		for(String colName : dataTableInterface_.getColNames())
 		{
             colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
-            elementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLengthUnit.Percentage), new WLength());
+            elementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLength.Unit.Percentage), new WLength());
             elementAt(row, col).setStyleClass("column-title");
             if(dataTableInterface_.sortableFields()[columnIndex])
             {
@@ -103,9 +100,9 @@ public class DataTable<DataType> extends WTable
                 
                 colHeaders_[col].setSortNone();
                 final int colHeaderIndex = col;
-                colHeaders_[col].clicked.addListener(new SignalListener<WMouseEvent>()
+                colHeaders_[col].clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                         {
-                    public void notify(WMouseEvent a) 
+                    public void trigger(WMouseEvent a) 
                     {
                         //a header is selected where sorting is already enabled
                         if(colHeaderIndex==sortColIndex_)
@@ -141,7 +138,8 @@ public class DataTable<DataType> extends WTable
 			{
 				if(filter!=null)
 				{
-					filter.getFilterWidget().setParent(elementAt(row, col));
+					elementAt(row, col).clear();
+					elementAt(row, col).addWidget(filter.getFilterWidget());
 		            elementAt(row, col).setStyleClass("filter");
 				}
 				col++;
@@ -163,9 +161,9 @@ public class DataTable<DataType> extends WTable
 			{
 			    toPut = new WText(noNullLt(null), elementAt(row, col));
                 toPut.setStyleClass("table-cell");
-                toPut.clicked.addListener(new SignalListener<WMouseEvent>()
+                toPut.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                         {
-                            public void notify(WMouseEvent a) 
+                            public void trigger(WMouseEvent a) 
                             {
                                 if(stillExists(rawDataArray_.get(index)))
                                 {
@@ -173,11 +171,11 @@ public class DataTable<DataType> extends WTable
                                 }
                                 else
                                 {
-                                    MessageBox.showWarningMessage(tr("datatable.message.alreadySelected"));
+                                	UIUtils.showWarningMessageBox(DataTable.this, tr("datatable.message.alreadySelected"));
                                 }
                             }
                         });
-                elementAt(row, col).resize(new WLength(), new WLength(1.0,WLengthUnit.FontEm));
+                elementAt(row, col).resize(new WLength(), new WLength(1.0,WLength.Unit.FontEm));
                 textRow.add(toPut);
 				col++;
 			}
@@ -189,43 +187,44 @@ public class DataTable<DataType> extends WTable
         elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
         elementAt(row, col).setStyleClass("navigation");
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
-        scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
+        //TODO
+        //scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
         scrollingButtons.setStyleClass("scrollingButtons");
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
-        firstScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
+        firstScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a) 
+                    public void trigger(WMouseEvent a) 
                     {
                         firstScroll();
                     }
                });
         previousScroll_ = new WPushButton(tr("datatable.button.previousScroll"), scrollingButtons);
-        previousScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
+        previousScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a) 
+                    public void trigger(WMouseEvent a) 
                     {
                         previousScroll();
                     }
                });
         
         labelScroll_ = new WText(scrollingButtons);
-        labelMsg_ = new WArgMessage("datatable.text.pageXOfY");
-        labelMsg_.addArgument("{currentPage}", 0);
-        labelMsg_.addArgument("{amountOfPages}", 0);
+        labelMsg_ = tr("datatable.text.pageXOfY");
+        labelMsg_.arg(0);
+        labelMsg_.arg(0);
         labelScroll_.setText(labelMsg_);
         
         nextScroll_ = new WPushButton(tr("datatable.button.nextScroll"), scrollingButtons);
-        nextScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
+        nextScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a) 
+                    public void trigger(WMouseEvent a) 
                     {
                         nextScroll();
                     }
                });
         lastScroll_ = new WPushButton(tr("datatable.button.lastScroll"), scrollingButtons);
-        lastScroll_.clicked.addListener(new SignalListener<WMouseEvent>()
+        lastScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a) 
+                    public void trigger(WMouseEvent a) 
                     {
                         Transaction trans = RegaDBMain.getApp().createTransaction();
                         lastScroll(trans, getAmountOfPages(trans));
@@ -322,8 +321,8 @@ public class DataTable<DataType> extends WTable
             }
         }
         
-        labelMsg_.changeArgument("{currentPage}", (currentPage_+1));
-        labelMsg_.changeArgument("{amountOfPages}", amountOfPages_);
+        labelMsg_.changeArg(0, (currentPage_+1));
+        labelMsg_.changeArg(1, amountOfPages_);
         labelScroll_.setText(labelMsg_);
 	}
 	
@@ -348,7 +347,7 @@ public class DataTable<DataType> extends WTable
 		applyFilter_.setHidden(!applyFilter_.isHidden());	
 	}
 	
-	private WMessage noNullLt(String col)
+	private WString noNullLt(String col)
 	{
 		if(col==null)
 		{

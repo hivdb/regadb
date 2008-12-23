@@ -5,12 +5,12 @@ import java.util.List;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCManager;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCManager;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEditorPanel{
 	private ComposedAWCManager  manager;

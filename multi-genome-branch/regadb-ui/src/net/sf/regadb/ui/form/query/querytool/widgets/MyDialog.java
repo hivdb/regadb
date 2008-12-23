@@ -1,13 +1,12 @@
 package net.sf.regadb.ui.form.query.querytool.widgets;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTimer;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
-public class WDialog extends WStyledContainerWidget implements StatusbarHolder, ToolbarHolder {
+public class MyDialog extends WStyledContainerWidget implements StatusbarHolder, ToolbarHolder {
 	private WContainerWidget titlePanel;
 	private WText titleText;
 	
@@ -30,7 +29,7 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder, 
 	 * a dialog with content and button panel
 	 * @param title the title of the dialog
 	 */
-	public WDialog(WMessage title) {
+	public MyDialog(WString title) {
 		super();
 		getStyleClasses().addStyle("dialog");
 		insideDialogArea = new WContainerWidget(this);
@@ -50,11 +49,11 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder, 
 		outSideDialogArea = new WStyledContainerWidget(this);
 	}
 	
-	public void setTitle(WMessage title) {
+	public void setTitle(WString title) {
 		titleText.setText(title);
 	}
 	
-	public WMessage getTitle() {
+	public WString getTitle() {
 		return titleText.text();
 	}
 	
@@ -90,8 +89,8 @@ public class WDialog extends WStyledContainerWidget implements StatusbarHolder, 
 		if (modal) {
 			insideDialogArea.setStyleClass("modalDialog");
 			outSideDialogArea.getStyleClasses().addStyle("unfocusArea");
-			WTimer.singleShot(1, new SignalListener<WEmptyEvent>() {
-				public void notify(WEmptyEvent a) {
+			UIUtils.singleShot(this, 1, new Signal.Listener() {
+				public void trigger() {
 					outSideDialogArea.getStyleClasses().addStyle("fixed");
 				}
 			});

@@ -20,15 +20,17 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
 import net.sf.regadb.ui.tree.items.custom.ContactItem.TestItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StandardButton;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMessageBox;
+import eu.webtoolkit.jwt.WString;
 
 public class MultipleTestResultForm extends FormWidget {
     
@@ -43,7 +45,7 @@ public class MultipleTestResultForm extends FormWidget {
     private List<Test> tests_;
     private ActionItem lastItem_;
 
-    public MultipleTestResultForm(WMessage name, InteractionState state, List<TestItem> tests, ActionItem lastItem) {
+    public MultipleTestResultForm(WString name, InteractionState state, List<TestItem> tests, ActionItem lastItem) {
         super(name, state);
         
         tests_ = new ArrayList<Test>();
@@ -65,7 +67,7 @@ public class MultipleTestResultForm extends FormWidget {
         generalGroupBox_ = new WGroupBox(tr("form.multipleTestResults.general"), this);
         generalGroupTable_ = new FormTable(generalGroupBox_);
         dateL_ = new Label(tr("form.multipleTestResults.date"));
-        dateTF_ = new DateField(getInteractionState(), this);
+        dateTF_ = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         dateTF_.setMandatory(true);
         generalGroupTable_.addLineToTable(dateL_, dateTF_);
         sampleIdL_ = new Label(tr("form.multipleTestResults.sampleId"));
@@ -135,7 +137,7 @@ public class MultipleTestResultForm extends FormWidget {
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 
@@ -164,22 +166,14 @@ public class MultipleTestResultForm extends FormWidget {
         }
         
         if(duplicateSampleId) {
-	        final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.multipleTestResults.duplicateSampleIdWarning"));
-	        cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
-	                {
-	            public void notify(WMouseEvent a) 
-	            {
-	                cmb.hide();
-	            }
-	        });
-	        cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
-	                {
-	            public void notify(WMouseEvent a) 
-	            {
-	                cmb.hide();
-	                return;
-	            }
-	        });
+	        final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.multipleTestResults.duplicateSampleIdWarning"));
+            cmb.buttonClicked.addListener(this, new Signal1.Listener<StandardButton>(){
+				@Override
+				public void trigger(StandardButton sb) {
+					cmb.destroy();
+				}
+            });
+            cmb.show();
         }
         
         for(int i = 0; i<tests_.size(); i++) {

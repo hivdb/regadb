@@ -2,13 +2,12 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.validation.WValidator;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WValidator;
+import eu.webtoolkit.jwt.WWidget;
 
 public class CheckBox extends WContainerWidget implements IFormField
 {
@@ -99,11 +98,11 @@ public class CheckBox extends WContainerWidget implements IFormField
         checkBox_.setChecked(checked);
     }
 
-    public void setConfirmAction(SignalListener<WEmptyEvent> se) {
+    public void setConfirmAction(Signal.Listener se) {
         if(getFormWidget()!=null) {
         getFormWidget().enterPressed.removeAllListeners();
         if(se != null)
-            getFormWidget().enterPressed.addListener(se);
+            getFormWidget().enterPressed.addListener(this, se);
         }
     }
 }

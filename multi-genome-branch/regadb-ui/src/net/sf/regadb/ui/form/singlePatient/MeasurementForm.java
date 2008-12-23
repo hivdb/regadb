@@ -21,11 +21,10 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class MeasurementForm extends FormWidget
 {
@@ -46,7 +45,7 @@ public class MeasurementForm extends FormWidget
     private FormField testResultField_;
     private WContainerWidget testResultC;
     
-	public MeasurementForm(InteractionState interactionState, WMessage formName, TestResult testResult)
+	public MeasurementForm(InteractionState interactionState, WString formName, TestResult testResult)
 	{
 		super(formName, interactionState);
 		testResult_ = testResult;
@@ -63,7 +62,7 @@ public class MeasurementForm extends FormWidget
         sampleIdTF_ = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         dateL = new Label(tr("form.testResult.editView.date"));
-        dateTF = new DateField(getInteractionState(), this);
+        dateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(dateL, dateTF);
         testTypeL = new Label(tr("form.testResult.editView.testType"));
         testTypeCB = new TestTypeComboBox(getInteractionState(), this);
@@ -77,7 +76,7 @@ public class MeasurementForm extends FormWidget
         testResultL = new Label(tr("form.testResult.editView.testResult"));
         testResultL.setLabelUIMandatory(this);
         testResultC = new WContainerWidget();
-        int row = generalGroupTable_.numRows();
+        int row = generalGroupTable_.rowCount();
         generalGroupTable_.putElementAt(row, 0, testResultL);
         generalGroupTable_.putElementAt(row, 1, testResultC);
         generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
@@ -129,9 +128,9 @@ public class MeasurementForm extends FormWidget
             }
         }
 		
-        testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
+        testTypeCB.addComboChangeListener(new Signal.Listener()
                 {
-        			public void notify(WEmptyEvent a)
+        			public void trigger()
         			{
                         TestType testType = testTypeCB.currentValue();
                         
@@ -231,7 +230,7 @@ public class MeasurementForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

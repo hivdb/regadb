@@ -15,11 +15,11 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 
 public class ViralIsolateCumulatedResistance extends FormWidget
 {
@@ -28,7 +28,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     
     private Patient patient_;
     
-    public ViralIsolateCumulatedResistance(WMessage formName, Patient patient) {
+    public ViralIsolateCumulatedResistance(WString formName, Patient patient) {
         super(formName, InteractionState.Viewing);
         patient_ = patient;
         
@@ -42,9 +42,9 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
         showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 0));
-        showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
+        showMutations_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a)
+                    public void trigger(WMouseEvent a)
                     {
                         refreshTable();
                     }
@@ -90,7 +90,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 

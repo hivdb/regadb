@@ -2,21 +2,19 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WLineEdit;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.validation.WDoubleValidator;
-import net.sf.witty.wt.validation.WIntValidator;
-import net.sf.witty.wt.validation.WValidatorState;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import eu.webtoolkit.jwt.WDoubleValidator;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WIntValidator;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WValidator;
 
 public class LimitedNumberField extends FormField
 {
     private WLineEdit fieldEdit_;
-    private WComboBox limiterField_;
+    private MyComboBox limiterField_;
     
     public LimitedNumberField(InteractionState state, IForm form, FieldType type)
     {
@@ -26,14 +24,14 @@ public class LimitedNumberField extends FormField
             fieldEdit_ = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, fieldEdit_);
 
-            limiterField_ = new WComboBox();
+            limiterField_ = new MyComboBox();
             limiterField_.addItem(lt("<"));
             limiterField_.addItem(lt("="));
             limiterField_.addItem(lt(">"));
             WTable table = new WTable(this);
-            table.putElementAt(0, 0, limiterField_);
-            table.elementAt(0, 0).resize(new WLength(3, WLengthUnit.FontEm), new WLength());
-            table.putElementAt(0, 1, fieldEdit_);
+            table.elementAt(0, 0).addWidget(limiterField_);
+            table.elementAt(0, 0).resize(new WLength(3, WLength.Unit.FontEm), new WLength());
+            table.elementAt(0, 1).addWidget(fieldEdit_);
             
             flagValid();
         }
@@ -64,7 +62,7 @@ public class LimitedNumberField extends FormField
         this(state, form, FieldType.DOUBLE);
     }
     
-    public void setEchomode(WLineEditEchoMode mode)
+    public void setEchomode(WLineEdit.EchoMode mode)
     {
         fieldEdit_.setEchoMode(mode);
     }
@@ -98,7 +96,7 @@ public class LimitedNumberField extends FormField
     {
         if(getFormWidget().validator()!=null)
         {
-            return getFormWidget().validator().validate(fieldEdit_.text(), null) == WValidatorState.Valid;
+            return getFormWidget().validator().validate(fieldEdit_.text()) == WValidator.State.Valid;
         }
         return true;
     }

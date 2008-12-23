@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
-import net.sf.witty.wt.WRadioButton;
-import net.sf.witty.wt.i8n.WMessage;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
+
+import eu.webtoolkit.jwt.WRadioButton;
 
 public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 
@@ -69,7 +69,7 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	
 	private void addSelectorPanel(WAWCSelectorTab panel) {
 		panels.put(panel.getTitle(), panel);
-        tabs.addTab(new WMessage(panel.getTitle(), true), panel);
+        tabs.addTab(lt(panel.getTitle()), panel);
 	}
 
 	@Override

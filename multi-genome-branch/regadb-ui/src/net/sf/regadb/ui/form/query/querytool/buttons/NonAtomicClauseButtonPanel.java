@@ -4,15 +4,16 @@ package net.sf.regadb.ui.form.query.querytool.buttons;
 
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
 
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.ComposedWhereClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 public class NonAtomicClauseButtonPanel extends WButtonPanel {
 	private QueryTreeNode node;
@@ -27,8 +28,8 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 	
 	private void init() {
 		addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
-		addClauseButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		addClauseButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				addClauseButton_.disable();
 				node.selectNewNode();
 			}
@@ -37,24 +38,24 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 		addSeparator();
 		
 		WPushButton addAndButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addand"));
-		addAndButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		addAndButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				node.addNode(new AndClause(), AssignMode.all);
 			}
 		});
 		addButton(addAndButton_);
 		
 		WPushButton addOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addor"));
-		addOrButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		addOrButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				node.addNode(new InclusiveOrClause(), AssignMode.all);
 			}
 		});
 		addButton(addOrButton_);
 
 		WPushButton addNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addnot"));
-		addNotButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		addNotButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				node.addNode(new NotClause(), AssignMode.all);
 			}
 		});

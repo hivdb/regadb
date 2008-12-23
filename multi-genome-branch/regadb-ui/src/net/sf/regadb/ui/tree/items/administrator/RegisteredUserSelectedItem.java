@@ -2,13 +2,13 @@ package net.sf.regadb.ui.tree.items.administrator;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class RegisteredUserSelectedItem extends GenericSelectedItem<SettingsUser>
 {
     public RegisteredUserSelectedItem(WTreeNode parent) 
     {
-        super(parent, "menu.administrator.registeredUserSelectedItem", "{registeredUserSelectedItem}");
+        super(parent, "menu.administrator.registeredUserSelectedItem");
     }
 
     @Override

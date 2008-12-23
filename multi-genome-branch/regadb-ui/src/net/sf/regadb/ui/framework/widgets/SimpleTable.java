@@ -1,12 +1,11 @@
 package net.sf.regadb.ui.framework.widgets;
 
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WWidget;
 
 public class SimpleTable extends WTable{
 	int currentRow;
@@ -18,11 +17,11 @@ public class SimpleTable extends WTable{
     	setStyleClass("datatable datatable-grid");
     	currentRow = 1;
 	}
-	public void setHeaders(WMessage... titles) {
+	public void setHeaders(WString... titles) {
         int row = 0;
         headerColumns = 0;
-        for (WMessage title : titles) {
-        	putElementAt(row, headerColumns, new TableHeader(title));
+        for (WString title : titles) {
+        	elementAt(row, headerColumns).addWidget(new TableHeader(title));
         	elementAt(row, headerColumns).setStyleClass("column-title");
         	headerColumns++;
         }
@@ -32,7 +31,7 @@ public class SimpleTable extends WTable{
 	public void setWidths(int... widths) {
 		int col = 0;
 		for (int i : widths) {
-			elementAt(0, col).resize(new WLength(i, WLengthUnit.Percentage), new WLength());
+			elementAt(0, col).resize(new WLength(i, WLength.Unit.Percentage), new WLength());
 			col++;
 		}
 	}
@@ -40,7 +39,7 @@ public class SimpleTable extends WTable{
 	public void addRow(WWidget... widgets) {
 		int col = 0;
 		for (WWidget widget : widgets) {
-			putElementAt(currentRow, col, widget);
+			elementAt(currentRow, col).addWidget(widget);
 			col++;
 		}
 		currentRow++;

@@ -6,9 +6,9 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WTreeNode;
+import eu.webtoolkit.jwt.WWidget;
 
 public class PatientEventAdd extends ActionItem {
 	public PatientEventAdd(WTreeNode root) {

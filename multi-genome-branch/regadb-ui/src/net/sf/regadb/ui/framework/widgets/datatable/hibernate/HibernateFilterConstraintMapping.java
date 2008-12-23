@@ -5,7 +5,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
 public class HibernateFilterConstraintMapping
 {
@@ -44,7 +44,7 @@ public class HibernateFilterConstraintMapping
 	{
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		
-		WMessage message = lf.getComboValue();
+		WString message = lf.getComboValue();
 		if(message!=null)
 		{
 		constraint.clause_ = " " + varName+" = :param" + filterIndex;

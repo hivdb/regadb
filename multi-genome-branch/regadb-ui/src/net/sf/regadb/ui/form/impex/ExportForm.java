@@ -15,25 +15,26 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
+
 public class ExportForm extends FormWidget {
 	private FormTable table_;
 	private ComboBox<Dataset> datasets;
 	private File exportFile;
 	
-	public ExportForm(WMessage formName, InteractionState interactionState) {
+	public ExportForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		init();
 	}
@@ -52,8 +53,8 @@ public class ExportForm extends FormWidget {
 		WWidget[] widgets = {exportL, export};
 		table_.addLineToTable(widgets);
 		
-		export.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		export.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				ExportToXML l = new ExportToXML();
 		        Element root = new Element("patients");
 		        Dataset ds = datasets.currentValue();
@@ -84,7 +85,7 @@ public class ExportForm extends FormWidget {
                 table_.elementAt(0, 2).clear();
                 
                 new WAnchor(new WFileResource("text/txt", exportFile.getAbsolutePath()),
-                		new WMessage(ds.getDescription() + "_export.xml", true),
+                		lt(ds.getDescription() + "_export.xml"),
                 		table_.elementAt(0, 2)).setStyleClass("link");
 			}
 		});
@@ -113,7 +114,7 @@ public class ExportForm extends FormWidget {
 	public void cancel() {}
 	
 	@Override
-	public WMessage deleteObject() {return null;}
+	public WString deleteObject() {return null;}
 	
 	@Override
 	public void redirectAfterDelete() {}
@@ -122,7 +123,7 @@ public class ExportForm extends FormWidget {
 	public void saveData() {}
 	
 	@Override
-	public WMessage leaveForm() {
+	public WString leaveForm() {
 		deleteExportFile();
 		return null;
 	}

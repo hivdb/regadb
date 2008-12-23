@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WFormWidget;
 
 public class ComboBox<ComboDataType> extends FormField
 {
-    private WComboBox fieldEdit_;
+    private MyComboBox fieldEdit_;
     private ArrayList<DataComboMessage<ComboDataType>> list_ = null;
     private int selectedIndex = -1;
     private boolean mandatory_ = false;
@@ -23,7 +23,7 @@ public class ComboBox<ComboDataType> extends FormField
         super();
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
-            fieldEdit_ = new WComboBox();
+            fieldEdit_ = new MyComboBox();
             addWidget(fieldEdit_);
             flagValid();
         }
@@ -40,11 +40,11 @@ public class ComboBox<ComboDataType> extends FormField
         setText(null);
     }
     
-    public void addComboChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addComboChangeListener(Signal.Listener listener)
     {
     	if(fieldEdit_!=null)
     	{
-    	fieldEdit_.changed.addListener(listener);
+    	fieldEdit_.changed.addListener(this, listener);
     	}
     }
     
@@ -97,7 +97,7 @@ public class ComboBox<ComboDataType> extends FormField
     {
     	if(fieldEdit_!=null)
     	{
-            if(fieldEdit_.currentText()==null)
+            if(fieldEdit_.currentText().value().equals(""))
                 return null;
             else if(isNoSelectionItem((DataComboMessage)fieldEdit_.currentText()))
                 return null;
@@ -185,7 +185,7 @@ public class ComboBox<ComboDataType> extends FormField
 
     public String getFormText() 
     {
-        return fieldEdit_.currentText().keyOrValue();
+        return UIUtils.keyOrValue(fieldEdit_.currentText());
     }
 
     public void setFormText(String text) 
@@ -229,7 +229,7 @@ public class ComboBox<ComboDataType> extends FormField
             if(fieldEdit_.currentText()==null)
                 return false;
             
-            return !(fieldEdit_.currentText().keyOrValue().equals(tr(noSelectionItem).value()));
+            return !(UIUtils.keyOrValue(fieldEdit_.currentText()).equals(tr(noSelectionItem).value()));
         }
         else
         {

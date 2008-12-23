@@ -1,14 +1,15 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
-public class DataComboMessage <DataType> extends WMessage
+
+public class DataComboMessage <DataType> extends WString
 {
     private DataType value_;
     
     public DataComboMessage(DataType value, String text)
     {
-        super(text, true);
+        super(text);
         value_ = value;
     }
 

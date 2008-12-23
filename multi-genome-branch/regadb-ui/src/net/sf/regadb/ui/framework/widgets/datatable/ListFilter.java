@@ -1,15 +1,14 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
 import net.sf.regadb.db.Transaction;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
 
 public abstract class ListFilter extends WContainerWidget implements IFilter 
 {
-	private WComboBox combo_;
+	private MyComboBox combo_;
 	private Transaction transaction_;
 	
 	public ListFilter(){
@@ -30,15 +29,15 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	}
 	
 	public void init(){
-	    combo_ = new WComboBox(this);
+	    combo_ = new MyComboBox(this);
         
         setComboBox(combo_);
         combo_.sort();
         combo_.insertItem(0, tr("dataTable.filter.listFilter.noFilter"));
         
-        combo_.changed.addListener(new SignalListener<WEmptyEvent>()
+        combo_.changed.addListener(this, new Signal.Listener()
                 {
-                    public void notify(WEmptyEvent a)
+                    public void trigger()
                     {
                         FilterTools.findDataTable(combo_).applyFilter();
                     }
@@ -50,7 +49,7 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 		return this;
 	}
 
-	public abstract void setComboBox(WComboBox combo);
+	public abstract void setComboBox(MyComboBox combo);
 
 	public Transaction getTransaction()
 	{
@@ -61,7 +60,7 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	 * Returns the selected value,
 	 * if nofilter is selected null is returned.
 	 */
-	public WMessage getComboValue()
+	public WString getComboValue()
 	{
 		if(combo_.currentIndex()==0)
 			return null;

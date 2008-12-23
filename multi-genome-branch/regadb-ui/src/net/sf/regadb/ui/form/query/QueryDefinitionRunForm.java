@@ -17,15 +17,16 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.apache.commons.io.FileUtils;
+
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class QueryDefinitionRunForm extends FormWidget
 {
@@ -55,7 +56,7 @@ public class QueryDefinitionRunForm extends FormWidget
     
     private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     
-    public QueryDefinitionRunForm(WMessage formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
+    public QueryDefinitionRunForm(WString formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
     {
         super(formName, interactionState);
         
@@ -134,7 +135,7 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
         	
-        	int row = queryDefinitionRunGroupTable.numRows();
+        	int row = queryDefinitionRunGroupTable.rowCount();
             
             resultL = new Label(tr("form.query.definition.run.label.result"));
             queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
@@ -181,7 +182,7 @@ public class QueryDefinitionRunForm extends FormWidget
     	}
     	else
     	{
-    		MessageBox.showWarningMessage(tr("form.query.definition.run.validate.parameters.null"));
+    		UIUtils.showWarningMessageBox(this, tr("form.query.definition.run.validate.parameters.null"));
     	}
 	}
 
@@ -199,7 +200,7 @@ public class QueryDefinitionRunForm extends FormWidget
 	}
 
 	@Override
-	public WMessage deleteObject()
+	public WString deleteObject()
 	{
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         

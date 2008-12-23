@@ -16,8 +16,9 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class DatasetForm extends FormWidget 
 {
@@ -35,7 +36,7 @@ public class DatasetForm extends FormWidget
 	private Label revisionL;
 	private TextField revisionTF;
 	
-	public DatasetForm(InteractionState interactionState, WMessage formName,  Dataset dataset) 
+	public DatasetForm(InteractionState interactionState, WString formName,  Dataset dataset) 
 	{
 		super(formName, interactionState);
 		dataset_ = dataset;
@@ -54,10 +55,10 @@ public class DatasetForm extends FormWidget
 		if (getInteractionState() != InteractionState.Adding && getInteractionState() != InteractionState.Editing)
 		{
 			creationDateL = new Label(tr("form.datasetForm.editView.creationDate")) ;
-			creationDateDF = new DateField(InteractionState.Viewing, this);
+			creationDateDF = new DateField(InteractionState.Viewing, this, RegaDBSettings.getInstance().getDateFormat());
 			mainGroupTable_.addLineToTable(creationDateL, creationDateDF);
 			closedDateL = new Label(tr("form.datasetForm.editView.closedDate"));
-			closedDateDF = new DateField(InteractionState.Viewing, this);
+			closedDateDF = new DateField(InteractionState.Viewing, this, RegaDBSettings.getInstance().getDateFormat());
 			mainGroupTable_.addLineToTable(closedDateL, closedDateDF);
 			revisionL = new Label(tr("form.datasetForm.editView.revision"));
 			revisionTF = new TextField(InteractionState.Viewing, this);
@@ -129,7 +130,7 @@ public class DatasetForm extends FormWidget
 	}
 
 	@Override
-	public WMessage deleteObject() 
+	public WString deleteObject() 
 	{
     	Set<DatasetAccess> datasetAccess = dataset_.getDatasetAccesses();
     	

@@ -4,20 +4,21 @@ import java.util.Date;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public abstract class WivIntervalQueryForm extends WivQueryForm{
     private DateField startDate, endDate;
     
-    public WivIntervalQueryForm(WMessage formName, WMessage description, WMessage filename){
+    public WivIntervalQueryForm(WString formName, WString description, WString filename){
         super(formName, description, filename);
     }
     
     public void init(){
         super.init();
         
-        startDate = new DateField(InteractionState.Editing,this);
-        endDate = new DateField(InteractionState.Editing,this);
+        startDate = new DateField(InteractionState.Editing,this, RegaDBSettings.getInstance().getDateFormat());
+        endDate = new DateField(InteractionState.Editing,this, RegaDBSettings.getInstance().getDateFormat());
         
         endDate.setDate(new Date());
         

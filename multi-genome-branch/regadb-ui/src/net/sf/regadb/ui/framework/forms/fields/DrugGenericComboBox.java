@@ -3,7 +3,6 @@ package net.sf.regadb.ui.framework.forms.fields;
 import java.util.Collection;
 
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;

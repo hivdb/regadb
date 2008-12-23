@@ -5,7 +5,6 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -17,7 +16,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import net.sf.regadb.util.frequency.Frequency;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class ICommercialDrugSelectionEditableTable implements IEditableTable<TherapyCommercial>
 {

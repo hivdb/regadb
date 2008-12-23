@@ -2,16 +2,16 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFileUpload;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFileUpload;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class FileUpload extends WContainerWidget implements IFormField{
 	private WAnchor link;
@@ -25,8 +25,8 @@ public class FileUpload extends WContainerWidget implements IFormField{
         link.setStyleClass("link");
         
         uploadFile = new WFileUpload(this);
-        uploadFile.uploaded.addListener(new SignalListener<WEmptyEvent>()  {
-            public void notify(WEmptyEvent a) {
+        uploadFile.uploaded.addListener(this, new Signal.Listener()  {
+            public void trigger() {
                 link.setHidden(uploadFile.clientFileName()==null);
                 uploadButton.setEnabled(true);
                 uploadButton.setText(tr("form.general.button.upload"));
@@ -35,8 +35,8 @@ public class FileUpload extends WContainerWidget implements IFormField{
         });
         
         uploadButton = new WPushButton(tr("form.general.button.upload"), this);
-        uploadButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-            public void notify(WMouseEvent a) {
+        uploadButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+            public void trigger(WMouseEvent a) {
                 uploadButton.setText(tr("form.general.button.uploading"));
             	uploadFile.upload();
             }
@@ -54,8 +54,8 @@ public class FileUpload extends WContainerWidget implements IFormField{
 		return uploadFile;
 	}
 	
-	public void setAnchor(WMessage title, String url) {
-	        link.label().setText(title);
+	public void setAnchor(WString title, String url) {
+	        link.setText(title);
 	        link.setRef(url);
 	}
 
@@ -87,11 +87,11 @@ public class FileUpload extends WContainerWidget implements IFormField{
 		return mandatory;
 	}
 
-	public void setConfirmAction(SignalListener<WEmptyEvent> se) {
+	public void setConfirmAction(Signal.Listener se) {
         if(getFormWidget()!=null) {
             getFormWidget().enterPressed.removeAllListeners();
             if(se != null)
-                getFormWidget().enterPressed.addListener(se);
+                getFormWidget().enterPressed.addListener(this, se);
             }
 	}
 

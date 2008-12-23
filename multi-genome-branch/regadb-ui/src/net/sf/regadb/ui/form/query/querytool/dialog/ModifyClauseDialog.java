@@ -2,17 +2,17 @@ package net.sf.regadb.ui.form.query.querytool.dialog;
 
 import java.util.List;
 
+import net.sf.regadb.ui.form.query.querytool.awceditor.WComposedAWCSelectorPanel;
+import net.sf.regadb.ui.form.query.querytool.buttons.ModifyClauseButtonPanel;
+import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.widgets.MyDialog;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
+
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
-import net.sf.regadb.ui.form.query.querytool.awceditor.WComposedAWCSelectorPanel;
-import net.sf.regadb.ui.form.query.querytool.buttons.ModifyClauseButtonPanel;
-import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
-import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
-
-public class ModifyClauseDialog extends WDialog {
+public class ModifyClauseDialog extends MyDialog {
 	
 	public ModifyClauseDialog(QueryTreeNode node, QueryContext context, AtomicWhereClause clause) {
 		super(tr("form.query.querytool.dialog.modify"));

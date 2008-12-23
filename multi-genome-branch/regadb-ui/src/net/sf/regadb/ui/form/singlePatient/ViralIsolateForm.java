@@ -14,10 +14,11 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StandardButton;
+import eu.webtoolkit.jwt.WMessageBox;
+import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateForm extends FormWidget
 {
@@ -28,7 +29,7 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
-	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
+	public ViralIsolateForm(InteractionState interactionState, WString formName, ViralIsolate viralIsolate)
 	{
 		super(formName, interactionState);
 		viralIsolate_ = viralIsolate;
@@ -143,7 +144,7 @@ public class ViralIsolateForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -165,7 +166,7 @@ public class ViralIsolateForm extends FormWidget
     }
     
     @Override
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         if(proteinForm_!=null && proteinForm_.refreshAlignmentsTimer_!=null)
             proteinForm_.refreshAlignmentsTimer_.stop();
         return super.leaveForm();
@@ -175,23 +176,17 @@ public class ViralIsolateForm extends FormWidget
     public void confirmAction()
     {
         if(!_mainForm.checkSampleId()){
-            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.confirm.duplicate.viralIsolate.sampleId"));
-            cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                public void notify(WMouseEvent a) 
-                {
-                    cmb.hide();
-                    doConfirm();
-                }
+            final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.confirm.duplicate.viralIsolate.sampleId"));
+            cmb.buttonClicked.addListener(this, new Signal1.Listener<StandardButton>(){
+				@Override
+				public void trigger(StandardButton sb) {
+					cmb.destroy();
+					if(sb==StandardButton.Yes) {
+						doConfirm();
+					}
+				}
             });
-            cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                public void notify(WMouseEvent a) 
-                {
-                    cmb.hide();
-                }
-            });
-
+            cmb.show();
         }
         else{
             doConfirm();

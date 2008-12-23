@@ -2,11 +2,10 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCssDecorationStyle;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WTextArea;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WCssDecorationStyle;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WTextArea;
 
 public class TextArea extends FormField
 {
@@ -70,11 +69,11 @@ public class TextArea extends FormField
         }
     }
     
-    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addChangeListener(Signal.Listener listener)
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(listener);
+            _fieldEdit.changed.addListener(this, listener);
         }
     }
 }

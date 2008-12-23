@@ -5,17 +5,18 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
-
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.witty.wt.WApplication;
-import net.sf.witty.wt.WEnvironment;
+
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
+import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
+
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WEnvironment;
 
 public class RegaDBApplication extends WApplication
 {

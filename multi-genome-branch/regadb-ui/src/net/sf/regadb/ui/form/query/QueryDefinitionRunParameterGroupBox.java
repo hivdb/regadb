@@ -26,9 +26,10 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 {
@@ -41,7 +42,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 	
 	private FormTable parameterTable;
     
-    public QueryDefinitionRunParameterGroupBox(InteractionState interactionState, WMessage message, QueryDefinitionRunForm queryDefinitionRunForm)
+    public QueryDefinitionRunParameterGroupBox(InteractionState interactionState, WString message, QueryDefinitionRunForm queryDefinitionRunForm)
     {
     	super(message, queryDefinitionRunForm);
         
@@ -100,7 +101,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
 					((TextField)w).setText(qdrp.getValue());
 		        break;
 		        case DATE:
-		        	w = new DateField(interactionState, queryDefinitionRunForm);
+		        	w = new DateField(interactionState, queryDefinitionRunForm, RegaDBSettings.getInstance().getDateFormat());
 
 		        	((DateField)w).setText(qdrp.getValue());
 		        break;

@@ -12,6 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	private static String [] _colNames = {
@@ -65,8 +66,8 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	}
 	
 	public void init(Transaction t) {
-		filters_[0] = new DateFilter();
-		filters_[1] = new DateFilter();
+		filters_[0] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
+		filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[2] = new StringFilter();
 		filters_[3] = null;
 	}

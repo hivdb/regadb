@@ -2,7 +2,7 @@ package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.WContainerWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
 
 public class RootItem extends TreeMenuNode
 {

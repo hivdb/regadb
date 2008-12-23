@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.witty.wt.WApplication;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WTableCell;
-import net.sf.witty.wt.i8n.WStdMessageResource;
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WStdLocalizedStrings;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 
 public class RegaDBWindow extends WTable
 {
@@ -19,7 +19,6 @@ public class RegaDBWindow extends WTable
 		loadI18nResources();
 		
 		WApplication.instance().useStyleSheet("style/regadb.css");
-		WApplication.instance().useStyleSheet("style/calendar.css");
 		WApplication.instance().useStyleSheet("style/querytool.css");
 		
 		//! TODO make the edition configurable
@@ -34,7 +33,9 @@ public class RegaDBWindow extends WTable
 	
 	private void loadI18nResources()
 	{
-		WApplication.instance().messageResourceBundle().useResource(new WStdMessageResource("net.sf.regadb.ui.i18n.resources.regadb"));
+		WStdLocalizedStrings resourceBundle = new WStdLocalizedStrings();
+		resourceBundle.use("net.sf.regadb.ui.i18n.resources.regadb");
+		WApplication.instance().setLocalizedStrings(resourceBundle);
 	}
 
 	public FormContainer getContainer_()

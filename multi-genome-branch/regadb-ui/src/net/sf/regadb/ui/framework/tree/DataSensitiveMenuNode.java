@@ -4,7 +4,7 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class DataSensitiveMenuNode extends TreeMenuNode {
 

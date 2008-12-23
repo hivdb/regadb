@@ -1,13 +1,13 @@
 package net.sf.regadb.ui.framework.widgets.expandtable;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WTableCell;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.extra.WIconPair;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WIconPair;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 
 public class TableExpander 
 {
@@ -17,19 +17,19 @@ public class TableExpander
     
     private WTableCell startTableCell_;
    
-    public TableExpander(WMessage labelText, WTable table, int row)
+    public TableExpander(WString labelText, WTable table, int row)
     {
         table_ = table;
         
         startTableCell_ = table.elementAt(row, 0);
         startTableCell_.setStyleClass("table-expander");
-        plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", startTableCell_);
+        plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", true, startTableCell_);
         label_ = new WText(labelText, table.elementAt(row, 0));
         label_.setStyleClass("table-expander-text");
         
-        label_.clicked.addListener(new SignalListener<WMouseEvent>()
+        label_.clicked.addListener(table, new Signal1.Listener<WMouseEvent>()
         {
-            public void notify(WMouseEvent me)
+            public void trigger(WMouseEvent me)
             {
                 if(plusMinusIcon_.state()==0)
                 {
@@ -44,17 +44,17 @@ public class TableExpander
             }
         });
         
-        plusMinusIcon_.icon1Clicked.addListener(new SignalListener<WMouseEvent>() 
+        plusMinusIcon_.icon1Clicked.addListener(table, new Signal1.Listener<WMouseEvent>() 
                 {
-                    public void notify(WMouseEvent me) 
+                    public void trigger(WMouseEvent me) 
                     {
                         performExpand();
                     }
                 });
         
-        plusMinusIcon_.icon2Clicked.addListener(new SignalListener<WMouseEvent>() 
+        plusMinusIcon_.icon2Clicked.addListener(table, new Signal1.Listener<WMouseEvent>() 
                 {
-                    public void notify(WMouseEvent me) 
+                    public void trigger(WMouseEvent me) 
                     {
                         performCollapse();
                     }
@@ -75,7 +75,7 @@ public class TableExpander
     {
         WWidget cellWidget;
         int row = startTableCell_.row();
-        for(int i = row+1; i<table_.numRows(); i++)
+        for(int i = row+1; i<table_.rowCount(); i++)
         {
             if(table_.elementAt(i, 0)!=null && table_.elementAt(i, 0).children().size()!=0)
             {
@@ -87,7 +87,7 @@ public class TableExpander
             }
             if(!(cellWidget instanceof WIconPair))
             {
-                int numCols = table_.numColumns();
+                int numCols = table_.columnCount();
                 for(int j = 0; j<numCols; j++)
                 {
                     if(table_.elementAt(i, j)!=null)

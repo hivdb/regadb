@@ -14,9 +14,9 @@ import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
-import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
+import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
@@ -97,8 +97,8 @@ import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.ResRepTemplateSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestTypeSelectedItem;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WWidget;
 
 public class TreeContent
 {
@@ -335,7 +335,7 @@ public class TreeContent
     				{
 						public void performAction(TreeMenuNode node)
 						{
-							RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(null);
+							TreeContent.this.measurementSelected.setSelectedItem(null);
 							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
 						}
     				});
@@ -374,7 +374,7 @@ public class TreeContent
     				{
 						public void performAction(TreeMenuNode node)
 						{
-							RegaDBMain.getApp().getTree().getTreeContent().therapiesSelected.setSelectedItem(null);
+							TreeContent.this.therapiesSelected.setSelectedItem(null);
 							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
 						}
     				});
@@ -382,7 +382,7 @@ public class TreeContent
                     {
                         public void performAction(TreeMenuNode node)
                         {
-                            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+                            Patient p = TreeContent.this.patientSelected.getSelectedItem();
                             Therapy lastTherapy = null;
                             for(Therapy therapy : p.getTherapies()){
                                 if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
@@ -427,7 +427,7 @@ public class TreeContent
                     {
                         public void performAction(TreeMenuNode node)
                         {
-                        	RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
+                        	TreeContent.this.viralIsolateSelected.setSelectedItem(null);
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), null));
                         }
                     });
@@ -459,7 +459,9 @@ public class TreeContent
 							if(!super.isEnabled()) {
 								return false;
 							} else {
-								return RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getViralIsolates().size()>1;
+								if(TreeContent.this.patientSelected.getSelectedItem()==null)
+									return false;
+								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
 							}
 						}
                     };
@@ -468,7 +470,7 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateMutationEvolution(WWidget.tr("form.viralIsolate.evolution.mutation"), 
-                                    RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
+                                    TreeContent.this.patientSelected.getSelectedItem()));
                         }
                     });
                     viralIsolateResistanceEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.resistance"), viralIsolateEvolution, new ITreeAction()
@@ -476,7 +478,7 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateResistanceEvolutionForm(WWidget.tr("form.viralIsolate.evolution.resistance"), 
-                                    RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
+                                    TreeContent.this.patientSelected.getSelectedItem()));
                         }
                     });
                     viralIsolateCumulatedResistance = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
@@ -484,7 +486,7 @@ public class TreeContent
                         public void performAction(TreeMenuNode node)
                         {
                             RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
-                                    RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem()));
+                                    TreeContent.this.patientSelected.getSelectedItem()));
                         }
                     }){
                         @Override
@@ -492,7 +494,9 @@ public class TreeContent
 							if(!super.isEnabled()) {
 								return false;
 							} else {
-								return RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getViralIsolates().size()>1;
+								if(TreeContent.this.patientSelected.getSelectedItem()==null)
+									return false;
+								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
 							}
 						}
                     };
@@ -555,7 +559,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                	RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(null);
+                	TreeContent.this.attributesSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attribute.add"), null));
                 }
             });
@@ -594,7 +598,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                	RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(null);
+                	TreeContent.this.attributeGroupsSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
                 }
             });
@@ -642,7 +646,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                	RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(null);
+                	TreeContent.this.testTypeSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("form.testSettings.testType.add"),null));
                 }
             });
@@ -682,7 +686,7 @@ public class TreeContent
            {
                 public void performAction(TreeMenuNode node)
                 {
-                	RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(null);
+                	TreeContent.this.testSelected.setSelectedItem(null);
                     RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("form.testSettings.test.add"),null));
                 }
             });
@@ -772,7 +776,7 @@ public class TreeContent
         {
              public void performAction(TreeMenuNode node)
              {
-            	 RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(null);
+            	 TreeContent.this.datasetSelected.setSelectedItem(null);
                  RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Adding, WWidget.tr("form.datasetSettings.dataset.add"),null));
              }
          });
@@ -865,7 +869,7 @@ public class TreeContent
         {
         	public void performAction(TreeMenuNode node)
         	{
-        		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(null);
+        		TreeContent.this.eventSelected.setSelectedItem(null);
         		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Adding, WWidget.tr("menu.event.add"), null));
         	}
         });

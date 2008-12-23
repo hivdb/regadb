@@ -10,11 +10,11 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class DatasetAccessForm extends FormWidget
 {
@@ -24,7 +24,7 @@ public class DatasetAccessForm extends FormWidget
     private EditableTable<DatasetAccess> datasetList_;
     private IDatasetAccessSelectionEditableTable iDatasetAccessSelectionEditableTable_;
     
-    public DatasetAccessForm(InteractionState interactionState, WMessage formName, SettingsUser user)
+    public DatasetAccessForm(InteractionState interactionState, WString formName, SettingsUser user)
     {
         super(formName, interactionState);
         user_ = user;
@@ -68,7 +68,7 @@ public class DatasetAccessForm extends FormWidget
         }
         if(widgets.size() != datasets.size())
         {
-            MessageBox.showWarningMessage(tr("form.dataset.access.edit.warning"));
+            UIUtils.showWarningMessageBox(this, tr("form.dataset.access.edit.warning"));
         }
         else
         {
@@ -98,7 +98,7 @@ public class DatasetAccessForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         return null;
     }

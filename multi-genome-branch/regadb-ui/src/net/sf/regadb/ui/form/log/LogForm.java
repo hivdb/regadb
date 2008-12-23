@@ -12,12 +12,13 @@ import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.file.FileUtils;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WWidget;
 
 public class LogForm extends FormWidget {
     private File logFile = null;
@@ -43,7 +44,7 @@ public class LogForm extends FormWidget {
     private TextArea fileContentTA;
     
     
-    public LogForm(WMessage formName, InteractionState interactionState, File logFile) {
+    public LogForm(WString formName, InteractionState interactionState, File logFile) {
         super(formName, interactionState);
         this.logFile = logFile;
         
@@ -64,7 +65,7 @@ public class LogForm extends FormWidget {
         propertiesTable.addLineToTable(fileNameL, fileNameTF);
 
         fileDateL = new Label(tr("form.log.date"));
-        fileDateDF = new DateField(InteractionState.Viewing,this);
+        fileDateDF = new DateField(InteractionState.Viewing,this, RegaDBSettings.getInstance().getDateFormat());
         propertiesTable.addLineToTable(fileDateL, fileDateDF);
         
         fileSizeL = new Label(tr("form.log.size"));
@@ -77,7 +78,7 @@ public class LogForm extends FormWidget {
 
         fileContentTA = new TextArea(InteractionState.Viewing,this);
         fileContentTA.setStyleClass("code-area");
-        contentTable.putElementAt(0,0,fileContentTA);
+        contentTable.elementAt(0,0).addWidget(fileContentTA);
     }
     
     protected void fillData(){
@@ -86,7 +87,7 @@ public class LogForm extends FormWidget {
             fileDateDF.setDate(new Date(logFile.lastModified()));
             fileSizeTF.setText(FileUtils.getHumanReadableFileSize(logFile));
             
-            fileDownloadA.label().setText(lt(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]"));
+            fileDownloadA.setText(lt(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]"));
             fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
             
             try{
@@ -118,7 +119,7 @@ public class LogForm extends FormWidget {
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         if(exists(logFile)){
             logFile.delete();
         }

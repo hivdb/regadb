@@ -10,7 +10,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.service.wts.TestNtSequenceAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
 public class BatchTestRunningTest extends Thread {
 	private Test test;
@@ -64,8 +64,8 @@ public class BatchTestRunningTest extends Thread {
 		status = BatchTestStatus.CANCELING;
 	}
 	
-	public WMessage testName() {
-		return new WMessage(test.getDescription(), true);
+	public WString testName() {
+		return WString.lt(test.getDescription());
 	}
 	
 	public boolean isTest(Test t) {
@@ -78,11 +78,11 @@ public class BatchTestRunningTest extends Thread {
 	
 	public boolean isRunning() { return status == BatchTestStatus.RUNNING || status == BatchTestStatus.CANCELING; }
 	
-	public WMessage getPercent() {
-		return new WMessage(percent + "%", true);
+	public WString getPercent() {
+		return WString.lt(percent + "%");
 	}
 	
-	public WMessage getStatusMessage() {
+	public WString getStatusMessage() {
 		String key = "";
 		
 		if ( status == BatchTestStatus.RUNNING ) key = "form.batchtest.running.status.run";
@@ -91,7 +91,7 @@ public class BatchTestRunningTest extends Thread {
 		else if ( status == BatchTestStatus.CANCELING ) key = "form.batchtest.running.status.canceling";
 		else if ( status == BatchTestStatus.CANCELED ) key = "form.batchtest.running.status.canceled";
 		
-		return new WMessage(key);
+		return new WString(key);
 	}
 	
 	private abstract class BatchRun<DataType> {

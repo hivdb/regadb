@@ -30,14 +30,16 @@ import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 
 public class SinglePatientForm extends FormWidget
 {
@@ -66,7 +68,7 @@ public class SinglePatientForm extends FormWidget
     
     private Patient patient_;
     
-    public SinglePatientForm(InteractionState state, WMessage formName, Patient patient)
+    public SinglePatientForm(InteractionState state, WString formName, Patient patient)
 	{
         super(formName, state);
         patient_ = patient;
@@ -99,10 +101,10 @@ public class SinglePatientForm extends FormWidget
         lastNameTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(lastNameL, lastNameTF);
         birthDateL = new Label(tr("form.singlePatient.editView.birthDate"));
-        birthDateTF = new DateField(getInteractionState(), this);
+        birthDateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(birthDateL, birthDateTF);
         deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
-        deathDateTF = new DateField(getInteractionState(), this);
+        deathDateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(deathDateL, deathDateTF);
         /*WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
         export.clicked.addListener(new SignalListener<WMouseEvent>()
@@ -116,7 +118,7 @@ public class SinglePatientForm extends FormWidget
                 WAnchor anchor = new WAnchor(new WFileResource("xml", tmpFile.getAbsolutePath()), WWidget.lt("patient xml file"), parent.elementAt(parent.numRows()-1, 1));
             }
         });*/
-        generalGroupTable_.numColumns();
+        generalGroupTable_.columnCount();
         
         fillData(patient_);
         
@@ -219,7 +221,7 @@ public class SinglePatientForm extends FormWidget
             attributesGroupTable_.setStyleClass("datatable");
             int rowToPlace;
             TableExpander attributeGroup;
-            WMessage groupMessage;
+            WString groupMessage;
             Label attributeLabel;
             FormField attributeFieldTF = null;
             ComboBox<AttributeNominalValue> attributeFieldCB;
@@ -234,7 +236,7 @@ public class SinglePatientForm extends FormWidget
                 else
                 {
                     groupMessage = lt(entry.getKey());
-                    rowToPlace = attributesGroupTable_.numRows();
+                    rowToPlace = attributesGroupTable_.rowCount();
                 }
                 addRowIfNotEmpty(rowToPlace);
                 attributeGroup = new TableExpander(groupMessage, attributesGroupTable_, rowToPlace);
@@ -246,12 +248,12 @@ public class SinglePatientForm extends FormWidget
                     addRowIfNotEmpty(rowToPlace);
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
                     attributePairs_.put(attributeLabel, attrEl.getKey());
-                    attributesGroupTable_.putElementAt(rowToPlace, 0, attributeLabel);
+                    attributesGroupTable_.elementAt(rowToPlace, 0).addWidget(attributeLabel);
                     attributesGroupTable_.elementAt(rowToPlace, 0).setStyleClass("form-label-area");
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
                         attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
-                        attributesGroupTable_.putElementAt(rowToPlace, 1, attributeFieldCB);
+                        attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldCB);
                         
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
@@ -283,7 +285,7 @@ public class SinglePatientForm extends FormWidget
                             else
                                 attributeFieldTF.setText(attrEl.getValue().getValue());
                         }
-                        attributesGroupTable_.putElementAt(rowToPlace, 1, attributeFieldTF);
+                        attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldTF);
                     }
                 }
                 attributeGroup.expand();
@@ -372,7 +374,7 @@ public class SinglePatientForm extends FormWidget
         Attribute attribute;
         if(attributesGroupTable_!=null)
         {
-        for(int row = 0; row < attributesGroupTable_.numRows(); row++)
+        for(int row = 0; row < attributesGroupTable_.rowCount(); row++)
         {
                 label = attributesGroupTable_.elementAt(row, 0).children().get(0);
                 if(label instanceof Label)
@@ -440,7 +442,7 @@ public class SinglePatientForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

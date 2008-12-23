@@ -1,14 +1,12 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WInteractWidget;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.validation.WValidator;
-import net.sf.witty.wt.validation.WValidatorState;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WInteractWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WValidator;
+import eu.webtoolkit.jwt.WWidget;
 
 public abstract class FormField extends WContainerWidget implements IFormField
 {
@@ -48,7 +46,7 @@ public abstract class FormField extends WContainerWidget implements IFormField
 
         if(getFormWidget().validator()!=null)
         {
-            valid = getFormWidget().validator().validate(getFormText(), null) == WValidatorState.Valid;
+            valid = getFormWidget().validator().validate(getFormText()) == WValidator.State.Valid;
         }
         
         if(isUnique()){
@@ -97,12 +95,12 @@ public abstract class FormField extends WContainerWidget implements IFormField
             }
     }
     
-    protected void setViewMessage(WMessage message)
+    protected void setViewMessage(WString message)
     {
     	_fieldView.setText(message);
     }
     
-    protected WMessage getViewMessage()
+    protected WString getViewMessage()
     {
     	return _fieldView.text();
     }
@@ -112,11 +110,11 @@ public abstract class FormField extends WContainerWidget implements IFormField
         return this;
     }
     
-    public void setConfirmAction(SignalListener<WEmptyEvent> se) {
+    public void setConfirmAction(Signal.Listener se) {
         if(getFormWidget()!=null) {
         getFormWidget().enterPressed.removeAllListeners();
         if(se!=null)
-            getFormWidget().enterPressed.addListener(se);
+            getFormWidget().enterPressed.addListener(this, se);
         }
     }
     

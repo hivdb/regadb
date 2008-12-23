@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class StringFilter extends WContainerWidget implements IFilter 
 {
@@ -35,7 +35,7 @@ public class StringFilter extends WContainerWidget implements IFilter
 		return this;
 	}
 	
-	public WMessage getComboState()
+	public WString getComboState()
 	{
 		return combo_.currentText();
 	}

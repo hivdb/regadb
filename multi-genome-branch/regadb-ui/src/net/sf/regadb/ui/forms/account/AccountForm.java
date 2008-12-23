@@ -9,7 +9,6 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.DescribeMutations;
@@ -23,12 +22,12 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.encrypt.Encrypt;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WString;
 
 public class AccountForm extends FormWidget
 {
@@ -72,7 +71,7 @@ public class AccountForm extends FormWidget
     private Label chartMutationL;
     private ComboBox<Test> chartMutationCB;
     
-    public AccountForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
+    public AccountForm(WString formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
         super(formName, interactionState);
         administrator_ = admin;
@@ -134,12 +133,12 @@ public class AccountForm extends FormWidget
             newPasswordL = new Label(tr("form.settings.user.label.password"));
             newPasswordTF = new TextField(getInteractionState(), this);
             newPasswordTF.setMandatory(true);
-            newPasswordTF.setEchomode(WLineEditEchoMode.Password);
+            newPasswordTF.setEchomode(WLineEdit.EchoMode.Password);
             loginGroupTable.addLineToTable(newPasswordL, newPasswordTF);
             retypePasswordL = new Label(tr("form.settings.user.label.password.retype"));
             retypePasswordTF = new TextField(getInteractionState(), this);
             retypePasswordTF.setMandatory(true);
-            retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
+            retypePasswordTF.setEchomode(WLineEdit.EchoMode.Password);
             loginGroupTable.addLineToTable(retypePasswordL, retypePasswordTF);
         }
         
@@ -308,7 +307,7 @@ public class AccountForm extends FormWidget
             boolean nonExistingName = t.getSettingsUser(uidTF.text())==null;
             if(!nonExistingName)
             {
-                MessageBox.showWarningMessage(tr("form.administrator.notRegisteredUser.edit.uid.warning"));
+            	UIUtils.showWarningMessageBox(this, tr("form.administrator.notRegisteredUser.edit.uid.warning"));
                 return;
             }
         }
@@ -340,7 +339,7 @@ public class AccountForm extends FormWidget
             if(getInteractionState()==InteractionState.Adding)
             {
                 Login.createNewAccount(su_);
-                MessageBox.showWarningMessage(tr("form.account.create.warning"));
+                UIUtils.showWarningMessageBox(this, tr("form.account.create.warning"));
             }
             else
             {                
@@ -400,7 +399,7 @@ public class AccountForm extends FormWidget
     }
 
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

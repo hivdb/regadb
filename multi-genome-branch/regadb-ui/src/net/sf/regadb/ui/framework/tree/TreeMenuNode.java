@@ -5,40 +5,40 @@ import java.util.ArrayList;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public abstract class TreeMenuNode extends WTreeNode
 {
-	public TreeMenuNode(WMessage intlText, WTreeNode root)
+	public TreeMenuNode(WString intlText, WTreeNode root)
 	{
-		super(intlText, null, root, true);
+		super(intlText, null, root);
 		
 		setLabelIcon(null);
 		
 		setImagePack("pics/");
 		
-		childCountLabel_.setHidden(true);
+		this.setChildCountPolicy(ChildCountPolicy.Disabled);
 		
 		setStyle();
 		
-		label().clicked.addListener(new SignalListener<WMouseEvent>()
+		label().clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
 		{
-			public void notify(WMouseEvent a)
+			public void trigger(WMouseEvent a)
 			{
                 IForm form = RegaDBMain.getApp().getFormContainer().getForm();
                 
-                WMessage leaveMessage = null;
+                WString leaveMessage = null;
                 if(form!=null)
                     leaveMessage = form.leaveForm();
                 
                 if(leaveMessage==null)
                     selectNode();
                 else
-                    MessageBox.showWarningMessage(leaveMessage);
+                	UIUtils.showWarningMessageBox(TreeMenuNode.this, leaveMessage);
 			}
 		});
 	}
@@ -99,7 +99,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		}
 	}
 	
-	public TreeMenuNode(WMessage intlText)
+	public TreeMenuNode(WString intlText)
 	{
 		this(intlText, null);
 	}
@@ -121,7 +121,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	public TreeMenuNode getParent()
 	{
-		return (TreeMenuNode)this.parentNode_;
+		return (TreeMenuNode)this.parentNode();
 	}
 	
 	public TreeMenuNode findChild(String intlKey)
@@ -131,7 +131,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	private static TreeMenuNode findChildInNode(TreeMenuNode rootNode, String intlKey, boolean deep)
 	{
-		if(((TreeMenuNode)rootNode).label().text().keyOrValue().equals(intlKey))
+		if(UIUtils.keyOrValue(((TreeMenuNode)rootNode).label().text()).equals(intlKey))
 		{
 			return rootNode;
 		}
@@ -140,7 +140,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		{
 			if(node instanceof TreeMenuNode)
 			{
-				if(((TreeMenuNode)node).label().text().keyOrValue().equals(intlKey))
+				if(UIUtils.keyOrValue(((TreeMenuNode)node).label().text()).equals(intlKey))
 				{
 					return (TreeMenuNode)node;
 				}
@@ -216,7 +216,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		
 		for(WTreeNode node : getParent().childNodes())
 		{
-			if(node.expanded() && node!=this)
+			if(node.isExpanded() && node!=this)
 			{
 				node.collapse();
 			}

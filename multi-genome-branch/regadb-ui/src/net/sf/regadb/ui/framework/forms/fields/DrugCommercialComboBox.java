@@ -1,12 +1,8 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
@@ -17,7 +13,6 @@ public class DrugCommercialComboBox extends ComboBox<DrugCommercial> {
 
     public DrugCommercialComboBox(InteractionState state, IForm form) {
         super(state, form);
-        // TODO Auto-generated constructor stub
     }
 
     public void fill(Transaction t, Filter organismFilter){ 

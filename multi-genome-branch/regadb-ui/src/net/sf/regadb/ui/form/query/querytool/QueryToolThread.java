@@ -3,10 +3,11 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.session.Login;
+
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 
-import net.sf.regadb.db.session.Login;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
 public class QueryToolThread {
 	private static Object mutex_ = new Object();
@@ -42,7 +43,10 @@ public class QueryToolThread {
     }
     
 	private String getFileName() {
-		return new WMessage("file.query.querytool").value();
+		//TODO
+		//????
+		
+		return WString.tr("file.query.querytool").value();
 	}      
 	
     public void startQueryThread()

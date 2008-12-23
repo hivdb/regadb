@@ -5,23 +5,20 @@ import java.util.Date;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WLineEdit;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.validation.WEuropeanDateValidator;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WDateValidator;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WTable;
 
 public class DateField extends FormField
 {
 	private WLineEdit _fieldEdit;
 	private WImage calendarIcon_ = new WImage("pics/calendar.png");
 	
-	public DateField(InteractionState state, IForm form)
+	public DateField(InteractionState state, IForm form, String dateFormat)
 	{
 		super();
         if(state == InteractionState.Adding || state == InteractionState.Editing)
@@ -29,9 +26,9 @@ public class DateField extends FormField
 			_fieldEdit = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, _fieldEdit);
             WTable table = new WTable(this);
-            table.putElementAt(0, 0, _fieldEdit);
-            table.putElementAt(0, 1, calendarIcon_);
-            table.elementAt(0, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
+            table.elementAt(0, 0).addWidget(_fieldEdit);
+            table.elementAt(0, 1).addWidget(calendarIcon_);
+            table.elementAt(0, 1).resize(new WLength(24, WLength.Unit.Pixel), new WLength());
 			addWidget(_fieldEdit);
 			addWidget(calendarIcon_);
 			flagValid();
@@ -46,11 +43,11 @@ public class DateField extends FormField
         
 		if(_fieldEdit!=null)
 		{
-			_fieldEdit.setValidator(new WEuropeanDateValidator());
+			_fieldEdit.setValidator(new WDateValidator(dateFormat));
 		}
 	}
 	
-	public void setEchomode(WLineEditEchoMode mode)
+	public void setEchomode(WLineEdit.EchoMode mode)
 	{
 		_fieldEdit.setEchoMode(mode);
 	}
@@ -97,11 +94,11 @@ public class DateField extends FormField
     	return DateUtils.parseEuropeanDate(text());
     }
     
-    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addChangeListener(Signal.Listener listener)
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(listener);
+            _fieldEdit.changed.addListener(this, listener);
         }
     }
 }

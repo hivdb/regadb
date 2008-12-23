@@ -2,20 +2,16 @@ package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.i8n.WArgMessage;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
 {
     private DataType type_;
     
-    private String textVar_;
-    
-    public GenericSelectedItem(WTreeNode parent, String text, String textVar)
+    public GenericSelectedItem(WTreeNode parent, String text)
     {
-        super(new WArgMessage(text), parent);
-        textVar_ = textVar;
-        ((WArgMessage)label().text()).addArgument(textVar_, "");
+        super(tr(text), parent);
+        label().text().arg("");
     }
 
     public DataType getSelectedItem()
@@ -28,7 +24,7 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
         type_ = item;
         
         String value = item==null?"":getArgument(type_);
-        ((WArgMessage)label().text()).changeArgument(textVar_, value);
+        label().text().changeArg(0, value);
         
         refresh();
     }

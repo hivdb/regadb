@@ -2,9 +2,9 @@ package net.sf.regadb.ui.framework.widgets.formtable;
 
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WWidget;
 
 public class FormTable extends WTable {
 	public FormTable(WContainerWidget parent) {
@@ -14,7 +14,7 @@ public class FormTable extends WTable {
 	
     public int addLineToTable(Label label, IFormField field)
     {
-        int numRows = numRows();
+        int numRows = rowCount();
         elementAt(numRows, 0).setStyleClass("form-label-area");
         putElementAt(numRows, 0, label);
         putElementAt(numRows, 1, field.getWidget());
@@ -24,7 +24,7 @@ public class FormTable extends WTable {
     
     public int addLineToTable(WWidget... widgets)
     {
-        int numRows = numRows();
+        int numRows = rowCount();
         elementAt(numRows, 0).setStyleClass("form-label-area");
         for(int i=0;i<widgets.length;++i) {
             putElementAt(numRows, i, widgets[i]);
@@ -36,7 +36,7 @@ public class FormTable extends WTable {
     	if (col == 0) {
     		elementAt(row, col).setStyleClass("form-label-area");
     	}
-    	super.putElementAt(row, col, widget);
+    	super.elementAt(row, col).addWidget(widget);
     }
 
 }

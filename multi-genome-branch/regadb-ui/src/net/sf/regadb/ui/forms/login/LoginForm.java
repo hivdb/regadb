@@ -18,15 +18,14 @@ import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 {	
@@ -68,7 +67,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         //user password
         passwordTF.setMandatory(true);
         passwordL.setBuddy(passwordTF);
-        passwordTF.setEchomode(WLineEditEchoMode.Password);
+        passwordTF.setEchomode(WLineEdit.EchoMode.Password);
         loginGroupTable.addLineToTable(passwordL, passwordTF);
         if(RegaDBSettings.getInstance().getProxyList().size() > 1)
         {
@@ -85,9 +84,9 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         WContainerWidget createAccountContainer = new WContainerWidget(loginGroup_);
         createAccountContainer.setStyleClass("create-account");
         createAccountLink_.setStyleClass("general-clickable-text");
-        createAccountLink_.clicked.addListener(new SignalListener<WMouseEvent>()
+        createAccountLink_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
         {
-            public void notify(WMouseEvent me)
+            public void trigger(WMouseEvent me)
             {
                 RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
             }
@@ -99,10 +98,11 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         buttonContainer.setStyleClass("control-buttons");
         buttonContainer.addWidget(_loginButton);
         buttonContainer.addWidget(_helpButton);
-        buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
-        _loginButton.clicked.addListener(new SignalListener<WMouseEvent>()
+        //TODO
+        //buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
+        _loginButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
         {
-            public void notify(WMouseEvent me)
+            public void trigger(WMouseEvent me)
             {
                 confirmAction();
             }
@@ -168,7 +168,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         }
     }
 
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         return tr("form.login.tree.warning");
     }
 }

@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class IDatasetDataTable implements IDataTable<Dataset> 
 {
@@ -68,8 +69,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	public void init(Transaction t) 
 	{
 		filters_[0] = new StringFilter();
-        filters_[1] = new DateFilter();
-        filters_[2] = new DateFilter();
+        filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
+        filters_[2] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
         filters_[3] = new StringFilter();
 	}
 

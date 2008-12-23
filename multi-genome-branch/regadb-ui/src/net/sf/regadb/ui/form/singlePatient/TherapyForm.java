@@ -20,15 +20,15 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class TherapyForm extends FormWidget
 {
@@ -58,7 +58,7 @@ public class TherapyForm extends FormWidget
     private EditableTable<TherapyCommercial> drugCommercialList_;
     private ICommercialDrugSelectionEditableTable iCommercialDrugSelectionEditableTable_;
     
-	public TherapyForm(InteractionState interactionState, WMessage formName, Therapy therapy)
+	public TherapyForm(InteractionState interactionState, WString formName, Therapy therapy)
 	{
 		super(formName, interactionState);
 		therapy_ = therapy;
@@ -78,16 +78,16 @@ public class TherapyForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
-        startDateDF = new DateField(getInteractionState(), this);
+        startDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         startDateDF.setMandatory(true);
         generalGroupTable_.addLineToTable(startDateL, startDateDF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
-        stopDateDF = new DateField(getInteractionState(), this);
+        stopDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
-        stopDateDF.addChangeListener(new SignalListener<WEmptyEvent>()
+        stopDateDF.addChangeListener(new Signal.Listener()
         {
-            public void notify(WEmptyEvent a)
+            public void trigger()
             {
                 fillComboBoxes();
             }
@@ -257,7 +257,7 @@ public class TherapyForm extends FormWidget
 
         if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
         {
-            MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.edit.warning"));
         }
         else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
         {
@@ -265,11 +265,11 @@ public class TherapyForm extends FormWidget
         }
         else if(startDateExists)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.add.warning"));
         }
         else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
         }
         else
         {
@@ -331,7 +331,7 @@ public class TherapyForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

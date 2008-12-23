@@ -16,13 +16,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class AttributeForm extends FormWidget
 {
@@ -45,7 +44,7 @@ public class AttributeForm extends FormWidget
     private EditableTable<AttributeNominalValue> nominalValuesList_;
     private IAttributeNominalValueDataList iNominalValuesList_;
     
-    public AttributeForm(InteractionState interactionState, WMessage formName, Attribute attribute)
+    public AttributeForm(InteractionState interactionState, WString formName, Attribute attribute)
     {
         super(formName, interactionState);
         attribute_ = attribute;
@@ -158,9 +157,9 @@ public class AttributeForm extends FormWidget
         
         setNominalValuesGroup();
         
-        valueTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
+        valueTypeCB.addComboChangeListener(new Signal.Listener()
                 {
-                    public void notify(WEmptyEvent a)
+                    public void trigger()
                     {
                         setNominalValuesGroup();
                     }
@@ -170,13 +169,13 @@ public class AttributeForm extends FormWidget
     @Override
     public void saveData() 
     {
-        WMessage duplicates = null;
+    	WString duplicates = null;
         if(nominalValuesList_!=null) {
         duplicates = nominalValuesList_.removeDuplicates(0);
         }
         if(duplicates!=null)
         {
-            MessageBox.showWarningMessage(duplicates);
+        	UIUtils.showWarningMessageBox(this, duplicates);
         }
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -220,7 +219,7 @@ public class AttributeForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

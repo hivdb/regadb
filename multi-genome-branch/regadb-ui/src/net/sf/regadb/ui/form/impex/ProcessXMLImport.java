@@ -11,11 +11,12 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.impl.ImportXML;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.WFileUpload;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.xml.sax.InputSource;
+
+import eu.webtoolkit.jwt.WFileUpload;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WString;
 
 public class ProcessXMLImport extends Thread {
 	private File xmlFile;
@@ -74,8 +75,8 @@ public class ProcessXMLImport extends Thread {
 		return logFile;
 	}
 	
-	public WMessage getDatasetName() {
-		return new WMessage(dataset_.getDescription(), true);
+	public WString getDatasetName() {
+		return WString.lt(dataset_.getDescription());
 	}
 	
 	public String clientFileName() {
@@ -89,7 +90,7 @@ public class ProcessXMLImport extends Thread {
 	public UploadStatus getStatus(){
 		return status;
 	}
-	public WMessage getStatusName() {
+	public WString getStatusName() {
 		String key = "form.impex.import.progress.status.";
 		if ( status == UploadStatus.PROCESSING ) key += "processing";
 		else if ( status == UploadStatus.SUCCEEDED ) key += "done";

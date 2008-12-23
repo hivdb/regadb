@@ -1,15 +1,13 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.validation.WEuropeanDateValidator;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WDate;
+import eu.webtoolkit.jwt.WDateValidator;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 
 public class DateFilter extends WContainerWidget implements IFilter 
 {
@@ -24,10 +22,14 @@ public class DateFilter extends WContainerWidget implements IFilter
 	public final static String after_ = "dataTable.filter.dateFilter.after";
 	public final static String between_ = "dataTable.filter.dateFilter.between";
 	
-	public DateFilter()
+	private String dateFormat;
+	
+	public DateFilter(String dateFormat)
 	{
-		setDateField1(new FilterTF(new WEuropeanDateValidator()));
-		setDateField2(new FilterTF(new WEuropeanDateValidator()));
+		this.dateFormat = dateFormat;
+		
+		setDateField1(new FilterTF(new WDateValidator(dateFormat)));
+		setDateField2(new FilterTF(new WDateValidator(dateFormat)));
 		getDateField2().setEnabled(false);
 		combo_ = new FilterOperatorCombo(getDateField1());
 		combo_.setInline(false);
@@ -35,12 +37,12 @@ public class DateFilter extends WContainerWidget implements IFilter
 		addWidget(combo_);
 		WTable w1 = new WTable(this);
 		w1.setStyleClass("date-field");
-		w1.putElementAt(0, 0, getDateField1());
-		w1.putElementAt(0,1, calendarIcon1);
-		w1.putElementAt(1, 0, getDateField2());
-		w1.putElementAt(1, 1, calendarIcon2);
-        w1.elementAt(0, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
-        w1.elementAt(1, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
+		w1.elementAt(0, 0).addWidget(getDateField1());
+		w1.elementAt(0,1).addWidget(calendarIcon1);
+		w1.elementAt(1, 0).addWidget( getDateField2());
+		w1.elementAt(1, 1).addWidget( calendarIcon2);
+        w1.elementAt(0, 1).resize(new WLength(24, WLength.Unit.Pixel), new WLength());
+        w1.elementAt(1, 1).resize(new WLength(24, WLength.Unit.Pixel), new WLength());
 		
 		//filling of the combo-box with operators		
 		combo_.addItem(tr(equals_));
@@ -48,9 +50,9 @@ public class DateFilter extends WContainerWidget implements IFilter
 		combo_.addItem(tr(after_));
 		combo_.addItem(tr(between_));
 		
-		combo_.changed.addListener(new SignalListener<WEmptyEvent>()
+		combo_.changed.addListener(this, new Signal.Listener()
 				{
-					public void notify(WEmptyEvent a)
+					public void trigger()
 					{
 						getDateField1().setText("");
 						getDateField1().setText("");
@@ -67,15 +69,15 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public Object getFirstDate()
 	{
-		return DateUtils.parseEuropeanDate(getDateField1().text());
+		return WDate.fromString(getDateField1().text(), dateFormat).getDate();
 	}
 	
 	public Object getSecondDate()
 	{
-		return DateUtils.parseEuropeanDate(getDateField2().text());
+		return WDate.fromString(getDateField2().text(), dateFormat).getDate();
 	}
 	
-	public WMessage getComboState()
+	public WString getComboState()
 	{
 		return combo_.currentText();
 	}

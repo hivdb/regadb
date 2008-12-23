@@ -84,7 +84,6 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
     }
 
 	public int[] getColumnWidths() {
-		// TODO Auto-generated method stub
 		return colWidths;
 	}
 }

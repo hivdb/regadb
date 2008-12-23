@@ -17,13 +17,13 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMemoryResource;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMemoryResource;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 public class ViralIsolateReportForm extends WContainerWidget
 {
@@ -68,9 +68,9 @@ public class ViralIsolateReportForm extends WContainerWidget
         reportA_.setStyleClass("link");
         reportTable_.addLineToTable(reportL, reportA_);
         
-        generateButton_.clicked.addListener(new SignalListener<WMouseEvent>()
+        generateButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
         {
-            public void notify(WMouseEvent a) 
+            public void trigger(WMouseEvent a) 
             {
                 
                 if( resRepTemplateCB_.currentItem() != null){
@@ -84,8 +84,10 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                                t,
                                                                chartFile
                                                                );
-                    reportA_.label().setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
-                    reportA_.setRef(new WMemoryResource("application/rtf", report.getReport()).generateUrl());
+                    reportA_.setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
+                    WMemoryResource memResource = new WMemoryResource("application/rtf");
+                    memResource.setData(report.getReport(), report.getReport().length);
+                    reportA_.setRef(memResource.generateUrl());
                     chartFile.delete();
                     t.commit();
                 }

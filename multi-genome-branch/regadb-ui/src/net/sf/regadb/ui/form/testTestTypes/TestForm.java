@@ -22,17 +22,17 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
 import net.sf.wts.client.meta.WtsMetaClient;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class TestForm extends FormWidget
 {
@@ -75,7 +75,7 @@ public class TestForm extends FormWidget
     private IAnalysisDataEditableTable ianalysisDataET;
     //analysis data group -end-
   
-	public TestForm(InteractionState interactionState, WMessage formName, Test test ) 
+	public TestForm(InteractionState interactionState, WString formName, Test test ) 
 	{
 		super(formName, interactionState);
 		
@@ -105,9 +105,9 @@ public class TestForm extends FormWidget
 	    analysisCK = new CheckBox(getInteractionState(),this);
 	    mainFrameTable_.addLineToTable(analysisL, analysisCK);
 	    
-        analysisCK.clicked.addListener(new SignalListener<WMouseEvent>()
+        analysisCK.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
         {
-            public void notify(WMouseEvent a)
+            public void trigger(WMouseEvent a)
             {
                   setAnalysisGroup();
             }
@@ -146,7 +146,7 @@ public class TestForm extends FormWidget
         
         passwordL = new Label(tr("form.testSettings.test.editView.analysis.password"));
         passwordTF = new TextField(getInteractionState(), this);
-        passwordTF.setEchomode(WLineEditEchoMode.Password);
+        passwordTF.setEchomode(WLineEdit.EchoMode.Password);
         passwordTF.setMandatory(true);
         analysisTable_.addLineToTable(passwordL, passwordTF);
         
@@ -155,9 +155,9 @@ public class TestForm extends FormWidget
             refreshButton = new WPushButton(tr("form.testSettings.test.editView.analysis.refreshButton"));
             Label refreshL = new Label(tr("form.testSettings.test.editView.analysis.refreshButton"));
             
-            refreshButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            refreshButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
             {
-                public void notify(WMouseEvent a)
+                public void trigger(WMouseEvent a)
                 {
                     refreshForm();
                 }
@@ -521,7 +521,7 @@ public class TestForm extends FormWidget
 		}
 		else
 		{
-			MessageBox.showWarningMessage(tr("form.testSetting.test.warning"));
+			UIUtils.showWarningMessageBox(this, tr("form.testSetting.test.warning"));
 		}
     }
     
@@ -539,7 +539,7 @@ public class TestForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
     	Transaction t = RegaDBMain.getApp().createTransaction();
     	

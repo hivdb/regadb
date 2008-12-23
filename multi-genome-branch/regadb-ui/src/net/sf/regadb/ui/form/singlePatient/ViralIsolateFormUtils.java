@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import static net.sf.witty.wt.WObject.lt;
+import static eu.webtoolkit.jwt.WString.lt;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,11 +13,13 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
-import net.sf.witty.wt.WTableCell;
-import net.sf.witty.wt.WText;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import eu.webtoolkit.jwt.WTableCell;
+import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateFormUtils {
     public static void putResistanceTableResult(TestResult tr, final WTableCell cell, boolean onlyIfCurrentValueIsNA, final boolean canShowMutations)
@@ -68,8 +70,8 @@ public class ViralIsolateFormUtils {
                     }
                     if(remarks!=null && !remarks.equals("null")) {
                     	cell.setStyleClass(cell.styleClass() + " resistance-remarks");
-                        toReturn.setToolTipMessage(lt(remarks));
-                        cell.setToolTipMessage(lt(remarks));
+                        toReturn.setToolTip(lt(remarks));
+                        cell.setToolTip(lt(remarks));
                     }
                     if(canShowMutations && mutations.size()>0) {
                         StringBuffer currentValue = new StringBuffer();
@@ -94,7 +96,7 @@ public class ViralIsolateFormUtils {
 
         cell.setStyleClass("resistance-cell " + cell.styleClass());
         cell.addWidget(toReturn);
-        if (!mutation.text().keyOrValue().equals("")) {
+        if (!UIUtils.keyOrValue(mutation.text()).equals("")) {
             cell.addWidget(mutation);
         }
     }

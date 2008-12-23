@@ -2,16 +2,14 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFileUpload;
-import net.sf.witty.wt.WFont;
-import net.sf.witty.wt.WFontGenericFamily;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTextArea;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WFileUpload;
+import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTextArea;
 
 public class NucleotideField extends FormField
 {
@@ -38,7 +36,9 @@ public class NucleotideField extends FormField
         else
         {
             initViewWidget();
-            getViewWidget().decorationStyle().setFont(new WFont(WFontGenericFamily.Monospace , "Courier"));
+            WFont font = new WFont();
+            font.setFamily(WFont.GenericFamily.Monospace , lt("Courier"));
+            getViewWidget().decorationStyle().setFont(new WFont());
         }
         
         form.addFormField(this);
@@ -81,13 +81,13 @@ public class NucleotideField extends FormField
     }
     
     @Override
-    protected void setViewMessage(WMessage message)
+    protected void setViewMessage(WString message)
     {
         super.setViewMessage(lt(createLinesFromText("<br>", message.value())));
     }
     
     @Override
-    protected WMessage getViewMessage()
+    protected WString getViewMessage()
     {
         return lt(replaceAllPatterns(super.getViewMessage().value(), "<br>", ""));
     }
@@ -141,11 +141,11 @@ public class NucleotideField extends FormField
         return newsb.toString();
     }
     
-    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addChangeListener(Signal.Listener listener)
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(listener);
+            _fieldEdit.changed.addListener(this, listener);
         }
     }
 }

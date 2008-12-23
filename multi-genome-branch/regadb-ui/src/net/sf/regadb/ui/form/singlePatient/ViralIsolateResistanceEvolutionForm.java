@@ -11,34 +11,33 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateResistanceEvolutionForm extends FormWidget
 {
     private Patient patient_;
     
-    private WComboBox asiCombo_;
+    private MyComboBox asiCombo_;
     private WTable resistanceTable_;
     private WCheckBox showMutations_;
     
-    public ViralIsolateResistanceEvolutionForm(WMessage formName, Patient patient) {
+    public ViralIsolateResistanceEvolutionForm(WString formName, Patient patient) {
         super(formName, InteractionState.Viewing);
         patient_ = patient;
 
@@ -49,10 +48,10 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
     {
     	WGroupBox algorithm = new WGroupBox(tr("form.viralIsolate.evolution.group.algorithm"), this);
     	FormTable form = new FormTable(algorithm);
-        asiCombo_ = new WComboBox();
+        asiCombo_ = new MyComboBox();
         loadCombo();
-        asiCombo_.clicked.addListener(new SignalListener<WMouseEvent>() {
-            public void notify(WMouseEvent a) {
+        asiCombo_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+            public void trigger(WMouseEvent a) {
                 loadTable();
             }
         });
@@ -72,9 +71,9 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         
         
         showMutations_ = new WCheckBox(tr("form.viralIsolate.evolution.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
-        showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
+        showMutations_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a)
+                    public void trigger(WMouseEvent a)
                     {
                         loadTable();
                     }
@@ -114,15 +113,15 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         //drug names - column position
         HashMap<String, Integer> viralIsolateColumn = new HashMap<String, Integer>();
         int col = 0;
-        resistanceTable_.putElementAt(0, col, new WText());
-        col = resistanceTable_.numColumns();
-        resistanceTable_.putElementAt(0, col, new WText());
+        resistanceTable_.elementAt(0, col).addWidget(new WText());
+        col = resistanceTable_.columnCount();
+        resistanceTable_.elementAt(0, col).addWidget(new WText());
 
         int maxWidth = 0;
         for(ViralIsolate vi : sortedViralIsolates) {
-                col = resistanceTable_.numColumns();
+                col = resistanceTable_.columnCount();
                 String viId = vi.getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vi.getSampleDate());
-                resistanceTable_.putElementAt(0, col, new TableHeader(lt(viId)));
+                resistanceTable_.elementAt(0, col).addWidget(new TableHeader(lt(viId)));
                 resistanceTable_.elementAt(0, col).setStyleClass("column-title");
                 viralIsolateColumn.put(viId, col);
                 maxWidth += viId.length();
@@ -140,23 +139,23 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
             firstGenericDrugInThisClass = true;
             for(DrugGeneric dg : genericDrugs)
             {
-                row = resistanceTable_.numRows();
+                row = resistanceTable_.rowCount();
                 if(firstGenericDrugInThisClass)
                 {
-                    resistanceTable_.putElementAt(row, 0, new TableHeader(lt(dc.getClassId()+ ":")));
+                    resistanceTable_.elementAt(row, 0).addWidget(new TableHeader(lt(dc.getClassId()+ ":")));
                     resistanceTable_.elementAt(row, 0).setStyleClass("form-label-area");
                     firstGenericDrugInThisClass = false;
                 }
-                resistanceTable_.putElementAt(row, 1, new TableHeader(lt(dg.getGenericId())));
+                resistanceTable_.elementAt(row, 1).addWidget(new TableHeader(lt(dg.getGenericId())));
                 resistanceTable_.elementAt(row, 1).setStyleClass("form-label-area");
                 drugColumn.put(dg.getGenericId(), row);
             }
         }
         
         //clear table
-        for(int i = 1; i < resistanceTable_.numRows(); i++)
+        for(int i = 1; i < resistanceTable_.rowCount(); i++)
         {
-            for(int j = 2; j< resistanceTable_.numColumns(); j++)
+            for(int j = 2; j< resistanceTable_.columnCount(); j++)
             {
                 ViralIsolateFormUtils.putResistanceTableResult(null, resistanceTable_.elementAt(i, j), false, showMutations_.isChecked());
             }
@@ -189,7 +188,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 

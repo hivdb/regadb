@@ -6,25 +6,25 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTimer;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
 
 public class BatchTestRunningForm extends FormWidget {
 	private static ArrayList<BatchTestRunningTest> runningList = new ArrayList<BatchTestRunningTest>();
 	private SimpleTable table;
 	private WTimer timer = new WTimer();
 	
-	public BatchTestRunningForm(WMessage formName, InteractionState interactionState) {
+	public BatchTestRunningForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		timer.setInterval(1000);
-		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		timer.timeout.addListener(this, new Signal.Listener() {
+			public void trigger() {
 				refreshRunning();
 			}
 		});
@@ -56,15 +56,15 @@ public class BatchTestRunningForm extends FormWidget {
 				needRefreshCount++;
 			}
 			
-			table.putElementAt(row, 0, new WText( run.testName() ));
-			table.putElementAt(row, 1, new WText( run.getStatusMessage() ));
-			table.putElementAt(row, 2, new WText( run.getPercent() ));
+			table.elementAt(row, 0).addWidget(new WText( run.testName() ));
+			table.elementAt(row, 1).addWidget(new WText( run.getStatusMessage()));
+			table.elementAt(row, 2).addWidget(new WText( run.getPercent() ));
 			table.elementAt(row, 3).setStyleClass("column-action");
 			
 			if (run.getStatus() == BatchTestStatus.RUNNING) {
 				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.elementAt(row, 3));
-				cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-					public void notify(WMouseEvent a) {
+				cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent a) {
 						if (run.isRunning()) {
 							run.cancel();
 							cancelButton.disable();
@@ -83,8 +83,8 @@ public class BatchTestRunningForm extends FormWidget {
 					run.getStatus() == BatchTestStatus.FAILED ||
 					run.getStatus() == BatchTestStatus.CANCELED) {
 				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.elementAt(row, 3));
-				clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-					public void notify(WMouseEvent a) {
+				clearButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent a) {
 						int row = runningList.indexOf(run);
 						table.deleteRow(row+1);
 						runningList.remove(run);
@@ -125,7 +125,7 @@ public class BatchTestRunningForm extends FormWidget {
 	public void cancel() {}
 	
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		return null;
 	}
 	

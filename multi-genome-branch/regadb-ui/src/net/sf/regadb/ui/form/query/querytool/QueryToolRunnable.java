@@ -10,6 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.exportCsv.ExportToCsv;
+import net.sf.regadb.util.settings.RegaDBSettings;
+
 import org.hibernate.exception.SQLGrammarException;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
@@ -27,14 +34,8 @@ import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateStatement;
 
-import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DatasetAccess;
-import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.exportCsv.ExportToCsv;
-import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WString;
 
 public class QueryToolRunnable implements Runnable {
 	private QueryEditor editor;
@@ -61,10 +62,10 @@ public class QueryToolRunnable implements Runnable {
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
-		errors.put("write_error", new WMessage("form.query.querytool.label.status.failed.writeerror").value());
-		errors.put("memory_error", new WMessage("form.query.querytool.label.status.failed.memoryerror").value());
-		errors.put("sql_error", new WMessage("form.query.querytool.label.status.failed.sqlerror").value());
-		errors.put("type_error", new WMessage("form.query.querytool.label.status.failed.typeerror").value());
+		errors.put("write_error", WString.tr("form.query.querytool.label.status.failed.writeerror").value());
+		errors.put("memory_error", WString.tr("form.query.querytool.label.status.failed.memoryerror").value());
+		errors.put("sql_error", WString.tr("form.query.querytool.label.status.failed.sqlerror").value());
+		errors.put("type_error", WString.tr("form.query.querytool.label.status.failed.typeerror").value());
 	}
 	
 	public boolean isDone() {
@@ -75,20 +76,22 @@ public class QueryToolRunnable implements Runnable {
 		return status == Status.FAILED;
 	}
 	
-	public WMessage getStatusText() {
+	public WString getStatusText() {
+		//TODO
+		//OMG
 		if (status == Status.RUNNING) {
-			return new WMessage(new WMessage("form.query.querytool.label.status.running").value() + statusMsg, true);			
+			return WString.lt(WString.tr("form.query.querytool.label.status.running").value() + statusMsg);			
 		}
 		else if (status == Status.FINISHED) {
-			return new WMessage(new WMessage("form.query.querytool.link.result").value() + statusMsg, true);			
+			return WString.lt(WString.tr("form.query.querytool.link.result").value() + statusMsg);			
 		}
 		else if (status == Status.FAILED) {
-			return new WMessage(new WMessage("form.query.querytool.label.status.failed").value() + statusMsg, true);			
+			return WString.lt(WString.tr("form.query.querytool.label.status.failed").value() + statusMsg);			
 		}
 		else if (status == Status.CANCELED) {
-			return new WMessage(new WMessage("form.query.querytool.label.status.canceling").value() + statusMsg, true);			
+			return WString.lt(WString.tr("form.query.querytool.label.status.canceling").value() + statusMsg);			
 		}
-		return new WMessage("form.query.querytool.label.status.initial");
+		return WString.tr("form.query.querytool.label.status.initial");
 	}
 
 	public void run() {

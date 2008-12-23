@@ -3,9 +3,9 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WDateConstantConfigurer extends WContainerWidget implements WordConfigurer{
 	private WordConfigurer confy;

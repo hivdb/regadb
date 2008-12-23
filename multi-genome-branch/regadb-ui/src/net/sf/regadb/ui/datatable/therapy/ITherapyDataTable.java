@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ITherapyDataTable implements IDataTable<Therapy>
 {
@@ -96,8 +97,8 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public void init(Transaction t)
 	{
-		filters_[0] = new DateFilter();
-		filters_[1] = new DateFilter();
+		filters_[0] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
+		filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[2] = null;
 		filters_[3] = new StringFilter();
 	}

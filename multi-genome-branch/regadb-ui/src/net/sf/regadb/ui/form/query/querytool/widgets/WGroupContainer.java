@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.form.query.querytool.widgets;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class WGroupContainer extends WGroupBox implements StyledWidget, StatusbarHolder, ToolbarHolder {
 
@@ -15,12 +15,12 @@ public class WGroupContainer extends WGroupBox implements StyledWidget, Statusba
 	private WContainerWidget statusbarArea;
 	private WStatusBar statusbar;
 	
-	public WGroupContainer(WMessage title, WContainerWidget parent) {
+	public WGroupContainer(WString title, WContainerWidget parent) {
 		super(title, parent);
 		init();
 	}
 
-	public WGroupContainer(WMessage titleMessage) {
+	public WGroupContainer(WString titleMessage) {
 		super(titleMessage);
 		init();
 	}

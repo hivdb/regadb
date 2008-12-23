@@ -13,12 +13,11 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class IDatasetAccessSelectionEditableTable implements IEditableTable<DatasetAccess>
 {
@@ -45,7 +44,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public void addData(WWidget[] widgets)
     {
         TextField dsTF = (TextField)widgets[0];
-        WComboBox priv = (WComboBox)widgets[1];
+        MyComboBox priv = (MyComboBox)widgets[1];
         Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
         
         for(DatasetAccess cuda : currentUserDatasetAccess)
@@ -60,7 +59,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
 
     public void changeData(DatasetAccess da, WWidget[] widgets)
     {
-        WComboBox priv = (WComboBox)widgets[1];
+        MyComboBox priv = (MyComboBox)widgets[1];
         Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
         da.setPermissions(privillege.getValue());
     }
@@ -115,7 +114,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
             }
             else
             {
-                WComboBox comboRights = new WComboBox();
+                MyComboBox comboRights = new MyComboBox();
                 widgets[1] = comboRights;
                 
                 DataComboMessage<Privileges> selected = new DataComboMessage<Privileges>(daPermissions, getPrivilegeString(daPermissions));
@@ -154,7 +153,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         return widgets;
     }
     
-    private WMessage getPrivilegeMessage(Privileges p)
+    private WString getPrivilegeMessage(Privileges p)
     {
         return WWidget.tr("privilege.status."+p.toString());
     }
@@ -173,11 +172,11 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     {
         WWidget[] widgets = new WWidget[3];
         
-        final WComboBox datasetCombo = new WComboBox();
-        final WComboBox privilegesCombo = new WComboBox();
-        datasetCombo.changed.addListener(new SignalListener<WEmptyEvent>()
+        final MyComboBox datasetCombo = new MyComboBox();
+        final MyComboBox privilegesCombo = new MyComboBox();
+        datasetCombo.changed.addListener(privilegesCombo, new Signal.Listener()
         {
-            public void notify(WEmptyEvent a) 
+            public void trigger() 
             {
                 setRights(datasetCombo, privilegesCombo);
             }
@@ -190,6 +189,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
             DataComboMessage<DatasetAccess> currentAccess = new DataComboMessage<DatasetAccess>(dsa, ds.getDescription());
             datasetCombo.addItem(currentAccess);
         }
+        datasetCombo.setCurrentIndex(0);
         
         setRights(datasetCombo, privilegesCombo);
         
@@ -202,7 +202,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         return widgets;
     }
     
-    private void setRights(WComboBox datasetCombo, WComboBox privilegesCombo)
+    private void setRights(MyComboBox datasetCombo, MyComboBox privilegesCombo)
     {
         Privileges daPermissions = Privileges.getPrivilege(((DataComboMessage<DatasetAccess>)datasetCombo.currentText()).getValue().getPermissions());
         privilegesCombo.clear();
@@ -215,9 +215,9 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
 
     public WWidget[] fixAddRow(WWidget[] widgets)
     {
-        WComboBox ds = (WComboBox)widgets[0];
+        MyComboBox ds = (MyComboBox)widgets[0];
         DatasetAccess dsaFromAddRow = ((DataComboMessage<DatasetAccess>)ds.currentText()).getValue();
-        WComboBox priv = (WComboBox)widgets[1];
+        MyComboBox priv = (MyComboBox)widgets[1];
         Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
     
         DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(currentUser_, dsaFromAddRow.getId().getDataset()),privillege.getValue(), ((TextField)widgets[2]).text());

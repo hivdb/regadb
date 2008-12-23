@@ -2,7 +2,6 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;

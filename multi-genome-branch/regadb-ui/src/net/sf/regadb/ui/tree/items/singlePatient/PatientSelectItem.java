@@ -4,7 +4,7 @@ import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class PatientSelectItem extends TreeMenuNode
 {

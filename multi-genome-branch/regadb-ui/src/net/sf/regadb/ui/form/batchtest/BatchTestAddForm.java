@@ -9,12 +9,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
 public class BatchTestAddForm extends FormWidget {
 	private ComboBox<Test> cmbTest;
 	
-	public BatchTestAddForm(WMessage formName, InteractionState interactionState) {
+	public BatchTestAddForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		init();
 	}
@@ -54,7 +54,7 @@ public class BatchTestAddForm extends FormWidget {
 	}
 	
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		return null;
 	}
 	

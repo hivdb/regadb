@@ -2,10 +2,10 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 
 
 import net.sf.regadb.ui.form.query.querytool.widgets.WProgressbar.ProgressListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class WStatusBar extends WStyledContainerWidget {
 	private WTable table;
@@ -39,7 +39,7 @@ public class WStatusBar extends WStyledContainerWidget {
 	 * and assign it the given style class
 	 * @param message
 	 */
-	public void showMessage(WMessage message, String cssClass) {
+	public void showMessage(WString message, String cssClass) {
 		warningText.setText(message);
 		warningText.setStyleClass(cssClass);
 	}	
@@ -55,7 +55,7 @@ public class WStatusBar extends WStyledContainerWidget {
 		table.elementAt(0, 1).addWidget(buttonPanel);
 	}
 	
-	public WMessage getStatusText() {
+	public WString getStatusText() {
 		return warningText.text();
 	}
 	

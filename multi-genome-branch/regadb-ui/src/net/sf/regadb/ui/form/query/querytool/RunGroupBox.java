@@ -3,19 +3,20 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pharmadm.custom.rega.queryeditor.QueryEditor;
-
 import net.sf.regadb.ui.form.query.querytool.widgets.WGroupContainer;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTimer;
+
+import com.pharmadm.custom.rega.queryeditor.QueryEditor;
+
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
 
 public class RunGroupBox extends WGroupContainer {
 	
@@ -38,8 +39,8 @@ public class RunGroupBox extends WGroupContainer {
 		
 		timer = new WTimer(this);
 		timer.setInterval(1000);
-		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		timer.timeout.addListener(this, new Signal.Listener() {
+			public void trigger() {
 				updateRunningQueries();
 			}
 		});
@@ -71,27 +72,27 @@ public class RunGroupBox extends WGroupContainer {
 	
 				WText lbl = new WText(lt("" + (i+1) + " :"));
 				lbl.setStyleClass("label");
-				table.putElementAt(runningQueries.size()-i-1, 0, lbl);
+				table.elementAt(runningQueries.size()-i-1, 0).addWidget(lbl);
 	
 				if (qt.isDone()) {
 					final WAnchor link = new WAnchor(qt.getDownloadLink(), qt.getStatusText());
-					table.putElementAt(runningQueries.size()-i-1, 1, link);
+					table.elementAt(runningQueries.size()-i-1, 1).addWidget(link);
 				}
 				else {
 					final WText status = new WText(qt.getStatusText());
-					table.putElementAt(runningQueries.size()-i-1, 1, status);
+					table.elementAt(runningQueries.size()-i-1, 1).addWidget(status);
 					if (!qt.isFailed()) {
 						done = false;
 					}
 					
 					if (qt.isRunning()) {
 						WPushButton cancelButton = new WPushButton(tr("form.query.querytool.pushbutton.cancel"));
-						cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-							public void notify(WMouseEvent a) {
+						cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent a) {
 								qt.cancel();
 							}
 						});
-						table.putElementAt(runningQueries.size()-i-1, 2, cancelButton);
+						table.elementAt(runningQueries.size()-i-1, 2).addWidget(cancelButton);
 					}
 				}
 				
