@@ -16,21 +16,21 @@ public class WTabMenuItem extends WMenuItem {
 	}
 	
 	public WInteractWidget itemWidget() {
-		//TODO 
-		//can we cast this?
-		WInteractWidget w = (WInteractWidget)super.itemWidget();
-		if (wrapped) {
-			return w;
-		}
-		else {
-			if (iw == null) {
-				iw = new WContainerWidget();
-				iw.setInline(true);
-				iw.addWidget(w);
+		if(super.itemWidget() instanceof WInteractWidget) {
+			WInteractWidget w = (WInteractWidget)super.itemWidget();
+			if (wrapped) {
+				return w;
 			}
-			return iw;
+			else {
+				if (iw == null) {
+					iw = new WContainerWidget();
+					iw.setInline(true);
+					iw.addWidget(w);
+				}
+				return iw;
+			}
+		} else {
+			return null;
 		}
 	}
-	
-
 }

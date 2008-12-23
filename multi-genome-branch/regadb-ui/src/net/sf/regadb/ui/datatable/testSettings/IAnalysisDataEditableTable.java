@@ -62,8 +62,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         type.setName(tf.text());
         WMemoryResource mem = (WMemoryResource)anchor.resource();
         type.setMimetype(mem.mimeType());
-        //TODO ask koen howto set the data now?
-        //type.setData(mem.);
+        type.setData(mem.data());
     }
     
     public void addData(WWidget[] widgets)
@@ -75,8 +74,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         
         AnalysisData data = new AnalysisData(analysis_, mem.mimeType());
         data.setName(tf.text());
-        //TODO ask koen howto set the data now?
-        //data.setData(mem.data());
+        data.setData(mem.data());
         
         analysis_.getAnalysisDatas().add(data);
     }
@@ -123,6 +121,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             byte[] data = null;
             try 
             {
+            	if(add_uf.getFileUpload().spoolFileName().equals(""))
+            		return null;
                 data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().spoolFileName()));
             } 
             catch (IOException e) 
