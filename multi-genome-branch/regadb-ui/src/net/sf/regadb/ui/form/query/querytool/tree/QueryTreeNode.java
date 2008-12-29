@@ -237,7 +237,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * @return
 	 */
 	public QueryTreeNode getParentNode() {
-		return (QueryTreeNode) parent();
+		return (QueryTreeNode) parentNode();
 	}
 	
 	/**
