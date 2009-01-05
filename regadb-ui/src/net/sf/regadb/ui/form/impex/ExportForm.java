@@ -22,8 +22,6 @@ import net.sf.witty.wt.WPushButton;
 import net.sf.witty.wt.WWidget;
 import net.sf.witty.wt.i8n.WMessage;
 
-import org.hibernate.Query;
-
 public class ExportForm extends FormWidget {
 	private FormTable table_;
 	private ComboBox<Dataset> datasets;
@@ -74,12 +72,7 @@ public class ExportForm extends FormWidget {
 						t.clearCache();
 						t = RegaDBMain.getApp().getLogin().createTransaction();
 
-						Query q = t.getPatientsQuery(ds);
-						q.setReadOnly(true);
-						q.setFirstResult(i);
-						q.setMaxResults(maxResults);
-
-						xmlout.write(q.list());
+						xmlout.write(t.getPatients(ds,i,maxResults));
 					}
 					xmlout.stop();
 					

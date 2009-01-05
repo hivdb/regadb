@@ -428,8 +428,7 @@ public class Transaction {
      * Returns patients in this data set according, checking access permissions.
      */
     
-    @SuppressWarnings("unchecked")
-    public List<Patient> getPatients(Dataset dataset) {
+    private Query getPatientsQuery(Dataset dataset){
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 "from PatientImpl as patient " +
@@ -439,10 +438,21 @@ public class Transaction {
                 "where dataset = :dataset " +
                 "and access.permissions >= 1 " +
                 "and access.id.settingsUser.uid = :uid " +
-                "group by patient");
+                "group by patient order by patient");
         q.setParameter("dataset", dataset);
         q.setParameter("uid", login.getUid());
-
+        return q;
+    }
+    @SuppressWarnings("unchecked")
+    public List<Patient> getPatients(Dataset dataset) {
+    	Query q = getPatientsQuery(dataset);
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<Patient> getPatients(Dataset dataset, int firstResult, int maxResult) {
+    	Query q = getPatientsQuery(dataset);
+    	q.setFirstResult(firstResult);
+    	q.setMaxResults(maxResult);
         return q.list();
     }
 
