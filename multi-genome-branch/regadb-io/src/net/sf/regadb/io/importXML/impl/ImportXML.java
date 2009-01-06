@@ -162,7 +162,8 @@ public class ImportXML {
                 t.clearCache();
                 t = login.createTransaction();
                 instance.loadDatabaseObjects(t);
-                dataset = loadOrCreateDataset(t, dataset.getDescription());
+                if(dataset != null)
+                    dataset = loadOrCreateDataset(t, dataset.getDescription());
             }
         }        
     }
@@ -171,7 +172,7 @@ public class ImportXML {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
-        Dataset dataset = loadOrCreateDataset(t, datasetName);
+        Dataset dataset = (datasetName != null? loadOrCreateDataset(t, datasetName) : null);
 
         ViralIsolateImportHandler importHandler = new ViralIsolateImportHandler(t, dataset);
         instance.readViralIsolates(s, importHandler);
@@ -185,7 +186,7 @@ public class ImportXML {
         Transaction t = login.createTransaction();
         instance.loadDatabaseObjects(t);
 
-        Dataset dataset = loadOrCreateDataset(t, datasetName);
+        //Dataset dataset = (datasetName != null? loadOrCreateDataset(t, datasetName) : null);
         
         t.commit();
         
