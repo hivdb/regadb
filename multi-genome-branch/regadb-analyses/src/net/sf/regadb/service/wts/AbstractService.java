@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.wts.client.WtsClient;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.wts.client.IWtsClient;
 
 public abstract class AbstractService {
     
@@ -30,7 +31,7 @@ public abstract class AbstractService {
         setStartTime(new Date());
         init();
         
-        WtsClient client_ = new WtsClient(getUrl());
+        IWtsClient client_ = WtsClientFactory.getWtsClient(url);
         
         String challenge;
         String ticket = null;

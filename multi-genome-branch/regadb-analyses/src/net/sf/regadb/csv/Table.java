@@ -633,6 +633,52 @@ public class Table {
 		}
 	}
 
+	public void inverseMerge(Table table2, int key1, int key2) {
+		/*
+		 * Merge header
+		 */
+		ArrayList<String> headerRow = rows.get(0);
+
+		for (int i = 0; i < table2.numColumns(); ++i) {
+			headerRow.add(table2.valueAt(i, 0));
+		}
+
+		/*
+		 * Merge data
+		 */
+		for (int j = 1; j < numRows(); ++j) {
+			String key1S = valueAt(key1, j);
+			boolean found = false;
+			ArrayList<String> dataRow = rows.get(j);
+
+			for (int jj = 1; jj < table2.numRows(); ++jj) {
+				if (key1S.equals(table2.valueAt(key2, jj))) {
+					for (int i = 0; i < table2.numColumns(); ++i) {
+						dataRow.add(table2.valueAt(i, jj));
+					}
+					found = true;
+					break;
+				}
+			}
+			
+
+			if (!found) {
+				System.err.println("Warning: could not find: '" + key1S + "'");
+				System.err.print("\tRow: "); 
+				for (int i = 0; i < dataRow.size(); ++i) {
+					System.err.print(dataRow.get(i) +",");
+				}
+				System.err.println();
+				for (int i = 0; i < table2.numColumns(); ++i) {
+					dataRow.add("");
+				}
+			}else{
+				deleteRow(j);
+				j--;
+			}
+		}
+	}
+
 	public void exportAsVdFiles(OutputStream outputVd, OutputStream outputIdt) {
 		PrintStream printVd = new PrintStream(outputVd);
 		ArrayList<Map<String, Integer> > histogram = histogram();
