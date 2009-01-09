@@ -6,16 +6,16 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.DatasetAccess;
-import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.QueryDefinitionRunParameter;
+import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.AaMutation;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AnalysisType;
@@ -28,39 +28,40 @@ import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.CombinedQuery;
 import net.sf.regadb.db.TherapyMotivation;
+import net.sf.regadb.db.CombinedQuery;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.CombinedQueryDefinition;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.UserAttribute;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.CombinedQueryDefinition;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.QueryDefinitionParameter;
-import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
+import net.sf.regadb.db.meta.Ids;
 
 public class ExportToXML 
 {
-	HashMap<Test, Integer> TestPMap = new HashMap<Test, Integer>();
-	HashMap<TestType, Integer> TestTypePMap = new HashMap<TestType, Integer>();
-	HashMap<ValueType, Integer> ValueTypePMap = new HashMap<ValueType, Integer>();
-	HashMap<TestObject, Integer> TestObjectPMap = new HashMap<TestObject, Integer>();
-	HashMap<TestNominalValue, Integer> TestNominalValuePMap = new HashMap<TestNominalValue, Integer>();
-	HashMap<Attribute, Integer> AttributePMap = new HashMap<Attribute, Integer>();
-	HashMap<AttributeGroup, Integer> AttributeGroupPMap = new HashMap<AttributeGroup, Integer>();
-	HashMap<AttributeNominalValue, Integer> AttributeNominalValuePMap = new HashMap<AttributeNominalValue, Integer>();
-	HashMap<Event, Integer> EventPMap = new HashMap<Event, Integer>();
-	HashMap<EventNominalValue, Integer> EventNominalValuePMap = new HashMap<EventNominalValue, Integer>();
-	HashMap<Analysis, Integer> AnalysisPMap = new HashMap<Analysis, Integer>();
-	HashMap<AnalysisData, Integer> AnalysisDataPMap = new HashMap<AnalysisData, Integer>();
+	HashMap<String, Integer> TestPMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> TestTypePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> ValueTypePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> TestObjectPMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> TestNominalValuePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> AttributePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> AttributeGroupPMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> AttributeNominalValuePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> EventPMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> EventNominalValuePMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> AnalysisPMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> AnalysisDataPMap = new HashMap<String, Integer>();
 	public void writeTherapy(Therapy Therapyvar, Element rootNode)
 	{
 		Element parentNode = new Element("Therapy");
@@ -316,7 +317,7 @@ public class ExportToXML
 		}
 		if(PatientEventValuevar.getEventNominalValue()!=null)
 		{
-			Integer indexeventNominalValue = EventNominalValuePMap.get(PatientEventValuevar.getEventNominalValue());
+			Integer indexeventNominalValue = EventNominalValuePMap.get(Ids.getUniqueId(PatientEventValuevar.getEventNominalValue()));
 			Element wrappereventNominalValue = new Element("eventNominalValue");
 			parentNode.addContent(wrappereventNominalValue);
 			if(indexeventNominalValue!=null)
@@ -331,13 +332,13 @@ public class ExportToXML
 				Element refElementeventNominalValue= new Element("reference");
 				wrappereventNominalValue.addContent(refElementeventNominalValue);
 				refElementeventNominalValue.addContent(indexeventNominalValue.toString());
-				EventNominalValuePMap.put(PatientEventValuevar.getEventNominalValue(),indexeventNominalValue);
+				EventNominalValuePMap.put(Ids.getUniqueId(PatientEventValuevar.getEventNominalValue()),indexeventNominalValue);
 				writeEventNominalValue(PatientEventValuevar.getEventNominalValue(),wrappereventNominalValue);
 			}
 		}
 		if(PatientEventValuevar.getEvent()!=null)
 		{
-			Integer indexevent = EventPMap.get(PatientEventValuevar.getEvent());
+			Integer indexevent = EventPMap.get(Ids.getUniqueId(PatientEventValuevar.getEvent()));
 			Element wrapperevent = new Element("event");
 			parentNode.addContent(wrapperevent);
 			if(indexevent!=null)
@@ -352,7 +353,7 @@ public class ExportToXML
 				Element refElementevent= new Element("reference");
 				wrapperevent.addContent(refElementevent);
 				refElementevent.addContent(indexevent.toString());
-				EventPMap.put(PatientEventValuevar.getEvent(),indexevent);
+				EventPMap.put(Ids.getUniqueId(PatientEventValuevar.getEvent()),indexevent);
 				writeEvent(PatientEventValuevar.getEvent(),wrapperevent);
 			}
 		}
@@ -517,7 +518,7 @@ public class ExportToXML
 		}
 		if(Eventvar.getValueType()!=null)
 		{
-			Integer indexvalueType = ValueTypePMap.get(Eventvar.getValueType());
+			Integer indexvalueType = ValueTypePMap.get(Ids.getUniqueId(Eventvar.getValueType()));
 			Element wrappervalueType = new Element("valueType");
 			parentNode.addContent(wrappervalueType);
 			if(indexvalueType!=null)
@@ -532,7 +533,7 @@ public class ExportToXML
 				Element refElementvalueType= new Element("reference");
 				wrappervalueType.addContent(refElementvalueType);
 				refElementvalueType.addContent(indexvalueType.toString());
-				ValueTypePMap.put(Eventvar.getValueType(),indexvalueType);
+				ValueTypePMap.put(Ids.getUniqueId(Eventvar.getValueType()),indexvalueType);
 				writeValueType(Eventvar.getValueType(),wrappervalueType);
 			}
 		}
@@ -553,7 +554,7 @@ public class ExportToXML
 				forParenteventNominalValues.addContent(forParentLoopVar);
 				if(eventNominalValuesloopvar!=null)
 				{
-					Integer indexeventNominalValuesloopvar = EventNominalValuePMap.get(eventNominalValuesloopvar);
+					Integer indexeventNominalValuesloopvar = EventNominalValuePMap.get(Ids.getUniqueId(eventNominalValuesloopvar));
 					Element wrappereventNominalValuesloopvar = forParentLoopVar;
 					if(indexeventNominalValuesloopvar!=null)
 					{
@@ -567,7 +568,7 @@ public class ExportToXML
 						Element refElementeventNominalValuesloopvar= new Element("reference");
 						wrappereventNominalValuesloopvar.addContent(refElementeventNominalValuesloopvar);
 						refElementeventNominalValuesloopvar.addContent(indexeventNominalValuesloopvar.toString());
-						EventNominalValuePMap.put(eventNominalValuesloopvar,indexeventNominalValuesloopvar);
+						EventNominalValuePMap.put(Ids.getUniqueId(eventNominalValuesloopvar),indexeventNominalValuesloopvar);
 						writeEventNominalValue(eventNominalValuesloopvar,wrappereventNominalValuesloopvar);
 					}
 				}
@@ -629,7 +630,7 @@ public class ExportToXML
 		}
 		if(TestResultvar.getTest()!=null)
 		{
-			Integer indextest = TestPMap.get(TestResultvar.getTest());
+			Integer indextest = TestPMap.get(Ids.getUniqueId(TestResultvar.getTest()));
 			Element wrappertest = new Element("test");
 			parentNode.addContent(wrappertest);
 			if(indextest!=null)
@@ -644,7 +645,7 @@ public class ExportToXML
 				Element refElementtest= new Element("reference");
 				wrappertest.addContent(refElementtest);
 				refElementtest.addContent(indextest.toString());
-				TestPMap.put(TestResultvar.getTest(),indextest);
+				TestPMap.put(Ids.getUniqueId(TestResultvar.getTest()),indextest);
 				writeTest(TestResultvar.getTest(),wrappertest);
 			}
 		}
@@ -656,7 +657,7 @@ public class ExportToXML
 		}
 		if(TestResultvar.getTestNominalValue()!=null)
 		{
-			Integer indextestNominalValue = TestNominalValuePMap.get(TestResultvar.getTestNominalValue());
+			Integer indextestNominalValue = TestNominalValuePMap.get(Ids.getUniqueId(TestResultvar.getTestNominalValue()));
 			Element wrappertestNominalValue = new Element("testNominalValue");
 			parentNode.addContent(wrappertestNominalValue);
 			if(indextestNominalValue!=null)
@@ -671,7 +672,7 @@ public class ExportToXML
 				Element refElementtestNominalValue= new Element("reference");
 				wrappertestNominalValue.addContent(refElementtestNominalValue);
 				refElementtestNominalValue.addContent(indextestNominalValue.toString());
-				TestNominalValuePMap.put(TestResultvar.getTestNominalValue(),indextestNominalValue);
+				TestNominalValuePMap.put(Ids.getUniqueId(TestResultvar.getTestNominalValue()),indextestNominalValue);
 				writeTestNominalValue(TestResultvar.getTestNominalValue(),wrappertestNominalValue);
 			}
 		}
@@ -722,7 +723,7 @@ public class ExportToXML
 		}
 		if(Testvar.getAnalysis()!=null)
 		{
-			Integer indexanalysis = AnalysisPMap.get(Testvar.getAnalysis());
+			Integer indexanalysis = AnalysisPMap.get(Ids.getUniqueId(Testvar.getAnalysis()));
 			Element wrapperanalysis = new Element("analysis");
 			parentNode.addContent(wrapperanalysis);
 			if(indexanalysis!=null)
@@ -737,13 +738,13 @@ public class ExportToXML
 				Element refElementanalysis= new Element("reference");
 				wrapperanalysis.addContent(refElementanalysis);
 				refElementanalysis.addContent(indexanalysis.toString());
-				AnalysisPMap.put(Testvar.getAnalysis(),indexanalysis);
+				AnalysisPMap.put(Ids.getUniqueId(Testvar.getAnalysis()),indexanalysis);
 				writeAnalysis(Testvar.getAnalysis(),wrapperanalysis);
 			}
 		}
 		if(Testvar.getTestType()!=null)
 		{
-			Integer indextestType = TestTypePMap.get(Testvar.getTestType());
+			Integer indextestType = TestTypePMap.get(Ids.getUniqueId(Testvar.getTestType()));
 			Element wrappertestType = new Element("testType");
 			parentNode.addContent(wrappertestType);
 			if(indextestType!=null)
@@ -758,7 +759,7 @@ public class ExportToXML
 				Element refElementtestType= new Element("reference");
 				wrappertestType.addContent(refElementtestType);
 				refElementtestType.addContent(indextestType.toString());
-				TestTypePMap.put(Testvar.getTestType(),indextestType);
+				TestTypePMap.put(Ids.getUniqueId(Testvar.getTestType()),indextestType);
 				writeTestType(Testvar.getTestType(),wrappertestType);
 			}
 		}
@@ -812,7 +813,7 @@ public class ExportToXML
 		}
 		if(PatientAttributeValuevar.getAttribute()!=null)
 		{
-			Integer indexattribute = AttributePMap.get(PatientAttributeValuevar.getAttribute());
+			Integer indexattribute = AttributePMap.get(Ids.getUniqueId(PatientAttributeValuevar.getAttribute()));
 			Element wrapperattribute = new Element("attribute");
 			parentNode.addContent(wrapperattribute);
 			if(indexattribute!=null)
@@ -827,13 +828,13 @@ public class ExportToXML
 				Element refElementattribute= new Element("reference");
 				wrapperattribute.addContent(refElementattribute);
 				refElementattribute.addContent(indexattribute.toString());
-				AttributePMap.put(PatientAttributeValuevar.getAttribute(),indexattribute);
+				AttributePMap.put(Ids.getUniqueId(PatientAttributeValuevar.getAttribute()),indexattribute);
 				writeAttribute(PatientAttributeValuevar.getAttribute(),wrapperattribute);
 			}
 		}
 		if(PatientAttributeValuevar.getAttributeNominalValue()!=null)
 		{
-			Integer indexattributeNominalValue = AttributeNominalValuePMap.get(PatientAttributeValuevar.getAttributeNominalValue());
+			Integer indexattributeNominalValue = AttributeNominalValuePMap.get(Ids.getUniqueId(PatientAttributeValuevar.getAttributeNominalValue()));
 			Element wrapperattributeNominalValue = new Element("attributeNominalValue");
 			parentNode.addContent(wrapperattributeNominalValue);
 			if(indexattributeNominalValue!=null)
@@ -848,7 +849,7 @@ public class ExportToXML
 				Element refElementattributeNominalValue= new Element("reference");
 				wrapperattributeNominalValue.addContent(refElementattributeNominalValue);
 				refElementattributeNominalValue.addContent(indexattributeNominalValue.toString());
-				AttributeNominalValuePMap.put(PatientAttributeValuevar.getAttributeNominalValue(),indexattributeNominalValue);
+				AttributeNominalValuePMap.put(Ids.getUniqueId(PatientAttributeValuevar.getAttributeNominalValue()),indexattributeNominalValue);
 				writeAttributeNominalValue(PatientAttributeValuevar.getAttributeNominalValue(),wrapperattributeNominalValue);
 			}
 		}
@@ -923,7 +924,7 @@ public class ExportToXML
 		}
 		if(TestTypevar.getValueType()!=null)
 		{
-			Integer indexvalueType = ValueTypePMap.get(TestTypevar.getValueType());
+			Integer indexvalueType = ValueTypePMap.get(Ids.getUniqueId(TestTypevar.getValueType()));
 			Element wrappervalueType = new Element("valueType");
 			parentNode.addContent(wrappervalueType);
 			if(indexvalueType!=null)
@@ -938,13 +939,13 @@ public class ExportToXML
 				Element refElementvalueType= new Element("reference");
 				wrappervalueType.addContent(refElementvalueType);
 				refElementvalueType.addContent(indexvalueType.toString());
-				ValueTypePMap.put(TestTypevar.getValueType(),indexvalueType);
+				ValueTypePMap.put(Ids.getUniqueId(TestTypevar.getValueType()),indexvalueType);
 				writeValueType(TestTypevar.getValueType(),wrappervalueType);
 			}
 		}
 		if(TestTypevar.getTestObject()!=null)
 		{
-			Integer indextestObject = TestObjectPMap.get(TestTypevar.getTestObject());
+			Integer indextestObject = TestObjectPMap.get(Ids.getUniqueId(TestTypevar.getTestObject()));
 			Element wrappertestObject = new Element("testObject");
 			parentNode.addContent(wrappertestObject);
 			if(indextestObject!=null)
@@ -959,7 +960,7 @@ public class ExportToXML
 				Element refElementtestObject= new Element("reference");
 				wrappertestObject.addContent(refElementtestObject);
 				refElementtestObject.addContent(indextestObject.toString());
-				TestObjectPMap.put(TestTypevar.getTestObject(),indextestObject);
+				TestObjectPMap.put(Ids.getUniqueId(TestTypevar.getTestObject()),indextestObject);
 				writeTestObject(TestTypevar.getTestObject(),wrappertestObject);
 			}
 		}
@@ -980,7 +981,7 @@ public class ExportToXML
 				forParenttestNominalValues.addContent(forParentLoopVar);
 				if(testNominalValuesloopvar!=null)
 				{
-					Integer indextestNominalValuesloopvar = TestNominalValuePMap.get(testNominalValuesloopvar);
+					Integer indextestNominalValuesloopvar = TestNominalValuePMap.get(Ids.getUniqueId(testNominalValuesloopvar));
 					Element wrappertestNominalValuesloopvar = forParentLoopVar;
 					if(indextestNominalValuesloopvar!=null)
 					{
@@ -994,7 +995,7 @@ public class ExportToXML
 						Element refElementtestNominalValuesloopvar= new Element("reference");
 						wrappertestNominalValuesloopvar.addContent(refElementtestNominalValuesloopvar);
 						refElementtestNominalValuesloopvar.addContent(indextestNominalValuesloopvar.toString());
-						TestNominalValuePMap.put(testNominalValuesloopvar,indextestNominalValuesloopvar);
+						TestNominalValuePMap.put(Ids.getUniqueId(testNominalValuesloopvar),indextestNominalValuesloopvar);
 						writeTestNominalValue(testNominalValuesloopvar,wrappertestNominalValuesloopvar);
 					}
 				}
@@ -1101,7 +1102,7 @@ public class ExportToXML
 				forParentanalysisDatas.addContent(forParentLoopVar);
 				if(analysisDatasloopvar!=null)
 				{
-					Integer indexanalysisDatasloopvar = AnalysisDataPMap.get(analysisDatasloopvar);
+					Integer indexanalysisDatasloopvar = AnalysisDataPMap.get(Ids.getUniqueId(analysisDatasloopvar));
 					Element wrapperanalysisDatasloopvar = forParentLoopVar;
 					if(indexanalysisDatasloopvar!=null)
 					{
@@ -1115,7 +1116,7 @@ public class ExportToXML
 						Element refElementanalysisDatasloopvar= new Element("reference");
 						wrapperanalysisDatasloopvar.addContent(refElementanalysisDatasloopvar);
 						refElementanalysisDatasloopvar.addContent(indexanalysisDatasloopvar.toString());
-						AnalysisDataPMap.put(analysisDatasloopvar,indexanalysisDatasloopvar);
+						AnalysisDataPMap.put(Ids.getUniqueId(analysisDatasloopvar),indexanalysisDatasloopvar);
 						writeAnalysisData(analysisDatasloopvar,wrapperanalysisDatasloopvar);
 					}
 				}
@@ -1278,7 +1279,7 @@ public class ExportToXML
 		}
 		if(Attributevar.getValueType()!=null)
 		{
-			Integer indexvalueType = ValueTypePMap.get(Attributevar.getValueType());
+			Integer indexvalueType = ValueTypePMap.get(Ids.getUniqueId(Attributevar.getValueType()));
 			Element wrappervalueType = new Element("valueType");
 			parentNode.addContent(wrappervalueType);
 			if(indexvalueType!=null)
@@ -1293,13 +1294,13 @@ public class ExportToXML
 				Element refElementvalueType= new Element("reference");
 				wrappervalueType.addContent(refElementvalueType);
 				refElementvalueType.addContent(indexvalueType.toString());
-				ValueTypePMap.put(Attributevar.getValueType(),indexvalueType);
+				ValueTypePMap.put(Ids.getUniqueId(Attributevar.getValueType()),indexvalueType);
 				writeValueType(Attributevar.getValueType(),wrappervalueType);
 			}
 		}
 		if(Attributevar.getAttributeGroup()!=null)
 		{
-			Integer indexattributeGroup = AttributeGroupPMap.get(Attributevar.getAttributeGroup());
+			Integer indexattributeGroup = AttributeGroupPMap.get(Ids.getUniqueId(Attributevar.getAttributeGroup()));
 			Element wrapperattributeGroup = new Element("attributeGroup");
 			parentNode.addContent(wrapperattributeGroup);
 			if(indexattributeGroup!=null)
@@ -1314,7 +1315,7 @@ public class ExportToXML
 				Element refElementattributeGroup= new Element("reference");
 				wrapperattributeGroup.addContent(refElementattributeGroup);
 				refElementattributeGroup.addContent(indexattributeGroup.toString());
-				AttributeGroupPMap.put(Attributevar.getAttributeGroup(),indexattributeGroup);
+				AttributeGroupPMap.put(Ids.getUniqueId(Attributevar.getAttributeGroup()),indexattributeGroup);
 				writeAttributeGroup(Attributevar.getAttributeGroup(),wrapperattributeGroup);
 			}
 		}
@@ -1335,7 +1336,7 @@ public class ExportToXML
 				forParentattributeNominalValues.addContent(forParentLoopVar);
 				if(attributeNominalValuesloopvar!=null)
 				{
-					Integer indexattributeNominalValuesloopvar = AttributeNominalValuePMap.get(attributeNominalValuesloopvar);
+					Integer indexattributeNominalValuesloopvar = AttributeNominalValuePMap.get(Ids.getUniqueId(attributeNominalValuesloopvar));
 					Element wrapperattributeNominalValuesloopvar = forParentLoopVar;
 					if(indexattributeNominalValuesloopvar!=null)
 					{
@@ -1349,7 +1350,7 @@ public class ExportToXML
 						Element refElementattributeNominalValuesloopvar= new Element("reference");
 						wrapperattributeNominalValuesloopvar.addContent(refElementattributeNominalValuesloopvar);
 						refElementattributeNominalValuesloopvar.addContent(indexattributeNominalValuesloopvar.toString());
-						AttributeNominalValuePMap.put(attributeNominalValuesloopvar,indexattributeNominalValuesloopvar);
+						AttributeNominalValuePMap.put(Ids.getUniqueId(attributeNominalValuesloopvar),indexattributeNominalValuesloopvar);
 						writeAttributeNominalValue(attributeNominalValuesloopvar,wrapperattributeNominalValuesloopvar);
 					}
 				}
