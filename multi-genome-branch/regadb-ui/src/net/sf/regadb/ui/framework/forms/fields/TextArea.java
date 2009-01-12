@@ -39,12 +39,12 @@ public class TextArea extends FormField
     
     public void flagErroneous()
     {
-        _fieldEdit.setStyleClass("form-field textarea edit-invalid");
+    	_fieldEdit.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
-        _fieldEdit.setStyleClass("form-field textarea edit-valid");
+    	_fieldEdit.setStyleClass("");
     }
 
     public String getFormText() 

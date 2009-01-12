@@ -185,10 +185,8 @@ public class DataTable<DataType> extends WTable
         
         //scrolling buttons
         elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
-        elementAt(row, col).setStyleClass("navigation");
+        elementAt(row, col).setStyleClass("bottom-navigation");
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
-        //TODO
-        //scrollingButtons.setContentAlignment(WHorizontalAlignment.AlignCenter);
         scrollingButtons.setStyleClass("scrollingButtons");
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
         firstScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()

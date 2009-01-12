@@ -98,8 +98,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         buttonContainer.setStyleClass("control-buttons");
         buttonContainer.addWidget(_loginButton);
         buttonContainer.addWidget(_helpButton);
-        //TODO
-        //buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
+        
         _loginButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent me)

@@ -40,8 +40,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         
         TextField tf = new TextField(InteractionState.Viewing, form_);
         tf.setText(type.getName());
-        
-        //TODO test!!!!!!!!
+
         WMemoryResource resource = new WMemoryResource(type.getMimetype(), tf);
         WAnchor anchor = new WAnchor(resource, WWidget.lt(type.getName()));
         resource.setData(type.getData(), type.getData().length);

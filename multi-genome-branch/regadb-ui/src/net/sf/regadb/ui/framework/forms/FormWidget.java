@@ -131,8 +131,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         }
         
         buttonContainer.addWidget(_helpButton);
-        //TODO
-        //buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
         buttonContainer.setStyleClass("control-buttons");
     }
     

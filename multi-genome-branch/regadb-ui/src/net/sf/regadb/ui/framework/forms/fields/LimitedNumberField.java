@@ -74,14 +74,14 @@ public class LimitedNumberField extends FormField
     
     public void flagErroneous()
     {
-        fieldEdit_.setStyleClass("form-field textfield edit-invalid");
-        limiterField_.setStyleClass("form-field combobox edit-invalid");
+    	fieldEdit_.setStyleClass("Wt-invalid");
+        limiterField_.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
-        fieldEdit_.setStyleClass("form-field textfield edit-valid");
-        limiterField_.setStyleClass("form-field combobox edit-valid");
+    	fieldEdit_.setStyleClass("");
+        limiterField_.setStyleClass("");
     }
 
     public String getFormText() 

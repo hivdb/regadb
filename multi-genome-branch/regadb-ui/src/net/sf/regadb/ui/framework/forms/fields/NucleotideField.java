@@ -51,12 +51,12 @@ public class NucleotideField extends FormField
     
     public void flagErroneous()
     {
-        _fieldEdit.setStyleClass("form-field ntfield edit-invalid");
+    	_fieldEdit.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
-        _fieldEdit.setStyleClass("form-field ntfield edit-valid");
+    	_fieldEdit.setStyleClass("");
     }
 
     public void setFormText(String text) 

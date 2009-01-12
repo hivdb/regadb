@@ -174,13 +174,13 @@ public class ComboBox<ComboDataType> extends FormField
     public void flagErroneous()
     {
         if(fieldEdit_!=null)
-            fieldEdit_.setStyleClass("form-field combo edit-invalid");
+        	fieldEdit_.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
         if(fieldEdit_!=null)
-            fieldEdit_.setStyleClass("form-field combo edit-valid");
+        	fieldEdit_.setStyleClass("");
     }
 
     public String getFormText() 

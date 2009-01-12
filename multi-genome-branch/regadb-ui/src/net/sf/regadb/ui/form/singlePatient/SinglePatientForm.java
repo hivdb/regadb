@@ -287,6 +287,7 @@ public class SinglePatientForm extends FormWidget
                         }
                         attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldTF);
                     }
+                    attributesGroupTable_.elementAt(rowToPlace, 1).setStyleClass("form-value-area");
                 }
                 attributeGroup.expand();
             }

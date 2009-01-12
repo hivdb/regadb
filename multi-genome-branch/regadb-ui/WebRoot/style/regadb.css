@@ -90,7 +90,9 @@ html div.MODAL_FLOATING_FORE iframe {
 	height:3000px !important;
 }
 
-
+.layout-table {
+	width: 100%;	
+}
 
 /* general layout */
 
@@ -177,38 +179,50 @@ td.header {
 	background-color:#ddd;	
 	border:1px solid #bbb;
 	margin-top:1em;
+	text-align: right;
 }
 
 /* data tables */
 
 table.datatable {
-	border-collapse:collapse;
 	background-color:#f4f4f4;
 	border:1px solid #bbb;
+	width: 100%;
 }
 
 table.datatable td {
 	padding:0.1em 0.2em;
-	text-align:left;
 	overflow:hidden;
 }
 
-table.datatable td.tablewrapper, table.date-field td {
-	padding:0px;
+
+table.datatable td.table-cell {
+	cursor: pointer;
+	display: block;
 }
 
-table.datatable-grid td{
+table.datatable-grid td {
 	border-left:1px solid #bbb;
 	border-right:1px solid #bbb;
 }
 
-table.datatable td.navigation{
-	border:1px solid #bbb;
-	background-color:#e5e5e5;
-	text-align:right !important;
+table.datatable-grid tr {
+	height: 1.4em;	
 }
 
-table.datatable td.column-title, table.datatable td.table-expander {
+table.datatable td.bottom-navigation{
+	border:1px solid #bbb;
+	background-color:#e5e5e5;
+	text-align:center;
+}
+
+table.datatable td.top-navigation {
+	border:1px solid #bbb;
+	background-color:#e5e5e5;
+	text-align:right;	
+}
+
+table.datatable td.column-title {
 	padding:0.2em 0.5em;	
 	background-color:#ddd;
 	border-top:1px solid #bbb;
@@ -224,13 +238,22 @@ table.datatable td.column-action button {
 	width:7em;
 }
 
-table.datatable td.hidden {
-	display:none;
-	padding:0px;	
-}
-
 table.datatable span.table-header {
 	font-weight: bold;
+}
+
+table.datatable-grid td.filter {
+	background-color: #ddeecc;
+	padding: 0;
+	height: 0;
+}
+
+table.datatable-grid tr.filter {
+	height: 0;	
+}
+
+table.datatable-grid div.filter {
+	padding: 3px;
 }
 
 *.scrollingButtons span {
@@ -259,7 +282,6 @@ fieldset {
 	border:1px solid #bbb;
 	margin:1em 0em 0em;
 	padding:0.5em 1em 1em 1em !important;
-	text-align:left !important;
 }
 
 fieldset fieldset {
@@ -289,6 +311,10 @@ table.datatable td.form-label-area {
 	padding-right:0.5em;
 	text-align:right !important;
 	background-color: #e5e5e5;
+}
+
+table.datatable td.form-value-area input {
+	width: 94%;
 }
 
 .form-label {
@@ -704,3 +730,11 @@ table.viral-isolate-table td {
 	height:0px;
 }
 
+.datefield input, table.datatable td.form-value-area .datefield input {
+	width: 12ex;
+}
+
+.datefield img {
+	vertical-align: -3px;	
+	margin-left: 3px;
+}

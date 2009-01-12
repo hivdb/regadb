@@ -18,6 +18,7 @@ public class FormTable extends WTable {
         elementAt(numRows, 0).setStyleClass("form-label-area");
         putElementAt(numRows, 0, label);
         putElementAt(numRows, 1, field.getWidget());
+        elementAt(numRows, 1).setStyleClass("form-value-area");
         label.setBuddy(field);
         return numRows;
     }
@@ -28,6 +29,7 @@ public class FormTable extends WTable {
         elementAt(numRows, 0).setStyleClass("form-label-area");
         for(int i=0;i<widgets.length;++i) {
             putElementAt(numRows, i, widgets[i]);
+            elementAt(numRows, i).setStyleClass("form-value-area");
         }
         return numRows;
     }

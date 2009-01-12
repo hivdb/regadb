@@ -60,11 +60,11 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	}
 
 	public void flagErroneous() {
-		this.setStyleClass("form-field textfield edit-invalid");
+		setStyleClass("Wt-invalid");
 	}
 
 	public void flagValid() {
-		this.setStyleClass("form-field textfield edit-valid");
+		setStyleClass("");
 	}
 
 	public String getFormText() {

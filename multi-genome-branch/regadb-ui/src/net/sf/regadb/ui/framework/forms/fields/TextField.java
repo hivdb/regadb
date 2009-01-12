@@ -88,12 +88,12 @@ public class TextField extends FormField
 	
 	public void flagErroneous()
 	{
-		_fieldEdit.setStyleClass("form-field textfield edit-invalid");
+		_fieldEdit.setStyleClass("Wt-invalid");
 	}
 
 	public void flagValid()
 	{
-		_fieldEdit.setStyleClass("form-field textfield edit-valid");
+		_fieldEdit.setStyleClass("");
 	}
 
     public String getFormText() 
