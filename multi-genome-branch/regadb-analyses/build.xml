@@ -97,6 +97,12 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	<jar jarfile="${dist}/testfastaalign.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="net.sf.regadb.align.test"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
