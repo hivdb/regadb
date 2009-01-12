@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.io.exportXML.ExportToXMLOutputStream;
+import net.sf.regadb.io.exportXML.ExportPatient;
+import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.PatientXMLOutputStream;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -13,7 +15,6 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WFileResource;
@@ -54,27 +55,10 @@ public class ExportForm extends FormWidget {
                     deleteExportFile();
                     exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "xml");
                     FileOutputStream fout = new FileOutputStream(exportFile);
-    
-                    ExportToXMLOutputStream xmlout = new ExportToXMLOutputStream(fout);
-    
-    
-                    Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+                    PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout);
                     
-                    HibernateFilterConstraint hfc = new HibernateFilterConstraint();
-                    hfc.setClause(" dataset.description = :description ");
-                    hfc.addArgument("description", ds.getDescription());
-                    long n = t.getPatientCount(hfc);
-                    int maxResults = 100;
-                    
-                    xmlout.start();
-                    for(int i=0; i < n; i+=maxResults){
-                        t.commit();
-                        t.clearCache();
-                        t = RegaDBMain.getApp().getLogin().createTransaction();
-    
-                        xmlout.write(t.getPatients(ds,i,maxResults));
-                    }
-                    xmlout.stop();
+                    ExportPatient<Patient> exportPatient = new ExportPatient<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
+                    exportPatient.run();
                     
                     table_.elementAt(0, 2).clear();
                     
