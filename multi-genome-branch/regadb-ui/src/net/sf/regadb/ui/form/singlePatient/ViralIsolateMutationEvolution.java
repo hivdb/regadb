@@ -96,7 +96,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
         List<AaSequence> aaseqs = getAaSeqsForViralIsolateSortedByProtein(vi);
         String result;
         for(AaSequence s : aaseqs) {
-            result = MutationHelper.getMutationDifferenceList(s, aaseq);
+            result = MutationHelper.getAaMutationDifferenceList(s, aaseq);
             if(result!=null) {
                 return result;
             }
