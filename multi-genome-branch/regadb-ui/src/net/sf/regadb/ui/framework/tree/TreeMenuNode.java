@@ -10,6 +10,8 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTreeNode;
+import eu.webtoolkit.jwt.WebSession;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 public abstract class TreeMenuNode extends WTreeNode
 {
@@ -17,9 +19,11 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		super(intlText, null, root);
 		
+		setInteractive(false);
 		setLabelIcon(null);
 		
-		setImagePack("pics/");
+		String contextPath = WebSession.Handler.instance().request().getContextPath();
+		setImagePack(StringUtils.terminate(contextPath, '/') + "pics/");
 		
 		this.setChildCountPolicy(ChildCountPolicy.Disabled);
 		
