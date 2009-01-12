@@ -52,6 +52,8 @@ public class TestFastaAlign {
         	ioe.printStackTrace();
         }
         
+        Genome g = null;
+        
         if(xna!=null)
         { 
             while(xna.hasNext())
@@ -60,8 +62,12 @@ public class TestFastaAlign {
                     Sequence seq = xna.nextRichSequence();
                     NtSequence ntseq = new NtSequence();
                     ntseq.setNucleotides(seq.seqString());
+                    
+                    if(g==null) {
+                    	g = getGenome(ntseq);
+                    }
                     		
-                    List<AaSequence> result = aligner.align(ntseq, getGenome(ntseq));
+                    List<AaSequence> result = aligner.align(ntseq, g);
                     for(AaSequence aaseq : result) {
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
                     		System.out.print(aaseq.getProtein().getAbbreviation() + 
