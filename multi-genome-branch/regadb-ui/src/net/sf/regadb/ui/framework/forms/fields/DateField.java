@@ -6,12 +6,11 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.util.date.DateUtils;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WDatePicker;
 import eu.webtoolkit.jwt.WDateValidator;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WImage;
-import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WLineEdit;
-import eu.webtoolkit.jwt.WTable;
 
 public class DateField extends FormField
 {
@@ -26,14 +25,10 @@ public class DateField extends FormField
         {
 			_fieldEdit = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, _fieldEdit);
-            WTable table = new WTable(this);
-            table.elementAt(0, 0).addWidget(_fieldEdit);
-            table.elementAt(0, 1).addWidget(calendarIcon_);
-            table.elementAt(0, 1).resize(new WLength(24, WLength.Unit.Pixel), new WLength());
 			addWidget(_fieldEdit);
-			addWidget(calendarIcon_);
+			WDatePicker dp = new WDatePicker(calendarIcon_, _fieldEdit, false, this);
+			dp.setFormat("dd/MM/yyyy");
 			flagValid();
-			table.setStyleClass("date-field");
 		}
 		else
 		{

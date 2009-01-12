@@ -15,22 +15,22 @@ public class HibernateFilterConstraintMapping
 		
 		String operator = df.getComboState().key();
 			
-		if(operator.equals(DateFilter.equals_))
+		if(operator.equals(DateFilter.equals))
 		{
 			constraint.clause_ = varName + " = :param" + filterIndex;
 			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, df.getFirstDate()));
 		}
-		else if(operator.equals(DateFilter.before_))
+		else if(operator.equals(DateFilter.before))
 		{
 			constraint.clause_ = varName + " < :param" + filterIndex;
 			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, df.getFirstDate()));
 		}
-		else if(operator.equals(DateFilter.after_))
+		else if(operator.equals(DateFilter.after))
 		{
 			constraint.clause_ = varName + " > :param" + filterIndex;
 			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, df.getFirstDate()));
 		}
-		else if(operator.equals(DateFilter.between_))
+		else if(operator.equals(DateFilter.between))
 		{
 			constraint.clause_ = varName + " between :paramA" + filterIndex + " and :paramB" + filterIndex;
 			constraint.arguments_.add(new Pair<String, Object>("paramA" + filterIndex, df.getFirstDate()));

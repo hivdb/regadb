@@ -738,3 +738,7 @@ table.viral-isolate-table td {
 	vertical-align: -3px;	
 	margin-left: 3px;
 }
+
+table.Wt-cal-table td, td.Wt-cal-header, td.Wt-cal-header:hover, td.Wt-cal-oom, td.Wt-cal-oom:hover {
+	border: 1px solid #E0E0E0;
+}
