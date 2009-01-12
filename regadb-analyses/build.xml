@@ -99,7 +99,7 @@
   	</jar>
   	<jar jarfile="${dist}/testfastaalign.jar" basedir="${build}">
   		<manifest>
-  			<attribute name="Main-Class" value="net.sf.regadb.align.test"/>
+  			<attribute name="Main-Class" value="net.sf.regadb.align.test.TestFastaAlign"/>
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
