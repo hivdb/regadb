@@ -18,12 +18,11 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
-import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.date.DateUtils;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WCheckBox;
-import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
@@ -46,8 +45,8 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 
     public void init()
     {
-    	WGroupBox algorithm = new WGroupBox(tr("form.viralIsolate.evolution.group.algorithm"), this);
-    	FormTable form = new FormTable(algorithm);
+    	WTable wrapper = new SimpleTable(this);
+    	
         asiCombo_ = new MyComboBox();
         loadCombo();
         asiCombo_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
@@ -56,21 +55,22 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
             }
         });
         Label asiL = new Label(tr("form.viralIsolate.editView.report.algorithm"));
-        form.addLineToTable(asiL, asiCombo_);
         
+        wrapper.elementAt(0, 0).addWidget(asiL);
+        wrapper.elementAt(0, 0).addWidget(new WLabel(lt("   ")));
+        wrapper.elementAt(0, 0).addWidget(asiCombo_);
     	
-    	WGroupBox resistanceGroup = new WGroupBox(tr("form.viralIsolate.evolution.group.resistance"), algorithm);
-        WTable wrapper = new SimpleTable(resistanceGroup);
-        wrapper.elementAt(0, 0).setStyleClass("navigation");
-        wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
+        
+        wrapper.elementAt(1, 0).setStyleClass("navigation");
+        wrapper.elementAt(2, 0).setStyleClass("tablewrapper");
 
     	
         
-        resistanceTable_ = new WTable(wrapper.elementAt(1, 0));
+        resistanceTable_ = new WTable(wrapper.elementAt(2, 0));
         resistanceTable_.setStyleClass("datatable datatable-resistance");
         
         
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.evolution.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.evolution.resistance.showMutationsCB"), wrapper.elementAt(1, 0));
         showMutations_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a)
