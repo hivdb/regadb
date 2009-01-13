@@ -8,6 +8,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.TestNtSequenceAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import eu.webtoolkit.jwt.WString;
@@ -138,7 +139,11 @@ public class BatchTestRunningTest extends Thread {
 		}
 
 		public void runSingleTest(NtSequence t, Login l) {
-			new TestNtSequenceAnalysis(t, test, l.getUid()).launch(l);
+			try {
+                new TestNtSequenceAnalysis(t, test, l.getUid()).launch(l);
+            } catch (ServiceException e) {
+                e.printStackTrace();
+            }
 		}
 	}	
 }
