@@ -4,6 +4,7 @@ import java.util.Date;
 
 import net.sf.regadb.db.AnalysisStatus;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.wts.ServiceException;
 
 public interface IAnalysis 
 {
@@ -15,7 +16,7 @@ public interface IAnalysis
     //return a Long represeting the time after the Analsyis should be removed from the logging
     public Long removeFromLogging();
     
-    public void launch(Login sessionSafeLogin);
+    public void launch(Login sessionSafeLogin) throws ServiceException;
     public void pause();
     public void kill();
 }

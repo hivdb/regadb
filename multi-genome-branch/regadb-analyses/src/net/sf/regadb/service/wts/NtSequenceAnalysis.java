@@ -33,9 +33,6 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
     public NtSequenceAnalysis(NtSequence ntSequence){
         setNtSequence(ntSequence);
     }
-
-    protected abstract void init();
-    protected abstract void processResults(); 
     
     protected String toFasta(NtSequence ntSequence){
         return '>' + ntSequence.getLabel() + '\n' + ntSequence.getNucleotides();
@@ -115,7 +112,7 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
         return 10000L;
     }
 
-    public void launch(Login sessionSafeLogin) {
+    public void launch(Login sessionSafeLogin) throws ServiceException{
         setLogin(sessionSafeLogin);
         launch();
     }

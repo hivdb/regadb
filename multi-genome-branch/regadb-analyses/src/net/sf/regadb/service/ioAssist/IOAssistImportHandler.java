@@ -25,6 +25,7 @@ import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.SubtypeAnalysis;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
 import net.sf.regadb.service.wts.util.Utils;
@@ -185,7 +186,11 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public static TestResult doSubtypeAnalysis(NtSequence ntseq, Test subtypeTest, Genome genome){
         SubtypeAnalysis subtypeAnalyis = new SubtypeAnalysis(ntseq, subtypeTest, genome);
-        subtypeAnalyis.launch();
+        try {
+            subtypeAnalyis.launch();
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
         return subtypeAnalyis.getTestResult();
     }
  
@@ -193,7 +198,11 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     public static Genome getGenome(NtSequence ntseq)
     {
         BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq);
-        blastAnalysis.launch();
+        try {
+            blastAnalysis.launch();
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
         return blastAnalysis.getGenome();
     }
     

@@ -11,9 +11,27 @@ import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportGenomes;
+import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class BlastAnalysis extends NtSequenceAnalysis{
+    public static class UnsupportedGenomeException extends ServiceException{
+        private String blastResult;
+
+        public UnsupportedGenomeException(String service, String url, String blastResult) {
+            super(service, url);
+            setBlastResult(blastResult);
+        }
+
+        public void setBlastResult(String blastResult) {
+            this.blastResult = blastResult;
+        }
+
+        public String getBlastResult() {
+            return blastResult;
+        }
+        
+    }
     
     private static Map<String, Genome> genomeMap=null;
     
@@ -37,9 +55,19 @@ public class BlastAnalysis extends NtSequenceAnalysis{
         destroyTransaction(t);
     }
     
-    protected void processResults()
+    protected void processResults() throws ServiceException
     {
-        setGenome(getGenome(getOutputs().get("species")));
+        String result = getOutputs().get("species");
+        if(result != null && result.length() > 0){
+            Genome g = getGenome(result);
+            
+            if(g != null)
+                setGenome(g);
+            else
+                throw new UnsupportedGenomeException(getService(), getUrl(), result);
+        }
+        else
+            throw new ServiceException(getService(),getUrl());
     }
     
     protected void setGenome(Genome genome_) {
@@ -51,7 +79,13 @@ public class BlastAnalysis extends NtSequenceAnalysis{
     }
 
     public Genome getGenome(String blastResult){
-        return getGenomeMap().get(blastResult.split("\n")[0].trim());
+        try{
+            return getGenomeMap().get(blastResult.split("\n")[0].trim());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
     
     synchronized public Map<String, Genome> getGenomeMap(){

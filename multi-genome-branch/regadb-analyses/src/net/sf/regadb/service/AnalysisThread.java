@@ -1,6 +1,7 @@
 package net.sf.regadb.service;
 
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.wts.ServiceException;
 
 
 public class AnalysisThread extends Thread
@@ -14,7 +15,11 @@ public class AnalysisThread extends Thread
         {
             public void run() 
             {
-                analysis.launch(login);
+                try {
+                    analysis.launch(login);
+                } catch (ServiceException e) {
+                    e.printStackTrace();
+                }
             }
         });
         analysis_ = analysis;

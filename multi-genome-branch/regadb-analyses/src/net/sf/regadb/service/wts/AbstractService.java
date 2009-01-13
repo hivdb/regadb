@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.service.wts.client.WtsClientFactory;
 import net.sf.wts.client.IWtsClient;
 
@@ -24,9 +25,9 @@ public abstract class AbstractService {
     private Map<String,String> outputs = new HashMap<String,String>();
     
     protected abstract void init();
-    protected abstract void processResults();
+    protected abstract void processResults() throws ServiceException;
 
-    public void launch()
+    public void launch() throws ServiceException
     {
         setStartTime(new Date());
         init();
@@ -74,10 +75,12 @@ public abstract class AbstractService {
         catch (RemoteException e1) 
         {
             e1.printStackTrace();
+            throw new ServiceUnavailableException(getService(),getUrl());
         } 
         catch (MalformedURLException e) 
         {
             e.printStackTrace();
+            throw new ServiceUnavailableException(getService(),getUrl());
         }
         
         processResults();

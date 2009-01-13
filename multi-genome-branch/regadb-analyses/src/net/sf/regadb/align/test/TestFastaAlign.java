@@ -20,6 +20,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
@@ -108,7 +109,11 @@ public class TestFastaAlign {
     public static Genome getGenome(NtSequence ntseq)
     {
         BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq);
-        blastAnalysis.launch();
+        try {
+            blastAnalysis.launch();
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
         return blastAnalysis.getGenome();
     }
 }
