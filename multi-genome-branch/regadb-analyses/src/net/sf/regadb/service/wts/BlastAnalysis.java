@@ -83,7 +83,6 @@ public class BlastAnalysis extends NtSequenceAnalysis{
             return getGenomeMap().get(blastResult.split("\n")[0].trim());
         }
         catch(Exception e){
-            e.printStackTrace();
             return null;
         }
     }
