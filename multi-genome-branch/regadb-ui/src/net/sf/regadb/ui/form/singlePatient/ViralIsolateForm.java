@@ -100,13 +100,13 @@ public class ViralIsolateForm extends FormWidget
 	
 	@Override
 	public void saveData()
-	{
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        t.attach(viralIsolate_);
-        
+	{        
         Genome genome = blast();
         if(genome == null)
             return;
+        
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.attach(viralIsolate_);
         
         _mainForm.saveData(t);
         
