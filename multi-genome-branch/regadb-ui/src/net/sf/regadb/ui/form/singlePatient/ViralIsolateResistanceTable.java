@@ -11,7 +11,6 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
-import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -27,6 +26,10 @@ public class ViralIsolateResistanceTable extends WTable {
     public void loadTable(boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
         clear();
         
+        if(gssTestType == null){
+            return;
+        }
+        
         Transaction t = RegaDBMain.getApp().createTransaction();
         List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
         
@@ -40,8 +43,7 @@ public class ViralIsolateResistanceTable extends WTable {
         for(Test test : t.getTests())
         {
             if(test.getAnalysis()!=null
-                    && (( gssTestType != null && Equals.isSameTestType(gssTestType, test.getTestType()) ))
-                        || (gssTestType == null && StandardObjects.getGssDescription().equals(test.getTestType().getDescription())))
+                    && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
                 col = columnCount();
                 elementAt(0, col).addWidget(new TableHeader(lt(test.getDescription())));
