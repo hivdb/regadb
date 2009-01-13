@@ -19,12 +19,14 @@ import net.sf.regadb.service.align.AlignmentAnalysis;
 public class FullAnalysis implements IAnalysis {
     private Date endTime, startTime;
     private AnalysisStatus status;
-    private String user;
+    private String user;    
+    private Genome genome;
     
     private ViralIsolate viralIsolate;
 
-    public FullAnalysis(ViralIsolate viralIsolate) {
+    public FullAnalysis(ViralIsolate viralIsolate, Genome genome) {
         setViralIsolate(viralIsolate);
+        setGenome(genome);
     }
 
     public Date getEndTime() {
@@ -49,15 +51,11 @@ public class FullAnalysis implements IAnalysis {
     public void launch(Login sessionSafeLogin) {
         setStartTime(new Date());
         
-        if(getViralIsolate().getNtSequences().size() > 0){
+        if(getViralIsolate().getNtSequences().size() > 0 && getGenome() != null){
             Transaction t = sessionSafeLogin.createTransaction();
             Test subTypeTest = t.getTest(RegaDBWtsServer.getSubtypeTest(), RegaDBWtsServer.getSubtypeTestType());
             t.commit();
-            
-            BlastAnalysis blastAnalysis = new BlastAnalysis(getViralIsolate().getNtSequences().iterator().next(), sessionSafeLogin.getUid());
-            blastAnalysis.launch(sessionSafeLogin);
-            Genome genome = blastAnalysis.getGenome();
-            
+                        
             if(genome != null){
                 
                 for(NtSequence ntseq : getViralIsolate().getNtSequences())
@@ -121,5 +119,13 @@ public class FullAnalysis implements IAnalysis {
 
     public ViralIsolate getViralIsolate() {
         return viralIsolate;
+    }
+
+    public void setGenome(Genome genome) {
+        this.genome = genome;
+    }
+
+    public Genome getGenome() {
+        return genome;
     }
 }
