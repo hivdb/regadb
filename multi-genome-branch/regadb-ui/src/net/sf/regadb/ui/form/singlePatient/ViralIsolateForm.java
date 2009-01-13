@@ -100,13 +100,14 @@ public class ViralIsolateForm extends FormWidget
 	
 	@Override
 	public void saveData()
-	{        
+	{                
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        t.attach(viralIsolate_);
+        
+        _mainForm.confirmSequence();
         Genome genome = blast();
         if(genome == null)
             return;
-        
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        t.attach(viralIsolate_);
         
         _mainForm.saveData(t);
         
@@ -138,11 +139,12 @@ public class ViralIsolateForm extends FormWidget
 	
 	private Genome blast(){
 	    Genome genome = null;
-        ViralIsolate vi = getViralIsolate();
-        if(vi.getNtSequences().size() > 0){
-            BlastAnalysis blastAnalysis = new BlastAnalysis(vi.getNtSequences().iterator().next(), RegaDBMain.getApp().getLogin().getUid());
+	    NtSequence ntseq = ((DataComboMessage<NtSequence>)_mainForm.getSeqComboBox().currentText()).getValue();
+	    
+        if(ntseq != null){
+            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());
             try{
-                blastAnalysis.launch(RegaDBMain.getApp().getLogin());
+                blastAnalysis.launch();
                 genome = blastAnalysis.getGenome();
             }
             catch(UnsupportedGenomeException e){

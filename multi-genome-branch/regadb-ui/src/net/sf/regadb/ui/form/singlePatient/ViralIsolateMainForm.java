@@ -401,7 +401,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.currentText()).getValue());
     }
     
-    private void confirmSequence()
+    void confirmSequence()
     {
         if(validateSequenceFields())
         {
@@ -464,7 +464,6 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     public void saveData(Transaction t)
     {
-        confirmSequence();
         
         for(NtSequence ntseq : removedSequences)
         {
@@ -551,4 +550,9 @@ public class ViralIsolateMainForm extends WContainerWidget
         t.commit();
         return unique;
     }
+    
+    public MyComboBox getSeqComboBox(){
+        return seqComboBox;
+    }
+    
 }
