@@ -155,7 +155,7 @@ public class ViralIsolateForm extends FormWidget
                 e.printStackTrace();
             }            
         }
-        return null;
+        return genome;
 	}
     
     @Override
