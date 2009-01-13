@@ -18,14 +18,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
-import net.sf.regadb.service.wts.ServiceException;
-import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
-import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -496,29 +491,12 @@ public class ViralIsolateMainForm extends WContainerWidget
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
     }
     
-    public void startAnalysis()
+    public void startAnalysis(Genome genome)
     {
         ViralIsolate vi = viralIsolateForm_.getViralIsolate();
         if(vi.getNtSequences().size() > 0){
-            BlastAnalysis blastAnalysis = new BlastAnalysis(vi.getNtSequences().iterator().next(), RegaDBMain.getApp().getLogin().getUid());
-            try{
-                blastAnalysis.launch(RegaDBMain.getApp().getLogin());
-                Genome genome = blastAnalysis.getGenome();
-                
-                if(genome != null){
-                    FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome);
-                    AnalysisPool.getInstance().launchAnalysis(fullAnalysis, RegaDBMain.getApp().getLogin());
-                }
-            }
-            catch(UnsupportedGenomeException e){
-                UIUtils.showWarningMessageBox(viralIsolateForm_, tr("form.viralIsolate.warning.unsupportedGenome"));
-            }
-            catch(ServiceUnavailableException e){
-                
-            }
-            catch(ServiceException e){
-                
-            }
+            FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome);
+            AnalysisPool.getInstance().launchAnalysis(fullAnalysis, RegaDBMain.getApp().getLogin());
         }
     }
 

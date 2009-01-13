@@ -10,6 +10,10 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
+import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
+import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -100,15 +104,19 @@ public class ViralIsolateForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.attach(viralIsolate_);
         
+        Genome genome = blast();
+        if(genome == null)
+            return;
+        
         _mainForm.saveData(t);
         
         //remove resistance tests
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolate_);
-        if(genome != null){
+        Genome oldgenome = ViralIsolateFormUtils.getGenome(viralIsolate_);
+        if(oldgenome != null){
             for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
             {
                 TestResult test = i.next();
-                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTest().getTestType()))
+                if(Equals.isSameTestType(StandardObjects.getGssTestType(oldgenome),test.getTest().getTestType()))
                 {
                     if(test.getTest().getAnalysis()!=null)
                     {
@@ -122,10 +130,32 @@ public class ViralIsolateForm extends FormWidget
         update(viralIsolate_, t);
         t.commit();
         
-        _mainForm.startAnalysis();
+        _mainForm.startAnalysis(genome);
              
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
+	}
+	
+	private Genome blast(){
+	    Genome genome = null;
+        ViralIsolate vi = getViralIsolate();
+        if(vi.getNtSequences().size() > 0){
+            BlastAnalysis blastAnalysis = new BlastAnalysis(vi.getNtSequences().iterator().next(), RegaDBMain.getApp().getLogin().getUid());
+            try{
+                blastAnalysis.launch(RegaDBMain.getApp().getLogin());
+                genome = blastAnalysis.getGenome();
+            }
+            catch(UnsupportedGenomeException e){
+                UIUtils.showWarningMessageBox(this, tr("form.viralIsolate.warning.unsupportedGenome"));
+            }
+            catch(ServiceUnavailableException e){
+                UIUtils.showWarningMessageBox(this, tr("msg.warning.serviceUnavailable"));
+            }
+            catch(ServiceException e){
+                e.printStackTrace();
+            }            
+        }
+        return null;
 	}
     
     @Override
