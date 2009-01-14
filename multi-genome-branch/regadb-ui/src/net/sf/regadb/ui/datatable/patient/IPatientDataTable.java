@@ -197,18 +197,13 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
     
     protected Attribute getDefaultAttribute(Transaction t){
         Attribute a = null;
-        List<Attribute> l;
         
         String dftAttr = RegaDBSettings.getInstance().getDefaultValue("datatable.patient.attribute");
         if(dftAttr != null){
-            l = t.getAttributes(dftAttr);
+            List<Attribute> l = t.getAttributes(dftAttr);
+            if(l.size() > 0)
+                a = l.get(0);
         }
-        else{
-            l = t.getAttributes();
-        }
-        
-        if(l.size() > 0)
-            a = l.get(0);
         
         return a;
     }
