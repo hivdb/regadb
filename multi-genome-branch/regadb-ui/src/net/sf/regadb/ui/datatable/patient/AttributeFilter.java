@@ -102,7 +102,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             if(vt == ValueTypes.DATE){
                 filter_ = new TimestampFilter(RegaDBSettings.getInstance().getDateFormat());
             }
-            if(vt == ValueTypes.LIMITED_NUMBER || vt == ValueTypes.STRING){
+            if(vt == ValueTypes.LIMITED_NUMBER || vt == ValueTypes.STRING || vt == ValueTypes.NUMBER){
                 filter_ = new StringFilter();
             }
             if(vt == ValueTypes.NOMINAL_VALUE){
