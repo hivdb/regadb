@@ -168,7 +168,6 @@ public class MultipleTestResultForm extends FormWidget {
         if(duplicateSampleId) {
 	        final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.multipleTestResults.duplicateSampleIdWarning"));
             cmb.buttonClicked.addListener(this, new Signal1.Listener<StandardButton>(){
-				@Override
 				public void trigger(StandardButton sb) {
 					cmb.destroy();
 				}

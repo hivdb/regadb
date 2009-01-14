@@ -26,7 +26,6 @@ public class LogoutItem extends TreeMenuNode
             {
                 final WMessageBox cmb = UIUtils.createYesNoMessageBox(LogoutItem.this, tr("menu.myAccount.logout.warning"));
                 cmb.buttonClicked.addListener(LogoutItem.this, new Signal1.Listener<StandardButton>(){
-    				@Override
     				public void trigger(StandardButton sb) {
     					cmb.destroy();
     					if(sb==StandardButton.Yes) {

@@ -92,7 +92,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 {
                     final WMessageBox cmb = UIUtils.createYesNoMessageBox(FormWidget.this, tr("msg.warning.delete"));
                     cmb.buttonClicked.addListener(FormWidget.this, new Signal1.Listener<StandardButton>(){
-        				@Override
         				public void trigger(StandardButton sb) {
         					cmb.destroy();
         					if(sb==StandardButton.Yes) {
