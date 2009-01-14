@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
@@ -79,7 +81,10 @@ public class ViralIsolateCumulatedResistance extends FormWidget
             }
         }
         
-        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, null);
+        Genome genome = ViralIsolateFormUtils.getGenome((ViralIsolate)patient_.getViralIsolates().toArray()[0]);
+        TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
+        
+        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, gssTestType);
         
         t.commit();
     }
