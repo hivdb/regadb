@@ -205,8 +205,8 @@ public class ViralIsolateMainForm extends WContainerWidget
        
         if (viralIsolateForm_.isEditable()) {
             int row = sequenceSelectForm.rowCount();
-            int col = 0;
-            sequenceSelectForm.elementAt(row, col).setColumnSpan(2);
+            int col = 1;
+            sequenceSelectForm.elementAt(row, 0).setStyleClass("form-label-area");
             sequenceSelectForm.elementAt(row, col).setStyleClass("navigation");
            
             confirmButton = new WPushButton(tr("form.viralIsolate.confirmButton"), sequenceSelectForm.elementAt(row, col));

@@ -650,3 +650,12 @@ table.viral-isolate-table td {
 table.Wt-cal-table td, td.Wt-cal-header, td.Wt-cal-header:hover, td.Wt-cal-oom, td.Wt-cal-oom:hover {
 	border: 1px solid #E0E0E0;
 }
+
+form.upload-form input{
+	width: auto;
+}
+
+table.datatable td.navigation{
+	text-align: right;
+}
+
