@@ -56,6 +56,30 @@ public class QueryToolRunnable implements Runnable {
 		CANCELED
 	}
 	
+	private class CsvLine{
+	    private StringBuilder line;
+	    private int n;
+	    
+	    public CsvLine(){
+	        line = new StringBuilder();
+	        n = 0;
+	    }
+	    
+	    public void addField(String f){
+	        if(n > 0)
+	            line.append(',');
+	        line.append('"');
+	        line.append((f == null ? "null" : f.replace("\"", "\"\"")));
+	        line.append('"');
+	        
+	        ++n;
+	    }
+	    
+	    public String toString(){
+	        return line.toString();
+	    }
+	}
+	
 	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
 		this.login = copiedLogin;
@@ -230,11 +254,10 @@ public class QueryToolRunnable implements Runnable {
 	
     private String getLine(Object[] array, List<Selection> selections, Set<Dataset> userDatasets, ExportToCsv csvExport, Set<Integer> accessiblePatients) {
 		boolean lastTableAccess = false;
-		boolean nullLine = true;
 		
-		String line = "";
+		CsvLine line = new CsvLine();
 		
-		for (int j = 0 ; j < array.length ; j++) {
+		for (int j = 0 ; j < array.length ; j++) {		    
 			if (selections.get(j) instanceof TableSelection) {
 				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 			}
@@ -243,24 +266,14 @@ public class QueryToolRunnable implements Runnable {
 				// changes made earlier guarantee that it is a static value
 				// so it can be outputted regardless of access
 				if (lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection) {
-					line += array[j];
-					nullLine = false;
+					line.addField(array[j].toString());
 				}
 				else {
-					line += "null";
+					line.addField(null);
 				}
-				line += ";";
 			}
 		}
-    	
-		if (nullLine) {
-			line = "";
-		}
-		
-		if (line.length() != 0) {
-			line= line.substring(0, line.length()-1) + "\n";			
-		}
-		return line;
+		return line.toString() +"\n";
     }
 
     private ScrollableQueryResult getQueryResult(Query query, QueryStatement statement) throws SQLException, OutOfMemoryError {
@@ -270,16 +283,13 @@ public class QueryToolRunnable implements Runnable {
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {
-        String indexLine = "";
+        CsvLine line = new CsvLine();
         for (int i = 0 ; i < selections.size(); i++) {
         	if (!(selections.get(i) instanceof TableSelection)) {
-        		indexLine += columnNames.get(i) + ";";
+        		line.addField(columnNames.get(i));
         	}
         }   
-        if (indexLine.length() != 0) {
-        	indexLine = indexLine.substring(0, indexLine.length()-1);       	
-        }
-        return indexLine + "\n";
+        return line.toString() + "\n";
     }
     
 	/** 
