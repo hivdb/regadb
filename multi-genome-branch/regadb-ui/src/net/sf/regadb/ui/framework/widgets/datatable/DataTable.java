@@ -140,8 +140,9 @@ public class DataTable<DataType> extends WTable
 				{
 					elementAt(row, col).clear();
 					elementAt(row, col).addWidget(filter.getFilterWidget());
-		            elementAt(row, col).setStyleClass("filter");
 				}
+                elementAt(row, col).setStyleClass("filter");
+
 				col++;
 			}
 			row++;
