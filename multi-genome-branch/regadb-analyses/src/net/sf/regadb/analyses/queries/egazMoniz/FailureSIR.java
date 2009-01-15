@@ -1,4 +1,4 @@
-package net.sf.regadb.io.queries.egazMoniz;
+package net.sf.regadb.analyses.queries.egazMoniz;
 
 import java.util.List;
 import java.util.Map;

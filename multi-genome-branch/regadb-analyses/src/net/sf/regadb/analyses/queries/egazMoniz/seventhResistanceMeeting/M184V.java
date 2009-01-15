@@ -1,4 +1,4 @@
-package net.sf.regadb.io.queries.egazMoniz.seventhResistanceMeeting;
+package net.sf.regadb.analyses.queries.egazMoniz.seventhResistanceMeeting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.regadb.analyses.queries.egazMoniz.Utils;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
@@ -18,7 +19,6 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.io.queries.egazMoniz.Utils;
 
 public class M184V {
 	public static void main(String [] args) {
