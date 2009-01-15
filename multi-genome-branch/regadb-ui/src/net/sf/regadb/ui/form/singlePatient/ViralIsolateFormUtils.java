@@ -5,6 +5,8 @@ import static eu.webtoolkit.jwt.WString.lt;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.AaSequence;
@@ -48,6 +50,7 @@ public class ViralIsolateFormUtils {
             ResistanceInterpretationParser inp = new ResistanceInterpretationParser() {
                 @Override
                 public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) {
+                    mutations = combineMutations(mutations);
                     if(gss == 0.0)
                     {
                         toReturn.setText(lt("R"));
@@ -120,5 +123,39 @@ public class ViralIsolateFormUtils {
             }
         }
         return null;
+    }
+    
+    public static ArrayList<String> combineMutations(ArrayList<String> mutations){
+        Map<String,StringBuilder> positions = new HashMap<String,StringBuilder>();
+        
+        for(String mut : mutations){
+            StringBuilder pre = new StringBuilder();
+            StringBuilder pos = new StringBuilder();
+            StringBuilder suf = new StringBuilder();
+            
+            for(int i=0; i<mut.length(); ++i){
+                char c = mut.charAt(i);
+                if(Character.isDigit(c))
+                    pos.append(c);
+                else if(pos.length() > 0)
+                    suf.append(c);
+                else
+                    pre.append(c);
+            }
+            System.out.println(pre +" "+ pos +" "+ suf);
+            
+            if(pos.length() > 0){
+                StringBuilder sb = positions.get(pos.toString());
+                if(sb == null)
+                    positions.put(pos.toString(), new StringBuilder(mut));
+                else
+                    sb.append(suf);
+            }
+        }
+        
+        ArrayList<String> r = new ArrayList<String>();
+        for(Map.Entry<String, StringBuilder> pos : positions.entrySet())
+            r.add(pos.getValue().toString());
+        return r;
     }
 }
