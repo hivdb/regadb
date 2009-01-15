@@ -159,8 +159,9 @@ table.datatable span.table-header {
 }
 
 table.datatable-grid td.filter {
-	background-color: #ddeecc;
-	padding: 0;
+	background-color: #eeeeee;
+	border-bottom: 1px solid #dddddd;
+	padding: 0px 0px 5px 0px;
 	height: 0;
 }
 
