@@ -214,7 +214,7 @@ public class XMLWriteCodeGen
         
         writeClassCode += "if("+var+"!=null)";
         writeClassCode += "{";
-        writeClassCode += "Integer index" + fieldName+" = " + toWrite.getSimpleName() +"PMap.get(" + var +");";
+        writeClassCode += "Integer index" + fieldName+" = " + toWrite.getSimpleName() +"PMap.get(Ids.getUniqueId(" + var +"));";
         if(doNotTransformFieldName)
         {
             writeClassCode += "Element wrapper"+fieldName +" = " + parentNode+";";
@@ -233,7 +233,7 @@ public class XMLWriteCodeGen
         writeClassCode += "{";
         writeClassCode += "index"+ fieldName+" = new Integer("+toWrite.getSimpleName() +"PMap.size());";
         writeClassCode += handlePointerRef(fieldName);
-        writeClassCode += toWrite.getSimpleName() +"PMap.put("+var+",index"+fieldName+");";
+        writeClassCode += toWrite.getSimpleName() +"PMap.put(Ids.getUniqueId("+var+"),index"+fieldName+");";
         addString(id, writeClassCode);
         
         callClassWriteMethod(null, toWrite, var, "wrapper"+fieldName, id);
@@ -375,6 +375,7 @@ public class XMLWriteCodeGen
         imports += "import net.sf.regadb.util.xml.XMLTools;";
         imports += "import org.jdom.Element;";
         imports += "import java.util.HashMap;";
+        imports += "import net.sf.regadb.db.meta.Ids;";
         
         total += imports +"\n";
         //imports
@@ -387,7 +388,7 @@ public class XMLWriteCodeGen
         for(String pointerClass : pointerClasses)
         {
             String pointer = pointerClass.substring(pointerClass.lastIndexOf('.')+1);
-            String line = "HashMap<" +pointer+", Integer> " + pointer +"PMap = new HashMap<"+pointer+", Integer>();";
+            String line = "HashMap<" +"String"+", Integer> " + pointer +"PMap = new HashMap<"+"String"+", Integer>();";
             total += line;
         }
         //pointer hashmaps
