@@ -208,16 +208,7 @@ public class ViralIsolateForm extends FormWidget
     public void confirmAction()
     {
         if(!_mainForm.checkSampleId()){
-            final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.confirm.duplicate.viralIsolate.sampleId"));
-            cmb.buttonClicked.addListener(this, new Signal1.Listener<StandardButton>(){
-				public void trigger(StandardButton sb) {
-					cmb.destroy();
-					if(sb==StandardButton.Yes) {
-						doConfirm();
-					}
-				}
-            });
-            cmb.show();
+            UIUtils.showWarningMessageBox(this, tr("form.confirm.duplicate.viralIsolate.sampleId"));
         }
         else{
             doConfirm();
