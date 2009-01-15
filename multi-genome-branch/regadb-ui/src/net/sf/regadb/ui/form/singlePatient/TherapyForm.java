@@ -203,6 +203,7 @@ public class TherapyForm extends FormWidget
             {
                 motivationCB.addItem(new DataComboMessage<TherapyMotivation>(therapyMotivation, therapyMotivation.getValue()));
             }
+            motivationCB.addNoSelectionItem();
             motivationCB.sort();
             
             if(therapy_.getTherapyMotivation()!=null)
