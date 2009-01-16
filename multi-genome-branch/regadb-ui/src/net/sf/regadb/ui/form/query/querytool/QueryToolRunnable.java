@@ -265,7 +265,7 @@ public class QueryToolRunnable implements Runnable {
 				// if the first element is an outputselection selection list
 				// changes made earlier guarantee that it is a static value
 				// so it can be outputted regardless of access
-				if (lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection) {
+				if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
 					line.addField(array[j].toString());
 				}
 				else {
