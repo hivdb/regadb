@@ -72,8 +72,6 @@ public class PrepareCentralRepos
         export.writeTopTest(StandardObjects.getGenericCD8PercentageTest(), tests);
         export.writeTopTest(StandardObjects.getPregnancyTest(), tests);
 
-        export.writeTopTest(StandardObjects.getSeroconversionTest(), tests);
-        
         export.writeTopTest(StandardObjects.getFollowUpTest(), tests);
         
         export.writeTopTest(StandardObjects.getGenericHBVViralLoadTest(), tests);
@@ -111,61 +109,6 @@ public class PrepareCentralRepos
         
         File testsFile = new File(outputDir +File.separatorChar+"tests-genomes.xml");
         writeXMLFile(testsFile, tests);
-        
-        //testing
-        /*Login login=null;
-        try {
-            login = Login.authenticate("test", "test");
-        } catch (WrongUidException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (WrongPasswordException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (DisabledUserException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        ImportFromXML imp = new ImportFromXML();
-        //synch method
-        FileReader r = null;
-        try {
-            r = new FileReader(testsFile);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            Transaction t = login.createTransaction();
-            imp.loadDatabaseObjects(t);
-            
-            List<Test> testsList = imp.readTests(new InputSource(r), null);
-            for(Test test : testsList)
-            {
-                try 
-                {
-                    imp.sync(t, test, SyncMode.Update, true);
-                } 
-                catch (ImportException e)
-                {
-                    e.printStackTrace();
-                }
-                if(test.getAnalysis()!=null)
-                {
-                    for(AnalysisData ad : test.getAnalysis().getAnalysisDatas())
-                    {
-                        FileUtils.writeByteArrayToFile(new File(args[0]+File.separatorChar+test.getDescription()), ad.getData());
-                    }
-                }
-            }
-            t.commit();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }*/
     }
     
     private static void writeXMLFile(File f, Element root)
