@@ -1,11 +1,16 @@
 package net.sf.regadb.analyses.queries.egazMoniz.seventhResistanceMeeting;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import net.sf.regadb.analyses.queries.egazMoniz.Utils;
 import net.sf.regadb.db.AaMutation;
@@ -19,14 +24,17 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 
 public class M184V {
 	public static void main(String [] args) {
+		M184V q = new M184V();
+		q.run();
 	}
 	
 	public void run() {
 		System.out.println("patient id, regimen, therapy stop date, viral load date, viral load, AZT mutations, "+
-							"TFV mutations, M184 mutation, #NNRTI mutations REGAv71, birthdate, sex");
+							"TFV mutations, M184 mutation, # EFV mutations REGAv71, birthdate, sex");
 		
 		List<Patient> patients = Utils.getPatients();
 		for(Patient p : patients) {
@@ -38,15 +46,20 @@ public class M184V {
 				} else if(therapyContains(t, "TDF") && therapyContains(t, "FTC") && therapyContains(t, "EFV")) {
 					regimen = "TDF+FTC+EFV";
 				}
-				ViralIsolate vi = getFirstViralIsolateAfter(p, t.getStopDate());
-				if(vi==null) {
-					System.err.println("No viral isolate avialable for patient " + p.getPatientId());
-				}
+
+				ViralIsolate vi = null;
+				if(t.getStopDate()!=null)
+					vi = getFirstViralIsolateAfter(p, t.getStopDate());
 				
+				if(vi==null && t.getStopDate()!=null) {
+					//System.err.println("No viral isolate avialable for patient " + p.getPatientId());
+				}
+
 				if(regimen!=null && t.getStopDate()!=null && vi!=null) {
 					TestResult failure = getFirstTestAfter(p, t.getStopDate(), "Therapy Failure");
 					TestResult vl = getFirstTestAfter(p, t.getStopDate(), "Viral Load");
-					if(failure.getValue().equals("Positive")) {
+
+					if(failure!=null && failure.getTestNominalValue().getValue().equals("Positive")) {
 						System.out.print(p.getPatientId() + ", ");
 						System.out.print(regimen + ", ");
 						System.out.print(t.getStopDate() + ", ");
@@ -79,7 +92,7 @@ public class M184V {
 						containtsMutation(vi, "RT", 184, "I", m184Mutations);
 						System.out.print(m184Mutations.toString() + ", ");
 						
-						//TODO nnrti mutations
+						System.out.print(numberOfNNRTIMutations(vi).toString() + ", ");
 						
 						System.out.print(p.getBirthDate() + ", ");
 						System.out.println(getPAV(p, "Gender"));
@@ -103,17 +116,36 @@ public class M184V {
 		return null;
 	}
 
-	public int numberOfNNRTIMutations(ViralIsolate vi) {
-		int counter = 0;
+	public StringBuilder numberOfNNRTIMutations(ViralIsolate vi) {
+		final StringBuilder amountMutations = new StringBuilder();
 		
 		for(TestResult tr : vi.getTestResults()) {
-			if(tr.getTest().getDescription().equals("REGA v7.1.1") 
+			if(tr.getTest().getDescription().equals("REGA v7.1") 
 					&& tr.getDrugGeneric().getGenericId().equals("EFV")) {
-				
+		        ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
+		        {
+		            @Override
+		            public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
+		            {
+		            	amountMutations.append(mutations.size());
+		            }
+		        };
+		        try 
+		        {
+		            inp.parse(new InputSource(new ByteArrayInputStream(tr.getData())));
+		        } 
+		        catch (SAXException e) 
+		        {
+		            e.printStackTrace();
+		        } 
+		        catch (IOException e) 
+		        {
+		            e.printStackTrace();
+		        }
 			}
 		}
 		
-		return counter;
+		return amountMutations;
 	}
 	
 	public void containtsMutation(ViralIsolate vi, String protein, int position, String mutation, StringBuilder sb) {
