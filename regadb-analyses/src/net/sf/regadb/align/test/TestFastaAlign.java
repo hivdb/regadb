@@ -82,11 +82,15 @@ public class TestFastaAlign {
                 }
                 catch (NoSuchElementException e) 
                 {
-                    break;
+                    System.out.println("ERROR");
                 } 
                 catch (BioException e) 
                 {
-                    break;
+                	System.out.println("ERROR");
+                }
+                catch (Exception e) 
+                {
+                	System.out.println("ERROR");
                 }
             }
         }
