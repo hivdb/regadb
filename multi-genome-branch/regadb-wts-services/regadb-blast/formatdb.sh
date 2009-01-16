@@ -8,7 +8,7 @@ rm -rf "$tmpdir"
 mkdir "$tmpdir"
 touch "$tmpdir/all.fasta"
 cat "$speciesdir"/*.fasta > "$tmpdir/all.fasta"
-formatdb -i "$tmpdir/all.fasta" -p F -n all
+formatdb -i "$tmpdir/all.fasta" -p F -n all.fasta
 
 mv all.* formatdb.log "$tmpdir/"
 dbdir="$dbbasedir/"`date +'%Y%m%d'`
