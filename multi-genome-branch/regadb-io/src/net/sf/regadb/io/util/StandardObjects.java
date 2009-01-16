@@ -75,7 +75,6 @@ public class StandardObjects {
     private static Test genericCD8PercentageTest;
     
     private static Test genericHBVViralLoadTest;
-    private static Test genericHCVViralLoadTest;
     private static Test genericHCVAbTest;
     
     private static Test genericHBcAbTest;
@@ -459,10 +458,10 @@ public class StandardObjects {
     }
     
     public static Test getGenericHCVViralLoadTest(){
-    	return genericHCVViralLoadTest;
+    	return getGenericTest(getViralLoadDescription(), getHcvGenome());
     }
     public static TestType getHCVViralLoadTestType(){
-    	return genericHCVViralLoadTest.getTestType();
+    	return getGenericHCVViralLoadTest().getTestType();
     }
 
     public static Test getGenericHBcAbTest(){

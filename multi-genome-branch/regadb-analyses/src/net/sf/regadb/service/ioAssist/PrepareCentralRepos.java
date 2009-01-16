@@ -62,8 +62,10 @@ public class PrepareCentralRepos
         
         //export all standard genome-related tests for every genome
         for(Map.Entry<String, Map<String, Test>> me : StandardObjects.getStandardGenomeTests().entrySet()){
-            for(Map.Entry<String, Test> meme : me.getValue().entrySet())
+            for(Map.Entry<String, Test> meme : me.getValue().entrySet()){
+                System.out.println(meme.getValue().getDescription());
                 export.writeTopTest(meme.getValue(), tests);
+            }
         }
         
         export.writeTopTest(StandardObjects.getGenericCD4Test(), tests);
@@ -75,7 +77,6 @@ public class PrepareCentralRepos
         export.writeTopTest(StandardObjects.getFollowUpTest(), tests);
         
         export.writeTopTest(StandardObjects.getGenericHBVViralLoadTest(), tests);
-        export.writeTopTest(StandardObjects.getGenericHCVViralLoadTest(), tests);
 
         export.writeTopTest(StandardObjects.getGenericHCVAbTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHBcAbTest(), tests);
