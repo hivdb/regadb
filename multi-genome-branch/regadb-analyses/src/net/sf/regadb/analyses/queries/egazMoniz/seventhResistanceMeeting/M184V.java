@@ -2,15 +2,14 @@ package net.sf.regadb.analyses.queries.egazMoniz.seventhResistanceMeeting;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import net.sf.regadb.analyses.queries.egazMoniz.Utils;
 import net.sf.regadb.db.AaMutation;
@@ -26,6 +25,9 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 public class M184V {
 	public static void main(String [] args) {
 		M184V q = new M184V();
@@ -35,6 +37,14 @@ public class M184V {
 	public void run() {
 		System.out.println("patient id, regimen, therapy stop date, viral load date, viral load, AZT mutations, "+
 							"TFV mutations, M184 mutation, # EFV mutations REGAv71, birthdate, sex");
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+		Date date1800 = null;
+		try {
+			date1800 = sdf.parse("1800.01.01");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		
 		List<Patient> patients = Utils.getPatients();
 		for(Patient p : patients) {
@@ -52,10 +62,10 @@ public class M184V {
 					vi = getFirstViralIsolateAfter(p, t.getStopDate());
 				
 				if(vi==null && t.getStopDate()!=null) {
-					//System.err.println("No viral isolate avialable for patient " + p.getPatientId());
+					System.err.println("No viral isolate avialable for patient " + p.getPatientId());
 				}
 
-				if(regimen!=null && t.getStopDate()!=null && vi!=null) {
+				if(regimen!=null && t.getStopDate()!=null && t.getStopDate().after(date1800) && vi!=null) {
 					TestResult failure = getFirstTestAfter(p, t.getStopDate(), "Therapy Failure");
 					TestResult vl = getFirstTestAfter(p, t.getStopDate(), "Viral Load");
 
@@ -173,7 +183,7 @@ public class M184V {
 		});
 		
 		for(ViralIsolate vi : viralIsolates) {
-			if(vi.getSampleDate().after(d)) 
+			if(vi.getSampleDate().after(d) || vi.getSampleDate().equals(d)) 
 				return vi;
 		}
 		
@@ -190,7 +200,8 @@ public class M184V {
 		});
 		
 		for(TestResult tr : results) {
-			if(tr.getTest().getTestType().getDescription().startsWith(testTypeName) && tr.getTestDate().after(d)) {
+			if(tr.getTest().getTestType().getDescription().startsWith(testTypeName) && 
+					(tr.getTestDate().after(d) || tr.getTestDate().equals(d))) {
 				return tr;
 			}
 		}
