@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Orientation;
-import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMenu;
 import eu.webtoolkit.jwt.WMenuItem;
@@ -56,8 +56,8 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 		titles.add(title);
 		tabItems.add(contents);
 		
-		wmi.activateSignal().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a) {
+		wmi.activateSignal().addListener(this, new Signal.Listener() {
+			public void trigger() {
 				contents.show();
 				selectedIndex = tabItems.indexOf(contents);
 			}
