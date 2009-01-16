@@ -45,8 +45,7 @@ name=`echo $line | cut -f 1-$ns -d ' '`
 ( echo $name | grep -q HXB2 ) && echo "HIV-1" >> $species_file
 ( echo $name | grep -q ROD ) && echo "HIV-2A" >> $species_file
 ( echo $name | grep -q EHO ) && echo "HIV-2B" >> $species_file
-( echo $name | grep -q 'AF009606' ) && echo "HCV-1A" >> $species_file
-( echo $name | grep -q 'AJ238799' ) && echo "HCV-1B" >> $species_file
+( echo $name | grep -q 'AF009606' ) && echo "HCV" >> $species_file
 
 echo $value >> $species_file
 echo $score >> $species_file
