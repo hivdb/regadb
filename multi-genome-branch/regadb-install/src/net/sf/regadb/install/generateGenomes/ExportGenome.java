@@ -29,6 +29,10 @@ public class ExportGenome {
         GenerateGenome hiv2ehoGen = new GenerateGenome("HIV-2B","EHO Human immunodeficiency virus type 2B","U27200",GenerateGenome.getReferenceSequence("hiv2eho.fasta"));
         Genome hiv2eho = hiv2ehoGen.generateFromFile("hiv2eho.genome");
         genomes.add(hiv2eho);
+        
+        GenerateGenome hcvGen = new GenerateGenome("HCV","Hepatitis C virus","AF009606",GenerateGenome.getReferenceSequence("AF009606.fasta"));
+        Genome hcv = hcvGen.generateFromFile("AF009606.genome");
+        genomes.add(hcv);
 
         String fileName = "genomes.xml";
         ExportGenome export = new ExportGenome();
