@@ -40,6 +40,7 @@ public class StandardObjects {
     private static Genome hiv1Genome;
     private static Genome hiv2aGenome;
     private static Genome hiv2bGenome;
+    private static Genome hcvGenome;
     
     private static TestObject patientTestObject;
     private static TestObject resistanceTestObject;
@@ -93,9 +94,7 @@ public class StandardObjects {
     
     private static Test genericHAVIgGTest;
     private static Test genericHAVIgMTest;
-    
-    private static Test seroconversionTest;
-    
+       
 //    private static Test anrs200607Test;
 //    private static Test hivdb429Test;
 //    private static Test rega641Test;
@@ -114,6 +113,9 @@ public class StandardObjects {
         
         hiv2bGenome = new Genome("HIV-2B", "");
         genomes.add(hiv2bGenome);
+        
+        hcvGenome = new Genome("HCV","");
+        genomes.add(hcvGenome);
         
         numberValueType         = new ValueType("number");
         limitedNumberValueType  = new ValueType("limited number (<,=,>)");
@@ -177,7 +179,6 @@ public class StandardObjects {
         contactTest             = new Test(new TestType(dateValueType, null, patientTestObject,"Contact",new TreeSet<TestNominalValue>()), "General contact");
         
         genericHBVViralLoadTest = createGenericTest("HBV Viral Load", getLimitedNumberValueType(), null, getPatientTestObject());
-        genericHCVViralLoadTest = createGenericTest("HCV Viral Load", getLimitedNumberValueType(), null, getPatientTestObject());
         genericHCVAbTest 		= createGenericTest("HCVAb", getNumberValueType(), null, getPatientTestObject());
         genericHBcAbTest 		= createGenericTest("HBcAb", getNumberValueType(), null, getPatientTestObject());
         genericHBcAgTest 		= createGenericTest("HBcAg", getNumberValueType(), null, getPatientTestObject());
@@ -194,7 +195,6 @@ public class StandardObjects {
         genericHAVIgGTest 		= createGenericTest("HAV IgG", getNumberValueType(), null, getPatientTestObject());
         genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), null, getPatientTestObject());
         
-        seroconversionTest = createSeroconversionTest();
         pregnancy = createPregnancyTest();     
         
 //        anrs200607Test = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
@@ -291,6 +291,9 @@ public class StandardObjects {
     }
     public static Genome getHiv2BGenome(){
         return hiv2bGenome;
+    }
+    public static Genome getHcvGenome(){
+        return hcvGenome;
     }
 
 
@@ -546,10 +549,6 @@ public class StandardObjects {
     	return genericHAVIgMTest.getTestType();
     }
     
-    public static Test getSeroconversionTest(){
-        return seroconversionTest;
-    }
-    
 //    public static Test getAnrs200607Test(){
 //        return anrs200607Test;
 //    }
@@ -633,18 +632,6 @@ public class StandardObjects {
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
         pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
         return new Test(pregnancyType, "Pregnancy");
-    }
-    
-    private static Test createSeroconversionTest()
-    {
-        TestType seroconversionType = new TestType(new TestObject("Patient test", 0), "Seroconversion");
-        seroconversionType.setValueType(getNominalValueType());
-        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Positive"));
-        seroconversionType.getTestNominalValues().add(new TestNominalValue(seroconversionType, "Negative"));
-        
-        Test seroconversion = new Test(seroconversionType, "Seroconversion");
-        
-        return seroconversion;
     }
 
     private static Attribute createGender()
