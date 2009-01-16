@@ -51,6 +51,7 @@ public class M184V {
 			if(p.getTherapies().size()>0) {
 				Therapy t = getFirstTherapy(p);
 				String regimen = null ;
+				
 				if(therapyContains(t, "AZT") && therapyContains(t, "3TC") && therapyContains(t, "EFV")) {
 					regimen = "AZT+3TC+EFV";
 				} else if(therapyContains(t, "TDF") && therapyContains(t, "FTC") && therapyContains(t, "EFV")) {
@@ -62,10 +63,10 @@ public class M184V {
 					vi = getFirstViralIsolateAfter(p, t.getStopDate());
 				
 				if(vi==null && t.getStopDate()!=null) {
-					System.err.println("No viral isolate avialable for patient " + p.getPatientId());
+					//System.err.println("No viral isolate avialable for patient " + p.getPatientId());
 				}
 
-				if(regimen!=null && t.getStopDate()!=null && t.getStopDate().after(date1800) && vi!=null) {
+				if(hasAmountOfDrugs(t) == 3 && regimen!=null && t.getStopDate()!=null && t.getStopDate().after(date1800) && vi!=null) {
 					TestResult failure = getFirstTestAfter(p, t.getStopDate(), "Therapy Failure");
 					TestResult vl = getFirstTestAfter(p, t.getStopDate(), "Viral Load");
 
@@ -112,6 +113,21 @@ public class M184V {
 		}
 	}
 	
+	public int hasAmountOfDrugs(Therapy t) {
+		int counter = 0;
+		for(TherapyCommercial tc : t.getTherapyCommercials()) {
+			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
+					counter++;
+			}
+		}
+		
+		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+				counter++;
+		}
+		
+		return counter;
+	}
+
 	public String getPAV(Patient p, String attributeName) {
 		for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
 			if(pav.getAttribute().getName().equals(attributeName)) {
