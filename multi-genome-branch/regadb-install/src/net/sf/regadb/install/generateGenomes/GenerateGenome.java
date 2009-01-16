@@ -138,7 +138,7 @@ public class GenerateGenome {
         p.setStartPosition(start+1);
         p.setStopPosition(stop+1);
 
-        int mod = (p.getStopPosition() - p.getStopPosition())%3;
+        int mod = (p.getStopPosition() - p.getStartPosition())%3;
         if(mod != 0)
             System.err.println(name+ " length%3 "+mod);
         
