@@ -1,0 +1,12 @@
+orf
+HCV orf,HCV org,342-9378
+Core protein,Core,342-915
+Envelope glycoprotein 1,E1,915-1491
+Envelope glycoprotein 2,E2,1491-2580
+Putative ion channel,p7,2580-2769
+Autoprotease,NS2,2769-3420
+Serine protease and RNA dependent RNA helicase,NS3,3420-5313
+NS3 co-factor,NS4A,5313-5475
+NS4B protein,NS4B,5475-6258
+NS5A phosphoprotein,NS5A,6258-7602
+RNA-dependent RNA polymerase,NS5B,7602-9378
