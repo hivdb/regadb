@@ -150,7 +150,6 @@ public class M184V {
 					&& tr.getDrugGeneric().getGenericId().equals("EFV")) {
 		        ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
 		        {
-		            @Override
 		            public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
 		            {
 		            	amountMutations.append(mutations.size());
@@ -251,7 +250,6 @@ public class M184V {
 		}
 		
 		Collections.sort(therapies, new Comparator<Therapy>(){
-			@Override
 			public int compare(Therapy t1, Therapy t2) {
 				return t1.getStartDate().compareTo(t2.getStartDate());
 			}

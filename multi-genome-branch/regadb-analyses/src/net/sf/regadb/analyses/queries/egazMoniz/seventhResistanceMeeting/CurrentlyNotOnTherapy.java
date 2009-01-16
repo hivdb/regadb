@@ -159,7 +159,6 @@ public class CurrentlyNotOnTherapy {
 		}
 		
 		Collections.sort(therapies, new Comparator<Therapy>(){
-			@Override
 			public int compare(Therapy t1, Therapy t2) {
 				return t1.getStartDate().compareTo(t2.getStartDate());
 			}
