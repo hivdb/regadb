@@ -142,7 +142,6 @@ public class ViralIsolateFormUtils {
                 else
                     pre.append(c);
             }
-            System.out.println(pre +" "+ pos +" "+ suf);
             
             if(pos.length() > 0){
                 StringBuilder sb = positions.get(pos.toString());
