@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,15 +68,19 @@ public class TestFastaAlign {
                     List<AaSequence> result = aligner.alignHiv(ntseq);
                     for(AaSequence aaseq : result) {
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
+                    		char[] mut = aamut.getAaMutation().toCharArray();
+                    		Arrays.sort(mut);
                     		System.out.print(aaseq.getProtein().getAbbreviation() + 
                     				aamut.getId().getMutationPosition() + 
-                    				aamut.getAaMutation()+ " ");
+                    				new String(mut) + " ");
                     	}
                     	
                     	for(AaInsertion aains : aaseq.getAaInsertions()) {
+                    		char[] ins = aains.getAaInsertion().toCharArray();
+                    		Arrays.sort(ins);
                     		System.out.print(aaseq.getProtein().getAbbreviation()+
                     				aains.getId().getInsertionPosition()+aains.getId().getInsertionOrder()+
-                    				aains.getAaInsertion()+" ");
+                    				new String(ins) + " ");
                     	}
                     }
                     System.out.print("\n");
