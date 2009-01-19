@@ -66,7 +66,7 @@ public class M184V {
 					//System.err.println("No viral isolate avialable for patient " + p.getPatientId());
 				}
 
-				if(hasAmountOfDrugs(t) == 3 && regimen!=null && t.getStopDate()!=null && t.getStopDate().after(date1800) && vi!=null) {
+				if(hasAmountOfDrugs(t) == 3 && regimen!=null && t.getStopDate()!=null && vi!=null) {
 					TestResult failure = getFirstTestAfter(p, t.getStopDate(), "Therapy Failure");
 					TestResult vl = getFirstTestAfter(p, t.getStopDate(), "Viral Load");
 
