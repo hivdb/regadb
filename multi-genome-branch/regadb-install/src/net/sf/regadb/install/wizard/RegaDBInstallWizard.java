@@ -70,7 +70,7 @@ public class RegaDBInstallWizard extends JFrame {
 								DeploymentStep.class,
 								}, new RegaDBInstallHandler());
 				
-				int width = 900;
+				int width = 800;
 				WizardDisplayer.showWizard(wiz, new Rectangle(width, (int)(width / 1.61803399)));
 				
 				dispose();

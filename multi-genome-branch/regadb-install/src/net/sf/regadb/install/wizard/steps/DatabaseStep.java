@@ -1,12 +1,15 @@
 package net.sf.regadb.install.wizard.steps;
 
 import java.awt.GridBagLayout;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import net.sf.regadb.install.wizard.RegaDBWizardPage;
 
@@ -16,7 +19,7 @@ import org.netbeans.spi.wizard.WizardPanelNavResult;
 public class DatabaseStep extends RegaDBWizardPage {
 	private static final long serialVersionUID = -3997952792118936850L;
 	
-	public DatabaseStep() {
+	public DatabaseStep() {		
 		super("data", tr("stepDatabase"), tr("db_Description"));
 		
 		getContainer().setLayout(new GridBagLayout());
@@ -38,11 +41,11 @@ public class DatabaseStep extends RegaDBWizardPage {
 	public WizardPanelNavResult allowNext(String stepName, Map settings, Wizard wizard) {
 		// Check if all needed is filled in
 		
-		if ( getTextFieldByName("psql_url").getText().length() == 0
-				|| getTextFieldByName("psql_adminUser").getText().length() == 0
-				|| getTextFieldByName("db_databaseName").getText().length() == 0
-				|| getTextFieldByName("db_roleUser").getText().length() == 0
- 				|| getTextFieldByName("db_rolePass").getText().length() == 0
+		if ( getDbHost().length() == 0
+				|| getAdminUser().length() == 0
+				|| getDbName().length() == 0
+				|| getRoleUser().length() == 0
+ 				|| getRolePass().length() == 0
 				) {
 			
 			setProblem(tr("db_EnterDetails"));
@@ -51,7 +54,7 @@ public class DatabaseStep extends RegaDBWizardPage {
 		
 		// Check password retype
 		
-		if ( !getTextFieldByName("db_rolePass").getText().equals( getTextFieldByName("db_rolePassRetype").getText() ) ) {
+		if ( !getRolePass().equals( getTextFieldByName("db_rolePassRetype").getText() ) ) {
 			setProblem(tr("account_PasswordMismatch"));
 			return WizardPanelNavResult.REMAIN_ON_PAGE;
 		}
@@ -60,12 +63,11 @@ public class DatabaseStep extends RegaDBWizardPage {
 		
 		try {
 			try {
-				Class.forName("org.postgresql.Driver");
-				String url = "jdbc:postgresql://" + getTextFieldByName("psql_url").getText() + "/template1";
-				Properties props = new Properties();
-				props.setProperty("user", getTextFieldByName("psql_adminUser").getText());
-				props.setProperty("password", getTextFieldByName("psql_adminPass").getText());
-				DriverManager.getConnection(url, props).close();
+				Connection conn = getConnection(
+						getAdminUser(),
+						getAdminPass(),
+						"template1");
+				conn.close();
 			} catch ( SQLException e ) {
 				setProblem(e.getLocalizedMessage());
 				return WizardPanelNavResult.REMAIN_ON_PAGE;
@@ -75,14 +77,13 @@ public class DatabaseStep extends RegaDBWizardPage {
 			
 			boolean exists = true;
 			try {
-				Class.forName("org.postgresql.Driver");
-				String url = "jdbc:postgresql://" + getTextFieldByName("psql_url").getText() + "/" + getTextFieldByName("db_databaseName").getText();
-				Properties props = new Properties();
-				props.setProperty("user", getTextFieldByName("psql_adminUser").getText());
-				props.setProperty("password", getTextFieldByName("psql_adminPass").getText());
-				DriverManager.getConnection(url, props).close();
+				Connection conn = getConnection(
+						getAdminUser(),
+						getAdminPass(),
+						getDbName());
+				conn.close();
 			} catch ( SQLException e ) {
-				if ( e.getLocalizedMessage().contains("database \"" + getTextFieldByName("db_databaseName").getText() + "\" does not exist") ) {
+				if ( e.getLocalizedMessage().contains("database \"" + getDbName() + "\" does not exist") ) {
 					exists = false;
 				} else {
 					setProblem(e.getLocalizedMessage());
@@ -90,9 +91,17 @@ public class DatabaseStep extends RegaDBWizardPage {
 				}
 			}
 			
-			if ( exists ) {
-				setProblem(tr("db_databaseExists"));
-				return WizardPanelNavResult.REMAIN_ON_PAGE;
+			if ( exists ){
+				settings.put("dbExists", true);
+
+				if(JOptionPane.showConfirmDialog(null, tr("warning.dbExists"), tr("warning.title"), JOptionPane.YES_NO_OPTION)
+					!= JOptionPane.YES_OPTION){
+					setProblem(tr("db_databaseExists"));
+					return WizardPanelNavResult.REMAIN_ON_PAGE;
+				}
+			}
+			else{
+				settings.put("dbExists", false);
 			}
 			
 			// Check if user role exists
@@ -103,27 +112,30 @@ public class DatabaseStep extends RegaDBWizardPage {
 			
 			exists = true;
 			try {
-				Class.forName("org.postgresql.Driver");
-				String url = "jdbc:postgresql://" + getTextFieldByName("psql_url").getText() + "/template1";
-				Properties props = new Properties();
-				props.setProperty("user", getTextFieldByName("db_roleUser").getText());
-				props.setProperty("password", getTextFieldByName("db_rolePass").getText());
-				DriverManager.getConnection(url, props).close();
+				Connection conn = getConnection(
+								getAdminUser(),
+								getAdminPass(),
+								"template1");
+				PreparedStatement st = conn.prepareStatement("select * from pg_user where usename = ?");
+				st.setString(1, getRoleUser());
+				if(!st.executeQuery().isAfterLast()){
+					exists = true;
+					settings.put("roleExists", true);
+					conn.close();
+					conn = getConnection(getRoleUser(), getRolePass(), "template1");
+				}
+				else
+					settings.put("roleExists", false);
+				
+				conn.close();
 			} catch ( SQLException e ) {
-				if ( e.getLocalizedMessage().contains("role \"" + getTextFieldByName("db_roleUser").getText() + "\" does not exist") ) {
-					exists = false;
-				} else if ( e.getLocalizedMessage().contains("password authentication failed") &&
-						System.getProperty("os.name").toLowerCase().contains("windows") ) {
-					exists = false;
+				if ( e.getLocalizedMessage().contains("password authentication failed") ) {
+					setProblem(tr("db_roleWrongPassword"));
+					return WizardPanelNavResult.REMAIN_ON_PAGE;
 				} else {
 					setProblem(e.getLocalizedMessage());
 					return WizardPanelNavResult.REMAIN_ON_PAGE;
 				}
-			}
-			
-			if ( exists ) {
-				setProblem(tr("db_roleExists"));
-				return WizardPanelNavResult.REMAIN_ON_PAGE;
 			}
 		} catch ( ClassNotFoundException e ) {
 			setProblem(tr("db_DriverNotFound") + ": " + e.getLocalizedMessage());
@@ -135,5 +147,36 @@ public class DatabaseStep extends RegaDBWizardPage {
 	
 	public static String getDescription() {
 		return tr("stepDatabase");
+	}
+	
+	protected Connection getConnection(String user, String passwd, String db) throws SQLException, ClassNotFoundException{		
+		Class.forName("org.postgresql.Driver");
+		String url = "jdbc:postgresql://" + getDbHost() + "/"+ db;
+		Properties props = new Properties();
+		props.setProperty("user", user);
+		props.setProperty("password", passwd);
+		return DriverManager.getConnection(url, props);
+	}
+	
+	protected String getRoleUser(){
+		return getTextFieldByName("db_roleUser").getText();
+	}
+	protected String getRolePass(){
+		return getTextFieldByName("db_rolePass").getText();
+	}
+	
+	protected String getAdminUser(){
+		return getTextFieldByName("psql_adminUser").getText();
+	}
+	protected String getAdminPass(){
+		return getTextFieldByName("psql_adminPass").getText();
+	}
+	
+	protected String getDbName(){
+		return getTextFieldByName("db_databaseName").getText();
+	}
+	
+	protected String getDbHost(){
+		return getTextFieldByName("psql_url").getText();
 	}
 }

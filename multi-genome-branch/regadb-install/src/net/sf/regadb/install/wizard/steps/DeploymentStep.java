@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.filechooser.FileFilter;
 
 import net.sf.regadb.install.wizard.FilePicker;
 import net.sf.regadb.install.wizard.RegaDBWizardPage;
@@ -16,6 +18,7 @@ public class DeploymentStep extends RegaDBWizardPage {
 	private static final long serialVersionUID = -1831736308327506143L;
 	private JCheckBox deploy_DoWant;
 	private FilePicker deployPick;
+	private FilePicker warPick;
 	
 	public DeploymentStep() {
 		super("deploy", tr("stepDeployment"), tr("deploy_Description"));
@@ -29,6 +32,22 @@ public class DeploymentStep extends RegaDBWizardPage {
 		deployPick = new FilePicker("deploydir");
 		deployPick.setDirectoryOnly(true);
 		getContainer().add(deployPick, getGridBag(0, lineNr++));
+		
+		getContainer().add(new JLabel(tr("war_Description")), getGridBag(0, lineNr++));
+		warPick = new FilePicker("warfile");
+		warPick.setFileFilter(new FileFilter(){
+
+			@Override
+			public boolean accept(File arg0) {
+				return arg0.getName().toLowerCase().endsWith(".war");
+			}
+
+			@Override
+			public String getDescription() {
+				return "WAR file (*.war)";
+			}
+		});
+		getContainer().add(warPick, getGridBag(0, lineNr++));
 	}
 	
 	@SuppressWarnings("unchecked")
