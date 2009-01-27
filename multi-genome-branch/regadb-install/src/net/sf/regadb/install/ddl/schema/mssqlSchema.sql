@@ -1,5 +1,3 @@
-create table commercial_generic (generic_ii int not null, commercial_ii int not null, primary key (commercial_ii, generic_ii));
-create table genome_drug_generic (genome_ii int not null, generic_ii int not null, primary key (generic_ii, genome_ii));
 create table regadbschema.aa_insertion (insertion_position smallint not null, aa_sequence_ii int not null, insertion_order smallint not null, version int not null, aa_insertion varchar(30) not null, nt_insertion_codon varchar(3) not null, primary key (insertion_position, aa_sequence_ii, insertion_order));
 create table regadbschema.aa_mutation (mutation_position smallint not null, aa_sequence_ii int not null, version int not null, aa_reference varchar(1) not null, aa_mutation varchar(30) null, nt_reference_codon varchar(3) not null, nt_mutation_codon varchar(3) null, primary key (mutation_position, aa_sequence_ii));
 create table regadbschema.aa_sequence (aa_sequence_ii int identity not null, version int not null, nt_sequence_ii int not null, protein_ii int not null, first_aa_pos smallint not null, last_aa_pos smallint not null, primary key (aa_sequence_ii));
@@ -11,6 +9,7 @@ create table regadbschema.attribute_group (attribute_group_ii int identity not n
 create table regadbschema.attribute_nominal_value (nominal_value_ii int identity not null, version int not null, attribute_ii int not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table regadbschema.combined_query (combined_query_ii int identity not null, name varchar(50) not null, primary key (combined_query_ii));
 create table regadbschema.combined_query_definition (combined_query_ii int not null, query_definition_ii int not null, number int not null, name varchar(50) null, primary key (combined_query_ii, query_definition_ii));
+create table regadbschema.commercial_generic (generic_ii int not null, commercial_ii int not null, primary key (commercial_ii, generic_ii));
 create table regadbschema.dataset (dataset_ii int identity not null, version int not null, uid varchar(50) not null, description varchar(50) not null, creation_date datetime not null, closed_date datetime null, revision int null, primary key (dataset_ii));
 create table regadbschema.dataset_access (uid varchar(50) not null, dataset_ii int not null, version int not null, permissions int not null, provider varchar(50) not null, primary key (uid, dataset_ii));
 create table regadbschema.drug_class (drug_class_ii int identity not null, version int not null, class_id varchar(10) not null, class_name varchar(100) not null, resistance_table_order int null, primary key (drug_class_ii));
@@ -19,6 +18,7 @@ create table regadbschema.drug_generic (generic_ii int identity not null, versio
 create table regadbschema.event (event_ii int identity not null, version int not null, value_type_ii int null, name varchar(50) not null, primary key (event_ii));
 create table regadbschema.event_nominal_value (nominal_value_ii int identity not null, version int not null, event_ii int not null, value varchar(500) not null, primary key (nominal_value_ii));
 create table regadbschema.genome (genome_ii int identity not null, version int not null, organism_name varchar(50) not null, organism_description varchar(500) not null, genbank_number varchar(50) null, primary key (genome_ii));
+create table regadbschema.genome_drug_generic (genome_ii int not null, generic_ii int not null, primary key (generic_ii, genome_ii));
 create table regadbschema.nt_sequence (nt_sequence_ii int identity not null, version int not null, viral_isolate_ii int not null, label varchar(50) null, sequence_date datetime null, nucleotides text null, primary key (nt_sequence_ii));
 create table regadbschema.open_reading_frame (open_reading_frame_ii int identity not null, version int not null, genome_ii int not null, name varchar(50) not null, description varchar(500) not null, reference_sequence text not null, primary key (open_reading_frame_ii));
 create table regadbschema.patient (patient_ii int identity not null, version int not null, patient_id varchar(50) not null, last_name varchar(50) null, first_name varchar(50) null, birth_date datetime null, death_date datetime null, primary key (patient_ii));
@@ -46,10 +46,6 @@ create table regadbschema.therapy_motivation (therapy_motivation_ii int identity
 create table regadbschema.user_attribute (user_attribute_ii int identity not null, value_type_ii int null, uid varchar(50) null, name varchar(50) null, value varchar(100) null, data varbinary(MAX) null, primary key (user_attribute_ii));
 create table regadbschema.value_type (value_type_ii int identity not null, version int not null, description varchar(50) not null, minimum double precision null, maximum double precision null, multiple tinyint null, primary key (value_type_ii));
 create table regadbschema.viral_isolate (viral_isolate_ii int identity not null, version int not null, patient_ii int not null, sample_id varchar(50) null, sample_date datetime null, primary key (viral_isolate_ii));
-alter table commercial_generic add constraint FK4E6E81E219F977A8 foreign key (generic_ii) references regadbschema.drug_generic;
-alter table commercial_generic add constraint FK4E6E81E2A152DB96 foreign key (commercial_ii) references regadbschema.drug_commercial;
-alter table genome_drug_generic add constraint FKCA02968019F977A8 foreign key (generic_ii) references regadbschema.drug_generic;
-alter table genome_drug_generic add constraint FKCA0296805A4F23B6 foreign key (genome_ii) references regadbschema.genome;
 alter table regadbschema.aa_insertion add constraint FKE54E0D50CBB9BE97 foreign key (aa_sequence_ii) references regadbschema.aa_sequence;
 alter table regadbschema.aa_mutation add constraint FK33795BE8CBB9BE97 foreign key (aa_sequence_ii) references regadbschema.aa_sequence;
 alter table regadbschema.aa_sequence add constraint FK50514100608572E3 foreign key (nt_sequence_ii) references regadbschema.nt_sequence;
@@ -61,12 +57,16 @@ alter table regadbschema.attribute add constraint FKC7AA9C6B7C6CBD foreign key (
 alter table regadbschema.attribute_nominal_value add constraint FK558F63EB28201F88 foreign key (attribute_ii) references regadbschema.attribute;
 alter table regadbschema.combined_query_definition add constraint FKA51227245D802F7D foreign key (combined_query_ii) references regadbschema.combined_query;
 alter table regadbschema.combined_query_definition add constraint FKA512272468B43D19 foreign key (query_definition_ii) references regadbschema.query_definition;
+alter table regadbschema.commercial_generic add constraint FK4E6E81E219F977A8 foreign key (generic_ii) references regadbschema.drug_generic;
+alter table regadbschema.commercial_generic add constraint FK4E6E81E2A152DB96 foreign key (commercial_ii) references regadbschema.drug_commercial;
 alter table regadbschema.dataset add constraint FK5605B478F76A62F5 foreign key (uid) references regadbschema.settings_user;
 alter table regadbschema.dataset_access add constraint FK1C0C870BB165C048 foreign key (dataset_ii) references regadbschema.dataset;
 alter table regadbschema.dataset_access add constraint FK1C0C870BF76A62F5 foreign key (uid) references regadbschema.settings_user;
 alter table regadbschema.drug_generic add constraint FK241E40388ED79C07 foreign key (drug_class_ii) references regadbschema.drug_class;
 alter table regadbschema.event add constraint FK5C6729A5FC38F0B foreign key (value_type_ii) references regadbschema.value_type;
 alter table regadbschema.event_nominal_value add constraint FK7D59576933594348 foreign key (event_ii) references regadbschema.event;
+alter table regadbschema.genome_drug_generic add constraint FKCA02968019F977A8 foreign key (generic_ii) references regadbschema.drug_generic;
+alter table regadbschema.genome_drug_generic add constraint FKCA0296805A4F23B6 foreign key (genome_ii) references regadbschema.genome;
 alter table regadbschema.nt_sequence add constraint FK161BA1A3C3F2CE1 foreign key (viral_isolate_ii) references regadbschema.viral_isolate;
 alter table regadbschema.open_reading_frame add constraint FK6BDEF0C55A4F23B6 foreign key (genome_ii) references regadbschema.genome;
 alter table regadbschema.patient_attribute_value add constraint FKDA05D0D428201F88 foreign key (attribute_ii) references regadbschema.attribute;

@@ -17,6 +17,7 @@
         <property name="hibernate.connection.username">regadb_user</property>
         <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.default_schema">regadbschema</property>
         <mapping resource="net/sf/regadb/db/Analysis.hbm.xml" />
         <mapping resource="net/sf/regadb/db/QueryDefinitionRunParameter.hbm.xml" />
         <mapping resource="net/sf/regadb/db/ValueType.hbm.xml" />
