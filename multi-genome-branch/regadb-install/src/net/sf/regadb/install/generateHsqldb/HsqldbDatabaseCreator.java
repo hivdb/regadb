@@ -67,6 +67,7 @@ public class HsqldbDatabaseCreator {
 			e.printStackTrace();
 		}
 		
+		executeQuery("CREATE SCHEMA regadbschema AUTHORIZATION DBA;", user, password);
 		executeQuery(query, user, password);
 	}
 	
