@@ -34,7 +34,7 @@ public class CurrentlyNotOnTherapy {
 			e.printStackTrace();
 		}
 		
-		System.out.println("patient id, last regimen, stop date, # SI drugs, sex, birtdate, last vl date, last vl");
+		System.out.println("patient id, last regimen, stop date, # SI drugs, sex, birtdate, last vl date, last vl, # therapies");
 		
 		List<Patient> patients = Utils.getPatients();
 		for(Patient p : patients) {
@@ -64,11 +64,13 @@ public class CurrentlyNotOnTherapy {
 					TestResult vl = getLastTestAfter(p, t.getStopDate(), "Viral Load");
 					if(vl!=null) {
 						System.out.print(vl.getTestDate() + ", ");
-						System.out.print(vl.getValue() + " ");
+						System.out.print(vl.getValue() + " ,");
 					} else {
 						System.out.print(", ");
-						System.out.print(" ");
+						System.out.print(" ,");
 					}
+					
+					System.out.print(p.getTherapies().size());
 					
 					System.out.println();
 					} else {
