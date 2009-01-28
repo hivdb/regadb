@@ -43,6 +43,7 @@ import net.sf.regadb.ui.form.query.wiv.WivArcCd4Form;
 import net.sf.regadb.ui.form.query.wiv.WivArcDeathsForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcLastContactForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcTherapyAtcForm;
+import net.sf.regadb.ui.form.query.wiv.WivArcViralLoadForm;
 import net.sf.regadb.ui.form.query.wiv.WivArlCd4Form;
 import net.sf.regadb.ui.form.query.wiv.WivArlConfirmedHivForm;
 import net.sf.regadb.ui.form.query.wiv.WivArlEpidemiologyForm;
@@ -177,6 +178,7 @@ public class TreeContent
     public ActionItem queryWivArlViralLoad;
     public ActionItem queryWivArlCd4;
     public ActionItem queryWivArcCd4;
+    public ActionItem queryWivArcViralLoad;
     public ActionItem queryWivArcTherapyAtc;
     public ActionItem queryWivArcLastContact;
     public ActionItem queryWivArcDeaths;
@@ -1083,13 +1085,6 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new WivArlEpidemiologyForm());
                 }
             });
-            queryWivArlViralLoad = new ActionItem(WResource.tr("menu.query.wiv.arl.viralLoad"), queryWiv, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new WivArlViralLoadForm());
-                }
-            });
             queryWivArlCd4 = new ActionItem(WResource.tr("menu.query.wiv.arl.cd4"), queryWiv, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
@@ -1097,11 +1092,25 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new WivArlCd4Form());
                 }
             });
+            queryWivArlViralLoad = new ActionItem(WResource.tr("menu.query.wiv.arl.viralLoad"), queryWiv, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new WivArlViralLoadForm());
+                }
+            });
             queryWivArcCd4 = new ActionItem(WResource.tr("menu.query.wiv.arc.cd4"), queryWiv, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new WivArcCd4Form());
+                }
+            });
+            queryWivArcViralLoad = new ActionItem(WResource.tr("menu.query.wiv.arc.viralLoad"), queryWiv, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new WivArcViralLoadForm());
                 }
             });
             queryWivArcTherapyAtc = new ActionItem(WResource.tr("menu.query.wiv.arc.therapyAtc"), queryWiv, new ITreeAction()

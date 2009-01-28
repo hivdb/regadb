@@ -14,11 +14,12 @@ public class WivArlCd4Form extends WivIntervalQueryForm {
     public WivArlCd4Form(){
         super(tr("menu.query.wiv.arl.cd4"),tr("form.query.wiv.label.arl.cd4"),tr("file.query.wiv.arl.cd4"));
         
-        String query =  "select tr, pav "+
-                        "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
-                        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-                        "and tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
-                        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
+        String query =  "select tr, pav, fu.attributeNominalValue "+
+				        "from TestResult tr join tr.patient p, PatientAttributeValue pav, PatientAttributeValue fu " +
+				        "where pav.patient = p and pav.attribute.name = 'PatCode' "+
+				        "and fu.patient = p and fu.attribute.name = 'FOLLOW-UP' "+
+				        "and tr.test.testType.description = '"+ StandardObjects.getCd4TestType().getDescription() +"' "+
+				        "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date";
         setQuery(query);
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
