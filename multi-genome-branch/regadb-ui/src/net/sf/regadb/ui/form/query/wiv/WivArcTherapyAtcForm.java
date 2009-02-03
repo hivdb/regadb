@@ -118,7 +118,6 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
             	String ss[] = dg.getAtcCode().split("[+]");
             	for(String s : ss){
             		atcs.add(s.trim());
-            		System.err.println(tp.getStartDate() +";"+ tp.getStopDate() +";"+ s);
             	}
             }
         }
