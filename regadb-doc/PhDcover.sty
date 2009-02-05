@@ -1,0 +1,201 @@
+%    *******************************************************
+%    * COVERPAGES FOR PhD THESES DEPT. OF COMPUTER SCIENCE *
+%    *******************************************************
+%
+% The simplest is to copy the file PhDcover.tex.skel from the standard
+% TeX inputs directory and adapt for your own needs.
+%
+% Please contact the TeX support team when experiencing problems.
+% This file produces a 125% size (to be reduced by 80%),
+% as is customary with the text pages as well.
+%
+% Written by Eric.VanGestel@cs.kuleuven.ac.be Sept. 23, 1992.
+%
+
+%\setlength{\textheight}{25cm}
+%\setlength{\textwidth}{15cm}
+%\hoffset=-0.5cm
+%\voffset=-3cm
+\gdef\thanks#1{}		% no thanks on cover page
+
+\input{rotate.sty}
+
+% FONTS: kul logo & 10/12/14 (bold) sans serif 
+\font\kul=kullogo
+\font\tensf=cmss10
+\font\tenbsf=cmssbx10
+\font\twvsf=cmss12
+\font\twvbsf=cmssbx10 scaled\magstep1
+\font\frtbsf=cmss10 scaled\magstep2
+\font\svtbsf=cmss10 scaled\magstep3	% provided in case
+
+% available degrees
+\def\@INF{INF}	 % toegepaste wetenschappen -- afdeling informatica
+\def\@NATW{NATW} % toegepaste wetenschappen -- afdeling num.anal. & toeg.wisk.
+\def\@WET{WET}	 % wetenschappen
+\def\@WETINF{WETINF}	 % wetenschappen informatica
+\def\@MEDWET{MEDWET}	 % medische wetenschappen
+
+\gdef\@deg{}
+\def\degree#1{%
+	\gdef\@deg{#1}%
+}
+
+\gdef\@degree#1{%
+	     \ifx#1\@INF	1	% INF  = 1
+	\else\ifx#1\@NATW	2	% NATW = 2
+	\else\ifx#1\@WET	3	% WET  = 3
+	\else\ifx#1\@WETINF	4	% WETINF  = 4
+	\else\ifx#1\@MEDWET	5	% MEDWET  = 5
+	\else 0				% ??   = 0
+	\fi\fi\fi\fi\fi
+}
+
+% degree as formulated
+\gdef\degree@{%
+	Proefschrift voorgedragen tot\\
+	het behalen van de graad van Doctor \\
+	in de
+	\ifcase\@degree{\@deg}%
+		???				% ??
+	\or	ingenieurswetenschappen	% INF
+	\or	ingenieurswetenschappen	% NATW
+	\or	wetenschappen			% WET
+	\or	informatica			% WETINF
+	\or	medische wetenschappen	% MEDWET
+	\fi
+}
+
+% KUL logo (hanging from the baseline)
+\newbox\logozone
+\setbox\logozone\hbox{\kul S}
+\setbox\logozone\hbox{\lower\ht\logozone\box\logozone}
+	
+% caption as formulated
+\gdef\addr@{%
+	\noindent\hfill\hbox{%
+		\unhcopy\logozone
+		\hskip 10mm
+		\vrule width 0.5pt
+		\hskip 10mm
+		\vbox to 0pt{\vbox to\dp\logozone{%	% rather awkward :-(
+			\vfil
+			\twvbsf
+			\hbox{KATHOLIEKE UNIVERSITEIT LEUVEN}%
+			\small\twvsf	% better looking interlineskip
+			\ifcase\@degree{\@deg}%
+				% ??
+			\hbox{FACULTEIT INGENIEURSWETENSCHAPPEN}%
+			\hbox{DEPARTEMENT COMPUTERWETENSCHAPPEN}%
+			\hbox{AFDELING ???}%
+			\or	% INF
+			\hbox{FACULTEIT INGENIEURSWETENSCHAPPEN}%
+			\hbox{DEPARTEMENT COMPUTERWETENSCHAPPEN}%
+			\hbox{AFDELING INFORMATICA}%
+			\or	% NATW
+			\hbox{FACULTEIT INGENIEURSWETENSCHAPPEN}%
+			\hbox{DEPARTEMENT COMPUTERWETENSCHAPPEN}%
+			\hbox{AFDELING NUMERIEKE ANALYSE EN}%
+			\hbox{TOEGEPASTE WISKUNDE}%
+			\or	% WET
+			\hbox{FACULTEIT WETENSCHAPPEN}%
+			\hbox{FACULTEIT INGENIEURSWETENSCHAPPEN}%
+			\hbox{DEPARTEMENT COMPUTERWETENSCHAPPEN}%
+			\or	% WETINF
+			\hbox{FACULTEIT WETENSCHAPPEN}%
+			\hbox{FACULTEIT INGENIEURSWETENSCHAPPEN}%
+			\hbox{DEPARTEMENT COMPUTERWETENSCHAPPEN}%
+			\or	% MEDWET
+			\hbox{FACULTEIT MEDISCHE WETENSCHAPPEN}%
+			\hbox{DEPARTEMENT MICROBIOLOGIE EN IMMUNOLOGIE}%
+			\hbox{AFDELING KLINISCHE EN EPIDEMIOLOGISCHE VIROLOGIE}%
+			\fi
+			\hbox{Minderbroedersstraat 10  --- B-3000 Leuven}
+			\vfil
+		}\vss}%
+	}\hfill\hbox{}%
+}
+
+% month/year:
+\gdef\@monthyear{Month 19??}
+\def\monthyear#1{\gdef\@monthyear{#1}}
+
+% title; all caps
+\def\title#1{\gdef\@title{#1}\gdef\@sidetitle{#1}}
+
+% [optional] title for side; all caps (default same as above)
+\def\sidetitle#1{\gdef\@sidetitle{#1}}
+
+% graduate name: {first LAST}
+\gdef\grad@{}
+\def\graduate#1{\gdef\grad@{#1}}
+
+% UDC code
+\gdef\@udc{}
+\def\udc#1 {\gdef\@udc{#1}}
+
+
+\def\coverpage#1{%
+	\newpage\thispagestyle{empty}
+	\frenchspacing
+	\ifcase\@degree{\@deg}
+		\typeout{PhDcover warning: unrecognized degree \@deg}
+	\fi
+	% caption
+	\vbox{\addr@}
+	% title; vertical ratio 2:1
+	\vfill\vfill
+	\begin{center}
+		\begin{minipage}[t]{15cm}	% takes care of linebreaking
+			\begin{center}
+				{\Large\frtbsf\@title\par\noindent}
+				% needed for correct line spacing
+			\end{center}
+		\end{minipage}
+	\end{center}
+	\vfill
+	\vbox to 8cm{\tensf
+		\hbox to\textwidth{\noindent
+			% supervisor(s)/jury&udc
+			\begin{tabular}[t]{@{}l@{}}
+				#1
+			\end{tabular}%
+			\hfill
+			% degree & graduate
+			\begin{tabular}[t]{@{}l@{}}
+				\degree@\\[3mm]
+				door\\[3mm]
+				{\tenbsf\grad@}
+			\end{tabular}%
+		}%
+		\vfil
+		\@UDC
+		\vfil
+		\hbox to\textwidth{\noindent\hfill\@monthyear\hfill}
+	}
+}
+
+\def\firstcoverpage#1{\def\@UDC{\hbox{}}\coverpage{#1}}
+\def\secondcoverpage#1{\def\@UDC{\hbox{U.D.C. \@udc}}\coverpage{#1}}
+
+\def\extracoverpage#1{%
+	\newpage\thispagestyle{empty}
+	\frenchspacing\tensf
+	\begin{minipage}{15mm}\rotate[r]{\hbox to 24cm{
+		\rule{1pt}{15mm}\hfill
+		\vbox to 15mm{\vfil\hbox{%
+			\grad@\quad---\quad
+			\begin{tabular}{c}
+				\tenbsf\@sidetitle
+			\end{tabular}%
+			\quad---\quad\@monthyear
+		}\vfil}
+		\hfill\rule{1pt}{15mm}%
+	}}%rotate%hbox
+	\end{minipage}
+	\hfill
+	\begin{minipage}{10cm}
+		{\tenbsf Instructies voor de zetter:}\\[2mm]
+		#1
+	\end{minipage}
+}

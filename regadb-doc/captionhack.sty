@@ -1,0 +1,5 @@
+% change the look of the captions
+\renewcommand{\fnum@figure}{{\vspace{-0.2cm}\small\textbf{Figure \thefigure}}}
+\renewcommand{\fnum@table}{{\vspace{-0.2cm}\small\textbf{Table \thetable}}}
+\let\ocaption\caption
+\renewcommand{\caption}[2][]{\ocaption[#1]{{\small\textsl{#2}\vspace{-0.2cm}}}}

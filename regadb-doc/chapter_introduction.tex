@@ -1,0 +1,31 @@
+\chapter{Introduction}
+\label{chapter:introduction}
+
+\section{General Introduction}
+
+RegaDB is a server side Java2 application, which runs in a Servlet Container (eg. Tomcat). For data storage RegaDB relies on a RDBMS. Clients can access the RegaDB by browsing to the machine where the server software is installed, any popular browser can be used (Mozilla Firefox, Microsoft Internet Explorer).
+
+Currently we support both Microsoft Windows and Linux operating systems. These platforms are officially tested, but any other platform which meets our requirements should be able to run RegaDB.
+
+\section{Revision}
+23 August 2007: Initial creation
+
+\section{Different installation methods}
+\subsection{Guided auto-install}
+This installation method is currently only available on Microsoft Windows operating systems. It consists of a user interface which assists the user to configure and install RegaDB. After this installation you have a complete running instance of RegaDB. This installation is the easiest way to setup RegaDB, but because several non optimized packages are used, this may result in lower performance.
+
+This procedure is recommended for local installations, e.g. on laptops where only one user will use the system. If you plan to install RegaDB on a server system, we recommend to use the manual installation procedure.
+
+\subsection{Manual installation}
+This procedure requires the installation of some packages, for which you might need some support from your system administrator. After installing these packages, this manual will guide you through the rest of the installation/configuration. Installing RegaDB like this will result in better performance, which is desirable on server systems.
+
+\section{System requirements}
+\subsection{Guided auto-install}
+Microsoft Windows 2000 or higher.
+\subsection{Manual installation}
+Microsoft Windows 2000 or higher or a Linux distribution configured with the following software:
+\begin{itemize}
+\item Sun Java2 Standard Edition version 5.0 or higher
+\item Apache Tomcat Core 5.5 or higher
+\item Postgresql 8.2.4 or higher
+\end{itemize}

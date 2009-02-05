@@ -1,0 +1,96 @@
+% Example to generate the coverpages of a PhD thesis with PhDcover.sty
+% Please contact the TeX support team when experiencing problems.
+% This file produces a 125% size (to be reduced by 80%),
+% as is customary with the text pages as well.
+%
+\documentclass[12pt,makeidx]{phdthesis}
+\usepackage{a4wide}
+\usepackage{listings}
+\usepackage{palatino}
+
+\usepackage{makeidx}
+\makeindex
+
+\usepackage{natbib}
+\usepackage{fancyheadings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{graphics}
+\usepackage{float}
+%\usepackage[abbr]{harvard}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{captionhack}
+\usepackage{epigraph}
+\usepackage{footnote}
+\usepackage[sectionbib]{chapterbib} 
+%\usepackage[rootbib]{chapterbib} 
+
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\topfraction}{0.99}
+\renewcommand{\floatpagefraction}{0.99}
+\renewcommand{\bottomfraction}{0.99}
+
+\makesavenoteenv{tabular} 
+
+\newenvironment{Abstract}
+{\begin{center}\textbf{Abstract}%
+ \end{center} \small \it \begin{quote}}
+{\end{quote}}
+
+\begin{document}
+\title{RegaDB Installation Manual}
+\author{Pieter Libin\\Rega Institute, Katholieke Universiteit Leuven}
+\maketitle
+
+\cleardoublepage
+\lhead[]{\fancyplain{}{\rightmark}}
+\chead[\fancyplain{}{}]{\fancyplain{}{}}
+\rhead[\fancyplain{}{\leftmark}]{\fancyplain{}{}}
+%\rhead[\fancyplain{}{}]{\fancyplain{}{}}
+%\lhead[\fancyplain{}{}]{\fancyplain{}{}}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+%%  add the acknowledgements to the table of contents
+%\cleardoublepage
+\addcontentsline{toc}{chapter}{Acknowledgements}
+%\include{thesis_acknowledgements}
+
+\cleardoublepage
+
+%%% Customisation of the header and footer for the chapters
+%\pagestyle{headings}
+%------------------------------
+\newcommand{\publ}{}
+
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{\markright{\it \thesection.\ #1}}
+\renewcommand{\chaptermark}[1]{\markboth{
+       \it \thechapter.\ #1}{}}
+\lhead[\thepage]{\fancyplain{\publ}{\rightmark}}
+\chead[\fancyplain{}{}]{\fancyplain{}{}}
+\rhead[\fancyplain{}{\leftmark}]{\fancyplain{}{\thepage}}
+\lfoot[]{}
+\cfoot[]{}
+\rfoot[]{}
+
+%------------------------------
+\pagenumbering{arabic}
+
+\include{chapter_introduction}
+\include{chapter_auto_install}
+\include{chapter_manual_install}
+\include{chapter_post_install}
+\include{chapter_import_data}
+
+% include the index
+%\cleardoublepage
+%\addcontentsline{toc}{chapter}{section}{Index}
+%\printindex
+
+\end{document}
