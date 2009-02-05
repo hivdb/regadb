@@ -62,5 +62,6 @@ public class RegaDBWindow extends WTable
         WTableCell cell = ((WTableCell)tree_.parent());
         cell.clear();
         tree_ = new Tree(cell);
+        tree_.init();
     }
 }
