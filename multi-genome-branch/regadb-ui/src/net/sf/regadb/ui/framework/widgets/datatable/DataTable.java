@@ -364,9 +364,11 @@ public class DataTable<DataType> extends WTable
 	}
     
     public boolean stillExists(Object obj) {
-        Transaction trans = RegaDBMain.getApp().createTransaction();
-        boolean state = trans.stillExists(obj);
-        trans.commit();
-        return state;
+    	//TODO: find a solution compatible with Hibernate 3.3.0+ 
+//        Transaction trans = RegaDBMain.getApp().createTransaction();
+//        boolean state = trans.stillExists(obj);
+//        trans.commit();
+//        return state;
+    	return true;
     }
 }
