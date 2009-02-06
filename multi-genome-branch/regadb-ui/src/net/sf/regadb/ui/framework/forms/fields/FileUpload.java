@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.WFileUpload;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
@@ -57,6 +58,11 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	public void setAnchor(WString title, String url) {
 	        link.setText(title);
 	        link.setRef(url);
+	}
+	
+	public void setAnchor(WString title, WResource res){
+		link.setResource(res);
+		link.setText(title);
 	}
 
 	public void flagErroneous() {
