@@ -90,7 +90,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     public WivQueryForm(WString formName, WString description, WString filename){
         super(formName,InteractionState.Viewing);
         
-        filename_ = filename.value();
+        filename_ = filename.value().trim();
         description_ = new WText(description);
         
         init();
@@ -298,7 +298,9 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
      
     public void setDownloadLink(File file){
         link_.setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
-        link_.setRef(new WFileResource("application/csv", file.getAbsolutePath()).generateUrl());
+        WFileResource res = new WFileResource("application/csv", file.getAbsolutePath());
+        res.suggestFileName(filename_ +".csv");
+        link_.setResource(res);
     }
 
     @Override
