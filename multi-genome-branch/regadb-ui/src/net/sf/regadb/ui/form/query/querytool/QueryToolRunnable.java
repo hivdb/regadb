@@ -144,11 +144,11 @@ public class QueryToolRunnable implements Runnable {
         return new File(queryDir.getAbsolutePath()  + File.separator + fileName);
     }  
 	
-    public String getDownloadLink(){
+    public WFileResource getDownloadResource(){
     	if (isDone()) {
-    		return new WFileResource("application/csv", csvFile.getAbsolutePath()).generateUrl();
+    		return new WFileResource("application/csv", csvFile.getAbsolutePath());
     	}
-    	return "";
+    	return null;
     }		
 	
     private boolean process(File csvFile){

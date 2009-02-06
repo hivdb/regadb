@@ -12,6 +12,7 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
@@ -75,7 +76,9 @@ public class RunGroupBox extends WGroupContainer {
 				table.elementAt(runningQueries.size()-i-1, 0).addWidget(lbl);
 	
 				if (qt.isDone()) {
-					final WAnchor link = new WAnchor(qt.getDownloadLink(), qt.getStatusText());
+					WFileResource res = qt.getDownloadResource();
+					res.suggestFileName("result_"+ (i+1) +".csv");
+					final WAnchor link = new WAnchor(res, qt.getStatusText());
 					table.elementAt(runningQueries.size()-i-1, 1).addWidget(link);
 				}
 				else {
