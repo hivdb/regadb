@@ -10,7 +10,7 @@
 
   <servlet-mapping>
     <servlet-name>RegaDB</servlet-name>
-    <url-pattern>/RegaDB</url-pattern>
+    <url-pattern>/RegaDB/*</url-pattern>
   </servlet-mapping>
 </web-app>
 
