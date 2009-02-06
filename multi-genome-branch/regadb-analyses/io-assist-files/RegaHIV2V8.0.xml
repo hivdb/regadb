@@ -53,7 +53,7 @@
 
         <DRUGCLASS>
             <NAME>PI</NAME>
-            <DRUGLIST>IDV/r,SQV/r,NFV,fAPV,fAPV/r,LPV/r,ATV,ATV/r,TPV/r,DRV/r</DRUGLIST>
+            <DRUGLIST>IDV,IDV/r,SQV,SQV/r,NFV,fAPV,fAPV/r,LPV/r,ATV,ATV/r,TPV/r,DRV/r</DRUGLIST>
         </DRUGCLASS>
 
         <DRUGCLASS>
@@ -63,7 +63,7 @@
 
         <DRUGCLASS>
             <NAME>NNRTI</NAME>
-            <DRUGLIST>NVP,DLV,EFV,ETV</DRUGLIST>
+            <DRUGLIST>NVP,DLV,EFV</DRUGLIST>
         </DRUGCLASS>
 
 	<DRUGCLASS>
@@ -580,7 +580,7 @@
 	        SELECT ATLEAST 0 FROM (1P,2A)
 	    </CONDITION>
             <ACTIONS>
-                <LEVEL>2</LEVEL>
+                <LEVEL>1</LEVEL>
             </ACTIONS>
         </RULE>
         <RULE>
@@ -612,7 +612,7 @@
 		SELECT ATLEAST 1 FROM (I54L,V62A,V71I,I84V,L90M,L99F)
 	    </CONDITION>
             <ACTIONS>
-                <LEVEL>3</LEVEL>
+                <LEVEL>5</LEVEL>
             </ACTIONS>
         </RULE>
 
@@ -686,6 +686,41 @@
         </RULE>	
     </DRUG>    <!-- END LPV/r -->
 
+    <DRUG>
+        <NAME>ATV</NAME>
+        <RULE>
+            <CONDITION>
+	        SELECT ATLEAST 0 FROM (1P,2A)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>1</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>
+	        I50L
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>
+	        I54M AND I82F
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>6</LEVEL>
+            </ACTIONS>
+        </RULE>
+	<RULE>
+	    <CONDITION>
+	        SELECT ATLEAST 1 FROM (I54M,I82F,L90M)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>5</LEVEL>
+            </ACTIONS>
+        </RULE>	
+    </DRUG>    <!-- END ATV -->
     <DRUG>
         <NAME>ATV/r</NAME>
         <RULE>
