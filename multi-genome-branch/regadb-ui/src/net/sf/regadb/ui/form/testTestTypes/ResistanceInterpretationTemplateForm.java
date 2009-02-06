@@ -73,7 +73,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
                         e.printStackTrace();
                     }
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
-                    memResource.setData(resRepTemplate_.getDocument(), resRepTemplate_.getDocument().length);
+                    memResource.setData(resRepTemplate_.getDocument());
                     upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource.generateUrl());
 				}
         	});
@@ -103,7 +103,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         {
             templateTF.setText(resRepTemplate_.getName());
             WMemoryResource memResource = new WMemoryResource("application/rtf");
-            memResource.setData(resRepTemplate_.getDocument(), resRepTemplate_.getDocument().length);
+            memResource.setData(resRepTemplate_.getDocument());
             upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource.generateUrl());
         }
     }

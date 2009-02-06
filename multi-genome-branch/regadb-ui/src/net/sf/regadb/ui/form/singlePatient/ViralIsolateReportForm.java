@@ -86,7 +86,7 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                                );
                     reportA_.setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
-                    memResource.setData(report.getReport(), report.getReport().length);
+                    memResource.setData(report.getReport());
                     reportA_.setRef(memResource.generateUrl());
                     chartFile.delete();
                     t.commit();

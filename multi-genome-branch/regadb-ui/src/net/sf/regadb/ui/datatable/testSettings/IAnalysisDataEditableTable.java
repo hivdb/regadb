@@ -43,7 +43,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
 
         WMemoryResource resource = new WMemoryResource(type.getMimetype(), tf);
         WAnchor anchor = new WAnchor(resource, WWidget.lt(type.getName()));
-        resource.setData(type.getData(), type.getData().length);
+        resource.setData(type.getData());
         
         anchor.setStyleClass("link");
         
