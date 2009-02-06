@@ -142,9 +142,10 @@ public class QueryDefinitionRunForm extends FormWidget
             
             if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-            	resultLink = new WAnchor((String)null, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
+                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult());
+                res.suggestFileName("result.csv");
+            	resultLink = new WAnchor(res, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
                 resultLink.setStyleClass("link");
-                resultLink.setRef(new WFileResource("application/excel", RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult()).generateUrl());
             }
         }
         
