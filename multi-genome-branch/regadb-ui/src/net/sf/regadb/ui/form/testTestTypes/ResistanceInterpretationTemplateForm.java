@@ -73,8 +73,9 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
                         e.printStackTrace();
                     }
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
+                    memResource.suggestFileName("template.rtf");
                     memResource.setData(resRepTemplate_.getDocument());
-                    upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource.generateUrl());
+                    upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource);
 				}
         	});
         }
