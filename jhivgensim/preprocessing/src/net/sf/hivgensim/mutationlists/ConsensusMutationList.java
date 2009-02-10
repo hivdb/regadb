@@ -106,7 +106,7 @@ public class ConsensusMutationList {
 	}
 	
 	public static void main(String[] args){
-		System.out.println(ALL.subList("IN"));
+		System.out.println(ALL);
 	}
 	
 	

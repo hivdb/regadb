@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jhivgensim-queries"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jhivgensim-wts-client-java"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
