@@ -9,10 +9,10 @@
 <inputs>
 	<input>
 		<name>
-		phylo.fasta	
+		phylo.nex	
 		</name>
 		<description>
-		A fasta file containing the sequences 
+		A nexus file containing the sequences 
 		</description>
 	</input>        														
 </inputs>
