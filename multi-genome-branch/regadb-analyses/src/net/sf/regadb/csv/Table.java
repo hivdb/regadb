@@ -405,6 +405,22 @@ public class Table {
 		}
 		deleteColumns(colsToBeDeleted);		
 	}
+	
+	/**
+	 * select the columns with name in names
+	 * the others columns are removed from the table
+	 * @param names
+	 */
+	public void selectColumns(ArrayList<String> names){
+		ArrayList<Integer> colsToBeDeleted = new ArrayList<Integer>();
+		ArrayList<String> header = getRow(0);
+		for(int i = 1; i < header.size(); i++){
+			if(!names.contains(header.get(i))){
+				colsToBeDeleted.add(i);				
+			}
+		}
+		deleteColumns(colsToBeDeleted);		
+	}
 
 	public ArrayList<String> getColumn(int c) {
 		ArrayList<String> result = new ArrayList<String>(numRows());
