@@ -59,10 +59,11 @@ public class ImportFromStanfordDB {
 	}
 
 	public void run(){
+		
+		//first import therapies: patients are also created
 		importTherapyFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "PatientsRx.txt"));
 		importTherapyFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "PatientsRx.txt"));
 
-		//important to FIRST import PR and then RT because the sequences are concatenated
 		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumPR.txt"));
 		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
 
@@ -103,9 +104,9 @@ public class ImportFromStanfordDB {
 						System.err.println("therapy generic(s) not added to therapy of patient: "+patientId+" "+drugs);
 					}
 					if(t.getTherapyGenerics().size() > 0){ //do not add therapy if drugs is equal to "none"
-						p.addTherapy(t);
-						patients.put(p.getPatientId(), p);
+						p.addTherapy(t);						
 					}
+					patients.put(p.getPatientId(), p);
 				}
 			}
 			s.close();
@@ -133,18 +134,12 @@ public class ImportFromStanfordDB {
 				nucleotides = s.nextLine().trim();
 
 				v = getViralIsolate(patientId,sampleId, sampleDate);
-				if(v.getNtSequences().size() == 0){
-					//new sequence
-					n = new NtSequence(v);
-					n.setNucleotides(Utils.clearNucleotides(nucleotides));
-					n.setSequenceDate(sampleDate);	
-					n.setLabel("Sequence 1");
-					v.getNtSequences().add(n);
-				}else{
-					//append RT sequence to PR sequence 
-					n = v.getNtSequences().iterator().next();
-					n.setNucleotides(n.getNucleotides()+Utils.clearNucleotides(nucleotides));
-				}
+				//new sequence
+				n = new NtSequence(v);
+				n.setNucleotides(Utils.clearNucleotides(nucleotides));
+				n.setSequenceDate(sampleDate);	
+				n.setLabel(sampleId); //set the old sample id as label
+				v.getNtSequences().add(n);
 			}
 			s.close();
 		} catch (FileNotFoundException e) {
