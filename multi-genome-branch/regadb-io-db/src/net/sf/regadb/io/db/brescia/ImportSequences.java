@@ -26,7 +26,7 @@ public class ImportSequences
     
     public ImportSequences(Map<String, Patient> patientMap, File sequenceExcellFile) {
         sequenceExcellFile_ = sequenceExcellFile;
-        
+        patientMap_ = patientMap;
         aligner_ = new Aligner(new LocalAlignmentService());
     }
     

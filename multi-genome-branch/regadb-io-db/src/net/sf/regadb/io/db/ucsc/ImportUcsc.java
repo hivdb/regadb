@@ -40,11 +40,11 @@ import net.sf.regadb.util.frequency.Frequency;
 public class ImportUcsc 
 {
 	//DB table names
-	private String patientTableName = "t pazienti";
-	private String analysisTableName = "t_analisi";
-	private String hivTherapyTableName = "t terapie anti hiv";
-	private String sequencesTableName = "t genotipo hiv";
-	private String adeTableName = "t eventi aids";
+	private String patientTableName = "T_pazienti";
+	private String analysisTableName = "T_analisi_HIV_RNA_CD4_CD8";
+	private String hivTherapyTableName = "T_terapie_anti_HIV";
+	private String sequencesTableName = "T_genotipo_HIV";
+	private String adeTableName = "T_eventi_AIDS";
 	
 	//DB tables
 	private Table patientTable;
@@ -88,7 +88,7 @@ public class ImportUcsc
     			 System.err.println("Usage: ImportUcsc workingDirectory database.mdb mappingBasePath");
     	         System.exit(0);
     	    }
-    		
+    		 
     		ImportUcsc imp = new  ImportUcsc();
         
     		imp.getData(new File(args[0]), args[1], args[2]);
@@ -109,20 +109,20 @@ public class ImportUcsc
     		mappings = Mappings.getInstance(mappingBasePath);
     		
     		ConsoleLogger.getInstance().logInfo("Creating CSV files...");
-    		tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
-    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
+    		//tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
+    		/*tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
     				"t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR " +
     				"t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' OR " +
     				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_risultato] LIKE 'Toxo%' OR " +
     				"t_analisi.[desc_risultato] LIKE 'HAV%' OR t_analisi.[desc_risultato] LIKE 'HB%' OR " +
     				"t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' "+
-    				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
-    		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
-    		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
-    		tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
+    				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");*/
+    		//tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
+    		//tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
+    		//tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
     		
-    		DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(databaseFile)));
-            a2c.createCsv(workingDirectory, tableSelections);
+    		//DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(databaseFile)));
+            //a2c.createCsv(workingDirectory, tableSelections);
     		
     		ConsoleLogger.getInstance().logInfo("Reading CSV files...");
     		//Filling DB tables
@@ -549,7 +549,6 @@ public class ImportUcsc
             String patientId = adeTable.valueAt(CPatientId, i);
             String startDate = adeTable.valueAt(CStartDate, i);
             String ade = adeTable.valueAt(CAde, i);
-            
             patientId = patientId.toUpperCase();
             
             Patient p = patientMap.get(patientId);
@@ -567,7 +566,7 @@ public class ImportUcsc
     			{
     				if(Utils.checkColumnValueForExistance("ade", ade, i, patientId))
     				{
-    					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseEnglishAccessDate(startDate), endDate, p);
+    					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseUcscSeqDate(startDate), endDate, p);
     				}
     			}
                 else
@@ -576,6 +575,7 @@ public class ImportUcsc
                 }
             }
         }
+       
     }
     
     private void handleTherapies()
@@ -611,7 +611,7 @@ public class ImportUcsc
         		HashMap<String,String> drugs = new HashMap<String,String>();
         		Date startDate = null;
         		Date stopDate = null;
-        		
+        		System.err.println(hivStartTherapy);
         		if(Utils.checkColumnValueForEmptiness("start date of therapy", hivStartTherapy, i, hivPatientID))
         		{
         			startDate = Utils.parseEnglishAccessDate(hivStartTherapy);
@@ -868,7 +868,7 @@ public class ImportUcsc
     			 
     			 if(Utils.checkColumnValueForEmptiness("date of sequence analysis", sequenceDate, i, patientID))
     			 {
-             		Date date = Utils.parseEnglishAccessDate(sequenceDate);
+             		Date date = Utils.parseUcscSeqDate(sequenceDate);
              		
              		if(date != null)
              		{

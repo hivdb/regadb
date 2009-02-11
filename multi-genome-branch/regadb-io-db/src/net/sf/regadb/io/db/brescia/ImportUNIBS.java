@@ -158,6 +158,7 @@ public class ImportUNIBS
     	}
     	catch(Exception e)
     	{
+    		e.printStackTrace();
     		ConsoleLogger.getInstance().logError("Unknown error: "+e.getMessage());
     	}
     }
@@ -226,7 +227,7 @@ public class ImportUNIBS
             	
             	if(Utils.checkColumnValueForEmptiness("date of Birth", birthDate, i, patientId))
             	{
-            		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
+            		p.setBirthDate(Utils.parseMMDDYYHHMMSS(birthDate));
             	}
             	
             	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
@@ -238,7 +239,7 @@ public class ImportUNIBS
             	{
             		TestResult t = p.createTestResult(StandardObjects.getGenericHiv1SeroStatusTest());
                     t.setTestNominalValue(posSeroStatus);
-                    t.setTestDate(Utils.parseEnglishAccessDate(firstTest));
+                    t.setTestDate(Utils.parseMMDDYYHHMMSS(firstTest));
             	}
             	
             	if(Utils.checkColumnValueForEmptiness("risk group", riskGroup, i, patientId))
@@ -250,7 +251,7 @@ public class ImportUNIBS
             	{
             		TestResult t = p.createTestResult(StandardObjects.getContactTest());
                     //t.setValue("Contact");
-                    t.setTestDate(Utils.parseEnglishAccessDate(lastTest));
+                    t.setTestDate(Utils.parseMMDDYYHHMMSS(lastTest));
             	}
             	
             	if(Utils.checkColumnValueForExistance("status", status, i, patientId))
@@ -288,7 +289,7 @@ public class ImportUNIBS
     		{
     			if(Utils.checkColumnValueForExistance("date of death", deathDate, i, deathPatientID))
             	{
-            		p.setDeathDate(Utils.parseEnglishAccessDate(deathDate));
+            		p.setDeathDate(Utils.parseMMDDYYHHMMSS(deathDate));
             	}
     			
     			if(Utils.checkColumnValueForExistance("death reason", deathReason, i, deathPatientID))
@@ -333,13 +334,13 @@ public class ImportUNIBS
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
 	                t.setValue(cd4Count);
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	                t.setTestDate(Utils.parseMMDDYYHHMMSS(analysisDate));
 	    		}
 	    		if (Utils.checkColumnValueForExistance("CD4 test result (%)", cd4Percentage, i, cd4PatientID)) 
 	    		{
 	                TestResult t = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
 	                t.setValue(cd4Percentage);
-	                t.setTestDate(Utils.parseEnglishAccessDate(analysisDate));
+	                t.setTestDate(Utils.parseMMDDYYHHMMSS(analysisDate));
 	    		}
     		}
     	}
@@ -390,7 +391,7 @@ public class ImportUNIBS
 		    			 value = "="+VLHIV;	
 		    		 
 		    		 testResult.setValue(value);
-		    		 testResult.setTestDate(Utils.parseEnglishAccessDate(rnaAnalysisDate));
+		    		 testResult.setTestDate(Utils.parseMMDDYYHHMMSS(rnaAnalysisDate));
 	   		 	}
     		}
     	}
@@ -406,7 +407,7 @@ public class ImportUNIBS
         
         for(int i = 1; i < adeTable.numRows(); i++) 
         {
-            String patientId = adeTable.valueAt(CPatientId, i);
+        	String patientId = adeTable.valueAt(CPatientId, i);
             String startDate = adeTable.valueAt(CStartDate, i);
             String ade = adeTable.valueAt(CAde, i);
             
@@ -425,7 +426,7 @@ public class ImportUNIBS
     			{
     				if(Utils.checkColumnValueForExistance("ade", ade, i, patientId))
     				{
-    					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseEnglishAccessDate(startDate), endDate, p);
+    					Utils.handlePatientEventValue(aidsDefiningIllnessA, ade, Utils.parseMMDDYYHHMMSS(startDate), endDate, p);
     				}
     			}
                 else
@@ -473,7 +474,7 @@ public class ImportUNIBS
     				if(Utils.checkColumnValueForExistance("marker test result", result, i, patientId))
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
-		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
+		    			tr.setTestDate(Utils.parseMMDDYYHHMMSS(date));
 		    			tr.setValue(result);
     				}
     			}
@@ -518,7 +519,7 @@ public class ImportUNIBS
     				if(Utils.checkColumnValueForExistance("marker test result", result, i, patientId))
     				{
 	    				TestResult tr = p.createTestResult(coinfection.get(method));
-		    			tr.setTestDate(Utils.parseEnglishAccessDate(date));
+		    			tr.setTestDate(Utils.parseMMDDYYHHMMSS(date));
 		    			
 		    			if(Utils.checkColumnValueForExistance("marker test result value", value, i, patientId))
 		    				tr.setValue(result+"("+value+")");
@@ -569,7 +570,7 @@ public class ImportUNIBS
         		
         		if(Utils.checkColumnValueForEmptiness("start date of therapy", startTherapy, i, patientID))
         		{
-        			startDate = Utils.parseEnglishAccessDate(startTherapy);
+        			startDate = Utils.parseMMDDYYDate(startTherapy);
         		}
         		
         		for(int j = CStatus+1; j < this.hivTherapyTable.numColumns()-1; j++) 
@@ -594,7 +595,7 @@ public class ImportUNIBS
         		
         		if(Utils.checkColumnValueForExistance("stop date of therapy", stopTherapy, i, patientID))
         		{
-        			stopDate = Utils.parseEnglishAccessDate(stopTherapy);
+        			stopDate = Utils.parseMMDDYYDate(stopTherapy);
         		}
         		
         		if(Utils.checkColumnValueForExistance("motivation of stopping therapy", stopReasonTherapy, i, patientID))

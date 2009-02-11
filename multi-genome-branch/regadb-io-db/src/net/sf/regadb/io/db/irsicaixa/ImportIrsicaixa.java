@@ -648,6 +648,8 @@ public class ImportIrsicaixa {
     public static void main(String [] args) {
         if(args.length < 2)
             System.out.println("Usage: ImportIrsicaixa <csv path> <mappings path>");
+        System.setProperty("http.proxyHost", "www-proxy");
+        System.setProperty("http.proxyPort", "3128");//*/
         ImportIrsicaixa imp = new ImportIrsicaixa(ConsoleLogger.getInstance(), args[0], args[1]);
         imp.run();
     }

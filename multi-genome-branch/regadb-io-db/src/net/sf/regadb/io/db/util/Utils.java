@@ -106,7 +106,7 @@ public class Utils {
             //Be even more careful if the month is already 0
             if(month!=0)
             	cal.set(year, month-1, day);
-            
+           //System.out.println(year + month + day);
             return new Date(cal.getTimeInMillis());
         } else {
             return null;
@@ -137,6 +137,119 @@ public class Utils {
         }
     }
     
+    public static Date parseMMDDYYDate(String date) {
+        if("".equals(date))
+            return null;
+
+    	DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    	
+        try {
+			return df.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    public static Date parseDDMMYYDate(String date) {
+        if("".equals(date))
+            return null;
+
+    	DateFormat df = new SimpleDateFormat("dd/MM/yy");
+    	
+        try {
+			return df.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    public static Date parseMMDDYY(String date) {
+    	if("".equals(date))
+            return null;
+        
+        String [] dateTokens = date.split("/");
+        
+        if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public static Date parseMMDDYYHHMMSS(String date) {
+    	if("".equals(date))
+            return null;
+    	 String dateNoTime = date.split(" ")[0];
+         String [] dateTokens = dateNoTime.split("/");
+      
+        
+        if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public static Date parseDDMMYY(String date) {
+    	if("".equals(date))
+            return null;
+        
+        String [] dateTokens = date.split("/");
+        /*if(Integer.valueOf(dateTokens[2])<=1900)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	dateTokens[2]=String.valueOf(value);
+        }*/
+        
+        /*if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else 
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        */
+       
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public static Date parseBresciaSeqDate(String date) {
         if("".equals(date))
             return null;
@@ -149,7 +262,18 @@ public class Utils {
             return null;
         }
     }
-    
+    public static Date parseUcscSeqDate(String date) {
+        if("".equals(date))
+            return null;
+        
+        String dateNoTime = date.split(" ")[0];
+        String [] dateTokens = dateNoTime.split("\\.");
+                try {
+        return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
+        } catch (Exception e) {
+            return null;
+        }
+    }
     public static Comparator<Date> getDayComparator(){
     	return new Comparator<Date>(){
 
@@ -745,4 +869,15 @@ public class Utils {
          ConsoleLogger.getInstance().logError("No mapping for nominal value: " + val);
          return false;
      }
+
+	public static Date parseYY(String firstTest)
+	{
+		try {
+	        return Utils.createDate("1", "1", firstTest);
+	        
+	        } catch (Exception e) {
+	            return null;
+	        }
+		
+	}
 }
