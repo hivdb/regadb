@@ -19,6 +19,7 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WWidget;
 
 public class EditableTable<DataType> extends WContainerWidget
@@ -289,7 +290,7 @@ public class EditableTable<DataType> extends WContainerWidget
     	}
     	
     	public void remove() {
-    		int row =  itemList_.indexOf(RemoveButton.this.toRemove)+1;
+    		int row =  ((WTableCell)RemoveButton.this.parent()).row();
     		
             itemTable_.deleteRow(row);
             removedItemList_.add(RemoveButton.this.toRemove);
