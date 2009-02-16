@@ -98,6 +98,10 @@ public class MutationConstant extends Constant {
         			return null;
         		}
         		
+        		if(mutationStr2.length()==0) {
+        			return null;
+        		}
+        		
         		// all options omitted is invalid
         		if (number.length() == 0 && mutationStr.length() == 0 && mutationStr2.length() == 0) {
         			return null;
@@ -130,16 +134,13 @@ public class MutationConstant extends Constant {
         		}        		
         		
         		if (number.length() > 0){
-	        		Constant numberConstant = new DoubleConstant();
-	        		numberConstant.setValue(number);
-	        		
             		if (previousCondition) {
             			query += " AND";
             		}
             		query += "\n\t\t\t";
             		query += fromVariable.acceptWhereClause(builder);
 	        		query += ".id.mutationPosition = ";
-	        		query += numberConstant.acceptWhereClause(builder);
+	        		query += number;
 	        		previousCondition = true;
         		}
         		
