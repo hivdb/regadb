@@ -731,7 +731,7 @@ public class Utils {
          }
      }
      
-     public static void handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate, Patient p) {
+     public static PatientEventValue handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate, Patient p) {
          EventNominalValue env = ne.nominalValueMap.get(value);
          
           if (env != null)
@@ -739,7 +739,7 @@ public class Utils {
         	  for(PatientEventValue pev : p.getPatientEventValues()){
         		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
         			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
-        			  return;
+        			  return null;
         		  }
         	  }
               PatientEventValue v = p.createPatientEventValue(ne.event);
@@ -747,11 +747,14 @@ public class Utils {
               v.setStartDate(startDate);
               if(endDate != null)
             	  v.setEndDate(endDate);
+              return v;
           }
           else 
           {
               ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
           }
+          
+          return null;
       }
      
      public static PatientEventValue handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate) {
