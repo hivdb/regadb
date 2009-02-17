@@ -139,17 +139,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
         {
         	warningMessage.setText(tr("form.viralIsolate.editView.message.aligningComplete"));
             refreshAlignmentsTimer_.stop();
-            WPushButton refreshAlignments_ = new WPushButton(warningMessage.getContentArea());
-            refreshAlignments_.setText(tr("form.viralIsolate.editView.button.refreshAlignments"));
-            refreshAlignments_.setEnabled(true);
-            refreshAlignments_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
-            {
-                public void trigger(WMouseEvent me)
-                {
-                    fillData(viralIsolateForm_.getViralIsolate());
-                    warningMessage.setHidden(true);
-                }
-            });
+            fillData(viralIsolateForm_.getViralIsolate());
+            warningMessage.setHidden(true);
         }
     }
 	
