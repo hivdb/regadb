@@ -16,11 +16,14 @@ import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.regadb.analysis.functions.FastaHelper;
+import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
@@ -32,9 +35,12 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.frequency.Frequency;
 
@@ -55,6 +61,8 @@ public class ImportUCLHiv2DB {
 	
 	private static SimpleDateFormat fullSimpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
+	private static SimpleDateFormat viDateFormat = new SimpleDateFormat("yyyyMMdd");
+	
 	private AttributeGroup ucl_group = new AttributeGroup("UCL");
 	
 	private List<Attribute> regadbAttributesList;
@@ -73,7 +81,6 @@ public class ImportUCLHiv2DB {
 	private HashMap<String, String> arcMappings;
 	private HashMap<String, String> countryMappings;
 	private HashMap<String, String> transmissionMappings;
-	private HashMap<String, String> adeMappings;
 	private HashMap<String, String> drugGenericsMappings;
 	
 	private Test seroconversion;
@@ -84,6 +91,9 @@ public class ImportUCLHiv2DB {
 	
 	private List<DrugGeneric> drugGenerics;
 	
+	private Map<String, Test> viralLoadTests = new HashMap<String, Test>();
+	
+	private Map<String, Patient> patientMap = new HashMap<String, Patient>();
 	
 	public ImportUCLHiv2DB(String mappingBasePath, String filesDir) throws IndexOutOfBoundsException, BiffException, IOException {
 		fieldsToIgnore.add("Variable");
@@ -96,7 +106,6 @@ public class ImportUCLHiv2DB {
 		arcMappings  = Utils.translationFileToHashMap(Utils.readTable(mappingBasePath + File.separatorChar + "arc.mapping"));
 		countryMappings  = Utils.translationFileToHashMap(Utils.readTable(mappingBasePath + File.separatorChar + "country.mapping"));
 		transmissionMappings  = Utils.translationFileToHashMap(Utils.readTable(mappingBasePath + File.separatorChar + "transmission.mapping"));
-		adeMappings  = Utils.translationFileToHashMap(Utils.readTable(mappingBasePath + File.separatorChar + "ade.mapping"));
 		drugGenericsMappings  = Utils.translationFileToHashMap(Utils.readTable(mappingBasePath + File.separatorChar + "genericDrugs.mapping"));
 		
 		regadbAttributesList = Utils.prepareRegaDBAttributes();
@@ -124,9 +133,9 @@ public class ImportUCLHiv2DB {
     	transmissionOtherA.setValueType(new ValueType("string"));
     	transmissionOtherA.setAttributeGroup(ucl_group);
     	
-    	TestType seroconversionTT = new TestType(new TestObject("Patient test", 0), "Seroconversion");
+    	TestType seroconversionTT = new TestType(new TestObject("Patient test", 0), "Seroconversion type");
     	seroconversionTT.setValueType(StandardObjects.getNominalValueType());
-    	seroconversion = new Test(seroconversionTT, "Seroconversion (generic)");
+    	seroconversion = new Test(seroconversionTT, "Seroconversion type (generic)");
     	seroconversionTNVMappings = new HashMap<String, TestNominalValue>();
     	seroconversionTNVMappings.put("1", new TestNominalValue(seroconversionTT, "midpoint between last neg. and first pos. HIV-2 test"));
     	seroconversionTNVMappings.put("2", new TestNominalValue(seroconversionTT, "lab evidence of seroconversion"));
@@ -138,18 +147,21 @@ public class ImportUCLHiv2DB {
     	
     	drugGenerics = Utils.prepareRegaDrugGenerics();
     	
-    	Map<String, Patient> patientMap = new HashMap<String, Patient>(); 
     	File srcPath = new File(filesDir);
     	for(File f : srcPath.listFiles()) {
     		if(f.getAbsolutePath().endsWith(".xls")) {
     			Patient p = new Patient();
-    			run(f, p);
+    			run(f, srcPath, p);
     			patientMap.put(p.getPatientId(), p);
     		}
     	}
+    	
+		//print out xml files
+		IOUtils.exportPatientsXML(patientMap, srcPath.getAbsolutePath()+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap, srcPath.getAbsolutePath()+File.separatorChar+"vi.xml", ConsoleLogger.getInstance());
 	}
 	
-	public void run(File xlsFile, Patient p) throws IndexOutOfBoundsException, BiffException, IOException {
+	public void run(File xlsFile, File srcPath, Patient p) throws IndexOutOfBoundsException, BiffException, IOException {
 		System.out.println("Handling file: " + xlsFile.getName());
 		Sheet generalSheet = Workbook.getWorkbook(xlsFile).getSheet(0);
 		Sheet arvTestsSheet = Workbook.getWorkbook(xlsFile).getSheet(1);
@@ -230,6 +242,92 @@ public class ImportUCLHiv2DB {
 			if(arv) {
 				parseARV(getCell(arvTestsSheet, r, 0), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 2), p);
 			}
+			if(tests && !getCell(arvTestsSheet, r, 0).equals("")) {
+				parseTests(getDate(getCell(arvTestsSheet, r, 0)), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 4), getCell(arvTestsSheet, r, 3), p);
+			}
+		}
+		
+		//viral isolates
+		String baseName = xlsFile.getName();
+		baseName = baseName.substring(0, baseName.indexOf('_'));
+		for(File f : srcPath.listFiles()) {
+			if(f.getName().endsWith(baseName+".txt")) {
+				String fileName = f.getName();
+				String date = fileName.substring(0, fileName.indexOf(baseName));
+				try {
+					Date d = viDateFormat.parse(date);
+		            FastaRead fr = FastaHelper.readFastaFile(f, true);
+
+		            switch (fr.status_) {
+		            case Valid:
+		            case ValidButFixed:
+		                break;
+		            case MultipleSequences:
+		            case FileNotFound:
+		            case Invalid:
+		                System.err.println("Invalid fasta: " + f.getName());
+		                continue;
+		            }
+		            
+                    ViralIsolate vi = p.createViralIsolate();
+                    vi.setSampleDate(d);
+                    vi.setSampleId(fr.fastaHeader_);
+                    
+                    NtSequence nts = new NtSequence(vi);
+                    vi.getNtSequences().add(nts);
+                    nts.setNucleotides(fr.xna_);
+                    nts.setLabel("Sequence 1");
+				} catch (ParseException e) {
+					System.err.println("Cannot parse VI date: " + date);
+				}
+			}
+		}
+	}
+	
+	public void parseTests(Date d, String cd4, String vl, String vl_limit, Patient p) {
+		//TODO always HIV2a VL tests?
+		
+		if(!cd4.equals("")) {
+	        TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
+	        try {
+	            int cd4I = Integer.parseInt(cd4);
+	        } catch(NumberFormatException nfe) {
+	            throw new RuntimeException("Illegal CD4:" + cd4);
+	        }
+	        
+	        t.setValue(cd4);
+	        t.setTestDate(d);
+		}
+		
+		if(!vl.equals("")) {
+			Test vlTest = null;
+			if(vl_limit.equals("")) {
+				vlTest = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome());
+			} else {
+				TestType tt = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome()).getTestType();
+				vlTest = viralLoadTests.get(vl_limit);
+				if(vlTest == null) {
+					vlTest = new Test(tt, "Viral Load (limit="+vl_limit+")");
+					viralLoadTests.put(vl_limit, vlTest);
+				}
+			}
+			
+			String changed_vl = null;
+			if(!"><=".contains(vl.charAt(0)+"")) {
+				changed_vl = "="+vl;
+			} else {
+				changed_vl = vl;
+			}
+			
+			try {
+				Integer.parseInt(vl.substring(1));
+			} catch (NumberFormatException e) {
+				System.err.println("Cannot parse viral load: " + vl);
+			}
+			
+            TestResult t = p.createTestResult(StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome()));
+            t.setValue(changed_vl);
+            t.setTestDate(d);
 		}
 	}
 	
@@ -284,6 +382,7 @@ public class ImportUCLHiv2DB {
 	                        false,
 	                        false, 
 	                        (long)Frequency.DAYS.getSeconds());
+		    		t.getTherapyGenerics().add(tg);
 				}
 			}	
 		}
