@@ -23,12 +23,12 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
@@ -42,6 +42,8 @@ import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.util.frequency.Frequency;
 
 
@@ -227,30 +229,7 @@ public class ImportUCLHiv2DB {
 			}
 		}
 		
-		//arv+measurement form
-		//TODO stop reason mapping (is the nominal list sufficient?)
-		boolean arv = false;
-		boolean tests = false;
-		for(int r = 0; r<arvTestsSheet.getRows(); r++) {
-			if(getCell(arvTestsSheet, r, 0).equals("ARV")) {
-				arv = true;
-				continue;
-			}
-			
-			if(getCell(arvTestsSheet, r, 0).equals("Date of visit")) {
-				arv = false;
-				tests = true;
-				continue;
-			}
-			
-			if(arv) {
-				parseARV(getCell(arvTestsSheet, r, 0), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 2), p);
-			}
-			if(tests && !getCell(arvTestsSheet, r, 0).equals("")) {
-				parseTests(getDate(getCell(arvTestsSheet, r, 0)), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 4), getCell(arvTestsSheet, r, 3), p);
-			}
-		}
-		
+		Genome genome = null;
 		//viral isolates
 		String baseName = xlsFile.getName();
 		baseName = baseName.substring(0, baseName.indexOf('_'));
@@ -279,17 +258,50 @@ public class ImportUCLHiv2DB {
                     
                     NtSequence nts = new NtSequence(vi);
                     vi.getNtSequences().add(nts);
-                    nts.setNucleotides(fr.xna_);
+                    nts.setNucleotides(Utils.clearNucleotides(fr.xna_));
                     nts.setLabel("Sequence 1");
+                    
+		            BlastAnalysis blastAnalysis = new BlastAnalysis(nts);
+		            try {
+		                blastAnalysis.launch();
+		            } catch (ServiceException e) {
+		                e.printStackTrace();
+		            }
+		            genome = blastAnalysis.getGenome();
 				} catch (ParseException e) {
 					System.err.println("Cannot parse VI date: " + date);
 				}
 			}
 		}
+		
+		//arv+measurement form
+		//TODO stop reason mapping (is the nominal list sufficient?)
+		boolean arv = false;
+		boolean tests = false;
+		for(int r = 0; r<arvTestsSheet.getRows(); r++) {
+			if(getCell(arvTestsSheet, r, 0).equals("ARV")) {
+				arv = true;
+				continue;
+			}
+			
+			if(getCell(arvTestsSheet, r, 0).equals("Date of visit")) {
+				arv = false;
+				tests = true;
+				continue;
+			}
+			
+			if(arv) {
+				parseARV(getCell(arvTestsSheet, r, 0), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 2), p);
+			}
+			if(tests && !getCell(arvTestsSheet, r, 0).equals("")) {
+				parseTests(getDate(getCell(arvTestsSheet, r, 0)), getCell(arvTestsSheet, r, 1), getCell(arvTestsSheet, r, 4), getCell(arvTestsSheet, r, 3), p, genome);
+			}
+		}
 	}
 	
-	public void parseTests(Date d, String cd4, String vl, String vl_limit, Patient p) {
-		//TODO always HIV2a VL tests?
+	public void parseTests(Date d, String cd4, String vl, String vl_limit, Patient p, Genome genome) {
+		//TODO
+		//We check for the genome, however, if no sequence is provided which genome should we choose?
 		
 		if(!cd4.equals("")) {
 	        TestResult t = p.createTestResult(StandardObjects.getGenericCD4Test());
@@ -306,9 +318,9 @@ public class ImportUCLHiv2DB {
 		if(!vl.equals("")) {
 			Test vlTest = null;
 			if(vl_limit.equals("")) {
-				vlTest = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome());
+				vlTest = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), genome);
 			} else {
-				TestType tt = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome()).getTestType();
+				TestType tt = StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), genome).getTestType();
 				vlTest = viralLoadTests.get(vl_limit);
 				if(vlTest == null) {
 					vlTest = new Test(tt, "Viral Load (limit="+vl_limit+")");
@@ -329,7 +341,7 @@ public class ImportUCLHiv2DB {
 				System.err.println("Cannot parse viral load: " + vl);
 			}
 			
-            TestResult t = p.createTestResult(StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), StandardObjects.getHiv2AGenome()));
+            TestResult t = p.createTestResult(StandardObjects.getGenericTest(StandardObjects.getViralLoadDescription(), genome));
             t.setValue(changed_vl);
             t.setTestDate(d);
 		}
