@@ -133,14 +133,18 @@ public class ImportUCLHiv2DB {
     	transmissionOtherA.setValueType(new ValueType("string"));
     	transmissionOtherA.setAttributeGroup(ucl_group);
     	
-    	TestType seroconversionTT = new TestType(new TestObject("Patient test", 0), "Seroconversion type");
+    	TestType seroconversionTT = new TestType(StandardObjects.getPatientTestObject(), "Seroconversion type");
     	seroconversionTT.setValueType(StandardObjects.getNominalValueType());
     	seroconversion = new Test(seroconversionTT, "Seroconversion type (generic)");
     	seroconversionTNVMappings = new HashMap<String, TestNominalValue>();
     	seroconversionTNVMappings.put("1", new TestNominalValue(seroconversionTT, "midpoint between last neg. and first pos. HIV-2 test"));
+    	seroconversionTT.getTestNominalValues().add(seroconversionTNVMappings.get("1"));
     	seroconversionTNVMappings.put("2", new TestNominalValue(seroconversionTT, "lab evidence of seroconversion"));
+    	seroconversionTT.getTestNominalValues().add(seroconversionTNVMappings.get("2"));
     	seroconversionTNVMappings.put("3", new TestNominalValue(seroconversionTT, "seroconversion illness"));
+    	seroconversionTT.getTestNominalValues().add(seroconversionTNVMappings.get("3"));
     	seroconversionTNVMappings.put("4", new TestNominalValue(seroconversionTT, "first pos HIV-2 test"));
+    	seroconversionTT.getTestNominalValues().add(seroconversionTNVMappings.get("4"));
 	
     	regadbEvents = Utils.prepareRegaDBEvents();
     	aidsDefiningIllnessA = new NominalEvent("Aids defining illness", Utils.readTable(mappingBasePath + File.separatorChar + "ade.mapping"), Utils.selectEvent("Aids defining illness", regadbEvents));
