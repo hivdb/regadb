@@ -27,7 +27,7 @@ import net.sf.wts.client.util.Encrypt;
 import net.sf.wts.client.util.EncryptedFileDataSource;
 import sun.misc.BASE64Decoder;
 
-public class WtsClient 
+public class WtsClient implements IWtsClient
 {
 	private String url_;
 	private AxisClient axisService = new AxisClient();
@@ -304,5 +304,26 @@ public class WtsClient
 	public String getUrl() 
 	{
 		return url_;
-	}	
+	}
+
+	public byte[] download(String sessionTicket, String serviceName,
+			String fileName) throws RemoteException, MalformedURLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String login(String userName, String challenge, String password,
+			String serviceName) throws RemoteException, MalformedURLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void upload(String sessionTicket, String serviceName,
+			String fileName, byte[] file) throws RemoteException,
+			MalformedURLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

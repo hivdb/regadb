@@ -245,5 +245,7 @@ public class Encrypt {
 	public static void main(String args[]){
 		System.out.println(Encrypt.encryptMD5("admin"));
 		System.out.println(Encrypt.encryptMD5("bla123"));
+		System.out.println(Encrypt.encryptMD5("public"));
+		System.out.println(Encrypt.encryptMD5("Vitabis1"));
 	}
 }
