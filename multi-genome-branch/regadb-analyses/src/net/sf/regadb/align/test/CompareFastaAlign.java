@@ -20,8 +20,10 @@ public class CompareFastaAlign {
 		if(lines_v1.size()==lines_v2.size()) {
 			for(int i = 0; i<lines_v1.size(); i++) {
 				String[] s_v1 = lines_v1.get(i).split(" ");
+				proToPr(s_v1);
 				Arrays.sort(s_v1);
-				String[] s_v2 = lines_v2.get(i).replaceAll("PR", "PRO").split(" ");
+				String[] s_v2 = lines_v2.get(i).split(" ");
+				proToPr(s_v2);
 				Arrays.sort(s_v2);
 				
 				if(!Arrays.deepEquals(s_v1, s_v2)) {
@@ -37,5 +39,16 @@ public class CompareFastaAlign {
 		}
 		
 		System.err.println(count);
+	}
+	
+	public static void proToPr(String [] s_v) {
+		for(int j = 0; j<s_v.length; j++) {
+			if(s_v[j].startsWith("PRO")) {
+				
+			}
+			else if(s_v[j].startsWith("PR")){
+				s_v[j] = "PRO" + s_v[j].substring(2);
+			}
+		}
 	}
 }
