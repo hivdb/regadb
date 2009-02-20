@@ -8,7 +8,7 @@ public class SampleIdFilter extends StringFilter {
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		HibernateFilterConstraint hfc = super.getConstraint(varName, filterIndex);
 		if(hfc.clause_!=null)
-			hfc.clause_ = " patient.id = (select vi.patient.id from ViralIsolate vi where " + hfc.clause_ + ") ";
+			hfc.clause_ = " patient.id in (select vi.patient.id from ViralIsolate vi where " + hfc.clause_ + ") ";
 		return hfc;
 	}
 }
