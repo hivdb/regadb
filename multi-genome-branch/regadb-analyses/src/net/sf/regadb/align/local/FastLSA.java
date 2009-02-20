@@ -5,29 +5,51 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import net.sf.regadb.align.local.Grid.Line;
+
 import org.apache.commons.io.FileUtils;
 
 @SuppressWarnings("serial")
-public class FastLSA extends JFrame{
-    VisualTrace visualTrace;
+public class FastLSA extends JFrame{    
+    final static double defaultscore = 0;
     
-    public int k=2;
-    public long bufferSizeBits = 96 * 1000 * 1000;
+    final static double gapOpenScore = 0;
+    final static double gapExtensionScore = -10;
+    final static double gapEdgeExtensionScore = 0;
     
-    String seq1 = "-actgcttggaccgtt";
-    String seq2 = "-acggcttggccg";
+    final static double matchscore = 20;
+    final static double mismatchscore = 0;
+    
+    public int k=8;
+    private long bufferSizeBits = 96 * 1000 * 1000;
+    
+    private SymbolSequence seq1;
+    private SymbolSequence seq2;
+    
+    private IAlphabet<Symbol> alphabet;
+    private ISymbolMatchTable<Symbol> matchTable;
+    
+    private VisualTrace visualTrace;
     
     public static class VisualTrace extends JPanel{
         private FastLSA flsa;
         
+        private ArrayList<Grid> grids = new ArrayList<Grid>();
+        private ArrayList<Bounds> bounds = new ArrayList<Bounds>();
+        private Path path = null;
+        
         public VisualTrace(FastLSA flsa){
             super();
             this.flsa = flsa;
+
+            x = flsa.seq1.length();
+            y = flsa.seq2.length();
         }
         
         private int xOffset(){
@@ -45,14 +67,7 @@ public class FastLSA extends JFrame{
         }
 
         private int x,y,xo,yo,xw,yw,xmax,ymax;
-        
-        public void paintComponent(Graphics g){
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D)g;
-
-            x = flsa.seq1.length();
-            y = flsa.seq2.length();
-
+        private void updateGeometryValues(){
             xo = xOffset();
             yo = yOffset();
 
@@ -61,38 +76,23 @@ public class FastLSA extends JFrame{
             
             xmax = xo + (x * xw);
             ymax = yo + (y * yw);            
+        }
+        
+        public void paintComponent(Graphics g){
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D)g;
+
+            updateGeometryValues();
             
-            //fillRow(g2d,new Color(0,0,0,100),2,1,5);
-            int k = flsa.k;
+            for(Grid grid : grids)
+                drawGrid(g2d, grid);
 
-            Path path = new Path();
-            path.add(new PathNode(x-1,y-1));
-            path.add(new PathNode(x-2,y-1));
-            path.add(new PathNode(x-2,y-2));
-            path.add(new PathNode(x-3,y-3));
-            path.add(new PathNode(x-4,y-4));
-            path.add(new PathNode(x-5,y-4));
-            path.add(new PathNode(x-6,y-4));
-            path.add(new PathNode(x-7,y-4));
-            path.add(new PathNode(x-8,y-4));
-            path.add(new PathNode(x-9,y-4));
-            path.add(new PathNode(x-10,y-5));
-            path.add(new PathNode(x-11,y-6));
-            path.add(new PathNode(x-12,y-7));
+            for(Bounds b : bounds)
+                drawBounds(g2d, b);
             
-            Grid grid = new Grid(k,new Bounds(0,0,x,y),new Line(x,-1),new Line(y,-1));
+            if(path != null)
+                drawPath(g2d, path);
 
-            Grid grid2 = new Grid(k,flsa.bottomRightBounds(grid),new Line(x/k,-1),new Line(y/k,-1));      
-
-            Bounds upleft = flsa.upLeft(grid, path);
-            Grid grid3 = new Grid(k, upleft,new Line(x/k,-1),new Line(y/k,-1));
-
-            drawGrid(g2d,grid);
-            //drawGrid(g2d,grid2);
-            //drawGrid(g2d,grid3);
-            drawBounds(g2d,upleft);
-
-            drawPath(g2d, path);            
             drawMatrixLines(g2d);
         }
         
@@ -106,9 +106,9 @@ public class FastLSA extends JFrame{
             int ys[] = new int[n];
             
             int i=0;
-            for(PathNode node : path){
-                xs[i] = xo + (node.x * xw) + xw/2;
-                ys[i] = yo + (node.y * yw) + yw/2;
+            for(Path.Node node : path){
+                xs[i] = xo + (node.x() * xw) + xw/2;
+                ys[i] = yo + (node.y() * yw) + yw/2;
                 ++i;
             }
             
@@ -128,6 +128,9 @@ public class FastLSA extends JFrame{
             g2d.drawString(s, x - (fw*s.length())/2, y + fh/2);
         }
         
+        private void fillRow(Graphics2D g2d, Color c, int row, int col, int col2){
+            fillRow(g2d, c, row, col, col2, null);
+        }
         private void fillRow(Graphics2D g2d, Color c, int row, int col, int col2, Line values){
             int y1 = yo + yw*row;
             int x1 = xo + xw*col;
@@ -139,10 +142,15 @@ public class FastLSA extends JFrame{
             
             if(values != null){
                 for(int i = 0; i < values.size(); ++i){
-                    drawCenteredString(g2d, values.at(i)+"", x1 +xw/2, y1 +yw/2);
+                    double val = values.at(i).getScore();
+                    //if(val != 0)
+                        drawCenteredString(g2d, val+"", x1 +xw/2, y1 +yw/2);
                     x1 += xw;
                 }
             }
+        }
+        private void fillCol(Graphics2D g2d, Color c, int col, int row, int row2){
+            fillCol(g2d, c, col, row, row2, null);
         }
         private void fillCol(Graphics2D g2d, Color c, int col, int row, int row2, Line values){
             int y1 = yo + yw*row;
@@ -155,7 +163,9 @@ public class FastLSA extends JFrame{
             
             if(values != null){
                 for(int i = 0; i < values.size(); ++i){
-                    drawCenteredString(g2d, values.at(i)+"", x1 +xw/2, y1 +yw/2);
+                    double val = values.at(i).getScore();
+                    //if(val != 0)
+                        drawCenteredString(g2d, val+"", x1 +xw/2, y1 +yw/2);
                     y1 += yw;
                 }
             }
@@ -164,22 +174,22 @@ public class FastLSA extends JFrame{
         private void drawBounds(Graphics2D g2d, Bounds bounds){
             Color boundsColor = new Color(0,50,200,100);
             
-            fillRow(g2d, boundsColor, bounds.y1(), bounds.x1(), bounds.x2(), null);
-            fillRow(g2d, boundsColor, bounds.y2(), bounds.x1(), bounds.x2(), null);
-            fillCol(g2d, boundsColor, bounds.x1(), bounds.y1(), bounds.y2(), null);
-            fillCol(g2d, boundsColor, bounds.x2(), bounds.y1(), bounds.y2(), null);
+            fillRow(g2d, boundsColor, bounds.y1(), bounds.x1(), bounds.x2());
+            fillRow(g2d, boundsColor, bounds.y2(), bounds.x1(), bounds.x2());
+            fillCol(g2d, boundsColor, bounds.x1(), bounds.y1(), bounds.y2());
+            fillCol(g2d, boundsColor, bounds.x2(), bounds.y1(), bounds.y2());
         }
         
         private void drawGrid(Graphics2D g2d, Grid grid){
             Color gridColor = new Color(100,0,0,100);
             
             for(int i=0; i<grid.rows.length; ++i){
-                int row = grid.bounds.y1 + (i * grid.stepY);
-                fillRow(g2d, gridColor, row, grid.bounds.x1, grid.bounds.x2, grid.rows[i]);
+                int row = grid.bounds.y1() + (i * grid.stepY);
+                fillRow(g2d, gridColor, row, grid.bounds.x1(), grid.bounds.x2(), grid.rows[i]);
             }
             for(int i=0; i<grid.cols.length; ++i){
-                int row = grid.bounds.x1 + (i * grid.stepX);
-                fillCol(g2d, gridColor, row, grid.bounds.y1, grid.bounds.y2, grid.cols[i]);
+                int row = grid.bounds.x1() + (i * grid.stepX);
+                fillCol(g2d, gridColor, row, grid.bounds.y1(), grid.bounds.y2(), grid.cols[i]);
             }            
         }
         
@@ -189,14 +199,14 @@ public class FastLSA extends JFrame{
                 g2d.drawLine(xi, yo, xi, ymax);
 
                 if(i < x)
-                    drawCenteredString(g2d, flsa.seq1.charAt(i)+"" , xi +(xw/2), 10);
+                    drawCenteredString(g2d, flsa.seq1.get(i).toString(), xi +(xw/2), 10);
             }
             for(int i = 0; i <= y; ++i){
                 int yi = yo + (yw*i);
                 g2d.drawLine(xo, yi, xmax, yi);
 
                 if(i < y)
-                    drawCenteredString(g2d, flsa.seq2.charAt(i)+"" , 10, yi +(yw/2));
+                    drawCenteredString(g2d, flsa.seq2.get(i).toString(), 10, yi +(yw/2));
             }
         }
     }
@@ -209,193 +219,18 @@ public class FastLSA extends JFrame{
         System.out.println("Total memory: "+ FileUtils.byteCountToDisplaySize(runtime.totalMemory()));
         System.out.println("Max memory:   "+ FileUtils.byteCountToDisplaySize(runtime.maxMemory()));
         
-        FastLSA flsa = new FastLSA();
-        flsa.run();
-    }
-    
-    public static class PathNode{
-        private int x;
-        private int y;
-        
-        public PathNode(){
+        FastLSA flsa;
+        try {
+            //flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt","-acggcttggccgacggcttggccg");
+            flsa = new FastLSA("-tldkllkd","-tdvlkad");
+            flsa.run();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        public PathNode(int x, int y){
-            x(x);
-            y(y);
-        }
-        
-        public int x(){
-            return x;
-        }
-        public void x(int x){
-            this.x = x;
-        }
-        public int y(){
-            return y;
-        }
-        public void y(int y){
-            this.y = y;
-        }
-    }
-    
-    public static class Path extends LinkedList<PathNode>{
-        public Path(){
-        }
-    }
-
-    public static class Bounds{
-        private int x1,y1,x2,y2;
-        
-        public Bounds(int x1, int y1, int x2, int y2){
-            this.x1 = x1;
-            this.y1 = y1;
-            this.x2 = x2;
-            this.y2 = y2;
-        }
-        
-        public int sizeX(){
-            return x2 - x1;
-        }
-        public int sizeY(){
-            return y2 - y1;
-        }
-        
-        public int x1(){
-            return x1;
-        }
-        public int x2(){
-            return x2;
-        }
-        public int y1(){
-            return y1;
-        }
-        public int y2(){
-            return y2;
-        }
-    }
-
-    public static class Line{
-        private double scores[];
-        
-        public Line(int size){
-            scores = new double[size];
-        }
-        public Line(int size, double value){
-            scores = new double[size];
-            for(int i=0;i<size;++i)
-                scores[i]=value;
-        }
-        
-        public double at(int i){
-            return scores[i];
-        }
-        public void at(int i, double score){
-            scores[i] = score;
-        }
-        
-        public void copy(int begin, int end, Line line){
-            int i=0;
-            for(int j=begin; j<end; ++j)
-                scores[i++] = line.scores[j];
-                
-        }
-        
-        public int size(){
-            return scores.length;
-        }
-    }
-    
-    public static class Grid{
-        
-        public Bounds bounds;
-        public Line rows[];
-        public Line cols[];
-        
-        public int stepX;
-        public int stepY;
-        
-        public Grid(int k, Bounds bounds, Line row, Line col){
-            this.bounds = bounds;
-            rows = new Line[k];
-            cols = new Line[k];
-
-            stepX = bounds.sizeX()/k;            
-            stepY = bounds.sizeY()/k;
-            
-            rows[0] = row;
-            cols[0] = col;            
-            for(int i = 1; i<k; ++i){
-                rows[i] = new Line(bounds.sizeX());
-                cols[i] = new Line(bounds.sizeY());
-            }
-            
-            
-//            stepX = bounds.sizeX()/k;            
-//            stepY = bounds.sizeY()/k;
-//            
-//            int bx = row.size() - (row.size()/k);
-//            int by = col.size() - (col.size()/k);
-//
-//            System.err.println("copy calculated values");
-//            for(int i=0; i<k; ++i){
-//                rows[i] = new Line(stepX);
-//                cols[i] = new Line(stepY);
-//                
-//                int ex = bx + stepX;
-//                int ey = by + stepY;
-//                
-//                System.err.println("copy "+ bx +" -> "+ ex +" from row");
-//                rows[i].copy(bx, ex, row);
-//                System.err.println("copy "+ by +" -> "+ ey +" from col");
-//                cols[i].copy(by, ey, col);
-//                
-//                bx = ex;
-//                by = ey;
-//            }
-        }
-        
-        public Line getTopRow(){
-            return rows[0];
-        }
-        public Line getBottomRow(){
-            return rows[rows.length-1];
-        }
-
-        public Line getLeftColumn(){
-            return cols[0];
-        }
-        public Line getRightColumn(){
-            return cols[cols.length-1];
-        }
-
     }
         
     public boolean fitsInBuffer(Bounds bounds){
         return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
-    }
-    
-    public Path fullMatrix(Bounds bounds, Grid grid){
-        return null;
-    }
-    
-    public void findScore(Bounds bounds, Grid grid, Grid newGrid){
-        
-    }
-    
-    public Grid allocateNewGrid(Bounds bounds, Grid grid){
-        return null;
-    }
-    
-    public Bounds lowerRightQuadrant(Bounds bounds){
-        return null;
-    }
-    
-    public boolean intersectsUpperLeft(Bounds bounds, Path path){
-        return false;
-    }
-    
-    public Bounds pruneBounds(Bounds bounds, Path path){
-        return null;
     }
     
     public Path concatenatePaths(Path p1, Path p2){
@@ -405,43 +240,25 @@ public class FastLSA extends JFrame{
         return r;
     }
     
-    public void deallocateGrid(Grid grid){
-        
-    }
-    
     public void run(){
-        Bounds bounds = new Bounds(0,0,seq1.length(),seq2.length());
-        Line cacheRow = new Line(seq1.length(),-1);
-        Line cacheCol = new Line(seq2.length(),-1);
-        Path path = new Path();
+        int x = seq1.length();
+        int y = seq2.length();
         
-        run(bounds, cacheRow, cacheCol, path);
+        Bounds bounds = new Bounds(0,0,x,y);
+        run(bounds, new Line(x,true), new Line(y,true), new Path());
     }
 
-    public Path run(Bounds bounds, Grid grid){
-        if (fitsInBuffer(bounds))
-            return fullMatrix(bounds, grid);
-        
-        Grid newGrid = allocateNewGrid(bounds, grid);
-        findScore(bounds, grid, newGrid);
-        Bounds newBounds = lowerRightQuadrant(bounds);
-        Path path = run(newBounds, newGrid);
-        while (!intersectsUpperLeft(bounds, path)){
-            Bounds subBounds = pruneBounds(bounds, path);
-            Path newPath = run(subBounds, newGrid);
-            path = concatenatePaths(path, newPath);
-        }
-        deallocateGrid(newGrid);
-        return path;
-    }
-    
     public Path run(Bounds bounds, Line cacheRow, Line cacheCol, Path path){
-        if(fitsInBuffer(bounds)){
+        if(false && fitsInBuffer(bounds)){
             return fullMatrix( bounds, cacheRow, cacheCol, path );
         }
         Grid grid = new Grid(k, bounds, cacheRow, cacheCol );
+        visualTrace.grids.add(grid);
 
-        fillGridCache(bounds, grid);
+        fillGridCache(bounds, grid);       
+        
+        if(true)
+            return null;
 
         Line newCacheRow = grid.getBottomRow();
         Line newCacheCol = grid.getRightColumn();
@@ -456,9 +273,57 @@ public class FastLSA extends JFrame{
             /* Figure 3.6 (e) */
             pathExt = run( subProblem, newCacheRow, newCacheCol, pathExt );
         }
-        deallocateGrid( grid );
         
         return pathExt;
+    }
+
+
+    public Score findScore(int i, int j, Score left, Score up, Score leftUp, Symbol s1, Symbol s2){
+        Score ret = new Score();
+        
+//        double upscore = up.getScore() + gapscore;
+//        double leftscore = left.getScore() + gapscore;
+//        
+//        double upleftscore = leftUp.getScore() + matchTable.getScore(s1, s2);
+//
+//        if ((upleftscore >= leftscore) && (upleftscore >= upscore)) {
+//            ret.setScore(upleftscore);
+//        } else {
+//            if (leftscore > upscore) {
+//                ret.setScore(leftscore);
+//                ret.setGapSize(Math.max(0,left.getGapSize()) + 1);
+//            } else {
+//                ret.setScore(upscore);
+//                ret.setGapSize(Math.min(0,up.getGapSize()) - 1);
+//            }
+//        }
+        
+        double sextend = leftUp.getScore() + matchTable.getScore(s1, s2);
+
+        double ges = (j == seq2.length()) ? gapEdgeExtensionScore : gapExtensionScore;
+
+        double horizGapScore = ((left.getGapSize() > 0) || (j == seq2.length()) ? ges : gapOpenScore + ges);
+        double sgaphoriz = left.getScore() + horizGapScore;
+
+        ges = (i == seq1.length()) ? gapEdgeExtensionScore : gapExtensionScore;
+
+        double vertGapScore = (up.getGapSize() < 0 || (i == seq1.length()) ? ges : gapOpenScore + ges);
+        double sgapvert = up.getScore() + vertGapScore;
+
+        if ((sextend >= sgaphoriz) && (sextend >= sgapvert)) {
+            ret.setScore(sextend);
+            ret.setGapSize(0);
+        } else {
+            if (sgaphoriz > sgapvert) {
+                ret.setScore(sgaphoriz);
+                ret.setGapSize(Math.max(0,left.getGapSize()) + 1);
+            } else {
+                ret.setScore(sgapvert);
+                ret.setGapSize(Math.min(0,up.getGapSize()) - 1);
+            }
+        }
+        
+        return ret;
     }
     
     private Path fullMatrix(Bounds bounds, Line cacheRow, Line cacheCol,
@@ -468,19 +333,48 @@ public class FastLSA extends JFrame{
     }
 
     private void fillGridCache(Bounds bounds, Grid grid) {
-        // TODO Auto-generated method stub
+        Line colcache = grid.cols[0].clone();
         
+        int gc = -1,gr = -1;
+        Score up,upleft;
+        
+        for(int i = 1; i < bounds.x2() - bounds.x1(); ++i){
+            if(i % grid.stepX == 0)
+                gc = i/grid.stepX;
+            else
+                gc = -1;
+            
+            up = grid.rows[0].at(i);
+            upleft = grid.rows[0].at(i-1);
+            
+            for(int j = 1; j < bounds.y2() - bounds.y1(); ++j){
+                if(j % grid.stepY == 0)
+                    gr = j/grid.stepY;
+                else
+                    gr = -1;
+                
+                Score score = findScore(i, j, colcache.at(j), up, upleft, seq1.get(i), seq2.get(j));
+                upleft = colcache.at(j);
+                up = score;
+                
+                colcache.at(j, score);
+                if(gr != -1 && gr < grid.rows.length)
+                    grid.rows[gr].at(i, score);
+                if(gc != -1 && gc < grid.cols.length)
+                    grid.cols[gc].at(j, score);
+            }
+        }
     }
 
     private Line cachedColumn(Grid grid, Bounds bounds) {
-        int x = bounds.x1() - grid.bounds.x1;
+        int x = bounds.x1() - grid.bounds.x1();
         x = (int)Math.floor(x / grid.stepX);
         
         return grid.cols[x];
     }
 
     private Line cachedRow(Grid grid, Bounds bounds) {
-        int y = bounds.y1() - grid.bounds.y1;
+        int y = bounds.y1() - grid.bounds.y1();
         y = (int)Math.floor(y / grid.stepY);
         
         return grid.rows[y];
@@ -489,11 +383,11 @@ public class FastLSA extends JFrame{
     public Bounds bottomRightBounds(Grid grid){
         int x1,x2,y1,y2;
 
-        x1 = grid.bounds.x1 + (grid.stepX * (k-1));
-        y1 = grid.bounds.y1 + (grid.stepY * (k-1));
+        x1 = grid.bounds.x1() + (grid.stepX * (k-1));
+        y1 = grid.bounds.y1() + (grid.stepY * (k-1));
         
-        x2 = grid.bounds.x2;
-        y2 = grid.bounds.y2;
+        x2 = grid.bounds.x2();
+        y2 = grid.bounds.y2();
         
         return new Bounds(x1,y1,x2,y2);
     }
@@ -502,40 +396,198 @@ public class FastLSA extends JFrame{
         int x1,x2,y1,y2;
         int tx, ty;
 
-        PathNode node = path.getLast();        
+        Path.Node node = path.getLast();        
         
-        tx = node.x() - grid.bounds.x1;
+        tx = node.x() - grid.bounds.x1();
         if( tx % grid.stepX == 0)
             tx = (tx/grid.stepX) - 1;
         else
             tx = (int)Math.floor(tx / grid.stepX);
-        x1 = (tx * grid.stepX) + grid.bounds.x1;
+        x1 = (tx * grid.stepX) + grid.bounds.x1();
         
         
-        ty = node.y() - grid.bounds.y1;
+        ty = node.y() - grid.bounds.y1();
         if(ty % grid.stepY == 0)
             ty = (ty/grid.stepY) - 1;
         else
             ty = (int)Math.floor(ty / grid.stepY);
-        y1 = (ty * grid.stepY) + grid.bounds.y1;
+        y1 = (ty * grid.stepY) + grid.bounds.y1();
         
-        x2 = node.x();
-        y2 = node.y();
+        x2 = node.x()+1;
+        y2 = node.y()+1;
 
         System.out.println(x1 +","+ y1 +" "+ x2 +","+ y2);
         return new Bounds(x1,y1,x2,y2);
     }
     
     public boolean notExtended(Bounds bounds, Path path){
-        PathNode node = path.getFirst();
+        Path.Node node = path.getFirst();
         
         return (node.x() <= bounds.x1()) || (node.y() <= bounds.y1());
     }
     
-    public FastLSA(){
+    public FastLSA(String seq1, String seq2) throws Exception{
+        super();
         init();
+        
+        this.seq1 = createSequence(seq1);
+        this.seq2 = createSequence(seq2);
+        
+        initVisualization();
     }
+    
+    private static final Symbol GAP = new Symbol("-");
+    private static final Symbol A = new Symbol("a");
+    private static final Symbol B = new Symbol("b");
+    private static final Symbol C = new Symbol("c");
+    private static final Symbol D = new Symbol("d");
+    private static final Symbol E = new Symbol("e");
+    private static final Symbol F = new Symbol("f");
+    private static final Symbol G = new Symbol("g");
+    private static final Symbol H = new Symbol("h");
+    private static final Symbol I = new Symbol("i");
+    private static final Symbol J = new Symbol("j");
+    private static final Symbol K = new Symbol("k");
+    private static final Symbol L = new Symbol("l");
+    private static final Symbol M = new Symbol("m");
+    private static final Symbol N = new Symbol("n");
+    private static final Symbol O = new Symbol("o");
+    private static final Symbol P = new Symbol("p");
+    private static final Symbol Q = new Symbol("q");
+    private static final Symbol R = new Symbol("r");
+    private static final Symbol S = new Symbol("s");
+    private static final Symbol T = new Symbol("t");
+    private static final Symbol U = new Symbol("u");
+    private static final Symbol V = new Symbol("v");
+    private static final Symbol W = new Symbol("w");
+    private static final Symbol X = new Symbol("x");
+    private static final Symbol Y = new Symbol("y");
+    private static final Symbol Z = new Symbol("z");
+    
     private void init(){
+        alphabet = new DefaultAlphabet<Symbol>();
+        alphabet.addSymbol(GAP);
+        alphabet.addSymbol(A);
+        alphabet.addSymbol(B);
+        alphabet.addSymbol(C);
+        alphabet.addSymbol(D);
+        alphabet.addSymbol(E);
+        alphabet.addSymbol(F);
+        alphabet.addSymbol(G);
+        alphabet.addSymbol(H);
+        alphabet.addSymbol(I);
+        alphabet.addSymbol(J);
+        alphabet.addSymbol(K);
+        alphabet.addSymbol(L);
+        alphabet.addSymbol(M);
+        alphabet.addSymbol(N);
+        alphabet.addSymbol(O);
+        alphabet.addSymbol(P);
+        alphabet.addSymbol(Q);
+        alphabet.addSymbol(R);
+        alphabet.addSymbol(S);
+        alphabet.addSymbol(T);
+        alphabet.addSymbol(U);
+        alphabet.addSymbol(V);
+        alphabet.addSymbol(W);
+        alphabet.addSymbol(X);
+        alphabet.addSymbol(Y);
+        alphabet.addSymbol(Z);
+
+        DefaultMatchTable<Symbol> t = new DefaultMatchTable<Symbol>(alphabet);
+        t.fill(20, 0);
+        t.setScore(A, A, 16);
+        t.setScore(C, C, 36);
+        t.setScore(D, B, 20);
+        t.setScore(E, A, 8);
+        t.setScore(E, B, 10);
+        t.setScore(E, D, 12);
+        t.setScore(F, F, 28);
+        t.setScore(G, G, 16);
+        t.setScore(H, B, 6);
+        t.setScore(H, H, 24);
+        t.setScore(I, F, 12);
+        t.setScore(K, B, 12);
+        t.setScore(L, F, 14);
+        t.setScore(L, I, 10);
+        t.setScore(M, F, 6);
+        t.setScore(M, I, 8);
+        t.setScore(M, L, 16);
+        t.setScore(M, M, 24);
+        t.setScore(N, B, 20);
+        t.setScore(N, D, 14);
+        t.setScore(N, E, 10);
+        t.setScore(N, H, 6);
+        t.setScore(N, K, 12);
+        t.setScore(O, B, 12);
+        t.setScore(O, K, 20);
+        t.setScore(O, N, 12);
+        t.setScore(Q, B, 12);
+        t.setScore(Q, D, 6);
+        t.setScore(Q, E, 14);
+        t.setScore(Q, H, 6);
+        t.setScore(Q, K, 6);
+        t.setScore(Q, N, 12);
+        t.setScore(Q, O, 6);
+        t.setScore(R, H, 10);
+        t.setScore(R, K, 16);
+        t.setScore(R, O, 16);
+        t.setScore(R, Q, 10);
+        t.setScore(S, A, 10);
+        t.setScore(S, B, 8);
+        t.setScore(S, N, 8);
+        t.setScore(T, S, 10);
+        t.setScore(V, I, 16);
+        t.setScore(V, L, 12);
+        t.setScore(V, M, 6);
+        t.setScore(W, F, 10);
+        t.setScore(W, R, 6);
+        t.setScore(W, W, 36);
+        t.setScore(Y, F, 20);
+        t.setScore(Y, W, 10);
+        t.setScore(Y, Y, 28);
+        t.setScore(Z, A, 8);
+        t.setScore(Z, B, 12);
+        t.setScore(Z, D, 6);
+        t.setScore(Z, E, 20);
+        t.setScore(Z, H, 6);
+        t.setScore(Z, K, 6);
+        t.setScore(Z, N, 12);
+        t.setScore(Z, O, 6);
+        t.setScore(Z, Q, 20);
+        t.setScore(Z, R, 10);
+        
+        t.setScore(X, A, 6);
+        t.setScore(X, B, 6);
+        t.setScore(X, C, 6);
+        t.setScore(X, D, 6);
+        t.setScore(X, E, 6);
+        t.setScore(X, F, 6);
+        t.setScore(X, G, 6);
+        t.setScore(X, H, 6);
+        t.setScore(X, I, 6);
+        t.setScore(X, J, 6);
+        t.setScore(X, K, 6);
+        t.setScore(X, L, 6);
+        t.setScore(X, M, 6);
+        t.setScore(X, N, 6);
+        t.setScore(X, O, 6);
+        t.setScore(X, P, 6);
+        t.setScore(X, Q, 6);
+        t.setScore(X, R, 6);
+        t.setScore(X, S, 6);
+        t.setScore(X, T, 6);
+        t.setScore(X, U, 6);
+        t.setScore(X, V, 6);
+        t.setScore(X, W, 6);
+        t.setScore(X, Y, 6);
+        t.setScore(X, Z, 6);
+        
+        
+        matchTable = t;
+    }
+    
+    private void initVisualization(){
         int width = 640, height = 640;
         setSize(width, height);
         
@@ -552,4 +604,16 @@ public class FastLSA extends JFrame{
         setVisible(true);
     }
     
+    private SymbolSequence createSequence(String str) throws Exception{
+        String s = str.toLowerCase();
+        SymbolSequence seq = new SymbolSequence();
+        for(int i=0; i<s.length(); ++i){
+            Symbol smb = alphabet.get(s.charAt(i)+"");
+            if(smb == null)
+                throw new Exception("Unrecognized char: "+ s.charAt(i));
+            
+            seq.add(smb);
+        }
+        return seq;
+    }
 }
