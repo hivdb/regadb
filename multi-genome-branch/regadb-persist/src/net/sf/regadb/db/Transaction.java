@@ -205,7 +205,7 @@ public class Transaction {
                 "join dataset.datasetAccesses access " +
                 from +" "+
                 "where ( access.permissions >= 1 " +
-                "and access.id.settingsUser.uid = :uid ) and ( "+ filter.clause_ +" ) group by patient");
+                "and access.id.settingsUser.uid = :uid ) and ( "+ filter.clause_ +" ) group by patient order by patient.id");
         
         for(Pair<String, Object> arg : filter.arguments_)
         {
@@ -261,7 +261,7 @@ public class Transaction {
     
     @SuppressWarnings("unchecked")
     public List<Test> getTests() {
-        Query q = session.createQuery("from Test test");
+        Query q = session.createQuery("from Test test order by test.id");
         
         return q.list();
     }
@@ -269,7 +269,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Test> getTests(TestType testType) 
     {
-        Query q = session.createQuery("from Test test where test.testType.testTypeIi = :testTypeIdParam");
+        Query q = session.createQuery("from Test test where test.testType.testTypeIi = :testTypeIdParam order by test.id");
 
         q.setParameter("testTypeIdParam", testType.getTestTypeIi());
         
@@ -292,21 +292,21 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<TestType> getTestTypes() 
     {
-        Query q = session.createQuery("from TestType");
+        Query q = session.createQuery("from TestType tt order by tt.id");
         
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<AnalysisType> getAnalysisTypes() {
-        Query q = session.createQuery("from AnalysisType");
+        Query q = session.createQuery("from AnalysisType analysistype order by analysistype.id");
         
         return q.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<TherapyMotivation> getTherapyMotivations() {
-        Query q = session.createQuery("from TherapyMotivation");
+        Query q = session.createQuery("from TherapyMotivation tm order by tm.id");
         
         return q.list();
     }
@@ -328,7 +328,7 @@ public class Transaction {
     
     @SuppressWarnings("unchecked")
     public List<ResistanceInterpretationTemplate> getResRepTemplates() {
-        Query q = session.createQuery("from ResistanceInterpretationTemplate");
+        Query q = session.createQuery("from ResistanceInterpretationTemplate rit order by rit.id");
         
         return q.list();
     }
@@ -354,7 +354,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<DrugGeneric> getGenericDrugs() 
     {
-        Query q = session.createQuery("from DrugGeneric");
+        Query q = session.createQuery("from DrugGeneric dg order by dg.id");
         return q.list();
     }
     @SuppressWarnings("unchecked")
@@ -374,7 +374,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<DrugCommercial> getCommercialDrugs() 
     {
-        Query q = session.createQuery("from DrugCommercial");
+        Query q = session.createQuery("from DrugCommercial dc order by dc.id");
         return q.list();
     }
     @SuppressWarnings("unchecked")
@@ -395,27 +395,27 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<DrugClass> getClassDrugs() 
     {
-        Query q = session.createQuery("from DrugClass");
+        Query q = session.createQuery("from DrugClass dc order by dc.id");
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<Protein> getProteins() {
-        Query q = session.createQuery("from Protein protein");
+        Query q = session.createQuery("from Protein protein order by protein.id");
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<ValueType> getValueTypes()
     {
-        Query q = session.createQuery("from ValueType");
+        Query q = session.createQuery("from ValueType vt order by vt.id");
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<AttributeGroup> getAttributeGroups()
     {
-        Query q = session.createQuery("from AttributeGroup");
+        Query q = session.createQuery("from AttributeGroup ag order by ag.id");
         return q.list();
     }
     
@@ -428,7 +428,7 @@ public class Transaction {
      */
     @SuppressWarnings("unchecked")
     public List<Dataset> getDatasets() {
-        Query q = session.createQuery("from Dataset dataset");
+        Query q = session.createQuery("from Dataset dataset order by dataset.id");
         
         return q.list();
     }
@@ -505,7 +505,7 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 getPatientsQuery() + 
-                "group by patient");
+                "group by patient order by patient");
         q.setParameter("uid", login.getUid());
 
         return q.list();
@@ -519,7 +519,7 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 getPatientsQuery() + 
-                "group by patient");
+                "group by patient order by patient");
         q.setParameter("uid", login.getUid());
 
         return q.scroll();
@@ -539,7 +539,7 @@ public class Transaction {
         	queryString += "and" + filterConstraints.clause_;
         }
         queryString += " group by patient, " + sortField;
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", patient ";
         
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
@@ -576,7 +576,7 @@ public class Transaction {
             queryString += "and" + filterConstraints.clause_;
         }
         //queryString += " group by patient ";
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", patient";
 
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
@@ -786,12 +786,12 @@ public class Transaction {
     }
     
     //Get a limited, filtered and sorted list
-    private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
+    private List getLFS(String queryString, String uniqueField, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += (and ? " and" : " where" ) + filterConstraints.clause_;
         }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", "+ uniqueField;
     
         Query q = session.createQuery(queryString);
         
@@ -818,7 +818,7 @@ public class Transaction {
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " +
                             "and testResult.ntSequence is null";
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "testResult", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
@@ -853,7 +853,7 @@ public class Transaction {
     {
     	String queryString = "FROM PatientEventValue AS patient_event_value " +
 							" WHERE patient_ii = " + p.getPatientIi() + " ";
-    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+    	return getLFS(queryString, "patient_event_value", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long patientEventCount(Patient p, HibernateFilterConstraint filterConstraints) {
@@ -890,7 +890,7 @@ public class Transaction {
     public List<Event> getEvents(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
     	String queryString = "FROM Event AS event ";
-    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+    	return getLFS(queryString, "event", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public long eventCount(HibernateFilterConstraint filterConstraints) {
@@ -920,7 +920,7 @@ public class Transaction {
     {
         String queryString = "select therapy from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "therapy", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -932,7 +932,7 @@ public class Transaction {
     {
         String queryString = "from ViralIsolate as viralIsolate " +
                             "where viralIsolate.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "viralIsolate", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -994,7 +994,7 @@ public class Transaction {
     {
         String queryString = "from Attribute as attribute ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "attribute", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -1039,7 +1039,7 @@ public class Transaction {
     {
         String queryString = "from AttributeGroup as attributeGroup ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "attributeGroup", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -1069,7 +1069,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
 	public List<TestObject> getTestObjects() 
 	{
-		Query q=session.createQuery("from TestObject");
+		Query q=session.createQuery("from TestObject tobj order by tobj");
 		return q.list();
 	}
 
@@ -1078,7 +1078,7 @@ public class Transaction {
 	{
 		String queryString = "select testType from TestType as testType left outer join testType.genome as genome";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "testType", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
@@ -1124,7 +1124,7 @@ public class Transaction {
 	{
 		String queryString = "select test from Test as test left outer join test.testType.genome as genome";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "test", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
     
     public long getResRepTemplatesCount(HibernateFilterConstraint filterConstraints) 
@@ -1151,7 +1151,7 @@ public class Transaction {
     {
         String queryString = "from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "resistanceInterpretationTemplate", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public UserAttribute getUserAttribute(SettingsUser uid, String name)
@@ -1179,7 +1179,7 @@ public class Transaction {
             queryString += " and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", settingsUser";
     
       	Query q = session.createQuery(queryString);
         
@@ -1233,7 +1233,7 @@ public class Transaction {
             queryString += " and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField;
+        queryString += " order by " + sortField +", settingsUser ";
     
         Query q = session.createQuery(queryString);
         
@@ -1343,7 +1343,7 @@ public class Transaction {
     {
         String queryString = "from QueryDefinition as queryDefinition where queryDefinition.queryTypeIi = " + queryType;
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "queryDefinition", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 
@@ -1377,7 +1377,7 @@ public class Transaction {
 	{
 		String queryString = "from Dataset as dataset ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "dataset", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getDatasetCount(HibernateFilterConstraint filterConstraints) 
@@ -1425,7 +1425,7 @@ public class Transaction {
             queryString += "and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField + (ascending ? " asc" : " desc");
+        queryString += " order by " + sortField + (ascending ? " asc" : " desc") +", queryDefinitionRun";
     
         Query q = session.createQuery(queryString);
         
