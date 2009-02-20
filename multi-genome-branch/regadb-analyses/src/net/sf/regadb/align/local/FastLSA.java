@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,7 +29,7 @@ public class FastLSA extends JFrame{
     final static double matchscore = 20;
     final static double mismatchscore = 0;
     
-    public int k=8;
+    public int k=2;
     private long bufferSizeBits = 96 * 1000 * 1000;
     
     private SymbolSequence seq1;
@@ -50,29 +53,78 @@ public class FastLSA extends JFrame{
 
             x = flsa.seq1.length();
             y = flsa.seq2.length();
+            
+            this.addMouseWheelListener(new MouseWheelListener(){
+                private float changeratio = 1.10f;
+                
+                @Override
+                public void mouseWheelMoved(MouseWheelEvent arg0) {
+                    if(arg0.getWheelRotation() > 0)
+                        ratio = (float)(ratio * changeratio * arg0.getWheelRotation());
+                    else
+                        ratio = (float)(ratio / (changeratio * -arg0.getWheelRotation()));
+                    repaint();
+                }
+                
+            });
+            
+            MouseAdapter ma = new MouseAdapter(){
+                private int oldx,oldy;
+                @Override
+                public void mousePressed(MouseEvent arg0) {
+                    super.mousePressed(arg0);
+                    oldx = arg0.getX();
+                    oldy = arg0.getY();
+                }
+                
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    super.mouseDragged(e);
+                    drag(e.getX(),e.getY());
+                }
+                
+                private void drag(int newx, int newy){
+                    int dragx = newx - oldx;
+                    int dragy = newy - oldy;
+                    
+                    oldx = newx;
+                    oldy = newy;
+                    
+                    xOffset += dragx;
+                    yOffset += dragy;
+                    
+                    repaint();                    
+                }
+            };
+            
+            this.addMouseListener(ma);
+            this.addMouseMotionListener(ma);
         }
         
         private int xOffset(){
-            return 20;
+            return xOffset;
         }
         private int yOffset(){
-            return 20;
+            return yOffset;
         }
         
         private int xWidth(){
-            return (getWidth() - xOffset())/flsa.seq1.length();
+            return (int) ((getWidth() * ratio)/flsa.seq1.length());
         }
         private int yWidth(){
-            return (getHeight() - yOffset())/flsa.seq2.length();
+            return (int) ((getHeight() * ratio)/flsa.seq2.length());
         }
 
+        private float ratio = 1;
+        private int xOffset = 0, yOffset = 0;
+        
         private int x,y,xo,yo,xw,yw,xmax,ymax;
         private void updateGeometryValues(){
             xo = xOffset();
             yo = yOffset();
 
-            xw = xWidth();
-            yw = yWidth();
+            xw = (int)(xWidth() * ratio);
+            yw = (int)(yWidth() * ratio);
             
             xmax = xo + (x * xw);
             ymax = yo + (y * yw);            
@@ -280,23 +332,6 @@ public class FastLSA extends JFrame{
 
     public Score findScore(int i, int j, Score left, Score up, Score leftUp, Symbol s1, Symbol s2){
         Score ret = new Score();
-        
-//        double upscore = up.getScore() + gapscore;
-//        double leftscore = left.getScore() + gapscore;
-//        
-//        double upleftscore = leftUp.getScore() + matchTable.getScore(s1, s2);
-//
-//        if ((upleftscore >= leftscore) && (upleftscore >= upscore)) {
-//            ret.setScore(upleftscore);
-//        } else {
-//            if (leftscore > upscore) {
-//                ret.setScore(leftscore);
-//                ret.setGapSize(Math.max(0,left.getGapSize()) + 1);
-//            } else {
-//                ret.setScore(upscore);
-//                ret.setGapSize(Math.min(0,up.getGapSize()) - 1);
-//            }
-//        }
         
         double sextend = leftUp.getScore() + matchTable.getScore(s1, s2);
 
