@@ -103,4 +103,8 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(SettingsUser type) {
+		return null;
+	}
 }

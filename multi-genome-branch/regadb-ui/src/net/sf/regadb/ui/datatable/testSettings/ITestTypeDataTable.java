@@ -81,4 +81,8 @@ public class ITestTypeDataTable implements IDataTable<TestType>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(TestType type) {
+		return null;
+	}
 }

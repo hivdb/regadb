@@ -113,4 +113,8 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(ViralIsolate type) {
+		return null;
+	}
 }

@@ -107,4 +107,8 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(TestResult type) {
+		return null;
+	}
 }

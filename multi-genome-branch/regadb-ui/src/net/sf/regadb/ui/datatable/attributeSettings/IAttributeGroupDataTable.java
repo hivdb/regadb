@@ -75,4 +75,8 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(AttributeGroup type) {
+		return null;
+	}
 }

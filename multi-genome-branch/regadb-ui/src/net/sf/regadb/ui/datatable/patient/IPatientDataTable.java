@@ -10,6 +10,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
@@ -51,6 +52,7 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	    addColumn("dataTable.patient.colName.name", new StringFilter(), "patient.firstName", true,20);
 	    addColumn("dataTable.patient.colName.surName", new StringFilter(), "patient.lastName", true,20);
 	    addColumn("dataTable.patient.colName.attribute", getAttributeFilter(), "attributeValue.value", true,20);
+	    addColumn("dataTable.patient.colName.sampleId", new SampleIdFilter(), "vi.sampleId", false, 20);
 	}
 	
 	public void addColumn(String colName, IFilter filter, String varName, boolean sortable, int width){
@@ -125,6 +127,18 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 		}
 		else{
 		    toReturn[4] = "";
+		}
+		
+		if(colNames_.size()==6) {
+			if(type.getKey().getViralIsolates().size()>0) {
+				ViralIsolate vi = (ViralIsolate)type.getKey().getViralIsolates().toArray()[0];
+				toReturn[5] = vi.getSampleId();
+				if(type.getKey().getViralIsolates().size()>1) {
+					toReturn[5] += ", ...";
+				}
+			} else {
+				toReturn[5] = "";
+			}
 		}
 
 		return toReturn;
@@ -214,5 +228,31 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	        ret[i] = widths.get(i);
 	    }
 	    return ret;
+	}
+
+	public String[] getRowTooltips(Pair<Patient, PatientAttributeValue> type) {
+		String[] toReturn = new String[colNames_.size()];
+		
+		if(colNames_.size()==6) {
+			if(type.getKey().getViralIsolates().size()>0) {
+				int count = 0;
+				for(ViralIsolate vi : type.getKey().getViralIsolates()) {
+					if(toReturn[5]==null)
+						toReturn[5] = vi.getSampleId();
+					else 
+						toReturn[5] += vi.getSampleId();
+					
+					count++;
+					
+					if(count<type.getKey().getViralIsolates().size()) {
+						toReturn[5] += ", ";
+					}
+				}
+			} else {
+				toReturn[5] = "";
+			}
+		}
+
+		return toReturn;
 	}
 }

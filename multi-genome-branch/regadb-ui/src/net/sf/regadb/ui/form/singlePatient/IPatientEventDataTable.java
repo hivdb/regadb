@@ -91,4 +91,8 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(PatientEventValue type) {
+		return null;
+	}
 }

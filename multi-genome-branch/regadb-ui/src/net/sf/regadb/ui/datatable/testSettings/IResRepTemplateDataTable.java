@@ -75,4 +75,8 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(ResistanceInterpretationTemplate type) {
+		return null;
+	}
 }

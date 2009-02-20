@@ -171,4 +171,8 @@ public class ILogDataTable implements IDataTable<File> {
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(File type) {
+		return null;
+	}
 }

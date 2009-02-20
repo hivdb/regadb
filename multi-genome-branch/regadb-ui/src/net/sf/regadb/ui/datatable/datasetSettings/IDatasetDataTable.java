@@ -90,4 +90,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(Dataset type) {
+		return null;
+	}
 }

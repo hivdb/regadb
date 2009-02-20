@@ -68,4 +68,10 @@ public class IEventDataTable implements IDataTable<Event> {
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	@Override
+	public String[] getRowTooltips(Event type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

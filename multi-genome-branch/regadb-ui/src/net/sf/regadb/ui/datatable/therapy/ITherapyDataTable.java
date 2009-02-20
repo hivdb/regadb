@@ -119,4 +119,8 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(Therapy type) {
+		return null;
+	}
 }

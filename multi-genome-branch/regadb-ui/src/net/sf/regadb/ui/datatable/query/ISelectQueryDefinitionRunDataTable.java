@@ -82,4 +82,8 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(QueryDefinitionRun type) {
+		return null;
+	}
 }

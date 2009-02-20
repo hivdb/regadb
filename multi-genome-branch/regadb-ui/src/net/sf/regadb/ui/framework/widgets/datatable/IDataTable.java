@@ -14,6 +14,7 @@ public interface IDataTable <DataType>
 	public List<DataType> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending);
 	
 	public String[] getRowData(DataType type);
+	public String[] getRowTooltips(DataType type);
 	
 	//return null if you do not want to use any filters
 	public IFilter[] getFilters();

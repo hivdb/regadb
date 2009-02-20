@@ -304,9 +304,13 @@ public class DataTable<DataType> extends WTable
 		{
 			List<WText> al = textMatrix_.get(i);
 			String [] cols = dataTableInterface_.getRowData(rawDataArray_.get(i));
+			String [] tooltips = dataTableInterface_.getRowTooltips(rawDataArray_.get(i));
 			for(int j = 0; j<al.size(); j++)
 			{
 				al.get(j).setText(noNullLt(cols[j]));
+				if(tooltips!=null && tooltips[j]!=null) {
+					al.get(j).setToolTip(lt(tooltips[j]));
+				}
 			}
 		}
         

@@ -86,4 +86,8 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(SettingsUser type) {
+		return null;
+	}
 }

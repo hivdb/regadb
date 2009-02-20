@@ -79,4 +79,8 @@ public class IAttributeDataTable implements IDataTable<Attribute>
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
+
+	public String[] getRowTooltips(Attribute type) {
+		return null;
+	}
 }
