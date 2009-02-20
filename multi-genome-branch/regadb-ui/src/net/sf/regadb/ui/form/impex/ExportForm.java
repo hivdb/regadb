@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.impex;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import net.sf.regadb.db.Dataset;
@@ -26,6 +27,7 @@ import eu.webtoolkit.jwt.WWidget;
 public class ExportForm extends FormWidget {
 	private FormTable table_;
 	private ComboBox<Dataset> datasets;
+	private WAnchor anchor;
 	private File exportFile;
 	
 	public ExportForm(WString formName, InteractionState interactionState) {
@@ -41,31 +43,23 @@ public class ExportForm extends FormWidget {
 		fillData();
 		table_.addLineToTable(datasetsL, datasets);
 		
-		
 		WPushButton export = new WPushButton(tr("form.impex.export.title"));
 		Label exportL = new Label(tr("form.impex.export.title"));
-		WWidget[] widgets = {exportL, export};
-		table_.addLineToTable(widgets);
+		anchor = new WAnchor();
+		anchor.setStyleClass("link");
+		anchor.setHidden(true);
+		table_.addLineToTable(exportL, export, anchor);
+		
 		
 		export.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 			    try{
+			    	anchor.setHidden(true);
     			    Dataset ds = datasets.currentValue();
-    
-                    deleteExportFile();
-                    exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "xml");
-                    FileOutputStream fout = new FileOutputStream(exportFile);
-                    PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout);
-                    
-                    ExportPatient<Patient> exportPatient = new ExportPatient<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
-                    exportPatient.run();
-                    
-                    table_.elementAt(0, 2).clear();
-                    
-                    new WAnchor(new WFileResource("text/txt", exportFile.getAbsolutePath()),
-                    		lt(ds.getDescription() + "_export.xml"),
-                    		table_.elementAt(0, 2)).setStyleClass("link");
-                }catch(Exception e){
+    			    deleteExportFile();
+    			    exportXml(ds);
+    			    anchor.setHidden(false);
+                }catch(FileNotFoundException e){
                     e.printStackTrace();
                 }
 			}
@@ -73,6 +67,22 @@ public class ExportForm extends FormWidget {
 		
 		addControlButtons();
     }
+	
+	private void exportXml(Dataset ds) throws FileNotFoundException {
+        exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "xml");
+        FileOutputStream fout = new FileOutputStream(exportFile);
+        PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout);
+        
+        ExportPatient<Patient> exportPatient = new ExportPatient<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
+        exportPatient.run();
+        
+        table_.elementAt(0, 2).clear();
+        
+        String fileName = ds.getDescription() + "_export.xml";
+        anchor.setText(lt(fileName));
+        anchor.setResource(new WFileResource("text/txt", exportFile.getAbsolutePath()));
+        anchor.resource().suggestFileName(fileName);
+	}
 	
 	public void fillData() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
