@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WString;
 
@@ -43,5 +45,36 @@ public class StringFilter extends WContainerWidget implements IFilter
 	public String getStringValue()
 	{
 		return tf_.text();
+	}
+
+	@Override
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
+		
+		String operator = getComboState().key();
+		
+		if(operator.equals(StringFilter.beginsWith_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getStringValue().toLowerCase() + "%"));
+			//return varName + " like '" + tf_.text() + "%'"; 
+		}
+		else if(operator.equals(StringFilter.endsWith_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+getStringValue().toLowerCase()));
+		}
+		else if(operator.equals(StringFilter.contains_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+getStringValue().toLowerCase()+"%"));
+		}
+		else if(operator.equals(StringFilter.sqlRegExp_))
+		{
+			constraint.clause_ = varName + " like :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getStringValue()));
+		}
+		
+		return constraint;
 	}
 }

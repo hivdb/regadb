@@ -2,6 +2,8 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WString;
@@ -66,5 +68,18 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 			return null;
 		else
 			return combo_.currentText();
+	}
+	
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
+		
+		WString message = getComboValue();
+		if(message!=null)
+		{
+		constraint.clause_ = " " + varName+" = :param" + filterIndex;
+		constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, message.value()));
+		}
+		
+		return constraint;
 	}
 }

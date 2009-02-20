@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -140,4 +142,35 @@ public class DateFilter extends WContainerWidget implements IFilter
 	FilterTF getDateField2() {
         return tf2;
     }
+
+	@Override
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
+		
+		String operator = getComboState().key();
+			
+		if(operator.equals(DateFilter.equals))
+		{
+			constraint.clause_ = varName + " = :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.before))
+		{
+			constraint.clause_ = varName + " < :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.after))
+		{
+			constraint.clause_ = varName + " > :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.between))
+		{
+			constraint.clause_ = varName + " between :paramA" + filterIndex + " and :paramB" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("paramA" + filterIndex, getFirstDate()));
+			constraint.arguments_.add(new Pair<String, Object>("paramB" + filterIndex, getSecondDate()));
+		}
+			
+		return constraint;
+	}
 }

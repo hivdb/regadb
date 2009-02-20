@@ -12,6 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.TimestampFilter;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -160,4 +161,12 @@ public class AttributeFilter extends WContainerWidget implements IFilter
             }
         }
     }
+
+	@Override
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		if(filter_!=null)
+			return filter_.getConstraint(varName, filterIndex);
+		else
+			return null;
+	}
 }
