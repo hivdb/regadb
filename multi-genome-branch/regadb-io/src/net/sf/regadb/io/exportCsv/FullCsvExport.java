@@ -295,7 +295,7 @@ public class FullCsvExport {
 			field = "";
 		sb.append("\""+field+"\"");
 		if(comma)
-			sb.append(",");
+			sb.append(";");
 		else
 			sb.append("\n");
 	}
@@ -310,7 +310,7 @@ public class FullCsvExport {
 			sb.append("\""+field.toString()+"\"");
 		
 		if(comma)
-			sb.append(",");
+			sb.append(";");
 		else
 			sb.append("\n");
 	}
