@@ -162,7 +162,6 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         }
     }
 
-	@Override
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		if(filter_!=null)
 			return filter_.getConstraint(varName, filterIndex);

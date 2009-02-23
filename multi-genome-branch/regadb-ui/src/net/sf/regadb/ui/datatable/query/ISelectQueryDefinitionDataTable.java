@@ -76,7 +76,6 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
 		return colWidths;
 	}
     
-	@Override
 	public String[] getRowTooltips(QueryDefinition type) {
 		return null;
 	}

@@ -143,7 +143,6 @@ public class DateFilter extends WContainerWidget implements IFilter
         return tf2;
     }
 
-	@Override
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		

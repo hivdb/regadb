@@ -47,7 +47,6 @@ public class StringFilter extends WContainerWidget implements IFilter
 		return tf_.text();
 	}
 
-	@Override
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		
