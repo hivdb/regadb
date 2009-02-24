@@ -56,8 +56,7 @@ public class FastLSA extends JFrame{
             
             this.addMouseWheelListener(new MouseWheelListener(){
                 private float changeratio = 1.10f;
-                
-                @Override
+
                 public void mouseWheelMoved(MouseWheelEvent arg0) {
                     if(arg0.getWheelRotation() > 0)
                         ratio = (float)(ratio * changeratio * arg0.getWheelRotation());
