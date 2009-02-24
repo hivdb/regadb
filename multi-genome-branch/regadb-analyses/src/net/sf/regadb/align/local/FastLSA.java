@@ -58,10 +58,15 @@ public class FastLSA extends JFrame{
                 private float changeratio = 1.10f;
 
                 public void mouseWheelMoved(MouseWheelEvent arg0) {
+                    float r = ratio;
                     if(arg0.getWheelRotation() > 0)
                         ratio = (float)(ratio * changeratio * arg0.getWheelRotation());
                     else
                         ratio = (float)(ratio / (changeratio * -arg0.getWheelRotation()));
+                    
+                    xOffset += (arg0.getX()*(r-ratio));
+                    yOffset += (arg0.getY()*(r-ratio));
+                    
                     repaint();
                 }
                 
@@ -249,15 +254,17 @@ public class FastLSA extends JFrame{
                 int xi = xo + (xw*i);
                 g2d.drawLine(xi, yo, xi, ymax);
 
-                if(i < x)
+                if(i < x){
                     drawCenteredString(g2d, flsa.seq1.get(i).toString(), xi +(xw/2), 10);
+                    drawCenteredString(g2d, ""+i, xi +(xw/2), 25);
+                }
             }
             for(int i = 0; i <= y; ++i){
                 int yi = yo + (yw*i);
                 g2d.drawLine(xo, yi, xmax, yi);
 
                 if(i < y)
-                    drawCenteredString(g2d, flsa.seq2.get(i).toString(), 10, yi +(yw/2));
+                    drawCenteredString(g2d, flsa.seq2.get(i).toString() +" "+ i, 20, yi +(yw/2));
             }
         }
     }
@@ -272,8 +279,8 @@ public class FastLSA extends JFrame{
         
         FastLSA flsa;
         try {
-            //flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt","-acggcttggccgacggcttggccg");
-            flsa = new FastLSA("-tldkllkd","-tdvlkad");
+            flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt","-acggcttggccgacggcttggccg");
+//            flsa = new FastLSA("-tldkllkd","-tdvlkad");
             flsa.run();
         } catch (Exception e) {
             e.printStackTrace();
@@ -281,7 +288,8 @@ public class FastLSA extends JFrame{
     }
         
     public boolean fitsInBuffer(Bounds bounds){
-        return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
+        return bounds.sizeX() < 4 && bounds.sizeY() < 4;
+        //return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
     }
     
     public Path concatenatePaths(Path p1, Path p2){
@@ -296,34 +304,46 @@ public class FastLSA extends JFrame{
         int y = seq2.length();
         
         Bounds bounds = new Bounds(0,0,x,y);
-        run(bounds, new Line(x,true), new Line(y,true), new Path());
+        Path p = new Path();
+        p.add(new Path.Node(x,y));
+        visualTrace.path = p;
+        run(bounds, new Line(x,true), new Line(y,true), p);
     }
 
     public Path run(Bounds bounds, Line cacheRow, Line cacheCol, Path path){
-        if(false && fitsInBuffer(bounds)){
-            return fullMatrix( bounds, cacheRow, cacheCol, path );
+        
+        if(fitsInBuffer(bounds)){
+            System.err.println("fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
+            
+            Path p = fullMatrix( bounds, cacheRow, cacheCol, path );
+            return p;
         }
+        System.err.println("no fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
+        
         Grid grid = new Grid(k, bounds, cacheRow, cacheCol );
         visualTrace.grids.add(grid);
 
-        fillGridCache(bounds, grid);       
+        fillGridCache(bounds, grid);
         
-        if(true)
-            return null;
-
         Line newCacheRow = grid.getBottomRow();
         Line newCacheCol = grid.getRightColumn();
 
         Bounds subProblem = bottomRightBounds(grid);
+//        visualTrace.bounds.add(subProblem);
         
         Path pathExt = run( subProblem, newCacheRow, newCacheCol, path );
         while (notExtended(bounds, pathExt)){
+//            visualTrace.bounds.remove(subProblem);
             subProblem = upLeft( grid, pathExt );
+            visualTrace.bounds.add(subProblem);
+
             newCacheRow = cachedRow( grid, subProblem );
             newCacheCol = cachedColumn( grid, subProblem );
             /* Figure 3.6 (e) */
             pathExt = run( subProblem, newCacheRow, newCacheCol, pathExt );
         }
+        
+//        visualTrace.bounds.remove(subProblem);
         
         return pathExt;
     }
@@ -362,8 +382,9 @@ public class FastLSA extends JFrame{
     
     private Path fullMatrix(Bounds bounds, Line cacheRow, Line cacheCol,
             Path path) {
-        // TODO Auto-generated method stub
-        return null;
+        //Path p = new Path();
+        path.add(new Path.Node(bounds.x1(),bounds.y1()));
+        return path;
     }
 
     private void fillGridCache(Bounds bounds, Grid grid) {
@@ -401,14 +422,14 @@ public class FastLSA extends JFrame{
     }
 
     private Line cachedColumn(Grid grid, Bounds bounds) {
-        int x = bounds.x1() - grid.bounds.x1();
+        int x = bounds.x1() - grid.bounds.x1() +1;
         x = (int)Math.floor(x / grid.stepX);
         
         return grid.cols[x];
     }
 
     private Line cachedRow(Grid grid, Bounds bounds) {
-        int y = bounds.y1() - grid.bounds.y1();
+        int y = bounds.y1() - grid.bounds.y1() +1;
         y = (int)Math.floor(y / grid.stepY);
         
         return grid.rows[y];
@@ -450,14 +471,14 @@ public class FastLSA extends JFrame{
         x2 = node.x()+1;
         y2 = node.y()+1;
 
-        System.out.println(x1 +","+ y1 +" "+ x2 +","+ y2);
+        System.err.println("upleft: "+ x1 +","+ y1 +" "+ x2 +","+ y2);
         return new Bounds(x1,y1,x2,y2);
     }
     
     public boolean notExtended(Bounds bounds, Path path){
-        Path.Node node = path.getFirst();
+        Path.Node node = path.getLast();
         
-        return (node.x() <= bounds.x1()) || (node.y() <= bounds.y1());
+        return (node.x() > bounds.x1()) && (node.y() > bounds.y1());
     }
     
     public FastLSA(String seq1, String seq2) throws Exception{
