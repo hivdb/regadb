@@ -8,6 +8,9 @@ public class SelectionWindow {
 	private int start;
 	private int stop;
 	
+	public SelectionWindow(Protein protein){
+		this(protein,1,protein.getStopPosition()-protein.getStartPosition());
+	}
 	public SelectionWindow(Protein protein, int start, int stop){
 		this.protein = protein;
 		this.start = start;

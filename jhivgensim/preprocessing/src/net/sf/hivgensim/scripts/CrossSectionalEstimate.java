@@ -28,7 +28,7 @@ import net.sf.regadb.tools.MutPos;
 
 import org.biojava.bio.BioException;
 
-public class CrossValidationEstimate {
+public class CrossSectionalEstimate {
 	
 	private String workDir = "/home/gbehey0/hivgensim";
 	private String[] naiveDrugClasses = {"NRTI"};
@@ -42,7 +42,7 @@ public class CrossValidationEstimate {
 	private Login login;
 	private SelectionWindow[] windows;
 	
-	public CrossValidationEstimate(){
+	public CrossSectionalEstimate(){
 		Login login = null;
 		try {
 			login = Login.authenticate("gbehey0", "bla123");
