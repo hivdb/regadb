@@ -128,7 +128,8 @@ public class MutationTable extends Table {
 			fs = scan.nextSequence();
 			alignedTarget = DNATools.createDNA(fs.getSequence());
 			createNewRow(fs.getId());
-			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
+			for(Mutation m = null;;){//TODO
+//			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
 				for(SelectionWindow sw : windows){
 					if(mutationInWindow(m,sw)){
 						String protein = sw.getProtein().getAbbreviation();
