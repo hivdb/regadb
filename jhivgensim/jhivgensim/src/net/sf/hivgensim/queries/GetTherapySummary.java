@@ -68,8 +68,7 @@ public class GetTherapySummary extends QueryOutput<Patient> {
 	
 
 	public void output(){
-		try {
-			PrintStream out = new PrintStream(new FileOutputStream(file));
+		
 			TreeSet<String> ts = new TreeSet<String>();
 			for(String therapy : drugcounts.keySet()){
 				Integer count = drugcounts.get(therapy);
@@ -82,17 +81,21 @@ public class GetTherapySummary extends QueryOutput<Patient> {
 			for(String line : ts.descendingSet()){
 				out.println(line);
 			}			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 
 	@Override
 	public void generateOutput(Query<Patient> query) {
 		for(Patient p : query.getOutputList()){
-			initializeCounts(p);
+			generateOutput(p);
 		}
-		output();		
+		output();
+		out.close();
+	}
+
+	@Override
+	protected void generateOutput(Patient t) {
+		initializeCounts(t);		
 	}
 }

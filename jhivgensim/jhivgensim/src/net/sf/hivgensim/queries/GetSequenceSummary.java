@@ -61,13 +61,6 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 	}
 	
 	private void generateOutputForAllSequences(Query<Patient> query){
-		PrintStream out = null;
-		try {
-			out = new PrintStream(new FileOutputStream(this.file));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		for(Patient p : query.getOutputList()){
 			for(ViralIsolate vi : p.getViralIsolates()){
 				for(NtSequence seq : vi.getNtSequences()){
@@ -111,13 +104,6 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 	}
 	
 	private void generateOutputForSelectedSequences(Query<Patient> query){
-		PrintStream out = null;
-		try {
-			out = new PrintStream(new FileOutputStream(this.file));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		for(Patient p : query.getOutputList()){
 			for(ViralIsolate vi : p.getViralIsolates()){
 				for(NtSequence seq : vi.getNtSequences()){
@@ -174,6 +160,12 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 		QueryInput qi = new FromSnapshot(new File("/home/gbehey0/queries/database.snapshot"));
 		GetSequenceSummary gss = new GetSequenceSummary(new File("/home/gbehey0/queries/summaryseq"));
 		gss.generateOutput(qi);
+	}
+
+	@Override
+	protected void generateOutput(Patient t) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

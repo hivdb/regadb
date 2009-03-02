@@ -6,28 +6,35 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryOutput;
-import net.sf.regadb.db.*;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.persistence.ExportToPersistentObjects;
 
-public class ToSnapshot extends QueryOutput<Patient> {
-
+public class ToSnapshot {
+	
+	private ObjectOutputStream snapshotstream;
+	
 	public ToSnapshot(File file){
-		super(file);
+		try {
+			snapshotstream = new ObjectOutputStream(new FileOutputStream(file));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
+	
 	public void generateOutput(Query<Patient> query) {
 		try 
 		{
 			ExportToPersistentObjects export = new ExportToPersistentObjects();
-			ObjectOutputStream snapshotstream = new ObjectOutputStream(new FileOutputStream(file));
+			
 			for(Patient p : query.getOutputList()){
 				export.initialize(p);
 				snapshotstream.writeObject(p);
 			}
+			snapshotstream.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
