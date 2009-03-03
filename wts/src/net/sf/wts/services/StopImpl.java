@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import org.apache.commons.io.FileUtils;
-
-import net.sf.wts.services.util.Job;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
 import net.sf.wts.services.util.Status;
+
+import org.apache.commons.io.FileUtils;
 
 public class StopImpl 
 {
@@ -30,20 +29,10 @@ public class StopImpl
             throw new RemoteException("Service is no longer runnning");
         
         File runningJob = new File(sessionPath.getAbsolutePath()+File.separatorChar+".running");
-        File endedJob = new File(sessionPath.getAbsolutePath()+File.separatorChar+".ended");
+//        File endedJob = new File(sessionPath.getAbsolutePath()+File.separatorChar+".ended");
         
-        Job toDestroy = null;
-        for(Job j : Sessions.getProcesses())
-        {
-            if(j.sessionTicket_.equals(sessionTicket))
-            {
-                toDestroy = j;
-                break;
-            }
-        }
-        if(toDestroy!=null)
-        {
-            runningJob.delete();
+        if(Sessions.removeProcess(sessionTicket)){
+        	runningJob.delete();
             try 
             {
                 FileUtils.writeByteArrayToFile(runningJob, "ENDED_KILLED".getBytes());
@@ -52,8 +41,6 @@ public class StopImpl
             {
                 e.printStackTrace();
             }
-            toDestroy.process_.destroy();
-            Sessions.getProcesses().remove(toDestroy);
         }
     }
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import net.sf.wts.services.util.Job;
 import net.sf.wts.services.util.Service;
 import net.sf.wts.services.util.Sessions;
 import net.sf.wts.services.util.Settings;
@@ -37,6 +38,7 @@ public class CloseSessionImpl
             e.printStackTrace();
         }
         
+        Sessions.removeProcess(sessionTicket);
         Sessions.removeSessionTicket(sessionTicket);
     }
 }

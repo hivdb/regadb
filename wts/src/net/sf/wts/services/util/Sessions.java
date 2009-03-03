@@ -63,4 +63,33 @@ public class Sessions
     {
         return processes_;
     }
+    
+    public static boolean removeProcess(String sessionTicket)
+    {
+    	synchronized(processes_)
+    	{
+    		Job toDestroy = null;
+            for(Job j : processes_)
+            {
+                if(j.sessionTicket_.equals(sessionTicket))
+                {
+                    toDestroy = j;
+                    break;
+                }
+            }
+            if(toDestroy!=null)
+            {
+            	try{
+    	            toDestroy.process_.destroy();
+    	            processes_.remove(toDestroy);
+    	            
+    	            return true;
+            	}
+            	catch(Exception e){
+            		e.printStackTrace();
+            	}
+            }
+    	}
+    	return false;
+    }
 }
