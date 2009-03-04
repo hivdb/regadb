@@ -44,6 +44,9 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 	int rowIndex = 0;
 	int colIndex = 0;
 	public void addColumn(String value, boolean endRow) {
+		if(value == null)
+			value = "";
+		
 		getOut().setValue(colIndex, rowIndex, value);
 		if(endRow) {
 			colIndex = 0;
@@ -51,7 +54,6 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 		} else {
 			colIndex++;
 		}
-		colIndex++;
 	}
 	
 	public void addColumn(String value) {
