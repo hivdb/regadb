@@ -1,11 +1,13 @@
 package net.sf.hivgensim.queries;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeSet;
 
-import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryOutput;
+import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -16,14 +18,14 @@ import net.sf.regadb.db.Therapy;
  * @author gbehey0
  *
  */
-public class GetTherapySummary extends QueryOutput<Patient> {
+public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 	
 	
 	HashMap<String,Integer> drugcounts = new HashMap<String,Integer>();
 	HashMap<Integer,String> drugnames = new HashMap<Integer, String>();
 	
-	public GetTherapySummary(File file) {
-		super(file);
+	public GetTherapySummary(File file) throws FileNotFoundException {
+		super(new PrintStream(file));
 	}
 	
 	protected void initializeCounts(Patient p) {
@@ -51,23 +53,15 @@ public class GetTherapySummary extends QueryOutput<Patient> {
 				ts.add(countstring + "\t" + therapy);
 			}
 			for(String line : ts.descendingSet()){
-				out.println(line);
+				getOut().println(line);
 			}			
 		
 	}
 
-
-	@Override
-	public void generateOutput(Query<Patient> query) {
-		for(Patient p : query.getOutputList()){
-			generateOutput(p);
+	protected void generateOutput(List<Patient> patients) {
+		for(Patient p : patients){
+			initializeCounts(p);
 		}
 		output();
-		out.close();
-	}
-
-	@Override
-	protected void generateOutput(Patient t) {
-		initializeCounts(t);		
 	}
 }

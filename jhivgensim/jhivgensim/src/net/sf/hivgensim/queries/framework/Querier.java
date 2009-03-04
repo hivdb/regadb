@@ -4,6 +4,7 @@ import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.Option;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 
 import net.sf.hivgensim.queries.GetLatestSequencePerPatient;
@@ -23,7 +24,7 @@ public class Querier {
 		System.err.println("from snapshot: -s -i input -o output");
 	}
 
-	public static void main(String [] args) {
+	public static void main(String [] args) throws FileNotFoundException {
 		CmdLineParser cmdLineParser = new CmdLineParser();
 		Option inputOption = cmdLineParser.addStringOption('i', "input");
 		Option outputOption = cmdLineParser.addStringOption('o', "output");
@@ -71,7 +72,7 @@ public class Querier {
 		//ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
 		SequencesToCsv tmt = new SequencesToCsv(new File(output));
 		//tss.generateOutput(q);
-		tmt.generateOutput(q);
+		tmt.generateOutput(q.getOutputList());
 		long stop = System.currentTimeMillis();
 		System.err.println("done in " + (stop - start) + " ms");
 	}

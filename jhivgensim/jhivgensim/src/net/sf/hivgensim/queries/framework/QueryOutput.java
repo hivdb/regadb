@@ -1,29 +1,19 @@
 package net.sf.hivgensim.queries.framework;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.util.List;
 
-public abstract class QueryOutput<T> {
-	
-	protected PrintStream out;
-		
-	public QueryOutput(File file){
-		try {
-			out = new PrintStream(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}		
+public abstract class QueryOutput<DataType, OutputType> {
+	private OutputType out;
+
+	public QueryOutput(OutputType out){
+		this.out = out;
 	}
 	
-	public void generateOutput(Query<T> query){
-		for(T t: query.getOutputList()){
-			generateOutput(t);
-			out.flush();
-		}
-		out.close();
-	}
+	protected abstract void generateOutput(List<DataType> query);
 	
-	protected abstract void generateOutput(T t);
-
+	protected abstract void closeOutput();
+	
+	public OutputType getOut() {
+		return out;
+	}
 }

@@ -2,12 +2,13 @@ package net.sf.hivgensim.queries;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
-import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.regadb.db.DrugGeneric;
@@ -19,20 +20,20 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 
 
-public class GetSequenceSummary extends QueryOutput<Patient> {
+public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 
 	private HashMap<String,Boolean> selectedSequences = null; 
 	
-	public GetSequenceSummary(File file) {
-		super(file);		
+	public GetSequenceSummary(File file) throws FileNotFoundException {
+		super(new PrintStream(file));		
 	}
 	
 	/*
 	 * Constructor used to output information about sequence ids from a file
 	 * this file was a diff between results from an old and new query
 	 */
-	public GetSequenceSummary(File file, File selectIds){
-		super(file);
+	public GetSequenceSummary(File file, File selectIds) throws FileNotFoundException{
+		super(new PrintStream(file));
 		selectedSequences = new HashMap<String,Boolean>();
 		
 		Scanner s = null;
@@ -48,73 +49,72 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 		}		
 	}
 
-	@Override
-	public void generateOutput(Query<Patient> query) {
+	protected void generateOutput(List<Patient> patients) {
 		if(selectedSequences == null){
-			generateOutputForAllSequences(query);
+			generateOutputForAllSequences(patients);
 		}else{
-			generateOutputForSelectedSequences(query);
+			generateOutputForSelectedSequences(patients);
 		}
 	}
 	
-	private void generateOutputForAllSequences(Query<Patient> query){
-		for(Patient p : query.getOutputList()){
+	private void generateOutputForAllSequences(List<Patient> patients){
+		for(Patient p : patients){
 			for(ViralIsolate vi : p.getViralIsolates()){
 				for(NtSequence seq : vi.getNtSequences()){
-					out.println();
-					out.println();
+					getOut().println();
+					getOut().println();
 
-					out.println(seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
+					getOut().println(seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
 					for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
 						if(!vi.getSampleDate().after(t.getStartDate())){
 							break;
 						}
 						if(t.getStopDate() == null){
-							out.print(t.getStartDate()+"\t\t\t");
+							getOut().print(t.getStartDate()+"\t\t\t");
 						}else{
-							out.print(t.getStartDate()+"\t"+t.getStopDate()+"\t");
+							getOut().print(t.getStartDate()+"\t"+t.getStopDate()+"\t");
 						}
 						for(TherapyCommercial tc : t.getTherapyCommercials()) {
 							for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-								out.print(dg.getGenericId() + " ");
+								getOut().print(dg.getGenericId() + " ");
 							}
 						}
 						for(TherapyGeneric tg : t.getTherapyGenerics()) {
-							out.print(tg.getId().getDrugGeneric().getGenericId()+ " ");
+							getOut().print(tg.getId().getDrugGeneric().getGenericId()+ " ");
 						}
-						out.print("\t");
+						getOut().print("\t");
 						if(QueryUtils.isGoodExperienceTherapy(t,new String[]{"AZT","3TC"})){
-							out.print("G.E.T. ");
+							getOut().print("G.E.T. ");
 							//								break;
 						}else if(QueryUtils.isGoodPreviousTherapy(t, new String[]{"AZT","3TC"})){
-							out.print("G.P.T. ");
+							getOut().print("G.P.T. ");
 						}else {
-							out.print("BREAK ");								
+							getOut().print("BREAK ");								
 							break;
 						}
-						out.println();
+						getOut().println();
 					}
-					out.println();
+					getOut().println();
 				}
 			}
 		}
 	}
 	
-	private void generateOutputForSelectedSequences(Query<Patient> query){
-		for(Patient p : query.getOutputList()){
+	private void generateOutputForSelectedSequences(List<Patient> patients){
+		for(Patient p : patients){
 			for(ViralIsolate vi : p.getViralIsolates()){
 				for(NtSequence seq : vi.getNtSequences()){
 					if(!selectedSequences.containsKey((seq.getLabel()))){
 						break;
 					}
-					out.println();
-					out.println();
+					getOut().println();
+					getOut().println();
 
-					out.println(seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
+					getOut().println(seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
 					if(selectedSequences.get(seq.getLabel())){
-						out.println("according to old query: EXPERIENCED");
+						getOut().println("according to old query: EXPERIENCED");
 					}else{
-						out.println("according to old query: NAIVE");
+						getOut().println("according to old query: NAIVE");
 					}
 				
 					for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
@@ -122,30 +122,30 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 							break;
 						}
 						if(t.getStopDate() == null){
-							out.print(t.getStartDate()+"\t\t\t");
+							getOut().print(t.getStartDate()+"\t\t\t");
 						}else{
-							out.print(t.getStartDate()+"\t"+t.getStopDate()+"\t");
+							getOut().print(t.getStartDate()+"\t"+t.getStopDate()+"\t");
 						}
 						for(TherapyCommercial tc : t.getTherapyCommercials()) {
 							for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-								out.print(dg.getGenericId() + " ");
+								getOut().print(dg.getGenericId() + " ");
 							}
 						}
 						for(TherapyGeneric tg : t.getTherapyGenerics()) {
-							out.print(tg.getId().getDrugGeneric().getGenericId()+ " ");
+							getOut().print(tg.getId().getDrugGeneric().getGenericId()+ " ");
 						}
-						out.print("\t");
+						getOut().print("\t");
 						if(QueryUtils.isGoodExperienceTherapy(t,new String[]{"AZT","3TC"})){
-							out.print("G.E.T. ");
+							getOut().print("G.E.T. ");
 						}else if(QueryUtils.isGoodPreviousTherapy(t, new String[]{"AZT","3TC"})){
-							out.print("G.P.T. ");
+							getOut().print("G.P.T. ");
 						}else {
-							out.print("BREAK ");								
+							getOut().print("BREAK ");								
 							break;
 						}
-						out.println();
+						getOut().println();
 					}
-					out.println();
+					getOut().println();
 				}
 			}
 		}
@@ -153,16 +153,9 @@ public class GetSequenceSummary extends QueryOutput<Patient> {
 
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		QueryInput qi = new FromSnapshot(new File("/home/gbehey0/queries/database.snapshot"));
 		GetSequenceSummary gss = new GetSequenceSummary(new File("/home/gbehey0/queries/summaryseq"));
-		gss.generateOutput(qi);
+		gss.generateOutput(qi.getOutputList());
 	}
-
-	@Override
-	protected void generateOutput(Patient t) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

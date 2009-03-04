@@ -1,13 +1,14 @@
 package net.sf.hivgensim.queries;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.hivgensim.queries.output.SequencesToCsv;
@@ -73,11 +74,11 @@ public class GetTreatedSequences extends QueryImpl<NtSequence, Patient> {
 //		outputList.addAll(temp);
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws FileNotFoundException{
 		QueryInput qi = new FromDatabase("gbehey0","bla123");
 		Query<NtSequence> q = new GetTreatedSequences(qi,new String[]{"AZT","3TC"});
-		QueryOutput<NtSequence> qo = new SequencesToCsv(new File("/home/gbehey0/queries/test2"));
-		qo.generateOutput(q);
+		DefaultQueryOutput<NtSequence> qo = new SequencesToCsv(new File("/home/gbehey0/queries/test2"));
+		qo.output(q.getOutputList());
 	}
 
 }

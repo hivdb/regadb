@@ -13,9 +13,9 @@ import net.sf.hivgensim.preprocessing.RemoveMixtures;
 import net.sf.hivgensim.preprocessing.Utils;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.GetTreatedSequences;
+import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.hivgensim.services.SequenceTool;
@@ -61,7 +61,11 @@ public class CrossSectionalEstimate {
 	}
 	
 	public void run(){
-		query();
+		try {
+			query();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		align();
 		clean();
 		region();
@@ -70,7 +74,7 @@ public class CrossSectionalEstimate {
 		
 	}
 	
-	public void query(){
+	public void query() throws FileNotFoundException{
 		long startTime,stopTime;
 		
 		//queries
@@ -84,8 +88,8 @@ public class CrossSectionalEstimate {
 		//naive
 		startTime = System.currentTimeMillis();
 		Query<NtSequence> qn = new GetDrugClassNaiveSequences(input,naiveDrugClasses);
-		QueryOutput<NtSequence> output = new SequencesToFasta(new File(workDir + File.separator + "naive.seqs.fasta"));
-		output.generateOutput(qn);
+		DefaultQueryOutput<NtSequence> output = new SequencesToFasta(new File(workDir + File.separator + "naive.seqs.fasta"));
+		output.output(qn.getOutputList());
 		stopTime = System.currentTimeMillis();
 		System.out.println("found "+ qn.getOutputList().size() + " naive seqs in "+(stopTime-startTime)+" ms");
 
@@ -93,7 +97,7 @@ public class CrossSectionalEstimate {
 		startTime = System.currentTimeMillis();
 		Query<NtSequence> qe = new GetTreatedSequences(input,drugs);
 		output = new SequencesToFasta(new File(workDir + File.separator + "treated.seqs.fasta"));
-		output.generateOutput(qe);
+		output.output(qe.getOutputList());
 		stopTime = System.currentTimeMillis();
 		System.out.println("found "+ qe.getOutputList().size() + " treated seqs in "+(stopTime-startTime)+" ms");
 	}
