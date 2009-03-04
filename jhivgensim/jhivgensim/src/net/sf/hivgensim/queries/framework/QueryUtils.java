@@ -19,6 +19,19 @@ import net.sf.regadb.db.ViralIsolate;
 
 public abstract class QueryUtils {
 	
+	public static String getDrugsString(Therapy t) {
+		StringBuffer drugs = new StringBuffer();
+		for(TherapyGeneric tg : t.getTherapyGenerics()){
+			drugs.append(" + ");
+			drugs.append(tg.getId().getDrugGeneric().getGenericId());
+		}
+		for(TherapyCommercial tc : t.getTherapyCommercials()){
+			drugs.append(" + ");
+			drugs.append(tc.getId().getDrugCommercial().getName());
+		}
+		return drugs.length() > 2 ? drugs.substring(3) : "";		
+	}
+	
 	public static Set<NtSequence> getLatestNtSequence(Set<NtSequence> sequences){
 		ViralIsolate latest = null;
 		for(NtSequence seq : sequences){

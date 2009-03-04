@@ -1,19 +1,14 @@
 package net.sf.hivgensim.queries;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.TreeSet;
-
 
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryOutput;
+import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyGeneric;
 
 /**
  * This query returns of summary of the types of therapies used and their frequencies.
@@ -33,7 +28,7 @@ public class GetTherapySummary extends QueryOutput<Patient> {
 	
 	protected void initializeCounts(Patient p) {
 		for(Therapy t : p.getTherapies()){
-			String therapyString = makeTherapyString(t.getTherapyGenerics());
+			String therapyString = QueryUtils.getDrugsString(t);
 			if(drugcounts.containsKey(therapyString)){
 				Integer count = drugcounts.get(therapyString);
 				count++;
@@ -43,30 +38,7 @@ public class GetTherapySummary extends QueryOutput<Patient> {
 			}
 		}
 	}
-
-
-	private String makeTherapyString(Set<TherapyGeneric> therapyGenerics) {
-		boolean[] genericPresent = new boolean[50]; //FIXED LENGTH?
-		for(TherapyGeneric tg : therapyGenerics){
-			genericPresent[tg.getId().getDrugGeneric().getGenericIi()-1] = true;
-			drugnames.put(tg.getId().getDrugGeneric().getGenericIi(),tg.getId().getDrugGeneric().getGenericId());			
-		}		
-		String therapyString = "";
-		for(int i = 0; i < genericPresent.length;i++){
-			if(genericPresent[i]){
-				
-				if(drugnames.get(i+1) == null){
-					therapyString = therapyString + " + " + (i+1);					
-				}else{
-					therapyString = therapyString + " + " + drugnames.get(i+1);					
-				}
-			}
-		}
-		return therapyString.substring(3);
-	}
-
 	
-
 	public void output(){
 		
 			TreeSet<String> ts = new TreeSet<String>();
