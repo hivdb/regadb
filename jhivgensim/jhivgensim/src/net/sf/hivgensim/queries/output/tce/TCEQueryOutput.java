@@ -4,10 +4,12 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,9 +21,11 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.service.wts.util.Utils;
@@ -91,8 +95,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 					seqs += ntSeq.getNucleotides() + "+";
 				}
 				addColumn(seqs.substring(0,seqs.length()-1));
-				//TODO subtype
-				addColumn("subtype");
+				addColumn(extractSubtype(vi));
 				for(TestResult tr : vi.getTestResults()) {
 					if(tr.getTest().getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)")) {
 						resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
@@ -119,6 +122,36 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
+			//TODO is this fine?
+			addColumn((tce.getTherapiesBefore().size()+1)+"");
+			for(DrugGeneric dg : genericDrugs) {
+				boolean found = false;
+				for(DrugGeneric dg_tce : tce.getDrugs()) {
+					if(dg_tce.getGenericId().equals(dg.getGenericId())) {
+						found = true;
+					}
+				}
+				addColumn(found?"yes":"no");
+			}
+			
+			//baseline
+			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, "CD4 Count (cells/ul)");
+			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, "Viral Load (copies/ml)");
+			//8 weeks
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, "CD4 Count (cells/ul)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, "Viral Load (copies/ml)");
+			//12 weeks
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, "CD4 Count (cells/ul)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, "Viral Load (copies/ml)");
+			//24 weeks
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "CD4 Count (cells/ul)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "Viral Load (copies/ml)");
+			
+			addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
+			addColumn(getPatientAttributeValue(tce.getPatient(), "Gender"));
+			addColumn(getPatientAttributeValue(tce.getPatient(), "Transmission group"));
+			addColumn(getPatientAttributeValue(tce.getPatient(), "Ethnicity"));
+			addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"));
 		}
 	}
 
@@ -127,6 +160,92 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(timePoint + " CD4 value");
 		addColumn(timePoint + " Viral Load date");
 		addColumn(timePoint + " Viral Load value");
+	}
+	
+	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, String testType) {
+		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
+		TestResult tr = closestToDate(tce.getStartDate(), trs);
+		if(tr!=null && betweenInterval(tr.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
+			addColumn(this.dateOutputFormat.format(tr.getTestDate()));
+			addColumn(tr.getValue());
+		} else {
+			addColumn("");
+			addColumn("");
+		}
+	}
+	
+	private String extractSubtype(ViralIsolate vi) {
+		Set<String> subtypes = new HashSet<String>();
+		
+		for(NtSequence ntseq : vi.getNtSequences()) {
+			for(TestResult tr : ntseq.getTestResults()) {
+				if(tr.getTest().getDescription().equals("Rega Subtype Tool")) {
+					subtypes.add(tr.getValue());
+				}
+			}
+		}
+		
+		StringBuilder b = new StringBuilder();
+		for(String s : subtypes) {
+			b.append(s);
+			b.append("+");
+		}
+		
+		if(b.length()==0)
+			return "";
+		else
+			return b.substring(0, b.length()-1);
+	}
+	
+	// TODO
+	// standard fun
+	public String getPatientAttributeValue(Patient p, String attributeName) {
+		for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
+			if(pav.getAttribute().getName().equals(attributeName)) {
+				if(ValueTypes.getValueType(pav.getAttribute().getValueType())==ValueTypes.NOMINAL_VALUE) {
+					return pav.getAttributeNominalValue().getValue();
+				} else {
+					return pav.getValue();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	// TODO
+	// standard fun
+	public List<TestResult> filterTestResults(Collection<TestResult> trs, String testType) {
+		List<TestResult> filteredTestResults = new ArrayList<TestResult>();
+		
+		for(TestResult tr : trs) {
+			if(tr.getTest().getTestType().getDescription().equals(testType)) {
+				filteredTestResults.add(tr);
+			}
+		}
+		
+		return filteredTestResults;
+	}
+	
+	// TODO
+	// standard fun
+	public TestResult closestToDate(Date d, List<TestResult> testResults) {
+		long min = Long.MIN_VALUE;
+		TestResult closest = null;
+		
+		if(testResults.size()==0)
+			return null;
+		
+		long diff;
+		for(TestResult tr : testResults) {
+			diff = Math.abs(tr.getTestDate().getTime()-d.getTime());
+			if(diff<min) {
+				min = diff;
+				closest = tr;
+			}
+		}
+		
+		return closest;
 	}
 	
 	// TODO
