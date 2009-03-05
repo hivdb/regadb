@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
@@ -29,6 +30,7 @@ public class RegaDBApplication extends WApplication
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
+		System.err.println("new regadb app");
 		
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
@@ -103,5 +105,9 @@ public class RegaDBApplication extends WApplication
 		}
 		
 		return file;
+	}
+	
+	public Patient getSelectedPatient(){
+		return getTree().getTreeContent().patientSelected.getSelectedItem();
 	}
 }

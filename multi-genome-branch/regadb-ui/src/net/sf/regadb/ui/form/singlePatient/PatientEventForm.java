@@ -167,6 +167,7 @@ public class PatientEventForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
         
+		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(patientEvent_);
         t.delete(patientEvent_);
         
         t.commit();
@@ -184,7 +185,7 @@ public class PatientEventForm extends FormWidget
 	public void saveData() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getSelectedPatient();
 		t.attach(p);
 		
 		if( endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
