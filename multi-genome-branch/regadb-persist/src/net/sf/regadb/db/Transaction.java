@@ -289,6 +289,19 @@ public class Transaction {
             return null;
     }
     
+    public PatientEventValue getNewestPatientEventValue(Event event, Patient p) {
+        Query q = session.createQuery("from PatientEventValue pev where pev.event.name = :eventName and pev.patient.id = :patientId order by pev.startDate desc");
+
+        q.setParameter("eventName", event.getName());
+        q.setParameter("patientId", p.getPatientIi());
+        q.setMaxResults(1);
+        
+        if(q.list().size()>0)
+            return (PatientEventValue)q.list().get(0);
+        else
+            return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public List<TestType> getTestTypes() 
     {
