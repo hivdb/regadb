@@ -72,7 +72,7 @@ public class Querier {
 		//ToSnapshot<NtSequence> tss = new ToSnapshot<NtSequence>(new File(output+".snapshot"));
 		SequencesToCsv tmt = new SequencesToCsv(new File(output));
 		//tss.generateOutput(q);
-		tmt.generateOutput(q.getOutputList());
+//		tmt.generateOutput(q.getOutputList());
 		long stop = System.currentTimeMillis();
 		System.err.println("done in " + (stop - start) + " ms");
 	}

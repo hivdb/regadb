@@ -4,14 +4,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import net.sf.hivgensim.fastatool.FastaScanner;
 import net.sf.hivgensim.fastatool.FastaSequence;
 import net.sf.hivgensim.fastatool.SelectionWindow;
+import net.sf.hivgensim.queries.CleanSequences;
+import net.sf.hivgensim.queries.framework.Query;
 import net.sf.regadb.align.Mutation;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.AaMutInsertion;
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.NtSequence;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
@@ -84,7 +92,7 @@ public class MutationTable extends Table {
 		}
 		return mt;
 	}
-	
+
 	/**
 	 * default constructor
 	 */
@@ -109,6 +117,7 @@ public class MutationTable extends Table {
 	 * @throws BioException
 	 * @throws FileNotFoundException
 	 */
+	@Deprecated
 	public MutationTable(String fastaFilename, SelectionWindow[] windows) throws BioException, FileNotFoundException {
 		super();
 		createIdColumn();
@@ -129,7 +138,7 @@ public class MutationTable extends Table {
 			alignedTarget = DNATools.createDNA(fs.getSequence());
 			createNewRow(fs.getId());
 			for(Mutation m = null;;){//TODO
-//			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
+				//			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
 				for(SelectionWindow sw : windows){
 					if(mutationInWindow(m,sw)){
 						String protein = sw.getProtein().getAbbreviation();
@@ -144,7 +153,46 @@ public class MutationTable extends Table {
 			}
 		}				
 	}
-	
+
+	public MutationTable(Query<NtSequence> query, SelectionWindow[] windows){
+		//remove sequences from query that have deletions in the windows
+		List<NtSequence> seqlist = new CleanSequences(query,windows).getOutputList();
+
+		for(NtSequence seq : seqlist){
+			createNewRow(seq.getViralIsolate().getSampleId());
+
+			Set<AaSequence> aaSequences = seq.getAaSequences();
+			for(AaSequence aaSequence : aaSequences){
+				for(SelectionWindow win : windows){
+					if(win.getProtein().getProteinIi() != aaSequence.getProtein().getProteinIi()){
+						break;
+					}
+					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
+					AaMutInsertion mut = muts.hasNext()? muts.next() : null;
+					String ref = win.getReferenceAaSequence();
+					
+					for(int pos = win.getStart(); pos <= win.getStop(); pos++){
+						if(mut != null && mut.getPosition() == pos && !mut.isSilent()){
+							if(!mut.isInsertion() ){
+								for(char m : mut.getAaMutationString().toCharArray()){
+									addMutation(win.getProtein().getAbbreviation() + pos + m);
+								}
+							}else{
+								//TODO insertions?
+							}
+						}else{
+							//reference
+							addMutation(win.getProtein().getAbbreviation() + pos + ref.charAt(pos-win.getStart()));
+						}
+						if(mut.getPosition() == pos){
+							mut = muts.hasNext()? muts.next() : null;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * remove all columns representing an insertion
 	 */
@@ -154,17 +202,18 @@ public class MutationTable extends Table {
 
 	/**
 	 * remove all columns with unknown AA-mutation
+	 * these are mutations indicated with a star (like PR9*)
 	 */
 	public void removeUnknownMutations(){
 		deleteColumns("[A-Za-z]+[0-9]+\\*");
 	}
-	
+
 	private void createIdColumn(){
 		//create id column
 		ArrayList<String> ids = new ArrayList<String>();
 		ids.add("id");
 		addColumn(ids, 0);
-	}
+	}	
 
 	private void addMutation(String mutationString) {
 		int nbCol = findInRow(0, mutationString);

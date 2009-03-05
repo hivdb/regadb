@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+import net.sf.hivgensim.mutationlists.ExcludeResistanceBlock;
+
 public class FastaToNexus{
 
 	private FastaScanner scanner;
@@ -86,11 +88,7 @@ public class FastaToNexus{
 	
 	private void generatePaupBlock(){
 		out.println("begin paup;");
-//	    charset piresist=232-234 280-282 292-294 304-306 355-357 361-363 388-390 394-396 406-408 412-414;
-//	    charset rtiresist=562-564 571-573 634-636 640-642 649-651 661-663 664-666 670-672 739-741 748-750 757-759 763-765 784-786 787-789 892-894 982-984 991-993
-//	 	1003-1005 1009-1011 1069-1071 1084-1086 1096-1098;
-//	    exclude piresist;
-//	    exclude rtiresist;
+		out.println(new ExcludeResistanceBlock("IAS-USA major (2007)").toString());
 		out.println("\tset criterion=distance;");
 		out.println("\tdset distance=hky;");
 		out.println("\tdset rates=gamma;");
@@ -107,6 +105,10 @@ public class FastaToNexus{
 			result = " "+result;
 		}
 		return result.substring(0, length) + " ";
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException{
+		new FastaToNexus("/dev/null","/home/gbehey0/null.nex").convert();
 	}
 	
 	

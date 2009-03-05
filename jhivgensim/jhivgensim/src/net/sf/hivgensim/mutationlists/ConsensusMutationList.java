@@ -8,8 +8,9 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class ConsensusMutationList {
+public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 	
 	public static final ConsensusMutationList ALL;
 	
@@ -60,6 +61,8 @@ public class ConsensusMutationList {
 		return new ConsensusMutationList(mutlist);
 	}
 	
+	
+	
 	private static ConsensusMutation parseLine(String line){
 		String[] parts = line.trim().split("\t");
 		if(parts.length != 7){
@@ -75,12 +78,28 @@ public class ConsensusMutationList {
 		return new ConsensusMutation(listName,version,proteinAbbreviation,referenceAa,position,mutationAa,drugClassId);
 	}
 	
-	
+	public static ConsensusMutationList getList(String listname){
+		ConsensusMutationList list = new ConsensusMutationList();
+		for(ConsensusMutation mut : ALL.mutationList){
+			if(mut.getListName().equals(listname)){
+				list.add(mut);
+			}
+		}
+		return list;
+	}
 	
 	private ArrayList<ConsensusMutation> mutationList = new ArrayList<ConsensusMutation>();
 	
+	public ConsensusMutationList(){
+		
+	}
+	
 	public ConsensusMutationList(ArrayList<ConsensusMutation> mutations){
 		this.mutationList = mutations;
+	}
+	
+	public void add(ConsensusMutation mutation){
+		mutationList.add(mutation);
 	}
 	
 	public void addAll(ConsensusMutationList extraMutations){
@@ -95,6 +114,7 @@ public class ConsensusMutationList {
 		return result;
 	}
 	
+	
 	public ConsensusMutationList subList(String protein){
 		ArrayList<ConsensusMutation> list = new ArrayList<ConsensusMutation>();
 		for(ConsensusMutation mut : mutationList){
@@ -107,6 +127,10 @@ public class ConsensusMutationList {
 	
 	public static void main(String[] args){
 		System.out.println(ALL);
+	}
+
+	public Iterator<ConsensusMutation> iterator() {
+		return mutationList.iterator();
 	}
 	
 	

@@ -20,16 +20,13 @@ import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.hivgensim.services.SequenceTool;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.session.Login;
 import net.sf.regadb.tools.MutPos;
 
 import org.biojava.bio.BioException;
 
 public class CrossSectionalEstimate {
 	
+	//initialized variables
 	private String workDir = "/home/gbehey0/hivgensim";
 	private String[] naiveDrugClasses = {"NRTI"};
 	private String[] drugs = {"AZT","3TC"};
@@ -39,25 +36,11 @@ public class CrossSectionalEstimate {
 	private double threshold = 0.01;
 	private boolean lumpValues = false;
 	
-	private Login login;
+	//initialized at runtime
 	private SelectionWindow[] windows;
 	
 	public CrossSectionalEstimate(){
-		Login login = null;
-		try {
-			login = Login.authenticate("gbehey0", "bla123");
-		} catch (WrongUidException e) {
-			e.printStackTrace();
-		} catch (WrongPasswordException e) {
-			e.printStackTrace();
-		} catch (DisabledUserException e) {
-			e.printStackTrace();
-		}
-		
-		windows = new SelectionWindow[]{
-				new SelectionWindow(Utils.getProtein(login, organismName, orfName, proteinAbbreviation),44,200)
-		};
-		
+//		windows = new SelectionWindow[]{new SelectionWindow(Utils.getProtein(organismName, orfName, proteinAbbreviation),44,200)};
 	}
 	
 	public void run(){
@@ -70,8 +53,7 @@ public class CrossSectionalEstimate {
 		clean();
 		region();
 		table();
-		//make phylo.fasta from naive.clean.fasta and treated.clean.fasta
-		
+		//make phylo.fasta from naive.clean.fasta and treated.clean.fasta		
 	}
 	
 	public void query() throws FileNotFoundException{
@@ -105,7 +87,7 @@ public class CrossSectionalEstimate {
 	public void align(){
 		//align
 		SequenceTool st = new SequenceTool();
-		Utils.createReferenceSequenceFile(login, organismName, orfName, workDir + File.separator + "reference.fasta");
+		Utils.createReferenceSequenceFile(organismName, orfName, workDir + File.separator + "reference.fasta");
 		st.align(workDir + File.separator + "reference.fasta",
 				workDir + File.separator + "naive.seqs.fasta",
 				workDir + File.separator + "aligned.naive.fasta");

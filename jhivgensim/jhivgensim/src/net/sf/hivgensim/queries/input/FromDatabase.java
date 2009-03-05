@@ -41,7 +41,15 @@ public class FromDatabase extends QueryInput {
         }
         Transaction t = login.createTransaction();
         ScrollableResults patients = t.getPatientsScrollable();
+        int i = 0;
         while(patients.next()){
+        	if(i % 100 == 0){
+				System.out.print(".");
+				if(i % 8000 == 0){
+					System.out.print("\n");
+				}
+			}
+        	i++;
         	Object[] os = patients.get();
             outputList.add((Patient)os[0]);            
         }

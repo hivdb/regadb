@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -22,7 +23,6 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 	
 	
 	HashMap<String,Integer> drugcounts = new HashMap<String,Integer>();
-	HashMap<Integer,String> drugnames = new HashMap<Integer, String>();
 	
 	public GetTherapySummary(File file) throws FileNotFoundException {
 		super(new PrintStream(file));
@@ -63,5 +63,9 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 			initializeCounts(p);
 		}
 		output();
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException{
+		new GetTherapySummary(new File("/home/gbehey0/therapy.summary")).generateOutput(new FromDatabase("gbehey0","bla123").getOutputList());
 	}
 }

@@ -11,7 +11,7 @@ public class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
 	
-	//vars used by treeweights (refactor?)
+	//TODO vars used by treeweights (refactor?)
 	public double weight = 0;
 	public double tmp = 0;
 	

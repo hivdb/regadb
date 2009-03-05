@@ -32,6 +32,7 @@ public class CheckTherapyOverlap extends DefaultQueryOutput<Patient> {
 					Date d1 = t1.getStartDate();
 					if(d.after(d1)){
 						getOut().println(
+								p.getDatasets().iterator().next().getDescription() + "," +
 								p.getPatientId() + "," +
 								t.getStartDate() + "," +
 								t.getStopDate() + "," + 

@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
@@ -20,16 +22,30 @@ import net.sf.regadb.db.ViralIsolate;
 public abstract class QueryUtils {
 	
 	public static String getDrugsString(Therapy t) {
-		StringBuffer drugs = new StringBuffer();
+		SortedSet<DrugGeneric> drugs = new TreeSet<DrugGeneric>(new Comparator<DrugGeneric>(){
+			public int compare(DrugGeneric o1, DrugGeneric o2) {
+				return o1.getGenericId().compareTo(o2.getGenericId());
+			}			
+		});
+		
 		for(TherapyGeneric tg : t.getTherapyGenerics()){
-			drugs.append(" + ");
-			drugs.append(tg.getId().getDrugGeneric().getGenericId());
+			drugs.add(tg.getId().getDrugGeneric());
 		}
 		for(TherapyCommercial tc : t.getTherapyCommercials()){
-			drugs.append(" + ");
-			drugs.append(tc.getId().getDrugCommercial().getName());
+			drugs.addAll(tc.getId().getDrugCommercial().getDrugGenerics());
 		}
-		return drugs.length() > 2 ? drugs.substring(3) : "";		
+		
+		if(drugs.size() == 0){
+			return "";
+		}
+		
+		String delimiter = " + ";
+		StringBuffer result = new StringBuffer();
+		for(DrugGeneric dg : drugs){
+				result.append(delimiter);
+				result.append(dg.getGenericId());
+		}		
+		return result.toString().substring(delimiter.length());
 	}
 	
 	public static Set<NtSequence> getLatestNtSequence(Set<NtSequence> sequences){
