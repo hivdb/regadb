@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.tree.items.custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.singlePatient.custom.MultipleTestResultForm;
@@ -31,8 +33,19 @@ public class ContactItem extends ActionItem {
         public String description = null;
         public String organism = null;
     }
+    public static class EventItem{
+    	public EventItem(){
+    		
+    	}
+    	public EventItem(String n){
+    		name = n;
+    	}
+    	public String name;
+    }
     
+    private static Map<String, String> properties = new HashMap<String, String>();
     private static List<TestItem> contactTests = new ArrayList<TestItem>();
+    private static List<EventItem> contactEvents = new ArrayList<EventItem>();
     
     static {
     	Element root = RegaDBSettings.getInstance().getCustomSettings("form.multipleTestResults.contact");
@@ -40,6 +53,16 @@ public class ContactItem extends ActionItem {
             Element tests = (Element)root.getChild("tests");
             for(Object o : tests.getChildren()){
             	contactTests.add(new TestItem(((Element)o).getAttributeValue("description"),((Element)o).getAttributeValue("organism")));
+            }
+            
+            Element events = (Element)root.getChild("events");
+            if(events != null){
+            	properties.put("useContactDate", events.getAttributeValue("useContactDate"));
+            	
+            	
+	            for(Object o : events.getChildren()){
+	            	contactEvents.add(new EventItem(((Element)o).getAttributeValue("description")));
+	            }
             }
     	}
     	else{
@@ -57,7 +80,7 @@ public class ContactItem extends ActionItem {
                 RegaDBMain.getApp().getFormContainer().setForm(
                         new MultipleTestResultForm( tr("form.multipleTestResults.contact.newest"),
                                                     InteractionState.Viewing,
-                                                    contactTests,
+                                                    properties,contactTests,contactEvents,
                                                     lastContact)
                         );
             }   
@@ -68,7 +91,7 @@ public class ContactItem extends ActionItem {
                 RegaDBMain.getApp().getFormContainer().setForm(
                         new MultipleTestResultForm( tr("form.multipleTestResults.contact.add"),
                                                     InteractionState.Adding,
-                                                    contactTests,
+                                                    properties,contactTests,contactEvents,
                                                     lastContact)
                         );
             }   
