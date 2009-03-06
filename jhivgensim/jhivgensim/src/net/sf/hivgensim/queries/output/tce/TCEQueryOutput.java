@@ -41,6 +41,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	protected void generateOutput(List<TCE> tces) {
+		//TODO -> only hiv1
 		List<DrugGeneric> genericDrugs = prepareRegaDrugGenerics();
 		List<Test> resistanceTests = Utils.getResistanceTests();
 		List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
@@ -125,7 +126,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
 			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
-			//TODO is this fine?
+			//TODO is this correct?
 			addColumn((tce.getTherapiesBefore().size()+1)+"");
 			for(DrugGeneric dg : genericDrugs) {
 				boolean found = false;
