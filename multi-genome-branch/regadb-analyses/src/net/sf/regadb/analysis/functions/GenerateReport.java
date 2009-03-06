@@ -222,7 +222,11 @@ public class GenerateReport
         String result;
         String textToReplace;
         boolean foundMatchinqSeq;
-        for(Protein protein : t.getProteins())
+        
+        
+        Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+        
+        for(Protein protein : t.getProteins(g))
         {   
             foundMatchinqSeq = false;
             textToReplace = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";
