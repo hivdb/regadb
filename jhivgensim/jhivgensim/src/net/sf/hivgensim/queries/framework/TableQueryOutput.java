@@ -3,6 +3,7 @@ package net.sf.hivgensim.queries.framework;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.csv.Table;
@@ -41,18 +42,19 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 		}
 	}
 	
-	int rowIndex = 0;
-	int colIndex = 0;
+	ArrayList<String> row = null;
 	public void addColumn(String value, boolean endRow) {
+		if(row == null) {
+			row = new ArrayList<String>();
+		}
+		
 		if(value == null)
 			value = "";
 		
-		getOut().setValue(colIndex, rowIndex, value);
+		row.add(value);
+		
 		if(endRow) {
-			colIndex = 0;
-			rowIndex++;
-		} else {
-			colIndex++;
+			getOut().addRow(row);
 		}
 	}
 	
@@ -61,4 +63,9 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 	}	
 
 	protected abstract void generateOutput(List<DataType> query);
+	
+	public void output(List<DataType> list) {
+		generateOutput(list);
+		closeOutput();
+	}
 }
