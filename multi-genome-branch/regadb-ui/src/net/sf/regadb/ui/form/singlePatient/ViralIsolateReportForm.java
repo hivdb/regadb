@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.sf.regadb.analysis.functions.GenerateReport;
@@ -38,6 +39,8 @@ public class ViralIsolateReportForm extends WContainerWidget
     private WPushButton generateButton_;
     private Label reportL;
     private WAnchor reportA_;
+    
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
     public ViralIsolateReportForm(ViralIsolateForm viralIsolateForm)
     {
@@ -87,7 +90,8 @@ public class ViralIsolateReportForm extends WContainerWidget
                     reportA_.setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
                     memResource.setData(report.getReport());
-                    memResource.suggestFileName("report.rtf");
+                    memResource.suggestFileName(resRepTemplateCB_.currentValue().getName().replace(' ', '_')
+                    								+"_"+ dateFormat.format(new Date()) +".rtf");
                     reportA_.setResource(memResource);
                     chartFile.delete();
                     t.commit();
