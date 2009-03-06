@@ -30,9 +30,15 @@ public class ToSnapshot {
 		{
 			ExportToPersistentObjects export = new ExportToPersistentObjects();
 			
+			int patientCounter = 0;
 			for(Patient p : query.getOutputList()){
 				export.initialize(p);
 				snapshotstream.writeObject(p);
+				patientCounter++;
+				if(patientCounter==100) {
+					System.out.print(".");
+					patientCounter = 0;
+				}
 			}
 			snapshotstream.close();
 		} catch (FileNotFoundException e) {
