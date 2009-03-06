@@ -83,6 +83,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		ViralIsolate vi;
 		Map<String, String> resistanceResults = new HashMap<String, String>();
 		for(TCE tce : tces) {
+			System.out.print(".");
 			addColumn(dateOutputFormat.format(tce.getStartDate()));
 			addColumn(getDatasource(tce.getPatient()).getDescription());
 			addColumn(tce.getPatient().getPatientId());
@@ -149,11 +150,15 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "CD4 Count (cells/ul)");
 			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "Viral Load (copies/ml)");
 			
-			addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
+			if(tce.getPatient().getBirthDate()!=null) {
+				addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
+			} else {
+				addColumn("");
+			}
 			addColumn(getPatientAttributeValue(tce.getPatient(), "Gender"));
 			addColumn(getPatientAttributeValue(tce.getPatient(), "Transmission group"));
 			addColumn(getPatientAttributeValue(tce.getPatient(), "Ethnicity"));
-			addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"));
+			addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"), true);
 		}
 	}
 
@@ -221,7 +226,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		List<TestResult> filteredTestResults = new ArrayList<TestResult>();
 		
 		for(TestResult tr : trs) {
-			if(tr.getTest().getTestType().getDescription().equals(testType)) {
+			if(tr.getTest().getTestType().getDescription().equals(testType) && tr.getTestDate()!=null) {
 				filteredTestResults.add(tr);
 			}
 		}
@@ -232,7 +237,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	// TODO
 	// standard fun
 	public TestResult closestToDate(Date d, List<TestResult> testResults) {
-		long min = Long.MIN_VALUE;
+		long min = Long.MAX_VALUE;
 		TestResult closest = null;
 		
 		if(testResults.size()==0)
@@ -292,7 +297,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	// TODO
 	// standard fun
 	public ViralIsolate closestToDate(Set<ViralIsolate> viralIsolates, Date d) {
-		long min = Long.MIN_VALUE;
+		long min = Long.MAX_VALUE;
 		ViralIsolate closest = null;
 		
 		if(viralIsolates.size()==0)
