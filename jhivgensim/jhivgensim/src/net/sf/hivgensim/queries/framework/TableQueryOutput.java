@@ -55,6 +55,7 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 		
 		if(endRow) {
 			getOut().addRow(row);
+			row = null;
 		}
 	}
 	
