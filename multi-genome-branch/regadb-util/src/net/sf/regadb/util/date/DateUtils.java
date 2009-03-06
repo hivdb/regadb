@@ -40,8 +40,19 @@ public class DateUtils
     
     public static int compareDates(Date date1, Date date2)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date1).compareTo(sdf.format(date2));
+    	if(date1 == date2)
+    		return 0;
+    	if(date1 == null)
+    		return 1;
+    	if(date2 == null)
+    		return -1;
+    	
+    	if(date1.before(date2))
+    		return -1;
+    	if(date1.after(date2))
+    		return 1;
+    	
+    	return 0;
     }
     
     public static Date parseDate(String timestamp){
