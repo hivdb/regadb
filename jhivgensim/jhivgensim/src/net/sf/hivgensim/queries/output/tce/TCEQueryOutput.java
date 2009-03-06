@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
+import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
@@ -356,5 +358,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	public List<DrugGeneric> prepareRegaDrugGenerics() {
 		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
 		return imDrug.getGenericDrugs();
+	}
+	
+	public static void main(String [] args) {
+		QueryInput input = new FromSnapshot(new File(args[0]));
+		TCEQuery tceq = new TCEQuery(input);
+		TCEQueryOutput tceqo = new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV);
+		tceqo.output(tceq.getOutputList());
 	}
 }
