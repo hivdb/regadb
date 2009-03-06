@@ -8,6 +8,7 @@ import java.util.Set;
 
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryImpl;
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -25,6 +26,19 @@ public class TCEQuery extends QueryImpl<TCE,Patient> {
 		List<Therapy> formerTherapies = new ArrayList<Therapy>();
 		for(Patient p : inputQuery.getOutputList()){
 			therapies = sortTherapiesByStartDate(p.getTherapies());
+			boolean therapyStopDateNull = false;
+			
+			for(int i = 0; i<therapies.size()-1; i++) {
+				if(therapies.get(i).getStopDate()==null) {
+					System.err.println("Excluded patient " + getDatasource(p).getDescription() + "_" + p.getPatientId()+ " since the he has therapies with stopdate=null");
+					therapyStopDateNull = true;
+				}
+			
+			}
+			if(therapyStopDateNull) {
+				continue;
+			}
+			
 			for(Therapy t : therapies) {
 				TCE tce = new TCE();
 				
@@ -39,6 +53,18 @@ public class TCEQuery extends QueryImpl<TCE,Patient> {
 			}
 			formerTherapies.clear();
 		}
+	}
+	
+	//TODO
+	//utility func?
+	public Dataset getDatasource(Patient p) {
+		for (Dataset ds : p.getDatasets()) {
+			if (ds.getClosedDate() == null) {
+				return ds;
+			}
+		}
+		
+		return null;
 	}
 	
 	//TODO
