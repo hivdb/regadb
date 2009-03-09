@@ -417,6 +417,12 @@ public class Transaction {
         Query q = session.createQuery("from Protein protein order by protein.id");
         return q.list();
     }
+    @SuppressWarnings("unchecked")
+    public List<Protein> getProteins(Genome genome) {
+        Query q = session.createQuery("from Protein protein where protein.openReadingFrame.genome.organismName = :organismName order by protein.id");
+        q.setParameter("organismName", genome.getOrganismName());
+        return q.list();
+    }
     
     @SuppressWarnings("unchecked")
     public List<ValueType> getValueTypes()
