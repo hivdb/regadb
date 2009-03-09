@@ -30,8 +30,9 @@ public class TCEQuery extends QueryImpl<TCE,Patient> {
 			
 			for(int i = 0; i<therapies.size()-1; i++) {
 				if(therapies.get(i).getStopDate()==null) {
-					System.err.println("Excluded patient " + getDatasource(p).getDescription() + "_" + p.getPatientId()+ " since the he has therapies with stopdate=null");
+					System.err.println("Excluded patient " + getDatasource(p).getDescription() + "_" + p.getPatientId()+ " since he has therapies with stopdate=null");
 					therapyStopDateNull = true;
+					break;
 				}
 			
 			}
