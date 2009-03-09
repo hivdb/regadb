@@ -21,15 +21,19 @@ import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.util.Utils;
 
 public class TCEQueryOutput extends TableQueryOutput<TCE> {
@@ -41,7 +45,11 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	protected void generateOutput(List<TCE> tces) {
-		//TODO -> only hiv1
+		Genome genome = StandardObjects.getHiv1Genome();
+		TestType cd4tt = StandardObjects.getCd4TestType();
+		TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
+
+		
 		List<DrugGeneric> genericDrugs = prepareRegaDrugGenerics();
 		List<Test> resistanceTests = Utils.getResistanceTests();
 		List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
@@ -101,7 +109,8 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				addColumn(seqs.substring(0,seqs.length()-1));
 				addColumn(extractSubtype(vi));
 				for(TestResult tr : vi.getTestResults()) {
-					if(tr.getTest().getTestType().getDescription().equals("Genotypic Susceptibility Score (GSS)")) {
+					TestType tt = tr.getTest().getTestType();
+					if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
 						resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
 					}
 				}
@@ -139,17 +148,17 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			}
 			
 			//baseline
-			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, "CD4 Count (cells/ul)");
-			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, "Viral Load (copies/ml)");
+			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, cd4tt);
+			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, vltt);
 			//8 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, "CD4 Count (cells/ul)");
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, "Viral Load (copies/ml)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, cd4tt);
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, vltt);
 			//12 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, "CD4 Count (cells/ul)");
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, "Viral Load (copies/ml)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, cd4tt);
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, vltt);
 			//24 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "CD4 Count (cells/ul)");
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, "Viral Load (copies/ml)");
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, cd4tt);
+			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, vltt);
 			
 			if(tce.getPatient().getBirthDate()!=null) {
 				addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
@@ -170,7 +179,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(timePoint + " Viral Load value");
 	}
 	
-	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, String testType) {
+	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, TestType testType) {
 		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
 		TestResult tr = closestToDate(tce.getStartDate(), trs);
 		if(tr!=null && betweenInterval(tr.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
@@ -223,11 +232,11 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	
 	// TODO
 	// standard fun
-	public List<TestResult> filterTestResults(Collection<TestResult> trs, String testType) {
+	public List<TestResult> filterTestResults(Collection<TestResult> trs, TestType testType) {
 		List<TestResult> filteredTestResults = new ArrayList<TestResult>();
 		
 		for(TestResult tr : trs) {
-			if(tr.getTest().getTestType().getDescription().equals(testType) && tr.getTestDate()!=null) {
+			if(Equals.isSameTestType(tr.getTest().getTestType(), testType) && tr.getTestDate()!=null) {
 				filteredTestResults.add(tr);
 			}
 		}
