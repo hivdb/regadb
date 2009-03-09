@@ -88,11 +88,11 @@ public class CrossSectionalEstimate {
 		//align
 		SequenceTool st = new SequenceTool();
 		Utils.createReferenceSequenceFile(organismName, orfName, workDir + File.separator + "reference.fasta");
-		st.align(workDir + File.separator + "reference.fasta",
+		st.run(workDir + File.separator + "reference.fasta",
 				workDir + File.separator + "naive.seqs.fasta",
 				workDir + File.separator + "aligned.naive.fasta");
 
-		st.align(workDir + File.separator + "reference.fasta",
+		st.run(workDir + File.separator + "reference.fasta",
 				workDir + File.separator + "treated.seqs.fasta",
 				workDir + File.separator + "aligned.treated.fasta");
 	}
