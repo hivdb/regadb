@@ -289,6 +289,8 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 	// TODO
 	// standard fun
+	//TODO
+	//include interval dates?
 	public boolean betweenInterval(Date d, Date begin, Date end) {
 		return d.after(begin) && d.before(end);
 	}
