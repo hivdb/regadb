@@ -121,7 +121,7 @@ public class Aligner {
                                 aam.setNtReferenceCodon(asCodonString(nttok, m.getRefCodon()));
                                 
                                 mutations.add(aam);
-                            } else {
+                            } else if(m.getAaPos() != getLastAa(protein)){
                                 AaInsertion aai = new AaInsertion();
                                 aai.setId(new AaInsertionId((short) posInProtein(protein, m.getAaPos()), s, (short) m.getInsIndex()));
                                 aai.setAaInsertion(asString(m.getTargetAminoAcids()));
