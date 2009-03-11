@@ -25,6 +25,7 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.TimeLine;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.pair.Pair;
 
 public class ParseTherapies extends Parser{
 //	private UniqueObjects<Patient,Pair<Integer,Therapy>> uniques = new UniqueObjects<Patient,Pair<Integer,Therapy>>(){
@@ -135,6 +136,21 @@ public class ParseTherapies extends Parser{
             TimeLine<Therapy> timeline = patientTimeLine.get(p);
             if(timeline == null)
                 continue;
+            
+            List<Pair<TimeLine<Therapy>.Period,List<TimeLine<Therapy>.Period>>> overlaps = timeline.getOverlappingPeriods(false);
+            if(overlaps.size() > 0){
+            	logWarn(p,"Therapies overlap",overlaps.size());
+            	int equal = 0;
+	            for(Pair<TimeLine<Therapy>.Period,List<TimeLine<Therapy>.Period>> pl1 : overlaps){
+	            	for(TimeLine<Therapy>.Period p2 : pl1.getValue()){
+	            		if(!pl1.getKey().equals(p2))
+	            			logWarn("Overlap: ("+ pl1.getKey().toString() +") ("+ p2.toString() +")");
+	            		else
+	            			++equal;
+	            	}
+	            }
+	            logWarn("Same start and stop date: "+ equal);
+            }
             
             List<TimeLine<Therapy>.Period> periods = timeline.createMergedPeriods();
             
