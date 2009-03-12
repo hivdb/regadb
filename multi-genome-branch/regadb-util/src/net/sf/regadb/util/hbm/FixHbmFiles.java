@@ -3,7 +3,9 @@ package net.sf.regadb.util.hbm;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.util.pair.Pair;
@@ -17,6 +19,49 @@ import org.jdom.output.XMLOutputter;
 
 public class FixHbmFiles 
 {
+	public static class FilterDef{
+		public String name;
+		public List<Pair<String,String>> params = new ArrayList<Pair<String,String>>();
+		
+		public FilterDef(String name){
+			this.name = name;
+		}
+		
+		public void addParam(String name, String type){
+			params.add(new Pair<String,String>(name,type));
+		}
+	}
+	public static class FilterInst{
+		public FilterDef filter;
+		
+		public String setName = null;
+		public String condition;
+		
+		public FilterInst(FilterDef filter, String condition){
+			this.filter = filter;
+			this.condition = condition;
+		}
+		public FilterInst(FilterDef filter, String condition, String setName){
+			this.filter = filter;
+			this.condition = condition;
+			this.setName = setName;
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class MultiMap<K, V> extends HashMap<K, ArrayList<V>>{
+		public void put(K key, V value){
+			ArrayList<V> values = get(key);
+			if(values == null){
+				values = new ArrayList<V>();
+				put(key, values);
+			}
+			values.add(value);
+		}
+	}
+	private static MultiMap<String, FilterDef> filterDefs = new MultiMap<String, FilterDef>();
+	private static MultiMap<String, FilterInst> filterInsts = new MultiMap<String, FilterInst>();
+	
     public static void main(String [] args)
     {
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
@@ -27,8 +72,21 @@ public class FixHbmFiles
       //put inverse true for PatientImpl >> patientattributevalues
         Object o;
         Element toRemoveGeneratorFrom = null;
+        
+//        FilterDef fd = new FilterDef("attributeFilter");
+//        fd.addParam("attribute_ii_list", "integer");
+//        filterDefs.put("net.sf.regadb.db.Attribute",fd);
+//        
+//        FilterInst fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)");
+//        filterInsts.put("net.sf.regadb.db.Attribute", fi);
+//        
+//        fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)", "patientAttributeValues");
+//        filterInsts.put("net.sf.regadb.db.PatientImpl", fi);
+        
+        
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
         {
+        	insertFilters(a.getKey());
             cascadeAllManyToOne(a.getKey());
             
            for(Iterator i = a.getValue().getDescendants(); i.hasNext();)
@@ -198,10 +256,51 @@ public class FixHbmFiles
         System.out.println("FixHbmFiles has finished");
     }
     
-    class StringPair
-    {
+    private static void insertFilters(String className) {
+    	InterpreteHbm interpreter = InterpreteHbm.getInstance();
+        Element e = interpreter.classHbms_.get(className);
+        System.out.println(e.getName());
         
-    }
+        ArrayList<FilterDef> defs = filterDefs.get(className);
+        if(defs != null){
+        	for(FilterDef d : defs){
+        		Element de = new Element("filter-def");
+        		de.setAttribute("name",d.name);
+        		e.getParentElement().addContent(de);
+        		
+        		for(Pair<String,String> p : d.params){
+        			Element pe = new Element("filter-param");
+        			pe.setAttribute("name",p.getKey());
+        			pe.setAttribute("type",p.getValue());
+        			de.addContent(pe);
+        		}
+        	}
+        }
+        
+        ArrayList<FilterInst> insts = filterInsts.get(className);
+		if(insts != null){
+			for(FilterInst i : insts){
+				Element fe = new Element("filter");
+				fe.setAttribute("name",i.filter.name);
+				fe.setAttribute("condition",i.condition);
+				
+				if(i.setName == null){
+					e.addContent(fe);
+				}
+				else{
+					for(Object o : e.getChildren("set")){
+						Element ee = (Element)o;
+						if(i.setName.equals(ee.getAttributeValue("name"))){
+							ee.addContent(fe);
+							break;
+						}
+					}
+				}
+			}
+		}
+        
+	}
+
     private static void removeManyToOneIfThereIsAKeyAlready()
     {
         InterpreteHbm interpreter = InterpreteHbm.getInstance();
