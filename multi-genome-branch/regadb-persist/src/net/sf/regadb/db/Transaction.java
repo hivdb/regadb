@@ -781,28 +781,6 @@ public class Transaction {
     /*
      * Patient queries
      */
-
-    public Criteria createCriteria(Class c)
-    {
-        return session.createCriteria(c);
-    }
-    
-    public boolean stillExists(Object obj)
-    {
-        if(obj instanceof Patient)
-            obj = ((Patient)obj).getPatient();
-        
-        String className = obj.getClass().getName();
-        int indexOfDollar = className.indexOf("$");
-        if(indexOfDollar!=-1)
-            className = className.substring(0, indexOfDollar);
-        
-        Query q = session.createQuery("from " + className + " obj where obj = :objParam");
-        
-        q.setParameter("objParam", obj);
-    
-        return q.uniqueResult() !=null;
-    }
     
     //Get a limited, filtered and sorted list
     private List getLFS(String queryString, String uniqueField, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
