@@ -14,7 +14,7 @@ public class FilterOperatorCombo extends MyComboBox
 		
 		addItem(tr("datatable.filter.combo.noFilter"));
 		
-		activated.addListener(this, new Signal1.Listener<Integer>()
+		activated().addListener(this, new Signal1.Listener<Integer>()
 		{
 			public void trigger(Integer i)
 			{

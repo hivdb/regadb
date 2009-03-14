@@ -16,13 +16,11 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
 import eu.webtoolkit.jwt.Signal;
-import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WImage;
-import eu.webtoolkit.jwt.WMouseEvent;
-import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 
 public class ViralIsolateProteinForm extends WContainerWidget
@@ -40,7 +38,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private Label regionL;
 	private TextField regionTF;
 	private Label alignmentL;
-	private TextField alignmentTF;
+	private WText alignmentTF;
 	private Label synonymousL;
 	private TextField synonymousTF;
 	private Label nonSynonymousL;
@@ -79,7 +77,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
         	addWidget(warningMessage);
             refreshAlignmentsTimer_ = new WTimer(warningMessage);
             refreshAlignmentsTimer_.setInterval(2000);
-            refreshAlignmentsTimer_.timeout.addListener(this, new Signal.Listener()
+            refreshAlignmentsTimer_.timeout().addListener(this, new Signal.Listener()
             {
                 public void trigger()
                 {
@@ -105,7 +103,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		regionTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(regionL, regionTF);
 		alignmentL = new Label(tr("form.viralIsolate.editView.label.alignment"));
-		alignmentTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+		alignmentTF = new WText(viralIsolateForm_);
 		WFont alignmentFont = new WFont();
 		alignmentFont.setFamily(WFont.GenericFamily.Monospace, lt("Courier"));
 		alignmentTF.decorationStyle().setFont(alignmentFont);
@@ -192,7 +190,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
         
     		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
     		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
-            alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
+    		alignmentTF.setText(lt("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>"));
             synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
             nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
             

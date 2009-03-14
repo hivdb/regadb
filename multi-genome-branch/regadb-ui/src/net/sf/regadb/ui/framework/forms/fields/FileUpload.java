@@ -26,7 +26,7 @@ public class FileUpload extends WContainerWidget implements IFormField{
         link.setStyleClass("link");
         
         uploadFile = new WFileUpload(this);
-        uploadFile.uploaded.addListener(this, new Signal.Listener()  {
+        uploadFile.uploaded().addListener(this, new Signal.Listener()  {
             public void trigger() {
                 link.setHidden(uploadFile.clientFileName()==null);
                 uploadButton.setEnabled(true);
@@ -36,7 +36,7 @@ public class FileUpload extends WContainerWidget implements IFormField{
         });
         
         uploadButton = new WPushButton(tr("form.general.button.upload"), this);
-        uploadButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+        uploadButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
             public void trigger(WMouseEvent a) {
                 uploadButton.setText(tr("form.general.button.uploading"));
             	uploadFile.upload();
@@ -95,9 +95,9 @@ public class FileUpload extends WContainerWidget implements IFormField{
 
 	public void setConfirmAction(Signal.Listener se) {
         if(getFormWidget()!=null) {
-            getFormWidget().enterPressed.removeAllListeners();
+            getFormWidget().enterPressed().removeAllListeners();
             if(se != null)
-                getFormWidget().enterPressed.addListener(this, se);
+                getFormWidget().enterPressed().addListener(this, se);
             }
 	}
 

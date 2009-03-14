@@ -44,7 +44,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
         showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 0));
-        showMutations_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a)
                     {

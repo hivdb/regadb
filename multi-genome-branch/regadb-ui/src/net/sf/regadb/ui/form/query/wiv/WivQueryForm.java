@@ -121,7 +121,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
         resultTable_.addLineToTable(new WWidget[]{statusL_,status_});
         resultTable_.addLineToTable(new WWidget[]{linkL_,link_});
         
-        run_.clicked.addListener(this, this);
+        run_.clicked().addListener(this, this);
     }
     
     public void trigger(WMouseEvent a) 

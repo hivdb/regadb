@@ -29,7 +29,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		
 		setStyle();
 		
-		label().clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+		label().clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 		{
 			public void trigger(WMouseEvent a)
 			{

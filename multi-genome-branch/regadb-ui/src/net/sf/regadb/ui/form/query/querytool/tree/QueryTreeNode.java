@@ -108,13 +108,13 @@ public abstract class QueryTreeNode extends WTreeNode {
 		contentTable.elementAt(0, 2).addWidget(checkBox);
 		contentTable.elementAt(0, 2).setStyleClass("checkbox");
 		
-		checkBox.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				setSelected(checkBox.isChecked());
 			}
 		});
 		
-		contentTable.elementAt(0, 0).clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		contentTable.elementAt(0, 0).clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 					setSelected(!checkBox.isChecked());
 			}

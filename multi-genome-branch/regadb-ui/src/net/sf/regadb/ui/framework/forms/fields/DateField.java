@@ -94,7 +94,7 @@ public class DateField extends FormField
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(this, listener);
+            _fieldEdit.changed().addListener(this, listener);
         }
     }
 }

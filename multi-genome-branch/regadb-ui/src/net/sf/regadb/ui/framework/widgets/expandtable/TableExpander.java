@@ -27,7 +27,7 @@ public class TableExpander
         label_ = new WText(labelText, table.elementAt(row, 0));
         label_.setStyleClass("table-expander-text");
         
-        label_.clicked.addListener(table, new Signal1.Listener<WMouseEvent>()
+        label_.clicked().addListener(table, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent me)
             {
@@ -44,7 +44,7 @@ public class TableExpander
             }
         });
         
-        plusMinusIcon_.icon1Clicked.addListener(table, new Signal1.Listener<WMouseEvent>() 
+        plusMinusIcon_.icon1Clicked().addListener(table, new Signal1.Listener<WMouseEvent>() 
                 {
                     public void trigger(WMouseEvent me) 
                     {
@@ -52,7 +52,7 @@ public class TableExpander
                     }
                 });
         
-        plusMinusIcon_.icon2Clicked.addListener(table, new Signal1.Listener<WMouseEvent>() 
+        plusMinusIcon_.icon2Clicked().addListener(table, new Signal1.Listener<WMouseEvent>() 
                 {
                     public void trigger(WMouseEvent me) 
                     {

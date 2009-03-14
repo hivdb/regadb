@@ -28,7 +28,7 @@ public class TableSelectionContainer extends WContainerWidget {
 		
 		tableCheckBox = new WCheckBox(lt(selection.getVariableName()), this);
 		tableCheckBox.setChecked(selection.isSelected());
-		tableCheckBox.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		tableCheckBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				toggleTableChecked();
 			}

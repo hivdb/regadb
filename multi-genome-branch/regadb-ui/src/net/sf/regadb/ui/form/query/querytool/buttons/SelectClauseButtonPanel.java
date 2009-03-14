@@ -32,7 +32,7 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 		cancelButton = new WPushButton(tr("form.general.button.cancel"));
 		addButton(cancelButton);
 
-		okButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				if (!disabled) {
 					disabled = true;
@@ -50,7 +50,7 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				if (!disabled) {
 					disabled = true;

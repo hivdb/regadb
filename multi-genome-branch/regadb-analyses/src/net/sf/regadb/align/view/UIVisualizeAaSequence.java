@@ -19,15 +19,15 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	private int aaCounter = 0;
 	private int lineCounter = 0;
 
-	private static final String newLine = "<br>";
+	private static final String newLine = "<br/>";
 
 	public void addNt(char reference, char target, int codonIndex) {
 		if (reference == target || target == '-') {
 			refNt.append(reference);
 			tarNt.append(target);
 		} else {
-			refNt.append("<font color=red>" + reference + "</font>");
-			tarNt.append("<font color=red>" + target + "</font>");
+			refNt.append("<font color=\"red\">" + reference + "</font>");
+			tarNt.append("<font color=\"red\">" + target + "</font>");
 		}
 
         refCodon.append(reference);
@@ -47,8 +47,8 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 			refAa.append(ref);
 			tarAa.append(tar);
 		} else {
-			refAa.append("<font color=red>" + ref + "</font>");
-			tarAa.append("<font color=red>" + tar + "</font>");
+			refAa.append("<font color=\"red\">" + ref + "</font>");
+			tarAa.append("<font color=\"red\">" + tar + "</font>");
 		}
 
 		refCodon.delete(0, 3);

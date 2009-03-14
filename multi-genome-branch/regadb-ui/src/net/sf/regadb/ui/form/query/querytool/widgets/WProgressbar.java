@@ -41,7 +41,7 @@ public class WProgressbar extends WStyledContainerWidget {
 		setText(lt(""));
 
 		time.start();
-		time.timeout.addListener(this, new Signal.Listener() {
+		time.timeout().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				if (reporter.isDone()) {
 					time.stop();

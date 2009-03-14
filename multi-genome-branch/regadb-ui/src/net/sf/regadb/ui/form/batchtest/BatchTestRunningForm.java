@@ -23,7 +23,7 @@ public class BatchTestRunningForm extends FormWidget {
 	public BatchTestRunningForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		timer.setInterval(1000);
-		timer.timeout.addListener(this, new Signal.Listener() {
+		timer.timeout().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				refreshRunning();
 			}
@@ -63,7 +63,7 @@ public class BatchTestRunningForm extends FormWidget {
 			
 			if (run.getStatus() == BatchTestStatus.RUNNING) {
 				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.elementAt(row, 3));
-				cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+				cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent a) {
 						if (run.isRunning()) {
 							run.cancel();
@@ -83,7 +83,7 @@ public class BatchTestRunningForm extends FormWidget {
 					run.getStatus() == BatchTestStatus.FAILED ||
 					run.getStatus() == BatchTestStatus.CANCELED) {
 				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.elementAt(row, 3));
-				clearButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+				clearButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent a) {
 						int row = runningList.indexOf(run);
 						table.deleteRow(row+1);

@@ -71,7 +71,7 @@ public class ViralIsolateReportForm extends WContainerWidget
         reportA_.setStyleClass("link");
         reportTable_.addLineToTable(reportL, reportA_);
         
-        generateButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        generateButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent a) 
             {

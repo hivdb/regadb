@@ -7,6 +7,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -67,7 +68,7 @@ public class DataTable<DataType> extends WTable
 			elementAt(row, col).setColumnSpan(dataTableInterface_.getColumnWidths().length);
 	        elementAt(row, col).setStyleClass("navigation");
 			showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
-			showHideFilter_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+			showHideFilter_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
 				public void trigger(WMouseEvent e)
 				{
@@ -75,7 +76,7 @@ public class DataTable<DataType> extends WTable
 				}
 			});
 			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
-			applyFilter_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+			applyFilter_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
 				public void trigger(WMouseEvent me)
 				{
@@ -100,7 +101,7 @@ public class DataTable<DataType> extends WTable
                 
                 colHeaders_[col].setSortNone();
                 final int colHeaderIndex = col;
-                colHeaders_[col].clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+                colHeaders_[col].clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                         {
                     public void trigger(WMouseEvent a) 
                     {
@@ -161,8 +162,9 @@ public class DataTable<DataType> extends WTable
 			for(int j = 0; j<dataTableInterface_.getColNames().length; j++)
 			{
 			    toPut = new WText(noNullLt(null), elementAt(row, col));
+			    toPut.setTextFormat(TextFormat.PlainText);
                 toPut.setStyleClass("table-cell");
-                toPut.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+                toPut.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                         {
                             public void trigger(WMouseEvent a) 
                             {
@@ -190,7 +192,7 @@ public class DataTable<DataType> extends WTable
         WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
         scrollingButtons.setStyleClass("scrollingButtons");
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
-        firstScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        firstScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
                     {
@@ -198,7 +200,7 @@ public class DataTable<DataType> extends WTable
                     }
                });
         previousScroll_ = new WPushButton(tr("datatable.button.previousScroll"), scrollingButtons);
-        previousScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        previousScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
                     {
@@ -213,7 +215,7 @@ public class DataTable<DataType> extends WTable
         labelScroll_.setText(labelMsg_);
         
         nextScroll_ = new WPushButton(tr("datatable.button.nextScroll"), scrollingButtons);
-        nextScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        nextScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
                     {
@@ -221,7 +223,7 @@ public class DataTable<DataType> extends WTable
                     }
                });
         lastScroll_ = new WPushButton(tr("datatable.button.lastScroll"), scrollingButtons);
-        lastScroll_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        lastScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
                     {

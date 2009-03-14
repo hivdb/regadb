@@ -86,14 +86,14 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         if(getInteractionState()==InteractionState.Deleting)
         {
             buttonContainer.addWidget(_deleteButton);
-            _deleteButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+            _deleteButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
                 public void trigger(WMouseEvent a) 
                 {
                     final WMessageBox cmb = UIUtils.createYesNoMessageBox(FormWidget.this, tr("msg.warning.delete"));
-                    cmb.buttonClicked.addListener(FormWidget.this, new Signal1.Listener<StandardButton>(){
+                    cmb.buttonClicked().addListener(FormWidget.this, new Signal1.Listener<StandardButton>(){
         				public void trigger(StandardButton sb) {
-        					cmb.destroy();
+        					cmb.remove();
         					if(sb==StandardButton.Yes) {
         						deleteAction();
         					}
@@ -106,7 +106,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         else
         {
             buttonContainer.addWidget(_okButton);
-            _okButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+            _okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
                 public void trigger(WMouseEvent a) 
                 {
@@ -114,7 +114,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 }
             });
             buttonContainer.addWidget(_cancelButton);
-            _cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+            _cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
                 public void trigger(WMouseEvent a) 
                 {

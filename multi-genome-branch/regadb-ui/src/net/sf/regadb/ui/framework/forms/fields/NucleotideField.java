@@ -83,13 +83,13 @@ public class NucleotideField extends FormField
     @Override
     protected void setViewMessage(WString message)
     {
-        super.setViewMessage(lt(createLinesFromText("<br>", message.value())));
+        super.setViewMessage(lt(createLinesFromText("<br/>", message.value())));
     }
     
     @Override
     protected WString getViewMessage()
     {
-        return lt(replaceAllPatterns(super.getViewMessage().value(), "<br>", ""));
+        return lt(replaceAllPatterns(super.getViewMessage().value(), "<br/>", ""));
     }
     
     public static String replaceAllPatterns(String str, String pattern, String replace) 
@@ -145,7 +145,7 @@ public class NucleotideField extends FormField
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(this, listener);
+            _fieldEdit.changed().addListener(this, listener);
         }
     }
 }

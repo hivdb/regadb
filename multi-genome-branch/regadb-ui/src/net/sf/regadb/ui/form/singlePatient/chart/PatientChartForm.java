@@ -14,6 +14,8 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {
@@ -26,21 +28,19 @@ public class PatientChartForm extends WGroupBox implements IForm
 		final PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
         
         WImage chartImage = new WImage(new WResource() {
-
-            @Override
             public String resourceMimeType() {
                 return "image/png";
             }
 
-            @Override
-            protected boolean streamResourceData(OutputStream stream, HashMap<String, String> arguments) throws IOException {
-                try {
-                    chartDrawer.writePngChart(800, stream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return true;
-            }
+        	protected void handleRequest(WebRequest request, WebResponse response) {
+        		try {
+        			// TODO
+        			// is this OK, to use the outputsream??
+        			chartDrawer.writePngChart(800, response.getOutputStream());
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        		}
+        	}
             
         }, lt("Patient Chart"), this);
 

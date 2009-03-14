@@ -61,7 +61,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         
         if(getInteractionState()==InteractionState.Adding || getInteractionState()==InteractionState.Editing)
         {
-        	upload.getFileUpload().uploaded.addListener(this, new Signal.Listener() {
+        	upload.getFileUpload().uploaded().addListener(this, new Signal.Listener() {
 				public void trigger() {
                     try 
                     {

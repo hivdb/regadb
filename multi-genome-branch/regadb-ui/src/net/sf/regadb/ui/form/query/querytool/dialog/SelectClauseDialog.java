@@ -82,7 +82,7 @@ public class SelectClauseDialog extends MyDialog {
 					}
 				}
 				
-				rootSelector.keyWentUp.addListener(SelectClauseDialog.this, new Signal1.Listener<WKeyEvent>() {
+				rootSelector.keyWentUp().addListener(SelectClauseDialog.this, new Signal1.Listener<WKeyEvent>() {
 					public void trigger(WKeyEvent a) {
 						if (getSelectedClause() != null) {
 							setEditable(!getSelectedClause().getManager().isUseless());
@@ -90,7 +90,7 @@ public class SelectClauseDialog extends MyDialog {
 					}
 				});
 				
-				rootSelector.clicked.addListener(SelectClauseDialog.this, new Signal1.Listener<WMouseEvent>() {
+				rootSelector.clicked().addListener(SelectClauseDialog.this, new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent a) {
 						if (getSelectedClause() != null) {
 							setEditable(!getSelectedClause().getManager().isUseless());

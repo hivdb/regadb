@@ -64,7 +64,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 		div.addWidget(getDateField1());
 		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1(), false));
 		dp.setFormat(dateFormat);
-		dp.calendar().selectionChanged.addListener(this, new Signal.Listener()
+		dp.calendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
 			public void trigger() 
 			{
@@ -77,7 +77,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 		div.addWidget(getDateField2());
 		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2(), false));
 		dp.setFormat(dateFormat);
-		dp.calendar().selectionChanged.addListener(this, new Signal.Listener()
+		dp.calendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
 			public void trigger() 
 			{
@@ -93,7 +93,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 		combo.addItem(tr(after));
 		combo.addItem(tr(between));
 		
-		combo.changed.addListener(this, new Signal.Listener() {
+		combo.changed().addListener(this, new Signal.Listener() {
 			public void trigger()
 			{
 				getDateField1().setEnabled(combo.currentIndex() > 0);

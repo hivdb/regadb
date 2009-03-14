@@ -22,7 +22,7 @@ public class ImportFormRunning extends FormWidget {
 	public ImportFormRunning(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		timer.setInterval(1000);
-		timer.timeout.addListener(this, new Signal.Listener() {
+		timer.timeout().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				refreshprogressTable();
 			}
@@ -76,7 +76,7 @@ public class ImportFormRunning extends FormWidget {
 				
 				if (importXml.getStatus() != UploadStatus.PROCESSING) {
 					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.elementAt(row, 4));
-					clearButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+					clearButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent a) {
 							int row = processList.indexOf(importXml);
 							table.deleteRow(row+1);

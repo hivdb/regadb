@@ -28,7 +28,7 @@ public class FieldSelectionContainer extends WContainerWidget {
 	private void init() {
 		checkBox = new WCheckBox(lt(selection.getDbObject().getDescription()), this);
 		checkBox.setChecked(selection.isSelected());
-		checkBox.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				toggleFieldChecked();
 			}

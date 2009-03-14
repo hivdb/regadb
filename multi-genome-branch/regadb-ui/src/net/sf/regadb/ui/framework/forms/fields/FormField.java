@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WInteractWidget;
 import eu.webtoolkit.jwt.WString;
@@ -16,6 +17,8 @@ public abstract class FormField extends WContainerWidget implements IFormField
     public void initViewWidget()
     {
         _fieldView = new WText();
+        _fieldView.setTextFormat(TextFormat.PlainText);
+        
         addWidget(_fieldView);
     }
     
@@ -112,9 +115,9 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public void setConfirmAction(Signal.Listener se) {
         if(getFormWidget()!=null) {
-        getFormWidget().enterPressed.removeAllListeners();
+        getFormWidget().enterPressed().removeAllListeners();
         if(se!=null)
-            getFormWidget().enterPressed.addListener(this, se);
+            getFormWidget().enterPressed().addListener(this, se);
         }
     }
     
@@ -128,5 +131,11 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public boolean checkUniqueness(){
         return false;
+    }
+    
+    public void setTextFormat(TextFormat tf) {
+    	if(_fieldView!=null) {
+    		_fieldView.setTextFormat(tf);
+    	}
     }
 }

@@ -28,7 +28,7 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 	
 	private void init() {
 		addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
-		addClauseButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		addClauseButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				addClauseButton_.disable();
 				node.selectNewNode();
@@ -38,7 +38,7 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 		addSeparator();
 		
 		WPushButton addAndButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addand"));
-		addAndButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		addAndButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				node.addNode(new AndClause(), AssignMode.all);
 			}
@@ -46,7 +46,7 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 		addButton(addAndButton_);
 		
 		WPushButton addOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addor"));
-		addOrButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		addOrButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				node.addNode(new InclusiveOrClause(), AssignMode.all);
 			}
@@ -54,7 +54,7 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 		addButton(addOrButton_);
 
 		WPushButton addNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addnot"));
-		addNotButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		addNotButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				node.addNode(new NotClause(), AssignMode.all);
 			}

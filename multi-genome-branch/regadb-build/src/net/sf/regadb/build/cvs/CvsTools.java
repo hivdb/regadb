@@ -67,16 +67,4 @@ public class CvsTools
             e.printStackTrace();
         }
     }
-    
-    public static void main(String [] args)
-    {
-        try 
-        {
-        	checkout(":pserver:anonymous@zolder:2401/cvsroot/witty", "/home/plibin0/regadb_build", "jwt/src", "jwt_src");
-        }
-        catch (Exception e) 
-        {
-        	e.printStackTrace();
-        }
-    }
 }

@@ -73,7 +73,7 @@ public class TextArea extends FormField
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(this, listener);
+            _fieldEdit.changed().addListener(this, listener);
         }
     }
 }

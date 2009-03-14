@@ -79,13 +79,13 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     	table.elementAt(0, 0).resize(new WLength(2, WLength.Unit.FontEm), new WLength());
     	table.elementAt(0, 1).addWidget(editPanel);
     	if (!isUseless()) {
-	    	this.clicked.addListener(this, new Signal1.Listener<WMouseEvent>(){
+	    	this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 				public void trigger(WMouseEvent a) {
 					radioButton.setChecked(true);
 					radioButton.refresh();
 				}
 	    	});
-	    	this.keyPressed.addListener(this, new Signal1.Listener<WKeyEvent>() {
+	    	this.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
 				public void trigger(WKeyEvent a) {
 					if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
 						radioButton.setChecked(true);

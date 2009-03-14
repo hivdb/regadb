@@ -53,7 +53,7 @@ public class EditButtonPanel extends WButtonPanel {
 		wrapOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapor"));
 		wrapNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapnot"));
 		
-		copyButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		copyButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				cursorClauses = new ArrayList<WhereClause>();
@@ -65,7 +65,7 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		pasteButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		pasteButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getRootNode() :selection.get(0));
@@ -76,7 +76,7 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		deleteButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		deleteButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
@@ -87,7 +87,7 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		cutButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		cutButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
@@ -100,7 +100,7 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		unwrapButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		unwrapButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
@@ -120,19 +120,19 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		wrapAndButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		wrapAndButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				wrapIn(new AndClause());
 			}
 		});
 
-		wrapOrButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		wrapOrButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				wrapIn(new InclusiveOrClause());
 			}
 		});	
 		
-		wrapNotButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		wrapNotButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				wrapIn(new NotClause());
 			}

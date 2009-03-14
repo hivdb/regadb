@@ -105,7 +105,7 @@ public class TestForm extends FormWidget
 	    analysisCK = new CheckBox(getInteractionState(),this);
 	    mainFrameTable_.addLineToTable(analysisL, analysisCK);
 	    
-        analysisCK.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        analysisCK.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent a)
             {
@@ -155,7 +155,7 @@ public class TestForm extends FormWidget
             refreshButton = new WPushButton(tr("form.testSettings.test.editView.analysis.refreshButton"));
             Label refreshL = new Label(tr("form.testSettings.test.editView.analysis.refreshButton"));
             
-            refreshButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+            refreshButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
                 public void trigger(WMouseEvent a)
                 {

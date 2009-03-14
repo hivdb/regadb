@@ -37,7 +37,7 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
         combo_.sort();
         combo_.insertItem(0, tr("dataTable.filter.listFilter.noFilter"));
         
-        combo_.changed.addListener(this, new Signal.Listener()
+        combo_.changed().addListener(this, new Signal.Listener()
                 {
                     public void trigger()
                     {

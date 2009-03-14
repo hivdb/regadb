@@ -40,7 +40,7 @@ public class RunGroupBox extends WGroupContainer {
 		
 		timer = new WTimer(this);
 		timer.setInterval(1000);
-		timer.timeout.addListener(this, new Signal.Listener() {
+		timer.timeout().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				updateRunningQueries();
 			}
@@ -90,7 +90,7 @@ public class RunGroupBox extends WGroupContainer {
 					
 					if (qt.isRunning()) {
 						WPushButton cancelButton = new WPushButton(tr("form.query.querytool.pushbutton.cancel"));
-						cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+						cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent a) {
 								qt.cancel();
 							}

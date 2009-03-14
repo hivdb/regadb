@@ -32,6 +32,7 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
@@ -153,7 +154,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 			upLoadL = new Label(tr("form.viralIsolate.editView.uploadlabel"));
 			sequenceSelectForm.addLineToTable(upLoadL, uploadTable);
             
-            upload_.getFileUpload().uploaded.addListener(this, new Signal.Listener()
+            upload_.getFileUpload().uploaded().addListener(this, new Signal.Listener()
             {
                    public void trigger() 
                    {                
@@ -201,6 +202,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         ntL = new Label(tr("form.viralIsolate.editView.nucleotides"));
         ntTF = new NucleotideField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
         ntTF.setMandatory(true);
+        ntTF.setTextFormat(TextFormat.XHTMLText);
         sequenceSelectForm.addLineToTable(ntL, ntTF);
        
         if (viralIsolateForm_.isEditable()) {
@@ -236,7 +238,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         
         setFieldListeners();
         
-        seqComboBox.changed.addListener(this, new Signal.Listener()
+        seqComboBox.changed().addListener(this, new Signal.Listener()
             {
                 public void trigger() 
                 {
@@ -245,7 +247,7 @@ public class ViralIsolateMainForm extends WContainerWidget
             });
 
         if (viralIsolateForm_.isEditable()) {
-	        addButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+	        addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {
@@ -256,7 +258,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    }
 	                });
 	        
-	        deleteButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+	        deleteButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {
@@ -275,7 +277,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
         
         if (viralIsolateForm_.isEditable()) {
-	        cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+	        cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {                        
@@ -287,7 +289,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    }
 	                });
 	        
-	        confirmButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+	        confirmButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {                

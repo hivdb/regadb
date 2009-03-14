@@ -55,7 +55,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         else
             getAttributeCombo().setCurrentItem(noAttribute);
         
-        getAttributeCombo().changed.addListener(this, new Signal.Listener()
+        getAttributeCombo().changed().addListener(this, new Signal.Listener()
                 {
             public void trigger()
             {

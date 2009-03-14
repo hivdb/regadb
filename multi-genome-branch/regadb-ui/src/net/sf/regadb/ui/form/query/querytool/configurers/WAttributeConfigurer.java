@@ -31,13 +31,13 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 		contentTable.setInline(true);
 		contentTable.addWidget((WWidget) constantPanels.get(ovar.getSelectedIndex()));
 		
-		((WInteractWidget) ovar).clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		((WInteractWidget) ovar).clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				changeSelection();
 			}
 		});
 		
-		((WInteractWidget) ovar).keyWentUp.addListener(this, new Signal1.Listener<WKeyEvent>() {
+		((WInteractWidget) ovar).keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>() {
 			public void trigger(WKeyEvent a) {
 				changeSelection();
 			}

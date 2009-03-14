@@ -12,7 +12,7 @@ public class ConfirmUtils
         if(form instanceof IConfirmForm)
         {
             final IConfirmForm confirmForm = ((IConfirmForm)form);
-            interactWidget.enterPressed.addListener(form.getWContainer(), new Signal.Listener()
+            interactWidget.enterPressed().addListener(form.getWContainer(), new Signal.Listener()
                     {
                         public void trigger() 
                         {

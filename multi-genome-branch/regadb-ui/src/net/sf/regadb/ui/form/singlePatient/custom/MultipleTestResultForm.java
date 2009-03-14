@@ -131,7 +131,7 @@ public class MultipleTestResultForm extends FormWidget {
 		        useContactDate_ = new CheckBox(getInteractionState(),this);
 		        eventGroupTable_.addLineToTable(new Label(tr("form.multipleTestResults.events.useContactDate")),useContactDate_);
 		        
-		        useContactDate_.clicked.addListener(this, new Signal.Listener(){
+		        useContactDate_.clicked().addListener(this, new Signal.Listener(){
 					@Override
 					public void trigger() {
 						setUseContactDate(useContactDate_.isChecked());
@@ -290,9 +290,9 @@ public class MultipleTestResultForm extends FormWidget {
         
         if(duplicateSampleId) {
 	        final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.multipleTestResults.duplicateSampleIdWarning"));
-            cmb.buttonClicked.addListener(this, new Signal1.Listener<StandardButton>(){
+            cmb.buttonClicked().addListener(this, new Signal1.Listener<StandardButton>(){
 				public void trigger(StandardButton sb) {
-					cmb.destroy();
+					cmb.remove();
 				}
             });
             cmb.show();

@@ -109,7 +109,7 @@ public class EditableTable<DataType> extends WContainerWidget
             WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
             itemTable_.elementAt(rowNum, colIndex).addWidget(addButton);
             itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
-            addButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+            addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                     {
                         public void trigger(WMouseEvent a) 
                         {
@@ -282,7 +282,7 @@ public class EditableTable<DataType> extends WContainerWidget
     		super(message);
     		this.toRemove = toRemove;
     	
-    		this.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+    		this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
                 public void trigger(WMouseEvent a) {
                 	remove();
                 }

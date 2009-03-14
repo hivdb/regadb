@@ -27,13 +27,13 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     	setValidator(new WConstantValidator());
     	validator().setMandatory(true);
     	
-    	this.keyWentUp.addListener(this, new Signal1.Listener<WKeyEvent>() {
+    	this.keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>() {
 			public void trigger(WKeyEvent a) {
 				validateConstant();
 			}
     	});
     	
-    	this.changed.addListener(this, new Signal.Listener() {
+    	this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				validateConstant();
 			}

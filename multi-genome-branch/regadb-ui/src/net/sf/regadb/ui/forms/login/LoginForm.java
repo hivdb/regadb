@@ -84,7 +84,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         WContainerWidget createAccountContainer = new WContainerWidget(loginGroup_);
         createAccountContainer.setStyleClass("create-account");
         createAccountLink_.setStyleClass("general-clickable-text");
-        createAccountLink_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        createAccountLink_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent me)
             {
@@ -99,7 +99,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         buttonContainer.addWidget(_loginButton);
         buttonContainer.addWidget(_helpButton);
         
-        _loginButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        _loginButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent me)
             {

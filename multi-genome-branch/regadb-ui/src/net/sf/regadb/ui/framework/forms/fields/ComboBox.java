@@ -44,7 +44,7 @@ public class ComboBox<ComboDataType> extends FormField
     {
     	if(fieldEdit_!=null)
     	{
-    	fieldEdit_.changed.addListener(this, listener);
+    	fieldEdit_.changed().addListener(this, listener);
     	}
     }
     

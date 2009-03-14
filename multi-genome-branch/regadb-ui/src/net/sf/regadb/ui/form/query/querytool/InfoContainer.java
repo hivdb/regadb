@@ -33,7 +33,7 @@ public class InfoContainer extends WContainerWidget {
     	nameTF = new TextField(form.getInteractionState(), form);
         nameTF.setMandatory(true);
         infoTable.addLineToTable(nameL, nameTF);
-        nameTF.keyPressed.addListener(this, new Signal1.Listener<WKeyEvent>() {
+        nameTF.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
 			public void trigger(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
 			}
@@ -43,7 +43,7 @@ public class InfoContainer extends WContainerWidget {
         descriptionTA = new TextArea(form.getInteractionState(), form);
         descriptionTA.setMandatory(true);
         infoTable.addLineToTable(descriptionL, descriptionTA);
-        descriptionTA.keyPressed.addListener(this, new Signal1.Listener<WKeyEvent>() {
+        descriptionTA.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
 			public void trigger(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
 			}

@@ -257,27 +257,12 @@ public class SinglePatientForm extends FormWidget
                         attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
                         attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldCB);
                         
-                        //TODO fix with new JWt
-                        List<AttributeNominalValue> anv = new ArrayList<AttributeNominalValue>();
-                        
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
-                        {
-                        	anv.add(nominalVal);
-                        }
-                        
-                        Collections.sort(anv, new Comparator<AttributeNominalValue>(){
-							public int compare(AttributeNominalValue anv0, AttributeNominalValue anv1) {
-								return anv0.getValue().compareTo(anv1.getValue());
-							}
-                        });
-                        
-                        //TODO
-                        //attributeFieldCB.sort();
-
-                        for(AttributeNominalValue nominalVal : anv)
                         {
                         	attributeFieldCB.addItem(new DataComboMessage<AttributeNominalValue>(nominalVal,nominalVal.getValue()));
                         }
+                        
+                        attributeFieldCB.sort();
                         	
                         //do this after the sort, should be on top
                         attributeFieldCB.addNoSelectionItem();

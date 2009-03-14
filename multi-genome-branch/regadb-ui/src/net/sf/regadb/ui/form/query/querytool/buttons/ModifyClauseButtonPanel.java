@@ -27,7 +27,7 @@ public class ModifyClauseButtonPanel extends WButtonPanel {
 		WPushButton cancelButton = new WPushButton(tr("form.general.button.cancel"));
 		addButton(cancelButton);
 
-		okButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				editPanel.getSelectedClause().getManager().applyEditings();
 				node.replaceNode(editPanel.getSelectedClause().getManager().getClause());
@@ -35,7 +35,7 @@ public class ModifyClauseButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		cancelButton.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				node.showContent();
 			}

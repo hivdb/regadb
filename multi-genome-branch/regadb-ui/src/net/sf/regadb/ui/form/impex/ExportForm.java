@@ -61,7 +61,7 @@ public class ExportForm extends FormWidget {
 		table_.addLineToTable(exportL, export, anchor);
 		
 		
-		export.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		export.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 			    try{
 			    	anchor.setHidden(true);

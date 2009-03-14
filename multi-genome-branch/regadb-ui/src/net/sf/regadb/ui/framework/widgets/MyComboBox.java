@@ -15,7 +15,7 @@ public class MyComboBox extends WComboBox {
 	}
 	
 	public void sort() {
-		
+		this.model().sort(0);
 	}
 
 	public void setCurrentItem(WString lt) {

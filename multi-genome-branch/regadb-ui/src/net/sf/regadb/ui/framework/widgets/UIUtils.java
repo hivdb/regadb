@@ -26,9 +26,9 @@ public class UIUtils {
 	public static void showWarningMessageBox(WObject receiver, WString text) {
         final WMessageBox box = new WMessageBox(WMessageBox.tr("datatable.message.warning"), text, Icon.Warning, EnumSet.of(StandardButton.Ok));
         box.show();
-        box.buttonClicked.addListener(box, new Signal1.Listener<StandardButton>(){
+        box.buttonClicked().addListener(box, new Signal1.Listener<StandardButton>(){
         	public void trigger(StandardButton e1){
-        		box.destroy();
+        		box.remove();
         	}
         });
 	}
@@ -50,7 +50,7 @@ public class UIUtils {
 		WTimer timer = new WTimer();
 		timer.setInterval(msec);
 		timer.setSingleShot(true);
-		timer.timeout.addListener(receiver, listener);
+		timer.timeout().addListener(receiver, listener);
 		timer.start();
 	}
 }

@@ -25,9 +25,9 @@ public class LogoutItem extends TreeMenuNode
             public void performAction(TreeMenuNode node) 
             {
                 final WMessageBox cmb = UIUtils.createYesNoMessageBox(LogoutItem.this, tr("menu.myAccount.logout.warning"));
-                cmb.buttonClicked.addListener(LogoutItem.this, new Signal1.Listener<StandardButton>(){
+                cmb.buttonClicked().addListener(LogoutItem.this, new Signal1.Listener<StandardButton>(){
     				public void trigger(StandardButton sb) {
-    					cmb.destroy();
+    					cmb.remove();
     					if(sb==StandardButton.Yes) {
                             RegaDBMain.getApp().getFormContainer().setForm(new LoginForm());
                             RegaDBMain.getApp().logout();

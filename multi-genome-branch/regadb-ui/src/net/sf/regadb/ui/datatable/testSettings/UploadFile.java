@@ -11,7 +11,7 @@ public class UploadFile extends FileUpload
     public UploadFile(InteractionState istate, IForm form)
     {
         super(istate, form);
-        getFileUpload().uploaded.addListener(this, new Signal.Listener() {
+        getFileUpload().uploaded().addListener(this, new Signal.Listener() {
                    public void trigger() {
                 	   if(getFileUpload().clientFileName()!=null) {
 	                       setAnchor(lt(getFileUpload().clientFileName()), getFileUpload().spoolFileName());

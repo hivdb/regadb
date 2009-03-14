@@ -174,7 +174,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         
         final MyComboBox datasetCombo = new MyComboBox();
         final MyComboBox privilegesCombo = new MyComboBox();
-        datasetCombo.changed.addListener(privilegesCombo, new Signal.Listener()
+        datasetCombo.changed().addListener(privilegesCombo, new Signal.Listener()
         {
             public void trigger() 
             {

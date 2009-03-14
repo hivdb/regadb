@@ -22,7 +22,7 @@ public class FilterTF extends WLineEdit
 		
 		setEnabled(false);
 		
-		changed.addListener(this, new Signal.Listener()
+		changed().addListener(this, new Signal.Listener()
 		{
 			public void trigger()
 			{
@@ -30,7 +30,7 @@ public class FilterTF extends WLineEdit
 			}
 		});
 	
-		keyWentUp.addListener(this, new Signal1.Listener<WKeyEvent>()
+		keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>()
 		{
 			public void trigger(WKeyEvent a)
 			{
@@ -38,7 +38,7 @@ public class FilterTF extends WLineEdit
 			}
 		});
 		
-		enterPressed.addListener(this, new Signal.Listener()
+		enterPressed().addListener(this, new Signal.Listener()
 				{
 					public void trigger() 
 					{

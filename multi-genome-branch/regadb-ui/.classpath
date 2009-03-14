@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="/regadb-persist" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/regadb-io" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/jwt" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/regadb-util" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/regadb-analyses" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/wts-client-java" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/regadb-querytool" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/pharmadm" kind="src"/>
-	<classpathentry path="/pharmadm-ui/lib/xstream-1.3.jar" kind="lib"/>
-	<classpathentry path="/pharmadm-ui/lib/xpp3_min-1.1.4c.jar" kind="lib"/>
-	<classpathentry path="lib/servlet-api.jar" kind="lib"/>
-	<classpathentry path="WebRoot/WEB-INF/classes" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/wts-client-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
+	<classpathentry kind="src" path="/pharmadm"/>
+	<classpathentry kind="lib" path="/pharmadm-ui/lib/xstream-1.3.jar"/>
+	<classpathentry kind="lib" path="/pharmadm-ui/lib/xpp3_min-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-2.9.0.jar"/>
+	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

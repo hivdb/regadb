@@ -45,7 +45,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
         
         refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.elementAt(0, 0));
-        refreshButton_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        refreshButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
                     {
@@ -54,7 +54,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                 });
         
         showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
-        showMutations_.clicked.addListener(this, new Signal1.Listener<WMouseEvent>()
+        showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a)
                     {

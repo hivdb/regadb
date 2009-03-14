@@ -28,7 +28,7 @@ public class SimpleSelectionContainer extends WContainerWidget {
 		OutputVariable ovar = (OutputVariable) selection.getObject();
 		checkBox = new WCheckBox(lt(ovar.getUniqueName()), this);
 		checkBox.setChecked(selection.isSelected());
-		checkBox.clicked.addListener(this, new Signal1.Listener<WMouseEvent>() {
+		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
 				toggleFieldChecked();
 			}
