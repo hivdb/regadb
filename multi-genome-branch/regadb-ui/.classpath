@@ -13,6 +13,6 @@
 	<classpathentry kind="lib" path="/pharmadm-ui/lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-2.99.0.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

@@ -132,7 +132,6 @@ public class MultipleTestResultForm extends FormWidget {
 		        eventGroupTable_.addLineToTable(new Label(tr("form.multipleTestResults.events.useContactDate")),useContactDate_);
 		        
 		        useContactDate_.clicked().addListener(this, new Signal.Listener(){
-					@Override
 					public void trigger() {
 						setUseContactDate(useContactDate_.isChecked());
 					}
