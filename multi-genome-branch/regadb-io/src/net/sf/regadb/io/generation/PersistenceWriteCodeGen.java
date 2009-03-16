@@ -5,16 +5,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class PersistenceWriteCodeGen {
 
 	public void writeClassToFile() {
+		
+		List<String> ignoreClasses = Arrays.asList(new String[]{
+			"Dataset","AaMutationId","AaInsertionId"	
+		});
 		//imports
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
 		String imports = "import net.sf.regadb.db.Patient;\n";
-		Package p = Package.getPackage("net.sf.regadb.db");
 		imports += "import org.hibernate.Hibernate;\n";
 
 		//rest of class
@@ -37,6 +42,11 @@ public class PersistenceWriteCodeGen {
 			System.out.println("queue size: "+queue.size()+" done size: "+done.size());
 			String shortClassName = queue.get(0);
 			total+= "private void write(" + shortClassName + " " + toObjectName(shortClassName) + "){\n";
+			if(ignoreClasses.contains(shortClassName)){
+				queue.remove(queue.indexOf(shortClassName));
+				total+= "}\n\n";
+				continue;
+			}
 			Class c = null;
 			try {
 				c = Class.forName("net.sf.regadb.db."+shortClassName);
@@ -55,7 +65,6 @@ public class PersistenceWriteCodeGen {
 						total+="\t}\n";						
 					}else{
 						total+="\tif("+toObjectName(shortClassName) +"."+methodName+"() != null"+")write("+toObjectName(shortClassName) +"."+methodName+"());\n";
-
 					}
 					total+="\t}\n";
 					if(!done.contains(toClassName(m)) && !queue.contains(toClassName(m))){
@@ -93,9 +102,7 @@ public class PersistenceWriteCodeGen {
 	private String toClassName(Method m){
 		return m.getGenericReturnType().toString().replace("java.util.Set<", "").replace("net.sf.regadb.db.","").replace(">", "").replace("class ", "");
 	}
-
-
-
+	
 	private boolean ignoreMethod(Method m){
 		return (!m.getName().startsWith("get") || // method must be a getter
 				m.getName().equals("getClass") ||
