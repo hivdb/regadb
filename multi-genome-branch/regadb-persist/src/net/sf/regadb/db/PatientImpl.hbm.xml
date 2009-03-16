@@ -15,18 +15,6 @@
     <property name="patientId" type="string">
       <column name="patient_id" length="50" not-null="true" />
     </property>
-    <property name="lastName" type="string">
-      <column name="last_name" length="50" />
-    </property>
-    <property name="firstName" type="string">
-      <column name="first_name" length="50" />
-    </property>
-    <property name="birthDate" type="date">
-      <column name="birth_date" length="13" />
-    </property>
-    <property name="deathDate" type="date">
-      <column name="death_date" length="13" />
-    </property>
     <set name="patientEventValues" inverse="true" cascade="all">
       <key>
         <column name="patient_ii" not-null="true" />

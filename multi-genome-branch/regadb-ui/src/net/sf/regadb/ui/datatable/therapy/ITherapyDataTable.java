@@ -19,18 +19,23 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class ITherapyDataTable implements IDataTable<Therapy>
 {
-	private static String [] _colNames = {"dataTable.therapy.colName.startDate","dataTable.therapy.colName.endDate", 
-		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.therapy.colName.startDate"),
+	    WString.tr("dataTable.therapy.colName.endDate"), 
+	    WString.tr("dataTable.therapy.colName.drugs"),
+	    WString.tr("dataTable.therapy.colName.comment")};
+	
 	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment"};
 	
 	private IFilter[] filters_ = new IFilter[4];
 	
 	private static boolean [] sortable_ = {true, true, false, true};
 	private static int[] colWidths = {20,20,25,25};
-	public String[] getColNames()
+	public WString[] getColNames()
 	{
 		return _colNames;
 	}

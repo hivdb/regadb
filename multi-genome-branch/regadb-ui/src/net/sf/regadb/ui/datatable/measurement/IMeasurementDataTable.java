@@ -14,11 +14,17 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IMeasurementDataTable implements IDataTable<TestResult>
 {
-	private static String [] _colNames = {"dataTable.test.colName.date","dataTable.test.colName.testType","dataTable.test.colName.genome", 
-		"dataTable.test.colName.testName", "dataTable.test.colName.result"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.test.colName.date"),
+	    WString.tr("dataTable.test.colName.testType"),
+	    WString.tr("dataTable.test.colName.genome"), 
+	    WString.tr("dataTable.test.colName.testName"),
+	    WString.tr("dataTable.test.colName.result")};
+	
 	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", "case when genome is null then '' else genome.organismName end",
 		"testResult.test.description",	"case when testResult.testNominalValue is null then testResult.value else testNominalValue.value end"};
 	
@@ -32,7 +38,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		
 	}
 	
-	public String[] getColNames()
+	public WString[] getColNames()
 	{
 		return _colNames;
 	}

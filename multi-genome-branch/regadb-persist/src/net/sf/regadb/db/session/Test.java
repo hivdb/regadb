@@ -59,7 +59,7 @@ public class Test {
         
         Patient p = t.getPatient(t.getDataset("TEST"), "12312");
         
-        p.setFirstName("Flapfoo");
+        p.setFirstName(t, "Flapfoo");
         
         ViralIsolate v = p.createViralIsolate();
         v.setSampleDate(new Date());

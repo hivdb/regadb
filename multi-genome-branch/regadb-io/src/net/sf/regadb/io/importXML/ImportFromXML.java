@@ -74,10 +74,6 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String referenceEventNominalValue = null;
     private Set<EventNominalValue> syncedEventNominalValueSet = new HashSet<EventNominalValue>();
     private String fieldPatient_patientId;
-    private String fieldPatient_lastName;
-    private String fieldPatient_firstName;
-    private Date fieldPatient_birthDate;
-    private Date fieldPatient_deathDate;
     private Set<PatientEventValue> fieldPatient_patientEventValues;
     private Set<Dataset> fieldPatient_patientDatasets;
     private Set<TestResult> fieldPatient_testResults;
@@ -192,10 +188,6 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.statePatient);
             patient = new Patient();
             fieldPatient_patientId = nullValueString();
-            fieldPatient_lastName = nullValueString();
-            fieldPatient_firstName = nullValueString();
-            fieldPatient_birthDate = nullValueDate();
-            fieldPatient_deathDate = nullValueDate();
             fieldPatient_patientEventValues = new HashSet<PatientEventValue>();
             fieldPatient_patientDatasets = new HashSet<Dataset>();
             fieldPatient_testResults = new HashSet<TestResult>();
@@ -417,18 +409,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elPatient.setPatientId(fieldPatient_patientId);
                 }
                 {
-                    elPatient.setLastName(fieldPatient_lastName);
-                }
-                {
-                    elPatient.setFirstName(fieldPatient_firstName);
-                }
-                {
-                    elPatient.setBirthDate(fieldPatient_birthDate);
-                }
-                {
-                    elPatient.setDeathDate(fieldPatient_deathDate);
-                }
-                {
                 }
                 {
                 }
@@ -448,14 +428,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 }
             } else if ("patientId".equals(qName)) {
                 fieldPatient_patientId = parseString(value == null ? null : value.toString());
-            } else if ("lastName".equals(qName)) {
-                fieldPatient_lastName = parseString(value == null ? null : value.toString());
-            } else if ("firstName".equals(qName)) {
-                fieldPatient_firstName = parseString(value == null ? null : value.toString());
-            } else if ("birthDate".equals(qName)) {
-                fieldPatient_birthDate = parseDate(value == null ? null : value.toString());
-            } else if ("deathDate".equals(qName)) {
-                fieldPatient_deathDate = parseDate(value == null ? null : value.toString());
             } else if ("patientEventValues".equals(qName)) {
             } else if ("patientDatasets".equals(qName)) {
             } else if ("testResults".equals(qName)) {
@@ -2196,38 +2168,6 @@ public class ImportFromXML extends ImportFromXMLBase {
                 if (!simulate)
                     dbo.setPatientId(o.getPatientId());
                 log.append(Describe.describe(o) + ": changed patientId\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getLastName(), o.getLastName())) {
-                if (!simulate)
-                    dbo.setLastName(o.getLastName());
-                log.append(Describe.describe(o) + ": changed lastName\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getFirstName(), o.getFirstName())) {
-                if (!simulate)
-                    dbo.setFirstName(o.getFirstName());
-                log.append(Describe.describe(o) + ": changed firstName\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getBirthDate(), o.getBirthDate())) {
-                if (!simulate)
-                    dbo.setBirthDate(o.getBirthDate());
-                log.append(Describe.describe(o) + ": changed birthDate\n");
-                changed = true;
-            }
-        }
-        if (dbo != null) {
-            if (!equals(dbo.getDeathDate(), o.getDeathDate())) {
-                if (!simulate)
-                    dbo.setDeathDate(o.getDeathDate());
-                log.append(Describe.describe(o) + ": changed deathDate\n");
                 changed = true;
             }
         }

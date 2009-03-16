@@ -14,18 +14,20 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class ILogDataTable implements IDataTable<File> {
-    private static String[] colNames_ = new String[]{"dataTable.log.colName.date",
-                                                     "dataTable.log.colName.name",
-                                                     "dataTable.log.colName.size"};
+    private static WString[] colNames_ = {
+        WString.tr("dataTable.log.colName.date"),
+        WString.tr("dataTable.log.colName.name"),
+        WString.tr("dataTable.log.colName.size")};
     
     private static int[] colWidths = {20,60,20};
 
     private static Comparator<File>[] comparators_ = new Comparator[]{ new FileDateComparator(), new FileNameComparator(), new FileSizeComparator() };
     private static boolean[] sortable_ = {true, true, true};
 
-    public String[] getColNames() {
+    public WString[] getColNames() {
         return colNames_;
     }
     

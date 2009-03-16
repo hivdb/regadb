@@ -355,22 +355,6 @@ if(PatientImplvar.getPatientId()!=null) {
 PatientImplLine += PatientImplvar.getPatientId().toString();
 }
 PatientImplLine += ",";
-if(PatientImplvar.getLastName()!=null) {
-PatientImplLine += PatientImplvar.getLastName().toString();
-}
-PatientImplLine += ",";
-if(PatientImplvar.getFirstName()!=null) {
-PatientImplLine += PatientImplvar.getFirstName().toString();
-}
-PatientImplLine += ",";
-if(PatientImplvar.getBirthDate()!=null) {
-PatientImplLine += XMLTools.dateToRelaxNgString(PatientImplvar.getBirthDate());
-}
-PatientImplLine += ",";
-if(PatientImplvar.getDeathDate()!=null) {
-PatientImplLine += XMLTools.dateToRelaxNgString(PatientImplvar.getDeathDate());
-}
-PatientImplLine += ",";
 return PatientImplLine;
 }
 
@@ -687,10 +671,6 @@ return SplicingPositionLine;
 public String getCsvHeaderLinePatient() {
 String PatientImplLine = "";
 PatientImplLine += "PatientImpl.patientId,";
-PatientImplLine += "PatientImpl.lastName,";
-PatientImplLine += "PatientImpl.firstName,";
-PatientImplLine += "PatientImpl.birthDate,";
-PatientImplLine += "PatientImpl.deathDate,";
 return PatientImplLine;
 }
 

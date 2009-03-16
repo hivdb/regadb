@@ -10,10 +10,15 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefinitionRun>
 {
-    private static String [] _colNames = {"dataTable.queryDefinitionRun.colName.name", "dataTable.queryDefinitionRun.colName.query", "dataTable.queryDefinitionRun.colName.description", "dataTable.queryDefinitionRun.colName.status"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.queryDefinitionRun.colName.name"),
+        WString.tr("dataTable.queryDefinitionRun.colName.query"),
+        WString.tr("dataTable.queryDefinitionRun.colName.description"),
+        WString.tr("dataTable.queryDefinitionRun.colName.status")};
     
     private static String[] filterVarNames_ = {"queryDefinitionRun.name", "queryDefinitionRun.queryDefinition.name", "queryDefinitionRun.queryDefinition.description", "queryDefinitionRun.status"};
         
@@ -21,7 +26,7 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
     private static int[] colWidths = {20,20,40,20};
     private IFilter[] filters_ = new IFilter[4];
     
-    public String[] getColNames()
+    public WString[] getColNames()
     {
         return _colNames;
     }

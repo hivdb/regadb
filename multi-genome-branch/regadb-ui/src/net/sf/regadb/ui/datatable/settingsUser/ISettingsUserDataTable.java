@@ -9,11 +9,17 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ISettingsUserDataTable implements IDataTable<SettingsUser>
 {
-    private static String [] _colNames = {"dataTable.settingsUser.colName.uid", "dataTable.settingsUser.colName.firstname","dataTable.settingsUser.colName.lastname", 
-        "dataTable.settingsUser.colName.email", "dataTable.settingsUser.colName.admin", "dataTable.settingsUser.colName.enabled"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.settingsUser.colName.uid"),
+        WString.tr("dataTable.settingsUser.colName.firstname"),
+        WString.tr("dataTable.settingsUser.colName.lastname"), 
+        WString.tr("dataTable.settingsUser.colName.email"),
+        WString.tr("dataTable.settingsUser.colName.admin"),
+        WString.tr("dataTable.settingsUser.colName.enabled")};
     
     private static String[] filterVarNames_ = { "settingsUser.uid", "settingsUser.firstName", "settingsUser.lastName", "settingsUser.email", "settingsUser.admin", "settingsUser.enabled"};
         
@@ -28,7 +34,7 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
         enabledUsers_ = enabledUsers;
     }
     
-    public String[] getColNames()
+    public WString[] getColNames()
     {
         return _colNames;
     }

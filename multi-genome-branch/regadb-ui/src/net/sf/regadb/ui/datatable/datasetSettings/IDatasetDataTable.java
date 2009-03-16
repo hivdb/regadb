@@ -12,13 +12,15 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IDatasetDataTable implements IDataTable<Dataset> 
 {
-	private static String [] _colNames = {"dataTable.dataset.colName.description", 										 
-										  "dataTable.dataset.colName.creationDate",
-										  "dataTable.dataset.colName.closedDate", 
-										  "dataTable.dataset.colName.revision"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.dataset.colName.description"), 										 
+	    WString.tr("dataTable.dataset.colName.creationDate"),
+        WString.tr("dataTable.dataset.colName.closedDate"), 
+        WString.tr("dataTable.dataset.colName.revision")};
 	private static String[] filterVarNames_ = {"dataset.description", 
 											   "dataset.creationDate",
 											   "dataset.closedDate",
@@ -29,7 +31,7 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 
 	private static int[] colWidths = {25,25,25,25};
 	
-	public String[] getColNames() 
+	public WString[] getColNames() 
 	{
 		return _colNames;
 	}

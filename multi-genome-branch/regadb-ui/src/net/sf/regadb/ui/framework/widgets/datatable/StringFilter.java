@@ -51,27 +51,28 @@ public class StringFilter extends WContainerWidget implements IFilter
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		
 		String operator = getComboState().key();
+		String param = "param"+filterIndex;
 		
 		if(operator.equals(StringFilter.beginsWith_))
 		{
-			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getStringValue().toLowerCase() + "%"));
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, getStringValue().toLowerCase() + "%"));
 			//return varName + " like '" + tf_.text() + "%'"; 
 		}
 		else if(operator.equals(StringFilter.endsWith_))
 		{
-			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+getStringValue().toLowerCase()));
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, "%"+getStringValue().toLowerCase()));
 		}
 		else if(operator.equals(StringFilter.contains_))
 		{
-			constraint.clause_ = "lower(" + varName + ") like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, "%"+getStringValue().toLowerCase()+"%"));
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, "%"+getStringValue().toLowerCase()+"%"));
 		}
 		else if(operator.equals(StringFilter.sqlRegExp_))
 		{
-			constraint.clause_ = varName + " like :param" + filterIndex;
-			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getStringValue()));
+			constraint.clause_ = varName + " like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, getStringValue()));
 		}
 		
 		return constraint;

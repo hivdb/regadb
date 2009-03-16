@@ -6,8 +6,8 @@ import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.util.pair.Pair;
 
-public class PatientDataTable extends DataTable<Pair<Patient,PatientAttributeValue>> {
-    public PatientDataTable(IDataTable<Pair<Patient,PatientAttributeValue>> dataTableInterface, int amountOfPageRows){
+public class PatientDataTable extends DataTable<Object[]> {
+    public PatientDataTable(IDataTable<Object[]> dataTableInterface, int amountOfPageRows){
         super(dataTableInterface, amountOfPageRows);
     }
 

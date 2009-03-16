@@ -13,13 +13,14 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
-	private static String [] _colNames = {
-		"dataTable.singlePatient.patientEvent.column.startDate",
-		"dataTable.singlePatient.patientEvent.column.endDate",
-		"dataTable.singlePatient.patientEvent.column.eventName",
-		"dataTable.singlePatient.patientEvent.column.value"};
+	private static WString [] _colNames = {
+		WString.tr("dataTable.singlePatient.patientEvent.column.startDate"),
+		WString.tr("dataTable.singlePatient.patientEvent.column.endDate"),
+		WString.tr("dataTable.singlePatient.patientEvent.column.eventName"),
+		WString.tr("dataTable.singlePatient.patientEvent.column.value")};
 	
 	private static String[] filterVarNames_ = {"patient_event_value.startDate", "patient_event_value.endDate", "event.name", null};
 	private static boolean [] sortable_ = {true, true, true, false};
@@ -80,7 +81,7 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 		return sortable_;
 	}
 	
-	public String[] getColNames() {
+	public WString[] getColNames() {
 		return _colNames;
 	}
 	

@@ -7,9 +7,7 @@ import java.util.Set;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
@@ -18,44 +16,60 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
-import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
-import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
-public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttributeValue>>
+public class IPatientDataTable implements IDataTable<Object[]>
 {
-	private List<String> colNames_ = new ArrayList<String>(5);
+	private List<WString> colNames_ = new ArrayList<WString>();
 
-	private List<IFilter> filters_ = new ArrayList<IFilter>(5);
+	private List<IFilter> filters_ = new ArrayList<IFilter>();
 
-	private List<String> filterVarNames_ = new ArrayList<String>(5);
+	private List<String> filterVarNames_ = new ArrayList<String>();
 	
-	private List<Boolean> sortable_ = new ArrayList<Boolean>(5);
+	private List<Boolean> sortable_ = new ArrayList<Boolean>();
 
-	private List<Integer> widths = new ArrayList<Integer>(5);
+	private List<Integer> widths = new ArrayList<Integer>();
 	
 	
 	private AttributeFilter attributeFilter_;
 	
+	private List<String> attributeNames = new ArrayList<String>();
+	private List<Attribute> attributes = new ArrayList<Attribute>();
+	
 	public IPatientDataTable()
 	{
-
+	    attributeNames.add(Patient.FIRST_NAME);
+	    attributeNames.add(Patient.LAST_NAME);
+//	    attributeNames.add(Patient.BIRTH_DATE);
+//	    attributeNames.add(Patient.DEATH_DATE);
 	}
 
 	public void init(Transaction t)
 	{
 	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
-	    addColumn("dataTable.patient.colName.dataSet", new DatasetFilter(t), "dataset.description", true,20);
-	    addColumn("dataTable.patient.colName.patientId", new StringFilter(), "patient.patientId", true,20);
-	    addColumn("dataTable.patient.colName.name", new StringFilter(), "patient.firstName", true,20);
-	    addColumn("dataTable.patient.colName.surName", new StringFilter(), "patient.lastName", true,20);
-	    addColumn("dataTable.patient.colName.attribute", getAttributeFilter(), "attributeValue.value", true,20);
-	    addColumn("dataTable.patient.colName.sampleId", new SampleIdFilter(), "vi.sampleId", false, 20);
+	    for(String attributeName : attributeNames){
+	        attributes.addAll(t.getAttributes(attributeName));
+	    }
+	    
+	    int width = 100 / (4 + attributes.size());
+	    
+	    addColumn(WString.tr("dataTable.patient.colName.dataSet"), new DatasetFilter(t), "dataset.description", true,width);
+	    addColumn(WString.tr("dataTable.patient.colName.patientId"), new StringFilter(), "p.patientId", true,width);
+	    
+	    int i=0;
+	    for(Attribute attribute : attributes){
+	        IFilter filter = AttributeFilter.createFilter(attribute, t);
+	        addColumn(WString.lt(attribute.getName()), filter, "av"+ (i++) +".value", true, width);
+	    }
+	    
+	    addColumn(WString.tr("dataTable.patient.colName.attribute"), getAttributeFilter(), "av"+ (i) +".value", true, width);
+	    addColumn(WString.tr("dataTable.patient.colName.sampleId"), new SampleIdFilter(), "vi.sampleId", false, width);
 	}
 	
-	public void addColumn(String colName, IFilter filter, String varName, boolean sortable, int width){
+	public void addColumn(WString colName, IFilter filter, String varName, boolean sortable, int width){
 	    colNames_.add(colName);
 	    filters_.add(filter);
 	    filterVarNames_.add(varName);
@@ -63,36 +77,32 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	    widths.add(width);
 	}
 
-	public String[] getColNames()
+	public WString[] getColNames()
 	{
-		return colNames_.toArray(new String[colNames_.size()]);
+		return colNames_.toArray(new WString[colNames_.size()]);
 	}
 
-	public List<Pair<Patient,PatientAttributeValue>> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortColIndex, boolean ascending)
+	public List<Object[]> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortColIndex, boolean ascending)
 	{
-	    if(!nullAttribute()){
-    	    HibernateFilterConstraint hfc = HibernateStringUtils.filterConstraintsQuery(this);
-    	    hfc.addArgument("attributeIi", getAttributeFilter().getAttribute().getAttributeIi());
-    	    
-    	    if(ValueTypes.getValueType(getAttributeFilter().getAttribute().getValueType()) == ValueTypes.NOMINAL_VALUE){
-    	    	return t.getPatientPatientAttributeNominalValues(startIndex, amountOfRows, filterVarNames_.get(sortColIndex), ascending, hfc);
-    	    }
-    	    else{
-    	        return t.getPatientPatientAttributeValues(startIndex, amountOfRows, filterVarNames_.get(sortColIndex), ascending, hfc);
-    	    }
-	    }
-	    else{
-	        String sort = filterVarNames_.get(sortColIndex);
-	        if(sort.equals("attributeValue.value"))
-	            sort = "patient.patientId";
-	        List<Patient> l = t.getPatients(startIndex, amountOfRows, sort, ascending, HibernateStringUtils.filterConstraintsQuery(this));
-	        List<Pair<Patient,PatientAttributeValue>> ret = new ArrayList<Pair<Patient,PatientAttributeValue>>();
-	        
-	        for(Patient p : l){
-	            ret.add(new Pair<Patient,PatientAttributeValue>(p,null));
-	        }
-	        return ret;
-	    }
+        HibernateFilterConstraint hfc = HibernateStringUtils.filterConstraintsQuery(this);
+        
+        List<Attribute> as;
+        if(!nullAttribute()){
+            as = new ArrayList<Attribute>();
+            as.addAll(attributes);
+            as.add(getAttributeFilter().getAttribute());
+        }
+        else
+            as = attributes;
+        
+        String sort;
+        IFilter f = filters_.get(sortColIndex); 
+        if(f != null && f instanceof AttributeFilter && nullAttribute())
+            sort = "p.patientId";
+        else
+            sort = filterVarNames_.get(sortColIndex);
+        
+        return t.getPatientWithAttributeValues(startIndex, amountOfRows, sort, ascending, hfc, as);
 	}
 
 	public IFilter[] getFilters()
@@ -100,45 +110,47 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 		return filters_.toArray(new IFilter[filters_.size()]);
 	}
 
-	public String[] getRowData(Pair<Patient, PatientAttributeValue> type)
+	public String[] getRowData(Object[] type)
 	{
+	    int rowIndex = 0;
+	    int objIndex = 0;
+	    
 		String[] toReturn = new String[colNames_.size()];
 
-		Set<Dataset> dataSets = type.getKey().getDatasets();
+		Patient p = (Patient)type[objIndex++];
+		Set<Dataset> dataSets = p.getDatasets();
 		for (Dataset set : dataSets)
 		{
 			if (set.getClosedDate() == null)
 			{
-				toReturn[0] = set.getDescription();
+				toReturn[rowIndex] = set.getDescription();
 			}
 		}
-		toReturn[1] = type.getKey().getPatientId();
-		toReturn[2] = type.getKey().getFirstName();
-		toReturn[3] = type.getKey().getLastName();
 		
-		if(!nullAttribute() && type.getValue() != null){
-		    ValueTypes vt = ValueTypes.getValueType(type.getValue().getAttribute().getValueType());
-    		if(vt == ValueTypes.NOMINAL_VALUE)
-    		    toReturn[4] = type.getValue().getAttributeNominalValue().getValue();
-    		else if(vt == ValueTypes.DATE)
-    		    toReturn[4] = DateUtils.getEuropeanFormat(type.getValue().getValue());
-    		else
-    		    toReturn[4] = type.getValue().getValue();
-		}
-		else{
-		    toReturn[4] = "";
+		toReturn[++rowIndex] = p.getPatientId();
+		
+		for(Attribute attribute : attributes){
+		    String value = (String)type[objIndex++];
+		    toReturn[++rowIndex] = AttributeFilter.formatValue(attribute, value);
 		}
 		
-		if(colNames_.size()==6) {
-			if(type.getKey().getViralIsolates().size()>0) {
-				ViralIsolate vi = (ViralIsolate)type.getKey().getViralIsolates().toArray()[0];
-				toReturn[5] = vi.getSampleId();
-				if(type.getKey().getViralIsolates().size()>1) {
-					toReturn[5] += ", ...";
-				}
-			} else {
-				toReturn[5] = "";
+		++rowIndex;
+		if(!nullAttribute()){
+		    String value = (String)type[objIndex++];
+		    toReturn[rowIndex] = AttributeFilter.formatValue(getAttributeFilter().getAttribute(), value);
+		}
+		else
+		    toReturn[rowIndex] = "";
+
+		++rowIndex;
+		if(p.getViralIsolates().size()>0) {
+			ViralIsolate vi = (ViralIsolate)p.getViralIsolates().toArray()[0];
+			toReturn[rowIndex] = vi.getSampleId();
+			if(p.getViralIsolates().size()>1) {
+				toReturn[rowIndex] += ", ...";
 			}
+		} else {
+			toReturn[rowIndex] = "";
 		}
 
 		return toReturn;
@@ -151,23 +163,22 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
     
     public long getDataSetSize(Transaction t)
     {
+        HibernateFilterConstraint hfc = HibernateStringUtils.filterConstraintsQuery(this);
+        List<Attribute> as;
         if(!nullAttribute()){
-            HibernateFilterConstraint hfc = HibernateStringUtils.filterConstraintsQuery(this);
-            hfc.addArgument("attributeIi", getAttributeFilter().getAttribute().getAttributeIi());
-            
-            if(ValueTypes.getValueType(getAttributeFilter().getAttribute().getValueType()) == ValueTypes.NOMINAL_VALUE)
-                return t.getPatientPatientAttributeNominalValuesCount(hfc);
-            else
-                return t.getPatientPatientAttributeValuesCount(hfc);
+            as = new ArrayList<Attribute>();
+            as.addAll(attributes);
+            as.add(getAttributeFilter().getAttribute());
         }
-        else{
-            return t.getPatientCount(HibernateStringUtils.filterConstraintsQuery(this));
-        }
+        else
+            as = attributes;
+        
+        return t.getPatientWithAttributeValuesCount(hfc,as);
     }
 
-    public void selectAction(Pair<Patient,PatientAttributeValue> selectedItem) 
+    public void selectAction(Object[] selectedItem) 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(selectedItem.getKey());
+        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem((Patient)selectedItem[0]);
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.selectNode();
@@ -230,29 +241,26 @@ public class IPatientDataTable implements IDataTable<Pair<Patient,PatientAttribu
 	    return ret;
 	}
 
-	public String[] getRowTooltips(Pair<Patient, PatientAttributeValue> type) {
+	public String[] getRowTooltips(Object[] type) {
 		String[] toReturn = new String[colNames_.size()];
+
+		for(int i = 0; i < toReturn.length; ++i)
+		    toReturn[i] = "";
+
+		Patient p = (Patient)type[0];
+		int rowIndex = colNames_.size()-1;
 		
-		if(colNames_.size()==6) {
-			if(type.getKey().getViralIsolates().size()>0) {
-				int count = 0;
-				for(ViralIsolate vi : type.getKey().getViralIsolates()) {
-					if(toReturn[5]==null)
-						toReturn[5] = vi.getSampleId();
-					else 
-						toReturn[5] += vi.getSampleId();
-					
-					count++;
-					
-					if(count<type.getKey().getViralIsolates().size()) {
-						toReturn[5] += ", ";
-					}
+		if(p.getViralIsolates().size()>0) {
+			int count = 0;
+			for(ViralIsolate vi : p.getViralIsolates()) {
+				toReturn[rowIndex] += vi.getSampleId();
+				++count;
+				
+				if(count<p.getViralIsolates().size()) {
+					toReturn[rowIndex] += ", ";
 				}
-			} else {
-				toReturn[5] = "";
 			}
 		}
-
 		return toReturn;
 	}
 }

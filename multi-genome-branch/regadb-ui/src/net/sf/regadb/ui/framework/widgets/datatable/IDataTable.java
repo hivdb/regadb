@@ -3,11 +3,12 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 import java.util.List;
 
 import net.sf.regadb.db.Transaction;
+import eu.webtoolkit.jwt.WString;
 
 
 public interface IDataTable <DataType>
 {
-	public String[] getColNames();
+	public WString[] getColNames();
 	
 	public void init(Transaction t);
 	

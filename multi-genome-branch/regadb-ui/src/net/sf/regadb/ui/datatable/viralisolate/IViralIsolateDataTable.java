@@ -20,18 +20,23 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 {
-	private static String [] _colNames = {"dataTable.viralIsolate.colName.sampleDate","dataTable.viralIsolate.colName.sampleId", 
-		"dataTable.viralIsolate.colName.protein", "dataTable.viralIsolate.colName.genome"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.viralIsolate.colName.sampleDate"),
+	    WString.tr("dataTable.viralIsolate.colName.sampleId"), 
+	    WString.tr("dataTable.viralIsolate.colName.protein"),
+	    WString.tr("dataTable.viralIsolate.colName.genome")};
+	
 	private static String[] filterVarNames_ = { "viralIsolate.sampleDate", "viralIsolate.sampleId", null, null};
 	
 	private IFilter[] filters_ = new IFilter[4];
 	
 	private static boolean [] sortable_ = {true, true, false, false};
 	private static int[] colWidths = {25,25,25,25};
-	public String[] getColNames()
+	public WString[] getColNames()
 	{
 		return _colNames;
 	}

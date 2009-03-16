@@ -89,9 +89,9 @@ public class DataTable<DataType> extends WTable
         colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
 		//put colheaders in the table
         int columnIndex = 0;
-		for(String colName : dataTableInterface_.getColNames())
+		for(WString colName : dataTableInterface_.getColNames())
 		{
-            colHeaders_[col] = new ColumnHeader(tr(colName), elementAt(row, col));
+            colHeaders_[col] = new ColumnHeader(colName, elementAt(row, col));
             elementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLength.Unit.Percentage), new WLength());
             elementAt(row, col).setStyleClass("column-title");
             if(dataTableInterface_.sortableFields()[columnIndex])

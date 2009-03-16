@@ -1153,10 +1153,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addObject(new DbObject("PatientImpl", null, "patient", "patient"));
         catalog.addObject(new DbObject("PatientImpl", "patientIi", "index", "index"));
         catalog.addObject(new DbObject("PatientImpl", "patientId", "id", "id"));
-        catalog.addObject(new DbObject("PatientImpl", "lastName", "name", "name"));
-        catalog.addObject(new DbObject("PatientImpl", "firstName", "surname", "surname"));
-        catalog.addObject(new DbObject("PatientImpl", "birthDate", "birth_date", "birth date"));
-        catalog.addObject(new DbObject("PatientImpl", "deathDate", "death_date", "death date"));
         catalog.addObject(new DbObject("PatientImpl", "patientDatasets", "dataset_count", "datasets").setValueType(ValueType.Number));
         catalog.addObject(new DbObject("PatientImpl", "testResults", "test_result_count", "test results").setValueType(ValueType.Number));
         catalog.addObject(new DbObject("PatientImpl", "viralIsolates", "viral_isolate_count", "viral isolates").setValueType(ValueType.Number));
@@ -1433,10 +1429,6 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         ///////////////////////////////////////
         // patients
         catalog.addAll(getPropertyComparisonClauses("PatientImpl", "patientId"));
-        catalog.addAll(getPropertyComparisonClauses("PatientImpl", "lastName"));
-   		catalog.addAll(getPropertyComparisonClauses("PatientImpl", "firstName"));
-   		catalog.addAll(getPropertyComparisonClauses("PatientImpl", "birthDate"));
-   		catalog.addAll(getPropertyComparisonClauses("PatientImpl", "deathDate"));
         catalog.addAll(getPropertyComparisonClauses(catalog.getRelation("PatientImpl", "Dataset"), catalog.getObject("Dataset", "description")));
 
         // patient custom attributes

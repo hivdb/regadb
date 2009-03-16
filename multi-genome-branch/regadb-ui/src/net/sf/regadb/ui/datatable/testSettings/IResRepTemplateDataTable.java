@@ -9,10 +9,11 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpretationTemplate>
 {
-    private static String [] _colNames = {"datatable.resistance.report.interpretation.colName.name"};
+    private static WString [] _colNames = {WString.tr("datatable.resistance.report.interpretation.colName.name")};
     private static String[] filterVarNames_ = {"resistanceInterpretationTemplate.name"};
     
     private IFilter[] filters_ = new IFilter[1];
@@ -20,7 +21,7 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     private static boolean [] sortable_ = {true};
     private static int[] colWidths = {100};
     
-    public String[] getColNames()
+    public WString[] getColNames()
     {
         return _colNames;
     }

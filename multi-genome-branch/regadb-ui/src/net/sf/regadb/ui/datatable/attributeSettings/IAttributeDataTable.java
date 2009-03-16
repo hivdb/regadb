@@ -9,10 +9,14 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class IAttributeDataTable implements IDataTable<Attribute>
 {
-    private static String [] _colNames = {"dataTable.attribute.colName.name","dataTable.attribute.colName.group", "dataTable.attribute.colName.valueType"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.attribute.colName.name"),
+        WString.tr("dataTable.attribute.colName.group"),
+        WString.tr("dataTable.attribute.colName.valueType")};
     private static String[] filterVarNames_ = { "attribute.name", "attribute.attributeGroup.groupName", "attribute.valueType.description"};
     private static int[] colWidths = {33,34,33};
     
@@ -20,7 +24,7 @@ public class IAttributeDataTable implements IDataTable<Attribute>
     
     private static boolean [] sortable_ = {true, true, true};
     
-    public String[] getColNames()
+    public WString[] getColNames()
     {
         return _colNames;
     }

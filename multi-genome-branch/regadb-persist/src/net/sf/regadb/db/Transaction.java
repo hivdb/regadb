@@ -7,7 +7,6 @@
 package net.sf.regadb.db;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.db.session.Login;
@@ -574,29 +573,61 @@ public class Transaction {
         return q.list();
     }
 
-    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeNominalValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, pav from PatientImpl patient join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue ","pav.attribute.attributeIi = :attributeIi");
-    }
+//    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeNominalValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
+//        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
+//                "select patient.patientIi, pav from PatientImpl patient join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue ","pav.attribute.attributeIi = :attributeIi");
+//    }
+//    
+//    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
+//        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
+//                "select patient.patientIi, attributeValue from PatientImpl patient join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi = :attributeIi");
+//    }
     
-    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, attributeValue from PatientImpl patient join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi = :attributeIi");
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValuesEx(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, String selectFrom, String where)
-    {
-        String datasetQuery = " join patient.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid and ";
-        String queryString = selectFrom + datasetQuery + where +" ";
+    private String getPatientFromWhereClause(HibernateFilterConstraint filterConstraints, List<Attribute> attributes){
+        StringBuilder from = new StringBuilder(" from PatientImpl p ");
+        
+        int i=0;
+        for(Attribute a : attributes){
+            String av = "av"+i;
+            
+            from.append(" left outer join p.patientAttributeValues ");
+            if(a.getAttributeNominalValues().size() == 0){
+                from.append(av +" with "+ av +".attribute.attributeIi = "+ a.getAttributeIi() +" " );
+                //from.append(av +" with ( p.patientIi = "+ av +".patientIi and "+ av +".attributeIi = "+ a.getAttributeIi() +") " );
+            }
+            else{
+                String pav = "p"+ av;
+                String att = "a"+i;
+                from.append(pav +" with "+ pav +".attribute.attributeIi = "+ a.getAttributeIi() +" left outer join "+ pav +".attributeNominalValue "+ av +" ");
+                //from.append(pav +" with p.patientIi = "+ pav +".patientIi left outer join AttributeNominalValue "+ av +" with "+ av +" = "+ pav  );
+            }
+            
+            ++i;
+        }
+        
+        String datasetQuery = " join p.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid ";
+        String queryString = from.toString() + datasetQuery+" ";
         
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += "and" + filterConstraints.clause_;
         }
-        //queryString += " group by patient ";
-        queryString += " order by " + sortField + (ascending?" asc":" desc") +", patient";
+        
+        return queryString;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Object[]> getPatientWithAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, List<Attribute> attributes)
+    {
+        String fromWhere = getPatientFromWhereClause(filterConstraints, attributes);
 
+        StringBuilder select = new StringBuilder("select p.patientIi");
+        for(int i=0; i< attributes.size(); ++i)
+            select.append(", av"+ i +".value");
+        
+        String queryString = select.toString() + fromWhere;
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", p";
+        
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
 
@@ -608,15 +639,28 @@ public class Transaction {
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
 
-        List<Pair<Patient,PatientAttributeValue>> res = new ArrayList<Pair<Patient,PatientAttributeValue>>();
-
         List<Object[]> l = q.list();
         for(Object[] o : l){
-            res.add(new Pair(getPatientByIi((Integer)o[0]),(PatientAttributeValue)o[1]));
+            o[0] = getPatientByIi((Integer)o[0]);
         }
-
-        return res;
+        return l;
     }
+    
+    public long getPatientWithAttributeValuesCount(HibernateFilterConstraint filterConstraints, List<Attribute> attributes){
+        String select = "select count(p) ";
+        String fromWhere = getPatientFromWhereClause(filterConstraints, attributes);
+        String queryString = select + fromWhere;
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("uid", login.getUid());
+
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        return ((Long)q.uniqueResult()).longValue();
+    }
+    
     
     public String getPatientsQuery()
     {

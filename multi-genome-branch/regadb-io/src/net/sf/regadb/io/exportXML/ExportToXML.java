@@ -447,30 +447,6 @@ public class ExportToXML
 			patientIdprimitiveValEl.addContent(Patientvar.getPatientId().toString());
 			parentNode.addContent(patientIdprimitiveValEl);
 		}
-		if(Patientvar.getLastName()!=null)
-		{
-			Element lastNameprimitiveValEl = new Element("lastName");
-			lastNameprimitiveValEl.addContent(Patientvar.getLastName().toString());
-			parentNode.addContent(lastNameprimitiveValEl);
-		}
-		if(Patientvar.getFirstName()!=null)
-		{
-			Element firstNameprimitiveValEl = new Element("firstName");
-			firstNameprimitiveValEl.addContent(Patientvar.getFirstName().toString());
-			parentNode.addContent(firstNameprimitiveValEl);
-		}
-		if(Patientvar.getBirthDate()!=null)
-		{
-			Element birthDateprimitiveValEl = new Element("birthDate");
-			birthDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Patientvar.getBirthDate()));
-			parentNode.addContent(birthDateprimitiveValEl);
-		}
-		if(Patientvar.getDeathDate()!=null)
-		{
-			Element deathDateprimitiveValEl = new Element("deathDate");
-			deathDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(Patientvar.getDeathDate()));
-			parentNode.addContent(deathDateprimitiveValEl);
-		}
 		Element patientEventValuesEl = new Element("patientEventValues");
 		parentNode.addContent(patientEventValuesEl);
 		for (PatientEventValue PatientEventValueloopvar : Patientvar.getPatientEventValues())

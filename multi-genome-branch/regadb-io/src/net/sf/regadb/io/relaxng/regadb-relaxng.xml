@@ -8,30 +8,6 @@
         </data>
       </element>
     </optional>
-    <optional>
-      <element name="lastName">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">50</param>
-        </data>
-      </element>
-    </optional>
-    <optional>
-      <element name="firstName">
-        <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">50</param>
-        </data>
-      </element>
-    </optional>
-    <optional>
-      <element name="birthDate">
-        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
-    <optional>
-      <element name="deathDate">
-        <data type="date" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" />
-      </element>
-    </optional>
     <element name="patientEventValues">
       <zeroOrMore>
         <element name="patientEventValues-el">

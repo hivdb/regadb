@@ -9,17 +9,22 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ITestDataTable implements IDataTable<Test>
 {
-	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType", "dataTable.test.colName.genome" };
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.test.colName.description"),
+	    WString.tr("dataTable.test.colName.testType"),
+	    WString.tr("dataTable.test.colName.genome") };
+	
 	private static String[] filterVarNames_ = {"test.description", "test.testType.description", "case when genome is null then '' else genome.organismName end" };
 
 	private IFilter[] filters_ = new IFilter[3];
 
 	private static boolean [] sortable_ = {true, true, true};
 	private static int[] colWidths = {45,45,10};
-	public String[] getColNames() 
+	public WString[] getColNames() 
 	{
 		return _colNames;
 	}

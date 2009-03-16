@@ -2,11 +2,11 @@ package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -62,6 +62,8 @@ public class SinglePatientForm extends FormWidget
     private DateField deathDateTF;
     
     //attributes
+    private Set<String> excludeList = new HashSet<String>();
+    
     private WGroupBox attributesGroup_;
     private WTable attributesGroupTable_;
     private ArrayList<Pair<IFormField, PatientAttributeValue>> attributeList_ = new ArrayList<Pair<IFormField, PatientAttributeValue>>();
@@ -78,7 +80,12 @@ public class SinglePatientForm extends FormWidget
 	}
     
     public void init()
-    {   
+    {
+        addExclude(Patient.FIRST_NAME);
+        addExclude(Patient.LAST_NAME);
+        addExclude(Patient.BIRTH_DATE);
+        addExclude(Patient.DEATH_DATE);
+        
         //general group
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
@@ -125,6 +132,13 @@ public class SinglePatientForm extends FormWidget
         fillData(patient_);
         
         addControlButtons();
+    }
+    
+    private void addExclude(String attribute){
+        excludeList.add(attribute);
+    }
+    private boolean isExcluded(Attribute attribute){
+        return excludeList.contains(attribute.getName());
     }
     
     private boolean checkPatientId(String id){
@@ -246,6 +260,9 @@ public class SinglePatientForm extends FormWidget
                 
                 for(Pair<Attribute, PatientAttributeValue> attrEl : entry.getValue())
                 {
+                    if(isExcluded(attrEl.getKey()))
+                        continue;
+                    
                     rowToPlace++;
                     addRowIfNotEmpty(rowToPlace);
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
@@ -365,11 +382,11 @@ public class SinglePatientForm extends FormWidget
         }
         
         patient_.setPatientId(getNulled(idTF.text()));
-        patient_.setFirstName(getNulled(firstNameTF.text()));
-        patient_.setLastName(getNulled(lastNameTF.text()));
+        patient_.setFirstName(t, getNulled(firstNameTF.text()));
+        patient_.setLastName(t, getNulled(lastNameTF.text()));
      
-        patient_.setBirthDate(birthDateTF.getDate());
-        patient_.setDeathDate(deathDateTF.getDate());
+        patient_.setBirthDate(t, birthDateTF.getDate());
+        patient_.setDeathDate(t, deathDateTF.getDate());
         
         Object label;
         Object tf;

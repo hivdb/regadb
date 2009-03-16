@@ -12,6 +12,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.TimestampFilter;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
@@ -98,18 +99,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         }
         
         if(attribute != null){
-            ValueTypes vt = ValueTypes.getValueType(attribute_.getValueType());
-                
-            if(vt == ValueTypes.DATE){
-                filter_ = new TimestampFilter(RegaDBSettings.getInstance().getDateFormat());
-            }
-            if(vt == ValueTypes.LIMITED_NUMBER || vt == ValueTypes.STRING || vt == ValueTypes.NUMBER){
-                filter_ = new StringFilter();
-            }
-            if(vt == ValueTypes.NOMINAL_VALUE){
-                filter_ = new AttributeNominalValueFilter(getTransaction(),attribute_);
-            }
-            
+            filter_ = createFilter(attribute_, getTransaction());
             addWidget(filter_.getFilterWidget());
         }
         else{
@@ -128,6 +118,28 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         return transaction_;
     }
     
+    public static IFilter createFilter(Attribute attribute, Transaction t){
+        ValueTypes vt = ValueTypes.getValueType(attribute.getValueType());
+        if(vt == ValueTypes.DATE){
+            return new TimestampFilter(RegaDBSettings.getInstance().getDateFormat());
+        }
+        if(vt == ValueTypes.NOMINAL_VALUE){
+            return new AttributeNominalValueFilter(t,attribute);
+        }
+        return new StringFilter();
+    }
+    
+    public static String formatValue(Attribute attribute, String value){
+        if(value == null)
+            return "";
+        
+        ValueTypes vt = ValueTypes.getValueType(attribute.getValueType());
+        if(vt == ValueTypes.DATE)
+            return DateUtils.getEuropeanFormat(value);
+        else
+            return value;
+    }
+    
     private void setAttributeCombo(MyComboBox attributeCombo_) {
         this.attributeCombo_ = attributeCombo_;
     }
@@ -136,7 +148,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         return attributeCombo_;
     }
 
-    public class AttributeNominalValueFilter extends ListFilter
+    public static class AttributeNominalValueFilter extends ListFilter
     {
         private Attribute attribute_;
         
