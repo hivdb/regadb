@@ -14,7 +14,6 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.Filter;
 
-import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -572,16 +571,6 @@ public class Transaction {
         
         return q.list();
     }
-
-//    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeNominalValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-//        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-//                "select patient.patientIi, pav from PatientImpl patient join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue ","pav.attribute.attributeIi = :attributeIi");
-//    }
-//    
-//    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-//        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-//                "select patient.patientIi, attributeValue from PatientImpl patient join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi = :attributeIi");
-//    }
     
     private String getPatientFromWhereClause(HibernateFilterConstraint filterConstraints, List<Attribute> attributes){
         StringBuilder from = new StringBuilder(" from PatientImpl p ");
@@ -676,41 +665,6 @@ public class Transaction {
     {
         String queryString =    "select count(patient) " +
                                 getPatientsQuery();
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "and" + filterConstraints.clause_;
-        }
-        
-        Query q = session.createQuery(queryString);
-        q.setParameter("uid", login.getUid());
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        return ((Long)q.uniqueResult()).longValue();
-    }
-    
-    public long getPatientPatientAttributeValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi=:attributeIi",filterConstraints); 
-    }
-
-    public long getPatientPatientAttributeNominalValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue","pav.attribute.attributeIi=:attributeIi",filterConstraints); 
-    }
-
-    private long getPatientPatientAttributeValuesCountEx(String from, String where, HibernateFilterConstraint filterConstraints) 
-    {
-        String queryString =    "select count(patient) " +
-            "from PatientImpl as patient " +
-            "join patient.patientDatasets as patient_dataset " +
-            "join patient_dataset.id.dataset as dataset " +
-            "join dataset.datasetAccesses access " +
-            from +
-            " where access.permissions >= 1 " +
-            "and access.id.settingsUser.uid = :uid and "+
-            where +" ";
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += "and" + filterConstraints.clause_;
