@@ -2,14 +2,19 @@ package net.sf.regadb.ui.form.batchtest;
 
 import java.util.List;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
-import net.sf.regadb.service.wts.TestNtSequenceAnalysis;
+import net.sf.regadb.service.wts.SubtypeAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import eu.webtoolkit.jwt.WString;
 
@@ -25,6 +30,14 @@ public class BatchTestRunningTest extends Thread {
 		percent = 0;
         t = RegaDBMain.getApp().createTransaction();
 		copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
+	}
+	
+	@Deprecated //TODO remove (made for debugging)
+	public BatchTestRunningTest(Test test, Transaction t, Login login){
+		this.test = test;
+		percent = 0;
+        this.t = t;
+		copiedLogin = login.copyLogin();
 	}
 	
 	public void run() {
@@ -43,7 +56,10 @@ public class BatchTestRunningTest extends Thread {
 				t.commit();
 				new SequenceBatchRun(list, copiedLogin).run();
 			}
-//TODO			} else if ( def.equals("iets met viral isolates") ) {
+			else if ( testObject.equals("viral isolate analysis")) {
+				//TODO
+				System.err.println("test '" + testObject + "' not yet supported");
+			}			
 			else {
 				System.err.println("test '" + testObject + "' not processable");
 				status = BatchTestStatus.FAILED;
@@ -140,10 +156,31 @@ public class BatchTestRunningTest extends Thread {
 
 		public void runSingleTest(NtSequence t, Login l) {
 			try {
-                new TestNtSequenceAnalysis(t, test, l.getUid()).launch(l);
+				for(TestResult res : t.getTestResults()){
+					if(res.getValue() != null && !res.getValue().equals("")){
+						return;
+					}
+				}
+				Transaction trans = l.createTransaction();
+				Genome g = trans.getGenome("HIV-1");
+				trans.commit();
+				
+				new SubtypeAnalysis(t, test, g, l.getUid()).launch(l);
+                
             } catch (ServiceException e) {
                 e.printStackTrace();
             }
 		}
-	}	
+	}
+	
+	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException{
+//		System.setProperty("http.proxyHost", "www-proxy");
+//		System.setProperty("http.proxyPort", "3128");	
+
+		Login login = Login.authenticate("gbehey0", "bla123");
+		Transaction t = login.createTransaction();
+		t.commit();
+		
+		new BatchTestRunningTest(t.getTest(1),login.createTransaction(),login).run();
+	}
 }
