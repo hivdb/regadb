@@ -321,8 +321,8 @@ public class ImportPortugalDBHIV2
                 {
                     lastName = nameTokens[0];
                 }
-                p.setFirstName(firstName);
-                p.setLastName(lastName);
+                Utils.setFirstName(p, firstName);
+                Utils.setLastName(p, lastName);
                 //Firstname+lastname
 
                 //Initials
@@ -356,7 +356,7 @@ public class ImportPortugalDBHIV2
                 
                 //Birth date
                 birth_date = patientTable.valueAt(5, i);
-                p.setBirthDate(Utils.parseAccessDate(birth_date));
+                Utils.setBirthDate(p, Utils.parseAccessDate(birth_date));
                 if(p.getBirthDate()==null)
                 {
                     System.err.println("No birthdate avialable for patientId:" + patientId);

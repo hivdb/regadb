@@ -189,7 +189,7 @@ public class ImportIrsicaixa {
             if(!birthdate.equals("NULL")) {
                 Date birthdateDate = Utils.parseMysqlDate(birthdate);
                 if(birthdateDate!=null)
-                    p.setBirthDate(birthdateDate);
+                    Utils.setBirthDate(p, birthdateDate);
                 else
                     logger_.logWarning("Unparsable birthdate for patient with patientId " + patientId + " for date " + birthdate);
             }

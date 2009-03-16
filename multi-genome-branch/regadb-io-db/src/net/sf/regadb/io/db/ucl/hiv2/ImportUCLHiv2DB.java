@@ -254,7 +254,7 @@ public class ImportUCLHiv2DB {
 			} else if(name.equals("PATIENT")) {
 				p.setPatientId(value);
 			} else if(name.equals("BIRTH_D")) {
-				p.setBirthDate(getDate(value));
+				Utils.setBirthDate(p, getDate(value));
 			} else if(name.equals("ENROL_D")) {
 				p.createPatientAttributeValue(enrolmentDateA).setValue(getDate(value).getTime()+"");
 			} else if(name.equals("GENDER")) {

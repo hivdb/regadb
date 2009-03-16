@@ -146,7 +146,7 @@ public class ParseConfirmation {
                 }
                 if(birthDate!=null) {
                     if(p.getBirthDate()==null) {
-                        p.setBirthDate(birthDate);
+                        Utils.setBirthDate(p, birthDate);
                     } else {
                         if(!p.getBirthDate().equals(birthDate)) {
                             ConsoleLogger.getInstance().logWarning("Confirmation birthDate and original birthDate are not the same for Patient with id: "+p.getPatientId() + "(pat code =" + code_pat + ")");

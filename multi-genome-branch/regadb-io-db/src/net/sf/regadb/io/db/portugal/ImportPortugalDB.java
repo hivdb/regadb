@@ -672,7 +672,7 @@ public class ImportPortugalDB {
 
                     patient = new Patient();
                     patient.setPatientId(patientId);
-                    patient.setBirthDate(Utils.createDate(yearBirth, "1", null));
+                    Utils.setBirthDate(patient, Utils.createDate(yearBirth, "1", null));
                     
 //                    if(sampleTable.valueAt(CSampleIdProtocol, row).contains("S")){
 //                        patient.addPatientToDataset(spreadDataset);

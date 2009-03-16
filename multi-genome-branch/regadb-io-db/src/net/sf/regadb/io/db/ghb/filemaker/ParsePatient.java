@@ -91,10 +91,10 @@ public class ParsePatient {
 
                 if(p!=null) {
                     if(p.getBirthDate() == null && birthDate != null){
-                        p.setBirthDate(birthDate);
+                        Utils.setBirthDate(p, birthDate);
                     }
                     if(deathDate != null){
-                        p.setDeathDate(deathDate);
+                        Utils.setDeathDate(p, deathDate);
                     }
                     
                     if(!isEmpty(SPatCode)){

@@ -115,12 +115,12 @@ public class ParsePatients extends Parser{
                 p.setPatientId(id);
                 
                 if((d = getDate(birthDate)) != null)
-                    p.setBirthDate(d);
+                    Utils.setBirthDate(p, d);
                 else
                     logWarn(p,"Invalid birth date",patientsFile,i,birthDate);
                 
                 if((d = getDate(deathDate)) != null)
-                	p.setDeathDate(d);
+                	Utils.setDeathDate(p, d);
                 
                 if((d = getDate(immigrationDate)) != null)
                 	p.createPatientAttributeValue(immigrationDateAttr).setValue(d.getTime()+"");
@@ -146,10 +146,10 @@ public class ParsePatients extends Parser{
                     p.createPatientAttributeValue(patientNumber).setValue(ptNum);
                 }
                 if(check(privateName)){
-                    p.setFirstName(privateName);
+                    Utils.setFirstName(p, privateName);
                 }
                 if(check(familyName)){
-                    p.setLastName(familyName);
+                    Utils.setLastName(p, familyName);
                 }
                 if(check(firstWB)){
                     Date testDate = getDate(firstWB);

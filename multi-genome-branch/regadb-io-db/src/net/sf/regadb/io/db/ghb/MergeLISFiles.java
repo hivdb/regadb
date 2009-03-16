@@ -173,7 +173,7 @@ public class MergeLISFiles {
             //p.setLastName(line.get(headers.indexOf("p.naam")));
         }
         
-        p.setBirthDate(birthDate);
+        Utils.setBirthDate(p, birthDate);
         if(!containsAttribute(emdAttribute, p))
             p.createPatientAttributeValue(emdAttribute).setValue(emd);
         if(!containsAttribute(gender.attribute, p))

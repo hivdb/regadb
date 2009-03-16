@@ -169,7 +169,7 @@ public class ImportEgazMonizHiv2 {
 				if(!birthDate.equals("")) {
 					try {
 						Date d = dateFormatter.parse(birthDate);
-						p.setBirthDate(d);
+						Utils.setBirthDate(p, d);
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}

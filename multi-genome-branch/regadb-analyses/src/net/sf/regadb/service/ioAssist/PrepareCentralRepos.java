@@ -39,6 +39,10 @@ public class PrepareCentralRepos
         Element tests = new Element("tests");
         
         //Attributes
+        export.writeTopAttribute(StandardObjects.getFirstNameAttribute(), attributes);
+        export.writeTopAttribute(StandardObjects.getLastNameAttribute(), attributes);
+        export.writeTopAttribute(StandardObjects.getBirthDateAttribute(), attributes);
+        export.writeTopAttribute(StandardObjects.getDeathDateAttribute(), attributes);
         export.writeTopAttribute(StandardObjects.getGenderAttribute(), attributes);
         export.writeTopAttribute(StandardObjects.getEthnicityAttribute(), attributes);
         export.writeTopAttribute(StandardObjects.getGeoGraphicOriginAttribute(), attributes);

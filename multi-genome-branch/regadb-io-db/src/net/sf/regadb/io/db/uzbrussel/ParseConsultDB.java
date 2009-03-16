@@ -151,14 +151,14 @@ public class ParseConsultDB {
             
             if(birthDate!=null) {
                 try {
-                    p.setBirthDate(dateFormatter.parse(birthDate));
+                    Utils.setBirthDate(p, dateFormatter.parse(birthDate));
                 } catch (ParseException e) {
                     ConsoleLogger.getInstance().logError("Cannot parse patient's birthdate: " + birthDate);
                 }
             }
             if(deathDate!=null) {
                 try {
-                    p.setDeathDate(dateFormatter.parse(deathDate));
+                    Utils.setDeathDate(p, dateFormatter.parse(deathDate));
                 } catch (ParseException e) {
                     ConsoleLogger.getInstance().logError("Cannot parse patient's deathdate: " + deathDate);
                 }

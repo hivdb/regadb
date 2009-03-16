@@ -227,7 +227,7 @@ public class ImportUNIBS
             	
             	if(Utils.checkColumnValueForEmptiness("date of Birth", birthDate, i, patientId))
             	{
-            		p.setBirthDate(Utils.parseMMDDYYHHMMSS(birthDate));
+            		Utils.setBirthDate(p, Utils.parseMMDDYYHHMMSS(birthDate));
             	}
             	
             	if(Utils.checkColumnValueForExistance("nationality", nationality, i, patientId))
@@ -289,7 +289,7 @@ public class ImportUNIBS
     		{
     			if(Utils.checkColumnValueForExistance("date of death", deathDate, i, deathPatientID))
             	{
-            		p.setDeathDate(Utils.parseMMDDYYHHMMSS(deathDate));
+            		Utils.setDeathDate(p,Utils.parseMMDDYYHHMMSS(deathDate));
             	}
     			
     			if(Utils.checkColumnValueForExistance("death reason", deathReason, i, deathPatientID))

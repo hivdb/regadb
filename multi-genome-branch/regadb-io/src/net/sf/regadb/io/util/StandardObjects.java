@@ -19,6 +19,7 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -56,6 +57,10 @@ public class StandardObjects {
     
     private static AttributeGroup regadbAttributeGroup;
     
+    private static Attribute firstNameAttribute;
+    private static Attribute lastNameAttribute;
+    private static Attribute birthDateAttribute;
+    private static Attribute deathDateAttribute;
     private static Attribute genderAttribute;
     private static Attribute ethnicityAttribute;
     private static Attribute geographicOriginAttribute;
@@ -124,11 +129,16 @@ public class StandardObjects {
         
         regadbAttributeGroup = new AttributeGroup("RegaDB");
         
+        firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType());
+        lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType());
+        birthDateAttribute          = createAttribute(Patient.BIRTH_DATE, getDateValueType());
+        deathDateAttribute          = createAttribute(Patient.DEATH_DATE, getDateValueType());
+        
         genderAttribute             = createGender();
         ethnicityAttribute          = createEthnicity();
         geographicOriginAttribute   = createGeographicOrigin();
         transmissionGroupAttribute  = createTransmissionGroup();
-        clinicalFileNumberAttribute = createClinicalFileNumber();
+        clinicalFileNumberAttribute = createAttribute("Clinical File Number", getStringValueType());
 //        countryOfOriginAttribute    = createCountryOfOrigin();
         
         patientTestObject           = new TestObject("Patient test", 0);
@@ -334,6 +344,18 @@ public class StandardObjects {
         return regadbAttributeGroup;
     }
     
+    public static Attribute getFirstNameAttribute(){
+        return firstNameAttribute;
+    }
+    public static Attribute getLastNameAttribute(){
+        return lastNameAttribute;
+    }
+    public static Attribute getBirthDateAttribute(){
+        return birthDateAttribute;
+    }
+    public static Attribute getDeathDateAttribute(){
+        return deathDateAttribute;
+    }
     public static Attribute getGenderAttribute(){
         return genderAttribute;
     }
@@ -633,6 +655,13 @@ public class StandardObjects {
         return new Test(pregnancyType, "Pregnancy");
     }
 
+    private static Attribute createAttribute(String name, ValueType vt){
+        Attribute a = new Attribute(name);
+        a.setAttributeGroup(getRegaDBAttributeGroup());
+        a.setValueType(vt);
+        return a;
+    }
+    
     private static Attribute createGender()
     {
         Attribute transmissionGroup = new Attribute("Gender");
@@ -693,15 +722,6 @@ public class StandardObjects {
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "caucasian"));
         
         return ethnicity;
-    }
-    
-    private static Attribute createClinicalFileNumber()
-    {
-        Attribute clinicalFileNumber = new Attribute("Clinical File Number");
-        clinicalFileNumber.setAttributeGroup(getRegaDBAttributeGroup());
-        clinicalFileNumber.setValueType(getStringValueType());
-        
-        return clinicalFileNumber;
     }
 
     public static TestType getGssTestType(Genome genome) {

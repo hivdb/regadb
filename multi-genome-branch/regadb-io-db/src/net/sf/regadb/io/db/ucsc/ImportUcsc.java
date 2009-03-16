@@ -255,7 +255,7 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValueForEmptiness("date of Birth", birthDate, i, patientId))
             	{
-            		p.setBirthDate(Utils.parseEnglishAccessDate(birthDate));
+            		Utils.setBirthDate(p, Utils.parseEnglishAccessDate(birthDate));
             	}
             	
             	if(Utils.checkColumnValueForExistance("birthplace", birthPlace, i, patientId))
@@ -298,7 +298,7 @@ public class ImportUcsc
             	
             	if(Utils.checkColumnValueForExistance("date of death", deathDate, i, patientId))
             	{
-            		p.setDeathDate(Utils.parseEnglishAccessDate(deathDate));
+            		Utils.setDeathDate(p, Utils.parseEnglishAccessDate(deathDate));
             	}
             	
             	if(Utils.checkColumnValueForExistance("death reason", deathReason, i, patientId))

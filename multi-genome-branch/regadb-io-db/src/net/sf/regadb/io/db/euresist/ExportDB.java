@@ -114,11 +114,11 @@ public class ExportDB {
             
             s = rs.getString("year_of_birth");
             if(check(s))
-                p.setBirthDate(yearDf.parse(s));
+                Utils.setBirthDate(p, yearDf.parse(s));
             
             sDate = rs.getDate("deceased_date");
             if(sDate != null)
-                p.setDeathDate(convert(sDate));
+                Utils.setDeathDate(p, convert(sDate));
             
             createAttributeNominalValue(p,tgMap, rs.getString("riskID"));
             createAttributeNominalValue(p,genMap,rs.getString("genderID"));

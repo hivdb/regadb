@@ -34,6 +34,7 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.FileProvider;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -798,6 +799,12 @@ public class Utils {
          pav.setValue(value);
          return pav;
      }
+     
+     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, Date date){
+         PatientAttributeValue pav = createPatientAttributeValue(attribute);
+         pav.setValue(date.getTime()+"");
+         return pav;
+     }
 
      public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, AttributeNominalValue anv){
          PatientAttributeValue pav = createPatientAttributeValue(attribute);
@@ -883,4 +890,45 @@ public class Utils {
 	        }
 		
 	}
+	
+	public static PatientAttributeValue setFirstName(Patient p, String name){
+	    if(name == null)
+            return null;
+	    
+	    name = name.trim();
+	    if(name.length() == 0)
+	        return null;
+	    
+	    PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getFirstNameAttribute(), name);
+	    p.addPatientAttributeValue(pav);
+	    return pav;
+	}
+	public static PatientAttributeValue setLastName(Patient p, String name){
+	    if(name == null)
+            return null;
+	    
+	    name = name.trim();
+        if(name.length() == 0)
+            return null;
+	    
+        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getLastNameAttribute(), name);
+        p.addPatientAttributeValue(pav);
+        return pav;
+    }
+	public static PatientAttributeValue setBirthDate(Patient p, Date date){
+	    if(date == null)
+	        return null;
+	    
+        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getBirthDateAttribute(), date.getTime() +"");
+        p.addPatientAttributeValue(pav);
+        return pav;
+    }
+	public static PatientAttributeValue setDeathDate(Patient p, Date date){
+        if(date == null)
+            return null;
+        
+        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getDeathDateAttribute(), date.getTime() +"");
+        p.addPatientAttributeValue(pav);
+        return pav;
+    }
 }
