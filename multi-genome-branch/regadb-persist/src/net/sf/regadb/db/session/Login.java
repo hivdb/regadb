@@ -106,7 +106,7 @@ public class Login {
     }
 
     public void closeSession() {
-        if("org.hibernate.dialect.HSQLDialect".equals(RegaDBSettings.getInstance().getPropertyValue("hibernate.dialect"))) {
+        if("org.hibernate.dialect.HSQLDialect".equals(RegaDBSettings.getInstance().getHibernateConfig().getDialect())) {
             SQLQuery shutdown = session_.createSQLQuery("SHUTDOWN");
             shutdown.executeUpdate();
         }

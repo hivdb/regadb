@@ -52,7 +52,7 @@ public class HibernateUtil {
     
     public static void setProperty(String name, Configuration conf)
     {
-        String value = RegaDBSettings.getInstance().getPropertyValue(name);
+        String value = RegaDBSettings.getInstance().getHibernateConfig().getProperty(name);
         
         System.err.println("Settings:"+ " name"+ name +" val"+value);
         if(value!=null)
@@ -65,10 +65,10 @@ public class HibernateUtil {
     
     public static Connection getJDBCConnection() {
         try {
-            Class.forName(RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.driver_class"));
-            String url = RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.url");
-            String userName = RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.username");
-            String password = RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.password");
+            Class.forName(RegaDBSettings.getInstance().getHibernateConfig().getDriverClass());
+            String url = RegaDBSettings.getInstance().getHibernateConfig().getUrl();
+            String userName = RegaDBSettings.getInstance().getHibernateConfig().getUsername();
+            String password = RegaDBSettings.getInstance().getHibernateConfig().getPassword();
             Connection conn = DriverManager.getConnection(url, userName, password);
             return conn;
         } catch (ClassNotFoundException e) {
