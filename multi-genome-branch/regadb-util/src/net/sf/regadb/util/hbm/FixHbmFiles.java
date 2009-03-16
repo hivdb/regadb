@@ -73,15 +73,15 @@ public class FixHbmFiles
         Object o;
         Element toRemoveGeneratorFrom = null;
         
-//        FilterDef fd = new FilterDef("attributeFilter");
-//        fd.addParam("attribute_ii_list", "integer");
-//        filterDefs.put("net.sf.regadb.db.Attribute",fd);
-//        
-//        FilterInst fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)");
-//        filterInsts.put("net.sf.regadb.db.Attribute", fi);
-//        
-//        fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)", "patientAttributeValues");
-//        filterInsts.put("net.sf.regadb.db.PatientImpl", fi);
+        FilterDef fd = new FilterDef("attributeFilter");
+        fd.addParam("attribute_ii_list", "integer");
+        filterDefs.put("net.sf.regadb.db.Attribute",fd);
+        
+        FilterInst fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)");
+        filterInsts.put("net.sf.regadb.db.Attribute", fi);
+        
+        fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)", "patientAttributeValues");
+        filterInsts.put("net.sf.regadb.db.PatientImpl", fi);
         
         
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
