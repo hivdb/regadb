@@ -1,0 +1,16 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Setting Files" >> monitor_file
+
+echo "Starting Generation of Graphs" >> $monitor_file
+EvolutionGraphs ../../bn/mut_treated ../../bn/best.cft ../../bn/mutations ../../bn/wildtypes ../../bn/doublepositions major minor ../../long.fasta 500
+
+echo "Converting .dot to .ps"
+for i in *.dot; do dot -T ps $i > $i.ps; done
+
+
+rm "$running_file"
+echo "ENDED_SUCCES" > "$1/.ended"
