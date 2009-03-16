@@ -7,7 +7,6 @@ public abstract class FormConfig implements IConfigParser{
 	
 	public FormConfig(String formName){
 		setFormName(formName);
-		setDefaults();
 	}
 
 	public String getXmlTag() {

@@ -12,7 +12,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class RegaDBSettings {
-	private static HashMap<String, IConfigParser> configs = new HashMap<String, IConfigParser>();
+	private HashMap<String, IConfigParser> configs = new HashMap<String, IConfigParser>();
 
     private static RegaDBSettings instance_ = null;
     

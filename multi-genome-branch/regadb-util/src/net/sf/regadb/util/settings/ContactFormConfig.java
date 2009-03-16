@@ -31,13 +31,14 @@ public class ContactFormConfig extends FormConfig {
 
     public static final String NAME = "form.multipleTestResults.contact";
     
-    private static List<TestItem> tests = new ArrayList<TestItem>();
-    private static List<EventItem> events = new ArrayList<EventItem>();
+    private List<TestItem> tests = new ArrayList<TestItem>();
+    private List<EventItem> events = new ArrayList<EventItem>();
     
     private boolean useContactDate = false;
 
 	public ContactFormConfig() {
 		super(NAME);
+		setDefaults();
 	}
 
 	@Override

@@ -41,7 +41,6 @@ public class ProxyConfig implements IConfigParser {
 
 	public void setDefaults() {
 		proxyList.clear();
-		//proxyList.add(new ProxyServer("www-proxy","3128"));
 	}
 
 	public Element toXml() {

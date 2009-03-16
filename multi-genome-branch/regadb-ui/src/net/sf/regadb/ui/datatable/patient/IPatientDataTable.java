@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUti
 import net.sf.regadb.ui.tree.GenericSelectedItem;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.SelectPatientFormConfig.AttributeItem;
 import eu.webtoolkit.jwt.WString;
 
 public class IPatientDataTable implements IDataTable<Object[]>
@@ -35,23 +36,20 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	
 	private AttributeFilter attributeFilter_;
 	
-	private List<String> attributeNames = new ArrayList<String>();
 	private List<Attribute> attributes = new ArrayList<Attribute>();
 	
 	public IPatientDataTable()
 	{
-	    attributeNames.add(Patient.FIRST_NAME);
-	    attributeNames.add(Patient.LAST_NAME);
-//	    attributeNames.add(Patient.BIRTH_DATE);
-//	    attributeNames.add(Patient.DEATH_DATE);
 	}
 
 	public void init(Transaction t)
 	{
 	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
-	    for(String attributeName : attributeNames){
-	        attributes.addAll(t.getAttributes(attributeName));
+	    for(AttributeItem ai : RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributes()){
+	    	Attribute a = t.getAttribute(ai.getName(), ai.getGroup());
+	    	if(a != null)
+	    		attributes.add(a);
 	    }
 	    
 	    int width = 100 / (4 + attributes.size());
