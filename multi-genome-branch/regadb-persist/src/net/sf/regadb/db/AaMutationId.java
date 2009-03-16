@@ -6,25 +6,18 @@ package net.sf.regadb.db;
  */
 public class AaMutationId implements java.io.Serializable {
 
-    // Fields    
-
     private short mutationPosition;
 
     private AaSequence aaSequence;
 
-    // Constructors
-
-    /** default constructor */
     public AaMutationId() {
     }
 
-    /** full constructor */
     public AaMutationId(short mutationPosition, AaSequence aaSequence) {
         this.mutationPosition = mutationPosition;
         this.aaSequence = aaSequence;
     }
 
-    // Property accessors
     public short getMutationPosition() {
         return this.mutationPosition;
     }

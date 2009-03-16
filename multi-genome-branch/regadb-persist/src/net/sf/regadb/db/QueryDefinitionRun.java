@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public class QueryDefinitionRun implements java.io.Serializable {
 
-    // Fields    
-
     private Integer queryDefinitionRunIi;
 
     private QueryDefinition queryDefinition;
@@ -31,18 +29,13 @@ public class QueryDefinitionRun implements java.io.Serializable {
     private Set<QueryDefinitionRunParameter> queryDefinitionRunParameters = new HashSet<QueryDefinitionRunParameter>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public QueryDefinitionRun() {
     }
 
-    /** minimal constructor */
     public QueryDefinitionRun(String name) {
         this.name = name;
     }
 
-    /** full constructor */
     public QueryDefinitionRun(QueryDefinition queryDefinition,
             SettingsUser settingsUser, Date startdate, Date enddate,
             Integer status, String name, String result,
@@ -57,7 +50,6 @@ public class QueryDefinitionRun implements java.io.Serializable {
         this.queryDefinitionRunParameters = queryDefinitionRunParameters;
     }
 
-    // Property accessors
     public Integer getQueryDefinitionRunIi() {
         return this.queryDefinitionRunIi;
     }

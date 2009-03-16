@@ -6,25 +6,18 @@ package net.sf.regadb.db;
  */
 public class DatasetAccessId implements java.io.Serializable {
 
-    // Fields    
-
     private SettingsUser settingsUser;
 
     private Dataset dataset;
 
-    // Constructors
-
-    /** default constructor */
     public DatasetAccessId() {
     }
 
-    /** full constructor */
     public DatasetAccessId(SettingsUser settingsUser, Dataset dataset) {
         this.settingsUser = settingsUser;
         this.dataset = dataset;
     }
 
-    // Property accessors
     public SettingsUser getSettingsUser() {
         return this.settingsUser;
     }

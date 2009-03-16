@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public class Therapy implements java.io.Serializable {
 
-    // Fields    
-
     private Integer therapyIi;
 
     private int version;
@@ -31,19 +29,14 @@ public class Therapy implements java.io.Serializable {
 
     private Set<TherapyGeneric> therapyGenerics = new HashSet<TherapyGeneric>(0);
 
-    // Constructors
-
-    /** default constructor */
     public Therapy() {
     }
 
-    /** minimal constructor */
     public Therapy(PatientImpl patient, Date startDate) {
         this.patient = patient;
         this.startDate = startDate;
     }
 
-    /** full constructor */
     public Therapy(TherapyMotivation therapyMotivation, PatientImpl patient,
             Date startDate, Date stopDate, String comment,
             Set<TherapyCommercial> therapyCommercials,
@@ -57,7 +50,6 @@ public class Therapy implements java.io.Serializable {
         this.therapyGenerics = therapyGenerics;
     }
 
-    // Property accessors
     public Integer getTherapyIi() {
         return this.therapyIi;
     }

@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class DrugGeneric implements java.io.Serializable {
 
-    // Fields    
-
     private Integer genericIi;
 
     private int version;
@@ -29,20 +27,15 @@ public class DrugGeneric implements java.io.Serializable {
 
     private Set<DrugCommercial> drugCommercials = new HashSet<DrugCommercial>(0);
 
-    // Constructors
-
-    /** default constructor */
     public DrugGeneric() {
     }
 
-    /** minimal constructor */
     public DrugGeneric(DrugClass drugClass, String genericId, String genericName) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
     }
 
-    /** full constructor */
     public DrugGeneric(DrugClass drugClass, String genericId,
             String genericName, Integer resistanceTableOrder, String atcCode,
             Set<Genome> genomes, Set<DrugCommercial> drugCommercials) {
@@ -55,7 +48,6 @@ public class DrugGeneric implements java.io.Serializable {
         this.drugCommercials = drugCommercials;
     }
 
-    // Property accessors
     public Integer getGenericIi() {
         return this.genericIi;
     }

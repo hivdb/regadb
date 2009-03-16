@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public class Dataset implements java.io.Serializable {
 
-    // Fields    
-
     private Integer datasetIi;
 
     private int version;
@@ -28,13 +26,9 @@ public class Dataset implements java.io.Serializable {
 
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
-    // Constructors
-
-    /** default constructor */
     public Dataset() {
     }
 
-    /** minimal constructor */
     public Dataset(SettingsUser settingsUser, String description,
             Date creationDate) {
         this.settingsUser = settingsUser;
@@ -42,7 +36,6 @@ public class Dataset implements java.io.Serializable {
         this.creationDate = creationDate;
     }
 
-    /** full constructor */
     public Dataset(SettingsUser settingsUser, String description,
             Date creationDate, Date closedDate, Integer revision,
             Set<DatasetAccess> datasetAccesses) {
@@ -54,7 +47,6 @@ public class Dataset implements java.io.Serializable {
         this.datasetAccesses = datasetAccesses;
     }
 
-    // Property accessors
     public Integer getDatasetIi() {
         return this.datasetIi;
     }

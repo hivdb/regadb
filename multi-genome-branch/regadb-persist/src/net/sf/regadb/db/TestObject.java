@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class TestObject implements java.io.Serializable {
 
-    // Fields    
-
     private Integer testObjectIi;
 
     private int version;
@@ -16,24 +14,18 @@ public class TestObject implements java.io.Serializable {
 
     private Integer testObjectId;
 
-    // Constructors
-
-    /** default constructor */
     public TestObject() {
     }
 
-    /** minimal constructor */
     public TestObject(String description) {
         this.description = description;
     }
 
-    /** full constructor */
     public TestObject(String description, Integer testObjectId) {
         this.description = description;
         this.testObjectId = testObjectId;
     }
 
-    // Property accessors
     public Integer getTestObjectIi() {
         return this.testObjectIi;
     }

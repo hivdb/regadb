@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class CombinedQueryDefinition implements java.io.Serializable {
 
-    // Fields    
-
     private CombinedQueryDefinitionId id;
 
     private QueryDefinition queryDefinition;
@@ -18,13 +16,9 @@ public class CombinedQueryDefinition implements java.io.Serializable {
 
     private String name;
 
-    // Constructors
-
-    /** default constructor */
     public CombinedQueryDefinition() {
     }
 
-    /** minimal constructor */
     public CombinedQueryDefinition(CombinedQueryDefinitionId id,
             QueryDefinition queryDefinition, CombinedQuery combinedQuery,
             int number) {
@@ -34,7 +28,6 @@ public class CombinedQueryDefinition implements java.io.Serializable {
         this.number = number;
     }
 
-    /** full constructor */
     public CombinedQueryDefinition(CombinedQueryDefinitionId id,
             QueryDefinition queryDefinition, CombinedQuery combinedQuery,
             int number, String name) {
@@ -45,7 +38,6 @@ public class CombinedQueryDefinition implements java.io.Serializable {
         this.name = name;
     }
 
-    // Property accessors
     public CombinedQueryDefinitionId getId() {
         return this.id;
     }

@@ -6,24 +6,17 @@ package net.sf.regadb.db;
  */
 public class CombinedQuery implements java.io.Serializable {
 
-    // Fields    
-
     private Integer combinedQueryIi;
 
     private String name;
 
-    // Constructors
-
-    /** default constructor */
     public CombinedQuery() {
     }
 
-    /** full constructor */
     public CombinedQuery(String name) {
         this.name = name;
     }
 
-    // Property accessors
     public Integer getCombinedQueryIi() {
         return this.combinedQueryIi;
     }

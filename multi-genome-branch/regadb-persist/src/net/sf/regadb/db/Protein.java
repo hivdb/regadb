@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class Protein implements java.io.Serializable {
 
-    // Fields    
-
     private Integer proteinIi;
 
     private int version;
@@ -28,13 +26,9 @@ public class Protein implements java.io.Serializable {
     private Set<SplicingPosition> splicingPositions = new HashSet<SplicingPosition>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public Protein() {
     }
 
-    /** minimal constructor */
     public Protein(OpenReadingFrame openReadingFrame, String abbreviation,
             int startPosition, int stopPosition) {
         this.openReadingFrame = openReadingFrame;
@@ -43,7 +37,6 @@ public class Protein implements java.io.Serializable {
         this.stopPosition = stopPosition;
     }
 
-    /** full constructor */
     public Protein(OpenReadingFrame openReadingFrame, String abbreviation,
             String fullName, int startPosition, int stopPosition,
             Set<SplicingPosition> splicingPositions) {
@@ -55,7 +48,6 @@ public class Protein implements java.io.Serializable {
         this.splicingPositions = splicingPositions;
     }
 
-    // Property accessors
     public Integer getProteinIi() {
         return this.proteinIi;
     }

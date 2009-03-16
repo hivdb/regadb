@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.OpenReadingFrame" table="open_reading_frame" schema="regadbschema">
+  <class name="net.sf.regadb.db.OpenReadingFrame" table="open_reading_frame">
     <id name="openReadingFrameIi" type="java.lang.Integer">
       <column name="open_reading_frame_ii" />
       <generator class="native">

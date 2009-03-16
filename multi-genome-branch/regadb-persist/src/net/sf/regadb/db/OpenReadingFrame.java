@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class OpenReadingFrame implements java.io.Serializable {
 
-    // Fields    
-
     private Integer openReadingFrameIi;
 
     private int version;
@@ -25,13 +23,9 @@ public class OpenReadingFrame implements java.io.Serializable {
 
     private Set<Protein> proteins = new HashSet<Protein>(0);
 
-    // Constructors
-
-    /** default constructor */
     public OpenReadingFrame() {
     }
 
-    /** minimal constructor */
     public OpenReadingFrame(Genome genome, String name, String description,
             String referenceSequence) {
         this.genome = genome;
@@ -40,7 +34,6 @@ public class OpenReadingFrame implements java.io.Serializable {
         this.referenceSequence = referenceSequence;
     }
 
-    /** full constructor */
     public OpenReadingFrame(Genome genome, String name, String description,
             String referenceSequence, Set<Protein> proteins) {
         this.genome = genome;
@@ -50,7 +43,6 @@ public class OpenReadingFrame implements java.io.Serializable {
         this.proteins = proteins;
     }
 
-    // Property accessors
     public Integer getOpenReadingFrameIi() {
         return this.openReadingFrameIi;
     }

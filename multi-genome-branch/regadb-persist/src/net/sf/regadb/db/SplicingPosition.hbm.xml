@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.SplicingPosition" table="splicing_position" schema="regadbschema">
+  <class name="net.sf.regadb.db.SplicingPosition" table="splicing_position">
     <id name="splicingPositionIi" type="java.lang.Integer">
       <column name="splicing_position_ii" />
       <generator class="native">

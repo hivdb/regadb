@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class SplicingPosition implements java.io.Serializable {
 
-    // Fields    
-
     private Integer splicingPositionIi;
 
     private int version;
@@ -16,19 +14,14 @@ public class SplicingPosition implements java.io.Serializable {
 
     private int ntPosition;
 
-    // Constructors
-
-    /** default constructor */
     public SplicingPosition() {
     }
 
-    /** full constructor */
     public SplicingPosition(Protein protein, int ntPosition) {
         this.protein = protein;
         this.ntPosition = ntPosition;
     }
 
-    // Property accessors
     public Integer getSplicingPositionIi() {
         return this.splicingPositionIi;
     }

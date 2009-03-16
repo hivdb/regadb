@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class PatientAttributeValue implements java.io.Serializable {
 
-    // Fields    
-
     private Integer patientAttributeValueIi;
 
     private int version;
@@ -20,19 +18,14 @@ public class PatientAttributeValue implements java.io.Serializable {
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public PatientAttributeValue() {
     }
 
-    /** minimal constructor */
     public PatientAttributeValue(Attribute attribute, PatientImpl patient) {
         this.attribute = attribute;
         this.patient = patient;
     }
 
-    /** full constructor */
     public PatientAttributeValue(Attribute attribute, PatientImpl patient,
             AttributeNominalValue attributeNominalValue, String value) {
         this.attribute = attribute;
@@ -41,7 +34,6 @@ public class PatientAttributeValue implements java.io.Serializable {
         this.value = value;
     }
 
-    // Property accessors
     public Integer getPatientAttributeValueIi() {
         return this.patientAttributeValueIi;
     }

@@ -6,25 +6,18 @@ package net.sf.regadb.db;
  */
 public class TherapyCommercialId implements java.io.Serializable {
 
-    // Fields    
-
     private Therapy therapy;
 
     private DrugCommercial drugCommercial;
 
-    // Constructors
-
-    /** default constructor */
     public TherapyCommercialId() {
     }
 
-    /** full constructor */
     public TherapyCommercialId(Therapy therapy, DrugCommercial drugCommercial) {
         this.therapy = therapy;
         this.drugCommercial = drugCommercial;
     }
 
-    // Property accessors
     public Therapy getTherapy() {
         return this.therapy;
     }

@@ -6,26 +6,19 @@ package net.sf.regadb.db;
  */
 public class AttributeGroup implements java.io.Serializable {
 
-    // Fields    
-
     private Integer attributeGroupIi;
 
     private int version;
 
     private String groupName;
 
-    // Constructors
-
-    /** default constructor */
     public AttributeGroup() {
     }
 
-    /** full constructor */
     public AttributeGroup(String groupName) {
         this.groupName = groupName;
     }
 
-    // Property accessors
     public Integer getAttributeGroupIi() {
         return this.attributeGroupIi;
     }

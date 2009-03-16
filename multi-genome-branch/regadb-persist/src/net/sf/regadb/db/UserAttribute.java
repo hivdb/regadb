@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class UserAttribute implements java.io.Serializable {
 
-    // Fields    
-
     private Integer userAttributeIi;
 
     private ValueType valueType;
@@ -20,13 +18,9 @@ public class UserAttribute implements java.io.Serializable {
 
     private byte[] data;
 
-    // Constructors
-
-    /** default constructor */
     public UserAttribute() {
     }
 
-    /** full constructor */
     public UserAttribute(ValueType valueType, SettingsUser settingsUser,
             String name, String value, byte[] data) {
         this.valueType = valueType;
@@ -36,7 +30,6 @@ public class UserAttribute implements java.io.Serializable {
         this.data = data;
     }
 
-    // Property accessors
     public Integer getUserAttributeIi() {
         return this.userAttributeIi;
     }

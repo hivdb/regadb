@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class DrugCommercial implements java.io.Serializable {
 
-    // Fields    
-
     private Integer commercialIi;
 
     private int version;
@@ -21,18 +19,13 @@ public class DrugCommercial implements java.io.Serializable {
 
     private Set<DrugGeneric> drugGenerics = new HashSet<DrugGeneric>(0);
 
-    // Constructors
-
-    /** default constructor */
     public DrugCommercial() {
     }
 
-    /** minimal constructor */
     public DrugCommercial(String name) {
         this.name = name;
     }
 
-    /** full constructor */
     public DrugCommercial(String name, String atcCode,
             Set<DrugGeneric> drugGenerics) {
         this.name = name;
@@ -40,7 +33,6 @@ public class DrugCommercial implements java.io.Serializable {
         this.drugGenerics = drugGenerics;
     }
 
-    // Property accessors
     public Integer getCommercialIi() {
         return this.commercialIi;
     }

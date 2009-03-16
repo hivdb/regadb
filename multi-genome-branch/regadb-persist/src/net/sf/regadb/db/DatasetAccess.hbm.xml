@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.DatasetAccess" table="dataset_access" schema="regadbschema">
+  <class name="net.sf.regadb.db.DatasetAccess" table="dataset_access">
     <composite-id name="id" class="net.sf.regadb.db.DatasetAccessId">
       <key-many-to-one name="settingsUser" class="net.sf.regadb.db.SettingsUser">
         <column name="uid" length="50" />

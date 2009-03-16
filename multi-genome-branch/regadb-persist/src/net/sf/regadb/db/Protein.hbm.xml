@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.Protein" table="protein" schema="regadbschema">
+  <class name="net.sf.regadb.db.Protein" table="protein">
     <id name="proteinIi" type="java.lang.Integer">
       <column name="protein_ii" />
       <generator class="native">

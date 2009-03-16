@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.NtSequence" table="nt_sequence" schema="regadbschema">
+  <class name="net.sf.regadb.db.NtSequence" table="nt_sequence">
     <id name="ntSequenceIi" type="java.lang.Integer">
       <column name="nt_sequence_ii" />
       <generator class="native">

@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.Attribute" table="attribute" schema="regadbschema">
+  <class name="net.sf.regadb.db.Attribute" table="attribute">
     <id name="attributeIi" type="java.lang.Integer">
       <column name="attribute_ii" />
       <generator class="native">
@@ -27,6 +27,10 @@
       </key>
       <one-to-many class="net.sf.regadb.db.AttributeNominalValue" />
     </set>
+    <filter name="attributeFilter" condition="attribute_ii IN (:attribute_ii_list)" />
   </class>
+  <filter-def name="attributeFilter">
+    <filter-param name="attribute_ii_list" type="integer" />
+  </filter-def>
 </hibernate-mapping>
 

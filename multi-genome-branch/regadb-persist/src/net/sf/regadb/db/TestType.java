@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class TestType implements java.io.Serializable {
 
-    // Fields    
-
     private Integer testTypeIi;
 
     private int version;
@@ -26,19 +24,14 @@ public class TestType implements java.io.Serializable {
     private Set<TestNominalValue> testNominalValues = new HashSet<TestNominalValue>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public TestType() {
     }
 
-    /** minimal constructor */
     public TestType(TestObject testObject, String description) {
         this.testObject = testObject;
         this.description = description;
     }
 
-    /** full constructor */
     public TestType(ValueType valueType, Genome genome, TestObject testObject,
             String description, Set<TestNominalValue> testNominalValues) {
         this.valueType = valueType;
@@ -48,7 +41,6 @@ public class TestType implements java.io.Serializable {
         this.testNominalValues = testNominalValues;
     }
 
-    // Property accessors
     public Integer getTestTypeIi() {
         return this.testTypeIi;
     }

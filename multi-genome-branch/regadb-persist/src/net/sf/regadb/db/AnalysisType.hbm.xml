@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.AnalysisType" table="analysis_type" schema="regadbschema">
+  <class name="net.sf.regadb.db.AnalysisType" table="analysis_type">
     <id name="analysisTypeIi" type="java.lang.Integer">
       <column name="analysis_type_ii" />
       <generator class="native">

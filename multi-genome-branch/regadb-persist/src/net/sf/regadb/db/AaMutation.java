@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class AaMutation implements java.io.Serializable {
 
-    // Fields    
-
     private AaMutationId id;
 
     private int version;
@@ -20,13 +18,9 @@ public class AaMutation implements java.io.Serializable {
 
     private String ntMutationCodon;
 
-    // Constructors
-
-    /** default constructor */
     public AaMutation() {
     }
 
-    /** minimal constructor */
     public AaMutation(AaMutationId id, String aaReference,
             String ntReferenceCodon) {
         this.id = id;
@@ -34,7 +28,6 @@ public class AaMutation implements java.io.Serializable {
         this.ntReferenceCodon = ntReferenceCodon;
     }
 
-    /** full constructor */
     public AaMutation(AaMutationId id, String aaReference, String aaMutation,
             String ntReferenceCodon, String ntMutationCodon) {
         this.id = id;
@@ -44,7 +37,6 @@ public class AaMutation implements java.io.Serializable {
         this.ntMutationCodon = ntMutationCodon;
     }
 
-    // Property accessors
     public AaMutationId getId() {
         return this.id;
     }

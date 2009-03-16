@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class Genome implements java.io.Serializable {
 
-    // Fields    
-
     private Integer genomeIi;
 
     private int version;
@@ -26,19 +24,14 @@ public class Genome implements java.io.Serializable {
     private Set<OpenReadingFrame> openReadingFrames = new HashSet<OpenReadingFrame>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public Genome() {
     }
 
-    /** minimal constructor */
     public Genome(String organismName, String organismDescription) {
         this.organismName = organismName;
         this.organismDescription = organismDescription;
     }
 
-    /** full constructor */
     public Genome(String organismName, String organismDescription,
             String genbankNumber, Set<DrugGeneric> drugGenerics,
             Set<OpenReadingFrame> openReadingFrames) {
@@ -49,7 +42,6 @@ public class Genome implements java.io.Serializable {
         this.openReadingFrames = openReadingFrames;
     }
 
-    // Property accessors
     public Integer getGenomeIi() {
         return this.genomeIi;
     }

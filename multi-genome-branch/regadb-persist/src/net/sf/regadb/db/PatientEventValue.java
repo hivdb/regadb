@@ -8,8 +8,6 @@ import java.util.Date;
  */
 public class PatientEventValue implements java.io.Serializable {
 
-    // Fields    
-
     private Integer patientEventValueIi;
 
     private int version;
@@ -26,19 +24,14 @@ public class PatientEventValue implements java.io.Serializable {
 
     private Date endDate;
 
-    // Constructors
-
-    /** default constructor */
     public PatientEventValue() {
     }
 
-    /** minimal constructor */
     public PatientEventValue(PatientImpl patient, Event event) {
         this.patient = patient;
         this.event = event;
     }
 
-    /** full constructor */
     public PatientEventValue(PatientImpl patient,
             EventNominalValue eventNominalValue, Event event, String value,
             Date startDate, Date endDate) {
@@ -50,7 +43,6 @@ public class PatientEventValue implements java.io.Serializable {
         this.endDate = endDate;
     }
 
-    // Property accessors
     public Integer getPatientEventValueIi() {
         return this.patientEventValueIi;
     }

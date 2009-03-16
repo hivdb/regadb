@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class TestNominalValue implements java.io.Serializable {
 
-    // Fields    
-
     private Integer nominalValueIi;
 
     private int version;
@@ -16,19 +14,14 @@ public class TestNominalValue implements java.io.Serializable {
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public TestNominalValue() {
     }
 
-    /** full constructor */
     public TestNominalValue(TestType testType, String value) {
         this.testType = testType;
         this.value = value;
     }
 
-    // Property accessors
     public Integer getNominalValueIi() {
         return this.nominalValueIi;
     }
