@@ -45,7 +45,7 @@ public class ILogDataTable implements IDataTable<File> {
     }
     
     private File getLogDir(){
-        File f =  new File(RegaDBSettings.getInstance().getPropertyValue("regadb.log.dir"));
+        File f =  RegaDBSettings.getInstance().getInstituteConfig().getLogDir();
         if (f!= null && !f.exists()) {
         	f.mkdirs();
         }
@@ -106,7 +106,7 @@ public class ILogDataTable implements IDataTable<File> {
     }
     
     private String getFormattedFileDate(long timestamp){
-        return DateUtils.getEuropeanFormat(new Date(timestamp));
+        return DateUtils.format(new Date(timestamp));
     }
     
     private String getFormattedFileName(String filename){

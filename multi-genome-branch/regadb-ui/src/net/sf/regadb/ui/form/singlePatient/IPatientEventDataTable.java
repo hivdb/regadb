@@ -49,8 +49,8 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	public String[] getRowData(PatientEventValue pev) {
 		String [] row = new String[4];
 		
-		row[0] = DateUtils.getEuropeanFormat(pev.getStartDate());
-		row[1] = DateUtils.getEuropeanFormat(pev.getEndDate());
+		row[0] = DateUtils.format(pev.getStartDate());
+		row[1] = DateUtils.format(pev.getEndDate());
 		
 		row[2] = pev.getEvent().getName();
 		

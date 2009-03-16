@@ -15,6 +15,6 @@ public class TherapySelectedItem extends GenericSelectedItem<Therapy>
     @Override
     public String getArgument(Therapy type) 
     {
-        return DateUtils.getEuropeanFormat(type.getStartDate());
+        return DateUtils.format(type.getStartDate());
     }
 }

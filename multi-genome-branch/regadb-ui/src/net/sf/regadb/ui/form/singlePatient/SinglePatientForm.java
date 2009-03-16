@@ -491,7 +491,7 @@ public class SinglePatientForm extends FormWidget
             }
             
             if(ValueTypes.getValueType(attribute.getValueType()) == ValueTypes.DATE)
-                attributeValue.setValue(DateUtils.parseEuropeanDate(text).getTime()+"");
+                attributeValue.setValue(DateUtils.parse(text).getTime()+"");
             else
                 attributeValue.setValue(text);
         }

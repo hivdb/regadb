@@ -69,7 +69,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 	{
 		String [] row = new String[5];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getTestDate());
+		row[0] = DateUtils.format(type.getTestDate());
 		row[1] = type.getTest().getTestType().getDescription();
 		row[2] = (type.getTest().getTestType().getGenome() == null ? "":type.getTest().getTestType().getGenome().getOrganismName());
 		row[3] = type.getTest().getDescription();

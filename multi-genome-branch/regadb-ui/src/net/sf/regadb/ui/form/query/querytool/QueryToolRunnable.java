@@ -132,7 +132,7 @@ public class QueryToolRunnable implements Runnable {
 	}
 	
     private File getResultDir(){
-        File queryDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separator + "querytool");
+        File queryDir = new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separator + "querytool");
         if(!queryDir.exists()){
         	 queryDir.mkdirs();
         }

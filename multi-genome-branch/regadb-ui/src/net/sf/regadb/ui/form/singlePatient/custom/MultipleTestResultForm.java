@@ -3,7 +3,6 @@ package net.sf.regadb.ui.form.singlePatient.custom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
@@ -28,11 +27,11 @@ import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.tree.items.custom.ContactItem.EventItem;
-import net.sf.regadb.ui.tree.items.custom.ContactItem.TestItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ContactFormConfig.EventItem;
+import net.sf.regadb.util.settings.ContactFormConfig.TestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
@@ -59,26 +58,23 @@ public class MultipleTestResultForm extends FormWidget {
     
     private List<Test> tests_;
     private List<Event> events_;
-    private Map<String, String> properties_;
     private ActionItem lastItem_;
     
 
-    public MultipleTestResultForm(WString name, InteractionState state, Map<String,String> properties, List<TestItem> tests, List<EventItem> events, ActionItem lastItem) {
+    public MultipleTestResultForm(WString name, InteractionState state, ActionItem lastItem) {
         super(name, state);
-
-        properties_ = properties;
 
         Transaction t = RegaDBMain.getApp().createTransaction();
 
         tests_ = new ArrayList<Test>();
-        for(TestItem ti : tests){
+        for(TestItem ti : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getTests()){
         	Test test = t.getTestByGenome(ti.description, ti.organism);
         	if(test != null)
         		tests_.add(test);
         }
         
         events_ = new ArrayList<Event>();
-        for(EventItem ei : events){
+        for(EventItem ei : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getEvents()){
         	Event event = t.getEvent(ei.name);
         	if(event != null)
         		events_.add(event);
@@ -125,7 +121,7 @@ public class MultipleTestResultForm extends FormWidget {
             eventGroupBox_ = new WGroupBox(tr("form.multipleTestResults.events"), this);
             eventGroupTable_ = new FormTable(eventGroupBox_);
 
-	        boolean useContactDate = "true".equals(properties_.get("useContactDate"));
+	        boolean useContactDate = RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getUseContactDate();
 
             if(getInteractionState() != InteractionState.Viewing){
 		        useContactDate_ = new CheckBox(getInteractionState(),this);

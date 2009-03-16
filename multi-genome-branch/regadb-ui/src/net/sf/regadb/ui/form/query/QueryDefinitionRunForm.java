@@ -142,7 +142,7 @@ public class QueryDefinitionRunForm extends FormWidget
             
             if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult());
+                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + queryDefinitionRun.getResult());
                 res.suggestFileName("result.csv");
             	resultLink = new WAnchor(res, lt(queryDefinitionRun.getResult()), queryDefinitionRunGroupTable.elementAt(row, 1));
                 resultLink.setStyleClass("link");
@@ -218,7 +218,7 @@ public class QueryDefinitionRunForm extends FormWidget
                 
         try
         {
-			FileUtils.forceDelete(new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + queryDefinitionRun.getResult()));
+			FileUtils.forceDelete(new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + queryDefinitionRun.getResult()));
 		}
         catch (IOException e)
         {

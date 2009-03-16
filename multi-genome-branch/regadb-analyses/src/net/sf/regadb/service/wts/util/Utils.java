@@ -63,7 +63,7 @@ public class Utils {
     }
 
     public static Collection<Genome> getGenomes(){
-        RegaDBSettings.getInstance().initProxySettings();
+        RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         
         FileProvider fp = new FileProvider();
         

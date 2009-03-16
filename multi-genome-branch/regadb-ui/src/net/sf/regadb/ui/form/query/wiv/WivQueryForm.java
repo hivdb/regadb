@@ -283,7 +283,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     }
     
     public File getResultDir(){
-        File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
+        File wivDir = new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + "wiv");
         if(!wivDir.exists()){
             wivDir.mkdirs();
         }
@@ -397,7 +397,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     }
     
     protected String getCentreName(){
-        return RegaDBSettings.getInstance().getPropertyValue("centre.name");
+        return RegaDBSettings.getInstance().getInstituteConfig().getWivCentreName();
     }
     
     protected String getFormattedDate(Date date){

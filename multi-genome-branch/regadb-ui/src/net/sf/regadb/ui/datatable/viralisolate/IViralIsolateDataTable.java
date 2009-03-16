@@ -67,7 +67,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	{
 		String [] row = new String[4];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getSampleDate());
+		row[0] = DateUtils.format(type.getSampleDate());
 		row[1] = type.getSampleId();
 		
 		SortedSet<String> proteinList = new TreeSet<String>();

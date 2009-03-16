@@ -120,7 +120,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         int maxWidth = 0;
         for(ViralIsolate vi : sortedViralIsolates) {
                 col = resistanceTable_.columnCount();
-                String viId = vi.getSampleId() + "<br/>" + DateUtils.getEuropeanFormat(vi.getSampleDate());
+                String viId = vi.getSampleId() + "<br/>" + DateUtils.format(vi.getSampleDate());
                 resistanceTable_.elementAt(0, col).addWidget(new TableHeader(lt(viId)));
                 resistanceTable_.elementAt(0, col).setStyleClass("column-title");
                 viralIsolateColumn.put(viId, col);
@@ -165,7 +165,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
         Integer rowN;
         String selectAsi = asiCombo_.currentText().value();
         for(ViralIsolate vi : sortedViralIsolates) {
-            String viId = vi.getSampleId() + "<br/>" + DateUtils.getEuropeanFormat(vi.getSampleDate());
+            String viId = vi.getSampleId() + "<br/>" + DateUtils.format(vi.getSampleDate());
             for(TestResult tr : vi.getTestResults()) {
                 if(tr.getTest().getDescription().equals(selectAsi)) {
                     colN = viralIsolateColumn.get(viId);

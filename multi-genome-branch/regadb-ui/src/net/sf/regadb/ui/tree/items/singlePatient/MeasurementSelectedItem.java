@@ -19,7 +19,7 @@ public class MeasurementSelectedItem extends GenericSelectedItem<TestResult>
     	
     	if (type.getTestDate() != null)
     	{
-    		result += " - " + DateUtils.getEuropeanFormat(type.getTestDate());
+    		result += " - " + DateUtils.format(type.getTestDate());
     	}
     	
         return result;

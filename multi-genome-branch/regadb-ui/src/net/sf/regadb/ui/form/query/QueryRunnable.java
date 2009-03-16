@@ -39,7 +39,7 @@ public class QueryRunnable implements Runnable
 	}
 	
 	private String getResultDir() {
-		File f= new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir"));
+		File f= RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir();
 		if (!f.exists()) {
 			f.mkdirs();
 		}

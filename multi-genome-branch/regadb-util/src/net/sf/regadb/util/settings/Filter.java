@@ -14,6 +14,9 @@ public class Filter {
 		return filterPattern.matcher(s).matches();
 	}
 	
+	public String getConfigString(){
+		return filter;
+	}
 	public String getHqlString() {
 		return filter.replace('*', '%');
 	}

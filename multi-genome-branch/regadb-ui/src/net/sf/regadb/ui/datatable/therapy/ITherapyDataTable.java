@@ -66,8 +66,8 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	{
 		String [] row = new String[4];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getStartDate());
-		row[1] = DateUtils.getEuropeanFormat(type.getStopDate());
+		row[0] = DateUtils.format(type.getStartDate());
+		row[1] = DateUtils.format(type.getStopDate());
 		
 		SortedSet<String> drugList = new TreeSet<String>();
 		for(TherapyGeneric tg : type.getTherapyGenerics())

@@ -541,6 +541,11 @@ public class TreeContent
     		                custom = new ActionItem(WResource.tr("menu.custom"), patientSelected);
     		                contact = new ContactItem(custom);
     		                
+    		                if(!true){
+    		                	singlePatientMain.expand();
+    		                	return singlePatientMain;
+    		                }
+    		                
        attributesSettings = new ActionItem(WResource.tr("menu.attributeSettings.attributeSettings"), rootItem)
        {
             @Override

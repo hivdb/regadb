@@ -16,8 +16,8 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ProxyConfig.ProxyServer;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
@@ -40,7 +40,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 	private Label passwordL = new Label(tr("form.login.label.password"));
 	private TextField passwordTF = new TextField(InteractionState.Editing, this);
     private Label proxyL;
-    private ComboBox<Pair<String, String>> proxyCB;
+    private ComboBox<ProxyServer> proxyCB;
     private WText createAccountLink_ = new WText(tr("form.login.link.create"));
 	
 	//control
@@ -69,15 +69,15 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         passwordL.setBuddy(passwordTF);
         passwordTF.setEchomode(WLineEdit.EchoMode.Password);
         loginGroupTable.addLineToTable(passwordL, passwordTF);
-        if(RegaDBSettings.getInstance().getProxyList().size() > 1)
+        if(RegaDBSettings.getInstance().getProxyConfig().getProxyList().size() > 1)
         {
             proxyL = new Label(tr("form.login.label.proxy"));
-            proxyCB = new ComboBox<Pair<String, String>>(InteractionState.Editing, this);
+            proxyCB = new ComboBox<ProxyServer>(InteractionState.Editing, this);
             loginGroupTable.addLineToTable(proxyL, proxyCB);
-            for(Pair<String,String> proxy : RegaDBSettings.getInstance().getProxyList())
+            for(ProxyServer proxy : RegaDBSettings.getInstance().getProxyConfig().getProxyList())
             {
-                String proxyKey = "".equals(proxy.getValue())?"Empty proxy":proxy.getKey();
-                proxyCB.addItem(new DataComboMessage<Pair<String, String>>(proxy, proxyKey));
+                String proxyKey = "".equals(proxy.getPort())?"Empty proxy":proxy.getHost();
+                proxyCB.addItem(new DataComboMessage<ProxyServer>(proxy, proxyKey));
             }
             proxyCB.sort();
         }
@@ -153,7 +153,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
                 
                 if(proxyCB!=null)
                 {
-                    RegaDBSettings.getInstance().setProxySettings(proxyCB.currentValue());
+                    RegaDBSettings.getInstance().getProxyConfig().setProxySettings(proxyCB.currentValue());
                 }
             }
             else

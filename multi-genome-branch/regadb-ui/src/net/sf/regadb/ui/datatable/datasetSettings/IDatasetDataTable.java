@@ -61,8 +61,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 		String [] row = new String[4];
         
         row[0] = dataset.getDescription();
-        row[1] = DateUtils.getEuropeanFormat(dataset.getCreationDate());
-        row[2] = DateUtils.getEuropeanFormat(dataset.getClosedDate());
+        row[1] = DateUtils.format(dataset.getCreationDate());
+        row[2] = DateUtils.format(dataset.getClosedDate());
         row[3] = String.valueOf(dataset.getRevision());
              
         return row;

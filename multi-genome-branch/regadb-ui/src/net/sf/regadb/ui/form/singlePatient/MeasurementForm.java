@@ -83,7 +83,7 @@ public class MeasurementForm extends FormWidget
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
-        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getFilter("organism"));
+        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         testTypeCB.selectIndex(0);
 
         t.commit();
@@ -200,7 +200,7 @@ public class MeasurementForm extends FormWidget
         }
 		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
 		{
-		    testResult_.setValue(DateUtils.parseEuropeanDate(testResultField_.text()).getTime()+"");
+		    testResult_.setValue(DateUtils.parse(testResultField_.text()).getTime()+"");
 		    testResult_.setTestNominalValue(null);
 		}
 		else

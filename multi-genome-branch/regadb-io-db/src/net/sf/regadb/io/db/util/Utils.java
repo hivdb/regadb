@@ -476,7 +476,7 @@ public class Utils {
      
      public static List<Attribute> prepareRegaDBAttributes()
      {
-         RegaDBSettings.getInstance().initProxySettings();
+         RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
          FileProvider fp = new FileProvider();
          List<Attribute> list = null;
@@ -514,7 +514,7 @@ public class Utils {
      
      public static List<Event> prepareRegaDBEvents()
      {
-	 	RegaDBSettings.getInstance().initProxySettings();
+	 	RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
          FileProvider fp = new FileProvider();
          List<Event> list = null;

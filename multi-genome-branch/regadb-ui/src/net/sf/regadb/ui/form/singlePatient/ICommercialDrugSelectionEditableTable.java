@@ -98,7 +98,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        combo.fill(t, RegaDBSettings.getInstance().getFilter("organism"));
+        combo.fill(t, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];
@@ -141,7 +141,7 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        combo.fill(t, RegaDBSettings.getInstance().getFilter("organism"));
+        combo.fill(t, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];

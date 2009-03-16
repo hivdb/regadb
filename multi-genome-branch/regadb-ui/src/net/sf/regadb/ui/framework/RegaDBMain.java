@@ -18,7 +18,7 @@ public class RegaDBMain extends WebController
 	{
 		RegaDBApplication app = new RegaDBApplication(env, this.getServletContext());
         
-        RegaDBSettings.getInstance().initProxySettings();
+        RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         
         return app;
 	}

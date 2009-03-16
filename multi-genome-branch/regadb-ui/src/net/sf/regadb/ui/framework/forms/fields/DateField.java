@@ -5,6 +5,7 @@ import java.util.Date;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WDatePicker;
 import eu.webtoolkit.jwt.WDateValidator;
@@ -27,7 +28,7 @@ public class DateField extends FormField
             ConfirmUtils.addConfirmAction(form, _fieldEdit);
 			addWidget(_fieldEdit);
 			WDatePicker dp = new WDatePicker(calendarIcon_, _fieldEdit, false, this);
-			dp.setFormat("dd/MM/yyyy");
+			dp.setFormat(RegaDBSettings.getInstance().getDateFormat());
 			flagValid();
 		}
 		else
@@ -77,7 +78,7 @@ public class DateField extends FormField
     {
     	if(date!=null)
     	{
-    		setText(DateUtils.getEuropeanFormat(date));
+    		setText(DateUtils.format(date));
     	}
         else
         {
@@ -87,7 +88,7 @@ public class DateField extends FormField
     
     public Date getDate()
     {
-    	return DateUtils.parseEuropeanDate(text());
+    	return DateUtils.parse(text());
     }
     
     public void addChangeListener(Signal.Listener listener)

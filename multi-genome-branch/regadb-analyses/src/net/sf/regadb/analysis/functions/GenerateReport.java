@@ -43,15 +43,7 @@ public class GenerateReport
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile){
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        int dateTolerance;
-        try{
-            dateTolerance = Integer.parseInt(RegaDBSettings.getInstance().getPropertyValue("regadb.report.dateTolerance"));
-        }
-        catch(Exception e){
-            dateTolerance = 14;
-        }
-        
-        init(vi, patient, algorithm, t, chartFile, dateTolerance); //default tolerance to two weeks
+        init(vi, patient, algorithm, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
     }
     
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)

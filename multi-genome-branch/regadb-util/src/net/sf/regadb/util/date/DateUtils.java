@@ -1,8 +1,11 @@
 package net.sf.regadb.util.date;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 
 //TODO
@@ -13,6 +16,23 @@ public class DateUtils
     
     public static String getHQLdateFormatString() {
     	return "DD-MM-YYYY";
+    }
+    
+    public static String format(Date date){
+    	SimpleDateFormat sdf = new SimpleDateFormat(RegaDBSettings.getInstance().getDateFormat());
+    	return sdf.format(date);
+    }
+    public static Date parse(String date){
+    	if(date == null || date.trim().length() == 0)
+    		return null;
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat(RegaDBSettings.getInstance().getDateFormat());
+    	try {
+			return sdf.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
     
     public static Date parseEuropeanDate(String europeanDate)

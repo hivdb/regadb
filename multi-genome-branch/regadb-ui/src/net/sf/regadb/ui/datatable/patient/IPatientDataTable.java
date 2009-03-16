@@ -223,7 +223,7 @@ public class IPatientDataTable implements IDataTable<Object[]>
     protected Attribute getDefaultAttribute(Transaction t){
         Attribute a = null;
         
-        String dftAttr = RegaDBSettings.getInstance().getDefaultValue("datatable.patient.attribute");
+        String dftAttr = RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributeFilter();
         if(dftAttr != null){
             List<Attribute> l = t.getAttributes(dftAttr);
             if(l.size() > 0)

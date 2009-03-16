@@ -11,7 +11,6 @@ import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportGenomes;
-import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class BlastAnalysis extends NtSequenceAnalysis{
@@ -107,7 +106,7 @@ public class BlastAnalysis extends NtSequenceAnalysis{
         Transaction t = createTransaction();
         
         if(t == null){
-            RegaDBSettings.getInstance().initProxySettings();
+            RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
             
             FileProvider fp = new FileProvider();
             
