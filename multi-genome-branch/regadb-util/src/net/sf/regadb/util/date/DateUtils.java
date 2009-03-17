@@ -19,6 +19,9 @@ public class DateUtils
     }
     
     public static String format(Date date){
+        if(date == null)
+            return "";
+        
     	SimpleDateFormat sdf = new SimpleDateFormat(RegaDBSettings.getInstance().getDateFormat());
     	return sdf.format(date);
     }
