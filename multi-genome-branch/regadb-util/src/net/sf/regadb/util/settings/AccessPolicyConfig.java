@@ -12,6 +12,11 @@ public class AccessPolicyConfig implements IConfigParser {
 	private Map<String, List<String>> blockedAttributes = new HashMap<String, List<String>>();
 	private List<String> admins = new ArrayList<String>();
 	
+	
+	public AccessPolicyConfig(){
+	    setDefaults();
+	}
+	
 	public String getXmlTag() {
 		return "access-policies";
 	}
@@ -48,6 +53,9 @@ public class AccessPolicyConfig implements IConfigParser {
 		roles.clear();
 		admins.clear();
 		blockedAttributes.clear();
+		
+		roles.add("admin");
+		admins.add("admin");
 	}
 	
 	public List<String> getRoles() {
@@ -67,7 +75,43 @@ public class AccessPolicyConfig implements IConfigParser {
 	}
 
 	public Element toXml() {
-		//TODO
-		return null;
+	    Element r = new Element(getXmlTag());
+        Element e;
+	    
+	    e = new Element("roles");
+	    r.addContent(e);
+	    for(String role : roles){
+	        Element ee = new Element("role");
+	        ee.setText(role);
+	        e.addContent(ee);
+	    }
+	    
+	    e = new Element("blocked-attributes");
+	    r.addContent(e);
+	    for(Map.Entry<String, List<String>> ba : blockedAttributes.entrySet()){
+	        for(String attr : ba.getValue()){
+    	        Element ee = new Element("blocked-attribute");
+
+    	        Element eee = new Element("role");
+    	        eee.setText(ba.getKey());
+    	        ee.addContent(eee);
+                
+    	        eee = new Element("attribute");
+                eee.setText(attr);
+                ee.addContent(eee);
+                
+                e.addContent(ee);
+	        }
+	    }
+	    
+	    e = new Element("admins");
+	    r.addContent(e);
+	    for(String role : admins){
+	        Element ee = new Element("role");
+	        ee.setText(role);
+	        e.addContent(ee);
+	    }
+	    
+		return r;
 	}
 }
