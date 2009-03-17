@@ -77,7 +77,7 @@ public class FixHbmFiles
         fd.addParam("attribute_ii_list", "integer");
         filterDefs.put("net.sf.regadb.db.Attribute",fd);
         
-        FilterInst fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)");
+        FilterInst fi = new FilterInst(fd, "attribute_ii NOT IN (:attribute_ii_list)");
         filterInsts.put("net.sf.regadb.db.Attribute", fi);
         
         fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)", "patientAttributeValues");

@@ -27,7 +27,7 @@
       </key>
       <one-to-many class="net.sf.regadb.db.AttributeNominalValue" />
     </set>
-    <filter name="attributeFilter" condition="attribute_ii IN (:attribute_ii_list)" />
+    <filter name="attributeFilter" condition="attribute_ii NOT IN (:attribute_ii_list)" />
   </class>
   <filter-def name="attributeFilter">
     <filter-param name="attribute_ii_list" type="integer" />

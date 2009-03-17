@@ -38,7 +38,7 @@
         <column name="patient_ii" not-null="true" />
       </key>
       <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
-      <filter name="attributeFilter" condition="attribute_ii IN (:attribute_ii_list)" />
+      <filter name="attributeFilter" condition="attribute_ii NOT IN (:attribute_ii_list)" />
     </set>
     <set name="viralIsolates" inverse="true" cascade="all">
       <key>
