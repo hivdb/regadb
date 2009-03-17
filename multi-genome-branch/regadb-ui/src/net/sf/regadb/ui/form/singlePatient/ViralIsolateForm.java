@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.Date;
 import java.util.Iterator;
 
 import net.sf.regadb.db.Genome;
@@ -19,9 +20,6 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
-import eu.webtoolkit.jwt.Signal1;
-import eu.webtoolkit.jwt.StandardButton;
-import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateForm extends FormWidget
@@ -33,6 +31,13 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
+    public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
+        this(interactionState,formName,null);
+        
+        _mainForm.setSampleId(sampleId);
+        _mainForm.setSampleDate(sampleDate);
+    }
+    
 	public ViralIsolateForm(InteractionState interactionState, WString formName, ViralIsolate viralIsolate)
 	{
 		super(formName, interactionState);

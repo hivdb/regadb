@@ -14,6 +14,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -37,7 +38,9 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMessageBox;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class MultipleTestResultForm extends FormWidget {
     
@@ -59,6 +62,8 @@ public class MultipleTestResultForm extends FormWidget {
     private List<Test> tests_;
     private List<Event> events_;
     private ActionItem lastItem_;
+    
+    private WPushButton addViralIsolate;
     
 
     public MultipleTestResultForm(WString name, InteractionState state, ActionItem lastItem) {
@@ -162,6 +167,15 @@ public class MultipleTestResultForm extends FormWidget {
 	        }
         }
         
+        if(getInteractionState() == InteractionState.Adding){
+            addViralIsolate = new WPushButton(tr("form.multipleTestResults.addViralIsolate"), this);
+            addViralIsolate.clicked().addListener(this, new Signal.Listener(){
+                public void trigger() {
+                    saveAndGotoViralIsolate();
+                }
+            });
+        }
+        
         fillData();
         addControlButtons();
     }
@@ -261,34 +275,33 @@ public class MultipleTestResultForm extends FormWidget {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
-    public void saveData() {
+    private void save(){
         Transaction t = RegaDBMain.getApp().createTransaction();        
         boolean duplicateSampleId = false;
         
-    	Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
 
         if(!sampleIdTF_.getFormText().equals("")) {
-        	for(TestResult tr : p.getTestResults()) {
-        		if(sampleIdTF_.getFormText().equals(tr.getSampleId())) {
-        			for(Test test : tests_) {
-        				if(tr.getTest().getDescription().equals(test.getDescription())) {
-        					duplicateSampleId = true;
-        					break;
-        				}
-        			}
-        		}
-        		if(duplicateSampleId)
-        			break;
-        	}
+            for(TestResult tr : p.getTestResults()) {
+                if(sampleIdTF_.getFormText().equals(tr.getSampleId())) {
+                    for(Test test : tests_) {
+                        if(tr.getTest().getDescription().equals(test.getDescription())) {
+                            duplicateSampleId = true;
+                            break;
+                        }
+                    }
+                }
+                if(duplicateSampleId)
+                    break;
+            }
         }
         
         if(duplicateSampleId) {
-	        final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.multipleTestResults.duplicateSampleIdWarning"));
+            final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("form.multipleTestResults.duplicateSampleIdWarning"));
             cmb.buttonClicked().addListener(this, new Signal1.Listener<StandardButton>(){
-				public void trigger(StandardButton sb) {
-					cmb.remove();
-				}
+                public void trigger(StandardButton sb) {
+                    cmb.remove();
+                }
             });
             cmb.show();
         }
@@ -310,7 +323,7 @@ public class MultipleTestResultForm extends FormWidget {
             if(tr!=null) {
                 tr.setTestDate(dateTF_.getDate());
                 if(!sampleIdTF_.getFormText().equals("")) {
-                	tr.setSampleId(sampleIdTF_.getFormText());
+                    tr.setSampleId(sampleIdTF_.getFormText());
                 }
                 t.save(tr);
             }
@@ -330,16 +343,28 @@ public class MultipleTestResultForm extends FormWidget {
                 }
             }
             if(pev!=null) {
-            	if(useContactDate_.isChecked())
-            		pev.setStartDate(dateTF_.getDate());
-            	else
-            		pev.setStartDate(eventStartDateTF_.getDate());
-            	pev.setEndDate(eventStopDateTF_.getDate());
+                if(useContactDate_.isChecked())
+                    pev.setStartDate(dateTF_.getDate());
+                else
+                    pev.setStartDate(eventStartDateTF_.getDate());
+                pev.setEndDate(eventStopDateTF_.getDate());
                 t.save(pev);
             }
         }
         
         t.commit();
+    }
+    
+	@Override
+    public void saveData() {
+        save();
         lastItem_.prograSelectNode();
+    }
+	
+    private void saveAndGotoViralIsolate(){
+        save();
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesAdd.prograSelectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), sampleIdTF_.text(), dateTF_.getDate()));
     }
 }

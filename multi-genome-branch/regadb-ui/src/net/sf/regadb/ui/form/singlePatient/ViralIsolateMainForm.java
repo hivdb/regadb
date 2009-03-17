@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -557,4 +558,10 @@ public class ViralIsolateMainForm extends WContainerWidget
         return seqComboBox;
     }
     
+    public void setSampleId(String sampleId){
+        sampleIdTF.setText(sampleId);
+    }
+    public void setSampleDate(Date sampleDate){
+        sampleDateTF.setDate(sampleDate);
+    }
 }
