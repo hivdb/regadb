@@ -104,8 +104,7 @@ public class InitRegaDB
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");
         admin.setLastName("install-admin");
-        admin.setAdmin(true);
-        admin.setEnabled(true);
+        admin.setRole("admin");
         admin.setPassword(Encrypt.encryptMD5("admin"));
         admin.setEmail("regadb-admin@uz.kuleuven.ac.be");
         su_=admin;

@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.forms.account;
 
+import java.util.List;
+
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -25,6 +27,7 @@ import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.encrypt.Encrypt;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WString;
@@ -32,8 +35,6 @@ import eu.webtoolkit.jwt.WString;
 public class AccountForm extends FormWidget
 {
     private SettingsUser su_;
-    
-    private boolean administrator_;
     
     private TreeMenuNode selectNode_, expandNode_;
     
@@ -56,10 +57,8 @@ public class AccountForm extends FormWidget
     private TextField retypePasswordTF;
     private Label datasetL;
     private ComboBox<Dataset> datasetCB;
-    private Label administratorL;
-    private CheckBox administratorCB;
-    private Label registeredL;
-    private CheckBox registeredCB;
+    private Label roleL;
+    private ComboBox<String> roleCB;
     
     //Attribute fields
     private WGroupBox attributeGroup_;
@@ -71,13 +70,15 @@ public class AccountForm extends FormWidget
     private Label chartMutationL;
     private ComboBox<Test> chartMutationCB;
     
+    private boolean admin;
+    
     public AccountForm(WString formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
         super(formName, interactionState);
-        administrator_ = admin;
         selectNode_ = selectNode;
         expandNode_ = expandNode;
         su_ = settingsUser;
+        this.admin = admin;
         init();
         authenticateLogin();
         fillData();
@@ -94,7 +95,7 @@ public class AccountForm extends FormWidget
         {
             uidL = new Label(tr("form.settings.user.label.uid"));
             uidTF = new TextField(  su_!=null&&
-                                    su_.getEnabled()==null&&
+                                    su_.getRole()==null&&
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
             uidTF.setMandatory(true);
@@ -102,7 +103,7 @@ public class AccountForm extends FormWidget
             
             datasetL = new Label(tr("form.settings.user.label.dataset"));
             datasetCB= new ComboBox<Dataset>(su_!=null&&
-                                    su_.getEnabled()==null&&
+            						su_.getRole()==null&&
                                     getInteractionState()!=InteractionState.Viewing
                                     ?InteractionState.Editing:InteractionState.Viewing, this);
             datasetCB.setMandatory(true);
@@ -142,19 +143,19 @@ public class AccountForm extends FormWidget
             loginGroupTable.addLineToTable(retypePasswordL, retypePasswordTF);
         }
         
-        //Administrator & enabled
-        if(administrator_)
-        {
-            administratorL = new Label(tr("form.settings.user.label.administrator"));
-            administratorCB = new CheckBox(getInteractionState(), this);
-            loginGroupTable.addLineToTable(administratorL, administratorCB);
-            registeredL = new Label(tr("form.settings.user.label.enabled"));
-            registeredCB = new CheckBox(getInteractionState(), this);
-            loginGroupTable.addLineToTable(registeredL, registeredCB);
-        }
-        
         if(getInteractionState()!=InteractionState.Adding)
         {
+	        roleL = new Label(tr("form.settings.user.label.role"));
+	        roleCB = new ComboBox<String>(admin?getInteractionState():InteractionState.Viewing, this);
+	        roleCB.setMandatory(true);
+	        List<String> roles = RegaDBSettings.getInstance().getAccessPolicyConfig().getRoles();
+	        roleCB.addNoSelectionItem();
+	        for(String r : roles) {
+	        	roleCB.addItem(new DataComboMessage<String>(r,r));
+	        }
+	        loginGroupTable.addLineToTable(roleL, roleCB);
+            
+
             //Attribute fields
             attributeGroup_ = new WGroupBox(tr("form.account.editView.attributes"));
             attributeGroupTable = new FormTable(attributeGroup_);
@@ -181,27 +182,27 @@ public class AccountForm extends FormWidget
         if(getInteractionState()!=InteractionState.Adding)
         {
             Transaction t = login.createTransaction();
-            
-            if(!administrator_)
+        	
+            if(!admin)
             {
                 su_ = t.getSettingsUser(login.getUid());
             }
             else
             {
-                administratorCB.setChecked(su_.getAdmin());
-                if(su_.getEnabled()!=null)
-                {
-                    registeredCB.setChecked(su_.getEnabled());
-                }
-                else
-                {
-                    for(Dataset ds : t.getDatasets())
+                if(su_.getRole()==null) {
+                	for(Dataset ds : t.getDatasets())
                     {
                         datasetCB.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
                     }
                     datasetCB.sort();
                 }
             }
+            
+        	if(su_.getRole()==null) {
+                roleCB.selectIndex(0);
+        	} else {
+                roleCB.selectItem(su_.getRole());
+        	}
             
             if(su_.getDataset()!=null)
             {
@@ -211,7 +212,7 @@ public class AccountForm extends FormWidget
             lastNameTF.setText(su_.getLastName());
             emailTF.setText(su_.getEmail());
             uidTF.setText(su_.getUid());
-            if(su_.getEnabled()==null)
+            if(su_.getRole()==null)
             {
                 uidTF.setText("");
             }
@@ -298,16 +299,16 @@ public class AccountForm extends FormWidget
     @Override
     public void saveData()
     {
-        boolean wasNotEnabled = su_.getEnabled()==null;
+        boolean wasNotEnabled = su_.getRole()==null;
         
         Transaction t;
-        if(administrator_ && wasNotEnabled)
+        if(admin && wasNotEnabled)
         {
             t = login.createTransaction();
             boolean nonExistingName = t.getSettingsUser(uidTF.text())==null;
             if(!nonExistingName)
             {
-            	UIUtils.showWarningMessageBox(this, tr("form.administrator.notRegisteredUser.edit.uid.warning"));
+            	UIUtils.showWarningMessageBox(this, tr("form.administrator.user.edit.uid.warning"));
                 return;
             }
         }
@@ -317,8 +318,7 @@ public class AccountForm extends FormWidget
             if(getInteractionState()==InteractionState.Adding)
             {
                 su_.setUid(emailTF.text());
-                su_.setAdmin(false);
-                su_.setEnabled(null);
+                su_.setRole(null);
             }
             
             su_.setFirstName(firstNameTF.text());
@@ -330,10 +330,9 @@ public class AccountForm extends FormWidget
                 su_.setPassword(Encrypt.encryptMD5(newPasswordTF.getFormText()));
             }
             
-            if(administrator_)
+            if(admin)
             {
-                su_.setAdmin(administratorCB.isChecked());
-                su_.setEnabled(registeredCB.isChecked());
+                su_.setRole(roleCB.currentValue());
             }
                 
             if(getInteractionState()==InteractionState.Adding)
@@ -347,7 +346,7 @@ public class AccountForm extends FormWidget
                 update(su_, t);
                 t.commit(); 
                 
-                if(administrator_ && wasNotEnabled)
+                if(admin && wasNotEnabled)
                 {
                     t = login.createTransaction();
                     su_.setDataset(t.getDataset(datasetCB.currentItem().value()));
@@ -413,7 +412,7 @@ public class AccountForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().registeredUsersSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().registeredUserSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getTree().getTreeContent().usersSelect.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().userSelected.setSelectedItem(null);
     }
 }

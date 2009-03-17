@@ -229,8 +229,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		SettingsUser admin = new SettingsUser(getString("account_Uid"), 0, 0);
 		admin.setFirstName(getString("account_FirstName"));
         admin.setLastName(getString("account_LastName"));
-        admin.setAdmin(true);
-        admin.setEnabled(true);
+        admin.setRole("admin");
         admin.setPassword(Encrypt.encryptMD5(getString("account_Pass")));
         
 		InitRegaDB init = new InitRegaDB();

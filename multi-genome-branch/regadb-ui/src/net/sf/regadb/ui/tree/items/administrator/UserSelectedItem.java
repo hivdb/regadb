@@ -4,11 +4,11 @@ import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
 import eu.webtoolkit.jwt.WTreeNode;
 
-public class RegisteredUserSelectedItem extends GenericSelectedItem<SettingsUser>
+public class UserSelectedItem extends GenericSelectedItem<SettingsUser>
 {
-    public RegisteredUserSelectedItem(WTreeNode parent) 
+    public UserSelectedItem(WTreeNode parent) 
     {
-        super(parent, "menu.administrator.registeredUserSelectedItem");
+        super(parent, "menu.administrator.userSelectedItem");
     }
 
     @Override

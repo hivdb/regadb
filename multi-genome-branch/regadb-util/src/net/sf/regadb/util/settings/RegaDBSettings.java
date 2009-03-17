@@ -19,6 +19,7 @@ public class RegaDBSettings {
     private RegaDBSettings() {
     	addConfig(new HibernateConfig());
     	addConfig(new ProxyConfig());
+    	addConfig(new AccessPolicyConfig());
     	addConfig(new InstituteConfig());
     }
     
@@ -122,6 +123,9 @@ public class RegaDBSettings {
     }
     public ProxyConfig getProxyConfig(){
     	return (ProxyConfig)configs.get("proxies");
+    }
+    public AccessPolicyConfig getAccessPolicyConfig(){
+    	return (AccessPolicyConfig)configs.get("access-policies");
     }
     
     public String getDateFormat(){

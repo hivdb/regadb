@@ -67,8 +67,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.administrator.AdministratorItem;
-import net.sf.regadb.ui.tree.items.administrator.NotRegisteredUserSelectedItem;
-import net.sf.regadb.ui.tree.items.administrator.RegisteredUserSelectedItem;
+import net.sf.regadb.ui.tree.items.administrator.UserSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeGroupSelectedItem;
 import net.sf.regadb.ui.tree.items.attributeSettings.AttributeSelectedItem;
 import net.sf.regadb.ui.tree.items.custom.ContactItem;
@@ -198,21 +197,14 @@ public class TreeContent
     public ActionItem queryDefinitionRunSelectedDelete;
     
     public AdministratorItem administratorMain;
-    public ActionItem enabledUsers;
-    public ActionItem registeredUsersSelect;
-    public RegisteredUserSelectedItem registeredUserSelected;
-    public ActionItem registeredUserDelete;
-    public ActionItem registeredUsersView;
-    public ActionItem registeredUsersEdit;
-    public ActionItem registeredUsersDelete;
-    public ActionItem registeredUsersChangePassword;
-    public ActionItem disabledUsers;
-    public ActionItem notRegisteredUsersSelect;
-    public NotRegisteredUserSelectedItem notRegisteredUserSelected;
-    public ActionItem notRegisteredUsersView;
-    public ActionItem notRegisteredUsersEdit;
-    public ActionItem notRegisteredUsersDelete;
-    public ActionItem notRegisteredUsersChangePassword;
+    public ActionItem users;
+    public ActionItem usersSelect;
+    public UserSelectedItem userSelected;
+    public ActionItem userDelete;
+    public ActionItem usersView;
+    public ActionItem usersEdit;
+    public ActionItem usersDelete;
+    public ActionItem usersChangePassword;
     public ActionItem updateFromCentralServer;
     public ActionItem updateFromCentralServerUpdate;
     public ActionItem updateFromCentralServerUpdateView;
@@ -1201,79 +1193,42 @@ public class TreeContent
             myAccountLogout = new LogoutItem(myAccountMain);
         
         administratorMain = new AdministratorItem(rootItem);
-            enabledUsers = new ActionItem(WResource.tr("menu.administrator.users.registered"), administratorMain);
-            registeredUsersSelect = new ActionItem(WResource.tr("menu.administrator.users.select"), enabledUsers, new ITreeAction()
+        usersSelect = new ActionItem(WResource.tr("menu.administrator.users"), administratorMain);
+
+            usersSelect = new ActionItem(WResource.tr("menu.administrator.users.select"), usersSelect, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new SelectSettingsUserForm(true));
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectSettingsUserForm());
                 }
             });
-            registeredUserSelected = new RegisteredUserSelectedItem(enabledUsers);
-            registeredUsersView = new ActionItem(WResource.tr("menu.administrator.users.view"), registeredUserSelected, new ITreeAction()
+            userSelected = new UserSelectedItem(usersSelect);
+            usersView = new ActionItem(WResource.tr("menu.administrator.users.view"), userSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.view"), InteractionState.Viewing, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.user.view"), InteractionState.Viewing, usersSelect, userSelected, true, userSelected.getSelectedItem()));
                 }
             });
-            registeredUsersEdit = new ActionItem(WResource.tr("menu.administrator.users.edit"), registeredUserSelected, new ITreeAction()
+            usersEdit = new ActionItem(WResource.tr("menu.administrator.users.edit"), userSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.edit"), InteractionState.Editing, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.user.edit"), InteractionState.Editing, usersSelect, userSelected, true, userSelected.getSelectedItem()));
                 }
             });
-            registeredUsersDelete = new ActionItem(WResource.tr("form.settings.user.delete"), registeredUserSelected, new ITreeAction()
+            usersDelete = new ActionItem(WResource.tr("form.settings.user.delete"), userSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.registeredUser.delete"), InteractionState.Deleting, registeredUsersSelect, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.user.delete"), InteractionState.Deleting, usersSelect, userSelected, true, userSelected.getSelectedItem()));
                 }
             });
-            registeredUsersChangePassword = new ActionItem(WResource.tr("form.settings.user.password"), registeredUserSelected, new ITreeAction()
+            usersChangePassword = new ActionItem(WResource.tr("form.settings.user.password"), userSelected, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, registeredUsersView, registeredUserSelected, true, registeredUserSelected.getSelectedItem()));
-                }
-            });
-            
-            disabledUsers = new ActionItem(WResource.tr("menu.administrator.users.notregistered"), administratorMain);
-            notRegisteredUsersSelect = new ActionItem(WResource.tr("menu.administrator.users.select"), disabledUsers, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new SelectSettingsUserForm(false));
-                }
-            });
-            notRegisteredUserSelected = new NotRegisteredUserSelectedItem(disabledUsers);
-            notRegisteredUsersView = new ActionItem(WResource.tr("menu.administrator.users.view"), notRegisteredUserSelected, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node)
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notRegisteredUser.view"), InteractionState.Viewing, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
-                }
-            });
-            notRegisteredUsersEdit = new ActionItem(WResource.tr("menu.administrator.users.edit"), notRegisteredUserSelected, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node)
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notRegisteredUser.edit"), InteractionState.Editing, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
-                }
-            });
-            notRegisteredUsersDelete = new ActionItem(WResource.tr("form.settings.user.delete"), notRegisteredUserSelected, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node)
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new AccountForm(WWidget.tr("form.administrator.notregisteredUser.delete"), InteractionState.Deleting, notRegisteredUsersSelect, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
-                }
-            });
-            notRegisteredUsersChangePassword = new ActionItem(WResource.tr("form.settings.user.password"), notRegisteredUserSelected, new ITreeAction()
-            {
-                public void performAction(TreeMenuNode node)
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, notRegisteredUsersView, notRegisteredUserSelected, true, notRegisteredUserSelected.getSelectedItem()));
+                    RegaDBMain.getApp().getFormContainer().setForm(new PasswordForm(WWidget.tr("menu.myAccount.passwordForm"), InteractionState.Editing, usersView, userSelected, true, userSelected.getSelectedItem()));
                 }
             });
             

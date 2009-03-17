@@ -1160,13 +1160,11 @@ public class Transaction {
     }
     
     @SuppressWarnings("unchecked")
-    public List<SettingsUser> getUsersByEnabled(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
+    public List<SettingsUser> getSettingsUsers(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "from SettingsUser as settingsUser ";
         
         queryString += "where not settingsUser.uid = :uid ";
-        
-        queryString += "and enabled " + (enabled?"is not null":"= null");
         
         if(!filterConstraints.clause_.equals(" "))
         {
@@ -1190,13 +1188,11 @@ public class Transaction {
         return q.list();
     }
     
-    public long getSettingsUserCountByEnabled(HibernateFilterConstraint filterConstraints, boolean enabled) 
+    public long getSettingsUsersCount(HibernateFilterConstraint filterConstraints) 
     {
          String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
             
          queryString += "where not settingsUser.uid = :uid ";
-         
-         queryString += "and enabled " + (enabled?"is not null":"= null");
          
          if(!filterConstraints.clause_.equals(" "))
          {

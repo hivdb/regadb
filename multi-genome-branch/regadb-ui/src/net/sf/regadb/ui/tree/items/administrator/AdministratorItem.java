@@ -4,6 +4,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WTreeNode;
 
 public class AdministratorItem extends TreeMenuNode
@@ -25,8 +26,9 @@ public class AdministratorItem extends TreeMenuNode
         if(RegaDBMain.getApp().getLogin()!=null)
         {
             Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-            
-            return t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getAdmin();
+
+            return RegaDBSettings.getInstance().getAccessPolicyConfig().isAdmin(
+            		t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getUid());
         }
         else
         {

@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ProxyConfig.ProxyServer;
@@ -113,6 +114,13 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 		try
 		{
 			RegaDBMain.getApp().login(uidTF.text(), passwordTF.text());
+			
+			String role = RegaDBMain.getApp().getLogin().createTransaction().getSettingsUser().getRole();
+			if(role == null || !RegaDBSettings.getInstance().getAccessPolicyConfig().getRoles().contains(role)) {
+				UIUtils.showWarningMessageBox(this, tr("form.login.error.noSuchRole"));
+				return false;
+			}
+			
 			return true;
 		}
 		catch (WrongUidException e)
