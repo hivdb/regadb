@@ -186,7 +186,10 @@ public class TimeLine<T> {
     				if(p1 != p2 && p2.getStart().equals(pl1.getKey()))
     					overlaps.add(p2);
     			
-    	    	for(Map.Entry<Date,List<Period>> pl2 : timeline.tailMap(pl1.getKey(),false).entrySet()){
+    	    	for(Map.Entry<Date,List<Period>> pl2 : timeline.tailMap(pl1.getKey()).entrySet()){
+    	    	    if(pl2.getKey().equals(pl1.getKey()))
+    	    	        continue;
+    	    	    
         			int size = overlaps.size();
 
     	    		for(Period p2 : pl2.getValue()){

@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 
 import net.sf.regadb.align.local.Grid.Line;
 
@@ -72,7 +72,7 @@ public class FastLSA extends JFrame{
                 
             });
             
-            MouseAdapter ma = new MouseAdapter(){
+            MouseInputAdapter ma = new MouseInputAdapter(){
                 private int oldx,oldy;
                 @Override
                 public void mousePressed(MouseEvent arg0) {

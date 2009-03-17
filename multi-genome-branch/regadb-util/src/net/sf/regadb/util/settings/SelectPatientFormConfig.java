@@ -43,7 +43,6 @@ public class SelectPatientFormConfig extends FormConfig {
 		setDefaults();
 	}
 
-	@Override
 	public void parseXml(RegaDBSettings settings, Element e) {
 		setAttributeFilter(e.getChildTextTrim("attributeFilter"));
 		if(getAttributeFilter() != null && getAttributeFilter().length() == 0)
@@ -60,7 +59,6 @@ public class SelectPatientFormConfig extends FormConfig {
 		}
 	}
 
-	@Override
 	public void setDefaults() {
 		setAttributeFilter(null);
 		

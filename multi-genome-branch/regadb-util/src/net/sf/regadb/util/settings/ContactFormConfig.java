@@ -41,7 +41,6 @@ public class ContactFormConfig extends FormConfig {
 		setDefaults();
 	}
 
-	@Override
 	public void parseXml(RegaDBSettings settings, Element e) {
 		tests.clear();
 		events.clear();
@@ -68,7 +67,6 @@ public class ContactFormConfig extends FormConfig {
         }
 	}
 
-	@Override
 	public void setDefaults() {
 		tests.clear();
 		events.clear();
@@ -78,7 +76,6 @@ public class ContactFormConfig extends FormConfig {
         tests.add(new TestItem("Viral Load (copies/ml) (generic)","HIV-1"));//StandardObjects.getGenericHiv1ViralLoadTest().getDescription(), StandardObjects.getHiv1Genome().getOrganismName()));
 	}
 
-	@Override
 	public Element toXml(){
 		Element r = super.toXml();
 		Element e;
