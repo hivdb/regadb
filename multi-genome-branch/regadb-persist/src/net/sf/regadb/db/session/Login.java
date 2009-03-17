@@ -6,6 +6,11 @@
  */
 package net.sf.regadb.db.session;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -14,6 +19,7 @@ import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.AccessPolicyConfig.BlockedAttribute;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -83,6 +89,26 @@ public class Login {
     private Login(String uid) {
         this.uid = uid;
         session_ = HibernateUtil.getSessionFactory().openSession();
+        
+        Transaction t  = new Transaction(this, getSession());
+        SettingsUser su = t.getSettingsUser(uid);
+        
+        List<BlockedAttribute> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getBlockedAttributes().get(su.getRole());
+        if(attributes!=null) {
+        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
+        	Attribute attribute;
+        	for(BlockedAttribute a : attributes) {
+        		attribute = t.getAttribute(a.attributeName, a.groupName);
+        		if(attribute!=null) {
+        			attribute_iis.add(attribute.getAttributeIi());
+        		} else {
+        			System.err.println("Blocked Attribute cannot be found: " + a.groupName + " - " +a.attributeName);
+        		}
+        	}
+        	
+        	if(attribute_iis.size()>0)
+        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+        }
         
         prepareQueries();
     }

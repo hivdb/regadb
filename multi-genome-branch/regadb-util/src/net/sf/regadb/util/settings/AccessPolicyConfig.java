@@ -8,8 +8,13 @@ import java.util.Map;
 import org.jdom.Element;
 
 public class AccessPolicyConfig implements IConfigParser {
+	public class BlockedAttribute {
+		public String attributeName;
+		public String groupName;		
+	}
+	
 	private List<String> roles = new ArrayList<String>();
-	private Map<String, List<String>> blockedAttributes = new HashMap<String, List<String>>();
+	private Map<String, List<BlockedAttribute>> blockedAttributes = new HashMap<String, List<BlockedAttribute>>();
 	private List<String> admins = new ArrayList<String>();
 	
 	
@@ -32,15 +37,16 @@ public class AccessPolicyConfig implements IConfigParser {
 		}
 		
 		String role;
-		String attribute;
 		for(Object ba : blockedAttributesE) {
 			Element baa = (Element)ba;
 			role = baa.getChildTextTrim("role");
-			attribute = baa.getChildTextTrim("attribute");
+			BlockedAttribute ba_o = new BlockedAttribute();
+			ba_o.attributeName = baa.getChildTextTrim("name");
+			ba_o.groupName = baa.getChildTextTrim("group");
 			if(blockedAttributes.get(role)==null) {
-				blockedAttributes.put(role, new ArrayList<String>());
+				blockedAttributes.put(role, new ArrayList<BlockedAttribute>());
 			}
-			blockedAttributes.get(role).add(attribute);
+			blockedAttributes.get(role).add(ba_o);
 		}
 		
 		for(Object a : adminsE) {
@@ -62,7 +68,7 @@ public class AccessPolicyConfig implements IConfigParser {
 		return roles;
 	}
 
-	public Map<String, List<String>> getBlockedAttributes() {
+	public Map<String, List<BlockedAttribute>> getBlockedAttributes() {
 		return blockedAttributes;
 	}
 
@@ -88,16 +94,20 @@ public class AccessPolicyConfig implements IConfigParser {
 	    
 	    e = new Element("blocked-attributes");
 	    r.addContent(e);
-	    for(Map.Entry<String, List<String>> ba : blockedAttributes.entrySet()){
-	        for(String attr : ba.getValue()){
+	    for(Map.Entry<String, List<BlockedAttribute>> ba : blockedAttributes.entrySet()){
+	        for(BlockedAttribute attr : ba.getValue()){
     	        Element ee = new Element("blocked-attribute");
 
     	        Element eee = new Element("role");
     	        eee.setText(ba.getKey());
     	        ee.addContent(eee);
                 
-    	        eee = new Element("attribute");
-                eee.setText(attr);
+    	        eee = new Element("group");
+                eee.setText(attr.groupName);
+                ee.addContent(eee);
+                
+    	        eee = new Element("name");
+                eee.setText(attr.attributeName);
                 ee.addContent(eee);
                 
                 e.addContent(ee);
