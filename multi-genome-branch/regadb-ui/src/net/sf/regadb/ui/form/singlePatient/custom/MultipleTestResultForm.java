@@ -168,7 +168,8 @@ public class MultipleTestResultForm extends FormWidget {
         }
         
         if(getInteractionState() == InteractionState.Adding){
-            addViralIsolate = new WPushButton(tr("form.multipleTestResults.addViralIsolate"), this);
+            addViralIsolate = new WPushButton(tr("form.multipleTestResults.addViralIsolate"));
+            getExtraButtons().add(addViralIsolate);
             addViralIsolate.clicked().addListener(this, new Signal.Listener(){
                 public void trigger() {
                     saveAndGotoViralIsolate();

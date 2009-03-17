@@ -2,6 +2,7 @@ package net.sf.regadb.ui.framework.forms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -39,7 +40,9 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
     private WPushButton _deleteButton = new WPushButton(tr("form.general.button.delete"));
     
-    public FormWidget(WString formName, InteractionState interactionState)
+    private List<WPushButton> extraButtons = new ArrayList<WPushButton>();
+
+	public FormWidget(WString formName, InteractionState interactionState)
 	{
         super(formName);
         interactionState_ = interactionState;
@@ -82,6 +85,10 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     protected void addControlButtons()
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
+        
+        for(WPushButton b : extraButtons) {
+        	buttonContainer.addWidget(b);
+        }
         
         if(getInteractionState()==InteractionState.Deleting)
         {
@@ -236,4 +243,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
             return null;
         }
     }
+    
+    protected List<WPushButton> getExtraButtons() {
+		return extraButtons;
+	}
 }
