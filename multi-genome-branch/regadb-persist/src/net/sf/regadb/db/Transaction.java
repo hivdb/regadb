@@ -712,7 +712,6 @@ public class Transaction {
         newSu.setFirstName(user.getFirstName());
         newSu.setLastName(user.getLastName());
         newSu.setRole(user.getRole());
-        newSu.setEnabled(user.getEnabled());
         
         delete(user);
         

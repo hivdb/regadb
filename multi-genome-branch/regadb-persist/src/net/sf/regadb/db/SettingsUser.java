@@ -31,8 +31,6 @@ public class SettingsUser implements java.io.Serializable {
 
     private String role;
 
-    private Boolean enabled;
-
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
     private Set<UserAttribute> userAttributes = new HashSet<UserAttribute>(0);
@@ -48,8 +46,7 @@ public class SettingsUser implements java.io.Serializable {
 
     public SettingsUser(String uid, Test test, Dataset dataset, int chartWidth,
             int chartHeight, String password, String email, String firstName,
-            String lastName, String role, Boolean enabled,
-            Set<DatasetAccess> datasetAccesses,
+            String lastName, String role, Set<DatasetAccess> datasetAccesses,
             Set<UserAttribute> userAttributes) {
         this.uid = uid;
         this.test = test;
@@ -61,7 +58,6 @@ public class SettingsUser implements java.io.Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
-        this.enabled = enabled;
         this.datasetAccesses = datasetAccesses;
         this.userAttributes = userAttributes;
     }
@@ -152,14 +148,6 @@ public class SettingsUser implements java.io.Serializable {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public Boolean getEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Set<DatasetAccess> getDatasetAccesses() {

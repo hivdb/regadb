@@ -36,9 +36,6 @@
     <property name="role" type="string">
       <column name="role" length="50" />
     </property>
-    <property name="enabled" type="java.lang.Boolean">
-      <column name="enabled" />
-    </property>
     <set name="datasetAccesses" inverse="true" cascade="all">
       <key>
         <column name="uid" length="50" not-null="true" />

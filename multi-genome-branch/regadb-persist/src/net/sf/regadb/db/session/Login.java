@@ -48,7 +48,7 @@ public class Login {
         
         SettingsUser su = loginMethod.authenticate(uid, passwd, login);
         
-        if(su.getEnabled()==null || !su.getEnabled())
+        if(su.getRole()==null || su.getRole().length() == 0)
         {
             throw new DisabledUserException();
         }
