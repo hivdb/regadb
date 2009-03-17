@@ -7,6 +7,7 @@
 package net.sf.regadb.db;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.db.session.Login;
@@ -624,13 +625,21 @@ public class Transaction {
         {
             q.setParameter(arg.getKey(), arg.getValue());
         }
-
+        System.out.println(queryString);
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
 
-        List<Object[]> l = q.list();
-        for(Object[] o : l){
-            o[0] = getPatientByIi((Integer)o[0]);
+        List<Object[]> l;
+        if(attributes.size() == 0){
+            l = new ArrayList<Object[]>();
+            
+            for(Object o : q.list())
+                l.add(new Object[]{getPatientByIi((Integer)o)});
+        }
+        else{
+            l = q.list();
+            for(Object[] o : l)
+                o[0] = getPatientByIi((Integer)o[0]);
         }
         return l;
     }
