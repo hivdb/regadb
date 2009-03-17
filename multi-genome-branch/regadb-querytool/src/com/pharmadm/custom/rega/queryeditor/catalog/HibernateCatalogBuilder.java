@@ -1390,7 +1390,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     }
     
     private void addAllTableClauses() throws SQLException {
-    	catalog.addAll(getObjectClauses(catalog.getObject("PatientImpl", "lastName")));
+    	catalog.addAll(getObjectClauses(catalog.getObject("PatientImpl", "patientId")));
     	catalog.addAll(getObjectClauses(catalog.getObject("Therapy")));
     	catalog.addAll(getObjectClauses(catalog.getObject("TherapyGeneric")));
     	catalog.addAll(getObjectClauses(catalog.getObject("TherapyCommercial")));
@@ -1551,7 +1551,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         ///////////////////////////////////////
         // amino acid sequence
         catalog.add(getNamedObjectFetchClause(catalog.getRelation("AaSequence", "Protein"), catalog.getObject("Protein", "fullName")));
-        catalog.add(getNamedObjectFetchClause(catalog.getRelation("AaSequence", "PatientImpl"), catalog.getObject("PatientImpl", "lastName")));
+        catalog.add(getNamedObjectFetchClause(catalog.getRelation("AaSequence", "PatientImpl"), catalog.getObject("PatientImpl", "patientId")));
         catalog.addAll(getPropertyComparisonClauses("AaSequence", "firstAaPos"));
         catalog.addAll(getPropertyComparisonClauses("AaSequence", "lastAaPos"));
         catalog.add(getMutationClause("ntReferenceCodon", "ntMutationCodon", "has synonymous mutations"));
