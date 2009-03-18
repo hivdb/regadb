@@ -11,6 +11,7 @@ public class SelectPatientFormConfig extends FormConfig {
 	private AttributeConfig attributeFilter;
 	private List<AttributeConfig> attributes = new ArrayList<AttributeConfig>();
 	
+	private boolean showSampleIds = true;
 
 	public SelectPatientFormConfig() {
 		super(NAME);
@@ -18,6 +19,8 @@ public class SelectPatientFormConfig extends FormConfig {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
+	    setShowSampleIds("true".equals(e.getAttributeValue("showSampleIds")));
+	    
 		AttributeConfig ac = new AttributeConfig();
 		ac.parseXml(settings, e.getChild("attributeFilter").getChild(ac.getXmlTag()));
 		setAttributeFilter(ac);
@@ -39,15 +42,18 @@ public class SelectPatientFormConfig extends FormConfig {
 
 	public void setDefaults() {
 		setAttributeFilter(null);
+		setShowSampleIds(true);
 		
 		attributes.clear();
-		attributes.add(new AttributeConfig("First name", "RegaDB"));
-		attributes.add(new AttributeConfig("Last name", "RegaDB"));
+		attributes.add(new AttributeConfig("First name", "Personal"));
+		attributes.add(new AttributeConfig("Last name", "Personal"));
 	}
 	
 	@Override
 	public Element toXml(){
 		Element r = super.toXml();
+		r.setAttribute("showSampleIds", (getShowSampleIds() ? "true": "false"));
+		
 		Element e;
 		
 		if(getAttributeFilter() != null){
@@ -77,4 +83,12 @@ public class SelectPatientFormConfig extends FormConfig {
 	public List<AttributeConfig> getAttributes(){
 		return attributes;
 	}
+
+    public void setShowSampleIds(boolean showSampleIds) {
+        this.showSampleIds = showSampleIds;
+    }
+
+    public boolean getShowSampleIds() {
+        return showSampleIds;
+    }
 }
