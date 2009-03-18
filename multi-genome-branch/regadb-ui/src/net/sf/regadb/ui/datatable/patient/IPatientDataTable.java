@@ -64,7 +64,9 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	    }
 	    
 	    addColumn(WString.tr("dataTable.patient.colName.attribute"), getAttributeFilter(), "av"+ (i) +".value", true, width);
-	    addColumn(WString.tr("dataTable.patient.colName.sampleId"), new SampleIdFilter(), "vi.sampleId", false, width);
+	    
+	    if(RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getShowSampleIds())
+	        addColumn(WString.tr("dataTable.patient.colName.sampleId"), new SampleIdFilter(), "vi.sampleId", false, width);
 	}
 	
 	public void addColumn(WString colName, IFilter filter, String varName, boolean sortable, int width){
@@ -140,15 +142,17 @@ public class IPatientDataTable implements IDataTable<Object[]>
 		else
 		    toReturn[rowIndex] = "";
 
-		++rowIndex;
-		if(p.getViralIsolates().size()>0) {
-			ViralIsolate vi = (ViralIsolate)p.getViralIsolates().toArray()[0];
-			toReturn[rowIndex] = vi.getSampleId();
-			if(p.getViralIsolates().size()>1) {
-				toReturn[rowIndex] += ", ...";
-			}
-		} else {
-			toReturn[rowIndex] = "";
+		if(RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getShowSampleIds()){
+    		++rowIndex;
+    		if(p.getViralIsolates().size()>0) {
+    			ViralIsolate vi = (ViralIsolate)p.getViralIsolates().toArray()[0];
+    			toReturn[rowIndex] = vi.getSampleId();
+    			if(p.getViralIsolates().size()>1) {
+    				toReturn[rowIndex] += ", ...";
+    			}
+    		} else {
+    			toReturn[rowIndex] = "";
+    		}
 		}
 
 		return toReturn;
@@ -241,16 +245,18 @@ public class IPatientDataTable implements IDataTable<Object[]>
 		Patient p = (Patient)type[0];
 		int rowIndex = colNames_.size()-1;
 		
-		if(p.getViralIsolates().size()>0) {
-			int count = 0;
-			for(ViralIsolate vi : p.getViralIsolates()) {
-				toReturn[rowIndex] += vi.getSampleId();
-				++count;
-				
-				if(count<p.getViralIsolates().size()) {
-					toReturn[rowIndex] += ", ";
-				}
-			}
+		if(RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getShowSampleIds()){
+    		if(p.getViralIsolates().size()>0) {
+    			int count = 0;
+    			for(ViralIsolate vi : p.getViralIsolates()) {
+    				toReturn[rowIndex] += vi.getSampleId();
+    				++count;
+    				
+    				if(count<p.getViralIsolates().size()) {
+    					toReturn[rowIndex] += ", ";
+    				}
+    			}
+    		}
 		}
 		return toReturn;
 	}
