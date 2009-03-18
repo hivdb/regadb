@@ -168,7 +168,7 @@ public class PrepareCentralRepos
     {
         Table countries = null;
         Attribute country = new Attribute("Country of origin");
-        country.setAttributeGroup(StandardObjects.getRegaDBAttributeGroup());
+        country.setAttributeGroup(StandardObjects.getDemographicsAttributeGroup());
         country.setValueType(StandardObjects.getNominalValueType());
         
         try 

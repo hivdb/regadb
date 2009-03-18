@@ -779,7 +779,7 @@ public class ImportPortugalDB {
         System.err.println("Importing patient attributes");
 
         AttributeGroup portugal = new AttributeGroup("PT");
-        AttributeGroup regadb = StandardObjects.getRegaDBAttributeGroup();
+        //AttributeGroup regadb = StandardObjects.getRegaDBAttributeGroup();
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
 
@@ -797,7 +797,7 @@ public class ImportPortugalDB {
         
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(StandardObjects.getPersonalInformationAttributeGroup());
         
         String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {

@@ -55,7 +55,9 @@ public class StandardObjects {
     private static ValueType stringValueType;
     private static ValueType dateValueType;
     
-    private static AttributeGroup regadbAttributeGroup;
+    private static AttributeGroup personalInformationGroup;
+    private static AttributeGroup demographicsGroup;
+    private static AttributeGroup clinicalGroup;
     
     private static Attribute firstNameAttribute;
     private static Attribute lastNameAttribute;
@@ -127,18 +129,20 @@ public class StandardObjects {
         stringValueType         = new ValueType("string");
         dateValueType           = new ValueType("date");
         
-        regadbAttributeGroup = new AttributeGroup("RegaDB");
+        personalInformationGroup = new AttributeGroup("Personal information");
+        demographicsGroup = new AttributeGroup("Demographics");
+        clinicalGroup = new AttributeGroup("Clinical");
         
-        firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType());
-        lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType());
-        birthDateAttribute          = createAttribute(Patient.BIRTH_DATE, getDateValueType());
-        deathDateAttribute          = createAttribute(Patient.DEATH_DATE, getDateValueType());
+        firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType(), getPersonalInformationAttributeGroup());
+        lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType(), getPersonalInformationAttributeGroup());
+        birthDateAttribute          = createAttribute(Patient.BIRTH_DATE, getDateValueType(), getPersonalInformationAttributeGroup());
+        deathDateAttribute          = createAttribute(Patient.DEATH_DATE, getDateValueType(), getPersonalInformationAttributeGroup());
         
         genderAttribute             = createGender();
         ethnicityAttribute          = createEthnicity();
         geographicOriginAttribute   = createGeographicOrigin();
         transmissionGroupAttribute  = createTransmissionGroup();
-        clinicalFileNumberAttribute = createAttribute("Clinical File Number", getStringValueType());
+        clinicalFileNumberAttribute = createAttribute("Clinical File Number", getStringValueType(), getClinicalAttributeGroup());
 //        countryOfOriginAttribute    = createCountryOfOrigin();
         
         patientTestObject           = new TestObject("Patient test", 0);
@@ -340,8 +344,14 @@ public class StandardObjects {
     }
 
 
-    public static AttributeGroup getRegaDBAttributeGroup(){
-        return regadbAttributeGroup;
+    public static AttributeGroup getPersonalInformationAttributeGroup(){
+        return personalInformationGroup;
+    }
+    public static AttributeGroup getDemographicsAttributeGroup(){
+        return demographicsGroup;
+    }
+    public static AttributeGroup getClinicalAttributeGroup(){
+        return clinicalGroup;
     }
     
     public static Attribute getFirstNameAttribute(){
@@ -655,9 +665,9 @@ public class StandardObjects {
         return new Test(pregnancyType, "Pregnancy");
     }
 
-    private static Attribute createAttribute(String name, ValueType vt){
+    private static Attribute createAttribute(String name, ValueType vt, AttributeGroup ag){
         Attribute a = new Attribute(name);
-        a.setAttributeGroup(getRegaDBAttributeGroup());
+        a.setAttributeGroup(ag);
         a.setValueType(vt);
         return a;
     }
@@ -665,7 +675,7 @@ public class StandardObjects {
     private static Attribute createGender()
     {
         Attribute transmissionGroup = new Attribute("Gender");
-        transmissionGroup.setAttributeGroup(getRegaDBAttributeGroup());
+        transmissionGroup.setAttributeGroup(getPersonalInformationAttributeGroup());
         transmissionGroup.setValueType(getNominalValueType());
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "male"));
@@ -677,7 +687,7 @@ public class StandardObjects {
     private static Attribute createTransmissionGroup()
     {
         Attribute transmissionGroup = new Attribute("Transmission group");
-        transmissionGroup.setAttributeGroup(getRegaDBAttributeGroup());
+        transmissionGroup.setAttributeGroup(getClinicalAttributeGroup());
         transmissionGroup.setValueType(getNominalValueType());
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "bisexual"));
@@ -696,7 +706,7 @@ public class StandardObjects {
     private static Attribute createGeographicOrigin()
     {
         Attribute geographicOrigin = new Attribute("Geographic origin");
-        geographicOrigin.setAttributeGroup(getRegaDBAttributeGroup());
+        geographicOrigin.setAttributeGroup(getDemographicsAttributeGroup());
         geographicOrigin.setValueType(getNominalValueType());
         
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Africa"));
@@ -714,7 +724,7 @@ public class StandardObjects {
     private static Attribute createEthnicity()
     {
         Attribute ethnicity = new Attribute("Ethnicity");
-        ethnicity.setAttributeGroup(getRegaDBAttributeGroup());
+        ethnicity.setAttributeGroup(getDemographicsAttributeGroup());
         ethnicity.setValueType(getNominalValueType());
         
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "african"));
