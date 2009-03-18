@@ -260,7 +260,8 @@ public class Jarbuilder
         }
         try {
         	String jarDeps = getJardependenciesString(getOwnJarDependencies(moduleName));
-        	
+        	jarDeps = jarDeps.concat(" " + getJardependenciesString(getForeignJarDependencies(moduleName, new ArrayList<String>())));
+
         	AntTools.buildProject(moduleName, buildDir_, jarDeps);
         	
         	List<String> dists = copyDistJarsToLibPool(buildDir, moduleName);
@@ -391,6 +392,8 @@ public class Jarbuilder
     	jars.addAll(getDists(moduleName));
     	
     	jars.addAll(getOwnJarDependencies(moduleName));
+    	
+  	  	jars.addAll(getForeignJarDependencies(moduleName, new ArrayList<String>()));
     	
     	Collection jarFilesFromLibPool = FileUtils.listFiles(new File(libPool_), new String[] { "jar" }, true);
         
