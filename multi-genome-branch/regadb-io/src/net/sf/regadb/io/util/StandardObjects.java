@@ -55,9 +55,9 @@ public class StandardObjects {
     private static ValueType stringValueType;
     private static ValueType dateValueType;
     
-    private static AttributeGroup personalInformationGroup;
-    private static AttributeGroup demographicsGroup;
-    private static AttributeGroup clinicalGroup;
+    private static AttributeGroup personalAttributeGroup;
+    private static AttributeGroup demographicsAttributeGroup;
+    private static AttributeGroup clinicalAttributeGroup;
     
     private static Attribute firstNameAttribute;
     private static Attribute lastNameAttribute;
@@ -129,14 +129,14 @@ public class StandardObjects {
         stringValueType         = new ValueType("string");
         dateValueType           = new ValueType("date");
         
-        personalInformationGroup = new AttributeGroup("Personal information");
-        demographicsGroup = new AttributeGroup("Demographics");
-        clinicalGroup = new AttributeGroup("Clinical");
+        personalAttributeGroup = new AttributeGroup("Personal");
+        demographicsAttributeGroup = new AttributeGroup("Demographics");
+        clinicalAttributeGroup = new AttributeGroup("Clinical");
         
-        firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType(), getPersonalInformationAttributeGroup());
-        lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType(), getPersonalInformationAttributeGroup());
-        birthDateAttribute          = createAttribute(Patient.BIRTH_DATE, getDateValueType(), getPersonalInformationAttributeGroup());
-        deathDateAttribute          = createAttribute(Patient.DEATH_DATE, getDateValueType(), getPersonalInformationAttributeGroup());
+        firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType(), getPersonalAttributeGroup());
+        lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType(), getPersonalAttributeGroup());
+        birthDateAttribute          = createAttribute(Patient.BIRTH_DATE, getDateValueType(), getPersonalAttributeGroup());
+        deathDateAttribute          = createAttribute(Patient.DEATH_DATE, getDateValueType(), getPersonalAttributeGroup());
         
         genderAttribute             = createGender();
         ethnicityAttribute          = createEthnicity();
@@ -344,14 +344,14 @@ public class StandardObjects {
     }
 
 
-    public static AttributeGroup getPersonalInformationAttributeGroup(){
-        return personalInformationGroup;
+    public static AttributeGroup getPersonalAttributeGroup(){
+        return personalAttributeGroup;
     }
     public static AttributeGroup getDemographicsAttributeGroup(){
-        return demographicsGroup;
+        return demographicsAttributeGroup;
     }
     public static AttributeGroup getClinicalAttributeGroup(){
-        return clinicalGroup;
+        return clinicalAttributeGroup;
     }
     
     public static Attribute getFirstNameAttribute(){
@@ -675,7 +675,7 @@ public class StandardObjects {
     private static Attribute createGender()
     {
         Attribute transmissionGroup = new Attribute("Gender");
-        transmissionGroup.setAttributeGroup(getPersonalInformationAttributeGroup());
+        transmissionGroup.setAttributeGroup(getPersonalAttributeGroup());
         transmissionGroup.setValueType(getNominalValueType());
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "male"));

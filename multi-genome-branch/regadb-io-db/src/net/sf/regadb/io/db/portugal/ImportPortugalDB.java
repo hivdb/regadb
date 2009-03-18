@@ -797,7 +797,7 @@ public class ImportPortugalDB {
         
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(StandardObjects.getPersonalInformationAttributeGroup());
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
         
         String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {
