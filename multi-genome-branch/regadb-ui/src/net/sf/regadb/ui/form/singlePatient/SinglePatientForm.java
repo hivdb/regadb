@@ -52,17 +52,6 @@ public class SinglePatientForm extends FormWidget
     private ComboBox<Dataset> sourceDatasetCB;
     private Label idL;
     private TextField idTF;
-    private Label firstNameL;
-    private TextField firstNameTF;
-    private Label lastNameL;
-    private TextField lastNameTF;
-    private Label birthDateL;
-    private DateField birthDateTF;
-    private Label deathDateL;
-    private DateField deathDateTF;
-    
-    //attributes
-    private Set<String> excludeList = new HashSet<String>();
     
     private WGroupBox attributesGroup_;
     private WTable attributesGroupTable_;
@@ -80,12 +69,7 @@ public class SinglePatientForm extends FormWidget
 	}
     
     public void init()
-    {
-        addExclude(Patient.FIRST_NAME);
-        addExclude(Patient.LAST_NAME);
-        addExclude(Patient.BIRTH_DATE);
-        addExclude(Patient.DEATH_DATE);
-        
+    {   
         //general group
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
@@ -103,18 +87,6 @@ public class SinglePatientForm extends FormWidget
         idTF.setMandatory(true);
         idTF.setUnique(true);
         generalGroupTable_.addLineToTable(idL, idTF);
-        firstNameL = new Label(tr("form.singlePatient.editView.firstName"));
-        firstNameTF = new TextField(getInteractionState(), this);
-        generalGroupTable_.addLineToTable(firstNameL, firstNameTF);
-        lastNameL = new Label(tr("form.singlePatient.editView.lastName"));
-        lastNameTF = new TextField(getInteractionState(), this);
-        generalGroupTable_.addLineToTable(lastNameL, lastNameTF);
-        birthDateL = new Label(tr("form.singlePatient.editView.birthDate"));
-        birthDateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
-        generalGroupTable_.addLineToTable(birthDateL, birthDateTF);
-        deathDateL = new Label(tr("form.singlePatient.editView.deathDate"));
-        deathDateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
-        generalGroupTable_.addLineToTable(deathDateL, deathDateTF);
         /*WPushButton export = new WPushButton(lt("Export Patient"),generalGroupTable_.elementAt(generalGroupTable_.numRows(), 0));
         export.clicked.addListener(new SignalListener<WMouseEvent>()
         {
@@ -132,13 +104,6 @@ public class SinglePatientForm extends FormWidget
         fillData(patient_);
         
         addControlButtons();
-    }
-    
-    private void addExclude(String attribute){
-        excludeList.add(attribute);
-    }
-    private boolean isExcluded(Attribute attribute){
-        return excludeList.contains(attribute.getName());
     }
     
     private boolean checkPatientId(String id){
@@ -203,10 +168,6 @@ public class SinglePatientForm extends FormWidget
         }
         
         idTF.setText(patient.getPatientId());
-        firstNameTF.setText(patient.getFirstName());
-        lastNameTF.setText(patient.getLastName());
-        birthDateTF.setDate(patient.getBirthDate());
-        deathDateTF.setDate(patient.getDeathDate());
         
         List<Attribute> attributes;
         if(isEditable())
@@ -260,9 +221,6 @@ public class SinglePatientForm extends FormWidget
                 
                 for(Pair<Attribute, PatientAttributeValue> attrEl : entry.getValue())
                 {
-                    if(isExcluded(attrEl.getKey()))
-                        continue;
-                    
                     rowToPlace++;
                     addRowIfNotEmpty(rowToPlace);
                     attributeLabel = new Label(lt(attrEl.getKey().getName()));
@@ -382,11 +340,6 @@ public class SinglePatientForm extends FormWidget
         }
         
         patient_.setPatientId(getNulled(idTF.text()));
-        patient_.setFirstName(t, getNulled(firstNameTF.text()));
-        patient_.setLastName(t, getNulled(lastNameTF.text()));
-     
-        patient_.setBirthDate(t, birthDateTF.getDate());
-        patient_.setDeathDate(t, deathDateTF.getDate());
         
         Object label;
         Object tf;
