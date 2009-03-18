@@ -14,7 +14,7 @@ public class AccessPolicyConfig implements IConfigParser {
 	}
 	
 	private List<String> roles = new ArrayList<String>();
-	private Map<String, List<BlockedAttribute>> blockedAttributes = new HashMap<String, List<BlockedAttribute>>();
+	private Map<String, List<AttributeConfig>> blockedAttributes = new HashMap<String, List<AttributeConfig>>();
 	private List<String> admins = new ArrayList<String>();
 	
 	
@@ -40,13 +40,12 @@ public class AccessPolicyConfig implements IConfigParser {
 		for(Object ba : blockedAttributesE) {
 			Element baa = (Element)ba;
 			role = baa.getChildTextTrim("role");
-			BlockedAttribute ba_o = new BlockedAttribute();
-			ba_o.attributeName = baa.getChildTextTrim("name");
-			ba_o.groupName = baa.getChildTextTrim("group");
+			AttributeConfig ac = new AttributeConfig();
+			ac.parseXml(settings, baa.getChild("attribute"));
 			if(blockedAttributes.get(role)==null) {
-				blockedAttributes.put(role, new ArrayList<BlockedAttribute>());
+				blockedAttributes.put(role, new ArrayList<AttributeConfig>());
 			}
-			blockedAttributes.get(role).add(ba_o);
+			blockedAttributes.get(role).add(ac);
 		}
 		
 		for(Object a : adminsE) {
@@ -68,7 +67,7 @@ public class AccessPolicyConfig implements IConfigParser {
 		return roles;
 	}
 
-	public Map<String, List<BlockedAttribute>> getBlockedAttributes() {
+	public Map<String, List<AttributeConfig>> getBlockedAttributes() {
 		return blockedAttributes;
 	}
 
@@ -94,21 +93,15 @@ public class AccessPolicyConfig implements IConfigParser {
 	    
 	    e = new Element("blocked-attributes");
 	    r.addContent(e);
-	    for(Map.Entry<String, List<BlockedAttribute>> ba : blockedAttributes.entrySet()){
-	        for(BlockedAttribute attr : ba.getValue()){
+	    for(Map.Entry<String, List<AttributeConfig>> ba : blockedAttributes.entrySet()){
+	        for(AttributeConfig attr : ba.getValue()){
     	        Element ee = new Element("blocked-attribute");
 
     	        Element eee = new Element("role");
     	        eee.setText(ba.getKey());
     	        ee.addContent(eee);
                 
-    	        eee = new Element("group");
-                eee.setText(attr.groupName);
-                ee.addContent(eee);
-                
-    	        eee = new Element("name");
-                eee.setText(attr.attributeName);
-                ee.addContent(eee);
+                ee.addContent(attr.toXml());
                 
                 e.addContent(ee);
 	        }

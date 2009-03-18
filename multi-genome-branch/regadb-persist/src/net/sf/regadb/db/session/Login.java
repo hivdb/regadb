@@ -18,6 +18,7 @@ import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.AccessPolicyConfig.BlockedAttribute;
 
@@ -93,16 +94,16 @@ public class Login {
         Transaction t  = new Transaction(this, getSession());
         SettingsUser su = t.getSettingsUser(uid);
         
-        List<BlockedAttribute> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getBlockedAttributes().get(su.getRole());
+        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getBlockedAttributes().get(su.getRole());
         if(attributes!=null) {
         	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
         	Attribute attribute;
-        	for(BlockedAttribute a : attributes) {
-        		attribute = t.getAttribute(a.attributeName, a.groupName);
+        	for(AttributeConfig a : attributes) {
+        		attribute = t.getAttribute(a.getName(), a.getGroup());
         		if(attribute!=null) {
         			attribute_iis.add(attribute.getAttributeIi());
         		} else {
-        			System.err.println("Blocked Attribute cannot be found: " + a.groupName + " - " +a.attributeName);
+        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
         		}
         	}
         	

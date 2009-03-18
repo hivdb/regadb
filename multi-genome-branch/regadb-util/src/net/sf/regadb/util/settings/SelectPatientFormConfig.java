@@ -6,36 +6,10 @@ import java.util.List;
 import org.jdom.Element;
 
 public class SelectPatientFormConfig extends FormConfig {
-	public static class AttributeItem{
-		private String name;
-		private String group;
-		
-		public AttributeItem(String name, String group){
-			this.setName(name);
-			this.setGroup(group);
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setGroup(String group) {
-			this.group = group;
-		}
-
-		public String getGroup() {
-			return group;
-		}
-	}
-	
 	public static final String NAME = "datatable.patient.SelectPatientForm"; 
 	
-	private String attributeFilter;
-	private List<AttributeItem> attributes = new ArrayList<AttributeItem>();
+	private AttributeConfig attributeFilter;
+	private List<AttributeConfig> attributes = new ArrayList<AttributeConfig>();
 	
 
 	public SelectPatientFormConfig() {
@@ -44,9 +18,9 @@ public class SelectPatientFormConfig extends FormConfig {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
-		setAttributeFilter(e.getChildTextTrim("attributeFilter"));
-		if(getAttributeFilter() != null && getAttributeFilter().length() == 0)
-			setAttributeFilter(null);
+		AttributeConfig ac = new AttributeConfig();
+		ac.parseXml(settings, e.getChild("attributeFilter").getChild(ac.getXmlTag()));
+		setAttributeFilter(ac);
 		
 		Element ee = e.getChild("attributes");
 		if(ee != null){
@@ -54,7 +28,11 @@ public class SelectPatientFormConfig extends FormConfig {
 			
 			for(Object o : ee.getChildren()){
 				Element eee = (Element)o;
-				attributes.add(new AttributeItem(eee.getAttributeValue("name"),eee.getAttributeValue("group")));
+				
+				AttributeConfig ai = new AttributeConfig();
+				ai.parseXml(settings, eee);
+				
+				attributes.add(ai);
 			}
 		}
 	}
@@ -63,8 +41,8 @@ public class SelectPatientFormConfig extends FormConfig {
 		setAttributeFilter(null);
 		
 		attributes.clear();
-		attributes.add(new AttributeItem("First name", "RegaDB"));
-		attributes.add(new AttributeItem("Last name", "RegaDB"));
+		attributes.add(new AttributeConfig("First name", "RegaDB"));
+		attributes.add(new AttributeConfig("Last name", "RegaDB"));
 	}
 	
 	@Override
@@ -72,34 +50,31 @@ public class SelectPatientFormConfig extends FormConfig {
 		Element r = super.toXml();
 		Element e;
 		
-		if(getAttributeFilter() != null && getAttributeFilter().length() != 0){
+		if(getAttributeFilter() != null){
 			e = new Element("attributeFilter");
-			e.setText(getAttributeFilter());
+			e.addContent(getAttributeFilter().toXml());
 			r.addContent(e);
 		}
 		
 		e = new Element("attributes");
 		r.addContent(e);
 		
-		for(AttributeItem ai : attributes){
-			Element ee = new Element("attribute");
-			ee.setAttribute("name", ai.getName());
-			ee.setAttribute("group", ai.getGroup());
-			e.addContent(ee);
+		for(AttributeConfig ai : attributes){
+			e.addContent(ai.toXml());
 		}
 		
 		return r;
 	}
 
-	public void setAttributeFilter(String attributeFilter) {
+	public void setAttributeFilter(AttributeConfig attributeFilter) {
 		this.attributeFilter = attributeFilter;
 	}
 
-	public String getAttributeFilter() {
+	public AttributeConfig getAttributeFilter() {
 		return attributeFilter;
 	}
 	
-	public List<AttributeItem> getAttributes(){
+	public List<AttributeConfig> getAttributes(){
 		return attributes;
 	}
 }

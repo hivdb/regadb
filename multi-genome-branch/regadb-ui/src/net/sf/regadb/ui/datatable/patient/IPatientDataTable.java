@@ -17,8 +17,8 @@ import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.SelectPatientFormConfig.AttributeItem;
 import eu.webtoolkit.jwt.WString;
 
 public class IPatientDataTable implements IDataTable<Object[]>
@@ -46,7 +46,7 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	{
 	    setAttributeFilter(new AttributeFilter(t,getDefaultAttribute(t)));
 	    
-	    for(AttributeItem ai : RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributes()){
+	    for(AttributeConfig ai : RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributes()){
 	    	Attribute a = t.getAttribute(ai.getName(), ai.getGroup());
 	    	if(a != null)
 	    		attributes.add(a);
@@ -219,16 +219,9 @@ public class IPatientDataTable implements IDataTable<Object[]>
     }
     
     protected Attribute getDefaultAttribute(Transaction t){
-        Attribute a = null;
-        
-        String dftAttr = RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributeFilter();
-        if(dftAttr != null){
-            List<Attribute> l = t.getAttributes(dftAttr);
-            if(l.size() > 0)
-                a = l.get(0);
-        }
-        
-        return a;
+    	AttributeConfig ac = RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributeFilter();
+    	
+    	return t.getAttribute(ac.getName(), ac.getName());
     }
 
 	public int[] getColumnWidths() {
