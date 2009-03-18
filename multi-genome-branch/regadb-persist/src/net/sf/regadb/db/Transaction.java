@@ -625,7 +625,7 @@ public class Transaction {
         {
             q.setParameter(arg.getKey(), arg.getValue());
         }
-        System.out.println(queryString);
+        
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
 
