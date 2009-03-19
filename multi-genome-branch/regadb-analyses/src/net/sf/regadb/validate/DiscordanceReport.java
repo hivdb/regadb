@@ -16,7 +16,7 @@ public class DiscordanceReport {
     
     public static void main(String [] args) {
         DiscordanceReport dr = new DiscordanceReport();
-        dr.run(new File(args[0]), 800);
+        dr.run(new File(args[0]), Integer.parseInt(args[1]));
     }
     
     public void run(File input, int amountOfSequences) {
