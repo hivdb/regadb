@@ -9,24 +9,14 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.hivgensim.fastatool.FastaScanner;
-import net.sf.hivgensim.fastatool.FastaSequence;
-import net.sf.hivgensim.fastatool.SelectionWindow;
 import net.sf.hivgensim.queries.CleanSequences;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.regadb.align.Mutation;
-import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.ProteinTools;
-import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.Symbol;
-import org.biojava.bio.symbol.SymbolList;
 
 /**
  * needs to be changed to use the regadb alignment algorithm fully
@@ -117,42 +107,42 @@ public class MutationTable extends Table {
 	 * @throws BioException
 	 * @throws FileNotFoundException
 	 */
-	@Deprecated
-	public MutationTable(String fastaFilename, SelectionWindow[] windows) throws BioException, FileNotFoundException {
-		super();
-		createIdColumn();
-
-		FastaScanner scan = new FastaScanner(new File(fastaFilename));
-		if (!scan.hasNextSequence()) {
-			return; // empty file
-		}
-
-		SymbolTokenization aatok = ProteinTools.getTAlphabet().getTokenization("token"); 
-		SymbolList alignedRef = DNATools.createDNA(scan.nextSequence().getSequence());
-		SymbolList alignedTarget;
-		LocalAlignmentService las = new LocalAlignmentService();
-
-		FastaSequence fs;
-		while (scan.hasNextSequence()) {
-			fs = scan.nextSequence();
-			alignedTarget = DNATools.createDNA(fs.getSequence());
-			createNewRow(fs.getId());
-			for(Mutation m = null;;){//TODO
-				//			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
-				for(SelectionWindow sw : windows){
-					if(mutationInWindow(m,sw)){
-						String protein = sw.getProtein().getAbbreviation();
-						int position = m.getAaPos()-(sw.getProtein().getStartPosition()/3);
-						for(Symbol aa : m.getTargetAminoAcids()){
-							String mutString = protein + position + aatok.tokenizeSymbol(aa);
-							addMutation(mutString);
-						}
-						//break; //already added so we don't need to check the mutation for other windows
-					}
-				}
-			}
-		}				
-	}
+//	@Deprecated
+//	public MutationTable(String fastaFilename, SelectionWindow[] windows) throws BioException, FileNotFoundException {
+//		super();
+//		createIdColumn();
+//
+//		FastaScanner scan = new FastaScanner(new File(fastaFilename));
+//		if (!scan.hasNextSequence()) {
+//			return; // empty file
+//		}
+//
+//		SymbolTokenization aatok = ProteinTools.getTAlphabet().getTokenization("token"); 
+//		SymbolList alignedRef = DNATools.createDNA(scan.nextSequence().getSequence());
+//		SymbolList alignedTarget;
+//		LocalAlignmentService las = new LocalAlignmentService();
+//
+//		FastaSequence fs;
+//		while (scan.hasNextSequence()) {
+//			fs = scan.nextSequence();
+//			alignedTarget = DNATools.createDNA(fs.getSequence());
+//			createNewRow(fs.getId());
+//			for(Mutation m = null;;){//TODO
+//				//			for(Mutation m : las.getAlignmentResult(alignedTarget, alignedRef, true).getMutations()){
+//				for(SelectionWindow sw : windows){
+//					if(mutationInWindow(m,sw)){
+//						String protein = sw.getProtein().getAbbreviation();
+//						int position = m.getAaPos()-(sw.getProtein().getStartPosition()/3);
+//						for(Symbol aa : m.getTargetAminoAcids()){
+//							String mutString = protein + position + aatok.tokenizeSymbol(aa);
+//							addMutation(mutString);
+//						}
+//						//break; //already added so we don't need to check the mutation for other windows
+//					}
+//				}
+//			}
+//		}				
+//	}
 
 	public MutationTable(Query<NtSequence> query, SelectionWindow[] windows){
 		//remove sequences from query that have deletions in the windows
@@ -246,9 +236,9 @@ public class MutationTable extends Table {
 		addRow(newrow);		
 	}
 
-	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
-		return m.getAaPos() >= (sw.getStartCheck()/3)+1
-		&& m.getAaPos() <= (sw.getStopCheck()/3)+1;
-	}	
+//	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
+//		return m.getAaPos() >= (sw.getStartCheck()/3)+1
+//		&& m.getAaPos() <= (sw.getStopCheck()/3)+1;
+//	}	
 
 }
