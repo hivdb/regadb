@@ -1,25 +1,22 @@
 package net.sf.regadb.io.db.portugal;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.db.tools.RunSqlCommand;
 
@@ -64,42 +61,49 @@ public class ChangeSchema {
 		changeTestAllPatients(args[1], args[2]);
 	}
 
-	public static void changeTestAllPatients(String testName, String eventName) throws WrongUidException, WrongPasswordException, DisabledUserException {
+	public static void changeTestAllPatients(String testName, String eventName) throws WrongUidException, WrongPasswordException, DisabledUserException, SQLException {
 		Login login = Login.authenticate("admin", "resist");
 		Transaction trans = login.createTransaction();
-		List<Patient> patients = trans.getPatients();
+		Test t = trans.getTest(testName);
+		Event e = trans.getEvent(eventName);
+		if(t==null || e==null) {
+			System.err.println("Error");
+			System.exit(0);
+		}
 		
-		int counter = 0;
-		for(Patient p : patients) {
-			counter++;
-			if(counter==500) {
-				System.out.print(".");
-				counter = 0;
-			}
-				
-			testToEvent(p, trans.getTest(testName), trans.getEvent(eventName), trans);
-		}
-		trans.commit();
-	}
-	
-	public static void testToEvent(Patient p, Test t, Event e, Transaction trans) {
-		for (TestResult tr : p.getTestResults()) {
-			if (Equals.isSameTestType(t.getTestType(), tr.getTest().getTestType())) {
-				PatientEventValue pev = p.createPatientEventValue(e);
-				pev.setStartDate(tr.getTestDate());
-				pev.setEventNominalValue(getENV(e, tr.getTestNominalValue().getValue()));
-				p.addPatientEventValue(pev);
-				trans.save(pev);
+		Map<Integer, Integer> nvMap = new HashMap<Integer, Integer>(); 
+		
+		for(TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
+			for(EventNominalValue env : e.getEventNominalValues()) {
+				if(tnv.getValue().equals(env.getValue())) {
+					nvMap.put(tnv.getNominalValueIi(), env.getNominalValueIi());
+				}
 			}
 		}
-	}
-	
-	public static EventNominalValue getENV(Event e, String tnv) {
-		for(EventNominalValue env : e.getEventNominalValues()) {
-			if(env.getValue().equals(tnv)) {
-				return env;
+		
+		String fetchTestResultsQ = "select patient_ii, nominal_value_ii, test_date from regadbschema.test_result where test_ii = "+t.getTestIi()+";";
+		RunSqlCommand runsqlcommmand = new RunSqlCommand();
+		Connection c = runsqlcommmand.getConnection();
+		Statement s = c.createStatement();
+		ResultSet rs = s
+				.executeQuery(fetchTestResultsQ);
+		
+		int patient_ii;
+		int nominal_value_ii;
+		Date test_date;
+		while (rs.next()) {
+			patient_ii = rs.getInt(1);
+			nominal_value_ii = rs.getInt(2);
+			test_date = rs.getDate(3);
+			String insertStm = "insert into regadbschema.patient_event_value (version, patient_ii, nominal_value_ii, event_ii, value, start_date, end_date) " +
+					" values (0, "+patient_ii+", "+nvMap.get(nominal_value_ii)+", "+e.getEventIi()+", null, ? , null)";
+			
+			if(test_date != null) {
+				PreparedStatement st = c.prepareStatement(insertStm);
+				st.setDate(1, new java.sql.Date(test_date.getTime()));
+				st.execute();
 			}
 		}
-		return null;
+
 	}
 }
