@@ -1,8 +1,8 @@
 package net.sf.hivgensim.fastatool;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+
+import net.sf.hivgensim.preprocessing.SelectionWindow;
 
 /*
  * WARNING: difference with old fastaclean: old PR only starting point is checked!
@@ -10,12 +10,10 @@ import java.io.PrintStream;
  */
 public class FastaClean extends FastaTool{
 	
-	PrintStream out;
 	SelectionWindow[] windows;
 	
 	public FastaClean(String inputFilename, String outputFilename, SelectionWindow[] windows) throws FileNotFoundException{
-		super(inputFilename);
-		this.out = new PrintStream(new FileOutputStream(outputFilename));
+		super(inputFilename,outputFilename);
 		this.windows = windows;
 	}
 	
@@ -26,7 +24,7 @@ public class FastaClean extends FastaTool{
 
 	@Override
 	protected void afterProcessing() {
-		out.close();
+		getOut().close();
 	}
 	
 	@Override
@@ -38,8 +36,7 @@ public class FastaClean extends FastaTool{
 			}
 		}		
 		if(seqIsClean){
-			out.println(fs.getId() + "\n" + fs.getSequence());
-			out.flush();
+			getOut().println(fs.getId() + "\n" + fs.getSequence());			
 		}		
 	}
 }
