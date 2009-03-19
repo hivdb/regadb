@@ -1,6 +1,6 @@
 package net.sf.hivgensim.queries;
 
-import net.sf.hivgensim.fastatool.SelectionWindow;
+import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.regadb.db.AaMutation;

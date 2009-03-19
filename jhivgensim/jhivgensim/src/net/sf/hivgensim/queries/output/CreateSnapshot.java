@@ -18,53 +18,44 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.persistence.ExportToPersistentObjects;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
-public class ToSnapshot {
+public class CreateSnapshot {
 
-	private ObjectOutputStream snapshotstream;
+	private ObjectOutputStream out;
 
-	public ToSnapshot(File file) {
-		try {
-			snapshotstream = new ObjectOutputStream(new FileOutputStream(file));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public CreateSnapshot(ObjectOutputStream out){
+		this.out = out;
 	}
 
-	public void generateOutput() {
-		try {
-			Login login = Login.authenticate("gbehey0", "bla123");
+	public void create(String uid, String passwd){
+		try{
 			ExportToPersistentObjects export = new ExportToPersistentObjects();
+			Login login = Login.authenticate(uid, passwd);
 			Transaction t = login.createTransaction();
 			List<Dataset> datasets = t.getDatasets();
 			String dataset = null;
 			for (Dataset ds : datasets) {
-				dataset = ds.getDescription();
+				dataset = ds.getDescription();								
 				System.err.println("now starting with: "+dataset);
 				HibernateFilterConstraint hfc = new HibernateFilterConstraint();
 				hfc.setClause(" dataset.description = :description ");
 				hfc.addArgument("description", dataset);
 				long n = t.getPatientCount(hfc);
-				int maxResults = 10;
+				int maxResults = 1000;
 
 				for (int i = 0; i < n; i += maxResults) {
+					System.err.println(i+"/"+n);
 					t.commit();
 					t.clearCache();
 					t = login.createTransaction();
 					Collection<Patient> patients = t.getPatients(t.getDataset(dataset),i,maxResults);
 					for (Patient p : patients) {
 						export.initialize(p);
-						snapshotstream.writeObject(p);
-						if(i % 100 == 0){
-							System.err.print("."); 
-						}
+						out.writeObject(p);						
 					}
+					out.reset();
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		}catch(IOException e){
 			e.printStackTrace();
 		} catch (WrongUidException e) {
 			e.printStackTrace();
@@ -73,5 +64,17 @@ public class ToSnapshot {
 		} catch (DisabledUserException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) throws FileNotFoundException, IOException{
+		if(args.length < 3){
+			System.err.println("Usage: CreateSnapshot snapshot.output login password");
+			System.exit(0);
+		}
+		long start = System.currentTimeMillis();
+		CreateSnapshot cs = new CreateSnapshot(new ObjectOutputStream(new FileOutputStream(new File(args[0]))));
+		cs.create(args[1],args[2]);
+		long stop = System.currentTimeMillis();
+		System.err.println("done in " + (stop - start) + " ms");
 	}
 }
