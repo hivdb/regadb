@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import net.sf.regadb.build.ant.AntTools;
-import net.sf.regadb.build.cvs.CvsTools;
 import net.sf.regadb.build.eclipse.EclipseParseTools;
 import net.sf.regadb.build.error.ErrorRapport;
 import net.sf.regadb.build.junit.JUnitRapport;
@@ -284,7 +283,7 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-") || m.startsWith("pharmadm"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-") || m.startsWith("pharmadm") || m.startsWith("jhivgensim"))
             {
                 if(!m.equals("wts-build"))
                 {
