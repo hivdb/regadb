@@ -258,7 +258,7 @@ public class SinglePatientForm extends FormWidget
                         if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
                         {
                             if(vt == ValueTypes.DATE){
-                                attributeFieldTF.setText(DateUtils.getEuropeanFormat(attrEl.getValue().getValue()));
+                                attributeFieldTF.setText(DateUtils.format(attrEl.getValue().getValue()));
                             }
                             else
                                 attributeFieldTF.setText(attrEl.getValue().getValue());

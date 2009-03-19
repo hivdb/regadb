@@ -78,7 +78,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		}
 		else {
 			if (ValueTypes.getValueType(type.getTest().getTestType().getValueType()) == ValueTypes.DATE) {
-				row[4] = DateUtils.getEuropeanFormat(type.getValue());
+				row[4] = DateUtils.format(type.getValue());
 			}
 			else {
 				row[4] = type.getValue();

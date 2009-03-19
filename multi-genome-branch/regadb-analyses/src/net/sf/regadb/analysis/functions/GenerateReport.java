@@ -56,13 +56,13 @@ public class GenerateReport
     public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
     {
         replace("$ASI_ALGORITHM", algorithm.getDescription());
-        replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date()));
+        replace("$REPORT_GENERATION_DATE", DateUtils.format(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
         replace("$PATIENT_ID", patient.getPatientId());
         replace("$PATIENT_CLINICAL_FILE_NR", getClinicalFileNumber(patient));
         replace("$SAMPLE_ID", vi.getSampleId());
-        replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
+        replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient));
         
         TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericHiv1ViralLoadTest(), dateTolerance);

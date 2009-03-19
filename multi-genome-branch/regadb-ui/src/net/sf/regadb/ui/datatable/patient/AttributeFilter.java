@@ -135,7 +135,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         
         ValueTypes vt = ValueTypes.getValueType(attribute.getValueType());
         if(vt == ValueTypes.DATE)
-            return DateUtils.getEuropeanFormat(value);
+            return DateUtils.format(value);
         else
             return value;
     }

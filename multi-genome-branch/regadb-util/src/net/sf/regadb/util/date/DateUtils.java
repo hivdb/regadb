@@ -18,6 +18,9 @@ public class DateUtils
     	return "DD-MM-YYYY";
     }
     
+    public static String format(String timestamp){
+    	return format(parseDate(timestamp));
+    }
     public static String format(Date date){
         if(date == null)
             return "";
