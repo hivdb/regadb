@@ -98,4 +98,12 @@ public class DateField extends FormField
             _fieldEdit.changed().addListener(this, listener);
         }
     }
+    
+    public void setEnabled(boolean enabled){
+    	if(_fieldEdit != null)
+    		_fieldEdit.setEnabled(enabled);
+    }
+    public boolean isEnabled(){
+    	return _fieldEdit != null && _fieldEdit.isEnabled();
+    }
 }

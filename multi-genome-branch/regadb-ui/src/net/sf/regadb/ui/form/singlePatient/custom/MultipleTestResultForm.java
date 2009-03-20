@@ -139,6 +139,12 @@ public class MultipleTestResultForm extends FormWidget {
 		        });
 		        
 		        useContactDate_.setChecked(useContactDate);
+		        
+		        dateTF_.addChangeListener(new Signal.Listener(){
+					public void trigger() {
+						copyContactDateToEventStartDate();
+					}
+		        });
             }
 	        
 	        eventStartDateTF_ = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
@@ -182,11 +188,17 @@ public class MultipleTestResultForm extends FormWidget {
     }
     
     private void setUseContactDate(boolean use){
-    	if(use)
-			eventStartDateTF_.hide();
-		else
-			eventStartDateTF_.show();
+    	if(eventStartDateTF_ != null){
+	    	eventStartDateTF_.setEnabled(!use);
+	    	
+	    	copyContactDateToEventStartDate();//eventStartDateTF_.setText(dateTF_.text());
+    	}
     }
+    private void copyContactDateToEventStartDate(){
+    	if(eventStartDateTF_ != null && useContactDate_ != null && useContactDate_.isChecked())
+    		eventStartDateTF_.setText(dateTF_.text());
+    }
+    
     
     @SuppressWarnings("unchecked")
 	private void fillData() {
