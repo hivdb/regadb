@@ -88,6 +88,8 @@ public class ChangeSchema {
 		ResultSet rs = s
 				.executeQuery(fetchTestResultsQ);
 		
+		System.err.println("test_ii " + t.getTestIi());
+		
 		int patient_ii;
 		int nominal_value_ii;
 		Date test_date;
