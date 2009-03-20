@@ -284,12 +284,12 @@ public class EditableTable<DataType> extends WContainerWidget
     	
     		this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
                 public void trigger(WMouseEvent a) {
-                	remove();
+                	removeRow();
                 }
-            });        	
+            });
     	}
     	
-    	public void remove() {
+    	private void removeRow() {
     		int row =  ((WTableCell)RemoveButton.this.parent()).row();
     		
             itemTable_.deleteRow(row);
