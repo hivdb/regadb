@@ -18,7 +18,7 @@ public class Patient implements Serializable {
     public static final String LAST_NAME = "Last name";
     public static final String BIRTH_DATE = "Birth date";
     public static final String DEATH_DATE = "Death date";
-    public static final String GROUP = "RegaDB";
+    public static final String GROUP = "Personal";
     
     private PatientImpl patient;
     private Privileges privileges;
