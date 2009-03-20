@@ -538,366 +538,6 @@ public class TreeContent
     		                	return singlePatientMain;
     		                }
     		                
-       attributesSettings = new ActionItem(WResource.tr("menu.attributeSettings.attributeSettings"), rootItem)
-       {
-            @Override
-            public boolean isEnabled()
-            {
-                return RegaDBMain.getApp().getLogin()!=null;
-            }
-       };
-           attributes = new ActionItem(WResource.tr("menu.attributeSettings.attributes"), attributesSettings);
-           attributesSelect  = new ActionItem(WResource.tr("menu.attributeSettings.attributes.select"), attributes, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node) 
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new SelectAttributeForm());
-               }
-           });
-           attributesAdd = new ActionItem(WResource.tr("menu.attributeSettings.attributes.add"), attributes, new ITreeAction()
-           {
-                public void performAction(TreeMenuNode node)
-                {
-                	TreeContent.this.attributesSelected.setSelectedItem(null);
-                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attribute.add"), null));
-                }
-            });
-           attributesSelected = new AttributeSelectedItem(attributes);
-           attributesView = new ActionItem(WResource.tr("menu.attributeSettings.attributes.view"), attributesSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attribute.view"), attributesSelected.getSelectedItem()));
-               }
-           });
-           attributesEdit = new ActionItem(WResource.tr("menu.attributeSettings.attributes.edit"), attributesSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attribute.edit"), attributesSelected.getSelectedItem()));
-               }
-           });
-           attributesDelete = new ActionItem(WResource.tr("menu.attributeSettings.attributes.delete"), attributesSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attribute.delete"), attributesSelected.getSelectedItem()));
-               }
-           });
-           
-           attributeGroups = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups"), attributesSettings);
-           attributeGroupsSelect  = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.select"), attributeGroups, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node) 
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new SelectAttributeGroupForm());
-               }
-           });
-           attributeGroupsAdd = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.add"), attributeGroups, new ITreeAction()
-           {
-                public void performAction(TreeMenuNode node)
-                {
-                	TreeContent.this.attributeGroupsSelected.setSelectedItem(null);
-                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
-                }
-            });
-           attributeGroupsSelected = new AttributeGroupSelectedItem(attributeGroups);
-           attributeGroupsView = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.view"), attributeGroupsSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attributeGroups.view"), attributeGroupsSelected.getSelectedItem()));
-               }
-           });
-           attributeGroupsEdit = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.edit"), attributeGroupsSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedItem()));
-               }
-           });
-           attributeGroupsDelete = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.delete"), attributeGroupsSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attributeGroups.delete"), attributeGroupsSelected.getSelectedItem()));
-               }
-           });
-           
-          testSettings = new ActionItem(WResource.tr("menu.testSettings.testSettings"), rootItem)
-           {
-                @Override
-                public boolean isEnabled()
-                {
-                    return RegaDBMain.getApp().getLogin()!=null;
-                }
-           };
-          
-          testTypes = new ActionItem(WResource.tr("menu.testSettings.testTypes"), testSettings);
-          testTypesSelect  = new ActionItem(WResource.tr("menu.testSettings.testTypes.select"), testTypes, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node) 
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new SelectTestTypeForm());
-               }
-           });
-           testTypesAdd = new ActionItem(WResource.tr("menu.testSettings.testTypes.add"), testTypes, new ITreeAction()
-           {
-                public void performAction(TreeMenuNode node)
-                {
-                	TreeContent.this.testTypeSelected.setSelectedItem(null);
-                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("form.testSettings.testType.add"),null));
-                }
-            });
-           testTypeSelected = new TestTypeSelectedItem(testTypes);
-           testTypesView = new ActionItem(WResource.tr("menu.testSettings.testTypes.view"), testTypeSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testTypeSelected.getSelectedItem()));
-               }
-           });
-           testTypesEdit = new ActionItem(WResource.tr("menu.testSettings.testTypes.edit"), testTypeSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Editing, WWidget.tr("form.testSettings.testType.edit"),testTypeSelected.getSelectedItem()));
-               }
-           });
-           testTypesDelete = new ActionItem(WResource.tr("menu.testSettings.testTypes.delete"), testTypeSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Deleting, WWidget.tr("form.testSettings.testType.delete"),testTypeSelected.getSelectedItem()));
-               }
-           });
-           
-           //test
-           test = new ActionItem(WResource.tr("menu.testSettings.tests"), testSettings);        
-           testSelect  = new ActionItem(WResource.tr("menu.testSettings.tests.select"), test, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node) 
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
-               }
-           });
-           testAdd = new ActionItem(WResource.tr("menu.testSettings.tests.add"), test, new ITreeAction()
-           {
-                public void performAction(TreeMenuNode node)
-                {
-                	TreeContent.this.testSelected.setSelectedItem(null);
-                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("form.testSettings.test.add"),null));
-                }
-            });
-           testSelected = new TestSelectedItem(test);
-           testView = new ActionItem(WResource.tr("menu.testSettings.tests.view"), testSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testSelected.getSelectedItem()));
-               }
-           });
-           testEdit = new ActionItem(WResource.tr("menu.testSettings.tests.edit"), testSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Editing, WWidget.tr("form.testSettings.test.edit"),testSelected.getSelectedItem()));
-               }
-           });
-           testDelete = new ActionItem(WResource.tr("menu.testSettings.tests.delete"), testSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Deleting, WWidget.tr("form.testSettings.test.delete"),testSelected.getSelectedItem()));
-               }
-           });
-           
-           //resistance report template
-           resRepTemplate = new ActionItem(WResource.tr("menu.resistance.report.template"), testSettings);        
-           resRepTemplateSelect  = new ActionItem(WResource.tr("menu.resistance.report.template.select"), resRepTemplate, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node) 
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new SelectResRepTemplateForm());
-               }
-           });
-           resRepTemplateAdd = new ActionItem(WResource.tr("menu.resistance.report.template.add"), resRepTemplate, new ITreeAction()
-           {
-                public void performAction(TreeMenuNode node)
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Adding, WWidget.tr("form.resistance.report.template.add"), null));
-                    
-                }
-            });
-           resRepTemplateSelected = new ResRepTemplateSelectedItem(resRepTemplate);
-           resRepTemplateView = new ActionItem(WResource.tr("menu.resistance.report.template.view"), resRepTemplateSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Viewing, WWidget.tr("form.resistance.report.template.view"), resRepTemplateSelected.getSelectedItem()));
-               }
-           });
-           resRepTemplateEdit = new ActionItem(WResource.tr("menu.resistance.report.template.edit"), resRepTemplateSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Editing, WWidget.tr("form.resistance.report.template.edit"), resRepTemplateSelected.getSelectedItem()));
-               }
-           });
-           resRepTemplateDelete = new ActionItem(WResource.tr("menu.resistance.report.template.delete"), resRepTemplateSelected, new ITreeAction()
-           {
-               public void performAction(TreeMenuNode node)
-               {
-                   RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Deleting, WWidget.tr("form.resistance.report.template.delete"), resRepTemplateSelected.getSelectedItem()));
-               }
-           });
-        
-        
-        //DatasetSettings
-        datasetSettings = new ActionItem(WResource.tr("menu.datasetSettings.datasetSettings"), rootItem)
-        {
-             @Override
-             public boolean isEnabled()
-             {
-                 return RegaDBMain.getApp().getLogin()!=null;
-             }
-        }; 
-        
-        datasets = new ActionItem(WResource.tr("menu.datasetSettings.dataset"), datasetSettings); 
-        datasetSelect  = new ActionItem(WResource.tr("menu.datasetSettings.dataset.select"), datasets, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetForm());
-            }
-        });
-        datasetAdd = new ActionItem(WResource.tr("menu.datasetSettings.dataset.add"), datasets, new ITreeAction()
-        {
-             public void performAction(TreeMenuNode node)
-             {
-            	 TreeContent.this.datasetSelected.setSelectedItem(null);
-                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Adding, WWidget.tr("form.datasetSettings.dataset.add"),null));
-             }
-         });
-        datasetSelected = new DatasetSelectedItem(datasets);
-       datasetView = new ActionItem(WResource.tr("menu.datasetSettings.dataset.view"), datasetSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Viewing, WWidget.tr("form.datasetSettings.dataset.view"),datasetSelected.getSelectedItem()));
-            }
-        });
-        datasetEdit = new ActionItem(WResource.tr("menu.datasetSettings.dataset.edit"), datasetSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Editing, WWidget.tr("form.datasetSettings.dataset.edit"),datasetSelected.getSelectedItem()));
-            }
-        })
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return setDatasetSensitivity();
-            }
-        };
-        datasetDelete = new ActionItem(WResource.tr("menu.datasetSettings.dataset.delete"), datasetSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Deleting, WWidget.tr("form.datasetSettings.dataset.delete"), datasetSelected.getSelectedItem()));
-            }
-        })
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return setDatasetSensitivity();
-            }
-        };
-        datasetAccess = new ActionItem(WResource.tr("menu.dataset.access"), datasetSettings)
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return RegaDBMain.getApp().getLogin()!=null;
-            }
-        };
-        datasetAccessSelect = new ActionItem(WResource.tr("menu.dataset.access.select"), datasetAccess, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
-            }
-        });
-        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccess);
-        datasetAccessView = new ActionItem(WResource.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Viewing, WWidget.tr("form.dataset.access.view"),datasetAccessSelected.getSelectedItem()));
-            }
-        });
-        datasetAccessEdit = new ActionItem(WResource.tr("menu.dataset.access.edit"), datasetAccessSelected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node)
-            {
-                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
-            }
-        });
-        
-        event = new ActionItem(RootItem.tr("menu.event"), rootItem)
-    	// Ticket #62
-        {
-            @Override
-            public boolean isEnabled()
-            {
-                return RegaDBMain.getApp().getLogin()!=null;
-            }
-        };
-        
-        eventSelect = new ActionItem(WResource.tr("menu.event.select"), event, new ITreeAction()
-        {
-        	public void performAction(TreeMenuNode node)
-        	{
-        		RegaDBMain.getApp().getFormContainer().setForm(new SelectEventForm());
-        	}
-        });
-        
-        eventAdd = new ActionItem(WResource.tr("menu.event.add"), event, new ITreeAction()
-        {
-        	public void performAction(TreeMenuNode node)
-        	{
-        		TreeContent.this.eventSelected.setSelectedItem(null);
-        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Adding, WWidget.tr("menu.event.add"), null));
-        	}
-        });
-        
-        eventSelected = new EventSelectedItem(event);
-        
-	        eventSelectedView = new ActionItem(WResource.tr("menu.event.selected.view"), eventSelected, new ITreeAction()
-	        {
-	        	public void performAction(TreeMenuNode node)
-	        	{
-	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Viewing, WWidget.tr("menu.event.selected.view"), eventSelected.getSelectedItem()));
-	        	}
-	        });
-	        
-	        eventSelectedEdit = new ActionItem(WResource.tr("menu.event.selected.edit"), eventSelected, new ITreeAction()
-	        {
-	        	public void performAction(TreeMenuNode node)
-	        	{
-	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Editing, WWidget.tr("menu.event.selected.edit"), eventSelected.getSelectedItem()));
-	        	}
-	        });
-	        
-	        eventSelectedDelete = new ActionItem(WResource.tr("menu.event.selected.delete"), eventSelected, new ITreeAction()
-	        {
-	        	public void performAction(TreeMenuNode node)
-	        	{
-	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Deleting, WWidget.tr("menu.event.selected.delete"), eventSelected.getSelectedItem()));
-	        	}
-	        });
         
         queryMain = new QueryItem(rootItem);
         
@@ -1193,6 +833,367 @@ public class TreeContent
             myAccountLogout = new LogoutItem(myAccountMain);
         
         administratorMain = new AdministratorItem(rootItem);
+        
+        attributesSettings = new ActionItem(WResource.tr("menu.attributeSettings.attributeSettings"), administratorMain)
+        {
+             @Override
+             public boolean isEnabled()
+             {
+                 return RegaDBMain.getApp().getLogin()!=null;
+             }
+        };
+            attributes = new ActionItem(WResource.tr("menu.attributeSettings.attributes"), attributesSettings);
+            attributesSelect  = new ActionItem(WResource.tr("menu.attributeSettings.attributes.select"), attributes, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectAttributeForm());
+                }
+            });
+            attributesAdd = new ActionItem(WResource.tr("menu.attributeSettings.attributes.add"), attributes, new ITreeAction()
+            {
+                 public void performAction(TreeMenuNode node)
+                 {
+                 	TreeContent.this.attributesSelected.setSelectedItem(null);
+                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attribute.add"), null));
+                 }
+             });
+            attributesSelected = new AttributeSelectedItem(attributes);
+            attributesView = new ActionItem(WResource.tr("menu.attributeSettings.attributes.view"), attributesSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attribute.view"), attributesSelected.getSelectedItem()));
+                }
+            });
+            attributesEdit = new ActionItem(WResource.tr("menu.attributeSettings.attributes.edit"), attributesSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attribute.edit"), attributesSelected.getSelectedItem()));
+                }
+            });
+            attributesDelete = new ActionItem(WResource.tr("menu.attributeSettings.attributes.delete"), attributesSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attribute.delete"), attributesSelected.getSelectedItem()));
+                }
+            });
+            
+            attributeGroups = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups"), attributesSettings);
+            attributeGroupsSelect  = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.select"), attributeGroups, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectAttributeGroupForm());
+                }
+            });
+            attributeGroupsAdd = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.add"), attributeGroups, new ITreeAction()
+            {
+                 public void performAction(TreeMenuNode node)
+                 {
+                 	TreeContent.this.attributeGroupsSelected.setSelectedItem(null);
+                     RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Adding, WWidget.tr("form.attributeSettings.attributeGroups.add"), null));
+                 }
+             });
+            attributeGroupsSelected = new AttributeGroupSelectedItem(attributeGroups);
+            attributeGroupsView = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.view"), attributeGroupsSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Viewing, WWidget.tr("form.attributeSettings.attributeGroups.view"), attributeGroupsSelected.getSelectedItem()));
+                }
+            });
+            attributeGroupsEdit = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.edit"), attributeGroupsSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Editing, WWidget.tr("form.attributeSettings.attributeGroups.edit"), attributeGroupsSelected.getSelectedItem()));
+                }
+            });
+            attributeGroupsDelete = new ActionItem(WResource.tr("menu.attributeSettings.attributeGroups.delete"), attributeGroupsSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new AttributeGroupForm(InteractionState.Deleting, WWidget.tr("form.attributeSettings.attributeGroups.delete"), attributeGroupsSelected.getSelectedItem()));
+                }
+            });
+            
+           testSettings = new ActionItem(WResource.tr("menu.testSettings.testSettings"), administratorMain)
+            {
+                 @Override
+                 public boolean isEnabled()
+                 {
+                     return RegaDBMain.getApp().getLogin()!=null;
+                 }
+            };
+           
+           testTypes = new ActionItem(WResource.tr("menu.testSettings.testTypes"), testSettings);
+           testTypesSelect  = new ActionItem(WResource.tr("menu.testSettings.testTypes.select"), testTypes, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectTestTypeForm());
+                }
+            });
+            testTypesAdd = new ActionItem(WResource.tr("menu.testSettings.testTypes.add"), testTypes, new ITreeAction()
+            {
+                 public void performAction(TreeMenuNode node)
+                 {
+                 	TreeContent.this.testTypeSelected.setSelectedItem(null);
+                     RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Adding, WWidget.tr("form.testSettings.testType.add"),null));
+                 }
+             });
+            testTypeSelected = new TestTypeSelectedItem(testTypes);
+            testTypesView = new ActionItem(WResource.tr("menu.testSettings.testTypes.view"), testTypeSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testTypeSelected.getSelectedItem()));
+                }
+            });
+            testTypesEdit = new ActionItem(WResource.tr("menu.testSettings.testTypes.edit"), testTypeSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Editing, WWidget.tr("form.testSettings.testType.edit"),testTypeSelected.getSelectedItem()));
+                }
+            });
+            testTypesDelete = new ActionItem(WResource.tr("menu.testSettings.testTypes.delete"), testTypeSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestTypeForm(InteractionState.Deleting, WWidget.tr("form.testSettings.testType.delete"),testTypeSelected.getSelectedItem()));
+                }
+            });
+            
+            //test
+            test = new ActionItem(WResource.tr("menu.testSettings.tests"), testSettings);        
+            testSelect  = new ActionItem(WResource.tr("menu.testSettings.tests.select"), test, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectTestForm());
+                }
+            });
+            testAdd = new ActionItem(WResource.tr("menu.testSettings.tests.add"), test, new ITreeAction()
+            {
+                 public void performAction(TreeMenuNode node)
+                 {
+                 	TreeContent.this.testSelected.setSelectedItem(null);
+                     RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Adding, WWidget.tr("form.testSettings.test.add"),null));
+                 }
+             });
+            testSelected = new TestSelectedItem(test);
+            testView = new ActionItem(WResource.tr("menu.testSettings.tests.view"), testSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Viewing, WWidget.tr("form.testSettings.testType.view"),testSelected.getSelectedItem()));
+                }
+            });
+            testEdit = new ActionItem(WResource.tr("menu.testSettings.tests.edit"), testSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Editing, WWidget.tr("form.testSettings.test.edit"),testSelected.getSelectedItem()));
+                }
+            });
+            testDelete = new ActionItem(WResource.tr("menu.testSettings.tests.delete"), testSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new TestForm(InteractionState.Deleting, WWidget.tr("form.testSettings.test.delete"),testSelected.getSelectedItem()));
+                }
+            });
+            
+            //resistance report template
+            resRepTemplate = new ActionItem(WResource.tr("menu.resistance.report.template"), testSettings);        
+            resRepTemplateSelect  = new ActionItem(WResource.tr("menu.resistance.report.template.select"), resRepTemplate, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new SelectResRepTemplateForm());
+                }
+            });
+            resRepTemplateAdd = new ActionItem(WResource.tr("menu.resistance.report.template.add"), resRepTemplate, new ITreeAction()
+            {
+                 public void performAction(TreeMenuNode node)
+                 {
+                     RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Adding, WWidget.tr("form.resistance.report.template.add"), null));
+                     
+                 }
+             });
+            resRepTemplateSelected = new ResRepTemplateSelectedItem(resRepTemplate);
+            resRepTemplateView = new ActionItem(WResource.tr("menu.resistance.report.template.view"), resRepTemplateSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Viewing, WWidget.tr("form.resistance.report.template.view"), resRepTemplateSelected.getSelectedItem()));
+                }
+            });
+            resRepTemplateEdit = new ActionItem(WResource.tr("menu.resistance.report.template.edit"), resRepTemplateSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Editing, WWidget.tr("form.resistance.report.template.edit"), resRepTemplateSelected.getSelectedItem()));
+                }
+            });
+            resRepTemplateDelete = new ActionItem(WResource.tr("menu.resistance.report.template.delete"), resRepTemplateSelected, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node)
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new ResistanceInterpretationTemplateForm(InteractionState.Deleting, WWidget.tr("form.resistance.report.template.delete"), resRepTemplateSelected.getSelectedItem()));
+                }
+            });
+            
+            event = new ActionItem(RootItem.tr("menu.event"), administratorMain)
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
+            
+            eventSelect = new ActionItem(WResource.tr("menu.event.select"), event, new ITreeAction()
+            {
+            	public void performAction(TreeMenuNode node)
+            	{
+            		RegaDBMain.getApp().getFormContainer().setForm(new SelectEventForm());
+            	}
+            });
+            
+            eventAdd = new ActionItem(WResource.tr("menu.event.add"), event, new ITreeAction()
+            {
+            	public void performAction(TreeMenuNode node)
+            	{
+            		TreeContent.this.eventSelected.setSelectedItem(null);
+            		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Adding, WWidget.tr("menu.event.add"), null));
+            	}
+            });
+            
+            eventSelected = new EventSelectedItem(event);
+            
+    	        eventSelectedView = new ActionItem(WResource.tr("menu.event.selected.view"), eventSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Viewing, WWidget.tr("menu.event.selected.view"), eventSelected.getSelectedItem()));
+    	        	}
+    	        });
+    	        
+    	        eventSelectedEdit = new ActionItem(WResource.tr("menu.event.selected.edit"), eventSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Editing, WWidget.tr("menu.event.selected.edit"), eventSelected.getSelectedItem()));
+    	        	}
+    	        });
+    	        
+    	        eventSelectedDelete = new ActionItem(WResource.tr("menu.event.selected.delete"), eventSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new EventForm(InteractionState.Deleting, WWidget.tr("menu.event.selected.delete"), eventSelected.getSelectedItem()));
+    	        	}
+    	        });
+    	        
+    	        datasetSettings = new ActionItem(WResource.tr("menu.datasetSettings.datasetSettings"), administratorMain)
+    	        {
+    	             @Override
+    	             public boolean isEnabled()
+    	             {
+    	                 return RegaDBMain.getApp().getLogin()!=null;
+    	             }
+    	        }; 
+    	        
+    	        datasets = new ActionItem(WResource.tr("menu.datasetSettings.dataset"), datasetSettings); 
+    	        datasetSelect  = new ActionItem(WResource.tr("menu.datasetSettings.dataset.select"), datasets, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node) 
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetForm());
+    	            }
+    	        });
+    	        datasetAdd = new ActionItem(WResource.tr("menu.datasetSettings.dataset.add"), datasets, new ITreeAction()
+    	        {
+    	             public void performAction(TreeMenuNode node)
+    	             {
+    	            	 TreeContent.this.datasetSelected.setSelectedItem(null);
+    	                 RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Adding, WWidget.tr("form.datasetSettings.dataset.add"),null));
+    	             }
+    	         });
+    	        datasetSelected = new DatasetSelectedItem(datasets);
+    	       datasetView = new ActionItem(WResource.tr("menu.datasetSettings.dataset.view"), datasetSelected, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node)
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Viewing, WWidget.tr("form.datasetSettings.dataset.view"),datasetSelected.getSelectedItem()));
+    	            }
+    	        });
+    	        datasetEdit = new ActionItem(WResource.tr("menu.datasetSettings.dataset.edit"), datasetSelected, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node)
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Editing, WWidget.tr("form.datasetSettings.dataset.edit"),datasetSelected.getSelectedItem()));
+    	            }
+    	        })
+    	        {
+    	            @Override
+    	            public boolean isEnabled()
+    	            {
+    	                return setDatasetSensitivity();
+    	            }
+    	        };
+    	        datasetDelete = new ActionItem(WResource.tr("menu.datasetSettings.dataset.delete"), datasetSelected, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node)
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new DatasetForm(InteractionState.Deleting, WWidget.tr("form.datasetSettings.dataset.delete"), datasetSelected.getSelectedItem()));
+    	            }
+    	        })
+    	        {
+    	            @Override
+    	            public boolean isEnabled()
+    	            {
+    	                return setDatasetSensitivity();
+    	            }
+    	        };
+    	        datasetAccess = new ActionItem(WResource.tr("menu.dataset.access"), datasetSettings)
+    	        {
+    	            @Override
+    	            public boolean isEnabled()
+    	            {
+    	                return RegaDBMain.getApp().getLogin()!=null;
+    	            }
+    	        };
+    	        datasetAccessSelect = new ActionItem(WResource.tr("menu.dataset.access.select"), datasetAccess, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node) 
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new SelectDatasetAccessUserForm());
+    	            }
+    	        });
+    	        datasetAccessSelected = new DatasetAccessSelectedItem(datasetAccess);
+    	        datasetAccessView = new ActionItem(WResource.tr("menu.dataset.access.view"), datasetAccessSelected, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node)
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Viewing, WWidget.tr("form.dataset.access.view"),datasetAccessSelected.getSelectedItem()));
+    	            }
+    	        });
+    	        datasetAccessEdit = new ActionItem(WResource.tr("menu.dataset.access.edit"), datasetAccessSelected, new ITreeAction()
+    	        {
+    	            public void performAction(TreeMenuNode node)
+    	            {
+    	                RegaDBMain.getApp().getFormContainer().setForm(new DatasetAccessForm(InteractionState.Editing, WWidget.tr("form.dataset.access.edit"),datasetAccessSelected.getSelectedItem()));
+    	            }
+    	        });
+
+
+
         usersSelect = new ActionItem(WResource.tr("menu.administrator.users"), administratorMain);
 
             usersSelect = new ActionItem(WResource.tr("menu.administrator.users.select"), usersSelect, new ITreeAction()
