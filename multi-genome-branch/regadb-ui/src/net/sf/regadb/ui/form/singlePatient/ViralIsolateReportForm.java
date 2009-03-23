@@ -87,11 +87,13 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                                t,
                                                                chartFile
                                                                );
-                    reportA_.setText(lt("Download Resistance Report [" + new Date(System.currentTimeMillis()).toString() + "]"));
+                    
+                    String fileName = viralIsolateForm_.getViralIsolate().getSampleId() + "_" +algorithmCB_.currentValue().getDescription()+"_"+resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
+                    
+                    reportA_.setText(lt(fileName));
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
                     memResource.setData(report.getReport());
-                    memResource.suggestFileName(resRepTemplateCB_.currentValue().getName().replace(' ', '_')
-                    								+"_"+ dateFormat.format(new Date()) +".rtf");
+                    memResource.suggestFileName(fileName);
                     reportA_.setResource(memResource);
                     chartFile.delete();
                     t.commit();
