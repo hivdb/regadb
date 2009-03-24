@@ -1233,15 +1233,15 @@ public class TreeContent
                 }
             });
             
-            updateFromCentralServer = new ActionItem(WResource.tr("menu.administrator.updateFromRegaDBServer"), administratorMain);
-            updateFromCentralServerUpdateView = new ActionItem(WResource.tr("menu.administrator.updateFromRegaDBServer.update.view"), updateFromCentralServer, new ITreeAction()
+            updateFromCentralServer = new ActionItem(WResource.tr("menu.administrator.updateFromCentralRepos"), administratorMain);
+            updateFromCentralServerUpdateView = new ActionItem(WResource.tr("menu.administrator.updateFromCentralRepos.update.view"), updateFromCentralServer, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new UpdateForm(WWidget.tr("form.update_central_server.view"), InteractionState.Viewing));
                 }
             });
-            updateFromCentralServerUpdate = new ActionItem(WResource.tr("menu.administrator.updateFromRegaDBServer.update"), updateFromCentralServer, new ITreeAction()
+            updateFromCentralServerUpdate = new ActionItem(WResource.tr("menu.administrator.updateFromCentralRepos.update"), updateFromCentralServer, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node)
                 {
