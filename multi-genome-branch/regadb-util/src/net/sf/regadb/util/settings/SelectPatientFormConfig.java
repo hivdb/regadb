@@ -19,13 +19,21 @@ public class SelectPatientFormConfig extends FormConfig {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
+		Element ee;
+		
 	    setShowSampleIds("true".equals(e.getAttributeValue("showSampleIds")));
 	    
 		AttributeConfig ac = new AttributeConfig();
-		ac.parseXml(settings, e.getChild("attributeFilter").getChild(ac.getXmlTag()));
-		setAttributeFilter(ac);
+		ee = e.getChild("attributeFilter");
+		if(ee != null){
+			ee = ee.getChild(ac.getXmlTag());
+			if(ee != null){
+				ac.parseXml(settings, ee);
+				setAttributeFilter(ac);
+			}
+		}
 		
-		Element ee = e.getChild("attributes");
+		ee = e.getChild("attributes");
 		if(ee != null){
 			attributes.clear();
 			

@@ -224,8 +224,9 @@ public class IPatientDataTable implements IDataTable<Object[]>
     
     protected Attribute getDefaultAttribute(Transaction t){
     	AttributeConfig ac = RegaDBSettings.getInstance().getInstituteConfig().getSelectPatientFormConfig().getAttributeFilter();
-    	
-    	return t.getAttribute(ac.getName(), ac.getGroup());
+    	if(ac != null)
+    		return t.getAttribute(ac.getName(), ac.getGroup());
+    	return null;
     }
 
 	public int[] getColumnWidths() {
