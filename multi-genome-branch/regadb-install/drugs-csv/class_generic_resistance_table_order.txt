@@ -2,3 +2,4 @@ nrti:AZT, DDC, DDI, 3TC, D4T, ABC, FTC, TDF
 nnrti:NVP, DLV, EFV, ETV
 pi:SQV, SQV/r, RTV, IDV, IDV/r, NFV, FPV, FPV/r, LPV/r, ATV, ATV/r, TPV/r, DRV/r
 ei:T20
+ii:RTG
