@@ -28,7 +28,7 @@ public class ParseAll {
     
     public void run(String importDir, String mappingDir, String outputDir){
         Logging logger = ConsoleLogger.getInstance();
-        logger.logWarning("Parsing...");
+        logger.logInfo("Parsing...");
         
         List<DateFormat> df = new ArrayList<DateFormat>();
         df.add(new SimpleDateFormat("MM/dd/yy HH:mm:ss"));
@@ -65,7 +65,7 @@ public class ParseAll {
         IOUtils.exportPatientsXML(patients, outputDir + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
         //Utils.exportNTXML(viralisolates, outputDir + File.separatorChar + "viralisolates.xml");
         
-        logger.logWarning("Done.");
+        logger.logInfo("Done.");
     }
     
     private File getFile(String dir, String name){

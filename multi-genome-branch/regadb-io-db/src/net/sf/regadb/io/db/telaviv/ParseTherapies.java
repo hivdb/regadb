@@ -24,6 +24,7 @@ import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.TimeLine;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.frequency.Frequency;
 import net.sf.regadb.util.pair.Pair;
 
@@ -100,7 +101,7 @@ public class ParseTherapies extends Parser{
                     if(check(note))
                         tp.setComment(note);
 	                    
-                    addDrugs(drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
+                    addDrugs(p,drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
 
 //	                int irow = Integer.parseInt(row);
 //	            	Pair<Integer,Therapy> pair2 = null, pair = new Pair<Integer,Therapy>(irow,tp);
@@ -146,10 +147,9 @@ public class ParseTherapies extends Parser{
 	            		if(!pl1.getKey().equals(p2))
 	            			logWarn("Overlap: ("+ pl1.getKey().toString() +") ("+ p2.toString() +")");
 	            		else
-	            			++equal;
+	            		    logWarn("Identical interval: "+ pl1.getKey().toString());
 	            	}
 	            }
-	            logWarn("Same start and stop date: "+ equal);
             }
             
             List<TimeLine<Therapy>.Period> periods = timeline.createMergedPeriods();
@@ -165,7 +165,7 @@ public class ParseTherapies extends Parser{
         }
     }
 
-    private void addDrugs(Map<String,Drug> drugs, Therapy tp, Table t, int row, int bIndex, int eIndex){
+    private void addDrugs(Patient p, Map<String,Drug> drugs, Therapy tp, Table t, int row, int bIndex, int eIndex){
         Set<String> drugNos = new HashSet<String>();
 
         for(int j=bIndex; j<eIndex; ++j){
@@ -189,7 +189,7 @@ public class ParseTherapies extends Parser{
                     }
                 }
                 else{
-                    logWarn("duplicate agentNo found", getCurrentFile(), row, drugNo);
+                    logWarn(p, "duplicate agentNo found in therapy "+ DateUtils.getEuropeanFormat(tp.getStartDate()), getCurrentFile(), row, drugNo);
                 }
             }
         }

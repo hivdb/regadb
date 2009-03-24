@@ -29,9 +29,12 @@ public class ParseSequences extends Parser{
     
     public ParseSequences(Logging logger, List<DateFormat> df) {
         super(logger,df);
+        setName("Sequences");
     }
     
     public void run(File csvSequenceFile, File csvSampleFile, Map<String, Patient> patients) {
+        setCurrentFile(csvSequenceFile);
+        
         Table seqsTable = Utils.readTable(csvSequenceFile.getAbsolutePath());
         Table sampleTable = Utils.readTable(csvSampleFile.getAbsolutePath());
         
@@ -66,8 +69,9 @@ public class ParseSequences extends Parser{
                         dateAnswer = null;
                 }
             }
+            Patient p = patients.get(seqsTable.valueAt(CID, i));
             if(dateTaken==null || dateAnswer==null) {
-                System.err.println("No dates for sequence with sampleno " + sampleNo);
+                logWarn(p, "No dates for sequence", sampleNo);
             } else {
                 List<NtSequence> seqs = new ArrayList<NtSequence>();
                 String pro = seqsTable.valueAt(CProtease, i);
@@ -81,7 +85,7 @@ public class ParseSequences extends Parser{
                 //String gag = seqsTable.valueAt(CGAG, i);
                 //    handleSequence(gag, seqs, dateAnswer, sampleNo);
                     
-                Patient p = patients.get(seqsTable.valueAt(CID, i));
+                
                 if(seqs.size()>0) {
                     ViralIsolate vi = p.createViralIsolate();
                     vi.setSampleId(sampleNo);
