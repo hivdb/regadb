@@ -1,28 +1,27 @@
 package net.sf.hivgensim.queries;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 
-public class CleanSequences extends QueryImpl<NtSequence, NtSequence> {
+public class CleanSequences extends Query<NtSequence,NtSequence> {
 
 	private SelectionWindow[] windows;
 	
-	protected CleanSequences(Query<NtSequence> inputQuery) {
-		super(inputQuery);
+	protected CleanSequences(IQuery<NtSequence> nextQuery) {
+		super(nextQuery);
 	}
 	
-	public CleanSequences(Query<NtSequence> inputQuery, SelectionWindow[] windows){
-		super(inputQuery);
+	public CleanSequences(SelectionWindow[] windows,IQuery<NtSequence> nextQuery){
+		super(nextQuery);
 		this.windows = windows;
 	}
 
 	@Override
-	public void populateOutputList() {
-		for(NtSequence seq : inputQuery.getOutputList()){
+	public void process(NtSequence seq) {
 			boolean allswok = true;
 			for(SelectionWindow sw : windows){
 				boolean swok = false;
@@ -44,9 +43,9 @@ public class CleanSequences extends QueryImpl<NtSequence, NtSequence> {
 				}
 			}
 			if(allswok){
-				outputList.add(seq);
+				getNextQuery().process(seq);
 			}
-		}		
+				
 	}
 
 }

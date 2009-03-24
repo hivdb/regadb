@@ -1,8 +1,8 @@
 package net.sf.hivgensim.queries;
 
 
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
@@ -14,28 +14,25 @@ import net.sf.regadb.db.ViralIsolate;
  *
  */
 
-public class GetLatestSequencePerPatient extends QueryImpl<NtSequence,Patient> {
-	
-	public GetLatestSequencePerPatient(Query<Patient> query){
-		super(query);
+public class GetLatestSequencePerPatient extends Query<Patient,NtSequence> {
+
+	public GetLatestSequencePerPatient(IQuery<NtSequence> nextQuery){
+		super(nextQuery);
 	}
-	
+
 	@Override
-	public void populateOutputList() {
+	public void process(Patient p) {
 		NtSequence latestSequenceForThisPatient = null; 
-		for(Patient p : inputQuery.getOutputList()){
-			for(ViralIsolate vi : p.getViralIsolates()){
-				for(NtSequence seq : vi.getNtSequences()){
-					if(latestSequenceForThisPatient == null || 
-							latestSequenceForThisPatient.getSequenceDate().before(seq.getSequenceDate())){
-						latestSequenceForThisPatient = seq;
-					}						
-				}
+		for(ViralIsolate vi : p.getViralIsolates()){
+			for(NtSequence seq : vi.getNtSequences()){
+				if(latestSequenceForThisPatient == null || 
+						latestSequenceForThisPatient.getSequenceDate().before(seq.getSequenceDate())){
+					latestSequenceForThisPatient = seq;
+				}						
 			}
-			if(latestSequenceForThisPatient != null){ //check if patient has sequences in the db
-				outputList.add(latestSequenceForThisPatient);
-				latestSequenceForThisPatient = null;
-			}
+		}
+		if(latestSequenceForThisPatient != null){ //check if patient has sequences in the db
+			getNextQuery().process(latestSequenceForThisPatient);
 		}
 	}
 }

@@ -4,12 +4,16 @@ import net.sf.regadb.db.NtSequence;
 
 public class SequencePair {
 	
+	private String patientId;
 	private NtSequence seq1;
 	private NtSequence seq2;
+	private String therapyRegimen;
 	
-	public SequencePair(NtSequence seq1, NtSequence seq2){
+	public SequencePair(String patientId, NtSequence seq1, NtSequence seq2, String therapyRegimenInBetween){
+		this.patientId = patientId;
 		this.seq1 = seq1;
 		this.seq2 = seq2;
+		this.therapyRegimen = therapyRegimenInBetween;
 	}
 
 	public NtSequence getSeq1() {
@@ -18,6 +22,14 @@ public class SequencePair {
 
 	public NtSequence getSeq2() {
 		return seq2;
+	}
+	
+	public String getTherapyRegimen() {
+		return therapyRegimen;
+	}
+	
+	public String getPatientId(){
+		return patientId;		
 	}
 
 }

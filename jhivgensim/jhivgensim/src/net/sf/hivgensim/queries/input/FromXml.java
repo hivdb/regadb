@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -24,14 +25,15 @@ public class FromXml extends QueryInput {
 	private String loginname;
 	private String passwd;
 	
-	public FromXml(File file, String loginname, String passwd){
+	public FromXml(File file, String loginname, String passwd, IQuery<Patient> nextQuery){
+		super(nextQuery);
 		this.file = file;
 		this.loginname = loginname;
 		this.passwd = passwd;		
 	}
 	
 	@Override
-	protected void populateOutputList() {
+	public void run() {
 		Login login = null;
 		try
 		{
@@ -60,7 +62,7 @@ public class FromXml extends QueryInput {
 			r = new FileReader(file);
 			imp.readPatients(new InputSource(r), new ImportHandler<Patient>() {
 				public void importObject(Patient p) {
-					outputList.add(p);
+					getNextQuery().process(p);
 				}
 			});
 		} 

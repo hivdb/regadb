@@ -1,22 +1,21 @@
 package net.sf.hivgensim.queries;
 
-import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryImpl;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.framework.SequencePair;
-import net.sf.hivgensim.queries.input.FromSnapshot;
+import net.sf.hivgensim.queries.output.ToObjectList;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.ViralIsolate;
 
-public class GetLongitudinalSequencePairs extends QueryImpl<SequencePair,Patient> {
-	
+public class GetLongitudinalSequencePairs extends Query<Patient,SequencePair> {
+
 	private String[] drugs = new String[]{};
-	
+
 	/*
 	 *  if strict is true
 	 *  	we get only one pair of viral isolates per patient:
@@ -29,59 +28,64 @@ public class GetLongitudinalSequencePairs extends QueryImpl<SequencePair,Patient
 	 *  	we return all pairs:
 	 *  	every naive with every treated sequence
 	 */
-	
+
 	private boolean strict = false;
-	
-	protected GetLongitudinalSequencePairs(Query<Patient> inputQuery) {
-		super(inputQuery);
+
+	protected GetLongitudinalSequencePairs(IQuery<SequencePair> nextQuery) {
+		super(nextQuery);
 	}
-	
-	public GetLongitudinalSequencePairs(Query<Patient> inputQuery,String[] drugs, boolean strict) {
-		super(inputQuery);
+
+	public GetLongitudinalSequencePairs(String[] drugs, boolean strict, IQuery<SequencePair> nextQuery) {
+		super(nextQuery);
 		this.drugs = drugs;
 		this.strict = strict;
 	}
 
 	@Override
-	public void populateOutputList() {
-		GetTreatedSequences exp = new GetTreatedSequences(inputQuery,drugs);
-		GetDrugNaiveSequences nai = new GetDrugNaiveSequences(inputQuery,drugs);
-		for(Patient p : inputQuery.getOutputList()){
-			Set<NtSequence> expFromPatient = new HashSet<NtSequence>();
-			Set<NtSequence> naiFromPatient = new HashSet<NtSequence>();
-			for(ViralIsolate vi : p.getViralIsolates()){
-				for(NtSequence seq : vi.getNtSequences()){
-					if(exp.getOutputList().contains(seq)){
-						expFromPatient.add(seq);					
-					}else if(nai.getOutputList().contains(seq)){
-						naiFromPatient.add(seq);					
-					}
-				}
+	public void process(Patient p) {
+		ToObjectList<NtSequence> treated = new ToObjectList<NtSequence>();
+		new GetTreatedSequences(drugs,treated).process(p);
+		ToObjectList<NtSequence> naive = new ToObjectList<NtSequence>();
+		new GetDrugNaiveSequences(drugs,naive).process(p);
+
+//		Set<NtSequence> expFromPatient = new HashSet<NtSequence>();
+//		Set<NtSequence> naiFromPatient = new HashSet<NtSequence>();
+//		for(ViralIsolate vi : p.getViralIsolates()){
+//			for(NtSequence seq : vi.getNtSequences()){
+//				if(exp.getOutputList().contains(seq)){
+//					expFromPatient.add(seq);					
+//				}else if(nai.getOutputList().contains(seq)){
+//					naiFromPatient.add(seq);					
+//				}
+//			}
+//		}
+		if(strict){
+			Set<NtSequence> latestNaive = QueryUtils.getLatestNtSequences(naive.getList());
+			Set<NtSequence> latestTreated = QueryUtils.getLatestNtSequences(treated.getList());
+			if(latestNaive == null || latestTreated == null){		
+				return;
 			}
-			if(strict){
-				Set<NtSequence> latestNaive = QueryUtils.getLatestNtSequence(naiFromPatient);
-				Set<NtSequence> latestTreated = QueryUtils.getLatestNtSequence(expFromPatient);
-				outputList.addAll(makeSequencePairs(latestNaive,latestTreated));
-			}else{
-				outputList.addAll(makeSequencePairs(naiFromPatient,expFromPatient));
-			}			
+			for(SequencePair pair : makeSequencePairs(p,latestNaive,latestTreated)){
+				getNextQuery().process(pair);
+			}
+		}else{
+			for(SequencePair pair : makeSequencePairs(p,naive.getList(),treated.getList())){
+				getNextQuery().process(pair);
+			}
 		}
 	}
-	
-	private Set<SequencePair> makeSequencePairs(Set<NtSequence> firstSequences, Set<NtSequence> secondSequences){
+
+	private Set<SequencePair> makeSequencePairs(Patient p, Collection<NtSequence> firstSequences, Collection<NtSequence> secondSequences){
 		Set<SequencePair> pairs = new HashSet<SequencePair>();
 		for(NtSequence seq1 : firstSequences){
 			for(NtSequence seq2 : secondSequences){
-				pairs.add(new SequencePair(seq1,seq2));
+				if(QueryUtils.isSequenceInRegion(seq1, "RT") && QueryUtils.isSequenceInRegion(seq2, "RT")){
+					pairs.add(new SequencePair(p.getPatientId(),seq1,seq2,QueryUtils.therapyRegimenInBetween(p, seq1, seq2)));
+				}else{
+					//do nothing
+				}
 			}
 		}
 		return pairs;
 	}
-	
-	public static void main(String[] args){
-		GetLongitudinalSequencePairs query = new GetLongitudinalSequencePairs(
-				new FromSnapshot(new File("/home/gbehey0/queries/stanford.snapshot")),new String[]{"IDV"},false);
-		query.populateOutputList();
-	}
-
 }

@@ -1,9 +1,16 @@
 package net.sf.hivgensim.queries.framework;
 
-import java.util.List;
+public abstract class Query<InputType,OutputType> extends PreQuery<OutputType> implements IQuery<InputType>{
 
-public interface Query<T> {
+	protected Query(IQuery<OutputType> nextQuery) {
+		super(nextQuery);		
+	}
 	
-	public abstract List<T> getOutputList();
+	public abstract void process(InputType input);
+	
+	public void close(){
+		System.err.println("Qclose");
+		getNextQuery().close();
+	}
 
 }

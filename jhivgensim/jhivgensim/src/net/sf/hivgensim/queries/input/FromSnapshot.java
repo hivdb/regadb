@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.regadb.db.Patient;
 
@@ -14,21 +14,27 @@ public class FromSnapshot extends QueryInput {
 	
 	private File file;	
 	
-	public FromSnapshot(File file){
-		this.file = file;	
+	public FromSnapshot(File file, IQuery<Patient> nextQuery){
+		super(nextQuery);
+		this.file = file;		
 	}
 	
-	@Override
-	protected void populateOutputList() {
+	public void run() {
 		try
 		{
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream in = new ObjectInputStream(fis);
 			Patient p;
+			int i = 0;
 			while((p = (Patient)in.readObject()) != null){				
-				outputList.add(p);
+				getNextQuery().process(p);
+				i++;
+				if(i % 100 == 0){
+					System.err.println(i);					
+				}				
 			}
 			in.close();
+			getNextQuery().close();
 		}
 		catch (EOFException e) 
 		{

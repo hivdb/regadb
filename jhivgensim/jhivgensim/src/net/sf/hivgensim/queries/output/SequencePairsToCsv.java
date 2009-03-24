@@ -14,9 +14,7 @@ public class SequencePairsToCsv extends DefaultQueryOutput<SequencePair>{
 		super(new PrintStream(f));
 	}
 
-	protected void generateOutput(List<SequencePair> pairs) {
-		for(SequencePair pair : pairs) {
-			this.getOut().println(pair.getSeq1().getLabel()+","+pair.getSeq2().getLabel());		
-		}
+	public void process(SequencePair pair) {
+		this.getOut().println(pair.getSeq1().getLabel()+","+pair.getSeq2().getLabel());		
 	}
 }

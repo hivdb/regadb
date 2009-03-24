@@ -37,139 +37,144 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.util.Utils;
 
 public class TCEQueryOutput extends TableQueryOutput<TCE> {
+
+	private Genome genome = StandardObjects.getHiv1Genome();
+	private TestType cd4tt = StandardObjects.getCd4TestType();
+	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
+
+
+	private List<DrugGeneric> genericDrugs = prepareRegaDrugGenerics();
+	private List<Test> resistanceTests = Utils.getResistanceTests();
+	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
+
 	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat(
-			"dd/MM/yyyy");
+	"dd/MM/yyyy");
+
+	private boolean first = true;
 
 	public TCEQueryOutput(Table out, File file, TableOutputType type) {
 		super(out, file, type);
 	}
 
-	protected void generateOutput(List<TCE> tces) {
-		Genome genome = StandardObjects.getHiv1Genome();
-		TestType cd4tt = StandardObjects.getCd4TestType();
-		TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
+	public void process(TCE tce) {
+		if(first){
+			//header
+			addColumn("start date");
+			addColumn("data source");
+			addColumn("patient id");
 
-		
-		List<DrugGeneric> genericDrugs = prepareRegaDrugGenerics();
-		List<Test> resistanceTests = Utils.getResistanceTests();
-		List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
-		
-		//header
-		addColumn("start date");
-		addColumn("data source");
-		addColumn("patient id");
-		
-		addColumn("vi id");
-		addColumn("vi date");
-		addColumn("nt sequences");
-		addColumn("subtype");
-		for(Test rt : resistanceTests) {
-			for(DrugGeneric dg : resistanceGenericDrugs) {
-				addColumn(rt.getDescription() + "_" + dg.getGenericId());
+			addColumn("vi id");
+			addColumn("vi date");
+			addColumn("nt sequences");
+			addColumn("subtype");
+			for(Test rt : resistanceTests) {
+				for(DrugGeneric dg : resistanceGenericDrugs) {
+					addColumn(rt.getDescription() + "_" + dg.getGenericId());
+				}
 			}
+
+			addColumn("# days of NRTI experience");
+			addColumn("# days of NNRTI experience");
+			addColumn("# days of PI experience");
+			addColumn("# previous therapy switches");
+			for(DrugGeneric dg : genericDrugs) {
+				addColumn(dg.getGenericId());
+			}
+
+			addCD4VLHeader("baseline");
+			addCD4VLHeader("8 weeks");
+			addCD4VLHeader("12 weeks");
+			addCD4VLHeader("24 weeks");
+
+			addColumn("birthdate");
+			addColumn("sex");
+			addColumn("transmission");
+			addColumn("ethnicity");
+			addColumn("country of origin", true);
+			first = false;
 		}
-		
-		addColumn("# days of NRTI experience");
-		addColumn("# days of NNRTI experience");
-		addColumn("# days of PI experience");
-		addColumn("# previous therapy switches");
-		for(DrugGeneric dg : genericDrugs) {
-			addColumn(dg.getGenericId());
-		}
-		
-		addCD4VLHeader("baseline");
-		addCD4VLHeader("8 weeks");
-		addCD4VLHeader("12 weeks");
-		addCD4VLHeader("24 weeks");
-		
-		addColumn("birthdate");
-		addColumn("sex");
-		addColumn("transmission");
-		addColumn("ethnicity");
-		addColumn("country of origin", true);
-		
 		//data
 		ViralIsolate vi;
 		Map<String, String> resistanceResults = new HashMap<String, String>();
-		for(TCE tce : tces) {
-			System.out.print(".");
-			addColumn(dateOutputFormat.format(tce.getStartDate()));
-			addColumn(getDatasource(tce.getPatient()).getDescription());
-			addColumn(tce.getPatient().getPatientId());
-			
-			vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-			if(vi!=null && betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
-				addColumn(vi.getSampleId());
-				addColumn(dateOutputFormat.format(vi.getSampleDate()));
-				
-				String seqs = "";
-				for(NtSequence ntSeq : vi.getNtSequences()) {
-					seqs += ntSeq.getNucleotides() + "+";
-				}
-				addColumn(seqs.substring(0,seqs.length()-1));
-				addColumn(extractSubtype(vi));
-				for(TestResult tr : vi.getTestResults()) {
-					TestType tt = tr.getTest().getTestType();
-					if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
-						resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
-					}
-				}
-				
-				for(Test rt : resistanceTests) {
-					for(DrugGeneric dg : resistanceGenericDrugs) {
-						addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
-					}
-				}
-			} else {
-				addColumn("");
-				addColumn("");
-				addColumn("");
-				addColumn("");
-				for(Test rt : resistanceTests) {
-					for(DrugGeneric dg : resistanceGenericDrugs) {
-						addColumn("");
-					}
+
+		System.out.print(".");
+		addColumn(dateOutputFormat.format(tce.getStartDate()));
+		addColumn(getDatasource(tce.getPatient()).getDescription());
+		addColumn(tce.getPatient().getPatientId());
+
+		vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
+		if(vi!=null && betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
+			addColumn(vi.getSampleId());
+			addColumn(dateOutputFormat.format(vi.getSampleDate()));
+
+			String seqs = "";
+			for(NtSequence ntSeq : vi.getNtSequences()) {
+				seqs += ntSeq.getNucleotides() + "+";
+			}
+			addColumn(seqs.substring(0,seqs.length()-1));
+			addColumn(extractSubtype(vi));
+			for(TestResult tr : vi.getTestResults()) {
+				TestType tt = tr.getTest().getTestType();
+				if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
+					resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
 				}
 			}
-			
-			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
-			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
-			addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
-			//TODO is this correct?
-			addColumn((tce.getTherapiesBefore().size()+1)+"");
-			for(DrugGeneric dg : genericDrugs) {
-				boolean found = false;
-				for(DrugGeneric dg_tce : tce.getDrugs()) {
-					if(dg_tce.getGenericId().equals(dg.getGenericId())) {
-						found = true;
-					}
+
+			for(Test rt : resistanceTests) {
+				for(DrugGeneric dg : resistanceGenericDrugs) {
+					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
 				}
-				addColumn(found?"yes":"no");
 			}
-			
-			//baseline
-			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, cd4tt);
-			addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, vltt);
-			//8 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, cd4tt);
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, vltt);
-			//12 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, cd4tt);
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, vltt);
-			//24 weeks
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, cd4tt);
-			addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, vltt);
-			
-			if(tce.getPatient().getBirthDate()!=null) {
-				addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
-			} else {
-				addColumn("");
+		} else {
+			addColumn("");
+			addColumn("");
+			addColumn("");
+			addColumn("");
+			for(Test rt : resistanceTests) {
+				for(DrugGeneric dg : resistanceGenericDrugs) {
+					addColumn("");
+				}
 			}
-			addColumn(getPatientAttributeValue(tce.getPatient(), "Gender"));
-			addColumn(getPatientAttributeValue(tce.getPatient(), "Transmission group"));
-			addColumn(getPatientAttributeValue(tce.getPatient(), "Ethnicity"));
-			addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"), true);
 		}
+
+		addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
+		addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
+		addColumn(daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
+		//TODO is this correct?
+		addColumn((tce.getTherapiesBefore().size()+1)+"");
+		for(DrugGeneric dg : genericDrugs) {
+			boolean found = false;
+			for(DrugGeneric dg_tce : tce.getDrugs()) {
+				if(dg_tce.getGenericId().equals(dg.getGenericId())) {
+					found = true;
+				}
+			}
+			addColumn(found?"yes":"no");
+		}
+
+		//baseline
+		addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, cd4tt);
+		addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, vltt);
+		//8 weeks
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, cd4tt);
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, vltt);
+		//12 weeks
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, cd4tt);
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, vltt);
+		//24 weeks
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, cd4tt);
+		addTestResultBetweenInterval(addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, vltt);
+
+		if(tce.getPatient().getBirthDate()!=null) {
+			addColumn(this.dateOutputFormat.format(tce.getPatient().getBirthDate()));
+		} else {
+			addColumn("");
+		}
+		addColumn(getPatientAttributeValue(tce.getPatient(), "Gender"));
+		addColumn(getPatientAttributeValue(tce.getPatient(), "Transmission group"));
+		addColumn(getPatientAttributeValue(tce.getPatient(), "Ethnicity"));
+		addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"), true);
+
 	}
 
 	private void addCD4VLHeader(String timePoint) {
@@ -178,7 +183,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(timePoint + " Viral Load date");
 		addColumn(timePoint + " Viral Load value");
 	}
-	
+
 	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, TestType testType) {
 		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
 		TestResult tr = closestToDate(tce.getStartDate(), trs);
@@ -190,10 +195,10 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addColumn("");
 		}
 	}
-	
+
 	private String extractSubtype(ViralIsolate vi) {
 		Set<String> subtypes = new HashSet<String>();
-		
+
 		for(NtSequence ntseq : vi.getNtSequences()) {
 			for(TestResult tr : ntseq.getTestResults()) {
 				if(tr.getTest().getDescription().equals("Rega Subtype Tool")) {
@@ -201,19 +206,19 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				}
 			}
 		}
-		
+
 		StringBuilder b = new StringBuilder();
 		for(String s : subtypes) {
 			b.append(s);
 			b.append("+");
 		}
-		
+
 		if(b.length()==0)
 			return "";
 		else
 			return b.substring(0, b.length()-1);
 	}
-	
+
 	// TODO
 	// standard fun
 	public String getPatientAttributeValue(Patient p, String attributeName) {
@@ -226,33 +231,33 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	// TODO
 	// standard fun
 	public List<TestResult> filterTestResults(Collection<TestResult> trs, TestType testType) {
 		List<TestResult> filteredTestResults = new ArrayList<TestResult>();
-		
+
 		for(TestResult tr : trs) {
 			if(Equals.isSameTestType(tr.getTest().getTestType(), testType) && tr.getTestDate()!=null) {
 				filteredTestResults.add(tr);
 			}
 		}
-		
+
 		return filteredTestResults;
 	}
-	
+
 	// TODO
 	// standard fun
 	public TestResult closestToDate(Date d, List<TestResult> testResults) {
 		long min = Long.MAX_VALUE;
 		TestResult closest = null;
-		
+
 		if(testResults.size()==0)
 			return null;
-		
+
 		long diff;
 		for(TestResult tr : testResults) {
 			diff = Math.abs(tr.getTestDate().getTime()-d.getTime());
@@ -261,31 +266,31 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				closest = tr;
 			}
 		}
-		
+
 		return closest;
 	}
-	
+
 	// TODO
 	// standard fun
 	public long daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
 		int days = 0;
-		
+
 		for(Therapy t : therapies) {
 			if(QueryUtils.hasClassExperience(drugClass, t)) {
 				days+=millisecondsToDays(t.getStopDate().getTime()-t.getStartDate().getTime());
 			}
 		}
-		
+
 		return days;
 	}
-	
-	
-	private long millisecondsToDays(long millis) {
-		   final long MILLISECS_PER_MINUTE = 60*1000;
-		   final long MILLISECS_PER_HOUR   = 60*MILLISECS_PER_MINUTE;
-		   final long MILLISECS_PER_DAY = 24*MILLISECS_PER_HOUR;
 
-		   return (long)(millis/MILLISECS_PER_DAY);
+
+	private long millisecondsToDays(long millis) {
+		final long MILLISECS_PER_MINUTE = 60*1000;
+		final long MILLISECS_PER_HOUR   = 60*MILLISECS_PER_MINUTE;
+		final long MILLISECS_PER_DAY = 24*MILLISECS_PER_HOUR;
+
+		return (long)(millis/MILLISECS_PER_DAY);
 	}
 	// TODO
 	// standard fun
@@ -294,27 +299,27 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	public boolean betweenInterval(Date d, Date begin, Date end) {
 		return d.after(begin) && d.before(end);
 	}
-	
+
 	// TODO
 	// standard fun
 	public Date addDaysToDate(Date d, int daysToAdd) {
 		Calendar c = Calendar.getInstance();
-		
+
 		c.setTime(d);
 		c.add(Calendar.DAY_OF_MONTH, daysToAdd);
-		
+
 		return c.getTime();
 	}
-	
+
 	// TODO
 	// standard fun
 	public ViralIsolate closestToDate(Set<ViralIsolate> viralIsolates, Date d) {
 		long min = Long.MAX_VALUE;
 		ViralIsolate closest = null;
-		
+
 		if(viralIsolates.size()==0)
 			return null;
-		
+
 		long diff;
 		for(ViralIsolate vi : viralIsolates) {
 			diff = Math.abs(vi.getSampleDate().getTime()-d.getTime());
@@ -323,10 +328,10 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				closest = vi;
 			}
 		}
-		
+
 		return closest;
 	}
-	
+
 	// TODO
 	// standard func
 	public Dataset getDatasource(Patient p) {
@@ -335,7 +340,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				return ds;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -360,9 +365,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 							dg2.getResistanceTableOrder());
 				} else {
 					return dg1.getDrugClass().getResistanceTableOrder()
-							.compareTo(
-									dg2.getDrugClass()
-											.getResistanceTableOrder());
+					.compareTo(
+							dg2.getDrugClass()
+							.getResistanceTableOrder());
 				}
 			}
 		});
@@ -376,11 +381,14 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
 		return imDrug.getGenericDrugs();
 	}
-	
+
 	public static void main(String [] args) {
-		QueryInput input = new FromSnapshot(new File(args[0]));
-		TCEQuery tceq = new TCEQuery(input);
-		TCEQueryOutput tceqo = new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV);
-		tceqo.output(tceq.getOutputList());
+		if(args.length != 2){
+			System.err.println("Usage: TCEQueryOutput input.snapshot output.table");
+		}
+		QueryInput input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV)));
+		input.run();
 	}
+
+	
 }

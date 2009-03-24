@@ -34,24 +34,17 @@
   	
   	<jar jarfile="${dist}/${proj.name}-create-snapshot.jar" basedir="${build}">
   		<manifest>
-  			<attribute name="Main-Class" value="net.sf.hivgensim.queries.input.CreateSnapshot"/>
+  			<attribute name="Main-Class" value="net.sf.hivgensim.queries.output.CreateSnapshot"/>
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
-  	
-  	<jar jarfile="${dist}/${proj.name}-checktherapies.jar" basedir="${build}">
-  	  		<manifest>
-  	  			<attribute name="Main-Class" value="net.sf.hivgensim.queries.CheckTherapyOverlap"/>
-  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
-  	  		</manifest>
-  	  	</jar>
-  	
-  	<jar jarfile="${dist}/${proj.name}-therapysummary.jar" basedir="${build}">
-  	  	  		<manifest>
-  	  	  			<attribute name="Main-Class" value="net.sf.hivgensim.queries.GetTherapySummary"/>
-  	  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
-  	  	  		</manifest>
-  	  	  	</jar>
+  	  	
+  	<jar jarfile="${dist}/${proj.name}-main.jar" basedir="${build}">
+  	  	  	  	  		<manifest>
+  	  	  	  	  			<attribute name="Main-Class" value="net.sf.hivgensim.Main"/>
+  	  	  	  	  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  	  	  	  	  		</manifest>
+  	  	  	  	  	</jar>
   </target>
   
   <!-- Clean up -->

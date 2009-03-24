@@ -34,7 +34,10 @@ public class CreateSnapshot {
 			List<Dataset> datasets = t.getDatasets();
 			String dataset = null;
 			for (Dataset ds : datasets) {
-				dataset = ds.getDescription();								
+				dataset = ds.getDescription();
+				if(!dataset.equals("ghb")){
+					continue;
+				}
 				System.err.println("now starting with: "+dataset);
 				HibernateFilterConstraint hfc = new HibernateFilterConstraint();
 				hfc.setClause(" dataset.description = :description ");
@@ -51,7 +54,7 @@ public class CreateSnapshot {
 					for (Patient p : patients) {
 						export.initialize(p);
 						out.writeObject(p);						
-					}
+					}					
 					out.reset();
 				}
 			}

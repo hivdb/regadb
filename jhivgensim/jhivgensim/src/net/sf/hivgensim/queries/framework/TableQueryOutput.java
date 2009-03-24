@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.regadb.csv.Table;
 
@@ -24,7 +23,8 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 		this.type = type;
 	}
 
-	protected void closeOutput() {
+	public void close() {
+		System.err.println("close");
 		if(type==TableOutputType.CSV) {
 			try {
 				getOut().exportAsCsv(new PrintStream(file));
@@ -61,12 +61,8 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 	
 	public void addColumn(String value) {
 		this.addColumn(value, false);
-	}	
-
-	protected abstract void generateOutput(List<DataType> query);
-	
-	public void output(List<DataType> list) {
-		generateOutput(list);
-		closeOutput();
 	}
+	
+	
+	
 }

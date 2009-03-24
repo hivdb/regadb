@@ -20,15 +20,15 @@ import net.sf.regadb.db.Therapy;
  *
  */
 public class GetTherapySummary extends DefaultQueryOutput<Patient> {
-	
-	
+
+
 	HashMap<String,Integer> drugcounts = new HashMap<String,Integer>();
-	
+
 	public GetTherapySummary(File file) throws FileNotFoundException {
 		super(new PrintStream(file));
 	}
-	
-	protected void initializeCounts(Patient p) {
+
+	public void process(Patient p) {
 		for(Therapy t : p.getTherapies()){
 			String therapyString = QueryUtils.getDrugsString(t);
 			if(drugcounts.containsKey(therapyString)){
@@ -40,32 +40,19 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 			}
 		}
 	}
-	
-	public void output(){
-		
-			TreeSet<String> ts = new TreeSet<String>();
-			for(String therapy : drugcounts.keySet()){
-				Integer count = drugcounts.get(therapy);
-				String countstring = count.toString();
-				while(countstring.length()<5){
-					countstring = " " + countstring;
-				}
-				ts.add(countstring + "\t" + therapy);
-			}
-			for(String line : ts.descendingSet()){
-				getOut().println(line);
-			}			
-		
-	}
 
-	protected void generateOutput(List<Patient> patients) {
-		for(Patient p : patients){
-			initializeCounts(p);
+	public void output(){
+		TreeSet<String> ts = new TreeSet<String>();
+		for(String therapy : drugcounts.keySet()){
+			Integer count = drugcounts.get(therapy);
+			String countstring = count.toString();
+			while(countstring.length()<5){
+				countstring = " " + countstring;
+			}
+			ts.add(countstring + "\t" + therapy);
 		}
-		output();
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException{
-		new GetTherapySummary(new File("/home/gbehey0/therapy.summary")).generateOutput(new FromDatabase("gbehey0","bla123").getOutputList());
-	}
+		for(String line : ts.descendingSet()){
+			getOut().println(line);
+		}
+	}	
 }

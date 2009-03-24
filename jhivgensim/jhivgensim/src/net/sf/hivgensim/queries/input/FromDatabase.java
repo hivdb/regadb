@@ -1,5 +1,6 @@
 package net.sf.hivgensim.queries.input;
 
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -15,13 +16,13 @@ public class FromDatabase extends QueryInput {
 	private String loginname;
 	private String passwd;
 	
-	public FromDatabase(String loginname, String passwd){
+	public FromDatabase(String loginname, String passwd, IQuery<Patient> nextQuery){
+		super(nextQuery);
 		this.loginname = loginname;
 		this.passwd = passwd;
 	}
 	
-	@Override
-	protected void populateOutputList() {
+	public void run() {
 		Login login = null;
 		try
 		{
@@ -51,8 +52,8 @@ public class FromDatabase extends QueryInput {
 			}
         	i++;
         	Object[] os = patients.get();
-            outputList.add((Patient)os[0]);            
+            getNextQuery().process((Patient)os[0]);            
         }
+        getNextQuery().close();
 	}
-
 }

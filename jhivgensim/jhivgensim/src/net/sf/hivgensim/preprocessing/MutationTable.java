@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.hivgensim.queries.CleanSequences;
-import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
@@ -144,10 +143,8 @@ public class MutationTable extends Table {
 //		}				
 //	}
 
-	public MutationTable(Query<NtSequence> query, SelectionWindow[] windows){
+	public MutationTable(List<NtSequence> seqlist, SelectionWindow[] windows){
 		//remove sequences from query that have deletions in the windows
-		List<NtSequence> seqlist = new CleanSequences(query,windows).getOutputList();
-
 		for(NtSequence seq : seqlist){
 			createNewRow(seq.getViralIsolate().getSampleId());
 

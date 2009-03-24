@@ -1,17 +1,11 @@
 package net.sf.hivgensim.queries;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
+import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryImpl;
-import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
-import net.sf.hivgensim.queries.input.FromDatabase;
-import net.sf.hivgensim.queries.output.SequencesToCsv;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -27,58 +21,40 @@ import net.sf.regadb.db.TherapyGeneric;
  *
  */
 
-public class GetTreatedSequences extends QueryImpl<NtSequence, Patient> {
+public class GetTreatedSequences extends Query<Patient,NtSequence> {
 
 	private String[] druggenerics = new String[]{};
 
-	public GetTreatedSequences(Query<Patient> inputQuery) {
-		super(inputQuery);
+	public GetTreatedSequences(IQuery<NtSequence> nextQuery) {
+		super(nextQuery);
 	}
 
-	public GetTreatedSequences(Query<Patient> query, String[] druggenerics){
-		super(query);
+	public GetTreatedSequences(String[] druggenerics,IQuery<NtSequence> nextQuery){
+		super(nextQuery);
 		this.druggenerics = druggenerics;		
 	}
 
 	@Override
-	public void populateOutputList() {
-//		Set<NtSequence> temp = new HashSet<NtSequence>();
+	public void process(Patient p) {
 		Set<String> history = new HashSet<String>();
-		for(Patient p : inputQuery.getOutputList()){
-//			Therapy latestGoodExperienceTherapy = null;
-			history = new HashSet<String>();
-			for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
-				for(TherapyGeneric tg : t.getTherapyGenerics()){
-					history.add(tg.getId().getDrugGeneric().getGenericId());
-				}			
-				if(QueryUtils.isGoodExperienceTherapy(t,druggenerics,history)){
-//					latestGoodExperienceTherapy = t;
-					outputList.addAll(QueryUtils.getAllSequencesDuringTherapy(p, t));					
-				}else{
-					//check if this therapy uses drugs in same drug class of
-					//wanted drug combination
-					//if such a therapy has been followed break loop and use
-					//latestGoodExperienceTherapy as latest therapy to extract sequence
-					if(!QueryUtils.isGoodPreviousTherapy(t, druggenerics)){
-						break;
-					}
+		history = new HashSet<String>();
+		for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
+			for(TherapyGeneric tg : t.getTherapyGenerics()){
+				history.add(tg.getId().getDrugGeneric().getGenericId());
+			}			
+			if(QueryUtils.isGoodExperienceTherapy(t,druggenerics,history)){
+				for(NtSequence seq : QueryUtils.getAllSequencesDuringTherapy(p, t)){
+					getNextQuery().process(seq);					
 				}
-
+			}else{
+				//check if this therapy uses drugs in same drug class of
+				//wanted drug combination
+				//if such a therapy has been followed break loop and use
+				//latestGoodExperienceTherapy as latest therapy to extract sequence
+				if(!QueryUtils.isGoodPreviousTherapy(t, druggenerics)){
+					return;
+				}
 			}
-//			if(latestGoodExperienceTherapy != null){
-//				Set<NtSequence> seqs = QueryUtils.getLatestSequencesDuringTherapy(p,latestGoodExperienceTherapy);
-//				if(seqs != null)
-//					temp.addAll(seqs);
-//			}						
 		}
-//		outputList.addAll(temp);
 	}
-
-	public static void main(String[] args) throws FileNotFoundException{
-		QueryInput qi = new FromDatabase("gbehey0","bla123");
-		Query<NtSequence> q = new GetTreatedSequences(qi,new String[]{"AZT","3TC"});
-		DefaultQueryOutput<NtSequence> qo = new SequencesToCsv(new File("/home/gbehey0/queries/test2"));
-		qo.output(q.getOutputList());
-	}
-
 }
