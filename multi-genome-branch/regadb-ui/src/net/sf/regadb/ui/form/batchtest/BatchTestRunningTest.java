@@ -21,13 +21,14 @@ import eu.webtoolkit.jwt.WString;
 public class BatchTestRunningTest extends Thread {
 	private Test test;
 	private BatchTestStatus status;
-	private int percent;
 	private Transaction t;
 	private Login copiedLogin;
 	
+	private int processedTests = 0;
+	private int testsToProcess = 0;
+	
 	public BatchTestRunningTest(Test test) {
 		this.test = test;
-		percent = 0;
         t = RegaDBMain.getApp().createTransaction();
 		copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
 	}
@@ -35,7 +36,6 @@ public class BatchTestRunningTest extends Thread {
 	@Deprecated //TODO remove (made for debugging)
 	public BatchTestRunningTest(Test test, Transaction t, Login login){
 		this.test = test;
-		percent = 0;
         this.t = t;
 		copiedLogin = login.copyLogin();
 	}
@@ -66,7 +66,6 @@ public class BatchTestRunningTest extends Thread {
 			}
 			
 			if ( status == BatchTestStatus.RUNNING ) {
-				percent = 100;
 				status = BatchTestStatus.DONE;
 			}
 		} catch ( Exception e ) {
@@ -96,7 +95,7 @@ public class BatchTestRunningTest extends Thread {
 	public boolean isRunning() { return status == BatchTestStatus.RUNNING || status == BatchTestStatus.CANCELING; }
 	
 	public WString getPercent() {
-		return WString.lt(percent + "%");
+		return WString.lt(this.processedTests + "/" + this.testsToProcess);
 	}
 	
 	public WString getStatusMessage() {
@@ -108,7 +107,7 @@ public class BatchTestRunningTest extends Thread {
 		else if ( status == BatchTestStatus.CANCELING ) key = "form.batchtest.running.status.canceling";
 		else if ( status == BatchTestStatus.CANCELED ) key = "form.batchtest.running.status.canceled";
 		
-		return new WString(key);
+		return WString.tr(key);
 	}
 	
 	private abstract class BatchRun<DataType> {
@@ -121,18 +120,17 @@ public class BatchTestRunningTest extends Thread {
 		}
 		
         public void run() {
-            int i = 0;
-            while (i<list.size() && status == BatchTestStatus.RUNNING) {
-                percent = i * 100 / list.size();
-               
-                DataType t = list.get(i);
+        	testsToProcess = list.size();
+        	
+            while (processedTests<testsToProcess && status == BatchTestStatus.RUNNING) {            	
+                DataType t = list.get(processedTests);
                 try {
                     runSingleTest(t, copiedLogin);
                 }
                 catch (Throwable e) {
                     status = BatchTestStatus.FAILED;
                 }
-                i++;
+                processedTests++;
             }
         }
 		
