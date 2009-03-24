@@ -178,4 +178,8 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
     public WString leaveForm() {
         return tr("form.login.tree.warning");
     }
+
+	public void removeFormField(IFormField field) {
+		
+	}
 }

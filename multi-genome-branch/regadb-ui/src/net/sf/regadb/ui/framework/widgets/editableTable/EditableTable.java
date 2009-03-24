@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
@@ -291,6 +292,15 @@ public class EditableTable<DataType> extends WContainerWidget
     	
     	private void removeRow() {
     		int row =  ((WTableCell)RemoveButton.this.parent()).row();
+    		
+    		WWidget[] widgets = getWidgets(row);
+    		for(WWidget ww : widgets) {
+    			if(ww instanceof IFormField) {
+    				IForm form = ((IFormField)ww).getForm();
+    				if(form!=null)
+    					form.removeFormField((IFormField)ww);
+    			}
+    		}
     		
             itemTable_.deleteRow(row);
             removedItemList_.add(RemoveButton.this.toRemove);

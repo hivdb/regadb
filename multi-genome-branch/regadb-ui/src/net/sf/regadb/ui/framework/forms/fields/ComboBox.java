@@ -20,7 +20,7 @@ public class ComboBox<ComboDataType> extends FormField
     
     public ComboBox(InteractionState state, IForm form)
     {
-        super();
+        super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new MyComboBox();

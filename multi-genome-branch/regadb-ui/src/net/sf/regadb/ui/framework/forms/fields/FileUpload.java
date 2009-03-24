@@ -21,7 +21,11 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	
 	private boolean mandatory;
 	
+	private IForm form;
+	
 	public FileUpload(InteractionState istate, IForm form) {
+		this.form = form;
+		
         link = new WAnchor("dummy", lt(""), this);
         link.setStyleClass("link");
         
@@ -113,5 +117,9 @@ public class FileUpload extends WContainerWidget implements IFormField{
 			return getFileUpload().clientFileName() != null;
 		}
 		return true;
+	}
+
+	public IForm getForm() {
+		return form;
 	}
 }

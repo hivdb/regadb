@@ -8,5 +8,6 @@ public interface IForm
 {
 	public WContainerWidget getWContainer();
 	public void addFormField(IFormField field);
+	public void removeFormField(IFormField field);
     public WString leaveForm();
 }

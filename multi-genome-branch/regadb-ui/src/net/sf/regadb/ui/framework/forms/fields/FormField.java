@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.ui.framework.forms.IForm;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -13,6 +14,12 @@ public abstract class FormField extends WContainerWidget implements IFormField
 {
     private WText _fieldView;
     private boolean _unique=false;
+    
+    private IForm form;
+    
+    public FormField(IForm form) {
+    	this.form = form;
+    }
     
     public void initViewWidget()
     {
@@ -137,5 +144,9 @@ public abstract class FormField extends WContainerWidget implements IFormField
     	if(_fieldView!=null) {
     		_fieldView.setTextFormat(tf);
     	}
+    }
+    
+    public IForm getForm() {
+    	return form;
     }
 }

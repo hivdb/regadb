@@ -16,7 +16,7 @@ public class TextField extends FormField
 	
 	public TextField(InteractionState state, IForm form, FieldType type)
 	{
-		super();
+		super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();

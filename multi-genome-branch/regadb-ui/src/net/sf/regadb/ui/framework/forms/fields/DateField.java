@@ -20,7 +20,7 @@ public class DateField extends FormField
 	
 	public DateField(InteractionState state, IForm form, String dateFormat)
 	{
-		super();
+		super(form);
 		setStyleClass("datefield");
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {

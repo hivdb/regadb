@@ -60,4 +60,8 @@ public class PatientChartForm extends WGroupBox implements IForm
     public WString leaveForm() {
         return null;
     }
+
+	public void removeFormField(IFormField field) {
+
+	}
 }

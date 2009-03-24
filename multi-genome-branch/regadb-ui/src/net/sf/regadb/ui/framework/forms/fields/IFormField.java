@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.ui.framework.forms.IForm;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WWidget;
@@ -17,4 +18,5 @@ public interface IFormField
 	public void flagValid();
     public WWidget getWidget();
     public void setConfirmAction(Signal.Listener se);
+    public IForm getForm();
 }

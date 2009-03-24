@@ -22,4 +22,8 @@ public class SelectForm extends WGroupBox implements IForm {
     public WString leaveForm() {
         return null;
     }
+
+	public void removeFormField(IFormField field) {
+		
+	}
 }

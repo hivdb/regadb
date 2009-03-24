@@ -13,7 +13,7 @@ public class TextArea extends FormField
     
     public TextArea(InteractionState state, IForm form)
     {
-        super();
+        super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             _fieldEdit = new WTextArea();

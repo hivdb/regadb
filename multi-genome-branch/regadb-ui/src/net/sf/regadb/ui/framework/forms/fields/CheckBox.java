@@ -12,12 +12,15 @@ import eu.webtoolkit.jwt.WWidget;
 public class CheckBox extends WContainerWidget implements IFormField
 {
     private WCheckBox checkBox_ = new WCheckBox();
+    private IForm form;
     
     public CheckBox(InteractionState state, IForm form)
     {
         super();
         addWidget(checkBox_);
         checkBox_.setEnabled(state == InteractionState.Adding || state == InteractionState.Editing);
+        
+        this.form = form;
         
         if(state!=InteractionState.Viewing)
         {
@@ -104,5 +107,9 @@ public class CheckBox extends WContainerWidget implements IFormField
         if(se != null)
             getFormWidget().enterPressed().addListener(this, se);
         }
+    }
+
+    public IForm getForm() {
+    	return form;
     }
 }

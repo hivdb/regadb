@@ -18,7 +18,7 @@ public class LimitedNumberField extends FormField
     
     public LimitedNumberField(InteractionState state, IForm form, FieldType type)
     {
-        super();
+        super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WLineEdit();
