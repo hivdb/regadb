@@ -31,15 +31,10 @@ public class TableExpander
         {
             public void trigger(WMouseEvent me)
             {
-                if(plusMinusIcon_.state()==0)
-                {
-                    performExpand();
-                    plusMinusIcon_.setState(1);
-                }
-                else
-                {
-                    performCollapse();
-                    plusMinusIcon_.setState(0);
+                if(plusMinusIcon_.state()==0) {
+                    expand(true);
+                } else {
+                    expand(false);
                 }
             }
         });
@@ -48,7 +43,7 @@ public class TableExpander
                 {
                     public void trigger(WMouseEvent me) 
                     {
-                        performExpand();
+                        expand(true);
                     }
                 });
         
@@ -56,23 +51,15 @@ public class TableExpander
                 {
                     public void trigger(WMouseEvent me) 
                     {
-                        performCollapse();
+                        expand(false);
                     }
                 });
     }
-
-    private void performExpand() 
-    {
-        perform(true);
-    }
     
-    private void performCollapse() 
+    public void expand(boolean expand)
     {
-        perform(false);
-    }
-    
-    private void perform(boolean expand)
-    {
+    	plusMinusIcon_.setState(expand?1:0);
+    	
         WWidget cellWidget;
         int row = startTableCell_.row();
         for(int i = row+1; i<table_.rowCount(); i++)
@@ -90,17 +77,9 @@ public class TableExpander
                 int numCols = table_.columnCount();
                 for(int j = 0; j<numCols; j++)
                 {
-                    if(table_.elementAt(i, j)!=null)
+                    if(table_.elementAt(i, j)!=null && table_.elementAt(i, j).children().size()>0)
                     {
-                    	if (expand && table_.elementAt(i, j).styleClass() != null) {
-                    		int index = table_.elementAt(i, j).styleClass().indexOf(" hidden");
-                    		if (index >= 0) {
-                    			table_.elementAt(i, j).setStyleClass(table_.elementAt(i, j).styleClass().substring(0, index));
-                    		}
-                    	}
-                    	else if (!expand) {
-                    		table_.elementAt(i, j).setStyleClass(table_.elementAt(i, j).styleClass() + " hidden");
-                    	}
+                    	table_.elementAt(i, j).children().get(0).setHidden(!expand);
                     }
                 }
             }
@@ -109,17 +88,5 @@ public class TableExpander
                 break;
             }
         }
-    }
-    
-    public void expand()
-    {
-        plusMinusIcon_.setState(1);
-        performExpand();
-    }
-    
-    public void collapse()
-    {
-        plusMinusIcon_.setState(0);
-        performCollapse();
     }
 }

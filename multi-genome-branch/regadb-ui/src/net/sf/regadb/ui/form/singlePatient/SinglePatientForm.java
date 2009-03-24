@@ -3,10 +3,8 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -32,7 +30,6 @@ import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -267,7 +264,7 @@ public class SinglePatientForm extends FormWidget
                     }
                     attributesGroupTable_.elementAt(rowToPlace, 1).setStyleClass("form-value-area");
                 }
-                attributeGroup.expand();
+                attributeGroup.expand(true);
             }
         }
         
