@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -19,17 +21,23 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class FullCsvExport {
+	private Map<String, String> resistanceResults = new HashMap<String, String>();
+	
 	public FullCsvExport() {
 	}
 	
-	public void export(List<Patient> patients, List<Attribute> attributes, File zipFile) throws IOException {
+	public void export(List<Patient> patients, List<Attribute> attributes, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs, File zipFile) throws IOException {
 		List<File> files = new ArrayList<File>();
 		List<String> fileNames = new ArrayList<String>();
 		
@@ -53,6 +61,10 @@ public class FullCsvExport {
 		files.add(viralIsolateFile);
 		fileNames.add("viral_isolates.csv");
 		FileWriter viralIsolateFileWriter = new FileWriter(viralIsolateFile);
+		File resistanceFile = File.createTempFile("resistance", "csv");
+		files.add(resistanceFile);
+		fileNames.add("resistance.csv");
+		FileWriter resistanceFileWriter = new FileWriter(resistanceFile);
 		
 		Collections.sort(attributes, new Comparator<Attribute>(){
 			public int compare(Attribute a0, Attribute a1) {
@@ -73,6 +85,7 @@ public class FullCsvExport {
 		testHeader(testFileWriter);
 		therapyHeader(therapyFileWriter);
 		viralIsolateHeader(viralIsolateFileWriter, maxNumberSeqs);
+		resistanceHeader(resistanceFileWriter, resistanceTests, resistanceGenericDrugs);
 		
 		for(Patient p : patients) {
 			patientRow(p, patientFileWriter, attributes);
@@ -87,6 +100,7 @@ public class FullCsvExport {
 			}
 			for(ViralIsolate vi : p.getViralIsolates()) {
 				viralIsolateRow(p, vi, viralIsolateFileWriter, maxNumberSeqs);
+				resistanceRow(resistanceFileWriter, p, vi, resistanceTests, resistanceGenericDrugs);
 			}
 		}
 		
@@ -129,7 +143,7 @@ public class FullCsvExport {
 	    	f.delete();
 	    }
 	}
-	
+
 	private void therapyRow(Patient p, Therapy t, FileWriter fw) throws IOException {
 		StringBuilder row = new StringBuilder();
 		
@@ -286,6 +300,48 @@ public class FullCsvExport {
 		
 		fw.append(row.toString());
 	}
+	
+	private void resistanceHeader(FileWriter resistanceFileWriter, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs) throws IOException {
+		StringBuilder header = new StringBuilder();
+		
+		formatField(header, "patient_id");
+		formatField(header, "sample_date");
+		formatField(header, "sample_id");
+		
+		for(Test rt : resistanceTests) {
+			for(DrugGeneric dg : resistanceGenericDrugs) {
+				formatField(header, rt.getDescription() + "_" + dg.getGenericId());
+			}
+		}
+		
+		resistanceFileWriter.append(header.substring(0,header.length()-1)+"\n");
+	}
+	
+	private void resistanceRow(FileWriter resistanceFileWriter, Patient p, ViralIsolate vi, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs) throws IOException {
+		StringBuilder row = new StringBuilder();
+		
+		resistanceResults.clear();
+		
+		formatField(row, p.getPatientId());
+		formatField(row, vi.getSampleDate());
+		formatField(row, vi.getSampleId());
+		
+		for(TestResult tr : vi.getTestResults()) {
+			TestType tt = tr.getTest().getTestType();
+			if(tt.getDescription().equals(StandardObjects.getGssDescription())) {
+				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId()+"_"+tt.getGenome().getOrganismName(), tr.getValue());
+			}
+		}
+		
+		for(Test rt : resistanceTests) {
+			for(DrugGeneric dg : resistanceGenericDrugs) {
+				formatField(row, resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()+"_"+rt.getTestType().getGenome().getOrganismName()));
+			}
+		}
+		
+		resistanceFileWriter.append(row.substring(0,row.length()-1)+"\n");
+	}
+		
 	
 	private void formatField(StringBuilder sb, String field) {
 		formatField(sb, field, true);

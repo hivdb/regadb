@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.exportCsv.FullCsvExport;
 import net.sf.regadb.io.exportXML.ExportPatient;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.PatientXMLOutputStream;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -87,8 +93,21 @@ public class ExportForm extends FormWidget {
 		FullCsvExport csvExport = new FullCsvExport();
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
 		
+		List<Test> resistanceTests = new ArrayList<Test>();
+        for(Test test : t.getTests()) {
+            if(test.getTestType().getDescription().equals(StandardObjects.getGssDescription()) ) {
+            	resistanceTests.add(test);
+            }
+        }
+        List<DrugGeneric> resistanceDrugs = new ArrayList<DrugGeneric>();
+        for(DrugClass dc : t.getDrugClassesSortedOnResistanceRanking()) {
+        	for(DrugGeneric dg : t.getDrugGenericSortedOnResistanceRanking(dc)) {
+        		resistanceDrugs.add(dg);
+        	}
+        }
+        
 		try {
-			csvExport.export(t.getPatients(ds), t.getAttributes(), exportFile);
+			csvExport.export(t.getPatients(ds), t.getAttributes(), resistanceTests, resistanceDrugs, exportFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
