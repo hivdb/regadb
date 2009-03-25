@@ -49,7 +49,7 @@ public class Login {
      * @throws WrongUidException 
      */
     public static Login authenticate(String uid, String passwd) throws WrongUidException, WrongPasswordException, DisabledUserException {
-        Login login = new Login(uid);
+        Login login = new Login(uid, true);
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
@@ -87,7 +87,7 @@ public class Login {
         return session_;
     }
     
-    private Login(String uid) {
+    private Login(String uid, boolean blockAttributes) {
         this.uid = uid;
         session_ = HibernateUtil.getSessionFactory().openSession();
         
@@ -95,7 +95,7 @@ public class Login {
         SettingsUser su = t.getSettingsUser(uid);
         
         List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getBlockedAttributes().get(su.getRole());
-        if(attributes!=null) {
+        if(blockAttributes && attributes!=null) {
         	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
         	Attribute attribute;
         	for(AttributeConfig a : attributes) {
@@ -116,7 +116,11 @@ public class Login {
     
     public Login copyLogin()
     {
-        return new Login(this.uid);
+        return copyLogin(true);
+    }
+    
+    public Login copyLogin(boolean blockAttributes) {
+    	return new Login(this.uid, blockAttributes);
     }
     
     private void prepareQueries()

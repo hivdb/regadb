@@ -164,7 +164,7 @@ public class UpdateForm extends FormWidget
         final ImportFromXML imp = new ImportFromXML();
         try 
         {
-            final Transaction t = RegaDBMain.getApp().createTransaction();
+            final Transaction t = RegaDBMain.getApp().getLogin().copyLogin(false).createTransaction();
             imp.loadDatabaseObjects(t);
             imp.readAttributes(new InputSource(new FileReader(attributesFile)), new ImportHandler<Attribute>()
                     {
