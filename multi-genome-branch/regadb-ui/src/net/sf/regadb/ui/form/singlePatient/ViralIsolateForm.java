@@ -118,20 +118,16 @@ public class ViralIsolateForm extends FormWidget
         
         //remove resistance tests
         Genome oldgenome = ViralIsolateFormUtils.getGenome(viralIsolate_);
-        if(oldgenome != null){
-            for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
-            {
-                TestResult test = i.next();
-                if(Equals.isSameTestType(StandardObjects.getGssTestType(oldgenome),test.getTest().getTestType()))
-                {
-                    if(test.getTest().getAnalysis()!=null)
-                    {
-                        i.remove();
-                        t.delete(test);
-                    }
-                }
-            }
-        }
+        
+        Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
+		while (i.hasNext()) {
+			TestResult test = i.next();
+			if (test.getTest().getTestType().getDescription().equals(
+					StandardObjects.getGssDescription())) {
+				i.remove();
+				t.delete(test);
+			}
+		}
         
         update(viralIsolate_, t);
         t.commit();
