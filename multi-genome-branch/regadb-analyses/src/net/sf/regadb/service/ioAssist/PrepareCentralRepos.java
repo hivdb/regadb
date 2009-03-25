@@ -57,9 +57,9 @@ public class PrepareCentralRepos
         //Events
         export = new ExportToXML();
         export.writeTopEvent(StandardObjects.getAidsDefiningIllnessEvent(), events);
+        export.writeTopEvent(StandardObjects.getPregnancyEvent(), events);
         File eventsFile = new File(outputDir +File.separatorChar+"events.xml");
         writeXMLFile(eventsFile, events);
-        
         
         export = new ExportToXML();
         //Tests
@@ -76,7 +76,6 @@ public class PrepareCentralRepos
         export.writeTopTest(StandardObjects.getGenericCD4PercentageTest(), tests);
         export.writeTopTest(StandardObjects.getGenericCD8Test(), tests);
         export.writeTopTest(StandardObjects.getGenericCD8PercentageTest(), tests);
-        export.writeTopTest(StandardObjects.getPregnancyTest(), tests);
 
         export.writeTopTest(StandardObjects.getFollowUpTest(), tests);
         

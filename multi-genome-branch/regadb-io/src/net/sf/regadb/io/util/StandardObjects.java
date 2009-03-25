@@ -72,7 +72,6 @@ public class StandardObjects {
     
     private static Test followUpTest;
     private static Test contactTest;
-    private static Test pregnancy;
 
     private static Test genericCD3Test;
     private static Test genericCD3PercentTest;
@@ -108,6 +107,7 @@ public class StandardObjects {
 
     
     private static Event aidsDefiningIllnessEvent;
+    private static Event pregnancyEvent;
 
 
     static {
@@ -206,9 +206,7 @@ public class StandardObjects {
         genericToxoIgGTest 		= createGenericTest("Toxo IgG", getNumberValueType(), null, getPatientTestObject());
         genericToxoIgMTest 		= createGenericTest("Toxo IgM", getNumberValueType(), null, getPatientTestObject());
         genericHAVIgGTest 		= createGenericTest("HAV IgG", getNumberValueType(), null, getPatientTestObject());
-        genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), null, getPatientTestObject());
-        
-        pregnancy = createPregnancyTest();     
+        genericHAVIgMTest 		= createGenericTest("HAV IgM", getNumberValueType(), null, getPatientTestObject()); 
         
 //        anrs200607Test = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07");
 //        hivdb429Test = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9");
@@ -216,6 +214,7 @@ public class StandardObjects {
 //        rega71Test = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1");
         
         aidsDefiningIllnessEvent = createAidsDefiningIllnessEvent();
+        pregnancyEvent = createPregnancyEvent();
     }
     
     public static List<Genome> getGenomes(){
@@ -384,10 +383,6 @@ public class StandardObjects {
 //    public static Attribute getCountryOfOriginAttribute(){
 //        return countryOfOriginAttribute;
 //    }
-    
-    public static Test getPregnancyTest() {
-        return pregnancy;
-    }
 
     public static TestType getCD3TestType(){
         return genericCD3Test.getTestType();
@@ -597,6 +592,9 @@ public class StandardObjects {
         return aidsDefiningIllnessEvent;
     }
     
+    public static Event getPregnancyEvent() {
+    	return pregnancyEvent;
+    }
     
     public static int getHqlQueryQueryType(){
         return 1;
@@ -656,13 +654,15 @@ public class StandardObjects {
         return e;
     }
     
-    private static Test createPregnancyTest()
-    {
-        TestType pregnancyType = new TestType(new TestObject("Patient test", 0), "Pregnancy");
-        pregnancyType.setValueType(nominalValueType);
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Positive"));
-        pregnancyType.getTestNominalValues().add(new TestNominalValue(pregnancyType, "Negative"));
-        return new Test(pregnancyType, "Pregnancy");
+    private static Event createPregnancyEvent(){
+    	Event e = new Event();
+        e.setValueType(getNominalValueType());
+        e.setName("Pregnancy");
+        
+        e.getEventNominalValues().add(new EventNominalValue(e,"Positive"));
+        e.getEventNominalValues().add(new EventNominalValue(e,"Negative"));
+      
+        return e;
     }
 
     private static Attribute createAttribute(String name, ValueType vt, AttributeGroup ag){

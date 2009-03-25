@@ -611,11 +611,11 @@ public class ImportPortugalDB {
                   Utils.createDate(collectionYear, collectionMonth, null),
                   sampleId);
           
-          handlePosNegTest(pregnancy, StandardObjects.getPregnancyTest(), p,
-                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Positive"),
-                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Negative"),
-                  Utils.createDate(collectionYear, collectionMonth, null),
-                  sampleId);
+//          handlePosNegTest(pregnancy, StandardObjects.getPregnancyTest(), p,
+//                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Positive"),
+//                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Negative"),
+//                  Utils.createDate(collectionYear, collectionMonth, null),
+//                  sampleId);
           
           handlePosNegTest(therapyFailure, this.genericTherapyFailure, p,
                   this.therapyFailurePos,
