@@ -14,10 +14,9 @@ import net.sf.hivgensim.queries.CleanSequences;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.GetTreatedSequences;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.input.FromSnapshot;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.hivgensim.queries.output.ToObjectList;
-import net.sf.hivgensim.services.Paup;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.tools.MutPos;
 
@@ -35,6 +34,14 @@ public class CrossSectionalEstimate {
 	private double threshold = 0.01;
 	private boolean lumpValues = false;
 	
+	//bayesian parameters
+	private int ESS = 1;
+	private String ARC_OPTS ="";
+	private int sa_T0=10;
+	private double sa_mu_T=1.002;
+	private int sa_iterations=40000;
+	private double arc_cost=1.2;
+
 	public CrossSectionalEstimate(){
 		
 	}
@@ -44,13 +51,15 @@ public class CrossSectionalEstimate {
 		
 		//queries
 		//naive dirty
-		QueryInput query =  new FromSnapshot(new File("/home/gbehey0/snapshot"),
+//		QueryInput query =  new FromSnapshot(new File("/home/gbehey0/snapshot"),
+		QueryInput query =  new FromDatabase("gbehey0","bla123",
 							new GetDrugClassNaiveSequences(naiveDrugClasses,
 							new SequencesToFasta(new File(workDir + File.separator + "naive.fasta"))));
 		query.run();
 		//naive clean
 		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
-		query =	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+//		query =	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+		query = new FromDatabase("gbehey0","bla123",
 				new GetDrugClassNaiveSequences(naiveDrugClasses,
 				new CleanSequences(smallWindows,
 				tol)));
@@ -58,13 +67,15 @@ public class CrossSectionalEstimate {
 		List<NtSequence> cleanNaive = tol.getList();
 		
 		//treated
-		query = new FromSnapshot(new File("/home/gbehey0/snapshot"),
+//		query = new FromSnapshot(new File("/home/gbehey0/snapshot"),
+		query = new FromDatabase("gbehey0","bla123",
 				new GetTreatedSequences(drugs,
 				new SequencesToFasta(new File(workDir + File.separator + "treated.fasta"))));
 		query.run();
 		//treated clean
 		tol = new ToObjectList<NtSequence>();
-		query =	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+//		query =	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+		query = new FromDatabase("gbehey0","bla123",
 				new GetTreatedSequences(drugs,
 				new CleanSequences(smallWindows,
 				tol)));
@@ -106,10 +117,15 @@ public class CrossSectionalEstimate {
 						workDir + File.separator + "phylo.fasta");
 		fc.processFastaFile();
 		
-		Paup paup = new Paup();
-		paup.run(workDir + File.separator + "phylo.fasta",workDir + File.separator + "tree.phy");
+//		bayesian(workDir + File.separator + "phylo.fasta");
+//		Paup paup = new Paup();
+//		paup.run(workDir + File.separator + "phylo.fasta",workDir + File.separator + "tree.phy");
 		
 		
+		
+	}
+	
+	private void bayesian(String phyloFasta){
 		
 	}
 	

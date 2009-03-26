@@ -1,16 +1,13 @@
 package net.sf.hivgensim;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
 import net.sf.hivgensim.queries.GetPatientsFromDatasets;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.TableQueryOutput.TableOutputType;
-import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.hivgensim.queries.output.SequencePairsTableOutput;
-import net.sf.hivgensim.scripts.CrossSectionalEstimate;
 import net.sf.regadb.csv.Table;
 
 
@@ -19,19 +16,19 @@ public class Main {
 	public static void main(String[] args){
 		
 		//longitudinal kristof
-//		Table t = new Table();
-//		QueryInput q = 	new FromDatabase("gbehey0","bla123",
-//					new GetPatientsFromDatasets(new String[]{"stanford","egazmoniz","ghb"},
-//				    new GetLongitudinalSequencePairs(new String[]{"AZT","3TC"},true,
-//				    new SequencePairsTableOutput(t,new File("/home/gbehey0/long.out"),TableOutputType.CSV)
-//				    ))); 
-//		q.run();		
+		Table t = new Table();
+		QueryInput q = 	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+					new GetPatientsFromDatasets(new String[]{"stanford","egazmoniz","ghb"},
+				    new GetLongitudinalSequencePairs(new String[]{"AZT","3TC"},true,
+				    new SequencePairsTableOutput(t,new File("/home/gbehey0/long.out"),TableOutputType.CSV)
+				    ))); 
+		q.run();		
 		
-		try {
-			new CrossSectionalEstimate().run();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			new CrossSectionalEstimate().run();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		
 	}
 

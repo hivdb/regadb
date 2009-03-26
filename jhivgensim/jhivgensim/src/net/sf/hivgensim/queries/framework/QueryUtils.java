@@ -23,7 +23,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 
 public abstract class QueryUtils {
-	
+
 	public static boolean isSequenceInRegion(NtSequence seq, String protein){
 		for(AaSequence aaseq : seq.getAaSequences()){
 			if(aaseq.getProtein().getAbbreviation().equalsIgnoreCase(protein) &&
@@ -94,45 +94,35 @@ public abstract class QueryUtils {
 
 
 	public static boolean hasClassExperience(String drugClass, Therapy t) {
-		try{
-			for(TherapyCommercial tc : t.getTherapyCommercials()) {
-				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-					if(dg.getDrugClass().getClassId().equals(drugClass)) {
-						return true;
-					}
-				}
-			}
-			for(TherapyGeneric tg : t.getTherapyGenerics()) {
-				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
+		for(TherapyCommercial tc : t.getTherapyCommercials()) {
+			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
+				if(dg.getDrugClass().getClassId().equals(drugClass)) {
 					return true;
 				}
 			}
-			return false;
-		}catch(Exception exc){
-			System.err.println(exc.getMessage()+" "+t.getTherapyIi());
-			return false;
 		}
+		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+			if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugClass)) {
+				return true;
+			}
+		}
+		return false;		
 	}
 
 	public static boolean hasDrugExperience(String drug, Therapy t) {
-		try{
-			for(TherapyCommercial tc : t.getTherapyCommercials()) {
-				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-					if(dg.getGenericId().equals(drug)) {
-						return true;
-					}
-				}
-			}
-			for(TherapyGeneric tg : t.getTherapyGenerics()) {
-				if(tg.getId().getDrugGeneric().getGenericId().equals(drug)) {
+		for(TherapyCommercial tc : t.getTherapyCommercials()) {
+			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
+				if(dg.getGenericId().equals(drug)) {
 					return true;
 				}
 			}
-			return false;
-		}catch(Exception exc){
-			System.err.println(exc.getMessage()+" "+t.getTherapyIi());
-			return false;
 		}
+		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+			if(tg.getId().getDrugGeneric().getGenericId().equals(drug)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static List<Therapy> sortTherapies(List<Therapy> therapies){
@@ -145,7 +135,6 @@ public abstract class QueryUtils {
 				return 0;
 			}			
 		};
-
 		Collections.sort(therapies,c);
 		return therapies;
 	}
@@ -225,8 +214,7 @@ public abstract class QueryUtils {
 	}
 
 	public static boolean isGoodPreviousTherapy(Therapy t, String[] druggenerics){
-		try{
-			boolean ok = true;
+		boolean ok = true;
 			for(TherapyCommercial tc : t.getTherapyCommercials()) {
 				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) { //for every commercial drug, get all generic drugs
 					for(DrugGeneric dg2 : dg.getDrugClass().getDrugGenerics()){ // for every generic drug, get all generic drugs belonging to the same class
@@ -269,11 +257,7 @@ public abstract class QueryUtils {
 					}
 				}
 			}		
-			return ok;
-		}catch(Exception e){
-			System.err.println("nullpointer for therapy "+t.getTherapyIi());
-			return false;
-		}
+			return ok;		
 	}
 
 	public static Date getWindowEndDateFor(Date therapyStop){

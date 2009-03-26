@@ -8,14 +8,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.Hibernate;
+
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class PersistenceWriteCodeGen {
 
 	public void writeClassToFile() {
 		
+		/*
+		TODO make this less dirty
+		quick and dirty fix to support link from generic to class and again to all generics from same class 
+		for(Therapy t: p.getTherapies()){
+			for(TherapyCommercial c : t.getTherapyCommercials()){
+				for(DrugGeneric g : c.getId().getDrugCommercial().getDrugGenerics()){
+					for(DrugGeneric g2 : g.getDrugClass().getDrugGenerics()){
+						Hibernate.initialize(g2);
+					}
+				}
+			}
+		 } 
+		 */
+		
 		List<String> ignoreClasses = Arrays.asList(new String[]{
-			"Dataset","AaMutationId","AaInsertionId"	
+//			"Dataset","AaMutationId","AaInsertionId"	
 		});
 		//imports
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
@@ -27,6 +46,12 @@ public class PersistenceWriteCodeGen {
 		total+="public class ExportToPersistentObjects {\n";
 		total+="public void initialize(Patient p){\n";
 		total+="write(p);\n";
+		total+="for(Therapy t: p.getTherapies()){\n" + 
+				"for(TherapyCommercial c : t.getTherapyCommercials()){\n" +
+				"for(DrugGeneric g : c.getId().getDrugCommercial().getDrugGenerics()){\n" +
+				"for(DrugGeneric g2 : g.getDrugClass().getDrugGenerics()){\n" +
+				"Hibernate.initialize(g2);\n" +
+				"}\n}\n}\n}\n";
 		total+="}\n\n";
 
 		ArrayList<String> classes = new ArrayList<String>();
@@ -57,14 +82,14 @@ public class PersistenceWriteCodeGen {
 				String methodName = m.getName().replace("PatientDatasets", "Datasets");
 				if(!ignoreMethod(m)){
 					total+="\tif(!Hibernate.isInitialized("+ toObjectName(shortClassName) +"."+methodName+"())){\n";
-					total+="\tHibernate.initialize("+ toObjectName(shortClassName) +"."+methodName+"());\n";
+					total+="\t\tHibernate.initialize("+ toObjectName(shortClassName) +"."+methodName+"());\n";
 
 					if(m.getReturnType().equals(java.util.Set.class)){
-						total+="\tfor("+toClassName(m)+ " " + toObjectName(toClassName(m)) + ":" + toObjectName(shortClassName) + "." + methodName + "()){\n";
-						total+="\twrite("+toObjectName(toClassName(m)) + ");\n";
-						total+="\t}\n";						
+						total+="\t\tfor("+toClassName(m)+ " " + toObjectName(toClassName(m)) + ":" + toObjectName(shortClassName) + "." + methodName + "()){\n";
+						total+="\t\t\twrite("+toObjectName(toClassName(m)) + ");\n";
+						total+="\t\t}\n";						
 					}else{
-						total+="\tif("+toObjectName(shortClassName) +"."+methodName+"() != null"+")write("+toObjectName(shortClassName) +"."+methodName+"());\n";
+						total+="\t\tif("+toObjectName(shortClassName) +"."+methodName+"() != null"+")write("+toObjectName(shortClassName) +"."+methodName+"());\n";
 					}
 					total+="\t}\n";
 					if(!done.contains(toClassName(m)) && !queue.contains(toClassName(m))){

@@ -23,8 +23,7 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 		this.type = type;
 	}
 
-	public void close() {
-		System.err.println("close");
+	public void close() {		
 		if(type==TableOutputType.CSV) {
 			try {
 				getOut().exportAsCsv(new PrintStream(file));
