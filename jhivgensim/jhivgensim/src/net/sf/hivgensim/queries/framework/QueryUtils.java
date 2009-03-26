@@ -24,10 +24,10 @@ import net.sf.regadb.db.ViralIsolate;
 
 public abstract class QueryUtils {
 
-	public static boolean isSequenceInRegion(NtSequence seq, String protein){
+	public static boolean isSequenceInRegion(NtSequence seq, String organism, String protein){
 		for(AaSequence aaseq : seq.getAaSequences()){
 			if(aaseq.getProtein().getAbbreviation().equalsIgnoreCase(protein) &&
-					aaseq.getProtein().getOpenReadingFrame().getGenome().getOrganismName().equals("HIV-1")){
+					aaseq.getProtein().getOpenReadingFrame().getGenome().getOrganismName().equals(organism)){
 				return true;
 			}
 		}

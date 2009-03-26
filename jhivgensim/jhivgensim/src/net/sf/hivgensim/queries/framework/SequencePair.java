@@ -31,5 +31,10 @@ public class SequencePair {
 	public String getPatientId(){
 		return patientId;		
 	}
+	
+	public boolean inRegion(String organism, String protein){
+		return QueryUtils.isSequenceInRegion(getSeq1(), organism, protein)
+			&& QueryUtils.isSequenceInRegion(getSeq2(), organism, protein);
+	}
 
 }

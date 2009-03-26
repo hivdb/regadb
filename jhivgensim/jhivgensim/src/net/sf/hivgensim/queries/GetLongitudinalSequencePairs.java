@@ -79,11 +79,7 @@ public class GetLongitudinalSequencePairs extends Query<Patient,SequencePair> {
 		Set<SequencePair> pairs = new HashSet<SequencePair>();
 		for(NtSequence seq1 : firstSequences){
 			for(NtSequence seq2 : secondSequences){
-				if(QueryUtils.isSequenceInRegion(seq1, "RT") && QueryUtils.isSequenceInRegion(seq2, "RT")){
-					pairs.add(new SequencePair(p.getPatientId(),seq1,seq2,QueryUtils.therapyRegimenInBetween(p, seq1, seq2)));
-				}else{
-					//do nothing
-				}
+				pairs.add(new SequencePair(p.getPatientId(),seq1,seq2,QueryUtils.therapyRegimenInBetween(p, seq1, seq2)));				
 			}
 		}
 		return pairs;
