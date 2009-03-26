@@ -62,8 +62,8 @@ public class FastaSubtype extends FastaTool {
 	}
 
 	public static void main(String args[]) throws FileNotFoundException{
-		System.setProperty("http.proxyHost", "www-proxy");
-		System.setProperty("http.proxyPort", "3128");	
+//		System.setProperty("http.proxyHost", "www-proxy");
+//		System.setProperty("http.proxyPort", "3128");	
 		FastaSubtype fs = new FastaSubtype("/home/gbehey0/nt-alignment.fasta","/home/gbehey0/out.csv");
 		fs.processFastaFile();
 	}

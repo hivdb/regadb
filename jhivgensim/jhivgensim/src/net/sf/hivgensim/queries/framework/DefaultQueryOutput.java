@@ -8,6 +8,8 @@ public abstract class DefaultQueryOutput<DataType> extends QueryOutput<DataType,
 		super(out);
 	}
 	
+	
+	
 	public void close() {
 		this.getOut().flush();
 		this.getOut().close();

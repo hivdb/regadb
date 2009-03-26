@@ -6,6 +6,9 @@ import java.io.PrintStream;
 
 public class TreeWeights {
 	
+	public static short WEIGHT_FOR_PR = 50;
+	public static short WEIGHT_FOR_RT = 100;
+	
 	public class DoublePointer{
 		double value = 0;
 	}

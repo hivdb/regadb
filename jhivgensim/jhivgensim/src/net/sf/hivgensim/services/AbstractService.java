@@ -9,7 +9,7 @@ public abstract class AbstractService {
 	
 	private String url = "http://localhost:8080/wts/services/";
 	private String uid = "gbehey0";
-	private String passwd = "bla123";
+	private String passwd = "public";
 	
 	private String serviceName = "";
 	private HashMap<String,File> uploads = new HashMap<String,File>();
@@ -52,7 +52,7 @@ public abstract class AbstractService {
 		downloads.put(filename, file);
 	}
 	
-	public void run(){
+	protected void run(){
 		WtsClient wc = new WtsClient(getUrl());		
 		try{
 			String challenge = wc.getChallenge(getUid());

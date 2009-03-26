@@ -1,7 +1,10 @@
 package net.sf.hivgensim;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
+import net.sf.hivgensim.fastatool.FastaSubtype;
+import net.sf.hivgensim.queries.CheckForRegion;
 import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
 import net.sf.hivgensim.queries.GetPatientsFromDatasets;
 import net.sf.hivgensim.queries.framework.QueryInput;
@@ -14,15 +17,22 @@ import net.sf.regadb.csv.Table;
 public class Main {
 	
 	public static void main(String[] args){
-		
+		try {
+			FastaSubtype.main(args);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		//longitudinal kristof
-		Table t = new Table();
-		QueryInput q = 	new FromSnapshot(new File("/home/gbehey0/snapshot"),
-					new GetPatientsFromDatasets(new String[]{"stanford","egazmoniz","ghb"},
-				    new GetLongitudinalSequencePairs(new String[]{"AZT","3TC"},true,
-				    new SequencePairsTableOutput(t,new File("/home/gbehey0/long.out"),TableOutputType.CSV)
-				    ))); 
-		q.run();		
+//		Table t = new Table();
+//		QueryInput q = 	new FromSnapshot(new File("/home/gbehey0/snapshot"),
+//					new GetPatientsFromDatasets(new String[]{"stanford","egazmoniz","ghb"},
+//				    new GetLongitudinalSequencePairs(new String[]{"AZT","3TC"},true,
+//				    new CheckForRegion("HIV-1","RT",
+//				    new SequencePairsTableOutput(t,new File("/home/gbehey0/long.out"),TableOutputType.CSV)
+//				    )))); 
+//		q.run();
+		
+		
 		
 //		try {
 //			new CrossSectionalEstimate().run();
