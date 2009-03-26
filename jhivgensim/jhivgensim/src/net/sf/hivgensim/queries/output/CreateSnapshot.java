@@ -35,15 +35,12 @@ public class CreateSnapshot {
 			String dataset = null;
 			for (Dataset ds : datasets) {
 				dataset = ds.getDescription();
-				if(!dataset.equals("ghb")){
-					continue;
-				}
 				System.err.println("now starting with: "+dataset);
 				HibernateFilterConstraint hfc = new HibernateFilterConstraint();
 				hfc.setClause(" dataset.description = :description ");
 				hfc.addArgument("description", dataset);
 				long n = t.getPatientCount(hfc);
-				int maxResults = 1000;
+				int maxResults = 100;
 
 				for (int i = 0; i < n; i += maxResults) {
 					System.err.println(i+"/"+n);
@@ -53,7 +50,7 @@ public class CreateSnapshot {
 					Collection<Patient> patients = t.getPatients(t.getDataset(dataset),i,maxResults);
 					for (Patient p : patients) {
 						export.initialize(p);
-						out.writeObject(p);						
+						out.writeObject(p);
 					}					
 					out.reset();
 				}
