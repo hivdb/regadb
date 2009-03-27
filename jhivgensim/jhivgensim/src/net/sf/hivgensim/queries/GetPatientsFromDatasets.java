@@ -27,11 +27,4 @@ public class GetPatientsFromDatasets extends Query<Patient, Patient> {
 			}
 		}		
 	}
-	
-	public void close(){
-		super.close();
-	}
-	
-	
-
 }

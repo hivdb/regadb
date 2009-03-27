@@ -82,14 +82,17 @@ public class CrossSectionalEstimate {
 		query.run();
 		List<NtSequence> treated = tol.getList();
 		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta")).output(tol);
-
+		
+		System.err.println("Queries Finished");
+		
 		//both
 		FastaConcat fc = new FastaConcat(
 				workDir + File.separator + "naive.fasta",
 				workDir + File.separator + "treated.fasta",
 				workDir + File.separator + "phylo.fasta");
 		fc.processFastaFile();
-
+		
+		System.err.println("Creating Mutation Table");
 		//mutation table
 		MutationTable mt = new MutationTable(treated,fullWindows);
 		mt.exportAsCsv(new FileOutputStream(new File(workDir + File.separator + "all.mutations.csv")));
@@ -101,7 +104,8 @@ public class CrossSectionalEstimate {
 		//TODO remove certain mutations: known/transmission/... ?
 
 		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "all.mutations.selection.csv"),',', false);
-
+		
+		System.err.println("Running Mutpos");
 		ArrayList<String> mutations = MutPos.execute(new String[]{
 				workDir + File.separator + "mut.treated.selection.csv",
 				workDir + File.separator + "mutations",
@@ -110,7 +114,7 @@ public class CrossSectionalEstimate {
 
 		mt.selectColumns(mutations);
 		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated.csv"),',', false);
-
+		System.err.println("Removing Mixtures");
 		RemoveMixtures rm = new RemoveMixtures(mt);
 		rm.removeMixtures();
 		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_nomix.csv"),',', false);
@@ -118,13 +122,13 @@ public class CrossSectionalEstimate {
 		mt.exportAsVdFiles(
 				new FileOutputStream(workDir + File.separator + "mut_treated.vd"),
 				new FileOutputStream(workDir + File.separator + "mut_treated.idt"));
-
+		
+		System.err.println("Building Phylogenetic Tree");
 		FastaToNexus ftn = new FastaToNexus(
 				workDir + File.separator + "phylo.fasta",
 				workDir + File.separator + "phylo.nex");
 		ftn.convert();
 		
-		//TODO install paup
 		Paup p = new Paup();
 		p.run(
 				workDir + File.separator + "phylo.nex",
@@ -141,6 +145,8 @@ public class CrossSectionalEstimate {
 			e.printStackTrace();
 			throw new Error("treeparsing or -weighting failed");
 		}
+		
+		System.err.println("Learning the network");
 		
 		BnLearner bnl = new BnLearner();
 		bnl.run(
@@ -159,7 +165,7 @@ public class CrossSectionalEstimate {
 		out.flush();
 		out.close();
 		
-		//TODO check service script
+		System.err.println("Estimation...");
 		Estimate estimate = new Estimate();
 		estimate.run(
 				workDir + File.separator + "mut_treated.csv",

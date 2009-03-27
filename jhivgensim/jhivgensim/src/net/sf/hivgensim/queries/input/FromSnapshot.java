@@ -33,17 +33,17 @@ public class FromSnapshot extends QueryInput {
 					System.err.println(i);					
 				}				
 			}
-			in.close();
 			getNextQuery().close();
+			in.close();			
 		}
 		catch (EOFException e) 
 		{
-			//end of file reached but unexpected?
+			getNextQuery().close();
 			return;
 		}
-		catch(IOException ex)
+		catch(IOException e)
 		{
-			ex.printStackTrace();
+			e.printStackTrace();
 		} 
 		catch (ClassNotFoundException e)
 		{

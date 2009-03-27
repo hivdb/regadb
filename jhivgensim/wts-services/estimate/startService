@@ -4,8 +4,8 @@ monitor_file="$1/.monitor"
 running_file="$1/.running"
 
 echo "Starting Estimation" >> $monitor_file
-Estimate $1/inputs/mut_treated.csv $1/inputs/naive.fasta $1/inputs/mut_treated $1/outputs/best.cft $1/inputs/wildtypes 100 $1/inputs/doublepositions 20 $1/inputs/mutagenesis weights.csv >> $monitor_file
+cd $1/outputs/ 
+Estimate $1/inputs/mut_treated.csv $1/inputs/naive.fasta $1/inputs/mut_treated $1/outputs/best.cft $1/inputs/wildtypes 100 $1/inputs/doublepositions 20 $1/inputs/mutagenesis $1/inputs/weights.csv >> $monitor_file
 echo "Estimation finished" >> $monitor_file
-mv $1/inputs/estimate.diag $1/outputs/estimate.diag
 rm "$running_file"
 echo "ENDED_SUCCES" > "$1/.ended"

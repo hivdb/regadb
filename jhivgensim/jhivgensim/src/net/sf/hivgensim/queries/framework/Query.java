@@ -8,8 +8,7 @@ public abstract class Query<InputType,OutputType> extends PreQuery<OutputType> i
 	
 	public abstract void process(InputType input);
 	
-	public void close(){
-		System.err.println("Qclose");
+	public void close(){		
 		getNextQuery().close();
 	}
 
