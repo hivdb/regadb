@@ -719,7 +719,7 @@ History:
 		 SCORE FROM (74M => 1, 92Q => 1, 97A => 1, 138A => 1, 140AS => 1, 143CH => 1, 163K => 1, 232N => 1, 97A => 0.25, 138K => 0.25, 151I => 0.25, 156N => 0.25, 163R => 0.25, 206S => 0.25, 230N => 0.25)
 	   </CONDITION>
             <ACTIONS>
-                 <SCORERANGE>(-INF TO 1 => 1, 1 TO INF => 5)</SCORERANGE>
+                 <SCORERANGE>(-INF TO 0.99 => 1, 1 TO INF => 5)</SCORERANGE>
             </ACTIONS> 
         </RULE>
     </DRUG>    <!-- END RAL -->
