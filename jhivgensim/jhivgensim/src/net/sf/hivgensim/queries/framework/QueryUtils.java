@@ -260,6 +260,30 @@ public abstract class QueryUtils {
 			return ok;		
 	}
 
+	public static List<DrugGeneric> getGenericDrugs(Therapy t) {
+		List<DrugGeneric> drugGenerics = new ArrayList<DrugGeneric>();
+
+		for(TherapyGeneric tg : t.getTherapyGenerics()) {
+			drugGenerics.add(tg.getId().getDrugGeneric());
+		}
+
+		for(TherapyCommercial tc : t.getTherapyCommercials()) {
+			for(DrugGeneric  dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
+				drugGenerics.add(dg);
+			}
+		}
+
+		return drugGenerics;
+	}
+	
+	public static boolean betweenInterval(Date d, Date start, Date end) {
+		return d.after(start) && d.before(end);
+	}
+	
+	public static boolean betweenOrEqualsInterval(Date d, Date start, Date end) {
+		return (d.after(start) || d.equals(start)) && (d.before(end) || d.equals(end));
+	}
+	
 	public static Date getWindowEndDateFor(Date therapyStop){
 		Calendar c = Calendar.getInstance();
 		c.setTime(therapyStop);

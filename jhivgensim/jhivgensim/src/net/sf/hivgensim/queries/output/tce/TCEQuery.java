@@ -8,12 +8,10 @@ import java.util.Set;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-import net.sf.regadb.db.TherapyCommercial;
-import net.sf.regadb.db.TherapyGeneric;
 
 public class TCEQuery extends Query<Patient,TCE> {
 
@@ -45,7 +43,7 @@ public class TCEQuery extends Query<Patient,TCE> {
 
 			tce.setStartDate(t.getStartDate());
 			tce.getTherapiesBefore().addAll(formerTherapies);
-			tce.getDrugs().addAll(getGenericDrugs(t));
+			tce.getDrugs().addAll(QueryUtils.getGenericDrugs(t));
 			tce.setPatient(p);
 
 			getNextQuery().process(tce);
@@ -66,24 +64,6 @@ public class TCEQuery extends Query<Patient,TCE> {
 		}
 
 		return null;
-	}
-
-	//TODO
-	//utility func?
-	private List<DrugGeneric> getGenericDrugs(Therapy t) {
-		List<DrugGeneric> drugGenerics = new ArrayList<DrugGeneric>();
-
-		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			drugGenerics.add(tg.getId().getDrugGeneric());
-		}
-
-		for(TherapyCommercial tc : t.getTherapyCommercials()) {
-			for(DrugGeneric  dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				drugGenerics.add(dg);
-			}
-		}
-
-		return drugGenerics;
 	}
 
 	//TODO

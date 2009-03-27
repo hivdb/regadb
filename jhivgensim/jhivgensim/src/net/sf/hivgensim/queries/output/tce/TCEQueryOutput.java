@@ -103,7 +103,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(tce.getPatient().getPatientId());
 
 		vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-		if(vi!=null && betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
+		if(vi!=null && QueryUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
 			addColumn(vi.getSampleId());
 			addColumn(dateOutputFormat.format(vi.getSampleDate()));
 
@@ -187,7 +187,10 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, TestType testType) {
 		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
 		TestResult tr = closestToDate(tce.getStartDate(), trs);
-		if(tr!=null && betweenInterval(tr.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
+		
+		//TODO
+		//betweenOrEquals ???
+		if(tr!=null && QueryUtils.betweenInterval(tr.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
 			addColumn(this.dateOutputFormat.format(tr.getTestDate()));
 			addColumn(tr.getValue());
 		} else {
@@ -291,13 +294,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		final long MILLISECS_PER_DAY = 24*MILLISECS_PER_HOUR;
 
 		return (long)(millis/MILLISECS_PER_DAY);
-	}
-	// TODO
-	// standard fun
-	//TODO
-	//include interval dates?
-	public boolean betweenInterval(Date d, Date begin, Date end) {
-		return d.after(begin) && d.before(end);
 	}
 
 	// TODO
