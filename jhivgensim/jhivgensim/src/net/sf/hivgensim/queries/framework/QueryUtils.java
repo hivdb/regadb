@@ -34,6 +34,11 @@ public abstract class QueryUtils {
 		}
 		return false;
 	}
+	
+	public static boolean isSequenceInRegion(AaSequence aaseq, String organism, String protein){
+		return aaseq.getProtein().getAbbreviation().equalsIgnoreCase(protein) &&
+					aaseq.getProtein().getOpenReadingFrame().getGenome().getOrganismName().equals(organism);
+	}
 
 	public static String therapyRegimenInBetween(Patient p, NtSequence firstSequence, NtSequence secondSequence){
 		Date firstDate = firstSequence.getViralIsolate().getSampleDate();

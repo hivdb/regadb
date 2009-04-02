@@ -9,5 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io-db"/>
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
+	<classpathentry kind="lib" path="lib/bnj.jar"/>
+	<classpathentry kind="lib" path="lib/openjgraph.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
