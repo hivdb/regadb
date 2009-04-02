@@ -49,7 +49,7 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 				}
 				if(seqIsNaive){
 					//how to avoid having seqs from same patient?
-					//not necessary for the moment
+					//not necessary for the moment					
 					getNextQuery().process(seq);
 				}
 			}

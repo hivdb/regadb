@@ -17,11 +17,11 @@ public class SelectionWindow {
 	 *  
 	 */
 	public static final SelectionWindow PR_WINDOW_CLEAN = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"),10,95);
-	public static final SelectionWindow RT_WINDOW_CLEAN = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"),44,200);
+	public static final SelectionWindow RT_WINDOW_CLEAN = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "RT"),44,200);
 	
 	public static final SelectionWindow PR_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"));
 	public static final SelectionWindow RT_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "RT"));
-	
+	public static final SelectionWindow IN_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "IN"));
 	
 	private Protein protein;
 	//starting point of this window relative to the start of the protein in the AA sequence
@@ -29,19 +29,41 @@ public class SelectionWindow {
 	//stopping point of this window relative to the start of the protein in the AA sequence
 	private int stop;
 	
+	private String referenceAaSequence = null;
+	private String referenceNtSequence = null;
+	
 	private SelectionWindow(Protein protein){
-		this(protein,1,protein.getStopPosition()-protein.getStartPosition());
+		this(protein,1,((protein.getStopPosition()-protein.getStartPosition())/3));
 	}
 	private SelectionWindow(Protein protein, int start, int stop){
 		this.protein = protein;
 		this.start = start;
 		this.stop = stop;
 	}
-
+	
+	public String getReferenceNtSequence(){
+		if(referenceNtSequence != null){
+			return referenceNtSequence;
+		}
+		
+		String ntseq = protein.getOpenReadingFrame().getReferenceSequence().substring(getStartCheck(),getStopCheck());
+		//TODO dirty fix
+		//In the old hivgensim code reference sequence of RT = RT + p15 therefore I append this to the reference sequence
+		if(protein.getAbbreviation().equals("RT")){
+			ntseq += protein.getOpenReadingFrame().getReferenceSequence().substring(1785,2145);
+		}
+		referenceNtSequence = ntseq;
+		return ntseq;
+	}
+	
 	public String getReferenceAaSequence(){
+		if(referenceAaSequence != null){
+			return referenceAaSequence;
+		}
 		try {
-			String ntseq = protein.getOpenReadingFrame().getReferenceSequence().substring(getStartCheck(),getStopCheck());
-			String aaseq = RNATools.translate(DNATools.toRNA(DNATools.createDNA(ntseq))).seqString();
+			
+			String aaseq = RNATools.translate(DNATools.toRNA(DNATools.createDNA(getReferenceNtSequence()))).seqString();
+			this.referenceAaSequence = aaseq; //cache result
 			return aaseq;
 		} catch (IllegalAlphabetException e) {
 			e.printStackTrace();
@@ -86,6 +108,5 @@ public class SelectionWindow {
 	
 	public boolean contains(AaMutation mut){
 		return contains(mut.getId().getMutationPosition());
-	}
-	
+	}	
 }

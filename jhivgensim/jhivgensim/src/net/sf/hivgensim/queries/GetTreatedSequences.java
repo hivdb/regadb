@@ -6,9 +6,11 @@ import java.util.Set;
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 
 
@@ -41,7 +43,12 @@ public class GetTreatedSequences extends Query<Patient,NtSequence> {
 		for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
 			for(TherapyGeneric tg : t.getTherapyGenerics()){
 				history.add(tg.getId().getDrugGeneric().getGenericId());
-			}			
+			}
+			for(TherapyCommercial tc : t.getTherapyCommercials()){
+				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+					history.add(dg.getGenericId());
+				}
+			}
 			if(QueryUtils.isGoodExperienceTherapy(t,druggenerics,history)){
 				for(NtSequence seq : QueryUtils.getAllSequencesDuringTherapy(p, t)){
 					getNextQuery().process(seq);					

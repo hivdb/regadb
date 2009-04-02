@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.hivgensim.queries.framework.IQuery;
+import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
@@ -144,15 +144,19 @@ public class MutationTable extends Table {
 //	}
 
 	public MutationTable(List<NtSequence> seqlist, SelectionWindow[] windows){
-		//remove sequences from query that have deletions in the windows
+		//assumes already removed sequences from query that have deletions in the windows
+		int n = seqlist.size();
+		System.err.println("Making mutation table containing "+n+" sequences.");
+		createNewRow("id");
 		for(NtSequence seq : seqlist){
 			createNewRow(seq.getViralIsolate().getSampleId());
-
 			Set<AaSequence> aaSequences = seq.getAaSequences();
 			for(AaSequence aaSequence : aaSequences){
 				for(SelectionWindow win : windows){
-					if(win.getProtein().getProteinIi() != aaSequence.getProtein().getProteinIi()){
-						break;
+					String sprotein = win.getProtein().getAbbreviation();
+					String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+					if(!QueryUtils.isSequenceInRegion(aaSequence, sorganism, sprotein)){
+						continue;
 					}
 					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
 					AaMutInsertion mut = muts.hasNext()? muts.next() : null;
@@ -171,7 +175,8 @@ public class MutationTable extends Table {
 							//reference
 							addMutation(win.getProtein().getAbbreviation() + pos + ref.charAt(pos-win.getStart()));
 						}
-						if(mut.getPosition() == pos){
+						
+						if(mut != null && mut.getPosition() == pos){
 							mut = muts.hasNext()? muts.next() : null;
 						}
 					}

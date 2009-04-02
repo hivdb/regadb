@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
+import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -24,9 +26,10 @@ public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 	public void process(Patient p){
 		for(ViralIsolate vi : p.getViralIsolates()){
 			for(NtSequence seq : vi.getNtSequences()){
+				
 				getOut().println();
 				getOut().println();
-				getOut().println(seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
+				getOut().println(vi.getSampleId() + "|" + seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
 				for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
 					if(!vi.getSampleDate().after(t.getStartDate())){
 						break;
@@ -59,5 +62,11 @@ public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 				getOut().println();
 			}
 		}
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException{
+		QueryInput q = 	new FromDatabase("gbehey0","bla123",
+						new GetSequenceSummary(new File("/home/gbehey0/bla")));
+		q.run();
 	}
 }
