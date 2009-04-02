@@ -1,4 +1,4 @@
-package net.sf.hivgensim.queries.output.tce;
+package be.kuleuven.rega.research.tce;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -32,7 +32,6 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
-import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.util.Utils;
 
@@ -43,7 +42,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
 
 
-	private List<DrugGeneric> genericDrugs = prepareRegaDrugGenerics();
+	private List<DrugGeneric> genericDrugs = QueryUtils.prepareRegaDrugGenerics();
 	private List<Test> resistanceTests = Utils.getResistanceTests();
 	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
 
@@ -369,13 +368,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		});
 
 		return resistanceGenericDrugs;
-	}
-
-	// TODO
-	// standard func
-	public List<DrugGeneric> prepareRegaDrugGenerics() {
-		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
-		return imDrug.getGenericDrugs();
 	}
 
 	public static void main(String [] args) {

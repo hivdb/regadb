@@ -21,6 +21,7 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 
 public abstract class QueryUtils {
 
@@ -290,6 +291,10 @@ public abstract class QueryUtils {
 		c.add(Calendar.MONTH, 1); // <= edit the window time here
 		return c.getTime();
 	}
-
+	
+	public static List<DrugGeneric> prepareRegaDrugGenerics() {
+		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
+		return imDrug.getGenericDrugs();
+	}
 }
 

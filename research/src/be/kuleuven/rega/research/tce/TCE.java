@@ -1,4 +1,4 @@
-package net.sf.hivgensim.queries.output.tce;
+package be.kuleuven.rega.research.tce;
 
 import java.util.ArrayList;
 import java.util.Date;
