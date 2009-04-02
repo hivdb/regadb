@@ -1,21 +1,47 @@
 package com.pharmadm.custom.rega.queryeditor.catalog;
 
 import java.sql.SQLException;
-import java.util.*;
-
-import com.pharmadm.custom.rega.awccomposition.*;
-import com.pharmadm.custom.rega.queryeditor.port.*;
-import com.pharmadm.custom.rega.queryeditor.*;
-import com.pharmadm.custom.rega.queryeditor.ComposedAtomicWhereClause.ExportPolicy;
-import com.pharmadm.custom.rega.queryeditor.ComposedAtomicWhereClause.VisualisationListPolicy;
-import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog.Status;
-import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
-import com.pharmadm.custom.rega.queryeditor.constant.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.util.date.DateUtils;
+
+import com.pharmadm.custom.rega.awccomposition.AggregateComposition;
+import com.pharmadm.custom.rega.awccomposition.MutationComposition;
+import com.pharmadm.custom.rega.awccomposition.NamedTableFetchComposition;
+import com.pharmadm.custom.rega.awccomposition.NamedTablePropertyComposition;
+import com.pharmadm.custom.rega.awccomposition.NewTableComposition;
+import com.pharmadm.custom.rega.awccomposition.PrimitiveDeclarationComposition;
+import com.pharmadm.custom.rega.awccomposition.PropertyFetchComposition;
+import com.pharmadm.custom.rega.awccomposition.PropertySetComposition;
+import com.pharmadm.custom.rega.awccomposition.TableFetchComposition;
+import com.pharmadm.custom.rega.queryeditor.AWCWord;
+import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.ComposedAtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.FixedString;
+import com.pharmadm.custom.rega.queryeditor.FromVariable;
+import com.pharmadm.custom.rega.queryeditor.InputJoin;
+import com.pharmadm.custom.rega.queryeditor.InputOutputJoin;
+import com.pharmadm.custom.rega.queryeditor.InputVariable;
+import com.pharmadm.custom.rega.queryeditor.OrderedAWCWordList;
+import com.pharmadm.custom.rega.queryeditor.OutputJoin;
+import com.pharmadm.custom.rega.queryeditor.OutputVariable;
+import com.pharmadm.custom.rega.queryeditor.SimpleAtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.VisualizationClauseList;
+import com.pharmadm.custom.rega.queryeditor.WhereClauseComposer;
+import com.pharmadm.custom.rega.queryeditor.ComposedAtomicWhereClause.ExportPolicy;
+import com.pharmadm.custom.rega.queryeditor.ComposedAtomicWhereClause.VisualisationListPolicy;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog.Status;
+import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
+import com.pharmadm.custom.rega.queryeditor.constant.Constant;
+import com.pharmadm.custom.rega.queryeditor.constant.MutationConstant;
+import com.pharmadm.custom.rega.queryeditor.port.CatalogBuilder;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
 public class HibernateCatalogBuilder implements CatalogBuilder{
 
@@ -447,15 +473,33 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             	boolean caseSensitive = (HibernateCatalogUtils.isCaseSensitive(property));
             	// create comparison constraint
             	// [foreigntable.property] [operator] [constant]
-                if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
-            	if (!relations.isRelation()) {
-            		aComposer.addInputVariable(ivar);
+            	
+            	if(property.getValueType() == ValueType.Number){
+            	    
+            	    aComposer.addFixedString(new FixedString("cast( CASE WHEN substring("));
+            	    
+            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+
+            	    aComposer.addFixedString(new FixedString(", 1 , 1) in ('<', '>', '=') THEN substring("));
+
+            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+
+            	    aComposer.addFixedString(new FixedString(",2,length("));
+
+                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+                    
+                    aComposer.addFixedString(new FixedString(")) ELSE "));
+
+                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+            	    
+            	    aComposer.addFixedString(new FixedString(" END as double )"));
             	}
-            	else {
-            		aComposer.addFromVariable(newFromVar);
+            	else{
+                    if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
+                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+                    
+                    if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
             	}
-                aComposer.addFixedString(new FixedString("." + property.getPropertyName()));
-                if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
                 aComposer.addFixedString(new FixedString(" "));
                 aComposer.addConstant(comparisonOperator);
                 aComposer.addFixedString(new FixedString(" "));
@@ -465,6 +509,16 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             }
             
             return aClause;
+    }
+    
+    private void addObjectProperty(WhereClauseComposer aComposer, ObjectRelation relations, InputVariable ivar, FromVariable fromvar, DbObject property){
+        if (!relations.isRelation()) {
+            aComposer.addInputVariable(ivar);
+        }
+        else {
+            aComposer.addFromVariable(fromvar);
+        }
+        aComposer.addFixedString(new FixedString("." + property.getPropertyName()));
     }
     
     private AtomicWhereClause getAggregateClause(DbObject field, ObjectRelation rel) {
