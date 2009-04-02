@@ -9,6 +9,10 @@ public class MutationsPrevalence {
 	private Map<Character, Integer> prevalences = new HashMap<Character, Integer>();
 	
 	public void addMutation(AaMutation aamut) {
+		if(aamut.getAaMutation() == null) {
+			return;
+		}
+		
 		for(int i = 0; i<aamut.getAaMutation().length(); i++) {
 			char c = aamut.getAaMutation().charAt(i);
 			Integer count = prevalences.get(c);

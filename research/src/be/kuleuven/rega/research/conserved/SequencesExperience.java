@@ -1,11 +1,13 @@
 package be.kuleuven.rega.research.conserved;
 
 import java.util.Date;
+import java.util.List;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -13,7 +15,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
 
-public class SequencesExperience extends Query<Patient, Sequence> {
+public abstract class SequencesExperience extends Query<Patient, Sequence> {
 	private Protein protein;
 
 	public SequencesExperience(IQuery<Sequence> nextQuery, Protein protein) {
@@ -42,11 +44,7 @@ public class SequencesExperience extends Query<Patient, Sequence> {
 							}
 						}
 						
-						for (TestResult tr : ntseq.getTestResults()) {
-							if (tr.getTest().getDescription().equals("Rega Subtype Tool")) {
-								seq.subType = tr.getValue();
-							}
-						}
+						seq.group = getGroup(ntseq, seq.drugs);
 
 						getNextQuery().process(seq);
 					}
@@ -54,4 +52,6 @@ public class SequencesExperience extends Query<Patient, Sequence> {
 			}
 		}
 	}
+	
+	public abstract String getGroup(NtSequence ntseq, List<DrugGeneric> genericDrugs);
 }

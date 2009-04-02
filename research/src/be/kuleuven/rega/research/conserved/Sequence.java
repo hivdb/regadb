@@ -9,5 +9,5 @@ import net.sf.regadb.db.DrugGeneric;
 public class Sequence {
 	public AaSequence sequence;
 	public List<DrugGeneric> drugs = new ArrayList<DrugGeneric>();
-	public String subType;
+	public String group;
 }
