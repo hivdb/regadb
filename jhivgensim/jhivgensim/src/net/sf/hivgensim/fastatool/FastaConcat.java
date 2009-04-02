@@ -10,6 +10,8 @@ public class FastaConcat extends FastaTool{
 	
 	public FastaConcat(String naiveInputFilename, String treatedInputFilename, String outputFilename) throws FileNotFoundException{
 		super(naiveInputFilename,outputFilename);
+		this.naiveInputFilename = naiveInputFilename;
+		this.treatedInputFilename = treatedInputFilename;
 	}
 
 	@Override
@@ -30,6 +32,12 @@ public class FastaConcat extends FastaTool{
 		treated = true;
 		setInputFile(treatedInputFilename);
 		super.processFastaFile();
+	}
+	
+	public void close(){
+		if(treated){
+			super.close();
+		}
 	}
 
 	@Override

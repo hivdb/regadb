@@ -26,6 +26,10 @@ public abstract class FastaTool {
 			processSequence(fs);
 		}
 		afterProcessing();
+		close();
+	}
+	
+	public void close(){
 		out.close();
 	}
 	

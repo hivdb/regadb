@@ -28,9 +28,11 @@ public class FastaToNexus{
 			if (seqlength != fs.getSequence().length()) {
 				if (seqlength == -1) {
 					seqlength = fs.getSequence().length();
+					System.err.println("reference sequence length: "+seqlength);
 				} else {
 //					 seqs not the same length
-					throw new IllegalArgumentException();
+					System.err.println(fs.getId()+" unequal length: "+fs.getSequence().length());
+					continue;					
 				}
 			}
 			sequences.add(fs);
