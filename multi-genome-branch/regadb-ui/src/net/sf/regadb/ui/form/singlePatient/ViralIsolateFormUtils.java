@@ -56,7 +56,7 @@ public class ViralIsolateFormUtils {
                         toReturn.setText(lt("R"));
                         cell.setStyleClass("resistance-R");
                     }
-                    else if(gss == 0.5 || gss == 0.75)
+                    else if(gss == 0.25 || gss == 0.5 || gss == 0.75)
                     {
                         toReturn.setText(lt("I"));
                         cell.setStyleClass("resistance-I");

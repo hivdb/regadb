@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.regadb.analysis.functions.ResistanceInterpretationHelper;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
@@ -51,10 +52,10 @@ public class FailureSIR {
 								if(dg.getDrugClass().getClassId().equals(drugClass)) {
 									Integer pos = headers.get(Utils.getFixedGenericId(tr) + " (" + tr.getTest().getDescription() + ")");
 									if(pos!=null)
-										row[pos] = Utils.getSIR(tr.getValue());
+										row[pos] = ResistanceInterpretationHelper.getSIRRepresentation(Double.parseDouble(tr.getValue()));
 									pos = headers.get(Utils.getFixedGenericId(tr) +"/r"+ " (" + tr.getTest().getDescription() + ")");
 									if(pos!=null)	
-										row[pos] = Utils.getSIR(tr.getValue());
+										row[pos] = ResistanceInterpretationHelper.getSIRRepresentation(Double.parseDouble(tr.getValue()));
 								}
 							}
 						}

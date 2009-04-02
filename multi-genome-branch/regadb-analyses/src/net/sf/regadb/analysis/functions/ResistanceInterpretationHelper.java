@@ -8,7 +8,7 @@ public class ResistanceInterpretationHelper {
         else if(gss == 0.0) {
                 return "R";
         }
-        else if(gss == 0.5 || gss == 0.75) {
+        else if(gss == 0.25 || gss == 0.5 || gss == 0.75) {
                 return "I";
         }
         else if(gss == 1.0 || gss == 1.5) {

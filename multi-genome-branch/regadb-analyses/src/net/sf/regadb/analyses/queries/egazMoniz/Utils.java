@@ -209,19 +209,4 @@ public class Utils {
         else
             return genericId;
     }
-    
-    public static String getSIR(String gssS) {
-    	double gss = Double.parseDouble(gssS);
-        if(gss == 0.0) {
-            return "R";
-        }
-        else if(gss == 0.5 || gss == 0.75) {
-            return "I";
-        }
-        else if(gss == 1.0 || gss == 1.5) {
-            return "S";
-        } else {
-        	return "CANNOT INTERPRETE";
-        }
-    }
 }

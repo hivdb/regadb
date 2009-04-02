@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.regadb.analysis.functions.ResistanceInterpretationHelper;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
@@ -47,7 +48,7 @@ public class NaiveWorstCase {
 			System.out.print(p.getTherapies().size());
 			for(DrugClass dc : dcs){
 				Double d = dm.get(dc.getClassId());
-				System.out.print(","+(d==null?"NA":Utils.getSIR(d+""))+"");
+				System.out.print(","+ResistanceInterpretationHelper.getSIRRepresentation(d));
 			}
 			System.out.println();
 			dm.clear();
