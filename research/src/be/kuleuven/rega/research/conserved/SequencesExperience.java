@@ -11,16 +11,17 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
 
-public abstract class SequencesExperience extends Query<Patient, Sequence> {
+public class SequencesExperience extends Query<Patient, Sequence> {
 	private Protein protein;
+	private Grouper grouper;
 
-	public SequencesExperience(IQuery<Sequence> nextQuery, Protein protein) {
+	public SequencesExperience(IQuery<Sequence> nextQuery, Protein protein, Grouper grouper) {
 		super(nextQuery);
 		this.protein = protein;
+		this.grouper = grouper;
 	}
 
 	public void process(Patient input) {
@@ -44,7 +45,7 @@ public abstract class SequencesExperience extends Query<Patient, Sequence> {
 							}
 						}
 						
-						seq.group = getGroup(ntseq, seq.drugs);
+						seq.group = grouper.getGroup(ntseq, seq.drugs);
 
 						getNextQuery().process(seq);
 					}
@@ -52,6 +53,4 @@ public abstract class SequencesExperience extends Query<Patient, Sequence> {
 			}
 		}
 	}
-	
-	public abstract String getGroup(NtSequence ntseq, List<DrugGeneric> genericDrugs);
 }

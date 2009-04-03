@@ -25,6 +25,14 @@ public class MutationsPrevalence {
 		}
 	}
 	
+	public String mutationsString() {
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<Character, Integer> e : prevalences.entrySet()) {
+			sb.append(e.getKey()+"("+e.getValue()+") ");
+		}
+		return sb.toString();
+	}
+	
 	public int totalMutations() {
 		int total = 0;
 		

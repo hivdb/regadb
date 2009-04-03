@@ -1,27 +1,26 @@
 package be.kuleuven.rega.research.conserved;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.hivgensim.preprocessing.Utils;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.input.FromSnapshot;
-import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.TestResult;
+import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
+import be.kuleuven.rega.research.conserved.selector.TreatmentSelector;
 
-public abstract class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutput> {	
-	public Map<Integer, Integer> start = new HashMap<Integer, Integer>();
-	public Map<Integer, Integer> end = new HashMap<Integer, Integer>();
+public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutput> {	
+	private Selector sequenceSelector;
 	
-	public ConservedRegions(ConservedRegionsOutput out) {
+	private Map<Integer, Integer> start = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> end = new HashMap<Integer, Integer>();
+	
+	public ConservedRegions(ConservedRegionsOutput out, Selector sequenceSelector) {
 		super(out);
+		this.sequenceSelector = sequenceSelector;
 	}
 
 	public void close() {
@@ -48,49 +47,30 @@ public abstract class ConservedRegions extends QueryOutput<Sequence, ConservedRe
 		end.put(endI, endCount);
 		
 		
-		if(selectSequence(input)) {
+		if(sequenceSelector.selectSequence(input)) {
 			getOut().addPrevalence(input.group, input.sequence);
 		}
 	}
 	
-	public abstract boolean selectSequence(Sequence s);
+	public void printMinMax() {
+		System.err.println("min");
+		for(Map.Entry<Integer, Integer> e : start.entrySet()) {
+			System.err.println(e.getKey()+":"+e.getValue());
+		}
+		
+		System.err.println("max");
+		for(Map.Entry<Integer, Integer> e : end.entrySet()) {
+			System.err.println(e.getKey()+":"+e.getValue());
+		}
+	}
 	
 	public static void main(String [] args) {
-		File snapshotDir = new File(args[0]);
-		List<File> files = new ArrayList<File>();
-		Collections.addAll(files, snapshotDir.listFiles());
-		
 		Protein p = Utils.getProtein("HIV-1", "pol", "PR");
-		ConservedRegions cr = new ConservedRegions(new ConservedRegionsOutput(p)) {
-			//naive or treated
-			public boolean selectSequence(Sequence s) {
-				return true;
-			}
-		};
-		SequencesExperience se = new SequencesExperience(cr, p) {
-			public String getGroup(NtSequence ntseq, List<DrugGeneric> genericDrugs) {
-				for (TestResult tr : ntseq.getTestResults()) {
-					if (tr.getTest().getDescription().equals("Rega Subtype Tool")) {
-						return tr.getValue();
-					}
-				}
-				return null;
-			}
-		};
-		QueryInput input = new FromSnapshot(files, se);
+		ConservedRegions cr = new ConservedRegions(new ConservedRegionsOutput(p), new TreatmentSelector(TreatmentSelector.Mode.All));
+		SequencesExperience se = new SequencesExperience(cr, p, new SubtypeGrouper());
+		QueryInput input = new FromSnapshot(new File(args[0]).listFiles(), se);
 		input.run();
-		cr.close();
-		
-		if(false) {
-			System.err.println("min");
-			for(Map.Entry<Integer, Integer> e : cr.start.entrySet()) {
-				System.err.println(e.getKey()+":"+e.getValue());
-			}
-			
-			System.err.println("max");
-			for(Map.Entry<Integer, Integer> e : cr.end.entrySet()) {
-				System.err.println(e.getKey()+":"+e.getValue());
-			}
-		}
+		cr.close();		
+		cr.printMinMax();
 	}
 }
