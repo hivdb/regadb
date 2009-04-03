@@ -15,7 +15,7 @@ public class FastaScanner {
 		if(s.hasNextLine()){
 			id = s.nextLine();
 		}else{
-			//file empty exception?
+			//TODO file empty warning?
 		}
 	}
 	

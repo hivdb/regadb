@@ -16,14 +16,12 @@ public class FastaConcat extends FastaTool{
 
 	@Override
 	protected void afterProcessing() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	protected void beforeProcessing() {
-		// TODO Auto-generated method stub
-		
+
 	}
 	
 	public void processFastaFile() throws FileNotFoundException{
@@ -49,10 +47,4 @@ public class FastaConcat extends FastaTool{
 		}
 		getOut().println(fs.getSequence());		
 	}
-	
-	
-	
-	
-
-
 }

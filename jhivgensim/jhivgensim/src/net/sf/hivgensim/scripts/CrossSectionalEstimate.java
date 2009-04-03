@@ -64,70 +64,70 @@ public class CrossSectionalEstimate {
 		//queries
 
 		//naive
-		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
-		QueryInput query =  new FromSnapshot(new File(snapshotFile),
-				new GetDrugClassNaiveSequences(naiveDrugClasses,
-						new CleanSequences(smallWindows,
-								tol)));
-		query.run();
-		//		List<NtSequence> naive = tol.getList();
-		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta")).output(tol);
-
-		//treated
-		tol = new ToObjectList<NtSequence>();
-		query =	new FromSnapshot(new File(snapshotFile),
-				new GetTreatedSequences(drugs,
-						new CleanSequences(smallWindows,
-								tol)));
-		query.run();
-		List<NtSequence> treated = tol.getList();
-		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta")).output(tol);
-		
-		System.err.println("Queries Finished");
-		
-		//both
-		FastaConcat fc = new FastaConcat(
-				workDir + File.separator + "naive.fasta",
-				workDir + File.separator + "treated.fasta",
-				workDir + File.separator + "phylo.fasta");
-		fc.processFastaFile();
-		
-		System.err.println("Creating Mutation Table");
-		//mutation table
-		MutationTable mt = new MutationTable(treated,fullWindows);
-		mt.exportAsCsv(new FileOutputStream(new File(workDir + File.separator + "all.mutations.csv")));
-
-		mt.removeInsertions();
-		mt.removeUnknownMutations();
-		mt.removeLowPrevalenceMutations(threshold,lumpValues);
-
-		//TODO remove certain mutations: known/transmission/... ?
-
-		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "all.mutations.selection.csv"),',', false);
-		
-		System.err.println("Running Mutpos");
-		ArrayList<String> mutations = MutPos.execute(new String[]{
-				workDir + File.separator + "mut.treated.selection.csv",
-				workDir + File.separator + "mutations",
-				workDir + File.separator + "positions",
-				workDir + File.separator + "wildtypes"});
-
-		mt.selectColumns(mutations);
-		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated.csv"),',', false);
-		System.err.println("Removing Mixtures");
-		RemoveMixtures rm = new RemoveMixtures(mt);
-		rm.removeMixtures();
-		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_nomix.csv"),',', false);
-		mt.deleteColumn(0);
-		mt.exportAsVdFiles(
-				new FileOutputStream(workDir + File.separator + "mut_treated.vd"),
-				new FileOutputStream(workDir + File.separator + "mut_treated.idt"));
-		
-		System.err.println("Building Phylogenetic Tree");
-		FastaToNexus ftn = new FastaToNexus(
-				workDir + File.separator + "phylo.fasta",
-				workDir + File.separator + "phylo.nex");
-		ftn.convert();
+//		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
+//		QueryInput query =  new FromSnapshot(new File(snapshotFile),
+//				new GetDrugClassNaiveSequences(naiveDrugClasses,
+//						new CleanSequences(smallWindows,
+//								tol)));
+//		query.run();
+//		//		List<NtSequence> naive = tol.getList();
+//		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta")).output(tol);
+//
+//		//treated
+//		tol = new ToObjectList<NtSequence>();
+//		query =	new FromSnapshot(new File(snapshotFile),
+//				new GetTreatedSequences(drugs,
+//						new CleanSequences(smallWindows,
+//								tol)));
+//		query.run();
+//		List<NtSequence> treated = tol.getList();
+//		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta")).output(tol);
+//		
+//		System.err.println("Queries Finished");
+//		
+//		//both
+//		FastaConcat fc = new FastaConcat(
+//				workDir + File.separator + "naive.fasta",
+//				workDir + File.separator + "treated.fasta",
+//				workDir + File.separator + "phylo.fasta");
+//		fc.processFastaFile();
+//		
+//		System.err.println("Creating Mutation Table");
+//		//mutation table
+//		MutationTable mt = new MutationTable(treated,fullWindows);
+//		mt.exportAsCsv(new FileOutputStream(new File(workDir + File.separator + "all_mutations.csv")));
+//
+//		mt.removeInsertions();
+//		mt.removeUnknownMutations();
+//		mt.removeLowPrevalenceMutations(threshold,lumpValues);
+//
+//		//TODO remove certain mutations: known/transmission/... ?
+//
+//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "all_mutations_selection.csv"),',', false);
+//		
+//		System.err.println("Running Mutpos");
+//		ArrayList<String> mutations = MutPos.execute(new String[]{
+//				workDir + File.separator + "all_mutations_selection.csv",
+//				workDir + File.separator + "mutations",
+//				workDir + File.separator + "positions",
+//				workDir + File.separator + "wildtypes"});
+//
+//		mt.selectColumns(mutations);
+//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_mix.csv"),',', false);
+//		System.err.println("Removing Mixtures");
+//		RemoveMixtures rm = new RemoveMixtures(mt);
+//		rm.removeMixtures();
+//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_nomix.csv"),',', false);
+//		mt.deleteColumn(0);
+//		mt.exportAsVdFiles(
+//				new FileOutputStream(workDir + File.separator + "mut_treated.vd"),
+//				new FileOutputStream(workDir + File.separator + "mut_treated.idt"));
+//		
+//		System.err.println("Building Phylogenetic Tree");
+//		FastaToNexus ftn = new FastaToNexus(
+//				workDir + File.separator + "phylo.fasta",
+//				workDir + File.separator + "phylo.nex");
+//		ftn.convert();
 		
 		Paup p = new Paup();
 		p.run(

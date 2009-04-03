@@ -1,8 +1,5 @@
 package net.sf.hivgensim;
 
-import java.io.FileNotFoundException;
-
-import net.sf.hivgensim.scripts.CrossSectionalEstimate;
 
 
 public class Main {
@@ -25,11 +22,12 @@ public class Main {
 		
 		
 		
-		try {
-			new CrossSectionalEstimate().run();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
+//		try {
+//			new CrossSectionalEstimate().run();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		
 	}
 

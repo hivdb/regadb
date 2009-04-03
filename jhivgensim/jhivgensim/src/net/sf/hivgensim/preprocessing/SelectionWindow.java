@@ -21,8 +21,7 @@ public class SelectionWindow {
 	
 	public static final SelectionWindow PR_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"));
 	public static final SelectionWindow RT_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "RT"));
-	public static final SelectionWindow IN_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "IN"));
-	
+		
 	private Protein protein;
 	//starting point of this window relative to the start of the protein in the AA sequence
 	private int start;
@@ -44,14 +43,8 @@ public class SelectionWindow {
 	public String getReferenceNtSequence(){
 		if(referenceNtSequence != null){
 			return referenceNtSequence;
-		}
-		
+		}		
 		String ntseq = protein.getOpenReadingFrame().getReferenceSequence().substring(getStartCheck(),getStopCheck());
-		//TODO dirty fix
-		//In the old hivgensim code reference sequence of RT = RT + p15 therefore I append this to the reference sequence
-		if(protein.getAbbreviation().equals("RT")){
-			ntseq += protein.getOpenReadingFrame().getReferenceSequence().substring(1785,2145);
-		}
 		referenceNtSequence = ntseq;
 		return ntseq;
 	}
@@ -60,10 +53,9 @@ public class SelectionWindow {
 		if(referenceAaSequence != null){
 			return referenceAaSequence;
 		}
-		try {
-			
+		try {			
 			String aaseq = RNATools.translate(DNATools.toRNA(DNATools.createDNA(getReferenceNtSequence()))).seqString();
-			this.referenceAaSequence = aaseq; //cache result
+			this.referenceAaSequence = aaseq;
 			return aaseq;
 		} catch (IllegalAlphabetException e) {
 			e.printStackTrace();

@@ -169,7 +169,7 @@ public class MutationTable extends Table {
 									addMutation(win.getProtein().getAbbreviation() + pos + m);
 								}
 							}else{
-								//TODO insertions?
+								//TODO insertions
 							}
 						}else{
 							//reference

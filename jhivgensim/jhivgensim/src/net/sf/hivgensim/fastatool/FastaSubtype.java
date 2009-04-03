@@ -37,13 +37,11 @@ public class FastaSubtype extends FastaTool {
 
 	@Override
 	protected void afterProcessing() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void beforeProcessing() {
-		// TODO Auto-generated method stub
 
 	}
 
