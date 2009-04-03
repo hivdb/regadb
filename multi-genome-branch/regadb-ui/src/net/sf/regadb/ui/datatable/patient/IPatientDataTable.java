@@ -184,7 +184,11 @@ public class IPatientDataTable implements IDataTable<Object[]>
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.expand();
         RegaDBMain.getApp().getTree().getTreeContent().patientSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().viewPatient.selectNode();
-        
+    
+        clearItems();
+    }
+    
+    public static void clearItems() {
         ArrayList<TreeMenuNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getChildren();
         
         for(TreeMenuNode tn : patientAttributes)

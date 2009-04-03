@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.ui.datatable.patient.IPatientDataTable;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -25,6 +26,8 @@ public class PatientAddItem extends TreeMenuNode
 			{
 				RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(null);
                 RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("form.singlePatient.add"), new Patient()));
+			
+                IPatientDataTable.clearItems();
 			}
 		};
 	}
