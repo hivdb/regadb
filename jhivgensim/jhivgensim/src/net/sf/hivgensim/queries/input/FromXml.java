@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.QueryInput;
@@ -20,64 +21,59 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class FromXml extends QueryInput {
-	
+	private List<Patient> patientsCache;
+
 	private File file;
 	private String loginname;
 	private String passwd;
-	
-	public FromXml(File file, String loginname, String passwd, IQuery<Patient> nextQuery){
+
+	public FromXml(File file, String loginname, String passwd,
+			IQuery<Patient> nextQuery) {
 		super(nextQuery);
 		this.file = file;
 		this.loginname = loginname;
-		this.passwd = passwd;		
+		this.passwd = passwd;
 	}
-	
+
 	@Override
 	public void run() {
-		Login login = null;
-		try
-		{
-			login = Login.authenticate(loginname, passwd);
-		}
-		catch (WrongUidException e)
-		{
-			e.printStackTrace();
-		}
-		catch (WrongPasswordException e)
-		{
-			e.printStackTrace();
-		} 
-		catch (DisabledUserException e) 
-		{
-			e.printStackTrace();
-		}
+		if (patientsCache == null) {
+			Login login = null;
+			try {
+				login = Login.authenticate(loginname, passwd);
+			} catch (WrongUidException e) {
+				e.printStackTrace();
+			} catch (WrongPasswordException e) {
+				e.printStackTrace();
+			} catch (DisabledUserException e) {
+				e.printStackTrace();
+			}
 
-		Transaction t = login.createTransaction();
+			Transaction t = login.createTransaction();
 
-		ImportFromXML imp = new ImportFromXML();
-		imp.loadDatabaseObjects(t);
-		FileReader r;
-		try 
-		{
-			r = new FileReader(file);
-			imp.readPatients(new InputSource(r), new ImportHandler<Patient>() {
-				public void importObject(Patient p) {
-					getNextQuery().process(p);
-				}
-			});
-		} 
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (SAXException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
+			ImportFromXML imp = new ImportFromXML();
+			imp.loadDatabaseObjects(t);
+			FileReader r;
+			try {
+				r = new FileReader(file);
+				imp.readPatients(new InputSource(r),
+						new ImportHandler<Patient>() {
+							public void importObject(Patient p) {
+								getNextQuery().process(p);
+								patientsCache.add(p);
+							}
+						});
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			for (Patient p : patientsCache) {
+				getNextQuery().process(p);
+			}
 		}
 	}
-
 }
