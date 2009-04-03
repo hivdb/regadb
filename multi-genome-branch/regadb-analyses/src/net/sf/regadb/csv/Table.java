@@ -268,6 +268,10 @@ public class Table {
 	public void exportAsCsv(OutputStream output){
 		exportAsCsv(output,',',false);
 	}
+	
+	public void exportAsCsv(OutputStream output, boolean quotes){
+		exportAsCsv(output,',',quotes);
+	}
 
 	public void exportAsCsv(OutputStream output, char delimiter, boolean quotes) {
 		PrintStream sout = new PrintStream(output);

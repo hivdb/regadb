@@ -26,7 +26,7 @@ public abstract class TableQueryOutput<DataType> extends QueryOutput<DataType, T
 	public void close() {		
 		if(type==TableOutputType.CSV) {
 			try {
-				getOut().exportAsCsv(new PrintStream(file));
+				getOut().exportAsCsv(new PrintStream(file), true);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
