@@ -63,8 +63,10 @@ public class ImportUNIBS
 	private List<Attribute> regadbAttributes;
 	private List<Event> regadbEvents;
     
-    private AttributeGroup regadb = new AttributeGroup("RegaDB");
     private AttributeGroup virolab = new AttributeGroup("ViroLab");
+    private AttributeGroup personal = new AttributeGroup("Personal");
+    private AttributeGroup demographics = new AttributeGroup("Demographics");
+    private AttributeGroup clinical = new AttributeGroup("Clinical");
     
     private Mappings mappings;
     
@@ -184,11 +186,11 @@ public class ImportUNIBS
     	
     	NominalAttribute gender = new NominalAttribute("Gender", Csex, new String[] { "M", "F" },
                  new String[] { "male", "female" } );
-        gender.attribute.setAttributeGroup(regadb);
+        gender.attribute.setAttributeGroup(personal);
          
         NominalAttribute seroA = new NominalAttribute("Seroconverter", seroConverterMappingTable, virolab, null);
-        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupmappingTable, regadb, Utils.selectAttribute("Transmission group", regadbAttributes));  
-        NominalAttribute originA = new NominalAttribute("Geographic origin", countryMappingTable, regadb, Utils.selectAttribute("Geographic origin", regadbAttributes));
+        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupmappingTable, clinical, Utils.selectAttribute("Transmission group", regadbAttributes));  
+        NominalAttribute originA = new NominalAttribute("Geographic origin", countryMappingTable, demographics, Utils.selectAttribute("Geographic origin", regadbAttributes));
         NominalAttribute statusA = new NominalAttribute("Status", statusMappingTable, virolab, null);
      	
      	NominalAttribute deathReasonA = new NominalAttribute("Reason of Death", deathReasonMappingTable, virolab, null);
