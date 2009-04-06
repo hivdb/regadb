@@ -20,9 +20,11 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class ParsePatients extends Parser{
-
-    private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
+    private AttributeGroup personal = new AttributeGroup("Personal");
+    private AttributeGroup demographics = new AttributeGroup("Demographics");
+    private AttributeGroup clinical = new AttributeGroup("Clinical");
     private AttributeGroup telavivGroup_ = new AttributeGroup("Tel Aviv");
+    
     private List<Attribute> regadbAttributes_;
     
     private Map<String, AttributeNominalValue> infectionPlaces_ = new HashMap<String, AttributeNominalValue>();
@@ -85,9 +87,9 @@ public class ParsePatients extends Parser{
         logInfo("Retrieving standard RegaDB attributes");
         regadbAttributes_ = Utils.prepareRegaDBAttributes();
         
-        NominalAttribute countryNominal = new NominalAttribute("Country of origin", countryMapTable, regadbAttributeGroup_, Utils.selectAttribute("Country of origin", regadbAttributes_));
-        NominalAttribute genderNominal = new NominalAttribute("Gender", genderMapTable, regadbAttributeGroup_, Utils.selectAttribute("Gender", regadbAttributes_));
-        NominalAttribute transmissionGroupNominal = new NominalAttribute("Transmission group", transmissionGroupMapTable, regadbAttributeGroup_, Utils.selectAttribute("Transmission group", regadbAttributes_));
+        NominalAttribute countryNominal = new NominalAttribute("Country of origin", countryMapTable, demographics, Utils.selectAttribute("Country of origin", regadbAttributes_));
+        NominalAttribute genderNominal = new NominalAttribute("Gender", genderMapTable, personal, Utils.selectAttribute("Gender", regadbAttributes_));
+        NominalAttribute transmissionGroupNominal = new NominalAttribute("Transmission group", transmissionGroupMapTable, clinical, Utils.selectAttribute("Transmission group", regadbAttributes_));
         
         for(int i=1; i<patTable.numRows(); ++i){
             String id = patTable.valueAt(CId, i);
