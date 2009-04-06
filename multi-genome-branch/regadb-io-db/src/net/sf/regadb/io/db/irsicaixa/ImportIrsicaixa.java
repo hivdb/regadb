@@ -61,12 +61,14 @@ public class ImportIrsicaixa {
     
     private HashSet<String> unmappedDrugs = new HashSet<String>();
     
-    private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
-    
     private HashMap<String,TherapyDrug> drugDosageMapping_;
     
     private HashMap<String, Test> tests_ = new HashMap<String, Test>();
     private ArrayList<TestType> testTypes_ = new ArrayList<TestType>();
+    
+    private AttributeGroup demographics = new AttributeGroup("Demographics");
+    private AttributeGroup clinical = new AttributeGroup("Clinical");
+    private AttributeGroup personal = new AttributeGroup("Personal");
     
     private List<Attribute> regadbAttributes_;
     private List<Event> regadbEvents_;
@@ -168,10 +170,10 @@ public class ImportIrsicaixa {
         
         NominalAttribute genderNominal = new NominalAttribute("Gender", CGender, new String[] { "M", "F" },
                 new String[] { "male", "female" } );
-        genderNominal.attribute.setAttributeGroup(regadbAttributeGroup_);
+        genderNominal.attribute.setAttributeGroup(personal);
         
-        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryTable_, regadbAttributeGroup_, Utils.selectAttribute("Country of origin", regadbAttributes_));
-        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable_, regadbAttributeGroup_, Utils.selectAttribute("Transmission group", regadbAttributes_));
+        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryTable_, demographics, Utils.selectAttribute("Country of origin", regadbAttributes_));
+        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable_, clinical, Utils.selectAttribute("Transmission group", regadbAttributes_));
         
         for(int i = 1; i<generalDataTable_.numRows(); i++) {
             String patientId = generalDataTable_.valueAt(CPatientId, i);
