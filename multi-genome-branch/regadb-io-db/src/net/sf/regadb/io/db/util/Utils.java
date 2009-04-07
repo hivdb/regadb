@@ -28,7 +28,6 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
@@ -814,8 +813,7 @@ public class Utils {
 
      public static PatientAttributeValue createPatientAttributeValue(Attribute attribute){
          PatientAttributeValue pav = new PatientAttributeValue();
-         PatientAttributeValueId pavId = new PatientAttributeValueId();
-         pavId.setAttribute(attribute);
+         pav.setAttribute(attribute);
          
          return pav;
      }
