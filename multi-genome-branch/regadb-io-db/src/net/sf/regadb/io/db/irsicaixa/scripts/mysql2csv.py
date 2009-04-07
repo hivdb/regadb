@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 import sys
 
@@ -7,7 +9,7 @@ password = sys.argv[3]
 database = sys.argv[4]
 path	 = sys.argv[5]
 
-showTablesCmd = 'mysql -u' + user + ' -p' + user + ' ' +  database + ' -B -e \"show tables;\" '
+showTablesCmd = 'mysql -u' + user + ' -p' + password + ' ' +  database + ' -B -e \"show tables;\" '
 
 showTables = os.popen(showTablesCmd, "r")
 
