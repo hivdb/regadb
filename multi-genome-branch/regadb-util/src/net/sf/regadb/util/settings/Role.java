@@ -16,12 +16,10 @@ public class Role implements IConfigParser{
 		setDefaults();
 	}
 	
-	@Override
 	public String getXmlTag() {
 		return "role";
 	}
 
-	@Override
 	public void parseXml(RegaDBSettings settings, Element e) {
 		name = e.getChildTextTrim("name");
 		admin = "true".equals(e.getChildTextTrim("admin"));
@@ -38,7 +36,6 @@ public class Role implements IConfigParser{
 		}
 	}
 
-	@Override
 	public void setDefaults() {
 		name = "anonymous";
 		admin = false;
@@ -46,7 +43,6 @@ public class Role implements IConfigParser{
 		blockedAttributes.clear();
 	}
 
-	@Override
 	public Element toXml() {
 		Element e = new Element(getXmlTag());
 		Element ee;
