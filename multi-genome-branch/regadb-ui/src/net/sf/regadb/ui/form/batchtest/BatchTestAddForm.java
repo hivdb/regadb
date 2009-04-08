@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.batchtest;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
@@ -40,7 +41,9 @@ public class BatchTestAddForm extends FormWidget {
         for(Test t : tr.getTests())
         {
         	if ( t.getAnalysis() != null && !BatchTestRunningForm.containsRunningTest(t) ) {
-            	cmbTest.addItem(new DataComboMessage<Test>(t, t.getDescription()));
+        		Genome genome = t.getTestType().getGenome();
+        		String genomeString = genome!=null?" ("+genome.getOrganismName()+")":"";
+            	cmbTest.addItem(new DataComboMessage<Test>(t, t.getDescription() + genomeString));
         	}
         }
     	cmbTest.sort();
