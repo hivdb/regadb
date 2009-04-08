@@ -20,7 +20,8 @@ public class PatientSelectItem extends TreeMenuNode
         {
             public void performAction(TreeMenuNode node) 
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientForm());    
+            	if(isEnabled())
+            		RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientForm());    
             }
         };
 	}
@@ -28,6 +29,6 @@ public class PatientSelectItem extends TreeMenuNode
 	@Override
 	public boolean isEnabled()
 	{
-		return RegaDBMain.getApp().getLogin()!=null;
+		return RegaDBMain.getApp().getLogin()!=null && !RegaDBMain.getApp().getRole().isSinglePatientView();
 	}
 }

@@ -16,7 +16,16 @@ public class RegaDBMain extends WebController
 	@Override
 	public WApplication createApplication(WEnvironment env)
 	{
-		RegaDBApplication app = new RegaDBApplication(env, this.getServletContext());
+		RegaDBApplication app;
+		
+		switch(RegaDBSettings.getInstance().getAccessPolicyConfig().getAccessMode()){
+			case INTEGRATED:
+				app = new IntegratedRegaDBApplication(env, this.getServletContext()); 
+				break;
+			default:
+				app = new RegaDBApplication(env, this.getServletContext());
+				break;
+		}
         
         RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         

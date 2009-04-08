@@ -1,6 +1,5 @@
 package net.sf.regadb.util.settings;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,15 +7,10 @@ import java.util.Map;
 import org.jdom.Element;
 
 public class AccessPolicyConfig implements IConfigParser {
-	public class BlockedAttribute {
-		public String attributeName;
-		public String groupName;		
-	}
+	public static enum AccessMode{STANDALONE, INTEGRATED};
 	
-	private List<String> roles = new ArrayList<String>();
-	private Map<String, List<AttributeConfig>> blockedAttributes = new HashMap<String, List<AttributeConfig>>();
-	private List<String> admins = new ArrayList<String>();
-	
+	private Map<String, Role> roles = new HashMap<String, Role>();
+	private AccessMode accessMode;
 	
 	public AccessPolicyConfig(){
 	    setDefaults();
@@ -27,93 +21,68 @@ public class AccessPolicyConfig implements IConfigParser {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
-		List rolesE = e.getChild("roles").getChildren();
-		List blockedAttributesE = e.getChild("blocked-attributes").getChildren();
-		List adminsE = e.getChild("admins").getChildren();
-		
-		for(Object r : rolesE) {
-			Element rr = (Element)r;
-			roles.add(rr.getTextTrim());
+		String s = e.getChildTextTrim("access-mode");
+		try{
+			if(s != null)
+				accessMode = AccessMode.valueOf(s);
+		}catch(Exception ex){
+			System.err.println("Invalid access-mode: "+ s);
 		}
 		
-		String role;
-		for(Object ba : blockedAttributesE) {
-			Element baa = (Element)ba;
-			role = baa.getChildTextTrim("role");
-			AttributeConfig ac = new AttributeConfig();
-			ac.parseXml(settings, baa.getChild("attribute"));
-			if(blockedAttributes.get(role)==null) {
-				blockedAttributes.put(role, new ArrayList<AttributeConfig>());
-			}
-			blockedAttributes.get(role).add(ac);
-		}
-		
-		for(Object a : adminsE) {
-			Element aa = (Element)a;
-			admins.add(aa.getTextTrim());
+		for(Object o : e.getChild("roles").getChildren()){
+			Element ee = (Element)o;
+			Role r = new Role();
+			r.parseXml(settings, ee);
+			roles.put(r.getName(), r);
 		}
 	}
 
 	public void setDefaults() {
-		roles.clear();
-		admins.clear();
-		blockedAttributes.clear();
+		accessMode = AccessMode.STANDALONE;
 		
-		roles.add("admin");
-		admins.add("admin");
+		roles.clear();
+		
+		Role r = new Role();
+		r.setName("admin");
+		r.setAdmin(true);
+		addRole(r);
 	}
 	
-	public List<String> getRoles() {
+	public void addRole(Role r){
+		roles.put(r.getName(),r);
+	}
+	
+	public Map<String, Role> getRoles() {
 		return roles;
 	}
-
-	public Map<String, List<AttributeConfig>> getBlockedAttributes() {
-		return blockedAttributes;
+	
+	public Role getRole(String name){
+		return roles.get(name);
 	}
 
-	public List<String> getAdmins() {
-		return admins;
+	public List<AttributeConfig> getBlockedAttributes(String role) {
+		return getRole(role).getBlockedAttributes();
 	}
 	
-	public boolean isAdmin(String userName) {
-		return admins.contains(userName);
+	public AccessMode getAccessMode(){
+		return accessMode;
+	}
+	public void setAccessMode(AccessMode accessMode){
+		this.accessMode = accessMode;
 	}
 
 	public Element toXml() {
 	    Element r = new Element(getXmlTag());
         Element e;
 	    
+        e = new Element("access-mode");
+        e.setText(""+accessMode);
+        r.addContent(e);
+        
 	    e = new Element("roles");
 	    r.addContent(e);
-	    for(String role : roles){
-	        Element ee = new Element("role");
-	        ee.setText(role);
-	        e.addContent(ee);
-	    }
-	    
-	    e = new Element("blocked-attributes");
-	    r.addContent(e);
-	    for(Map.Entry<String, List<AttributeConfig>> ba : blockedAttributes.entrySet()){
-	        for(AttributeConfig attr : ba.getValue()){
-    	        Element ee = new Element("blocked-attribute");
-
-    	        Element eee = new Element("role");
-    	        eee.setText(ba.getKey());
-    	        ee.addContent(eee);
-                
-                ee.addContent(attr.toXml());
-                
-                e.addContent(ee);
-	        }
-	    }
-	    
-	    e = new Element("admins");
-	    r.addContent(e);
-	    for(String role : admins){
-	        Element ee = new Element("role");
-	        ee.setText(role);
-	        e.addContent(ee);
-	    }
+	    for(Role role : roles.values())
+	        e.addContent(role.toXml());
 	    
 		return r;
 	}

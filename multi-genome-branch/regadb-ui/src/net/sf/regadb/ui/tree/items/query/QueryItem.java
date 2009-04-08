@@ -33,6 +33,6 @@ public class QueryItem extends TreeMenuNode
     @Override
     public boolean isEnabled()
     {
-        return RegaDBMain.getApp().getLogin() != null;
+        return RegaDBMain.getApp().getLogin() != null && !RegaDBMain.getApp().getRole().isSinglePatientView();
     }
 }

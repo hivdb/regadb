@@ -20,7 +20,6 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.AccessPolicyConfig.BlockedAttribute;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -70,6 +69,10 @@ public class Login {
         }
     }
     
+    public static Login getLogin(String uid){
+    	return new Login(uid, true);
+    }
+    
     /**
      * Start a new transaction.
      * 
@@ -94,7 +97,7 @@ public class Login {
         Transaction t  = new Transaction(this, getSession());
         SettingsUser su = t.getSettingsUser(uid);
         
-        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getBlockedAttributes().get(su.getRole());
+        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
         if(blockAttributes && attributes!=null) {
         	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
         	Attribute attribute;

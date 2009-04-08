@@ -115,8 +115,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 		{
 			RegaDBMain.getApp().login(uidTF.text(), passwordTF.text());
 			
-			String role = RegaDBMain.getApp().getLogin().createTransaction().getSettingsUser().getRole();
-			if(role == null || !RegaDBSettings.getInstance().getAccessPolicyConfig().getRoles().contains(role)) {
+			if(RegaDBMain.getApp().getRole() == null) {
 				UIUtils.showWarningMessageBox(this, tr("form.login.error.noSuchRole"));
 				return false;
 			}

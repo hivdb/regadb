@@ -27,8 +27,8 @@ public class AdministratorItem extends TreeMenuNode
         {
             Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
 
-            return RegaDBSettings.getInstance().getAccessPolicyConfig().isAdmin(
-            		t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getUid());
+            return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(
+            		t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getUid()).isAdmin();
         }
         else
         {

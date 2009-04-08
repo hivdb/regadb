@@ -6,11 +6,14 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.Role;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
@@ -62,6 +65,10 @@ public class RegaDBApplication extends WApplication
     {
         return login_;
     }
+    protected void setLogin(Login login)
+    {
+    	login_ = login;
+    }
     
     public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
@@ -109,5 +116,12 @@ public class RegaDBApplication extends WApplication
 	
 	public Patient getSelectedPatient(){
 		return getTree().getTreeContent().patientSelected.getSelectedItem();
+	}
+	
+	public SettingsUser getSettingsUser(){
+		return getLogin().createTransaction().getSettingsUser();
+	}
+	public Role getRole(){
+		return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(getSettingsUser().getRole());
 	}
 }

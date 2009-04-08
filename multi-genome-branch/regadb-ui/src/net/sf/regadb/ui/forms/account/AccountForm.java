@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.forms.account;
 
-import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Dataset;
@@ -18,7 +18,6 @@ import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -28,6 +27,7 @@ import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.Role;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WString;
@@ -58,7 +58,7 @@ public class AccountForm extends FormWidget
     private Label datasetL;
     private ComboBox<Dataset> datasetCB;
     private Label roleL;
-    private ComboBox<String> roleCB;
+    private ComboBox<Role> roleCB;
     
     //Attribute fields
     private WGroupBox attributeGroup_;
@@ -146,12 +146,12 @@ public class AccountForm extends FormWidget
         if(getInteractionState()!=InteractionState.Adding)
         {
 	        roleL = new Label(tr("form.settings.user.label.role"));
-	        roleCB = new ComboBox<String>(admin?getInteractionState():InteractionState.Viewing, this);
+	        roleCB = new ComboBox<Role>(admin?getInteractionState():InteractionState.Viewing, this);
 	        roleCB.setMandatory(true);
-	        List<String> roles = RegaDBSettings.getInstance().getAccessPolicyConfig().getRoles();
+	        Map<String, Role> roles = RegaDBSettings.getInstance().getAccessPolicyConfig().getRoles();
 	        roleCB.addNoSelectionItem();
-	        for(String r : roles) {
-	        	roleCB.addItem(new DataComboMessage<String>(r,r));
+	        for(Role r : roles.values()) {
+	        	roleCB.addItem(new DataComboMessage<Role>(r,r.getName()));
 	        }
 	        loginGroupTable.addLineToTable(roleL, roleCB);
             
@@ -332,7 +332,7 @@ public class AccountForm extends FormWidget
             
             if(admin)
             {
-                su_.setRole(roleCB.currentValue());
+                su_.setRole(roleCB.currentValue().getName());
             }
                 
             if(getInteractionState()==InteractionState.Adding)

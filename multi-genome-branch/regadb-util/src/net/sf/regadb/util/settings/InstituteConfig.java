@@ -25,33 +25,33 @@ public class InstituteConfig implements IConfigParser {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
-		Element ee = e.getChild("logDir");
+		Element ee = e.getChild("log-dir");
 		if(ee != null)
 			logDir = new File(ee.getTextTrim());
 		
-		ee = e.getChild("queryResultDir");
+		ee = e.getChild("query-result-dir");
 		if(ee != null)
 			queryResultDir = new File(ee.getTextTrim());
 		
-		ee = e.getChild("wivCentreName");
+		ee = e.getChild("wiv-centre-name");
 		if(ee != null)
 			wivCentreName = ee.getTextTrim();
 		
-		ee = e.getChild("reportDateTolerance");
+		ee = e.getChild("report-date-tolerance");
 		if(ee != null){
 			try{
 				reportDateTolerance = Integer.parseInt(ee.getTextTrim());
 			}
 			catch(Exception ex){
-				System.err.println("reportDateTolerance is not a number");
+				System.err.println("report-date-tolerance is not a number");
 			}
 		}
 		
-		ee = e.getChild("dateFormat");
+		ee = e.getChild("date-format");
 		if(ee != null)
 			setDateFormat(ee.getTextTrim());
 
-		ee = e.getChild("organismFilter");
+		ee = e.getChild("organism-filter");
 		if(ee != null)
 			organismFilter = new Filter(ee.getText());
 		
@@ -92,28 +92,28 @@ public class InstituteConfig implements IConfigParser {
 		Element r = new Element(getXmlTag());
 		Element e;
 
-		e = new Element("logDir");
+		e = new Element("log-dir");
 		e.setText(getLogDir().getAbsolutePath());
 		r.addContent(e);
 		
-		e = new Element("queryResultDir");
+		e = new Element("query-result-dir");
 		e.setText(getQueryResultDir().getAbsolutePath());
 		r.addContent(e);
 		
-		e = new Element("wivCentreName");
+		e = new Element("wiv-centre-name");
 		e.setText(wivCentreName);
 		r.addContent(e);
 		
-		e = new Element("reportDateTolerance");
+		e = new Element("report-date-tolerance");
 		e.setText(""+reportDateTolerance);
 		r.addContent(e);
 		
-		e = new Element("dateFormat");
+		e = new Element("date-format");
 		e.setText(getDateFormat());
 		r.addContent(e);
 		
 		if(organismFilter != null){
-			e = new Element("organismFilter");
+			e = new Element("organism-filter");
 			e.setText(organismFilter.getConfigString());
 			r.addContent(e);
 		}

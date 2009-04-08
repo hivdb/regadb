@@ -24,7 +24,7 @@ public class SelectPatientFormConfig extends FormConfig {
 	    setShowSampleIds("true".equals(e.getAttributeValue("showSampleIds")));
 	    
 		AttributeConfig ac = new AttributeConfig();
-		ee = e.getChild("attributeFilter");
+		ee = e.getChild("attribute-filter");
 		if(ee != null){
 			ee = ee.getChild(ac.getXmlTag());
 			if(ee != null){
@@ -65,7 +65,7 @@ public class SelectPatientFormConfig extends FormConfig {
 		Element e;
 		
 		if(getAttributeFilter() != null){
-			e = new Element("attributeFilter");
+			e = new Element("attribute-filter");
 			e.addContent(getAttributeFilter().toXml());
 			r.addContent(e);
 		}
