@@ -7,12 +7,13 @@ import java.util.Collection;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.export.ExportPatient;
 
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-public abstract class ExportToXMLOutputStream<T> {
+public abstract class ExportToXMLOutputStream<T> implements ExportPatient {
 	
 	private PrintStream out;
 	private ExportToXML xml = new ExportToXML();

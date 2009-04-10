@@ -1632,6 +1632,15 @@ public class Transaction {
         
         return q.list();
     }
+    
+    public long getMaxAmountOfSequences() {
+        String queryString = 
+            " select count(ntseq) from NtSequence ntseq group by ntseq.viralIsolate.id order by count(ntseq) desc";
+    
+        Query q = session.createQuery(queryString);
+        
+        return (Long)q.list().get(0);
+    }
 
     public void flush() 
     {

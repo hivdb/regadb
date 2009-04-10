@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.export.PatientExporter;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.ViralIsolateXMLOutputStream;
 
 public class ExportViralIsolates {
@@ -44,7 +45,7 @@ public class ExportViralIsolates {
         
         ViralIsolateXMLOutputStream xmlout = new ViralIsolateXMLOutputStream(fout);
 
-        ExportPatient<ViralIsolate> ep = new ExportPatient<ViralIsolate>(getLogin(), getDataset(), xmlout);
+        PatientExporter<ViralIsolate> ep = new PatientExporter<ViralIsolate>(getLogin(), getDataset(), xmlout);
         ep.run();
     }
 

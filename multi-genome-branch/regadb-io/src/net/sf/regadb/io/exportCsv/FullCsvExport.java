@@ -15,8 +15,12 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.hibernate.Hibernate;
+import org.hibernate.LazyInitializationException;
+
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -28,120 +32,63 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.meta.Equals;
+import net.sf.regadb.io.export.ExportPatient;
 import net.sf.regadb.io.util.StandardObjects;
 
-public class FullCsvExport {
+public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
 	
-	public FullCsvExport() {
-	}
+	private List<File> files = new ArrayList<File>();
+	private List<String> fileNames = new ArrayList<String>();
 	
-	public void export(List<Patient> patients, List<Attribute> attributes, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs, File zipFile) throws IOException {
-		List<File> files = new ArrayList<File>();
-		List<String> fileNames = new ArrayList<String>();
-		
+	private FileWriter patientFileWriter;
+	private FileWriter eventFileWriter;
+	private FileWriter testFileWriter;
+	private FileWriter therapyFileWriter;
+	private FileWriter viralIsolateFileWriter;
+	private FileWriter resistanceFileWriter;
+	
+	private long maxNumberSeqs;
+	private List<Attribute> attributes;
+	private List<String> resistanceTestDrugs;
+	private File zipFile;
+	
+	public FullCsvExport(long maxNumberSeqs, List<Attribute> attributes, List<String> resistanceTestDrugs, File zipFile) throws IOException {
 		File patientFile = File.createTempFile("patients", "csv");
 		files.add(patientFile);
 		fileNames.add("patients.csv");
-		FileWriter patientFileWriter = new FileWriter(patientFile);
+		patientFileWriter = new FileWriter(patientFile);
 		File eventFile = File.createTempFile("events", "csv");
 		files.add(eventFile);
 		fileNames.add("events.csv");
-		FileWriter eventFileWriter = new FileWriter(eventFile);
+		eventFileWriter = new FileWriter(eventFile);
 		File testFile = File.createTempFile("tests", "csv");
 		files.add(testFile);
 		fileNames.add("tests.csv");
-		FileWriter testFileWriter = new FileWriter(testFile);
+		testFileWriter = new FileWriter(testFile);
 		File therapyFile = File.createTempFile("therapies", "csv");
 		fileNames.add("therapies.csv");
 		files.add(therapyFile);
-		FileWriter therapyFileWriter = new FileWriter(therapyFile);
+		therapyFileWriter = new FileWriter(therapyFile);
 		File viralIsolateFile = File.createTempFile("viral_isolates", "csv");
 		files.add(viralIsolateFile);
 		fileNames.add("viral_isolates.csv");
-		FileWriter viralIsolateFileWriter = new FileWriter(viralIsolateFile);
+		viralIsolateFileWriter = new FileWriter(viralIsolateFile);
 		File resistanceFile = File.createTempFile("resistance", "csv");
 		files.add(resistanceFile);
 		fileNames.add("resistance.csv");
-		FileWriter resistanceFileWriter = new FileWriter(resistanceFile);
+		resistanceFileWriter = new FileWriter(resistanceFile);
+		
+		this.maxNumberSeqs = maxNumberSeqs;
+		this.attributes = attributes;
+		this.resistanceTestDrugs = resistanceTestDrugs;
+		this.zipFile = zipFile;
 		
 		Collections.sort(attributes, new Comparator<Attribute>(){
 			public int compare(Attribute a0, Attribute a1) {
 				return a0.getName().compareTo(a1.getName());
 			}
 		});
-		
-		int maxNumberSeqs = 0;
-		
-		for(Patient p : patients) {
-			for(ViralIsolate vi : p.getViralIsolates()) {
-				maxNumberSeqs = Math.max(maxNumberSeqs, vi.getNtSequences().size());
-			}
-		}
-		
-		patientHeader(patientFileWriter, attributes);
-		eventHeader(eventFileWriter);
-		testHeader(testFileWriter);
-		therapyHeader(therapyFileWriter);
-		viralIsolateHeader(viralIsolateFileWriter, maxNumberSeqs);
-		resistanceHeader(resistanceFileWriter, resistanceTests, resistanceGenericDrugs);
-		
-		for(Patient p : patients) {
-			patientRow(p, patientFileWriter, attributes);
-			for(PatientEventValue pev : p.getPatientEventValues()) {
-				eventRow(p, pev, eventFileWriter);
-			}
-			for(TestResult tr : p.getTestResults()) {
-				testRow(p, tr, testFileWriter);
-			}
-			for(Therapy t : p.getTherapies()) {
-				therapyRow(p, t, therapyFileWriter);
-			}
-			for(ViralIsolate vi : p.getViralIsolates()) {
-				viralIsolateRow(p, vi, viralIsolateFileWriter, maxNumberSeqs);
-				resistanceRow(resistanceFileWriter, p, vi, resistanceTests, resistanceGenericDrugs);
-			}
-		}
-		
-		patientFileWriter.close();
-		eventFileWriter.close();
-		testFileWriter.close();
-		therapyFileWriter.close();
-		viralIsolateFileWriter.close();
-		
-		// Create a buffer for reading the files
-	    byte[] buf = new byte[1024];
-	    
-	    try {
-	        // Create the ZIP file
-	        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-	    
-	        // Compress the files
-	        for (int i=0; i<files.size(); i++) {
-	            FileInputStream in = new FileInputStream(files.get(i));
-	    
-	            // Add ZIP entry to output stream.
-	            out.putNextEntry(new ZipEntry(fileNames.get(i)));
-	    
-	            // Transfer bytes from the file to the ZIP file
-	            int len;
-	            while ((len = in.read(buf)) > 0) {
-	                out.write(buf, 0, len);
-	            }
-	    
-	            // Complete the entry
-	            out.closeEntry();
-	            in.close();
-	        }
-	        out.close();
-	    } catch (IOException ioe) {
-	    	ioe.printStackTrace();
-	    }
-	    
-	    for(File f : files) {
-	    	f.delete();
-	    }
 	}
 
 	private void therapyRow(Patient p, Therapy t, FileWriter fw) throws IOException {
@@ -167,7 +114,7 @@ public class FullCsvExport {
 		fw.append(row.toString());
 	}
 	
-	private void viralIsolateHeader(FileWriter fw, int maxNumberSeqs) throws IOException {
+	private void viralIsolateHeader(FileWriter fw, long maxNumberSeqs) throws IOException {
 		StringBuilder header = new StringBuilder();
 		
 		formatField(header, "patient_id");
@@ -180,7 +127,7 @@ public class FullCsvExport {
 		fw.append(header.toString());
 	}
 	
-	private void viralIsolateRow(Patient p, ViralIsolate vi, FileWriter fw, int maxNumberSeqs) throws IOException {
+	private void viralIsolateRow(Patient p, ViralIsolate vi, FileWriter fw, long maxNumberSeqs) throws IOException {
 		StringBuilder row = new StringBuilder();
 		
 		formatField(row, p.getPatientId());
@@ -301,23 +248,21 @@ public class FullCsvExport {
 		fw.append(row.toString());
 	}
 	
-	private void resistanceHeader(FileWriter resistanceFileWriter, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs) throws IOException {
+	private void resistanceHeader(FileWriter resistanceFileWriter, List<String> resistanceTestsDrugs) throws IOException {
 		StringBuilder header = new StringBuilder();
 		
 		formatField(header, "patient_id");
 		formatField(header, "sample_date");
 		formatField(header, "sample_id");
 		
-		for(Test rt : resistanceTests) {
-			for(DrugGeneric dg : resistanceGenericDrugs) {
-				formatField(header, rt.getDescription() + "_" + dg.getGenericId());
-			}
+		for(String rtd : resistanceTestsDrugs) {
+			formatField(header, rtd);
 		}
 		
 		resistanceFileWriter.append(header.substring(0,header.length()-1)+"\n");
 	}
 	
-	private void resistanceRow(FileWriter resistanceFileWriter, Patient p, ViralIsolate vi, List<Test> resistanceTests, List<DrugGeneric> resistanceGenericDrugs) throws IOException {
+	private void resistanceRow(FileWriter resistanceFileWriter, Patient p, ViralIsolate vi, List<String> resistanceTestDrugs) throws IOException {
 		StringBuilder row = new StringBuilder();
 		
 		resistanceResults.clear();
@@ -332,11 +277,8 @@ public class FullCsvExport {
 				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId()+"_"+tt.getGenome().getOrganismName(), tr.getValue());
 			}
 		}
-		
-		for(Test rt : resistanceTests) {
-			for(DrugGeneric dg : resistanceGenericDrugs) {
-				formatField(row, resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()+"_"+rt.getTestType().getGenome().getOrganismName()));
-			}
+		for(String rtd : resistanceTestDrugs) {
+			formatField(row, resistanceResults.get(rtd));
 		}
 		
 		resistanceFileWriter.append(row.substring(0,row.length()-1)+"\n");
@@ -371,4 +313,83 @@ public class FullCsvExport {
 			sb.append("\n");
 	}
 
+	public void exportPatient(Patient p) {
+		try {
+			patientRow(p, patientFileWriter, attributes);
+
+			for (PatientEventValue pev : p.getPatientEventValues()) {
+				eventRow(p, pev, eventFileWriter);
+			}
+			for (TestResult tr : p.getTestResults()) {
+				testRow(p, tr, testFileWriter);
+			}
+			for (Therapy t : p.getTherapies()) {
+				therapyRow(p, t, therapyFileWriter);
+			}
+			for (ViralIsolate vi : p.getViralIsolates()) {
+				viralIsolateRow(p, vi, viralIsolateFileWriter, maxNumberSeqs);
+				resistanceRow(resistanceFileWriter, p, vi, resistanceTestDrugs);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void start() {
+		try {
+			patientHeader(patientFileWriter, attributes);
+			eventHeader(eventFileWriter);
+			testHeader(testFileWriter);
+			therapyHeader(therapyFileWriter);
+			viralIsolateHeader(viralIsolateFileWriter, maxNumberSeqs);
+			resistanceHeader(resistanceFileWriter, resistanceTestDrugs);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void stop() {
+		try {
+			patientFileWriter.close();
+			eventFileWriter.close();
+			testFileWriter.close();
+			therapyFileWriter.close();
+			viralIsolateFileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Create a buffer for reading the files
+	    byte[] buf = new byte[1024];
+	    
+	    try {
+	        // Create the ZIP file
+	        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+	    
+	        // Compress the files
+	        for (int i=0; i<files.size(); i++) {
+	            FileInputStream in = new FileInputStream(files.get(i));
+	    
+	            // Add ZIP entry to output stream.
+	            out.putNextEntry(new ZipEntry(fileNames.get(i)));
+	    
+	            // Transfer bytes from the file to the ZIP file
+	            int len;
+	            while ((len = in.read(buf)) > 0) {
+	                out.write(buf, 0, len);
+	            }
+	    
+	            // Complete the entry
+	            out.closeEntry();
+	            in.close();
+	        }
+	        out.close();
+	    } catch (IOException ioe) {
+	    	ioe.printStackTrace();
+	    }
+	    
+	    for(File f : files) {
+	    	f.delete();
+	    }
+	}
 }

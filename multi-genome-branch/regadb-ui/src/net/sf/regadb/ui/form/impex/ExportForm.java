@@ -13,8 +13,8 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.export.PatientExporter;
 import net.sf.regadb.io.exportCsv.FullCsvExport;
-import net.sf.regadb.io.exportXML.ExportPatient;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.PatientXMLOutputStream;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
@@ -90,28 +90,28 @@ public class ExportForm extends FormWidget {
 	
 	private void exportCsv(Dataset ds) {
 		exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "zip");
-		FullCsvExport csvExport = new FullCsvExport();
+		
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
 		
-		List<Test> resistanceTests = new ArrayList<Test>();
+		List<String> resistanceTestsDrugs = new ArrayList<String>();
         for(Test test : t.getTests()) {
             if(test.getTestType().getDescription().equals(StandardObjects.getGssDescription()) ) {
-            	resistanceTests.add(test);
+                for(DrugClass dc : t.getDrugClassesSortedOnResistanceRanking()) {
+                	for(DrugGeneric dg : t.getDrugGenericSortedOnResistanceRanking(dc)) {
+                		resistanceTestsDrugs.add(test.getDescription() + "_" + dg.getGenericId()+"_"+test.getTestType().getGenome().getOrganismName());
+                	}
+                }
             }
-        }
-        List<DrugGeneric> resistanceDrugs = new ArrayList<DrugGeneric>();
-        for(DrugClass dc : t.getDrugClassesSortedOnResistanceRanking()) {
-        	for(DrugGeneric dg : t.getDrugGenericSortedOnResistanceRanking(dc)) {
-        		resistanceDrugs.add(dg);
-        	}
         }
         
 		try {
-			csvExport.export(t.getPatients(ds), t.getAttributes(), resistanceTests, resistanceDrugs, exportFile);
+			FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs, exportFile);
+	        PatientExporter<Patient> csvExport = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(), ds.getDescription(), fullCsvExport);
+	        csvExport.run();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+        
         table_.elementAt(0, 2).clear();
         
         String fileName = ds.getDescription() + "_csv_export.zip";
@@ -125,15 +125,16 @@ public class ExportForm extends FormWidget {
         FileOutputStream fout = new FileOutputStream(exportFile);
         PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout);
         
-        ExportPatient<Patient> exportPatient = new ExportPatient<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
+        PatientExporter<Patient> exportPatient = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
         exportPatient.run();
         
         table_.elementAt(0, 2).clear();
         
         String fileName = ds.getDescription() + "_export.xml";
         anchor.setText(lt(fileName));
-        anchor.setResource(new WFileResource("text/txt", exportFile.getAbsolutePath()));
-        anchor.resource().suggestFileName(fileName);
+        WFileResource wfr = new WFileResource("text/txt", exportFile.getAbsolutePath());
+        anchor.setResource(wfr);
+        wfr.suggestFileName(fileName);
 	}
 	
 	public void fillData() {

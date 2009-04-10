@@ -1,4 +1,4 @@
-package net.sf.regadb.io.exportXML;
+package net.sf.regadb.io.export;
 
 import java.util.Collection;
 
@@ -7,15 +7,15 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
-public class ExportPatient<T> {
+public class PatientExporter<T> {
     private Login login;
     private String dataset;
-    private ExportToXMLOutputStream<T> xmlOut;
+    private ExportPatient<T> out;
     
-    public ExportPatient(Login login, String dataset, ExportToXMLOutputStream<T> xmlout){
+    public PatientExporter(Login login, String dataset, ExportPatient<T> xmlout){
         setLogin(login);
         setDataset(dataset);
-        setXmlOut(xmlout);
+        setOut(xmlout);
     }
         
     public void run(){
@@ -27,7 +27,7 @@ public class ExportPatient<T> {
         long n = t.getPatientCount(hfc);
         int maxResults = 100;
         
-        getXmlOut().start();
+        getOut().start();
         for(int i=0; i < n; i+=maxResults){
             t.commit();
             t.clearCache();
@@ -35,9 +35,9 @@ public class ExportPatient<T> {
 
             Collection<Patient> patients = t.getPatients(t.getDataset(getDataset()),i,maxResults);
             for(Patient p : patients)
-                getXmlOut().exportPatient(p);
+                getOut().exportPatient(p);
         }
-        getXmlOut().stop();
+        getOut().stop();
     }
 
     protected void setLogin(Login login) {
@@ -56,11 +56,11 @@ public class ExportPatient<T> {
         return dataset;
     }
 
-    protected void setXmlOut(ExportToXMLOutputStream<T> xmlout) {
-        this.xmlOut = xmlout;
+    protected void setOut(ExportPatient<T> out) {
+        this.out = out;
     }
 
-    protected ExportToXMLOutputStream<T> getXmlOut() {
-        return xmlOut;
+    protected ExportPatient<T> getOut() {
+        return out;
     }
 }
