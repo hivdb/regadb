@@ -3,14 +3,13 @@
 monitor_file="$1/.monitor"
 running_file="$1/.running"
 
-echo "Setting Files" >> monitor_file
-
+echo "Setting Files" > monitor_file
 nexus="$1/inputs/phylo.nex"
-
+cd "$1/inputs/"
 echo "Starting Paup" >> $monitor_file
-paup $nexus
+paup $nexus >> $monitor_file 2>> $monitor_file
 echo "Tree Finished" >> $monitor_file
 mv $1/inputs/tree.phy $1/outputs/tree.phy
-
 rm "$running_file"
+cd -
 echo "ENDED_SUCCES" > "$1/.ended"

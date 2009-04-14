@@ -65,7 +65,14 @@ public abstract class AbstractService {
 			wc.start(sessionTicket, getServiceName());
 			String status = wc.monitorStatus(sessionTicket, getServiceName());			
 			while (!status.equals("ENDED_SUCCES")) {
-				status = wc.monitorStatus(sessionTicket, getServiceName());			
+				try{
+					status = wc.monitorStatus(sessionTicket, getServiceName());
+				}catch(Exception e){
+					//catch time-outs and continue
+					System.err.println(e.getMessage());
+					status = "";
+				}
+				
 			}
 			
 			for(String filename : downloads.keySet()){

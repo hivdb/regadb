@@ -23,7 +23,8 @@ public class SequencesToFasta extends DefaultQueryOutput<NtSequence> {
 	
 
 	public void process(NtSequence seq) {
-		getOut().println(">"+seq.getViralIsolate().getSampleId()+"|"+seq.getLabel());
+//		getOut().println(">"+seq.getViralIsolate().getSampleId()+"|"+seq.getLabel());
+		getOut().println(">"+seq.getNtSequenceIi());
 		if(!align){			
 			getOut().println(seq.getNucleotides());
 		}else{

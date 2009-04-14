@@ -22,6 +22,7 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public abstract class QueryUtils {
 
@@ -297,6 +298,7 @@ public abstract class QueryUtils {
 	}
 	
 	public static List<DrugGeneric> prepareRegaDrugGenerics() {
+		RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
 		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
 		return imDrug.getGenericDrugs();
 	}
