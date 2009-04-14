@@ -89,7 +89,7 @@ public class XmlMapper {
     }
     
     public static void main(String args[]){
-        XmlMapper mapper = new XmlMapper(new File(args[0]));
+        XmlMapper mapper = new XmlMapper(new File("src/net/sf/regadb/util/mapper/example-mapping.xml"));
         mapper.parseXml();
         
         System.out.println(mapper.getTest("HIV viral load"));

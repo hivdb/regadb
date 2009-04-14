@@ -1,6 +1,5 @@
 package net.sf.regadb.util.mapper.matcher;
 
-import net.sf.regadb.util.mapper.CaseInsensitiveEqualsMatcher;
 
 import org.jdom.Element;
 
