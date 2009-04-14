@@ -463,7 +463,7 @@ public class Table {
 
 	public void addRow(ArrayList<String> row){
 		if(numColumns() != 0 && row.size() != numColumns())
-			throw new RuntimeException("column not compatible with table geometry");
+			throw new RuntimeException("row not compatible with table geometry");
 		else
 			rows.add(row);
 	}
