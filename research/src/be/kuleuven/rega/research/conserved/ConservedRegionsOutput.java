@@ -1,6 +1,8 @@
 package be.kuleuven.rega.research.conserved;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.AaMutation;
@@ -13,8 +15,15 @@ public class ConservedRegionsOutput {
 	private Map<String, Integer> sequencesPerGroup = new HashMap<String, Integer>();
 	
 	private Protein protein;
+	
+	private List<ConservedRegionsOutputter> outputters = new ArrayList<ConservedRegionsOutputter>(); 
+	
 	public ConservedRegionsOutput(Protein protein) {
 		this.protein = protein;
+	}
+	
+	public void addOutputter(ConservedRegionsOutputter outputter) {
+		outputters.add(outputter);
 	}
 	
 	public void addPrevalence(String subtype, AaSequence aaseq) {
@@ -46,11 +55,15 @@ public class ConservedRegionsOutput {
 
 	public void close() {
 		for(Map.Entry<String, Map<Integer, MutationsPrevalence>> e : regionsPrevalencePerGroup.entrySet()) {
-			System.out.println(e.getKey() + " " +sequencesPerGroup.get(e.getKey()));
-			for(int i = 0; i<e.getValue().size(); i++) {
-				int pos = i+1;
-				MutationsPrevalence mp = e.getValue().get(pos);
-				System.out.println("\t"+pos + " " +mp.totalMutations());
+//			System.out.println(e.getKey() + " " +sequencesPerGroup.get(e.getKey()));
+//			for(int i = 0; i<e.getValue().size(); i++) {
+//				int pos = i+1;
+//				MutationsPrevalence mp = e.getValue().get(pos);
+//				System.out.println("\t"+pos + " " +mp.totalMutations());
+//			}
+			
+			for(ConservedRegionsOutputter cro : outputters) {
+				cro.export(e.getKey(), e.getValue(), sequencesPerGroup.get(e.getKey()));
 			}
 		}
 	}

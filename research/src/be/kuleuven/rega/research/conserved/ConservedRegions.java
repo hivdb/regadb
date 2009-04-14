@@ -65,10 +65,17 @@ public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutp
 	}
 	
 	public static void main(String [] args) {
-		Protein p = Utils.getProtein("HIV-1", "pol", "PR");
-		ConservedRegions cr = new ConservedRegions(new ConservedRegionsOutput(p), new TreatmentSelector(TreatmentSelector.Mode.All));
+		Protein p = Utils.getProtein("HIV-1", "pol", "RT");
+		
+		ConservedRegionsOutput cro = new ConservedRegionsOutput(p);
+		cro.addOutputter(new ConservedRegionsJMolOutputter(new File("/home/plibin0/research/conserved/hiv-subtype/jmol")));
+		
+		ConservedRegions cr = new ConservedRegions(cro, new TreatmentSelector(TreatmentSelector.Mode.All));
+		
 		SequencesExperience se = new SequencesExperience(cr, p, new SubtypeGrouper());
+		
 		QueryInput input = new FromSnapshot(new File(args[0]).listFiles(), se);
+		
 		input.run();
 		cr.close();		
 		cr.printMinMax();
