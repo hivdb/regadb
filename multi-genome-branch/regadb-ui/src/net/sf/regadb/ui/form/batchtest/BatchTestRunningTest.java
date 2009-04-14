@@ -8,9 +8,6 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
@@ -31,13 +28,6 @@ public class BatchTestRunningTest extends Thread {
 		this.test = test;
         t = RegaDBMain.getApp().createTransaction();
 		copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
-	}
-	
-	@Deprecated //TODO remove (made for debugging)
-	public BatchTestRunningTest(Test test, Transaction t, Login login){
-		this.test = test;
-        this.t = t;
-		copiedLogin = login.copyLogin();
 	}
 	
 	public void run() {
@@ -155,11 +145,13 @@ public class BatchTestRunningTest extends Thread {
 		public void runSingleTest(NtSequence t, Login l) {
 			try {
 				for(TestResult res : t.getTestResults()){
-					if(res.getValue() != null && !res.getValue().equals("")){
+					if(res.getTest().getDescription().equals("Rega Subtype Tool") &&
+							res.getValue() != null && !res.getValue().equals("")){
 						return;
 					}
 				}
 				Transaction trans = l.createTransaction();
+				//TODO remove hard-coded (?)
 				Genome g = trans.getGenome("HIV-1");
 				trans.commit();
 				
@@ -169,16 +161,5 @@ public class BatchTestRunningTest extends Thread {
                 e.printStackTrace();
             }
 		}
-	}
-	
-	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException{
-//		System.setProperty("http.proxyHost", "www-proxy");
-//		System.setProperty("http.proxyPort", "3128");	
-
-		Login login = Login.authenticate("gbehey0", "bla123");
-		Transaction t = login.createTransaction();
-		t.commit();
-		
-		new BatchTestRunningTest(t.getTest(1),login.createTransaction(),login).run();
 	}
 }
