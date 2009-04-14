@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings>
+	<tests>
+		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
+			<match type="or">
+				<match type="iequals">hiv-1 viral load</match>
+				<match type="iequals">hiv viral load</match>
+			</match>
+		</test>
+		<test testtype="Pregnancy" description="Pregnancy">
+			<match type="equals">Pregnant</match>
+			<results>
+				<result value="Positive">
+					<match type="or">
+						<match type="iequals">y</match>
+						<match type="iequals">true</match>
+					</match>
+				</result>
+				<result value="Negative">
+					<match type="or">
+						<match type="iequals">n</match>
+						<match type="iequals">false</match>
+					</match>
+				</result>
+			</results>
+		</test>
+	</tests>
+</mappings>
