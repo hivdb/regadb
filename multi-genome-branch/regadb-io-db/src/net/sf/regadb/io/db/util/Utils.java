@@ -113,6 +113,11 @@ public class Utils {
         }
     }
     
+    public static Date parse(String date, String format) throws ParseException{
+    	SimpleDateFormat sdf = new SimpleDateFormat(format);
+    	return sdf.parse(date.trim());
+    }
+    
     public static Date parseAccessDate(String date) {
         if("".equals(date))
             return null;
@@ -737,6 +742,9 @@ public class Utils {
           if (env != null)
           {
         	  for(PatientEventValue pev : p.getPatientEventValues()){
+        		  if(pev.getStartDate() == null){
+        			  return null;
+        		  }
         		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
         			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
         			  return null;
