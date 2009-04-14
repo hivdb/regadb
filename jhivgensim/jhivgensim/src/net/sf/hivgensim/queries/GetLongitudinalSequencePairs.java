@@ -48,17 +48,6 @@ public class GetLongitudinalSequencePairs extends Query<Patient,SequencePair> {
 		ToObjectList<NtSequence> naive = new ToObjectList<NtSequence>();
 		new GetDrugNaiveSequences(drugs,naive).process(p);
 
-//		Set<NtSequence> expFromPatient = new HashSet<NtSequence>();
-//		Set<NtSequence> naiFromPatient = new HashSet<NtSequence>();
-//		for(ViralIsolate vi : p.getViralIsolates()){
-//			for(NtSequence seq : vi.getNtSequences()){
-//				if(exp.getOutputList().contains(seq)){
-//					expFromPatient.add(seq);					
-//				}else if(nai.getOutputList().contains(seq)){
-//					naiFromPatient.add(seq);					
-//				}
-//			}
-//		}
 		if(strict){
 			Set<NtSequence> latestNaive = QueryUtils.getLatestNtSequences(naive.getList());
 			Set<NtSequence> latestTreated = QueryUtils.getLatestNtSequences(treated.getList());
@@ -79,7 +68,7 @@ public class GetLongitudinalSequencePairs extends Query<Patient,SequencePair> {
 		Set<SequencePair> pairs = new HashSet<SequencePair>();
 		for(NtSequence seq1 : firstSequences){
 			for(NtSequence seq2 : secondSequences){
-				pairs.add(new SequencePair(p.getPatientId(),seq1,seq2,QueryUtils.therapyRegimenInBetween(p, seq1, seq2)));				
+				pairs.add(new SequencePair(p,seq1,seq2,QueryUtils.therapyRegimenInBetween(p, seq1, seq2)));				
 			}
 		}
 		return pairs;

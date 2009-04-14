@@ -1,16 +1,17 @@
 package net.sf.hivgensim.queries.framework;
 
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Patient;
 
 public class SequencePair {
 	
-	private String patientId;
+	private Patient patient;
 	private NtSequence seq1;
 	private NtSequence seq2;
 	private String therapyRegimen;
 	
-	public SequencePair(String patientId, NtSequence seq1, NtSequence seq2, String therapyRegimenInBetween){
-		this.patientId = patientId;
+	public SequencePair(Patient patient, NtSequence seq1, NtSequence seq2, String therapyRegimenInBetween){
+		this.patient = patient;
 		this.seq1 = seq1;
 		this.seq2 = seq2;
 		this.therapyRegimen = therapyRegimenInBetween;
@@ -28,8 +29,8 @@ public class SequencePair {
 		return therapyRegimen;
 	}
 	
-	public String getPatientId(){
-		return patientId;		
+	public Patient getPatient(){
+		return patient;
 	}
 	
 	public boolean inRegion(String organism, String protein){
