@@ -93,7 +93,11 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			first = false;
 		}
 		//data
-		ViralIsolate vi;
+		ViralIsolate vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
+		if(vi==null || !QueryUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
+			return;
+		}
+		
 		Map<String, String> resistanceResults = new HashMap<String, String>();
 
 		System.out.print(".");
@@ -101,38 +105,25 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(getDatasource(tce.getPatient()).getDescription());
 		addColumn(tce.getPatient().getPatientId());
 
-		vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-		if(vi!=null && QueryUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
-			addColumn(vi.getSampleId());
-			addColumn(dateOutputFormat.format(vi.getSampleDate()));
+		addColumn(vi.getSampleId());
+		addColumn(dateOutputFormat.format(vi.getSampleDate()));
 
-			String seqs = "";
-			for(NtSequence ntSeq : vi.getNtSequences()) {
-				seqs += ntSeq.getNucleotides() + "+";
+		String seqs = "";
+		for(NtSequence ntSeq : vi.getNtSequences()) {
+			seqs += ntSeq.getNucleotides() + "+";
+		}
+		addColumn(seqs.substring(0,seqs.length()-1));
+		addColumn(extractSubtype(vi));
+		for(TestResult tr : vi.getTestResults()) {
+			TestType tt = tr.getTest().getTestType();
+			if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
+				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
 			}
-			addColumn(seqs.substring(0,seqs.length()-1));
-			addColumn(extractSubtype(vi));
-			for(TestResult tr : vi.getTestResults()) {
-				TestType tt = tr.getTest().getTestType();
-				if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
-					resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
-				}
-			}
+		}
 
-			for(Test rt : resistanceTests) {
-				for(DrugGeneric dg : resistanceGenericDrugs) {
-					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
-				}
-			}
-		} else {
-			addColumn("");
-			addColumn("");
-			addColumn("");
-			addColumn("");
-			for(Test rt : resistanceTests) {
-				for(DrugGeneric dg : resistanceGenericDrugs) {
-					addColumn("");
-				}
+		for(Test rt : resistanceTests) {
+			for(DrugGeneric dg : resistanceGenericDrugs) {
+				addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
 			}
 		}
 
@@ -317,10 +308,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 		long diff;
 		for(ViralIsolate vi : viralIsolates) {
-			diff = Math.abs(vi.getSampleDate().getTime()-d.getTime());
-			if(diff<min) {
-				min = diff;
-				closest = vi;
+			if(vi.getSampleDate()!=null) {
+				diff = Math.abs(vi.getSampleDate().getTime()-d.getTime());
+				if(diff<min) {
+					min = diff;
+					closest = vi;
+				}
 			}
 		}
 
