@@ -12,10 +12,14 @@ import net.sf.hivgensim.fastatool.FastaToNexus;
 import net.sf.hivgensim.preprocessing.MutationTable;
 import net.sf.hivgensim.preprocessing.RemoveMixtures;
 import net.sf.hivgensim.preprocessing.SelectionWindow;
+import net.sf.hivgensim.queries.CheckForRegion;
 import net.sf.hivgensim.queries.CleanSequences;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
+import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
 import net.sf.hivgensim.queries.GetTreatedSequences;
+import net.sf.hivgensim.queries.RemoveSequencesFromLongitudinalPair;
 import net.sf.hivgensim.queries.framework.QueryInput;
+import net.sf.hivgensim.queries.framework.SequencePair;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.hivgensim.queries.output.ToObjectList;
@@ -62,23 +66,32 @@ public class CrossSectionalEstimate {
 
 	public void run() throws FileNotFoundException{
 		//queries
-
+		
+		//longitudinal
+		ToObjectList<SequencePair> pairs = new ToObjectList<SequencePair>();
+		QueryInput query = new FromSnapshot(new File(snapshotFile),
+							new GetLongitudinalSequencePairs(drugs,false,
+							new CheckForRegion("HIV-1","RT",
+							pairs)));
+		System.err.println("Found "+pairs.getList().size()+" longitudinal sequence pairs.");
+		
 		//naive
 		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
-		QueryInput query =  new FromSnapshot(new File(snapshotFile),
-							new GetDrugClassNaiveSequences(naiveDrugClasses,
-							new CleanSequences(smallWindows,
-							tol)));
+		query =  new FromSnapshot(new File(snapshotFile),
+								  new GetDrugClassNaiveSequences(naiveDrugClasses,
+								  new RemoveSequencesFromLongitudinalPair(pairs.getList(),
+								  new CleanSequences(smallWindows,
+								  tol))));
 		query.run();
-//		List<NtSequence> naive = tol.getList();
 		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta")).output(tol);
 
 		//treated
 		tol = new ToObjectList<NtSequence>();
 		query =	new FromSnapshot(new File(snapshotFile),
 				new GetTreatedSequences(drugs,
+				new RemoveSequencesFromLongitudinalPair(pairs.getList(),
 				new CleanSequences(smallWindows,
-				tol)));
+				tol))));
 		query.run();
 		List<NtSequence> treated = tol.getList();
 		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta")).output(tol);
@@ -91,6 +104,8 @@ public class CrossSectionalEstimate {
 				workDir + File.separator + "phylo.fasta");
 		fc.processFastaFile();
 		System.err.println("Creating Mutation Table");
+		
+		//longitudinal
 		
 		//mutation table
 		MutationTable mt = new MutationTable(treated,fullWindows);
