@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IllegalFormatException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -93,7 +94,21 @@ public class MutPos {
 		wtFile.close();
 
 		PrintStream posFile = new PrintStream(new FileOutputStream(args[2]));
-		posFile.println(selectedPositions.toString().replace("[", "").replace("]", "").replace(",", "|").replace(" ",""));
+		Collections.sort(selectedPositions, new Comparator<String>(){
+
+			public int compare(String o1, String o2) {
+				Pattern p = Pattern.compile("\\([A-Z]+([0-9]+)_.\\)");
+				Matcher m1 = p.matcher(o1);
+				Matcher m2 = p.matcher(o2);
+				if(m1.matches() && m2.matches()){
+					return m1.group(1).compareTo(m2.group(1));
+				}else{
+					return o1.compareTo(o2);
+				}
+			}
+			
+		});
+		posFile.println(selectedPositions.toString().replace("[", "|").replace("]", "").replace(",", "|").replace(" ",""));
 		posFile.close();
 		
 		return mutations;
@@ -103,6 +118,6 @@ public class MutPos {
 		if(args.length != 4){
 			System.err.println("Usage: mutpos mutationtable.input.csv mutations.out positions.out wildtypes.out");
 		}
-		execute(args);
+		execute(args);		
 	}
 }
