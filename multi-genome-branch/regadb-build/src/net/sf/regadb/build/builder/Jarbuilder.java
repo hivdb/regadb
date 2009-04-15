@@ -303,7 +303,7 @@ public class Jarbuilder
         {
             String dependency = md.substring(1);
             
-            if((dependency.startsWith("regadb") || dependency.startsWith("wts")) || dependency.startsWith("pharmadm") && dependency.indexOf('/')==-1)
+            if((dependency.startsWith("regadb") || dependency.startsWith("wts") || dependency.startsWith("jhivgensim")) || dependency.startsWith("pharmadm") && dependency.indexOf('/')==-1)
             {
                 filteredDependencies.add(dependency);
             }
