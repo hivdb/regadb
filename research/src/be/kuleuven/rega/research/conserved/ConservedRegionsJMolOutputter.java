@@ -9,6 +9,12 @@ import java.util.Map;
 public class ConservedRegionsJMolOutputter implements ConservedRegionsOutputter {
 	private File directory;
 	
+	private static Color[] gradient;
+	
+	static {
+		gradient = getGradient(101, Color.green, Color.red);
+	}
+	
 	public ConservedRegionsJMolOutputter(File directory) {
 		this.directory = directory;
 	}
@@ -42,15 +48,35 @@ public class ConservedRegionsJMolOutputter implements ConservedRegionsOutputter 
 	}
 	
 	private Color getColor(double percentage) {
-		if(between(0.0, 25.0, percentage)) 
-			return Color.blue;
-		else if(between(26.0, 50.0, percentage)) 
-			return Color.green;
-		else if(between(51.0, 75.0, percentage))
-			return Color.orange;
-		else if(between(76.0, 100, percentage))
-			return Color.red;
-		else return Color.black;
+		return gradient[((int)percentage)];
+//		if(between(0.0, 25.0, percentage)) 
+//			return Color.blue;
+//		else if(between(26.0, 50.0, percentage)) 
+//			return Color.green;
+//		else if(between(51.0, 75.0, percentage))
+//			return Color.orange;
+//		else if(between(76.0, 100, percentage))
+//			return Color.red;
+//		else return Color.black;
+	}
+	
+	private static Color[] getGradient(int amountOfSteps, Color start, Color end) {
+		Color [] steps = new Color[amountOfSteps];
+		
+		int r = end.getRed() - start.getRed();
+		int g = end.getGreen() - start.getGreen();
+		int b = end.getBlue() - start.getBlue();
+		
+		double r_step = r/amountOfSteps;
+		double g_step = g/amountOfSteps;
+		double b_step = b/amountOfSteps;
+		
+		for(int i = 0; i < amountOfSteps; i++) {
+			steps[i] = new Color((int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255));
+			//steps[i] = new Color((int)(start.getRed()+i*r_step), (int)(start.getGreen()+i*g_step), (int)(start.getBlue()+i*b_step));
+		}
+		
+		return steps;
 	}
 	
 	private boolean between(double min, double max, double value) {
