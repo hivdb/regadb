@@ -3,7 +3,6 @@ package net.sf.hivgensim.queries.output;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.List;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.SequencePair;

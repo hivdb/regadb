@@ -20,6 +20,8 @@ public class SequencePairsTableOutput extends TableQueryOutput<SequencePair> {
 		if(first){
 			addColumn("patient_id");
 			addColumn("source");
+			addColumn("nt_sequence_ii_1");
+			addColumn("nt_sequence_ii_2");
 			addColumn("sample_id_1");
 			addColumn("sample_id_2");
 			addColumn("sample_date_1");
@@ -31,6 +33,8 @@ public class SequencePairsTableOutput extends TableQueryOutput<SequencePair> {
 		}
 		addColumn(p.getPatient().getPatientId());
 		addColumn(p.getPatient().getDatasets().iterator().next().getDescription());
+		addColumn(String.valueOf(p.getSeq1().getNtSequenceIi()));
+		addColumn(String.valueOf(p.getSeq2().getNtSequenceIi()));
 		addColumn(p.getSeq1().getViralIsolate().getSampleId());
 		addColumn(p.getSeq2().getViralIsolate().getSampleId());
 		addColumn(format.format(p.getSeq1().getViralIsolate().getSampleDate()));

@@ -3,9 +3,7 @@ package net.sf.hivgensim.mutationlists;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,11 +30,8 @@ public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 	
 	public static ArrayList<String> retrieveURLs(String url) throws IOException{
 		ArrayList<String> urls = new ArrayList<String>();
-		//proxy settings
-		InetSocketAddress ISA=new InetSocketAddress("www-proxy",3128);
-        Proxy proxy=new Proxy(java.net.Proxy.Type.HTTP,ISA);
-        
-		BufferedReader bfr = new BufferedReader(new InputStreamReader(new URL(url).openConnection(proxy).getInputStream()));
+		        
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(new URL(url).openConnection().getInputStream()));
 		String line = null;
 		while((line = bfr.readLine()) != null){
 			if(line.contains("alt=\"[   ]\"")){
@@ -49,11 +44,8 @@ public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 	
 	public static ConsensusMutationList retrieveListFromURL(String url) throws IOException{
 		ArrayList<ConsensusMutation> mutlist = new ArrayList<ConsensusMutation>();
-		//proxy settings
-		InetSocketAddress ISA=new InetSocketAddress("www-proxy",3128);
-        Proxy proxy=new Proxy(java.net.Proxy.Type.HTTP,ISA);
-        
-		BufferedReader bfr = new BufferedReader(new InputStreamReader(new URL(url).openConnection(proxy).getInputStream()));
+		        
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(new URL(url).openConnection().getInputStream()));
 		String line = null;
 		while((line = bfr.readLine()) != null){
 			mutlist.add(parseLine(line));

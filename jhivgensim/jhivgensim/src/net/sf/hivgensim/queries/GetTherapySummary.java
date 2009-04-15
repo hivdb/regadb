@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
-import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 

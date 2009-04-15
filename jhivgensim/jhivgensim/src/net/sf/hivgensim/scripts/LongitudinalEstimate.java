@@ -1,7 +1,5 @@
 package net.sf.hivgensim.scripts;
 
-import net.sf.hivgensim.preprocessing.SelectionWindow;
-import net.sf.hivgensim.preprocessing.Utils;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;

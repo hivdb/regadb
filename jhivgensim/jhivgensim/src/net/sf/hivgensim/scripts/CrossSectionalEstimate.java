@@ -19,8 +19,9 @@ import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
 import net.sf.hivgensim.queries.GetTreatedSequences;
 import net.sf.hivgensim.queries.RemoveSequencesFromLongitudinalPair;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.SequencePair;
+import net.sf.hivgensim.queries.framework.TableQueryOutput.TableOutputType;
 import net.sf.hivgensim.queries.input.FromSnapshot;
+import net.sf.hivgensim.queries.output.SequencePairsTableOutput;
 import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.hivgensim.queries.output.ToObjectList;
 import net.sf.hivgensim.services.BnLearner;
@@ -29,6 +30,7 @@ import net.sf.hivgensim.services.Paup;
 import net.sf.hivgensim.treecluster.TreeNode;
 import net.sf.hivgensim.treecluster.TreeParser;
 import net.sf.hivgensim.treecluster.TreeWeights;
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.tools.MutPos;
 
@@ -68,33 +70,40 @@ public class CrossSectionalEstimate {
 		//queries
 		
 		//longitudinal
-		ToObjectList<SequencePair> pairs = new ToObjectList<SequencePair>();
+		Table t = new Table();
 		QueryInput query = new FromSnapshot(new File(snapshotFile),
-							new GetLongitudinalSequencePairs(drugs,false,
+							new GetLongitudinalSequencePairs(drugs,true,
 							new CheckForRegion("HIV-1","RT",
-							pairs)));
-		System.err.println("Found "+pairs.getList().size()+" longitudinal sequence pairs.");
+							new SequencePairsTableOutput(t,
+									new File(workDir + File.separator + "longitudinal.csv"),
+									TableOutputType.CSV))));
+		query.run();
+		
+		ArrayList<String> pairs = new ArrayList<String>();
+		pairs.addAll(t.getColumn(2));
+		pairs.addAll(t.getColumn(3));
+		t = new Table();
 		
 		//naive
 		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
 		query =  new FromSnapshot(new File(snapshotFile),
 								  new GetDrugClassNaiveSequences(naiveDrugClasses,
-								  new RemoveSequencesFromLongitudinalPair(pairs.getList(),
+								  new RemoveSequencesFromLongitudinalPair(pairs,
 								  new CleanSequences(smallWindows,
 								  tol))));
 		query.run();
-		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta")).output(tol);
+		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta"),true).output(tol);
 
 		//treated
 		tol = new ToObjectList<NtSequence>();
 		query =	new FromSnapshot(new File(snapshotFile),
 				new GetTreatedSequences(drugs,
-				new RemoveSequencesFromLongitudinalPair(pairs.getList(),
+				new RemoveSequencesFromLongitudinalPair(pairs,
 				new CleanSequences(smallWindows,
 				tol))));
 		query.run();
 		List<NtSequence> treated = tol.getList();
-		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta")).output(tol);
+		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta"),true).output(tol);
 		System.err.println("Queries Finished");
 		
 		//both
@@ -113,6 +122,7 @@ public class CrossSectionalEstimate {
 
 		mt.removeInsertions();
 		mt.removeUnknownMutations();
+		mt.removeMutationsOutsideRange(1, 220);
 		mt.removeLowPrevalenceMutations(threshold,lumpValues);
 
 		//TODO remove certain mutations: known/transmission/... ?

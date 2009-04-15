@@ -28,6 +28,9 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 		Date sampleDate;
 		for(ViralIsolate vi : p.getViralIsolates()){
 			sampleDate = vi.getSampleDate();
+			if(sampleDate == null){
+				continue;
+			}
 			for(NtSequence seq : vi.getNtSequences()){
 				boolean seqIsNaive = true;
 				for(Therapy t : p.getTherapies()){

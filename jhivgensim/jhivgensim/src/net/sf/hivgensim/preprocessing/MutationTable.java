@@ -20,8 +20,6 @@ import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 
-import org.biojava.bio.BioException;
-
 /**
  *  * 
  * 
