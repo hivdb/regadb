@@ -50,9 +50,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	"dd/MM/yyyy");
 
 	private boolean first = true;
+	
+	private String organism;
 
-	public TCEQueryOutput(Table out, File file, TableOutputType type) {
+	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
+		this.organism = organism;
 	}
 
 	public void process(TCE tce) {
@@ -67,8 +70,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addColumn("nt sequences");
 			addColumn("subtype");
 			for(Test rt : resistanceTests) {
+				if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA"))					
 				for(DrugGeneric dg : resistanceGenericDrugs) {
-					addColumn(rt.getDescription() + "_" + dg.getGenericId());
+					addColumn(rt.getDescription().replace('.', '_') + "_" + dg.getGenericId());
 				}
 			}
 
@@ -92,6 +96,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addColumn("country of origin", true);
 			first = false;
 		}
+
+		//TODO temporary fix, hibernate exception when there are to much patients
+		if(getDatasource(tce.getPatient()).getDescription().toLowerCase().startsWith("karoli")) {
+			return;
+		}
+		
 		//data
 		ViralIsolate vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
 		if(vi==null || !QueryUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
@@ -122,6 +132,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		}
 
 		for(Test rt : resistanceTests) {
+			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA"))					
 			for(DrugGeneric dg : resistanceGenericDrugs) {
 				addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
 			}
@@ -364,10 +375,10 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	public static void main(String [] args) {
-		if(args.length != 2){
-			System.err.println("Usage: TCEQueryOutput input.snapshot output.table");
+		if(args.length != 3){
+			System.err.println("Usage: TCEQueryOutput input.snapshot output.table organism");
 		}
-		QueryInput input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV)));
+		QueryInput input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
 		input.run();
 	}
 
