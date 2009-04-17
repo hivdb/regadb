@@ -36,7 +36,6 @@ public class MergeLISFiles {
     
     private Attribute emdAttribute;
     private AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
-    private AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
     private NominalAttribute gender;
     
     public Date firstCd4 = new Date();
@@ -77,7 +76,7 @@ public class MergeLISFiles {
         
         gender = new NominalAttribute("Gender", -1, new String[] { "M", "V" },
                 new String[] { "male", "female" } );
-        gender.attribute.setAttributeGroup(regadbAttributeGroup);
+        gender.attribute.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
         
         nationMapping = Utils.readTable(listNationMappingFile);
         
