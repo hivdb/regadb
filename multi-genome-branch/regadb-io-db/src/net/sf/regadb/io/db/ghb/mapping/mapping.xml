@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings>
+	<tests>
+<!--		<test organism="" testtype="" description="">-->
+<!--			<match var="aanvraagTestNaam" type="contains"></match>-->
+<!--			<values var="reeel"/>-->
+<!--		</test>-->
+		<test testtype="CD4 Count (cells/ul)" description="CD4 Count (generic)">
+			<match var="elementNaam" type="contains">CD4+ Abs.w.</match>
+			<values>
+				<value var="reeel*1000">
+					<match var="eenheden" type="equals">10**9/L</match>
+				</value>
+			</values>
+		</test>
+		<test testtype="CD4 Count (%)" description="CD4 Count % (generic)">
+			<match var="elementNaam" type="contains">CD4+ %</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count (cells/ul)" description="CD8 Count (generic)">
+			<match var="elementNaam" type="contains">CD8+ Abs.w.</match>
+			<values var="reeel*1000"/>
+		</test>
+		<test testtype="CD8 Count (%)" description="CD8 Count % (generic)">
+			<match var="elementNaam" type="contains">CD8+ %</match>
+			<values var="reeel"/>
+		</test>
+		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
+			<match type="and">
+				<match var="aanvraagTestNaam" type="contains">HIV-1 viral load</match>
+				<match var="eenheden" type="contains" inverse="true">log</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test organism="HIV-1" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
+			<match type="and">
+				<match var="aanvraagTestNaam" type="contains">HIV-1 viral load</match>
+				<match var="eenheden" type="contains">log</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test testtype="HBsAb" description="HBsAb (generic)">
+			<match type="and">
+				<match var="aanvraagTestNaam" type="contains">Hepatitis B surface antistoffen (aHBs)</match>
+				<match var="eenheden" type="contains">IU/L</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="Toxo IgG" description="Toxo IgG (generic)">
+			<match var="aanvraagTestNaam" type="contains">Toxoplasma IgG</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="Syphilis" description="Syphilis (generic)">
+			<match var="aanvraagTestNaam" type="contains">Syphilis</match>
+			<values var="resultaat">
+				<value const="Positive">
+					<match var="resultaat" type="equals">positief</match>
+				</value>
+				<value const="Negative">
+					<match var="resultaat" type="equals">negatief</match>
+				</value>
+			</values>
+		</test>
+	</tests>
+	<attributes>
+		<attribute name="Gender" group="Personal">
+			<values var="value">
+				<value const="male">
+					<match var="value" type="iequals">m</match>
+				</value>
+				<value const="female">
+					<match var="value" type="iequals">v</match>
+				</value>
+			</values>
+		</attribute>
+	</attributes>
+</mappings>
