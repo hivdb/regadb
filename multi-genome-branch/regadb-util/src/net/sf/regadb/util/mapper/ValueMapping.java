@@ -1,23 +1,46 @@
 package net.sf.regadb.util.mapper;
 
+import java.util.Map;
+
 import org.jdom.Element;
 
 public class ValueMapping extends Mapping{
-    private String value;
+    private String constant;
+    private String variable;
     
     @Override
     protected void parseMapping(Element e) {
-        setValue(e.getAttributeValue("value"));
+        setConstant(e.getAttributeValue("const"));
+        setVariable(e.getAttributeValue("var"));
     }
     
-    public String getValue(){
-        return value;
+    public String getValue(Map<String,String> variables){
+        if(getConstant() != null)
+            return getConstant();
+        if(getVariable() != null)
+            return variables.get(getVariable());
+        return null;
     }
-    public void setValue(String value){
-        this.value = value;
+
+    public String getConstant(){
+        return constant;
+    }
+    public void setConstant(String constant){
+        this.constant = constant;
+    }
+    
+    public String getVariable(){
+        return variable;
+    }
+    public void setVariable(String variable){
+        this.variable = variable;
     }
     
     public String toString(){
-        return value;
+        if(getConstant() != null)
+            return getConstant();
+        if(getVariable() != null)
+            return getVariable();
+        return "";
     }
 }

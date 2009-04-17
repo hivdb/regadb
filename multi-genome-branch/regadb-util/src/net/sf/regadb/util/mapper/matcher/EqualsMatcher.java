@@ -1,22 +1,11 @@
 package net.sf.regadb.util.mapper.matcher;
 
-import org.jdom.Element;
+import java.util.Map;
 
-public class EqualsMatcher implements Matcher{
-    private String reference;
-    
-    public boolean matches(String s){
-        return getReference().equals(s);
-    }
-    
-    public String getReference(){
-        return reference;
-    }
-    public void setReference(String reference){
-        this.reference = reference;
-    }
 
-    public void parseXml(Element e) {
-        setReference(e.getTextTrim());
+public class EqualsMatcher extends VariableMatcher{
+    
+    public boolean matchesCondition(Map<String,String> variables){
+        return getString().equals(variables.get(getVariable()));
     }
 }

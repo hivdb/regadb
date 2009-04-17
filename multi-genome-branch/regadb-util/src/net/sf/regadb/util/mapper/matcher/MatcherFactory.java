@@ -1,9 +1,18 @@
 package net.sf.regadb.util.mapper.matcher;
 
 
+import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
+
 import org.jdom.Element;
 
 public class MatcherFactory {
+    @SuppressWarnings("serial")
+    public static class InvalidMatcherTypeException extends MapperParseException{
+        public InvalidMatcherTypeException(String type){
+            super(type);
+        }
+    }
+    
     private static MatcherFactory factory = null;
     
     public static MatcherFactory getInstance(){
@@ -13,13 +22,13 @@ public class MatcherFactory {
         return factory;
     }
     
-    public Matcher createMatcher(Element e){
+    public Matcher createMatcher(Element e) throws MapperParseException{
         Matcher m = createMatcher(e.getAttributeValue("type"));
-        m.parseXml(e);
+        m.parse(e);
         return m;
     }
     
-    public Matcher createMatcher(String type){
+    public Matcher createMatcher(String type) throws InvalidMatcherTypeException{
         if(type.equals("equals"))
             return new EqualsMatcher();
         
@@ -32,9 +41,12 @@ public class MatcherFactory {
         if(type.equals("and"))
             return new AndMatcher();
         
-        if(type.equals("not"))
-            return new NotMatcher();
+        if(type.equals("number"))
+            return new NumberMatcher();
         
-        return null;
+        if(type.equals("contains"))
+            return new ContainsMatcher();
+        
+        throw new InvalidMatcherTypeException("type: '"+ type +"'");
     }
 }

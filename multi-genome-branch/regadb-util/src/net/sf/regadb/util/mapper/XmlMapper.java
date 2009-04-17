@@ -2,6 +2,8 @@ package net.sf.regadb.util.mapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -9,19 +11,31 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 public class XmlMapper {
+    @SuppressWarnings("serial")
+    public static class MapperParseException extends Exception{
+        public MapperParseException(){
+            super();
+        }
+        public MapperParseException(String msg){
+            super(msg);
+        }
+    }
+    
     private File file;
     
     private DefaultMapper<TestMapping> testMapper = new DefaultMapper<TestMapping>();
+    private HashMap<String, AttributeMapping> attributeMapper = new HashMap<String,AttributeMapping>();
     
-    public XmlMapper(File file){
+    public XmlMapper(File file) throws MapperParseException{
         this.file = file;
+        parseXml();
     }
     
     public File getFile(){
         return file;
     }
     
-    public void parseXml(){
+    protected void parseXml() throws MapperParseException{
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
         try {
@@ -55,8 +69,12 @@ public class XmlMapper {
         System.err.println(msg);
     }
     
-    protected void parseAttributes(Element e){
-        
+    protected void parseAttributes(Element e) throws MapperParseException{
+        for(Object o : e.getChildren()){
+            AttributeMapping am = new AttributeMapping();
+            am.parseXml((Element)o);
+            attributeMapper.put(am.getName(), am);
+        }
     }
     
     protected void parseDrugs(Element e){
@@ -67,33 +85,61 @@ public class XmlMapper {
         
     }
 
-    protected void parseTests(Element e){
+    protected void parseTests(Element e) throws MapperParseException{
         for(Object o : e.getChildren()){
-            Element ee = (Element)o;
-            
             TestMapping tm = new TestMapping();
-            tm.parseXml(ee);
+            tm.parseXml((Element)o);
             testMapper.add(tm);
         }
     }
     
-    public TestMapping getTest(String description){
-        return testMapper.get(description);
+    public TestMapping getTest(Map<String,String> variables){
+        return testMapper.get(variables);
     }
     
-    public TestResultMapping getTestResult(String description, String value){
-        TestMapping tm = testMapper.get(description);
+    public ValueMapping getTestResult(Map<String,String> variables){
+        TestMapping tm = getTest(variables);
         if(tm != null)
-            return tm.get(value);
+            return tm.get(variables);
+        return null;
+    }
+    
+    public AttributeMapping getAttribute(Map<String,String> variables){
+        return attributeMapper.get(variables.get("name"));
+    }
+    public ValueMapping getAttributeValue(Map<String,String> variables){
+        AttributeMapping am = getAttribute(variables);
+        if(am != null)
+            return am.get(variables);
         return null;
     }
     
     public static void main(String args[]){
-        XmlMapper mapper = new XmlMapper(new File("src/net/sf/regadb/util/mapper/example-mapping.xml"));
-        mapper.parseXml();
+        try {
+            XmlMapper mapper = new XmlMapper(new File("src/net/sf/regadb/util/mapper/example-mapping.xml"));
+            
+            Map<String,String> vars = new HashMap<String,String>();
+            
+            vars.put("description", "HIV viral load log");
+            vars.put("value", "5");
+            
+            System.out.print(mapper.getTest(vars));
+            System.out.println(mapper.getTestResult(vars));
+            
+            vars.put("description", "Pregnant");
+            vars.put("value", "Y");
+            
+            System.out.print(mapper.getTest(vars) +" = ");
+            System.out.println(mapper.getTestResult(vars));
+            
+            vars.clear();
+            vars.put("name", "Gender");
+            vars.put("value", "m");
+            System.out.println(mapper.getAttributeValue(vars));
+
+        } catch (MapperParseException e) {
+            e.printStackTrace();
+        }
         
-        System.out.println(mapper.getTest("HIV viral load"));
-        System.out.print(mapper.getTest("Pregnant") +" = ");
-        System.out.println(mapper.getTestResult("Pregnant","Y"));
     }
 }

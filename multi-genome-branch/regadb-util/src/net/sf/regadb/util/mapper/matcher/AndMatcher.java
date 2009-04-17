@@ -1,11 +1,12 @@
 package net.sf.regadb.util.mapper.matcher;
 
-@SuppressWarnings("serial")
+import java.util.Map;
+
 public class AndMatcher extends CompoundMatcher{
 
-    public boolean matches(String s) {
-        for(Matcher m : this)
-            if(!m.matches(s))
+    public boolean matchesCondition(Map<String,String> variables) {
+        for(Matcher m : getMatchers())
+            if(!m.matches(variables))
                 return false;
         return true;
     }

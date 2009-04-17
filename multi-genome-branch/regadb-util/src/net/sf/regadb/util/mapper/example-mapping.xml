@@ -3,26 +3,59 @@
 	<tests>
 		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
 			<match type="or">
-				<match type="iequals">hiv-1 viral load</match>
-				<match type="iequals">hiv viral load</match>
+				<match type="iequals" var="description">hiv-1 viral load</match>
+				<match type="iequals" var="description">hiv viral load</match>
 			</match>
+			<values var="value"/>
 		</test>
 		<test testtype="Pregnancy" description="Pregnancy">
-			<match type="equals">Pregnant</match>
-			<results>
-				<result value="Positive">
+			<match type="equals" var="description">Pregnant</match>
+			<values var="value">
+				<value const="Positive">
 					<match type="or">
-						<match type="iequals">y</match>
-						<match type="iequals">true</match>
+						<match type="iequals" var="value">y</match>
+						<match type="iequals" var="value">true</match>
 					</match>
-				</result>
-				<result value="Negative">
+				</value>
+				<value const="Negative">
 					<match type="or">
-						<match type="iequals">n</match>
-						<match type="iequals">false</match>
+						<match type="iequals" var="value">n</match>
+						<match type="iequals" var="value">false</match>
 					</match>
-				</result>
-			</results>
+				</value>
+			</values>
+		</test>
+		<test organism="HIV-1" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
+			<match type="or">
+				<match type="iequals" var="description">hiv-1 viral load log10</match>
+				<match type="iequals" var="description">hiv viral load log</match>
+			</match>
+			<values var="value">
+				<value const="&lt;50">
+					<match type="number" var="value">&lt;50</match>
+				</value>
+				<value const="&gt;500">
+					<match type="number" var="value">&gt;500</match>
+				</value>
+				<value const="unknown">
+					<match type="number" var="value">0</match>
+				</value>
+				<value const="Negative">
+					<match type="iequals" var="value">n</match>
+				</value>
+			</values>
 		</test>
 	</tests>
+	<attributes>
+		<attribute name="Gender" group="Personal">
+			<values var="value">
+				<value const="male">
+					<match type="iequals" var="value">m</match>
+				</value>
+				<value const="female">
+					<match type="iequals" var="value">f</match>
+				</value>
+			</values>
+		</attribute>
+	</attributes>
 </mappings>
