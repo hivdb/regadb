@@ -9,8 +9,10 @@ package net.sf.regadb.io.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Attribute;
@@ -27,9 +29,14 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 
 public class StandardObjects {
+    private static List<Genome> allGenomes = new ArrayList<Genome>();
+    private static List<TestType> allTestTypes = new ArrayList<TestType>();
+    private static List<Test> allTests = new ArrayList<Test>();
+    private static List<Attribute> allAttributes = new ArrayList<Attribute>();
+    private static List<Event> allEvents = new ArrayList<Event>();
+    
     private static Map<String, Map<String, TestType>> standardGenomeTestTypes = new HashMap<String, Map<String, TestType>>();
     private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
-
     
     private static String viralLoadDescription = "Viral Load (copies/ml)";
     private static String viralLoadLog10Description = "Viral Load (log10)";
@@ -37,7 +44,6 @@ public class StandardObjects {
     private static String seroconversionDescription = "Seroconversion";
     private static String gssDescription = "Genotypic Susceptibility Score (GSS)";
     
-    private static List<Genome> genomes = new ArrayList<Genome>();
     private static Genome hiv1Genome;
     private static Genome hiv2aGenome;
     private static Genome hiv2bGenome;
@@ -111,17 +117,10 @@ public class StandardObjects {
 
 
     static {
-        hiv1Genome = new Genome("HIV-1", "");
-        genomes.add(hiv1Genome);
-        
-        hiv2aGenome = new Genome("HIV-2A", "");
-        genomes.add(hiv2aGenome);
-        
-        hiv2bGenome = new Genome("HIV-2B", "");
-        genomes.add(hiv2bGenome);
-        
-        hcvGenome = new Genome("HCV","");
-        genomes.add(hcvGenome);
+        hiv1Genome = createGenome("HIV-1", "");
+        hiv2aGenome = createGenome("HIV-2A", "");
+        hiv2bGenome = createGenome("HIV-2B", "");
+        hcvGenome = createGenome("HCV","");
         
         numberValueType         = new ValueType("number");
         limitedNumberValueType  = new ValueType("limited number (<,=,>)");
@@ -174,22 +173,22 @@ public class StandardObjects {
         tt = new TestType(limitedNumberValueType, null, patientTestObject, getViralLoadLog10Description(), new TreeSet<TestNominalValue>());
         genomeTestTypes.add(tt);
                 
-        createStandardGenomeTestTypes(genomes,genomeTestTypes,true);
+        createStandardGenomeTestTypes(allGenomes,genomeTestTypes,true);
 
         //create test types without a generic test 
         genomeTestTypes.clear();
         tt = new TestType(numberValueType, null, resistanceTestObject, getGssDescription(), new TreeSet<TestNominalValue>());
         genomeTestTypes.add(tt);
         
-        createStandardGenomeTestTypes(genomes,genomeTestTypes,false);
+        createStandardGenomeTestTypes(allGenomes,genomeTestTypes,false);
 
         
-        genericCD4Test          = new Test(new TestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
-        genericCD4PercentageTest= new Test(new TestType(numberValueType, null, patientTestObject, "CD4 Count (%)", new TreeSet<TestNominalValue>()), "CD4 Count % (generic)");
-        genericCD8Test          = new Test(new TestType(numberValueType, null, patientTestObject, "CD8 Count", new TreeSet<TestNominalValue>()), "CD8 Count (generic)");
-        genericCD8PercentageTest= new Test(new TestType(numberValueType, null, patientTestObject, "CD8 Count (%)", new TreeSet<TestNominalValue>()), "CD8 Count % (generic)");
-        followUpTest            = new Test(new TestType(dateValueType, null, patientTestObject, "Follow up",new TreeSet<TestNominalValue>()), "Follow up");
-        contactTest             = new Test(new TestType(dateValueType, null, patientTestObject,"Contact",new TreeSet<TestNominalValue>()), "General contact");
+        genericCD4Test          = createTest(createTestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
+        genericCD4PercentageTest= createTest(createTestType(numberValueType, null, patientTestObject, "CD4 Count (%)", new TreeSet<TestNominalValue>()), "CD4 Count % (generic)");
+        genericCD8Test          = createTest(createTestType(numberValueType, null, patientTestObject, "CD8 Count", new TreeSet<TestNominalValue>()), "CD8 Count (generic)");
+        genericCD8PercentageTest= createTest(createTestType(numberValueType, null, patientTestObject, "CD8 Count (%)", new TreeSet<TestNominalValue>()), "CD8 Count % (generic)");
+        followUpTest            = createTest(createTestType(dateValueType, null, patientTestObject, "Follow up",new TreeSet<TestNominalValue>()), "Follow up");
+        contactTest             = createTest(createTestType(dateValueType, null, patientTestObject,"Contact",new TreeSet<TestNominalValue>()), "General contact");
         
         genericHBVViralLoadTest = createGenericTest("HBV Viral Load", getLimitedNumberValueType(), null, getPatientTestObject());
         genericHCVAbTest 		= createGenericTest("HCVAb", getNumberValueType(), null, getPatientTestObject());
@@ -217,8 +216,45 @@ public class StandardObjects {
         pregnancyEvent = createPregnancyEvent();
     }
     
+    private static Genome createGenome(String organismName, String organismDescription){
+        Genome g = new Genome(organismName, organismDescription);
+        allGenomes.add(g);
+        return g;
+    }
+    
+    private static TestType createTestType(ValueType vt, Genome g, TestObject to, String description, Set<TestNominalValue> values){
+        TestType tt = new TestType(vt, g, to,description,values);
+        allTestTypes.add(tt);
+        return tt;
+    }
+    
+    private static Test createTest(TestType tt, String description){
+        Test t = new Test(tt, description);
+        allTests.add(t);
+        return t;
+    }
+    
+    private static Event createEvent(String description, ValueType vt){
+        Event e = new Event(description);
+        e.setValueType(vt);
+        allEvents.add(e);
+        return e;
+    }
+    
     public static List<Genome> getGenomes(){
-        return genomes;
+        return allGenomes;
+    }
+    public static List<TestType> getTestTypes(){
+        return allTestTypes;
+    }
+    public static List<Test> getTests(){
+        return allTests;
+    }
+    public static List<Attribute> getAttributes(){
+        return allAttributes;
+    }
+    public static List<Event> getEvents(){
+        return allEvents;
     }
     
     public static Map<String, Map<String, Test>> getStandardGenomeTests(){
@@ -242,9 +278,7 @@ public class StandardObjects {
         }
         
         for(TestType tt : testTypes){
-            TestType ntt = new TestType(tt.getTestObject(), tt.getDescription());
-            ntt.setGenome(g);
-            ntt.setValueType(tt.getValueType());
+            TestType ntt = createTestType(tt.getValueType(), g, tt.getTestObject(), tt.getDescription(), new HashSet<TestNominalValue>());
             
             for(TestNominalValue tnv : tt.getTestNominalValues()){
                 ntt.getTestNominalValues().add(new TestNominalValue(ntt, tnv.getValue()));
@@ -253,7 +287,7 @@ public class StandardObjects {
             ttmap.put(ntt.getDescription(), ntt);
             
             if(genericTest){
-                Test nt = new Test(ntt, ntt.getDescription() +" (generic)");
+                Test nt = createTest(ntt, ntt.getDescription() +" (generic)");
                 tmap.put(ntt.getDescription(), nt);
             }
         }
@@ -273,7 +307,7 @@ public class StandardObjects {
     }
     
     private static Test createGenericTest(String name, ValueType valueType, Genome genome, TestObject testObject){
-        return new Test(new TestType(valueType, genome, testObject,
+        return createTest(createTestType(valueType, genome, testObject,
 				name, new TreeSet<TestNominalValue>()),
 				name + " (generic)");
     }
@@ -607,9 +641,7 @@ public class StandardObjects {
     
     
     private static Event createAidsDefiningIllnessEvent(){
-    	Event e = new Event();
-        e.setValueType(getNominalValueType());
-        e.setName("Aids defining illness");
+    	Event e = createEvent("Aids defining illness", getNominalValueType());
         
         e.getEventNominalValues().add(new EventNominalValue(e,"Bacillary angiomatosis"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Candidiasis of bronchi, trachea, or lungs"));
@@ -655,9 +687,7 @@ public class StandardObjects {
     }
     
     private static Event createPregnancyEvent(){
-    	Event e = new Event();
-        e.setValueType(getNominalValueType());
-        e.setName("Pregnancy");
+    	Event e = createEvent("Pregnancy",getNominalValueType());
         
         e.getEventNominalValues().add(new EventNominalValue(e,"Positive"));
         e.getEventNominalValues().add(new EventNominalValue(e,"Negative"));
@@ -669,14 +699,13 @@ public class StandardObjects {
         Attribute a = new Attribute(name);
         a.setAttributeGroup(ag);
         a.setValueType(vt);
+        allAttributes.add(a);
         return a;
     }
     
     private static Attribute createGender()
     {
-        Attribute transmissionGroup = new Attribute("Gender");
-        transmissionGroup.setAttributeGroup(getPersonalAttributeGroup());
-        transmissionGroup.setValueType(getNominalValueType());
+        Attribute transmissionGroup = createAttribute("Gender", getNominalValueType(), getPersonalAttributeGroup());
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "male"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "female"));
@@ -686,9 +715,7 @@ public class StandardObjects {
     
     private static Attribute createTransmissionGroup()
     {
-        Attribute transmissionGroup = new Attribute("Transmission group");
-        transmissionGroup.setAttributeGroup(getClinicalAttributeGroup());
-        transmissionGroup.setValueType(getNominalValueType());
+        Attribute transmissionGroup = createAttribute("Transmission group",getNominalValueType(),getClinicalAttributeGroup());
         
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "bisexual"));
         transmissionGroup.getAttributeNominalValues().add(new AttributeNominalValue(transmissionGroup, "heterosexual"));
@@ -705,9 +732,7 @@ public class StandardObjects {
     
     private static Attribute createGeographicOrigin()
     {
-        Attribute geographicOrigin = new Attribute("Geographic origin");
-        geographicOrigin.setAttributeGroup(getDemographicsAttributeGroup());
-        geographicOrigin.setValueType(getNominalValueType());
+        Attribute geographicOrigin = createAttribute("Geographic origin", getNominalValueType(),getDemographicsAttributeGroup());
         
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Asia"));
@@ -723,9 +748,7 @@ public class StandardObjects {
     
     private static Attribute createEthnicity()
     {
-        Attribute ethnicity = new Attribute("Ethnicity");
-        ethnicity.setAttributeGroup(getDemographicsAttributeGroup());
-        ethnicity.setValueType(getNominalValueType());
+        Attribute ethnicity = createAttribute("Ethnicity", getNominalValueType(), getDemographicsAttributeGroup());
         
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "african"));
         ethnicity.getAttributeNominalValues().add(new AttributeNominalValue(ethnicity, "asian"));
