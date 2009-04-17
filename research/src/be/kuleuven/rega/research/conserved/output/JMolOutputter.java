@@ -1,4 +1,4 @@
-package be.kuleuven.rega.research.conserved;
+package be.kuleuven.rega.research.conserved.output;
 
 import java.awt.Color;
 import java.io.File;
@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public class ConservedRegionsJMolOutputter implements ConservedRegionsOutputter {
+import be.kuleuven.rega.research.conserved.MutationsPrevalence;
+
+public class JMolOutputter implements ConservedRegionsOutputter {
 	private File directory;
 	
 	private static Color[] gradient;
@@ -15,7 +17,7 @@ public class ConservedRegionsJMolOutputter implements ConservedRegionsOutputter 
 		gradient = getGradient(101, Color.green, Color.red);
 	}
 	
-	public ConservedRegionsJMolOutputter(File directory) {
+	public JMolOutputter(File directory) {
 		this.directory = directory;
 	}
 	

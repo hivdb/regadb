@@ -10,6 +10,7 @@ import net.sf.hivgensim.queries.framework.QueryOutput;
 import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.regadb.db.Protein;
 import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
+import be.kuleuven.rega.research.conserved.output.MutationSetOutputter;
 import be.kuleuven.rega.research.conserved.selector.TreatmentSelector;
 
 public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutput> {	
@@ -65,19 +66,25 @@ public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutp
 	}
 	
 	public static void main(String [] args) {
-		Protein p = Utils.getProtein("HIV-1", "pol", "RT");
+		Protein p = Utils.getProtein("HIV-1", "pol", "PR");
 		
 		ConservedRegionsOutput cro = new ConservedRegionsOutput(p);
-		cro.addOutputter(new ConservedRegionsJMolOutputter(new File("/home/plibin0/research/conserved/hiv-subtype/jmol")));
+		//cro.addOutputter(new JMolOutputter(new File("/home/plibin0/research/conserved/hiv-subtype/jmol")));
+		MutationSetOutputter mso = new MutationSetOutputter(new File("/home/plibin0/research/TPV/pi.csv"), "24M", "55R", "74P", "83D");
+		cro.addOutputter(mso);
 		
-		ConservedRegions cr = new ConservedRegions(cro, new TreatmentSelector(TreatmentSelector.Mode.All));
+		Selector s ;
+		s = new TreatmentSelector(TreatmentSelector.Mode.Treated);
+		//s = new ClassExperienceSelector("PI");
+		ConservedRegions cr = new ConservedRegions(cro, s);
 		
 		SequencesExperience se = new SequencesExperience(cr, p, new SubtypeGrouper());
 		
-		QueryInput input = new FromSnapshot(new File(args[0]).listFiles(), se);
+		//new File(args[0]).listFiles()
+		QueryInput input = new FromSnapshot(new File(args[0]), se);
 		
 		input.run();
-		cr.close();		
-		cr.printMinMax();
+		//cr.printMinMax();
+		mso.writeTable();
 	}
 }

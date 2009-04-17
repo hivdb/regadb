@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Protein;
+import be.kuleuven.rega.research.conserved.output.ConservedRegionsOutputter;
 
 public class ConservedRegionsOutput {
 	//Map<Subtype, Map<MutationPosition, prevalence>> 

@@ -37,4 +37,15 @@ public class MutationsPrevalence {
 		
 		return total;
 	}
+	
+	public int totalMutations(char aaMutation) {
+		int total = 0;
+		
+		for(Map.Entry<String, Integer> e : prevalences.entrySet()) {
+			if(e.getKey().toLowerCase().contains(""+Character.toLowerCase(aaMutation)))
+				total += e.getValue();
+		}
+		
+		return total;
+	}
 }
