@@ -11,7 +11,7 @@ import net.sf.hivgensim.queries.input.FromSnapshot;
 import net.sf.regadb.db.Protein;
 import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
 import be.kuleuven.rega.research.conserved.output.MutationSetOutputter;
-import be.kuleuven.rega.research.conserved.selector.TreatmentSelector;
+import be.kuleuven.rega.research.conserved.selector.ClassExperienceSelector;
 
 public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutput> {	
 	private Selector sequenceSelector;
@@ -73,9 +73,10 @@ public class ConservedRegions extends QueryOutput<Sequence, ConservedRegionsOutp
 		MutationSetOutputter mso = new MutationSetOutputter(new File("/home/plibin0/research/TPV/pi.csv"), "24M", "55R", "74P", "83D");
 		cro.addOutputter(mso);
 		
-		Selector s ;
-		s = new TreatmentSelector(TreatmentSelector.Mode.Treated);
-		//s = new ClassExperienceSelector("PI");
+		ClassExperienceSelector s ;
+		//s = new TreatmentSelector(TreatmentSelector.Mode.Treated);
+		s = new ClassExperienceSelector("PI");
+		s.excludeDrug("TPV");
 		ConservedRegions cr = new ConservedRegions(cro, s);
 		
 		SequencesExperience se = new SequencesExperience(cr, p, new SubtypeGrouper());
