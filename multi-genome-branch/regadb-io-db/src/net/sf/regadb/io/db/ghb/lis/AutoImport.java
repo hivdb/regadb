@@ -288,13 +288,19 @@ public class AutoImport {
                 variables.put("eenheden", line[headers.get("eenheden")]);
                 variables.put("relatie+reeel", line[headers.get("relatie")]+reeel);
                 
-                double ul = 0;
+                long ul = 0;
+                long geheel = 0;
                 try{
-                    ul = Double.parseDouble(reeel) * 1000;
+                    double dreeel = Double.parseDouble(reeel);
+                    ul = Math.round(dreeel * 1000);
+                    geheel = Math.round(dreeel);
                 }
                 catch(Exception e){
                 }
                 variables.put("reeel*1000", ""+ul);
+                variables.put("geheel", ""+ geheel);
+                variables.put("relatie+geheel", line[headers.get("relatie")]+geheel);
+
                 
                 TestResult tr = null;
                 try {
@@ -302,34 +308,39 @@ public class AutoImport {
                     tr.setSampleId(correctId);
                     tr.setTestDate(sampleDate);
                     
-                    if(duplicateTestResult(p, tr))
+                    if(duplicateTestResult(p, tr)){
+                        logError(lineNumber, "Duplicate test result ignored");
                         return;
+                    }
                     
                     p.addTestResult(tr);
                 }
                 catch(MappingDoesNotExistException e){
-                    logError(lineNumber +": "+ e.getMessage());
+                    logError(lineNumber, e.getMessage());
                     lisTests.get(aanvraagTestNaam).mapping = true;
                     logNotImported(toString(line));
                 }
                 catch(ObjectDoesNotExistException e){
-                    logError(lineNumber +": "+ e.getMessage());
+                    logError(lineNumber, e.getMessage());
                     lisTests.get(aanvraagTestNaam).object = true;
                     logNotImported(toString(line));
                 }
                 catch(InvalidValueException e){
-                    logError(lineNumber +": "+ e.getMessage());
+                    logError(lineNumber, e.getMessage());
                     lisTests.get(aanvraagTestNaam).value = true;
                     logNotImported(toString(line));
                 }
                 catch (MappingException e) {
-                    logError("MappingException at line "+ lineNumber +": "+ e.getMessage());
+                    logError(lineNumber, "MappingException: "+ e.getMessage());
                     logNotImported(toString(line));
                 }
                 catch (Exception e){
-                    logError("Exception at line "+ lineNumber +": "+ e.getMessage());
+                    logError(lineNumber, "Exception: "+ e.getMessage());
                     logNotImported(toString(line));
                 }
+            }
+            else{
+                logError(lineNumber, "No result");
             }
         } catch (ParseException e) {
             logNotImported(toString(line));
@@ -398,6 +409,9 @@ public class AutoImport {
     }
     private void logError(String msg){
         errLog.println(msg);
+    }
+    private void logError(int lineNumber, String msg){
+        logError(lineNumber +": "+ msg);
     }
     private void logInfo(String msg){
         System.out.println(msg);
