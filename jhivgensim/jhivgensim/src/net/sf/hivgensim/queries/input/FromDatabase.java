@@ -16,6 +16,7 @@ import org.hibernate.ScrollableResults;
 
 public class FromDatabase extends QueryInput {
 	private List<Patient> patientsCache;
+	private boolean cacheOn = false;
 
 	private String loginname;
 	private String passwd;
@@ -29,7 +30,9 @@ public class FromDatabase extends QueryInput {
 
 	public void run() {
 		if (patientsCache == null) {
-			patientsCache = new ArrayList<Patient>();
+			if(cacheOn)
+				patientsCache = new ArrayList<Patient>();
+			
 			Login login = null;
 			try {
 				login = Login.authenticate(loginname, passwd);
@@ -53,7 +56,9 @@ public class FromDatabase extends QueryInput {
 				i++;
 				Object[] os = patients.get();
 				getNextQuery().process((Patient) os[0]);
-				patientsCache.add((Patient) os[0]);
+				
+				if(cacheOn)
+					patientsCache.add((Patient) os[0]);
 			}
 			getNextQuery().close();
 		} else {
@@ -61,5 +66,13 @@ public class FromDatabase extends QueryInput {
 				getNextQuery().process(p);
 			}
 		}
+	}
+	
+	public boolean isCacheOn() {
+		return cacheOn;
+	}
+
+	public void setCacheOn(boolean cacheOn) {
+		this.cacheOn = cacheOn;
 	}
 }

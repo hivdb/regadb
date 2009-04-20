@@ -15,6 +15,7 @@ import net.sf.regadb.db.Patient;
 
 public class FromSnapshot extends QueryInput {
 	private List<Patient> patientsCache;
+	private boolean cacheOn = false;
 
 	private List<File> files;
 
@@ -37,7 +38,8 @@ public class FromSnapshot extends QueryInput {
 
 	public void run() {
 		if (patientsCache == null) {
-			patientsCache = new ArrayList<Patient>();
+			if(cacheOn)
+				patientsCache = new ArrayList<Patient>();
 			for (File f : files) {
 				processFile(f);
 			}
@@ -56,7 +58,8 @@ public class FromSnapshot extends QueryInput {
 			int i = 0;
 			while ((p = (Patient) in.readObject()) != null) {
 				getNextQuery().process(p);
-				patientsCache.add(p);
+				if(cacheOn)
+					patientsCache.add(p);
 				i++;
 				if (i % 100 == 0) {
 					System.err.println(i);
@@ -72,5 +75,13 @@ public class FromSnapshot extends QueryInput {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isCacheOn() {
+		return cacheOn;
+	}
+
+	public void setCacheOn(boolean cacheOn) {
+		this.cacheOn = cacheOn;
 	}
 }

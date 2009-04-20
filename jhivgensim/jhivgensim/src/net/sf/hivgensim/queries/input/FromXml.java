@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.hivgensim.queries.framework.IQuery;
@@ -22,6 +23,7 @@ import org.xml.sax.SAXException;
 
 public class FromXml extends QueryInput {
 	private List<Patient> patientsCache;
+	private boolean cacheOn = false;
 
 	private File file;
 	private String loginname;
@@ -38,6 +40,9 @@ public class FromXml extends QueryInput {
 	@Override
 	public void run() {
 		if (patientsCache == null) {
+			if(cacheOn)
+				patientsCache = new ArrayList<Patient>();
+				
 			Login login = null;
 			try {
 				login = Login.authenticate(loginname, passwd);
@@ -60,7 +65,8 @@ public class FromXml extends QueryInput {
 						new ImportHandler<Patient>() {
 							public void importObject(Patient p) {
 								getNextQuery().process(p);
-								patientsCache.add(p);
+								if(cacheOn)
+									patientsCache.add(p);
 							}
 						});
 			} catch (FileNotFoundException e) {
@@ -75,5 +81,13 @@ public class FromXml extends QueryInput {
 				getNextQuery().process(p);
 			}
 		}
+	}
+	
+	public boolean isCacheOn() {
+		return cacheOn;
+	}
+
+	public void setCacheOn(boolean cacheOn) {
+		this.cacheOn = cacheOn;
 	}
 }
