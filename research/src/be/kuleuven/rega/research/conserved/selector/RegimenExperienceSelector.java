@@ -16,8 +16,8 @@ public class RegimenExperienceSelector implements Selector {
 	 * 
 	 * @param regimen
 	 */
-	public RegimenExperienceSelector(String regimen) {
-		Collections.addAll(this.regimen, regimen.split("+"));
+	public RegimenExperienceSelector(String ... drugs) {
+		Collections.addAll(this.regimen, drugs);
 	}
 	
 	public boolean selectSequence(Sequence s) {
