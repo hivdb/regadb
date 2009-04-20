@@ -38,6 +38,12 @@
   			<attribute name="Class-Path" value="${jar-dependencies}"/>
   		</manifest>
   	</jar>
+  	<jar jarfile="${dist}/${proj.name}-tpv-prevalence-query.jar" basedir="${build}">
+  		<manifest>
+  			<attribute name="Main-Class" value="be.kuleuven.rega.research.conserved.workshop2009.PrevalenceTPVMutations"/>
+  			<attribute name="Class-Path" value="${jar-dependencies}"/>
+  		</manifest>
+  	</jar>
   </target>
   
   <!-- Clean up -->
