@@ -10,12 +10,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
@@ -32,10 +33,13 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.mapping.DbObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper;
 import net.sf.regadb.io.db.util.mapping.ObjectStore;
+import net.sf.regadb.io.db.util.mapping.ObjectMapper.InvalidValueException;
+import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingDoesNotExistException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.ObjectDoesNotExistException;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.mapper.XmlMapper;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class AutoImport {
     private class FileLogger{
@@ -56,8 +60,25 @@ public class AutoImport {
             out.close();
         }
     }
+    private class ErrorTypes{
+        public boolean mapping = false;
+        public boolean object = false;
+        public boolean value = false;
+        
+        public String toString(){
+            String s = "";
+            if(mapping)
+                s = "not mapped, ";
+            if(object)
+                s += "wrong mapping, ";
+            if(value)
+                s += "invalid value";
+            
+            return s.length() == 0 ? "ok":s;
+        }
+    }
     
-    private FileLogger logger;
+    private FileLogger errLog, importLog;
     private Date earliestDate = new Date(System.currentTimeMillis());
     
     public Date firstCd4 = new Date();
@@ -69,7 +90,7 @@ public class AutoImport {
     
     //for checking nation codes
     Set<String> temp;
-    Set<String> uniqueTests = new TreeSet<String>();
+    Map<String, ErrorTypes> lisTests = new TreeMap<String, ErrorTypes>();
     
     private ObjectMapper objMapper;
     private XmlMapper xmlMapper;
@@ -77,16 +98,18 @@ public class AutoImport {
     
     public static void main(String [] args) {
         AutoImport ai = new AutoImport(
-                new File("/home/simbre1/tmp/ghb-ai-log.txt"),
                 new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml"),
                 new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping"));
                 
         ai.run(new File("/home/simbre1/import/ghb/2009-04-07"));
     }
     
-    public AutoImport(File logFile, File mappingFile, File nationMappingFile) {
+    public AutoImport(File mappingFile, File nationMappingFile) {
         try {
-            logger = new FileLogger(logFile);
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            File logDir = RegaDBSettings.getInstance().getInstituteConfig().getLogDir();
+            importLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar +"ghb-not-imported-"+ date +".txt"));
+            errLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar +"ghb-error-log-"+ date +".txt"));
             
             xmlMapper = new XmlMapper(mappingFile);
             
@@ -126,16 +149,17 @@ public class AutoImport {
             System.err.println(s);
         }
         
-        System.err.println("--- tests ---");
-        for(String s : uniqueTests)
-            System.err.println(s);
-        System.err.println("--- /tests ---");
+        logInfo("Tests summary ------");
+        for(Map.Entry<String, ErrorTypes> me : lisTests.entrySet())
+            logInfo(me.getKey() +": \t"+ me.getValue());
+        logInfo("------");
         
-        logger.close();
+        importLog.close();
+        errLog.close();
     }
     
     private void parse(File file){
-        ConsoleLogger.getInstance().logWarning("processing file: "+ file.getAbsolutePath());
+        logInfo("\nProcessing file: "+ file.getAbsolutePath());
         try {
             InputStream is = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -152,9 +176,9 @@ public class AutoImport {
                     String[] fields = tokenizeTab(line);
                     
                     if(fields.length > 0 && headers.get(fields[0]) == null){
-                        Patient p = handlePatient(headers, fields);
+                        Patient p = handlePatient(headers, fields, n);
                         if(p != null)
-                            handleTest(p, headers, fields);
+                            handleTest(p, headers, fields, n);
                         objectStore.commit();
                     }
                     ++n;
@@ -170,7 +194,7 @@ public class AutoImport {
         }
     }
     
-    private Patient handlePatient(Map<String,Integer> headers, String[] line) {
+    private Patient handlePatient(Map<String,Integer> headers, String[] line, int lineNumber) {
         String ead = line[headers.get("EADnr")];
         if(ead == null || ead.length() == 0)
             return null;
@@ -234,15 +258,18 @@ public class AutoImport {
         return null;
     }
     
-    private void handleTest(Patient p, Map<String,Integer> headers, String[] line) {
+    private void handleTest(Patient p, Map<String,Integer> headers, String[] line, int lineNumber) {
         String correctId = getCorrectSampleId(headers, line);
         Date sampleDate = null;
+        String aanvraagTestNaam = line[headers.get("aanvraagTestNaam")];
+        
         try {
             sampleDate = GhbUtils.LISDateFormat.parse(line[headers.get("afname")]);
             if(sampleDate.before(earliestDate)) {
                 earliestDate = sampleDate;
             }
-            uniqueTests.add(line[headers.get("aanvraagTestNaam")]);
+            if(!lisTests.containsKey(aanvraagTestNaam))
+                lisTests.put(aanvraagTestNaam,new ErrorTypes());
             
             String reeel = line[headers.get("reeel")];
             String resultaat = line[headers.get("resultaat")];
@@ -256,7 +283,7 @@ public class AutoImport {
                 variables.put("reeel", reeel);
                 variables.put("resultaat",resultaat);
                 variables.put("elementNaam", line[headers.get("elementNaam")]);
-                variables.put("aanvraagTestNaam", line[headers.get("aanvraagTestNaam")]);
+                variables.put("aanvraagTestNaam", aanvraagTestNaam);
                 variables.put("relatie", line[headers.get("relatie")]);
                 variables.put("eenheden", line[headers.get("eenheden")]);
                 variables.put("relatie+reeel", line[headers.get("relatie")]+reeel);
@@ -269,23 +296,44 @@ public class AutoImport {
                 }
                 variables.put("reeel*1000", ""+ul);
                 
+                TestResult tr = null;
                 try {
-                    TestResult tr = objMapper.getTestResult(variables);
-                    if(tr != null){
-                        tr.setSampleId(correctId);
-                        tr.setTestDate(sampleDate);
-                        
-                        if(duplicateTestResult(p, tr))
-                            return;
-                        
-                        p.addTestResult(tr);
-                    }
-                } catch (MappingException e) {
-                    log(line.toString());
+                    tr = objMapper.getTestResult(variables);
+                    tr.setSampleId(correctId);
+                    tr.setTestDate(sampleDate);
+                    
+                    if(duplicateTestResult(p, tr))
+                        return;
+                    
+                    p.addTestResult(tr);
+                }
+                catch(MappingDoesNotExistException e){
+                    logError(lineNumber +": "+ e.getMessage());
+                    lisTests.get(aanvraagTestNaam).mapping = true;
+                    logNotImported(toString(line));
+                }
+                catch(ObjectDoesNotExistException e){
+                    logError(lineNumber +": "+ e.getMessage());
+                    lisTests.get(aanvraagTestNaam).object = true;
+                    logNotImported(toString(line));
+                }
+                catch(InvalidValueException e){
+                    logError(lineNumber +": "+ e.getMessage());
+                    lisTests.get(aanvraagTestNaam).value = true;
+                    logNotImported(toString(line));
+                }
+                catch (MappingException e) {
+                    logError("MappingException at line "+ lineNumber +": "+ e.getMessage());
+                    logNotImported(toString(line));
+                }
+                catch (Exception e){
+                    logError("Exception at line "+ lineNumber +": "+ e.getMessage());
+                    logNotImported(toString(line));
                 }
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            logNotImported(toString(line));
+            logError("ParseException at line "+ lineNumber +": "+ e.getMessage());
         }
     }
        
@@ -345,7 +393,23 @@ public class AutoImport {
         return objectStore.createPatient(dataset, ead);
     }
     
-    private void log(String msg){
-        logger.println(msg);
+    private void logNotImported(String msg){
+        importLog.println(msg);
+    }
+    private void logError(String msg){
+        errLog.println(msg);
+    }
+    private void logInfo(String msg){
+        System.out.println(msg);
+        logError(msg);
+    }
+    
+    private String toString(String[] line){
+        StringBuilder sb = new StringBuilder();
+        for(String s : line){
+            sb.append(s);
+            sb.append('\t');
+        }
+        return sb.toString();
     }
 }
