@@ -26,17 +26,33 @@ public class ObjectMapper{
     }
     @SuppressWarnings("serial")
     public static class MappingDoesNotExistException extends MappingException{
+        public String msg;
+        
+        public MappingDoesNotExistException(Map<String, String> variables){
+            super();
+            StringBuilder sb = new StringBuilder("No mapping available: ");
+            for(Map.Entry<String, String> me : variables.entrySet()){
+                sb.append(me.getKey());
+                sb.append("='");
+                sb.append(me.getValue());
+                sb.append("', ");
+            }
+            msg = sb.toString();
+        }
+        public String getMessage(){
+            return msg;
+        }
     }
     @SuppressWarnings("serial")
     public static class ObjectDoesNotExistException extends MappingException{
-        public ObjectDoesNotExistException(String obj){
-            super("object: '"+ obj +'\'');
+        public ObjectDoesNotExistException(String msg){
+            super("Mapping to a non-existing object: "+ msg);
         }
     }
     @SuppressWarnings("serial")
     public static class InvalidValueException extends MappingException{
-        public InvalidValueException(String obj){
-            super("value: '"+ obj +'\'');
+        public InvalidValueException(String msg){
+            super("Invalid value: "+ msg);
         }
     }
     
@@ -60,32 +76,39 @@ public class ObjectMapper{
         this.mapper = mapper;
     }
     
+    public TestMapping getTestMapping(Map<String,String> variables) throws MappingDoesNotExistException{
+        TestMapping tm = mapper.getTest(variables);
+        if(tm == null)
+            throw new MappingDoesNotExistException(variables);
+        return tm;
+    }
+    
     public Test getTest(Map<String,String> variables) throws MappingException{
-        return getTest(mapper.getTest(variables));
+        return getTest(getTestMapping(variables));
     }
     
     public TestResult getTestResult(Map<String,String> variables) throws MappingException{
-        return getTestResult(mapper.getTest(variables), variables);
+        return getTestResult(getTestMapping(variables), variables);
     }
     
-    public Attribute getAttribute(Map<String,String> variables){
-        return getAttribute(mapper.getAttribute(variables));
+    public AttributeMapping getAttributeMapping(Map<String,String> variables) throws MappingDoesNotExistException{
+        AttributeMapping am = mapper.getAttribute(variables);
+        if(am == null)
+            throw new MappingDoesNotExistException(variables);
+        return am;
+    }
+    public Attribute getAttribute(Map<String,String> variables) throws MappingDoesNotExistException{
+        return getAttribute(getAttributeMapping(variables));
     }
     
     public PatientAttributeValue getAttributeValue(Map<String,String> variables) throws MappingException{
-        AttributeMapping am = mapper.getAttribute(variables);
-        if(am != null)
-            return getAttributeValue(am, variables);
-        return null;
+        return getAttributeValue(getAttributeMapping(variables), variables);
     }
     
     public Test getTest(TestMapping m) throws MappingException{
-        if(m == null)
-            throw new MappingDoesNotExistException();
-        
         TestType tt = getObjectStore().getTestType(m.getTestTypeDescription(), m.getOrganismName());
         if(tt == null)
-            throw new ObjectDoesNotExistException(m.getTestTypeDescription());
+            throw new ObjectDoesNotExistException("test type: '"+ m.getTestTypeDescription() +'\'');
         
         Test t = getObjectStore().getTest(m.getTestDescription(), m.getTestTypeDescription(), m.getOrganismName());
         if(t == null){
@@ -93,7 +116,7 @@ public class ObjectMapper{
                 t = new Test(tt, m.getTestDescription());
             }
             else
-                throw new ObjectDoesNotExistException(m.getTestDescription());
+                throw new ObjectDoesNotExistException("test: '"+ m.getTestDescription() +'\'');
         }
             
         return t;
@@ -116,7 +139,7 @@ public class ObjectMapper{
                     t.getTestType().getTestNominalValues().add(tnv);
                 }
                 else
-                    throw new InvalidValueException(value);
+                    throw new InvalidValueException("test '"+ t.getDescription() +"' nominal value: '"+ value +'\'');
             }
             
             tr.setTestNominalValue(tnv);
@@ -125,7 +148,7 @@ public class ObjectMapper{
             if(ValueTypes.isValidValue(t.getTestType().getValueType(), value))
                 tr.setValue(value);
             else
-                throw new InvalidValueException(value);
+                throw new InvalidValueException("test '"+ t.getDescription() +"' value: '"+ value +'\'');
         }
         
         return tr;
@@ -139,7 +162,7 @@ public class ObjectMapper{
         Attribute a = getAttribute(am);
         
         if(a == null)
-            throw new ObjectDoesNotExistException(am.getName());
+            throw new ObjectDoesNotExistException("attribute: '"+ am.getName() +'\'');
         
         PatientAttributeValue pav = new PatientAttributeValue();
         pav.setAttribute(a);
@@ -154,7 +177,7 @@ public class ObjectMapper{
                     a.getAttributeNominalValues().add(anv);
                 }
                 else
-                    throw new InvalidValueException(value);
+                    throw new InvalidValueException("attribute '"+ a.getName() +"' nominal value: '"+ value +'\'');
             }
             
             pav.setAttributeNominalValue(anv);
@@ -164,7 +187,7 @@ public class ObjectMapper{
                 pav.setValue(value);
             }
             else
-                throw new InvalidValueException(value);
+                throw new InvalidValueException("attribute '"+ a.getName() +"' value: '"+ value +'\'');
         }
         return pav;
     }
