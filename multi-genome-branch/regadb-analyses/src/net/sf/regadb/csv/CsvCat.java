@@ -16,6 +16,10 @@ public class CsvCat {
 		/*
 		 * Open two csv files, and merge them columnwise.
 		 */
+		if(args.length != 3){
+			System.err.println("Usage: csvcat in.csv in2.csv out.csv");
+			return;
+		}
 		String file1 = args[0];
 		String file2 = args[1];
         String prep1 = null;

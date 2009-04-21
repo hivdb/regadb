@@ -403,8 +403,7 @@ public class Table {
 		Pattern p = Pattern.compile(pattern);
 		for(int i = 0; i < header.size(); i++){
 			if(p.matcher(header.get(i)).matches()){
-				colsToBeDeleted.add(i);
-				System.out.println(i);
+				colsToBeDeleted.add(i);				
 			}
 		}
 		deleteColumns(colsToBeDeleted);		
