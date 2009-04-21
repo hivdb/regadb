@@ -332,4 +332,23 @@ public class CodonAlign {
             e.printStackTrace();
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    public static String toString(Alignment alignment){
+        StringBuilder sb = new StringBuilder();
+        
+        java.util.Iterator<SymbolList> iter = alignment.symbolListIterator();
+        while(iter.hasNext()){
+            SymbolList sl = iter.next();
+            String s = sl.seqString();
+            for(int i = 0; i<s.length(); ++i){
+                if((i % 3) == 0)
+                    sb.append(' ');
+                sb.append(s.charAt(i));
+            }
+            sb.append('\n');
+        }
+        
+        return sb.toString();
+    }
 }
