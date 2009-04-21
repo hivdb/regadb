@@ -7,21 +7,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import be.kuleuven.rega.research.conserved.MutationsPrevalence;
 
 public class MutationSetOutputter implements ConservedRegionsOutputter {
-	private Map<Integer, Character> mutations = new HashMap<Integer, Character>();
+	private String[] mutations;
 	private Table table = new Table();
 	private File tableFileName;
 	
 	public MutationSetOutputter(File tableFileName, String ... mutations) {
-		for(String m : mutations) {
-			this.mutations.put(Integer.parseInt(m.substring(0, m.length()-1)), m.charAt(m.length()-1));
-		}
+		this.mutations = mutations;
 		
 		this.tableFileName = tableFileName;
 		
@@ -37,8 +34,13 @@ public class MutationSetOutputter implements ConservedRegionsOutputter {
 		
 		ArrayList<String> row = new ArrayList<String>();
 		row.add(groupName);
-		for(Map.Entry<Integer, Character> e : mutations.entrySet()) {
-			row.add(prevalences.get(e.getKey()).totalMutations(e.getValue())+"");
+		
+		int position;
+		char aminoAcid;
+		for(String m : mutations) {
+			position = m.charAt(0);
+			aminoAcid = m.charAt(1);
+			row.add(prevalences.get(position).totalMutations(aminoAcid)+"");
 		}
 		
 		table.addRow(row);
