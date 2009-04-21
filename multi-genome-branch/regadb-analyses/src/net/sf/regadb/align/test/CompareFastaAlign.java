@@ -2,6 +2,7 @@ package net.sf.regadb.align.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,10 +20,10 @@ public class CompareFastaAlign {
 		
 		if(lines_v1.size()==lines_v2.size()) {
 			for(int i = 0; i<lines_v1.size(); i++) {
-				String[] s_v1 = lines_v1.get(i).split(" ");
+				String[] s_v1 = removeEndInsertion(lines_v1.get(i).split(" "));
 				proToPr(s_v1);
 				Arrays.sort(s_v1);
-				String[] s_v2 = lines_v2.get(i).split(" ");
+				String[] s_v2 = removeEndInsertion(lines_v2.get(i).split(" "));
 				proToPr(s_v2);
 				Arrays.sort(s_v2);
 				
@@ -50,5 +51,30 @@ public class CompareFastaAlign {
 				s_v[j] = "PRO" + s_v[j].substring(2);
 			}
 		}
+	}
+	
+	public static String[] removeEndInsertion(String []sa){
+	    ArrayList<String> list = new ArrayList<String>();
+	    
+	    for(String s : sa){
+	        if(s.startsWith("PR")){
+	            String spos = s.replaceFirst("^[^0-9]*([0-9]*)([^0-9].*)?$", "$1");
+
+//                System.err.println(s +"->"+ spos);
+
+	            try{
+    	            if(Integer.parseInt(spos) >= 99){
+    	                continue;
+    	            }
+	            }
+	            catch(Exception e){
+	                System.out.println("Can't find position: "+ s);
+	            }
+	        }
+            list.add(s);
+	    }
+	    
+	    String[] ret = new String[list.size()];
+	    return list.toArray(ret);
 	}
 }
