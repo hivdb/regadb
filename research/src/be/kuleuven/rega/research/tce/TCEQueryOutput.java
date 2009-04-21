@@ -44,7 +44,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 	private List<DrugGeneric> genericDrugs = QueryUtils.prepareRegaDrugGenerics();
 	private List<Test> resistanceTests = Utils.getResistanceTests();
-	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs);
+	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
 	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat(
 	"dd/MM/yyyy");
@@ -55,7 +55,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
-		this.organism = organism;
+		this.organism = organism;		
 	}
 
 	public void process(TCE tce) {
@@ -346,7 +346,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	// TODO
 	// standard func
 	public List<DrugGeneric> getDrugsSortedOnResistanceRanking(
-			List<DrugGeneric> genericDrugs) {
+			List<DrugGeneric> genericDrugs, boolean includeAPV) {
 		List<DrugGeneric> resistanceGenericDrugs = new ArrayList<DrugGeneric>();
 
 		for (DrugGeneric dg : genericDrugs) {
@@ -370,6 +370,13 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 				}
 			}
 		});
+		
+		if(includeAPV) {
+			for (DrugGeneric dg : genericDrugs) {
+				if(dg.getGenericId().startsWith("APV"))
+					resistanceGenericDrugs.add(dg);
+			}
+		}
 
 		return resistanceGenericDrugs;
 	}
