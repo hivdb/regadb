@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -24,58 +25,11 @@ public class GenerateGenome {
     private Collection<RegionValue<Protein>> proteinRegions;
     
     public static void main(String[] args){
-        
-        GenerateGenome hiv1gen = new GenerateGenome("HIV-1","K03455.1|HIVHXB2CG Human immunodeficiency virus type 1 (HXB2)","genbank 1",getReferenceSequence("k03455.fasta"));
-        hiv1gen.generateFromFile("k03455.genome");
-        
+        String basename = "k03455";
+        GenerateGenome hiv1gen = new GenerateGenome("HIV-1","K03455.1|HIVHXB2CG Human immunodeficiency virus type 1 (HXB2)","genbank 1",getReferenceSequence(basename +".fasta"));
+        hiv1gen.generateFromFile(basename +".genome");
 
-        String refPol = "CTACAAGGGAAGGCCAGGGAATTTTCTTCAGAGCAGACCAGAGCCAACAGCCCCACCAGAAGAGAGCTTC"
-                                    + "AGGTCTGGGGTAGAGACAACAACTCCCCCTCAGAAGCAGGAGCCGATAGACAAGGAACTGTATCCTTTAA"
-                                    + "CTTCCCTCAGGTCACTCTTTGGCAACGACCCCTCGTCACAATAAAGATAGGGGGGCAACTAAAGGAAGCT"
-                                    + "CTATTAGATACAGGAGCAGATGATACAGTATTAGAAGAAATGAGTTTGCCAGGAAGATGGAAACCAAAAA"
-                                    + "TGATAGGGGGAATTGGAGGTTTTATCAAAGTAAGACAGTATGATCAGATACTCATAGAAATCTGTGGACA"
-                                    + "TAAAGCTATAGGTACAGTATTAGTAGGACCTACACCTGTCAACATAATTGGAAGAAATCTGTTGACTCAG"
-                                    + "ATTGGTTGCACTTTAAATTTTCCCATTAGCCCTATTGAGACTGTACCAGTAAAATTAAAGCCAGGAATGG"
-                                    + "ATGGCCCAAAAGTTAAACAATGGCCATTGACAGAAGAAAAAATAAAAGCATTAGTAGAAATTTGTACAGA"
-                                    + "GATGGAAAAGGAAGGGAAAATTTCAAAAATTGGGCCTGAAAATCCATACAATACTCCAGTATTTGCCATA"
-                                    + "AAGAAAAAAGACAGTACTAAATGGAGAAAATTAGTAGATTTCAGAGAACTTAATAAGAGAACTCAAGACT"
-                                    + "TCTGGGAAGTTCAATTAGGAATACCACATCCCGCAGGGTTAAAAAAGAAAAAATCAGTAACAGTACTGGA"
-                                    + "TGTGGGTGATGCATATTTTTCAGTTCCCTTAGATGAAGACTTCAGGAAGTATACTGCATTTACCATACCT"
-                                    + "AGTATAAACAATGAGACACCAGGGATTAGATATCAGTACAATGTGCTTCCACAGGGATGGAAAGGATCAC"
-                                    + "CAGCAATATTCCAAAGTAGCATGACAAAAATCTTAGAGCCTTTTAGAAAACAAAATCCAGACATAGTTAT"
-                                    + "CTATCAATACATGGATGATTTGTATGTAGGATCTGACTTAGAAATAGGGCAGCATAGAACAAAAATAGAG"
-                                    + "GAGCTGAGACAACATCTGTTGAGGTGGGGACTTACCACACCAGACAAAAAACATCAGAAAGAACCTCCAT"
-                                    + "TCCTTTGGATGGGTTATGAACTCCATCCTGATAAATGGACAGTACAGCCTATAGTGCTGCCAGAAAAAGA"
-                                    + "CAGCTGGACTGTCAATGACATACAGAAGTTAGTGGGGAAATTGAATTGGGCAAGTCAGATTTACCCAGGG"
-                                    + "ATTAAAGTAAGGCAATTATGTAAACTCCTTAGAGGAACCAAAGCACTAACAGAAGTAATACCACTAACAG"
-                                    + "AAGAAGCAGAGCTAGAACTGGCAGAAAACAGAGAGATTCTAAAAGAACCAGTACATGGAGTGTATTATGA"
-                                    + "CCCATCAAAAGACTTAATAGCAGAAATACAGAAGCAGGGGCAAGGCCAATGGACATATCAAATTTATCAA"
-                                    + "GAGCCATTTAAAAATCTGAAAACAGGAAAATATGCAAGAATGAGGGGTGCCCACACTAATGATGTAAAAC"
-                                    + "AATTAACAGAGGCAGTGCAAAAAATAACCACAGAAAGCATAGTAATATGGGGAAAGACTCCTAAATTTAA"
-                                    + "ACTGCCCATACAAAAGGAAACATGGGAAACATGGTGGACAGAGTATTGGCAAGCCACCTGGATTCCTGAG"
-                                    + "TGGGAGTTTGTTAATACCCCTCCCTTAGTGAAATTATGGTACCAGTTAGAGAAAGAACCCATAGTAGGAG"
-                                    + "CAGAAACCTTCTATGTAGATGGGGCAGCTAACAGGGAGACTAAATTAGGAAAAGCAGGATATGTTACTAA"
-                                    + "TAGAGGAAGACAAAAAGTTGTCACCCTAACTGACACAACAAATCAGAAGACTGAGTTACAAGCAATTTAT"
-                                    + "CTAGCTTTGCAGGATTCGGGATTAGAAGTAAACATAGTAACAGACTCACAATATGCATTAGGAATCATTC"
-                                    + "AAGCACAACCAGATCAAAGTGAATCAGAGTTAGTCAATCAAATAATAGAGCAGTTAATAAAAAAGGAAAA"
-                                    + "GGTCTATCTGGCATGGGTACCAGCACACAAAGGAATTGGAGGAAATGAACAAGTAGATAAATTAGTCAGT"
-                                    + "GCTGGAATCAGGAAAGTACTATTTTTAGATGGAATAGATAAGGCCCAAGATGAACATGAGAAATATCACA"
-                                    + "GTAATTGGAGAGCAATGGCTAGTGATTTTAACCTGCCACCTGTAGTAGCAAAAGAAATAGTAGCCAGCTG"
-                                    + "TGATAAATGTCAGCTAAAAGGAGAAGCCATGCATGGACAAGTAGACTGTAGTCCAGGAATATGGCAACTA"
-                                    + "GATTGTACACATTTAGAAGGAAAAGTTATCCTGGTAGCAGTTCATGTAGCCAGTGGATATATAGAAGCAG"
-                                    + "AAGTTATTCCAGCAGAAACAGGGCAGGAAACAGCATATTTTCTTTTAAAATTAGCAGGAAGATGGCCAGT"
-                                    + "AAAAACAATACATACTGACAATGGCAGCAATTTCACCGGTGCTACGGTTAGGGCCGCCTGTTGGTGGGCG"
-                                    + "GGAATCAAGCAGGAATTTGGAATTCCCTACAATCCCCAAAGTCAAGGAGTAGTAGAATCTATGAATAAAG"
-                                    + "AATTAAAGAAAATTATAGGACAGGTAAGAGATCAGGCTGAACATCTTAAGACAGCAGTACAAATGGCAGT"
-                                    + "ATTCATCCACAATTTTAAAAGAAAAGGGGGGATTGGGGGGTACAGTGCAGGGGAAAGAATAGTAGACATA"
-                                    + "ATAGCAACAGACATACAAACTAAAGAATTACAAAAACAAATTACAAAAATTCAAAATTTTCGGGTTTATT"
-                                    + "ACAGGGACAGCAGAAATCCACTTTGGAAAGGACCAGCAAAGCTCCTCTGGAAAGGTGAAGGGGCAGTAGT"
-                                    + "AATACAAGATAATAGTGACATAAAAGTAGTGCCAAGAAGAAAAGCAAAGATCATTAGGGATTATGGAAAA"
-                                    + "CAGATGGCAGGTGATGATTGTGTGGCAAGTAGACAGGATGAGGAT";
-        
-        System.out.println(hiv1gen);
-        refPol = refPol.toLowerCase();
-        System.out.println(refPol);
+        System.out.println(hiv1gen.toString(true));
     }
     
     public GenerateGenome(String organismName, String organismDescription, String genbankNumber, String fullGenome){
@@ -325,17 +279,36 @@ public class GenerateGenome {
     }
     
     public String toString(){
+        return toString(true);
+    }
+    
+    public String toString(boolean nt){
         StringBuffer sb = new StringBuffer();
         
         sb.append("Organism name:\t"+ getGenome().getOrganismName()  +"\n");
         sb.append("Organism description:\t"+ getGenome().getOrganismDescription() +"\n");
         sb.append("Genbank number:\t"+ getGenome().getGenbankNumber()  +"\n");
-        sb.append("Full genome:\n"+ getFullGenome() +"\n");
+        
+        sb.append("Full genome:\n");
+        if(nt)
+            sb.append(getFullGenome() +"\n");
+        else
+            sb.append(toAAString(getFullGenome()) +"\n");
+        
         for(OpenReadingFrame orf : getGenome().getOpenReadingFrames()){
-            sb.append(orf.getName() +":\t"+ orf.getReferenceSequence() +"\n");
+            sb.append(orf.getName() +":\t");
+            if(nt)
+                sb.append(orf.getReferenceSequence() +"\n");
+            else
+                sb.append(toAAString(orf.getReferenceSequence()) +"\n");
+            
             for(Protein p : orf.getProteins()){
                 String pSeq = orf.getReferenceSequence().substring(p.getStartPosition()-1,p.getStopPosition()-1);
-                sb.append("- "+ p.getFullName() +":\t"+ pSeq +"\n");
+                sb.append("- "+ p.getAbbreviation() +":\t");
+                if(nt)
+                    sb.append(pSeq +"\n");
+                else
+                    sb.append(toAAString(pSeq) +"\n");
                 
                 TreeSet<Integer> ts = new TreeSet<Integer>();
                 
@@ -354,12 +327,189 @@ public class GenerateGenome {
                         else{
                             sSeq = pSeq.substring(sp-1,pSeq.length());
                         }
-                        sb.append("-- "+ sp +":\t"+ sSeq +"\n");
+                        sb.append("-- "+ sp +":\t");
+                        if(nt)
+                            sb.append(sSeq +"\n");
+                        else
+                            sb.append(toAAString(sSeq) +"\n");
                     }
                 }
             }
         }
         
         return sb.toString();
+    }
+    
+    public String getProteinSeq(Protein p){
+        return p.getOpenReadingFrame().getReferenceSequence().substring(p.getStartPosition()-1,p.getStopPosition()-1);
+    }
+    
+    public String getProteinSeq(String abbr){
+        return getProteinSeq(getProtein(abbr));
+    }
+    
+    public Protein getProtein(String abbr){
+        for(OpenReadingFrame orf : genome.getOpenReadingFrames())
+            for(Protein p : orf.getProteins())
+                if(p.getAbbreviation().equals(abbr))
+                    return p;
+        return null;
+    }
+    
+    public char getAA(String abbr, int pos){
+        String s = getProteinSeq(getProtein(abbr));
+        s = toAAString(s);
+        return s.charAt(pos-1);
+    }
+    
+    public char printAA(String abbr, int pos){
+        char aa = getAA(abbr, pos);
+        System.out.println(abbr +" "+ pos + aa);
+        return aa;
+    }
+    
+    public boolean isMutation(String abbr, String mut){
+        String raas = toAAString(getProteinSeq(abbr));
+
+        String spos = mut.replaceAll("[A-Za-z]", "");
+        String aas = mut.replaceAll("[0-9]", "");
+        int pos = Integer.parseInt(spos);
+        
+        for(int i = 0; i < aas.length(); ++i){
+            char aa = aas.charAt(i);
+            
+            if(aa == raas.charAt(pos-1))
+                return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean printIsMutation(String abbr, String mut){
+        boolean ismut = isMutation(abbr,mut);
+        System.out.println(mut +" "+ ismut);
+        return ismut;
+    }
+    
+    public boolean printAreMutations(String abbr, String[] muts){
+        boolean aremuts = true;
+        
+        for(String mut : muts){
+            boolean ismut = isMutation(abbr,mut);
+            if(!ismut)
+                System.err.println(mut);
+            
+            aremuts &= ismut;
+        }
+        
+        return aremuts;
+    }
+    
+    
+    static HashMap<String,String> ntToAa = new HashMap<String, String>();
+    static{
+        ntToAa.put("ATT", "I");
+        ntToAa.put("ATC", "I");
+        ntToAa.put("ATA", "I");
+
+        ntToAa.put("CTT", "L");
+        ntToAa.put("CTC", "L");
+        ntToAa.put("CTA", "L");
+        ntToAa.put("CTG", "L");
+        ntToAa.put("TTA", "L");
+        ntToAa.put("TTG", "L");
+        
+        ntToAa.put("GTT", "V");
+        ntToAa.put("GTC", "V");
+        ntToAa.put("GTA", "V");
+        ntToAa.put("GTG", "V");
+        
+        ntToAa.put("TTT", "F");
+        ntToAa.put("TTC", "F");
+        
+        ntToAa.put("ATG", "M");
+        
+        ntToAa.put("TGT", "C");
+        ntToAa.put("TGC", "C");
+        
+        ntToAa.put("GCT", "A");
+        ntToAa.put("GCC", "A");
+        ntToAa.put("GCA", "A");
+        ntToAa.put("GCG", "A");
+        
+        ntToAa.put("GGT", "G");
+        ntToAa.put("GGC", "G");
+        ntToAa.put("GGA", "G");
+        ntToAa.put("GGG", "G");
+        
+        ntToAa.put("CCT", "P");
+        ntToAa.put("CCA", "P");
+        ntToAa.put("CCG", "P");
+        ntToAa.put("CCC", "P");
+        
+        ntToAa.put("ACT", "T");
+        ntToAa.put("ACA", "T");
+        ntToAa.put("ACG", "T");
+        ntToAa.put("ACC", "T");
+        
+        ntToAa.put("TCT", "S");
+        ntToAa.put("TCC", "S");
+        ntToAa.put("TCA", "S");
+        ntToAa.put("TCG", "S");
+        ntToAa.put("AGT", "S");
+        ntToAa.put("AGC", "S");
+        
+        ntToAa.put("TAT", "Y");
+        ntToAa.put("TAC", "Y");
+        
+        ntToAa.put("TGG", "W");
+        
+        ntToAa.put("CAA", "Q");
+        ntToAa.put("CAG", "Q");
+        
+        ntToAa.put("AAT", "N");
+        ntToAa.put("AAC", "N");
+        
+        ntToAa.put("CAT", "H");
+        ntToAa.put("CAC", "H");
+        
+        ntToAa.put("GAA", "E");
+        ntToAa.put("GAG", "E");
+        
+        ntToAa.put("GAT", "D");
+        ntToAa.put("GAC", "D");
+        
+        ntToAa.put("AAA", "K");
+        ntToAa.put("AAG", "K");
+        
+        ntToAa.put("CGT", "R");
+        ntToAa.put("CGC", "R");
+        ntToAa.put("CGA", "R");
+        ntToAa.put("CGG", "R");
+        ntToAa.put("AGA", "R");
+        ntToAa.put("AGG", "R");
+        
+        ntToAa.put("TAA","#");
+        ntToAa.put("TAG","#");
+        ntToAa.put("TGA","#");
+    }
+    
+    public static String toAAString(String nt){
+        StringBuilder aas = new StringBuilder();
+        
+        
+        for(int i = 0; i<nt.length(); i+=3){
+            String s;
+            
+            if(i+3 >= nt.length())
+                s = nt.substring(i).toUpperCase();
+            else
+                s = nt.substring(i, i+3).toUpperCase();
+            String aa = ntToAa.get(s);
+            if(aa == null)
+                aa = "["+s+"]";
+            aas.append(aa);
+        }
+        return aas.toString();
     }
 }
