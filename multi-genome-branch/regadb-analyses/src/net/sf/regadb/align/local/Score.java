@@ -10,6 +10,10 @@ public class Score {
     public Score(double score){
         this.setScore(score);
     }
+    public Score(double score, int gapSize){
+        setScore(score);
+        setGapSize(gapSize);
+    }
     
     public void setScore(double score) {
         this.score = score;
@@ -26,6 +30,6 @@ public class Score {
     }
     
     public Score clone(){
-        return this.clone();
+        return new Score(getScore(),getGapSize());
     }
 }

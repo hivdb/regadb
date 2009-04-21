@@ -272,6 +272,7 @@ public class FastLSA extends JFrame{
 
     public static void main(String args[]){
         Runtime runtime = Runtime.getRuntime();
+        System.out.println("OS:           "+ System.getProperty("os.name"));
         System.out.println("Processors:   "+ runtime.availableProcessors());
         System.out.println("Free memory:  "+ FileUtils.byteCountToDisplaySize(runtime.freeMemory()));
         System.out.println("Total memory: "+ FileUtils.byteCountToDisplaySize(runtime.totalMemory()));
@@ -325,8 +326,8 @@ public class FastLSA extends JFrame{
 
         fillGridCache(bounds, grid);
         
-        Line newCacheRow = grid.getBottomRow();
-        Line newCacheCol = grid.getRightColumn();
+        Line newCacheRow = grid.getBottomRightRow();
+        Line newCacheCol = grid.getBottomRightColumn();
 
         Bounds subProblem = bottomRightBounds(grid);
 //        visualTrace.bounds.add(subProblem);
@@ -425,14 +426,22 @@ public class FastLSA extends JFrame{
         int x = bounds.x1() - grid.bounds.x1() +1;
         x = (int)Math.floor(x / grid.stepX);
         
-        return grid.cols[x];
+        int y = bounds.y1() - grid.bounds.y1();
+        
+        Line ret = new Line(bounds.sizeY());
+        grid.cols[x].copy(y, y+bounds.sizeY(), ret);
+        return ret;
     }
 
     private Line cachedRow(Grid grid, Bounds bounds) {
         int y = bounds.y1() - grid.bounds.y1() +1;
         y = (int)Math.floor(y / grid.stepY);
         
-        return grid.rows[y];
+        int x = bounds.x1() - grid.bounds.x1();
+        
+        Line ret = new Line(bounds.sizeX());
+        grid.rows[y].copy(x, x+bounds.sizeX(), ret);
+        return ret;
     }
 
     public Bounds bottomRightBounds(Grid grid){

@@ -39,6 +39,18 @@ public class Grid{
     public Line getRightColumn(){
         return cols[cols.length-1];
     }
+    
+    public Line getBottomRightRow(){
+        int b = (cols.length-1) * stepX;
+        int n = bounds.sizeX();
+        return getBottomRow().subLine(b,n);
+    }
+    
+    public Line getBottomRightColumn(){
+        int b = (rows.length-1) * stepY;
+        int n = bounds.sizeY();
+        return getRightColumn().subLine(b,n);
+    }
 
     public static class Line{
         private Score scores[];
@@ -66,10 +78,15 @@ public class Grid{
             scores[i] = score;
         }
         
-        public void copy(int begin, int end, Line line){
+        public Line subLine(int begin, int end){
+            Line line = new Line(end - begin);
+            line.copy(begin, end, this);
+            return line;
+        }
+        public void copy(int begin, int end, Line from){
             int i=0;
             for(int j=begin; j<end; ++j)
-                scores[i++] = line.scores[j].clone();
+                scores[i++] = from.scores[j].clone();
                 
         }
         
