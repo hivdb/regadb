@@ -46,8 +46,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private List<Test> resistanceTests = Utils.getResistanceTests();
 	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
-	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat(
-	"dd/MM/yyyy");
+	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private boolean first = true;
 	
