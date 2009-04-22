@@ -16,6 +16,7 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.io.exportXML.ExportToXML;
+import net.sf.regadb.ui.framework.IntegratedRegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -146,6 +147,9 @@ public class SinglePatientForm extends FormWidget
         if(patient.getPatientIi()!=null)
         {
             t.attach(patient);
+        }
+        else if(RegaDBMain.getApp() instanceof IntegratedRegaDBApplication){
+            patient.setPatientId(((IntegratedRegaDBApplication)RegaDBMain.getApp()).getPatientId());
         }
         
         for(Dataset ds : t.getCurrentUsersDatasets(Privileges.READWRITE))

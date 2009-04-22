@@ -14,6 +14,7 @@ import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 import eu.webtoolkit.jwt.WEnvironment;
 
 public class IntegratedRegaDBApplication extends RegaDBApplication{
+    private String patientId;
 
 	public IntegratedRegaDBApplication(WEnvironment env,
 			ServletContext servletContext) {
@@ -23,7 +24,9 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 		
 		Transaction t = getLogin().createTransaction();
 		Dataset ds = t.getDataset(env.getParameter("dataset"));
-		Patient p = t.getPatient(ds, env.getParameter("patient_id"));
+
+		patientId = env.getParameter("patient_id");
+		Patient p = t.getPatient(ds, patientId);
 		t.commit();
 		
 		
@@ -46,5 +49,9 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 	public void login(String uid){
 		setLogin(Login.getLogin(uid));
 		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(getLogin().copyLogin(), false));
+	}
+	
+	public String getPatientId(){
+	    return patientId;
 	}
 }
