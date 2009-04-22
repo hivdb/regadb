@@ -5,9 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.beanlib.hibernate.HibernateBeanReplicator;
+import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
+import net.sf.beanlib.provider.collector.PrivateSetterMethodCollector;
+import net.sf.beanlib.spi.PropertyFilter;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -15,7 +20,6 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.persistence.ExportToPersistentObjects;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
 public class CreateSnapshot {
@@ -28,7 +32,13 @@ public class CreateSnapshot {
 
 	public void create(String uid, String passwd){
 		try{
-			ExportToPersistentObjects export = new ExportToPersistentObjects();
+			PropertyFilter vetoer = new PropertyFilter() {
+			    public boolean propagate(String propertyName, Method readerMethod) {
+			        return !propertyName.equals("patient");
+			    }
+			};
+			
+			HibernateBeanReplicator rep = new Hibernate3BeanReplicator(null, null, vetoer).initSetterMethodCollector(new PrivateSetterMethodCollector());
 			Login login = Login.authenticate(uid, passwd);
 			Transaction t = login.createTransaction();
 			List<Dataset> datasets = t.getDatasets();
@@ -48,8 +58,9 @@ public class CreateSnapshot {
 					t.clearCache();
 					t = login.createTransaction();
 					Collection<Patient> patients = t.getPatients(t.getDataset(dataset),i,maxResults);
+					Patient pp;
 					for (Patient p : patients) {
-						export.initialize(p);
+						pp = p.copy(rep);
 						out.writeObject(p);
 					}					
 					out.reset();

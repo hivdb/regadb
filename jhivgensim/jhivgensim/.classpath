@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/bnj.jar"/>
 	<classpathentry kind="lib" path="lib/openjgraph.jar"/>
+	<classpathentry kind="lib" path="lib/beanlib-5.0.1beta.jar"/>
+	<classpathentry kind="lib" path="lib/beanlib-hibernate-5.0.1beta.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.beanlib.hibernate.HibernateBeanReplicator;
+
 public class Patient implements Serializable {
 
     public static final String FIRST_NAME = "First name";
@@ -316,5 +318,29 @@ public class Patient implements Serializable {
     
     public void addDataset(Dataset ds){
         getPatient().getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds,getPatient())));
+    }
+    
+    public Patient copy(HibernateBeanReplicator rep) {
+    	Patient newPatient = new Patient();
+    	
+    	newPatient.patient.setPatientAttributeValues(copy(rep, this.patient.getPatientAttributeValues()));
+    	newPatient.patient.setPatientDatasets(copy(rep, this.patient.getPatientDatasets()));
+    	newPatient.patient.setPatientEventValues(copy(rep, this.patient.getPatientEventValues()));
+    	newPatient.patient.setPatientId(this.patient.getPatientId());
+    	newPatient.patient.setTestResults(copy(rep, this.patient.getTestResults()));
+    	newPatient.patient.setTherapies(copy(rep, this.patient.getTherapies()));
+    	newPatient.patient.setViralIsolates(copy(rep, this.patient.getViralIsolates()));    	
+    	
+    	return newPatient;
+    }
+    
+    private Set copy(HibernateBeanReplicator rep, Set s) {
+    	Set cs = new HashSet();
+    	
+    	for(Object o : s) {
+    		cs.add(rep.copy(o));
+    	}
+    	
+    	return cs;
     }
 }
