@@ -6,6 +6,7 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WebController;
 
+@SuppressWarnings("serial")
 public class RegaDBMain extends WebController
 {
 	public RegaDBMain()
@@ -17,8 +18,15 @@ public class RegaDBMain extends WebController
 	public WApplication createApplication(WEnvironment env)
 	{
 		RegaDBApplication app;
+		RegaDBSettings settings;
 		
-		switch(RegaDBSettings.getInstance().getAccessPolicyConfig().getAccessMode()){
+		String confDir = getServletContext().getInitParameter("conf-dir");
+		if(confDir != null)
+		    settings = RegaDBSettings.getInstance(confDir);
+		else
+		    settings = RegaDBSettings.getInstance();
+		
+		switch(settings.getAccessPolicyConfig().getAccessMode()){
 			case INTEGRATED:
 				app = new IntegratedRegaDBApplication(env, this.getServletContext()); 
 				break;
@@ -27,7 +35,7 @@ public class RegaDBMain extends WebController
 				break;
 		}
         
-        RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
+        settings.getProxyConfig().initProxySettings();
         
         return app;
 	}

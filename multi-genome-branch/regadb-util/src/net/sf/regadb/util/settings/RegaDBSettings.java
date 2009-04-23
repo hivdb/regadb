@@ -27,26 +27,33 @@ public class RegaDBSettings {
     	configs.put(cfg.getXmlTag(),cfg);
     }
 
-    public static RegaDBSettings getInstance()
-    {
+    public static RegaDBSettings getInstance(){
         if(instance_==null)
         {
             instance_ = new RegaDBSettings();
             
             // determine configuration directory
-            String configFile = System.getenv("REGADB_CONF_DIR");
-            if(configFile==null) {
+            String confDir = System.getenv("REGADB_CONF_DIR");
+            if(confDir==null) {
                 String osName = System.getProperty("os.name");
                 osName = osName.toLowerCase();
                 if(osName.startsWith("windows"))
-                    configFile = "C:\\Program files\\rega_institute\\regadb\\global-conf.xml";
+                    confDir = "C:\\Program files\\rega_institute\\regadb";
                 else
-                    configFile = "/etc/rega_institute/regadb/global-conf.xml";
-            } else {
-                configFile += File.separatorChar + "global-conf.xml";
+                    confDir = "/etc/rega_institute/regadb";
             }
-            
-            instance_.parseConfFile(new File(configFile));
+            File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
+            instance_.parseConfFile(configFile);
+        }
+        return instance_;
+    }
+    
+    public static RegaDBSettings getInstance(String confDir){
+        if(instance_==null)
+        {
+            File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
+            instance_ = new RegaDBSettings();
+            instance_.parseConfFile(configFile);
         }
         return instance_;
     }
