@@ -16,6 +16,7 @@ import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.pair.Pair;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -34,6 +35,11 @@ public class InitRegaDB
         run(null);
     }
     
+    protected boolean isUninitialized(Session session){
+        Query q = session.createQuery("select count(*) from ValueType");
+        return (Long)q.uniqueResult() == 0;
+    }
+    
     public void run(ArrayList<Pair<String, String>> configurations) {
         Session session = null;
         if(configurations==null)
@@ -43,29 +49,27 @@ public class InitRegaDB
         
         session.beginTransaction();
         
-        addAdminUser(session);
-        ArrayList<TestObject> tos = initTestObjects(session);
-        
-        TestObject seqAnalysisTestObject = null;
-        TestObject resistanceTestObject = null;
-        for(TestObject to : tos)
-        {
-            if(to.getDescription().equals("Sequence analysis"))
+        if(isUninitialized(session)){
+            System.err.println("Initializing database.");
+            
+            addAdminUser(session);
+            ArrayList<TestObject> tos = initTestObjects(session);
+            
+            TestObject seqAnalysisTestObject = null;
+            for(TestObject to : tos)
             {
-                seqAnalysisTestObject = to;
+                if(to.getDescription().equals("Sequence analysis"))
+                {
+                    seqAnalysisTestObject = to;
+                }
             }
-            else if(to.getDescription().equals("Resistance test"))
-            {
-                resistanceTestObject = to;
-            }
+            
+            ArrayList<ValueType> valueTypes = initValueTypes(session);
+            initTherapyChangeMotivations(session);
+            AnalysisType wts = initAnalysisTypes(session);
+            initQueryDefinitionParameterTypes(session);
+            initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
         }
-        
-        ArrayList<ValueType> valueTypes = initValueTypes(session);
-        initTherapyChangeMotivations(session);
-        AnalysisType wts = initAnalysisTypes(session);
-        initQueryDefinitionParameterTypes(session);
-        initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
-        
         session.getTransaction().commit();
         session.close();
     }

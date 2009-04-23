@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-2.99.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-install"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

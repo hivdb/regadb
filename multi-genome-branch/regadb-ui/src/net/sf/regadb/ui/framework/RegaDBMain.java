@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework;
 
+import net.sf.regadb.install.initdb.InitRegaDB;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WApplication;
@@ -26,6 +27,11 @@ public class RegaDBMain extends WebController
 		else
 		    settings = RegaDBSettings.getInstance();
 		
+        settings.getProxyConfig().initProxySettings();
+        
+        InitRegaDB initDB = new InitRegaDB();
+        initDB.run();
+		
 		switch(settings.getAccessPolicyConfig().getAccessMode()){
 			case INTEGRATED:
 				app = new IntegratedRegaDBApplication(env, this.getServletContext()); 
@@ -34,8 +40,6 @@ public class RegaDBMain extends WebController
 				app = new RegaDBApplication(env, this.getServletContext());
 				break;
 		}
-        
-        settings.getProxyConfig().initProxySettings();
         
         return app;
 	}
