@@ -11,6 +11,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * Singleton class, it contains the RegaDB settings which are parsed from the global-conf.xml file.
+ * Since it's a singleton, it's import what getInstance method is called first as this will determine
+ * the configuration directory to be used to get the settings from.
+ */
 public class RegaDBSettings {
 	private HashMap<String, IConfigParser> configs = new HashMap<String, IConfigParser>();
 
@@ -32,7 +37,6 @@ public class RegaDBSettings {
         {
             instance_ = new RegaDBSettings();
             
-            // determine configuration directory
             String confDir = System.getenv("REGADB_CONF_DIR");
             if(confDir==null) {
                 String osName = System.getProperty("os.name");
@@ -64,10 +68,8 @@ public class RegaDBSettings {
         try {
             doc = builder.build(confFile);
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -99,7 +101,6 @@ public class RegaDBSettings {
         try {
             outputter.output(n, System.out);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -110,7 +111,6 @@ public class RegaDBSettings {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
