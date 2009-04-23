@@ -7,10 +7,19 @@ import org.jdom.Element;
 public class ProxyConfig implements IConfigParser {
 	public static class ProxyServer{
 		private String host, port;
+		private String user, password;
 		
 		public ProxyServer(String host, String port){
 			this.host = host;
 			this.port = port;
+			this.user = null;
+			this.password = null;
+		}
+		
+		public ProxyServer(String host, String port, String user, String password){
+		    this(host, port);
+		    this.user = user;
+		    this.password = password;
 		}
 		
 		public String getHost(){
@@ -18,6 +27,12 @@ public class ProxyConfig implements IConfigParser {
 		}
 		public String getPort(){
 			return port;
+		}
+		public String getUser(){
+		    return user;
+		}
+		public String getPassword(){
+		    return password;
 		}
 	}
 
@@ -34,7 +49,17 @@ public class ProxyConfig implements IConfigParser {
 	public void parseXml(RegaDBSettings settings, Element e) {
 		for(Object o : e.getChildren()){
 			Element ee = (Element)o;
-			ProxyServer ps = new ProxyServer(ee.getChildTextTrim("url"),ee.getChildTextTrim("port"));
+			ProxyServer ps;
+			
+			String host = ee.getChildTextTrim("host");
+			String port = ee.getChildTextTrim("port");
+			String user = ee.getChildTextTrim("user");
+			String pass = ee.getChildTextTrim("password");
+			
+			if(user == null)
+			    ps = new ProxyServer(host, port);
+			else
+			    ps = new ProxyServer(host, port, user, pass);
 			proxyList.add(ps);
 		}
 	}
@@ -57,6 +82,18 @@ public class ProxyConfig implements IConfigParser {
 			ee = new Element("port");
 			ee.setText(ps.getPort());
 			e.addContent(ee);
+			
+			if(ps.getUser() != null){
+			    ee = new Element("user");
+			    ee.setText(ps.getUser());
+			    e.addContent(ee);
+			}
+			
+			if(ps.getPassword() != null){
+                ee = new Element("password");
+                ee.setText(ps.getPassword());
+                e.addContent(ee);
+            }
 		}
 		
 		return r;
@@ -67,12 +104,17 @@ public class ProxyConfig implements IConfigParser {
 	}
 	
     public void setProxySettings(ProxyServer proxy){
-    	String host = proxy.getHost();
-    	String port = proxy.getPort();
-        if(host != null && host.length() > 0){
+        if(proxy.getHost() != null){
             System.setProperty("http.proxyHost", proxy.getHost());
-            if(port != null && port.length() > 0)
+            
+            if(proxy.getPort() != null)
             	System.setProperty("http.proxyPort", proxy.getPort());
+
+            if(proxy.getUser() != null)
+                System.setProperty("http.proxyUser", proxy.getUser());
+            
+            if(proxy.getPassword() != null)
+                System.setProperty("http.proxyPassword", proxy.getPassword());
         }
     }
     
