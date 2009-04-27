@@ -112,7 +112,7 @@ public class ParseTests extends Parser {
         if(tr2 !=  null){
         	p.getTestResults().remove(tr);
         	if(!tr.getValue().equals(tr2.getValue()))
-        	    logWarn(p,"Duplicate test result",tr.getTest().getDescription() +" "+ DateUtils.getEuropeanFormat(d) +" values: "+ tr.getValue() +" vs "+ tr2.getValue());
+        	    logWarn(p,"Duplicate test result",tr.getTest().getDescription() +" "+ simpleFormat.format(d) +" values: "+ tr.getValue() +" vs "+ tr2.getValue());
         	
         	return tr2;
         }

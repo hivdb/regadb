@@ -7,13 +7,8 @@ import java.util.Date;
 
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-
-//TODO
-//rethink these mechanisms
 public class DateUtils 
 {
-    private static SimpleDateFormat europeanDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    
     public static String getHQLdateFormatString() {
     	return "DD-MM-YYYY";
     }
@@ -21,6 +16,7 @@ public class DateUtils
     public static String format(String timestamp){
     	return format(parseDate(timestamp));
     }
+    
     public static String format(Date date){
         if(date == null)
             return "";
@@ -28,6 +24,7 @@ public class DateUtils
     	SimpleDateFormat sdf = new SimpleDateFormat(RegaDBSettings.getInstance().getDateFormat());
     	return sdf.format(date);
     }
+    
     public static Date parse(String date){
     	if(date == null || date.trim().length() == 0)
     		return null;
@@ -39,29 +36,6 @@ public class DateUtils
 			e.printStackTrace();
 			return null;
 		}
-    }
-    
-    public static Date parseEuropeanDate(String europeanDate)
-    {
-    	if (europeanDate.trim().equals("")) {
-    		return null;
-    	}
-    	
-        try{
-            return europeanDateFormat.parse(europeanDate);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    public static String getEuropeanFormat(Date date)
-    {
-    	if(date == null)
-    		return "";
-    	else
-    		return europeanDateFormat.format(date);
     }
     
     public static int compareDates(Date date1, Date date2)
@@ -84,10 +58,6 @@ public class DateUtils
     public static Date parseDate(String timestamp){
         long l = Long.parseLong(timestamp);
         return new Date(l);
-    }
-    
-    public static String getEuropeanFormat(String timestamp){
-        return getEuropeanFormat(parseDate(timestamp));
     }
     
     public static Date getDateOffset(Date base, int calendarUnit, int offset){

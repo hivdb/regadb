@@ -189,7 +189,7 @@ public class ParseTherapies extends Parser{
                     }
                 }
                 else{
-                    logWarn(p, "duplicate agentNo found in therapy "+ DateUtils.getEuropeanFormat(tp.getStartDate()), getCurrentFile(), row, drugNo);
+                    logWarn(p, "duplicate agentNo found in therapy "+ simpleFormat.format(tp.getStartDate()), getCurrentFile(), row, drugNo);
                 }
             }
         }
