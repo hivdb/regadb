@@ -96,10 +96,10 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			first = false;
 		}
 
-		//TODO temporary fix, hibernate exception when there are to much patients
-		if(getDatasource(tce.getPatient()).getDescription().toLowerCase().startsWith("karoli")) {
-			return;
-		}
+//TODO temporary fix, hibernate exception when there are to much patients
+//		if(getDatasource(tce.getPatient()).getDescription().toLowerCase().startsWith("karoli")) {
+//			return;
+//		}
 		
 		//data
 		ViralIsolate vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
@@ -174,7 +174,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(getPatientAttributeValue(tce.getPatient(), "Transmission group"));
 		addColumn(getPatientAttributeValue(tce.getPatient(), "Ethnicity"));
 		addColumn(getPatientAttributeValue(tce.getPatient(), "Country of origin"), true);
-
 	}
 
 	private void addCD4VLHeader(String timePoint) {
@@ -186,11 +185,18 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, TestType testType) {
 		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
-		TestResult tr = closestToDate(tce.getStartDate(), trs);
+		List<TestResult> trs_interval = new ArrayList<TestResult>();
+		for(TestResult tr_i : trs) {
+			if(QueryUtils.betweenInterval(tr_i.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
+				trs_interval.add(tr_i);
+			}
+		}
+		
+		TestResult tr = closestToDate(tce.getStartDate(), trs_interval);
 		
 		//TODO
 		//betweenOrEquals ???
-		if(tr!=null && QueryUtils.betweenInterval(tr.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
+		if(tr!=null) {
 			addColumn(this.dateOutputFormat.format(tr.getTestDate()));
 			addColumn(tr.getValue());
 		} else {
