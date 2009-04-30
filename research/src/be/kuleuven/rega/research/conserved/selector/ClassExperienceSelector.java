@@ -20,14 +20,15 @@ public class ClassExperienceSelector implements Selector {
 		boolean experience = false;
 		
 		for(DrugGeneric dg : s.drugs) {
-			if(dg.getDrugClass().getClassId().equals(drugClass)) {
-				experience = true;
-				break;
-			}
 			for(String ed : excludedDrugs) {
 				if(ed.toLowerCase().equals(dg.getGenericId().toLowerCase()))
 					return false;
 			}
+			if(dg.getDrugClass().getClassId().equals(drugClass)) {
+				experience = true;
+				break;
+			}
+			
 		}
 		
 		return experience;
