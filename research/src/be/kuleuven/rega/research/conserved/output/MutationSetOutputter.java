@@ -38,11 +38,10 @@ public class MutationSetOutputter implements ConservedRegionsOutputter {
 		int position;
 		char aminoAcid;
 		for(String m : mutations) {
-			position = m.charAt(0);
-			aminoAcid = m.charAt(1);
+			position = Integer.valueOf(m.substring(0,m.length()-1));
+			aminoAcid = m.charAt(m.length()-1);
 			row.add(prevalences.get(position).totalMutations(aminoAcid)+"");
-		}
-		
+		}		
 		table.addRow(row);
 	}
 	
