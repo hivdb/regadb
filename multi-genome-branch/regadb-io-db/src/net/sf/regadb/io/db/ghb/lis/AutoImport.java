@@ -26,6 +26,7 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -78,7 +79,7 @@ public class AutoImport {
         }
     }
     
-    private FileLogger errLog, importLog;
+    private FileLogger errLog, importLog, infoLog;
     private Date earliestDate = new Date(System.currentTimeMillis());
     
     public Date firstCd4 = new Date();
@@ -101,15 +102,16 @@ public class AutoImport {
                 new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml"),
                 new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping"));
                 
-        ai.run(new File("/home/simbre1/import/ghb/2009-04-07"));
+        try {
+			ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis"));
+        	//ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis/test.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
     }
     
     public AutoImport(File mappingFile, File nationMappingFile) {
         try {
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            File logDir = RegaDBSettings.getInstance().getInstituteConfig().getLogDir();
-            importLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar +"ghb-not-imported-"+ date +".txt"));
-            errLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar +"ghb-error-log-"+ date +".txt"));
             
             xmlMapper = new XmlMapper(mappingFile);
             
@@ -136,16 +138,20 @@ public class AutoImport {
         return null;
     }
     
-    public void run(File dir) {
-                
-        File[] files = dir.listFiles();
-        for(final File f : files) {
-            if(f.getAbsolutePath().endsWith(".txt") && f.getName().startsWith("GHB")){
-                parse(f);
-            }
-        }
-        
-        for(String s: temp) {
+    public void run(File path) throws FileNotFoundException{
+    	String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    	String logFile = File.separatorChar + date + ".log";
+    	
+    	if(path.isFile()){
+    		infoLog = new FileLogger(new File(path.getParent() + logFile));
+    		process(path);
+    	}
+    	else if(path.isDirectory()){
+    		infoLog = new FileLogger(new File(path.getAbsolutePath() + logFile));
+    		batchProcess(path);
+    	}
+    	
+    	for(String s: temp) {
             System.err.println(s);
         }
         
@@ -154,11 +160,23 @@ public class AutoImport {
             logInfo(me.getKey() +": \t"+ me.getValue());
         logInfo("------");
         
-        importLog.close();
-        errLog.close();
+        infoLog.close();
     }
     
-    private void parse(File file){
+    public void batchProcess(File dir) throws FileNotFoundException {
+        File[] files = dir.listFiles();
+        for(final File f : files) {
+            if(f.getAbsolutePath().endsWith(".txt") && f.getName().startsWith("GHB")){
+                process(f);
+            }
+        }
+    }
+    
+    public void process(File file) throws FileNotFoundException{
+        File logDir = RegaDBSettings.getInstance().getInstituteConfig().getLogDir();
+        errLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar + file.getName() +".errors.txt"));
+        importLog = new FileLogger(new File(logDir.getAbsolutePath() + File.separatorChar + file.getName() +".not-imported.txt"));
+    	
         logInfo("\nProcessing file: "+ file.getAbsolutePath());
         try {
             InputStream is = new FileInputStream(file);
@@ -171,7 +189,7 @@ public class AutoImport {
                 for(String s : tokenizeTab(line))
                     headers.put(s, i++);
             
-                int n = 1;
+                int n = 2;
                 while((line = br.readLine()) != null) {
                     String[] fields = tokenizeTab(line);
                     
@@ -192,6 +210,9 @@ public class AutoImport {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        importLog.close();
+        errLog.close();
     }
     
     private Patient handlePatient(Map<String,Integer> headers, String[] line, int lineNumber) {
@@ -214,7 +235,16 @@ public class AutoImport {
             p = createPatient(ead);
         }
         
-        Attribute emdAttribute = objectStore.getAttribute("EMD Number", "UZ Leuven");
+        Attribute emdAttribute = objectStore.getAttribute("EMD Number", StandardObjects.getClinicalAttributeGroup().getGroupName());
+        if(emdAttribute == null){
+        	Transaction t = ((DbObjectStore)objectStore).getTransaction();
+        	emdAttribute = new Attribute();
+        	emdAttribute.setName("EMD Number");
+        	emdAttribute.setAttributeGroup(t.getAttributeGroup(StandardObjects.getClinicalAttributeGroup().getGroupName()));
+        	emdAttribute.setValueType(t.getValueType(StandardObjects.getStringValueType().getDescription()));
+        	t.save(emdAttribute);
+        }
+        
         Attribute genderAttribute = objectStore.getAttribute(
                 StandardObjects.getGenderAttribute().getName(),
                 StandardObjects.getGenderAttribute().getAttributeGroup().getGroupName());
@@ -336,6 +366,7 @@ public class AutoImport {
                 }
                 catch (Exception e){
                     logError(lineNumber, "Exception: "+ e.getMessage());
+                    e.printStackTrace();
                     logNotImported(toString(line));
                 }
             }
@@ -384,7 +415,7 @@ public class AutoImport {
         for(TestResult tr : p.getTestResults()) {
             if(tr.getTest().getDescription().equals(result.getTest().getDescription()) &&
                     tr.getTestDate().equals(result.getTestDate()) &&
-                    tr.getSampleId().equals(result.getSampleId())) {
+                    equals(tr.getSampleId(),result.getSampleId())) {
                 if(tr.getTestNominalValue() == null)
                     return tr.getValue().equals(result.getValue());
                 else if(result.getTestNominalValue() != null)
@@ -393,6 +424,14 @@ public class AutoImport {
             }
         }
         return false;
+    }
+    
+    private boolean equals(String s1, String s2){
+    	if(s1 == s2)
+    		return true;
+    	if(s1 != null)
+    		return s1.equals(s2);
+    	return false;
     }
     
     private Patient getPatient(String ead){

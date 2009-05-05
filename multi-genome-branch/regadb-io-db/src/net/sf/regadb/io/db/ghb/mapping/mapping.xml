@@ -17,7 +17,7 @@
 			<match var="elementNaam" type="contains">CD4+ %</match>
 			<values var="reeel"/>
 		</test>
-		<test testtype="CD8 Count (cells/ul)" description="CD8 Count (generic)">
+		<test testtype="CD8 Count" description="CD8 Count (generic)">
 			<match var="elementNaam" type="contains">CD8+ Abs.w.</match>
 			<values var="reeel*1000"/>
 		</test>
@@ -59,6 +59,13 @@
 			<match type="and">
 				<match var="aanvraagTestNaam" type="contains">Hepatitis B surface antistoffen (aHBs)</match>
 				<match var="eenheden" type="contains">IU/L</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="HBsAg" description="HBsAg (generic)">
+			<match type="and">
+				<match var="elementNaam" type="contains">HBsAg</match>
+				<match var="eenheden" type="contains">S/N</match>
 			</match>
 			<values var="reeel"/>
 		</test>

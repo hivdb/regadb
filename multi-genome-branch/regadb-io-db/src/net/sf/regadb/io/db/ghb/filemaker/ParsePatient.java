@@ -8,7 +8,6 @@ import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.io.db.ghb.GhbUtils;
@@ -50,23 +49,21 @@ public class ParsePatient {
 //        int CCountryOfOrigin = Utils.findColumn(patientTable, "Land");
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
-        AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
-        AttributeGroup ghbAttributeGroup = new AttributeGroup("UZ Leuven");
         
         Attribute patCodeAttribute = new Attribute("PatCode");
-        patCodeAttribute.setAttributeGroup(ghbAttributeGroup);
+        patCodeAttribute.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
         patCodeAttribute.setValueType(StandardObjects.getStringValueType());
         
         Table countryOfOriginTable = Utils.readTable(countryOfOriginMapFile.getAbsolutePath());
         Table geographicOriginTable = Utils.readTable(geographicOriginMapFile.getAbsolutePath());
         Table transmissionGroupTable = Utils.readTable(transmissionGroupMapFile.getAbsolutePath());
         
-        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryOfOriginTable, regadbAttributeGroup, Utils.selectAttribute("Country of origin", regadbAttributes));
-        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, regadbAttributeGroup, Utils.selectAttribute("Geographic origin", regadbAttributes));
-        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, regadbAttributeGroup, Utils.selectAttribute("Transmission group", regadbAttributes));
+        NominalAttribute countryOfOriginA = new NominalAttribute("Country of origin", countryOfOriginTable, StandardObjects.getDemographicsAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes));
+        NominalAttribute geographicOriginA = new NominalAttribute("Geographic origin", geographicOriginTable, StandardObjects.getDemographicsAttributeGroup(), Utils.selectAttribute("Geographic origin", regadbAttributes));
+        NominalAttribute transmissionGroupA = new NominalAttribute("Transmission group", transmissionGroupTable, StandardObjects.getClinicalAttributeGroup(), Utils.selectAttribute("Transmission group", regadbAttributes));
         NominalAttribute genderA = new NominalAttribute("Gender", CGender, new String[] { "M", "V" },
                 new String[] { "male", "female" } );
-        genderA.attribute.setAttributeGroup(regadbAttributeGroup);
+        genderA.attribute.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
         
        
         for(int i=1; i<patientTable.numRows(); ++i){

@@ -17,7 +17,7 @@ import net.sf.regadb.io.util.IOUtils;
 // Files needed from filemaker pro are:
 //  - contacten.MER
 //  - eadnr_emdnr.MER
-//  - med_final.MER
+//  - medication.MER
 //  - patienten.MER
 //  - symptomen.MER
 //
@@ -32,43 +32,45 @@ public class ParseAll {
     private static char delimiter = ';';
     
     public static void main(String [] args) {
-        String eclipseFileMakerMappingDir;
-        String eadEmdNameFile;
+        String eadNrEmdNrFile;
         String patientenFile;
         String symptomenFile;
         String lisNationMappingFile;
-        String lisWorkingDir;
         String stalenLeuvenFile;
         String spreadStalenFile;
         String seqsToIgnoreFile;
         String macFastaFile;
         String pcFastaFile;
         String contactenFile;
-        String medFinalFile;
+        String medicatieFile;
         String filemakerMappingPath;
         String outputPath;
         
-        String importDir = args[0];
-        String workspace = args[1];
+        String importDir = new File(args[0]).getAbsolutePath() + File.separatorChar;
+        String workspaceDir = new File(args[1]).getAbsolutePath() + File.separatorChar;
         
-            eclipseFileMakerMappingDir  = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-            eadEmdNameFile              = importDir + "/import/ghb/filemaker/eadnr_emdnr.MER";
-            patientenFile               = importDir + "/import/ghb/filemaker/patienten.MER";
-            symptomenFile               = importDir + "/import/ghb/filemaker/symptomen.MER";
-            lisNationMappingFile        = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
-            lisWorkingDir               = importDir + "/import/ghb/";
-            stalenLeuvenFile            = importDir + "/import/ghb/seqs/Stalen Leuven.csv";
-            spreadStalenFile            = importDir + "/import/ghb/seqs/SPREAD_stalen.csv";
-            seqsToIgnoreFile            = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
-            macFastaFile                = importDir + "/import/ghb/seqs/MAC_final.fasta";
-            pcFastaFile                 = importDir + "/import/ghb/seqs/PC_final.fasta";
-            contactenFile               = importDir + "/import/ghb/filemaker/contacten.MER";
-            medFinalFile                = importDir + "/import/ghb/filemaker/med_final.MER";
-            filemakerMappingPath        = workspace + "/regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-            outputPath                  = importDir + "/import/ghb/xmlOutput/";
+        String lisDir = importDir + "lis" + File.separatorChar;
+        String filemakerDir = importDir + "filemaker" + File.separatorChar;
+        String seqDir = importDir + "sequences" + File.separatorChar;
+        
+        eadNrEmdNrFile              = filemakerDir + "eadnr_emdnr.MER";
+        patientenFile               = filemakerDir + "patienten.MER";
+        symptomenFile               = filemakerDir + "symptomen.MER";
+        contactenFile               = filemakerDir + "contacten.MER";
+        medicatieFile               = filemakerDir + "medicatie.MER";
+        
+        filemakerMappingPath        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+        lisNationMappingFile        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
+        seqsToIgnoreFile            = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
+        
+        stalenLeuvenFile            = seqDir + "Stalen Leuven.csv";
+        spreadStalenFile            = seqDir + "SPREAD_stalen.csv";
+        macFastaFile                = seqDir + "MAC_final.fasta";
+        pcFastaFile                 = seqDir + "PC_final.fasta";
+        outputPath                  = importDir;
         
         ParseEadEmd eadEmd = new ParseEadEmd();
-        eadEmd.run(eadEmdNameFile,patientenFile);
+        eadEmd.run(eadNrEmdNrFile,patientenFile);
         
         Map<String, Patient> eadPatients = new HashMap<String, Patient>();
         Map<String, Patient> patientIdPatients = new HashMap<String, Patient>();
@@ -81,7 +83,7 @@ public class ParseAll {
         
         MergeLISFiles mergeLIS = new MergeLISFiles(lisNationMappingFile);
         mergeLIS.patients = eadPatients;
-        mergeLIS.run(lisWorkingDir);
+        mergeLIS.run(lisDir);
         
         GetViralIsolates gvi = new GetViralIsolates();
         gvi.eadPatients = eadPatients;
@@ -89,20 +91,20 @@ public class ParseAll {
         
         ParsePatient parsePatient = new ParsePatient();
         parsePatient.parse( new File(patientenFile),
-                            new File(eclipseFileMakerMappingDir + "country_of_origin.mapping"),
-                            new File(eclipseFileMakerMappingDir + "geographic_origin.mapping"),
-                            new File(eclipseFileMakerMappingDir + "transmission_group.mapping"), patientIdPatients);
+                            new File(filemakerMappingPath + "country_of_origin.mapping"),
+                            new File(filemakerMappingPath + "geographic_origin.mapping"),
+                            new File(filemakerMappingPath + "transmission_group.mapping"), patientIdPatients);
         
         ParseSymptom parseSymptom = new ParseSymptom();
         parseSymptom.parse( new File(symptomenFile),
-                            new File(eclipseFileMakerMappingDir + "aids_defining_illness.mapping"),
+                            new File(filemakerMappingPath + "aids_defining_illness.mapping"),
                             patientIdPatients);
         
         ParseContacts parseContacts = new ParseContacts(mergeLIS.firstCd4, mergeLIS.firstCd8, mergeLIS.firstViralLoad);
         parseContacts.run(patientIdPatients, contactenFile);
         
         ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(medFinalFile,filemakerMappingPath);
+        parseTherapy.parseTherapy(medicatieFile,filemakerMappingPath);
         for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
             parseTherapy.mergeTherapies(e.getValue());
             parseTherapy.setStopDates(e.getValue());
