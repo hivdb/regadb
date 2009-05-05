@@ -30,7 +30,7 @@ public class DbObjectStore implements ObjectStore{
         setTransaction(getLogin().createTransaction());
     }
 
-    private Transaction getTransaction(){
+    public Transaction getTransaction(){
         return transaction;
     }
     private void setTransaction(Transaction transaction){
