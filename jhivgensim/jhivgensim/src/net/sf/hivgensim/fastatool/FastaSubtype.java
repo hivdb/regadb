@@ -18,11 +18,11 @@ public class FastaSubtype extends FastaTool {
 	private Genome g;
 	private Test t;
 
-	public FastaSubtype(String inputFilename,String outputFilename) throws FileNotFoundException {
+	public FastaSubtype(String inputFilename,String outputFilename,String uid, String passwd, String organism) throws FileNotFoundException {
 		super(inputFilename,outputFilename);
 		Login l = null;
 		try {
-			l = Login.authenticate("gbehey0", "bla123");
+			l = Login.authenticate(uid, passwd);
 		} catch (WrongUidException e) {
 			e.printStackTrace();
 		} catch (WrongPasswordException e) {
@@ -31,7 +31,7 @@ public class FastaSubtype extends FastaTool {
 			e.printStackTrace();
 		}
 		Transaction trans = l.createTransaction();
-		g = trans.getGenome("HIV-1");
+		g = trans.getGenome(organism);
 		t = trans.getTest("Rega Subtype Tool");		
 	}
 
@@ -60,9 +60,13 @@ public class FastaSubtype extends FastaTool {
 	}
 
 	public static void main(String args[]) throws FileNotFoundException{
-//		System.setProperty("http.proxyHost", "www-proxy");
-//		System.setProperty("http.proxyPort", "3128");	
-		FastaSubtype fs = new FastaSubtype("/home/gbehey0/nt-alignment.fasta","/home/gbehey0/out.csv");
+		if(args.length != 4 && args.length != 5){
+			System.err.println("Usage: FastaSubtype in.fasta out.csv uid passwd [organism]");
+			System.err.println("default organism = HIV-1");
+			System.exit(0);
+		}
+		String organism = args.length == 5 ? args[4] : "HIV-1";
+		FastaSubtype fs = new FastaSubtype(args[0],args[1],args[2],args[3],organism);
 		fs.processFastaFile();
 	}
 
