@@ -17,7 +17,7 @@ import java.util.Set;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
-import net.sf.hivgensim.queries.input.FromSnapshot;
+import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;

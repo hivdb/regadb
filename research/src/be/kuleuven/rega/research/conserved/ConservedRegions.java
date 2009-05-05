@@ -7,7 +7,7 @@ import java.util.Map;
 import net.sf.hivgensim.preprocessing.Utils;
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryOutput;
-import net.sf.hivgensim.queries.input.FromSnapshot;
+import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.regadb.db.Protein;
 import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
 import be.kuleuven.rega.research.conserved.output.MutationSetOutputter;
