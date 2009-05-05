@@ -10,9 +10,10 @@ public class InstituteConfig implements IConfigParser {
 	private Filter organismFilter = null;
 	private File logDir;
 	private File queryResultDir;
-	private String wivCentreName;
 	private int reportDateTolerance;
 	private String dateFormat;
+	
+	private WivConfig wivConfig;
 	
 	private HashMap<String, FormConfig> forms = new HashMap<String, FormConfig>();
 	
@@ -33,9 +34,11 @@ public class InstituteConfig implements IConfigParser {
 		if(ee != null)
 			queryResultDir = new File(ee.getTextTrim());
 		
-		ee = e.getChild("wiv-centre-name");
-		if(ee != null)
-			wivCentreName = ee.getTextTrim();
+		ee = e.getChild("wiv");
+		if(ee != null){
+			wivConfig = new WivConfig();
+			wivConfig.parseXml(settings, ee);
+		}
 		
 		ee = e.getChild("report-date-tolerance");
 		if(ee != null){
@@ -74,10 +77,11 @@ public class InstituteConfig implements IConfigParser {
 	public void setDefaults() {
 		setLogDir(new File("/etc/rega_institute/regadb/log"));
 		setQueryResultDir(new File("/etc/rega_institute/regadb/query"));
-		setWivCentreName("KUL");
 		setReportDateTolerance(2);
 		setDateFormat("dd/MM/yyyy");
 		organismFilter = null;
+		
+		wivConfig = null;
 		
 		forms.clear();
 		addFormConfig(new SelectPatientFormConfig());
@@ -100,9 +104,8 @@ public class InstituteConfig implements IConfigParser {
 		e.setText(getQueryResultDir().getAbsolutePath());
 		r.addContent(e);
 		
-		e = new Element("wiv-centre-name");
-		e.setText(wivCentreName);
-		r.addContent(e);
+		if(wivConfig != null)
+			r.addContent(wivConfig.toXml());
 		
 		e = new Element("report-date-tolerance");
 		e.setText(""+reportDateTolerance);
@@ -155,14 +158,6 @@ public class InstituteConfig implements IConfigParser {
 		return queryResultDir;
 	}
 
-	public void setWivCentreName(String wivCentreName) {
-		this.wivCentreName = wivCentreName;
-	}
-
-	public String getWivCentreName() {
-		return wivCentreName;
-	}
-
 	public void setReportDateTolerance(int reportDateTolerance) {
 		this.reportDateTolerance = reportDateTolerance;
 	}
@@ -177,5 +172,12 @@ public class InstituteConfig implements IConfigParser {
 
 	public String getDateFormat() {
 		return dateFormat;
+	}
+	
+	public WivConfig getWivConfig(){
+		return wivConfig;
+	}
+	public void setWivConfig(WivConfig wivConfig){
+		this.wivConfig = wivConfig;
 	}
 }

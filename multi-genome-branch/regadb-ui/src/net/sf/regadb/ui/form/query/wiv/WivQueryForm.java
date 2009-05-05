@@ -36,6 +36,7 @@ import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -75,10 +76,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     private String filename_;
     
     private SimpleDateFormat sdf_ = new SimpleDateFormat("yyyy-MM-dd");
-    private DecimalFormat decimalFormat = new DecimalFormat("##########.00");
-    
-    private static String arcPatientQuery = "select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = 'FOLLOW-UP' and lower(arc_pav.attributeNominalValue.value) = '1: arc of the same institution as arl'";
-
+    private DecimalFormat decimalFormat = new DecimalFormat("0.00");
     
     private HashMap<String,IFormField> parameters_ = new HashMap<String,IFormField>();
     
@@ -397,7 +395,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     }
     
     protected String getCentreName(){
-        return RegaDBSettings.getInstance().getInstituteConfig().getWivCentreName();
+        return RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getCentreName();
     }
     
     protected String getFormattedDate(Date date){
@@ -770,7 +768,12 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     	return RegaDBMain.getApp().createTransaction();
     }
     
-    protected String getArcPatientQuery(){
+    protected String getArcPatientQuery(String patientIiField){
+    	AttributeConfig ac = RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getArcPatientFilter();
+    	if(ac == null)
+    		return "1=1";
+    	
+    	String arcPatientQuery = patientIiField +" in (select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and lower(arc_pav.attributeNominalValue.value) = '"+ ac.getValue() +"')";
     	return arcPatientQuery;
     }
 }

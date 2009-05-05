@@ -31,12 +31,11 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
         super(tr("menu.query.wiv.arc.therapyAtc"),tr("form.query.wiv.label.arc.therapyAtc"),tr("file.query.wiv.arc.therapyAtc"));
 
         String query = "select tp, pav "+
-        "from Therapy tp inner join tp.patient p inner join p.patientAttributeValues pav "+
-        "where "+ therapyDateConstraint +
-        "and pav.attribute.name = 'PatCode' and p.patientIi in ("+ getArcPatientQuery() +")";
-
+        	"from Therapy tp inner join tp.patient p inner join p.patientAttributeValues pav "+
+        	"where "+ therapyDateConstraint +
+        	"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("p.patientIi");
+        
         setQuery(query);
-
     }
     
     public void init(){
@@ -96,7 +95,7 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
         			"select tp.patient from Therapy tp where " +
         				therapyDateConstraint +
         			") " +
-        		"and pav.attribute.name = 'PatCode' and pav.patient.patientIi in ("+ getArcPatientQuery() +")");
+        		"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("pav.patient.patientIi"));
         q.setDate("var_date", dateField.getDate());
         List<PatientAttributeValue> pavs = q.list();
         

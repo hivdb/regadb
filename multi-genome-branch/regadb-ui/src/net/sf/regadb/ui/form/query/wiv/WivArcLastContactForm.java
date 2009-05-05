@@ -62,9 +62,17 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         Date sdate = getStartDate();
         Date edate = getEndDate();
         
-        HibernateFilterConstraint hfc = new HibernateFilterConstraint();
-        hfc.setClause("patient.patientIi in ("+ getArcPatientQuery() +")");
-        List<Patient> patients = t.getPatients("",hfc);
+        List<Patient> patients;
+        
+        String aq = getArcPatientQuery("patient.patientIi");
+        if(aq != null){
+		    HibernateFilterConstraint hfc = new HibernateFilterConstraint();
+		    hfc.setClause(aq);
+		    patients = t.getPatients("",hfc);
+        }
+        else{
+        	patients = t.getPatients();
+        }
         
         ArrayList<String> row;
         Table out = new Table();

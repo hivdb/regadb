@@ -5,6 +5,7 @@ import org.jdom.Element;
 public class AttributeConfig {
 	private String name;
 	private String group;
+	private String value;
 	
 	public AttributeConfig() {
 		
@@ -35,9 +36,17 @@ public class AttributeConfig {
 		return group;
 	}
 	
+	public String getValue(){
+		return value;
+	}
+	public void setValue(String value){
+		this.value = value;
+	}
+	
 	public void parseXml(RegaDBSettings settings, Element e) {
 		name = e.getAttributeValue("name");
 		group = e.getAttributeValue("group");
+		value = e.getAttributeValue("value");
 	}
 
 	public Element toXml() {
@@ -45,6 +54,9 @@ public class AttributeConfig {
 		
 		ee.setAttribute("name", getName());
 		ee.setAttribute("group", getGroup());
+		
+		if(getValue()!=null)
+			ee.setAttribute("value", getValue());
 		
 		return ee;
 	}

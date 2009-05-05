@@ -18,10 +18,10 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
     
     public WivArcDeathsForm(){
         super(tr("menu.query.wiv.arc.deaths"),tr("form.query.wiv.label.arc.deaths"),tr("file.query.wiv.arc.deaths"));
-        setQuery("select pc, dd from PatientImpl as p inner join p.patientAttributeValues pc inner join p.patientAttributeValues dd " +
-        		"where p.patientIi in (" + getArcPatientQuery() +") "+
-        		"and pc.attribute.name = 'PatCode' and dd.attribute.name = 'Death date' "+
-        		"order by dd.value desc");
+        String query = "select pc, dd from PatientImpl as p inner join p.patientAttributeValues pc inner join p.patientAttributeValues dd where "
+        	+ getArcPatientQuery("p.patientIi") +" and "
+        	+"pc.attribute.name = 'PatCode' and dd.attribute.name = 'Death date' order by dd.value desc";
+        setQuery(query);
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
     }

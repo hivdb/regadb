@@ -10,8 +10,8 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
@@ -22,9 +22,9 @@ public class WivArcViralLoadForm extends WivIntervalQueryForm {
         String query =  "select tr, pav "+
             "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
             "where pav.patient = p and pav.attribute.name = 'PatCode' "+
-            "and tr.test.testType.description = '"+ StandardObjects.getHiv1ViralLoadTestType().getDescription() +"' "+
-            "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and pav.patient.patientIi in ("+ getArcPatientQuery() +") ";
-
+            "and tr.test.testType.description = '"+ RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getViralLoadTestType().getDescription() +"' "+
+            "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and "+ getArcPatientQuery("pav.patient.patientIi");
+        
         setQuery(query);
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
@@ -44,6 +44,8 @@ public class WivArcViralLoadForm extends WivIntervalQueryForm {
         ArrayList<String> row;
         Table out = new Table();
         
+        boolean toLog10 = !RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getViralLoadTestType().getDescription().contains("log10");
+        
         for(Object[] o : list){
         	TestResult tr = (TestResult)o[0];
         	PatientAttributeValue pav = (PatientAttributeValue)o[1];
@@ -56,7 +58,7 @@ public class WivArcViralLoadForm extends WivIntervalQueryForm {
             row.add(getFormattedDate(tr.getTestDate()));
             row.add(TypeOfInformationCode.LAB_RESULT.getCode()+"");
             row.add(TestCode.VL.getCode()+"");
-            row.add(getFormattedViralLoadResult(tr.getValue(),false,true));
+            row.add(getFormattedViralLoadResult(tr.getValue(),false,toLog10));
             row.add("");
             
             out.addRow(row);
