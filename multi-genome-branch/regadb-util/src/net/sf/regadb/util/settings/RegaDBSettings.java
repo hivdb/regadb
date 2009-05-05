@@ -21,7 +21,7 @@ public class RegaDBSettings {
 
     private static RegaDBSettings instance_ = null;
     
-    private RegaDBSettings() {
+    RegaDBSettings() {
     	addConfig(new HibernateConfig());
     	addConfig(new ProxyConfig());
     	addConfig(new AccessPolicyConfig());
