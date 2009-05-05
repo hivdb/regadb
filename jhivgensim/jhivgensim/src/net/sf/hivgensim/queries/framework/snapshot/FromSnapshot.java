@@ -1,4 +1,4 @@
-package net.sf.hivgensim.queries.input;
+package net.sf.hivgensim.queries.framework.snapshot;
 
 import java.io.EOFException;
 import java.io.File;

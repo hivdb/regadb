@@ -3,12 +3,7 @@ package net.sf.hivgensim.queries.framework;
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.Option;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-
-import net.sf.hivgensim.queries.input.FromDatabase;
-import net.sf.hivgensim.queries.input.FromSnapshot;
-import net.sf.hivgensim.queries.input.FromXml;
 
 public class Querier {
 

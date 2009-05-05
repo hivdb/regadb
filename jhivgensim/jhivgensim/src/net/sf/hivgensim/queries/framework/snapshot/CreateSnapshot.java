@@ -1,18 +1,13 @@
-package net.sf.hivgensim.queries.output;
+package net.sf.hivgensim.queries.framework.snapshot;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 
-import net.sf.beanlib.hibernate.HibernateBeanReplicator;
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
-import net.sf.beanlib.provider.collector.PrivateSetterMethodCollector;
-import net.sf.beanlib.spi.PropertyFilter;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -32,17 +27,11 @@ public class CreateSnapshot {
 
 	public void create(String uid, String passwd){
 		try{
-			PropertyFilter vetoer = new PropertyFilter() {
-			    public boolean propagate(String propertyName, Method readerMethod) {
-			        return !propertyName.equals("patient");
-			    }
-			};
-			
-			HibernateBeanReplicator rep = new Hibernate3BeanReplicator(null, null, vetoer).initSetterMethodCollector(new PrivateSetterMethodCollector());
 			Login login = Login.authenticate(uid, passwd);
 			Transaction t = login.createTransaction();
 			List<Dataset> datasets = t.getDatasets();
 			String dataset = null;
+			ObjectReplicator rep = new ObjectReplicator();
 			for (Dataset ds : datasets) {
 				dataset = ds.getDescription();
 				System.err.println("now starting with: "+dataset);
@@ -60,8 +49,8 @@ public class CreateSnapshot {
 					Collection<Patient> patients = t.getPatients(t.getDataset(dataset),i,maxResults);
 					Patient pp;
 					for (Patient p : patients) {
-						pp = p.copy(rep);
-						out.writeObject(p);
+						pp = rep.copy(p);						
+						out.writeObject(pp);
 					}					
 					out.reset();
 				}

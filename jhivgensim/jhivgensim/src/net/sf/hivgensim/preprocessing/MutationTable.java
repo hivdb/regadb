@@ -121,8 +121,12 @@ public class MutationTable extends Table {
 			temp.add(s);
 			addColumn(temp);
 		}
-		
+		int i = 0;
 		for(NtSequence seq : seqlist){
+			if(i % 100 == 0){
+				System.err.println(i);
+			}
+			i++;
 			createNewRow(seq.getViralIsolate().getSampleId());
 			Set<AaSequence> aaSequences = seq.getAaSequences();
 			for(AaSequence aaSequence : aaSequences){
@@ -238,7 +242,10 @@ public class MutationTable extends Table {
 	public void removeMutationsOutsideRange(int start,int stop){
 		Pattern p = Pattern.compile("[A-Za-z]+([0-9]+).");
 		Matcher m = null;
-		for(String s : getRow(0)){
+		ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
+		ArrayList<String> header = getRow(0);
+		for(int i = 0 ; i < header.size();i++){
+			String s = header.get(i);
 			m = p.matcher(s);
 			if(!m.matches()){
 				System.err.println(s + " isn't a mutation string");
@@ -246,9 +253,10 @@ public class MutationTable extends Table {
 			}
 			int pos = Integer.parseInt(m.group(1));
 			if(pos < start || pos > stop){
-				deleteColumns(s);
+				toBeDeleted.add(i);				
 			}			
 		}
+		deleteColumns(toBeDeleted);
 	}
 
 	private void createIdColumn(){

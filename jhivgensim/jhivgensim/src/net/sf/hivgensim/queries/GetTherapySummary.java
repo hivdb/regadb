@@ -20,7 +20,7 @@ import net.sf.regadb.db.Therapy;
 public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 
 
-	HashMap<String,Integer> drugcounts = new HashMap<String,Integer>();
+	private HashMap<String,Integer> drugcounts = new HashMap<String,Integer>();
 
 	public GetTherapySummary(File file) throws FileNotFoundException {
 		super(new PrintStream(file));
@@ -39,7 +39,7 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 		}
 	}
 
-	public void output(){
+	public void close(){
 		TreeSet<String> ts = new TreeSet<String>();
 		for(String therapy : drugcounts.keySet()){
 			Integer count = drugcounts.get(therapy);
@@ -51,6 +51,9 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 		}
 		for(String line : ts.descendingSet()){
 			getOut().println(line);
+			System.err.println(line);
 		}
-	}	
+		getOut().flush();
+		getOut().close();
+	}
 }

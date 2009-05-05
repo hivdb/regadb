@@ -10,25 +10,24 @@ import net.sf.regadb.db.NtSequence;
 
 public class SequencesToFasta extends DefaultQueryOutput<NtSequence> {
 
-	private boolean align;
+	private SelectionWindow sw;
 	
 	public SequencesToFasta(File file) throws FileNotFoundException {
 		super(new PrintStream(file));
 	}
 	
-	public SequencesToFasta(File file, boolean align) throws FileNotFoundException {
+	public SequencesToFasta(File file, SelectionWindow sw) throws FileNotFoundException {
 		this(file);
-		this.align = align;
-	}
-	
+		this.sw = sw;
+	}	
 
 	public void process(NtSequence seq) {
 //		getOut().println(">"+seq.getViralIsolate().getSampleId()+"|"+seq.getLabel());
 		getOut().println(">"+seq.getNtSequenceIi());
-		if(!align){			
-			getOut().println(seq.getNucleotides());
+		if(sw == null){			
+			getOut().println(seq.getNucleotides());			
 		}else{
-			getOut().println(net.sf.hivgensim.preprocessing.Utils.getAlignedNtSequenceString(seq, SelectionWindow.RT_WINDOW_REGION));
+			getOut().println(net.sf.hivgensim.preprocessing.Utils.getAlignedNtSequenceString(seq, sw));
 		}
 	}
 }

@@ -1,36 +1,22 @@
 package net.sf.hivgensim.preprocessing;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 
-import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.QueryUtils;
-import net.sf.hivgensim.queries.input.FromDatabase;
-import net.sf.hivgensim.queries.output.SequencesToFasta;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.OpenReadingFrame;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.ViralIsolate;
 
 public class Utils {
 	
 	public static String getAlignedNtSequenceString(NtSequence ntseq, SelectionWindow sw){
 		StringBuilder result = new StringBuilder();
-		
-		if(sw.getProtein().getAbbreviation().equals("RT")){
-			for(int i = 0; i < 99;++i){
-				result.append("---");
-			}
-		}
 		
 		for(AaSequence aaSequence : ntseq.getAaSequences()){
 				String sprotein = sw.getProtein().getAbbreviation();
@@ -50,7 +36,7 @@ public class Utils {
 						continue;
 					}
 					
-					if(mut.getPosition() == pos && !mut.isSilent()){
+					if(mut.getPosition() == pos){
 						if(!mut.isInsertion() ){
 							result.append(mut.getMutation().getNtMutationCodon());
 						}else{
@@ -143,27 +129,5 @@ public class Utils {
 			}
 		}
 		return null;
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException{
-		//TODO test this against reference
-		QueryInput q = new FromDatabase("gbehey0","bla123",
-						new Query<Patient,NtSequence>(
-						new SequencesToFasta(new File("/home/gbehey0/test"),true)){
-							private boolean first = true;
-							@Override
-							public void process(Patient input) {
-								if(first){
-									first = false;
-									for(ViralIsolate vi : input.getViralIsolates()){
-										for(NtSequence seq : vi.getNtSequences()){
-											getNextQuery().process(seq);
-										}
-									}
-								}							
-							}
-			
-		});
-		q.run();
-	}
+	}	
 }

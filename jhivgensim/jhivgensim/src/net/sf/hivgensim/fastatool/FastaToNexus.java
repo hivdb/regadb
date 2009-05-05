@@ -107,13 +107,5 @@ public class FastaToNexus{
 			result = " "+result;
 		}
 		return result.substring(0, length) + " ";
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException{
-		new FastaToNexus("/dev/null","/home/gbehey0/null.nex").convert();
-	}
-	
-	
-	
-	
+	}	
 }
