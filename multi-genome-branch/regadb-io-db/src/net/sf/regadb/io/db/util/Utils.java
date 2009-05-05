@@ -905,9 +905,7 @@ public class Utils {
 	    if(name.length() == 0)
 	        return null;
 	    
-	    PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getFirstNameAttribute(), name);
-	    p.addPatientAttributeValue(pav);
-	    return pav;
+	    return setPatientAttributeValue(p, StandardObjects.getFirstNameAttribute(), name);
 	}
 	public static PatientAttributeValue setLastName(Patient p, String name){
 	    if(name == null)
@@ -917,24 +915,30 @@ public class Utils {
         if(name.length() == 0)
             return null;
 	    
-        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getLastNameAttribute(), name);
-        p.addPatientAttributeValue(pav);
-        return pav;
+        return setPatientAttributeValue(p, StandardObjects.getLastNameAttribute(), name);
     }
 	public static PatientAttributeValue setBirthDate(Patient p, Date date){
 	    if(date == null)
 	        return null;
 	    
-        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getBirthDateAttribute(), date.getTime() +"");
-        p.addPatientAttributeValue(pav);
-        return pav;
+        return setPatientAttributeValue(p, StandardObjects.getBirthDateAttribute(), date.getTime() +"");
     }
 	public static PatientAttributeValue setDeathDate(Patient p, Date date){
         if(date == null)
             return null;
         
-        PatientAttributeValue pav = createPatientAttributeValue(StandardObjects.getDeathDateAttribute(), date.getTime() +"");
-        p.addPatientAttributeValue(pav);
-        return pav;
+        return setPatientAttributeValue(p, StandardObjects.getDeathDateAttribute(), date.getTime() +"");
     }
+	
+	public static PatientAttributeValue setPatientAttributeValue(Patient p, Attribute a, String value){
+		PatientAttributeValue pav = getAttributeValue(a, p);
+		if(pav == null){
+			pav = createPatientAttributeValue(a, value);
+			p.addPatientAttributeValue(pav);
+		}
+		else{
+			pav.setValue(value);
+		}
+		return pav;
+	}
 }
