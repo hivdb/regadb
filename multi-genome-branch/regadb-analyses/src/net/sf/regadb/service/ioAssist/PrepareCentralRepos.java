@@ -107,6 +107,8 @@ public class PrepareCentralRepos
         export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("RegaHIV1V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("RegaHIV1V8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("HIVDBv5.1.3.xml", "HIVDB v5.1.3", StandardObjects.getHiv1Genome());
