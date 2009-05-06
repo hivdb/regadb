@@ -45,6 +45,8 @@ public class ParseConsultDB {
     
     private List<Attribute> regadbAttributes_;
     
+    private Attribute patientNoAttribute;
+    
     private Set<String> setset = new HashSet<String>();
     
     private Map<Integer, String> codepat_;
@@ -73,6 +75,11 @@ public class ParseConsultDB {
         therapyAdherenceT = new NominalTestMapper(mappingBasePath + File.separatorChar + "therapyAdherence.mapping", Items.getGenerichivTherapyAdherence());
     
         codepat_ = codepat;
+        
+        patientNoAttribute = new Attribute();
+        patientNoAttribute.setName("PatientNo");
+        patientNoAttribute.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
+        patientNoAttribute.setValueType(StandardObjects.getStringValueType());
     }
     
     public void exec() {
@@ -119,7 +126,7 @@ public class ParseConsultDB {
                 
                 p.createPatientAttributeValue(Items.getPatCodeAttribute()).setValue(codepat_.get(id));
         	}
-            
+        	
             String birthDate = text(patientEl, "BirthDate");
             String deathDate = text(patientEl, "DeathDate");
             String sex = text(patientEl, "Sex");
@@ -147,6 +154,9 @@ public class ParseConsultDB {
             	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
             }
             
+            if(consultId != null){
+            	p.addPatientAttributeValue(Utils.createPatientAttributeValue(patientNoAttribute, consultId));
+            }
             if(birthDate!=null) {
                 try {
                     Utils.setBirthDate(p, dateFormatter.parse(birthDate));
