@@ -13,9 +13,6 @@ public class Items {
     
     private static Attribute patCodeAttribute = new Attribute("PatCode");
     
-    private static AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
-
-    
     static {
         hivTherapyAdherence = new TestType(StandardObjects.getPatientTestObject(), "HIV Therapy Adherence");
         hivTherapyAdherence.setValueType(StandardObjects.getNominalValueType());
@@ -24,7 +21,7 @@ public class Items {
         hivTherapyAdherence.getTestNominalValues().add(new TestNominalValue(hivTherapyAdherence, "Bad"));
         generichivTherapyAdherence = new Test(hivTherapyAdherence, "HIV Therapy Adherence (generic)");
         
-        patCodeAttribute.setAttributeGroup(regadbAttributeGroup);
+        patCodeAttribute.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
         patCodeAttribute.setValueType(StandardObjects.getStringValueType());
     }
 
@@ -38,9 +35,5 @@ public class Items {
 
 	public static Attribute getPatCodeAttribute() {
 		return patCodeAttribute;
-	}
-
-	public static AttributeGroup getRegadbAttributeGroup() {
-		return regadbAttributeGroup;
 	}
 }

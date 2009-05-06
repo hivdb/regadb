@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,16 +59,16 @@ public class ParseConsultDB {
     
         regadbAttributes_ = Utils.prepareRegaDBAttributes();
             
-        genderNominal_.attribute.setAttributeGroup(Items.getRegadbAttributeGroup());
+        genderNominal_.attribute.setAttributeGroup(StandardObjects.getGenderAttribute().getAttributeGroup());
         
         Table countryTable = Utils.readTable(mappingBasePath + File.separatorChar + "countryOfOrigin.mapping");
-        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes_), false);
+        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, StandardObjects.getDemographicsAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes_), false);
         
         Table geoTable = Utils.readTable(mappingBasePath + File.separatorChar + "geographicOrigin.mapping");
-        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Geographic origin", regadbAttributes_), false);
+        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, StandardObjects.getGeoGraphicOriginAttribute().getAttributeGroup(), Utils.selectAttribute(StandardObjects.getGeoGraphicOriginAttribute().getName(), regadbAttributes_), false);
         
         Table transmissionTable = Utils.readTable(mappingBasePath + File.separatorChar + "transmissionRisk.mapping");
-        transmissionA = new NominalAttribute("Transmission group", transmissionTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Transmission group", regadbAttributes_));
+        transmissionA = new NominalAttribute("Transmission group", transmissionTable, StandardObjects.getTransmissionGroupAttribute().getAttributeGroup(), Utils.selectAttribute(StandardObjects.getTransmissionGroupAttribute().getName(), regadbAttributes_));
         
         therapyAdherenceT = new NominalTestMapper(mappingBasePath + File.separatorChar + "therapyAdherence.mapping", Items.getGenerichivTherapyAdherence());
     
@@ -348,6 +346,6 @@ public class ParseConsultDB {
             return null;
         String toReturn = el.getChild(name).getText();
         el.getChild(name).detach();
-        return toReturn;
+        return toReturn != null ? toReturn.trim() : null;
     }
 }
