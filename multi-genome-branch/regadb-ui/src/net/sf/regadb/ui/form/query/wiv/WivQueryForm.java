@@ -773,7 +773,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     	if(ac == null)
     		return "1=1";
     	
-    	String arcPatientQuery = patientIiField +" in (select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and lower(arc_pav.attributeNominalValue.value) = '"+ ac.getValue() +"')";
+    	String arcPatientQuery = patientIiField +" in (select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and arc_pav.attributeNominalValue.value = '"+ ac.getValue() +"')";
     	return arcPatientQuery;
     }
 }
