@@ -11,6 +11,9 @@ The manual installation can be done on both Microsoft Windows 2000 or higher or 
 If you have no experience installing this software, please consult your local system administor.
 
 \section{Manual installation steps}
+\subsection{Obtaining the RegaDB software package}
+The RegaDB v2.0 software package can be downloaded from our website. The regadb-package.zip (Microsoft Windows) or regadb-package.tgz (Linux) contains all necessary files to perform a manual installation of the RegaDB software.
+
 \subsection{Configuring the Postgresql database}
 Log in as posgres administrator to psql
 \\
@@ -33,12 +36,12 @@ Create the schema:
 Log out from psql
 \\
 \\
-Create the Postgres database structure (this file can be downloaded from the RegaDB website)
+Create the Postgres database structure (this file is part of the RegaDB software package)
 \\
 \textbf{psql -U \textit{role\_name} regadb -f posgresSchema.sql}
 
 \subsection{RegaDB configuration}
-Download the global-conf.xml file from the RegaDB website. This config file can be placed at the default location (/etc/rega\_institute/regadb), or at an alternative location.
+RegaDB requires a XML configuration file, a documented example file is available in the RegaDB software package (global-conf.xml). This config file can be placed at the default location (/etc/rega\_institute/regadb), or at an alternative location.
 
 If you place the configuration file at an alternative location, you should define an environment variable called \textbf{REGADB\_CONF\_DIR} containing this path.
 Following attributes of the XML file should be filled in:
@@ -120,7 +123,7 @@ Note that this file should only be accessible by your servlet container, so plea
 \end{lstlisting}
 
 \subsection{Deploy RegaDB into your servlet container}
-Download the regadb.war file from the RegaDB website.
+To run RegaDB v2.0 in your application server, you will need to install the regadb.war file in your application server (eg. Tomcat, JBoss, ...). This file is part of the RegaDB software package.
 \\
 Navigate your browser to the Tomcat welcome page (f.e. http://serverName:8080/).
 \\
@@ -131,10 +134,3 @@ Navigate to the manager page and fill in the proper username and password.
 Go to the Deploy section, browse for the regadb.war file and click \textbf{Deploy}. RegaDB will be deployed in the servlet container, this might take a few minutes.
 \\
 \vspace{0.5cm}~ \\ \centerline{\includegraphics[width=8cm] {pics/nsis/tomcat_page_manager_2.png}}
-
-\subsection{Initiating the database}
-Download the regadb-install.tgz archive, and extract this archive to a temporary directory. 
-Navigate to this directory and execute regadb-install-regadb-init.jar;
-\\\textbf{java -jar regadb-install-regadb-init.jar}
-
-This command will initialize the RegaDB database. Please proceed to the Post installation chapter to finish the RegaDB configuration (chapter~\ref{chapter:post_install}).
