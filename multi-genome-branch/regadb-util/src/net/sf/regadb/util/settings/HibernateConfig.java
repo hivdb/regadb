@@ -3,6 +3,7 @@ package net.sf.regadb.util.settings;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jdom.Comment;
 import org.jdom.Element;
 
 public class HibernateConfig implements IConfigParser{
@@ -14,6 +15,8 @@ public class HibernateConfig implements IConfigParser{
 
 	public Element toXml() {
 		Element r = new Element(getXmlTag());
+		
+		r.addContent(new Comment("Hibernate database connection configuration."));
 		
 		for(Map.Entry<String, String> e : properties.entrySet()){
 			Element ee = new Element("property");

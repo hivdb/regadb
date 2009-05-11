@@ -1,8 +1,10 @@
 package net.sf.regadb.util.settings;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 
+import org.jdom.Comment;
 import org.jdom.Element;
 
 public class InstituteConfig implements IConfigParser {
@@ -96,10 +98,12 @@ public class InstituteConfig implements IConfigParser {
 		Element r = new Element(getXmlTag());
 		Element e;
 
+		r.addContent(new Comment("Directory for logging files, read/write permissions needed."));
 		e = new Element("log-dir");
 		e.setText(getLogDir().getAbsolutePath());
 		r.addContent(e);
 		
+		r.addContent(new Comment("Directory for temporary query results, read/write permissions needed."));
 		e = new Element("query-result-dir");
 		e.setText(getQueryResultDir().getAbsolutePath());
 		r.addContent(e);
@@ -107,15 +111,20 @@ public class InstituteConfig implements IConfigParser {
 		if(wivConfig != null)
 			r.addContent(wivConfig.toXml());
 		
+		r.addContent(new Comment("The maximum amount of days a test result's date can deviate from " +
+				"the viral isolate's sample date, for it to be included in a patient's viral isolate " +
+				"resistance report."));
 		e = new Element("report-date-tolerance");
 		e.setText(""+reportDateTolerance);
 		r.addContent(e);
 		
+		r.addContent(new Comment("The date format, detailed information on the format: http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html"));
 		e = new Element("date-format");
 		e.setText(getDateFormat());
 		r.addContent(e);
 		
 		if(organismFilter != null){
+			r.addContent(new Comment("Only show test types, tests, drugs linked with this organism, i.e. 'HIV*' will only show HIV-1, HIV-2A/B, ... items."));
 			e = new Element("organism-filter");
 			e.setText(organismFilter.getConfigString());
 			r.addContent(e);

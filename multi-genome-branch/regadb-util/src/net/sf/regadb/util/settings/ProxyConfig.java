@@ -2,6 +2,7 @@ package net.sf.regadb.util.settings;
 
 import java.util.ArrayList;
 
+import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ProxyConfig implements IConfigParser {
@@ -70,6 +71,8 @@ public class ProxyConfig implements IConfigParser {
 
 	public Element toXml() {
 		Element r = new Element(getXmlTag());
+		
+		r.addContent(new Comment("Optional list of proxies."));
 		
 		for(ProxyServer ps : proxyList){
 			Element e = new Element("proxy");

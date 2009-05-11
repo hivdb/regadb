@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jdom.Comment;
 import org.jdom.Element;
 
 public class AccessPolicyConfig implements IConfigParser {
@@ -75,10 +76,14 @@ public class AccessPolicyConfig implements IConfigParser {
 	    Element r = new Element(getXmlTag());
         Element e;
 	    
+	    r.addContent(new Comment("RegaDB can be used in STANDALONE (default) or INTEGRATED mode. " +
+	    		"Integrated mode bypasses the login-form through the URL, i.e. to log in with 'user1', " +
+	    		"access the application with the following URL: RegaDB?uid=user1")); 
         e = new Element("access-mode");
         e.setText(""+accessMode);
         r.addContent(e);
         
+        r.addContent(new Comment("Each user is assigned to one role."));
 	    e = new Element("roles");
 	    r.addContent(e);
 	    for(Role role : roles.values())

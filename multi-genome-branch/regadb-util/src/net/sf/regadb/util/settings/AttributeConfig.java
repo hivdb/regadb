@@ -16,8 +16,13 @@ public class AttributeConfig {
 	}
 	
 	public AttributeConfig(String name, String group){
-		this.setName(name);
-		this.setGroup(group);
+		setName(name);
+		setGroup(group);
+	}
+	public AttributeConfig(String name, String group, String value){
+		setName(name);
+		setGroup(group);
+		setValue(value);
 	}
 
 	public void setName(String name) {

@@ -3,6 +3,7 @@ package net.sf.regadb.util.settings;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ContactFormConfig extends FormConfig {
@@ -80,9 +81,12 @@ public class ContactFormConfig extends FormConfig {
 		Element r = super.toXml();
 		Element e;
 		
+		r.addContent(new Comment("Custom contact form configuration."));
+		
 		if(tests.size() > 0){
 			e = new Element("tests");
 			r.addContent(e);
+			e.addContent(new Comment("List of tests avaiable in the contact form."));
 			
 			for(TestItem ti : tests){
 				Element ee = new Element("test");
@@ -98,6 +102,9 @@ public class ContactFormConfig extends FormConfig {
 			e = new Element("events");
 			e.setAttribute("useContactDate",(getUseContactDate() ? "true":"false"));
 			r.addContent(e);
+			
+			e.addContent(new Comment("List of events available in the contact form." +
+					" 'useContactDate': use the sample date as start date of the events"));
 			
 			for(EventItem ei : events){
 				Element ee = new Element("event");
