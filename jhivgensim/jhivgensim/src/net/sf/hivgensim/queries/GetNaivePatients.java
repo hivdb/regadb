@@ -2,7 +2,7 @@ package net.sf.hivgensim.queries;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -25,11 +25,11 @@ public class GetNaivePatients extends Query<Patient,Patient>{
 		boolean naive = true;
 		for(Therapy t : p.getTherapies()) {
 			//always check for unknown therapies
-			if(QueryUtils.hasClassExperience("Unknown", t)){
+			if(TherapyUtils.hasClassExperience("Unknown", t)){
 				naive = false;
 			}
 			for(String tT : drugClasses){
-				if(QueryUtils.hasClassExperience(tT, t)) {
+				if(TherapyUtils.hasClassExperience(tT, t)) {
 					naive = false;					
 				}
 			}	

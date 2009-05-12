@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -28,7 +28,7 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 
 	public void process(Patient p) {
 		for(Therapy t : p.getTherapies()){
-			String therapyString = QueryUtils.getDrugsString(t);
+			String therapyString = TherapyUtils.getDrugsString(t);
 			if(drugcounts.containsKey(therapyString)){
 				Integer count = drugcounts.get(therapyString);
 				count++;

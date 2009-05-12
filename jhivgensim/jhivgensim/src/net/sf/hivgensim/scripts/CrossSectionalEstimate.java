@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
-import net.sf.hivgensim.queries.CheckForRegion;
 import net.sf.hivgensim.queries.CleanSequences;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
@@ -53,12 +52,12 @@ public class CrossSectionalEstimate {
 		//longitudinal
 		Table t = new Table();
 		QueryInput query = new FromSnapshot(new File(snapshotFile),
-							new GetLongitudinalSequencePairs(drugs,true,
-							new CheckForRegion("HIV-1","RT",
+							new GetLongitudinalSequencePairs(drugs,naiveDrugClasses,"HIV-1","RT",
+//							new CheckForRegion("HIV-1","RT",
 //							new SequencePairsTableOutput(t,
 //									new File(workDir + File.separator + "longitudinal.csv"),
 //									TableOutputType.CSV))));
-							new SequencePairsToFasta(new File(workDir + File.separator + "longitudinal.fasta"),fullWindows[0]))));
+							new SequencePairsToFasta(new File(workDir + File.separator + "longitudinal.fasta"),fullWindows[0])));
 		query.run();
 		
 		ArrayList<String> pairs = new ArrayList<String>();

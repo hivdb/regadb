@@ -1,0 +1,68 @@
+package net.sf.hivgensim.queries.framework.utils;
+
+import java.util.Set;
+
+import net.sf.regadb.db.DrugGeneric;
+
+public class DrugGenericUtils {
+
+	//returns true if one class has been found
+	public static boolean containsDrugsFromDrugClasses(Set<DrugGeneric> drugs, String[] drugclasses){
+		boolean[] found = new boolean[drugclasses.length];
+		for(DrugGeneric dg : drugs){
+			for(int i = 0 ; i < drugclasses.length ; i++){
+				if(dg.getDrugClass().getClassId().equalsIgnoreCase(drugclasses[i])){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean contains(Set<DrugGeneric> drugs, String drug){
+		for(DrugGeneric dg : drugs){
+			if(dg.getGenericId().equalsIgnoreCase(drug)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+	public static String toString(Set<DrugGeneric> drugs){
+		String result = "";
+		for(DrugGeneric dg : drugs){
+			result += " + "+dg.getGenericId();
+		}
+		return result.length() == 0 ? "" : result.substring(3);
+	}
+
+	public static boolean containsOnlyFromDrugClass(Set<DrugGeneric> history, String[] drugClass, String[] drugs) {
+		boolean[] found = new boolean[drugs.length];
+
+		for(DrugGeneric dg : history){
+			for(String dc : drugClass){
+				if(dg.getDrugClass().getClassId().equalsIgnoreCase(dc)){
+					boolean ok = false;
+					for(int i = 0; i < drugs.length; i++){
+						if(dg.getGenericId().equalsIgnoreCase(drugs[i])){
+							found[i] = true;
+							ok = true;
+						}
+					}
+					if(!ok){
+						return false;
+					}
+				}
+			}
+		}
+		for(boolean b : found){
+			if(!b){
+				return false;
+			}
+		}
+		return true;
+	}
+
+}

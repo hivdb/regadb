@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
@@ -133,7 +133,7 @@ public class MutationTable extends Table {
 				for(SelectionWindow win : windows){
 					String sprotein = win.getProtein().getAbbreviation();
 					String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-					if(!QueryUtils.isSequenceInRegion(aaSequence, sorganism, sprotein)){
+					if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
 						continue;
 					}
 					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
@@ -194,7 +194,7 @@ public class MutationTable extends Table {
 					String ref = win.getReferenceAaSequence();
 					String sprotein = win.getProtein().getAbbreviation();
 					String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-					if(!QueryUtils.isSequenceInRegion(aaSequence, sorganism, sprotein)){
+					if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
 						continue;
 					}
 					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();

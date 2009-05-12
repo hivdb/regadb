@@ -5,7 +5,7 @@ import java.util.Set;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -40,7 +40,7 @@ public class GetTreatedSequences extends Query<Patient,NtSequence> {
 	public void process(Patient p) {
 		Set<String> history = new HashSet<String>();
 		history = new HashSet<String>();
-		for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
+		for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
 			for(TherapyGeneric tg : t.getTherapyGenerics()){
 				history.add(tg.getId().getDrugGeneric().getGenericId());
 			}
@@ -49,8 +49,8 @@ public class GetTreatedSequences extends Query<Patient,NtSequence> {
 					history.add(dg.getGenericId());
 				}
 			}
-			if(QueryUtils.isGoodExperienceTherapy(t,druggenerics,history)){
-				for(NtSequence seq : QueryUtils.getAllSequencesDuringTherapy(p, t)){
+			if(TherapyUtils.isGoodExperienceTherapy(t,druggenerics,history)){
+				for(NtSequence seq : TherapyUtils.getAllSequencesDuringTherapy(p, t)){
 					getNextQuery().process(seq);					
 				}
 			}else{
@@ -58,7 +58,7 @@ public class GetTreatedSequences extends Query<Patient,NtSequence> {
 				//wanted drug combination
 				//if such a therapy has been followed break loop and use
 				//latestGoodExperienceTherapy as latest therapy to extract sequence
-				if(!QueryUtils.isGoodPreviousTherapy(t, druggenerics)){
+				if(!TherapyUtils.isGoodPreviousTherapy(t, druggenerics)){
 					return;
 				}
 			}

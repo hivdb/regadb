@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -19,7 +19,7 @@ public class CheckTherapyOverlap extends DefaultQueryOutput<Patient> {
 
 	public void process(Patient p) {
 		try{
-			List<Therapy> th = QueryUtils.sortTherapies(p.getTherapies());
+			List<Therapy> th = TherapyUtils.sortTherapies(p.getTherapies());
 			for(int i = 0 ; i < th.size() - 1 ; i++){
 				Therapy t = th.get(i);
 				Therapy t1 = th.get(i+1);
@@ -34,8 +34,8 @@ public class CheckTherapyOverlap extends DefaultQueryOutput<Patient> {
 							t1.getStartDate() + "," +
 							t1.getStopDate() + "," +
 							t1.getStopDate().before(t.getStopDate()) + "," +
-							QueryUtils.getDrugsString(t) + "," +
-							QueryUtils.getDrugsString(t1)														
+							TherapyUtils.getDrugsString(t) + "," +
+							TherapyUtils.getDrugsString(t1)														
 					);
 				}
 			}		

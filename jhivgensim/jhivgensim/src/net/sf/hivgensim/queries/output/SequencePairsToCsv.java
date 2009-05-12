@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
-import net.sf.hivgensim.queries.framework.SequencePair;
+import net.sf.hivgensim.queries.framework.datatypes.SequencePair;
 
 public class SequencePairsToCsv extends DefaultQueryOutput<SequencePair>{
 

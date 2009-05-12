@@ -6,7 +6,7 @@ import java.io.PrintStream;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
@@ -30,7 +30,7 @@ public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 				getOut().println();
 				getOut().println();
 				getOut().println(vi.getSampleId() + "|" + seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
-				for(Therapy t : QueryUtils.sortTherapies(p.getTherapies())){
+				for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
 					if(!vi.getSampleDate().after(t.getStartDate())){
 						break;
 					}
@@ -48,10 +48,10 @@ public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 						getOut().print(tg.getId().getDrugGeneric().getGenericId()+ " ");
 					}
 					getOut().print("\t");
-					if(QueryUtils.isGoodExperienceTherapy(t,new String[]{"AZT","3TC"})){
+					if(TherapyUtils.isGoodExperienceTherapy(t,new String[]{"AZT","3TC"})){
 						getOut().print("G.E.T. ");
 						//								break;
-					}else if(QueryUtils.isGoodPreviousTherapy(t, new String[]{"AZT","3TC"})){
+					}else if(TherapyUtils.isGoodPreviousTherapy(t, new String[]{"AZT","3TC"})){
 						getOut().print("G.P.T. ");
 					}else {
 						getOut().print("BREAK ");								

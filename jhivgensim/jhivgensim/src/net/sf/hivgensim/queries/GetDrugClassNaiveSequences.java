@@ -4,7 +4,7 @@ import java.util.Date;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -40,11 +40,11 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 							//for now consider them non-naive 
 							(t.getStartDate().equals(sampleDate) && t.getStopDate() != null && t.getStopDate().equals(sampleDate))								
 					){
-						if(QueryUtils.hasClassExperience("Unknown", t)){
+						if(TherapyUtils.hasClassExperience("Unknown", t)){
 							seqIsNaive = false;
 						}
 						for(String dc : drugclasses){
-							if(QueryUtils.hasClassExperience(dc,t)){
+							if(TherapyUtils.hasClassExperience(dc,t)){
 								seqIsNaive = false;
 							}
 						}

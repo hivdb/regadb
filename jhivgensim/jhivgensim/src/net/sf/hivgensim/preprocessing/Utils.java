@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Genome;
@@ -21,7 +21,7 @@ public class Utils {
 		for(AaSequence aaSequence : ntseq.getAaSequences()){
 				String sprotein = sw.getProtein().getAbbreviation();
 				String sorganism = sw.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-				if(!QueryUtils.isSequenceInRegion(aaSequence, sorganism, sprotein)){
+				if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
 					continue;
 				}
 				
