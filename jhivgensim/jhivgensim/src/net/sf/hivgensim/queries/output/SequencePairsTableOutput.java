@@ -53,10 +53,6 @@ public class SequencePairsTableOutput extends TableQueryOutput<SequencePair> {
 		}
 		addColumn(p.getTherapyRegimen());
 		addColumn(p.getSeq1().getNucleotides());
-		addColumn(p.getSeq2().getNucleotides(),true);
-		if(getOut().numRows() > 4){
-			this.close();
-			System.exit(0);
-		}
+		addColumn(p.getSeq2().getNucleotides(),true);		
 	}	
 }
