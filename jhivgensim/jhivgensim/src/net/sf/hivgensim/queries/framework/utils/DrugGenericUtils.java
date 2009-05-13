@@ -1,8 +1,11 @@
 package net.sf.hivgensim.queries.framework.utils;
 
+import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class DrugGenericUtils {
 
@@ -28,8 +31,12 @@ public class DrugGenericUtils {
 		return false;
 	}
 
-
-
+	public static List<DrugGeneric> prepareRegaDrugGenerics() {
+		RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
+		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
+		return imDrug.getGenericDrugs();
+	}
+	
 	public static String toString(Set<DrugGeneric> drugs){
 		String result = "";
 		for(DrugGeneric dg : drugs){
