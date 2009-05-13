@@ -8,7 +8,7 @@ import java.util.Set;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -43,7 +43,7 @@ public class TCEQuery extends Query<Patient,TCE> {
 
 			tce.setStartDate(t.getStartDate());
 			tce.getTherapiesBefore().addAll(formerTherapies);
-			tce.getDrugs().addAll(QueryUtils.getGenericDrugs(t));
+			tce.getDrugs().addAll(TherapyUtils.getGenericDrugs(t));
 			tce.setPatient(p);
 
 			getNextQuery().process(tce);
