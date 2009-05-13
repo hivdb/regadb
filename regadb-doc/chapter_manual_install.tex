@@ -44,83 +44,10 @@ Create the Postgres database structure (this file is part of the RegaDB software
 RegaDB requires a XML configuration file, a documented example file is available in the RegaDB software package (global-conf.xml). This config file can be placed at the default location (/etc/rega\_institute/regadb), or at an alternative location.
 
 If you place the configuration file at an alternative location, you should define an environment variable called \textbf{REGADB\_CONF\_DIR} containing this path.
-Following attributes of the XML file should be filled in:
-\begin{itemize}
-\item hibernate.connection.driver\_class : the default value is correct, do not change this
-\item hibernate.connection.password : replace default by your \textit{role\_password}
-\item hibernate.connection.url : replace default by the URL of your Postgresql database + /regadb (eg. jdbc:postgresql://serverName:5432/regadb)
-\item hibernate.connection.username : replace default by your \textit{role\_name}
-\item hibernate.dialect : the default value is correct, do not change this
-\item regadb.query.resultDir : replace default by a directory where query results should be stored (eg. /soft/regadb/queryResults), this directory should be writable by your servlet container
-\item http.proxy.url : replace default by your proxy server name, if you have direct access to internet, simply remove default
-\item http.proxy.port : replace default by your proxy server port, if you have direct access to internet, simply remove default
-\end{itemize}
-
 Note that this file should only be accessible by your servlet container, so please make sure only your servlet container user has read access to it.
 
 \lstset{language=XML, caption={RegaDB XML configuration file example (with proxy settings)}}
-\begin{lstlisting}
-<?xml version="1.0" encoding="UTF-8"?>
-<regadb-settings>
-  <property name="hibernate.connection.driver_class">
-		org.postgresql.Driver
-	</property>
-  <property name="hibernate.connection.password">
-		nock_nock
-	</property>
-  <property name="hibernate.connection.url">
-		jdbc:postgresql://zolder:5432/test_regadb
-	</property>
-  <property name="hibernate.connection.username">
-		woody
-	</property>
-  <property name="hibernate.dialect">
-		org.hibernate.dialect.PostgreSQLDialect
-	</property>
-  <property name="regadb.query.resultDir">
-		/soft/regadb/queryResults
-	</property>
-  <proxy>
-    <property name="http.proxy.url">
-			www-proxy
-		</property>
-    <property name="http.proxy.port">
-			3128
-		</property>
-  </proxy>
-</regadb-settings>
-\end{lstlisting}
-
-\lstset{language=XML, caption={RegaDB XML configuration file example (no proxy settings)}}
-\begin{lstlisting}
-<?xml version="1.0" encoding="UTF-8"?>
-<regadb-settings>
-  <property name="hibernate.connection.driver_class">
-    org.postgresql.Driver
-  </property>
-  <property name="hibernate.connection.password">
-    nock_nock
-  </property>
-  <property name="hibernate.connection.url">
-    jdbc:postgresql://zolder:5432/test_regadb
-  </property>
-  <property name="hibernate.connection.username">
-    woody
-  </property>
-  <property name="hibernate.dialect">
-    org.hibernate.dialect.PostgreSQLDialect
-  </property>
-  <property name="regadb.query.resultDir">
-    /soft/regadb/queryResults
-  </property>
-  <proxy>
-    <property name="http.proxy.url">
-    </property>
-    <property name="http.proxy.port">
-    </property>
-  </proxy>
-</regadb-settings>
-\end{lstlisting}
+\lstinputlisting{xml/global-conf.xml}
 
 \subsection{Deploy RegaDB into your servlet container}
 To run RegaDB v2.0 in your application server, you will need to install the regadb.war file in your application server (eg. Tomcat, JBoss, ...). This file is part of the RegaDB software package.
