@@ -1,13 +1,12 @@
 package be.kuleuven.rega.research.conserved;
 
 import java.util.Date;
-import java.util.List;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.QueryUtils;
+import net.sf.hivgensim.queries.framework.utils.DateUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -36,11 +35,11 @@ public class SequencesExperience extends Query<Patient, Sequence> {
 							if(endDate == null) 
 								endDate = new Date();
 							
-							if (QueryUtils.betweenOrEqualsInterval(vi
+							if (DateUtils.betweenOrEqualsInterval(vi
 									.getSampleDate(), 
 									t.getStartDate(), 
 									endDate)) {
-								seq.drugs.addAll(QueryUtils.getGenericDrugs(t));
+								seq.drugs.addAll(TherapyUtils.getGenericDrugs(t));
 								break;
 							}
 						}
