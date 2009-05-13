@@ -15,9 +15,11 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.hivgensim.queries.framework.QueryInput;
-import net.sf.hivgensim.queries.framework.QueryUtils;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
 import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
+import net.sf.hivgensim.queries.framework.utils.DateUtils;
+import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
+import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
@@ -42,7 +44,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
 
 
-	private List<DrugGeneric> genericDrugs = QueryUtils.prepareRegaDrugGenerics();
+	private List<DrugGeneric> genericDrugs = DrugGenericUtils.prepareRegaDrugGenerics();
 	private List<Test> resistanceTests = Utils.getResistanceTests();
 	private List<DrugGeneric> resistanceGenericDrugs = getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
@@ -103,7 +105,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		
 		//data
 		ViralIsolate vi = this.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-		if(vi==null || !QueryUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
+		if(vi==null || !DateUtils.betweenInterval(vi.getSampleDate(), addDaysToDate(tce.getStartDate(),-90), addDaysToDate(tce.getStartDate(),7))) {
 			return;
 		}
 		
@@ -187,7 +189,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		List<TestResult> trs = filterTestResults(tce.getPatient().getTestResults(), testType);
 		List<TestResult> trs_interval = new ArrayList<TestResult>();
 		for(TestResult tr_i : trs) {
-			if(QueryUtils.betweenInterval(tr_i.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
+			if(DateUtils.betweenInterval(tr_i.getTestDate(), addDaysToDate(d, daysBefore), addDaysToDate(d, daysAfter))) {
 				trs_interval.add(tr_i);
 			}
 		}
@@ -285,7 +287,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		int days = 0;
 
 		for(Therapy t : therapies) {
-			if(QueryUtils.hasClassExperience(drugClass, t)) {
+			if(TherapyUtils.hasClassExperience(drugClass, t)) {
 				days+=millisecondsToDays(t.getStopDate().getTime()-t.getStartDate().getTime());
 			}
 		}
