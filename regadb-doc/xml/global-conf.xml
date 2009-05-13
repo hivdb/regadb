@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <regadb-settings>
   <institute>
-	<!-- directory for logging files, read/write permissions needed -->  
+	<!-- directory for logging files, read/write permissions necessary
+			 this field is required 
+	-->  
     <log-dir>/etc/rega_institute/regadb/log</log-dir>
     
-    <!-- directory for temporary query results, read/write permissions needed -->
+    <!-- directory for temporary query results, appropriate read/write permissions necessary
+				 this field is required 
+		-->
     <query-result-dir>/etc/rega_institute/regadb/query</query-result-dir>
     
-    <!-- configuration for belgian wiv queries, omit if not needed -->
+    <!-- configuration for Belgian WIV queries
+				 this element is optional 
+		-->
     <wiv>
-      <!-- the name of the wiv centre -->
+      <!-- the name of the WIV centre -->
       <centre-name>KUL</centre-name>
       
       <!--
@@ -32,21 +38,28 @@
     
     <!--
     	the maximum amount of days a test result`s date can deviate from the viral isolate`s
-    	sample date, for it to be included in a patient`s viral isolate resistance report 
+    	sample date, for it to be included in a patient`s viral isolate resistance report
+			
+			this field is optional 
     --> 
     <report-date-tolerance>2</report-date-tolerance>
     
     <!--
     	the date format, detailed information on the format:
     	http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+
+			this field is optional
     -->
     <date-format>dd/MM/yyyy</date-format>
-    <forms>
+    
+		<forms>
       <!--
       	patient select form configuration:
       	showSampleIds:		show the sample id column
       	attribte-filter:	the default attribute to be selected in the attribute-column, optional
       	attributes:			the list of attributes to be present in the selection table
+
+				this element is optional
       -->
       <form name="datatable.patient.SelectPatientForm" showSampleIds="true">
         <attribute-filter>
@@ -58,7 +71,10 @@
         </attributes>
       </form>
       
-      <!-- custom contact form configuration -->
+      <!-- custom contact form configuration 
+
+					this element is optional
+			-->
       <form name="form.multipleTestResults.contact">
       	<!-- list of tests in the form -->
         <tests>
@@ -76,45 +92,38 @@
       </form>
     </forms>
   </institute>
-  <!-- Hibernate database connection configuration -->
+  
+	<!-- Hibernate database connection configuration
+	
+			this element is required
+	-->
   <hibernate>
-    <property name="hibernate.connection.username">regadb_user</property>
+    <!-- database username -->
+		<property name="hibernate.connection.username">regadb_user</property>
+    <!-- database driver class-->
     <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <!-- database password -->
     <property name="hibernate.connection.password">regadb_password</property>
+    <!-- database dialect -->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    <!-- database url -->
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/regadb</property>
   </hibernate>
-  <access-policies>
-  	<!--
-  		RegaDB can be used in STANDALONE (default) or INTEGRATED mode.
-	    Integrated mode bypasses the login-form through the URL, i.e. to log in with `user1`,
-	    access the application with the following URL: RegaDB?uid=user1
-  	-->
-    <access-mode>STANDALONE</access-mode>
-    
+ 
+	<!-- access policies
+			this element is required, at least one role should be defined
+	--> 
+	<access-policies>
     <!-- each user is connected to one role -->
     <roles>
       <role>
         <name>admin</name>
         <admin>true</admin>
-        
-        <!--
-        	single-patient-view disables the patient select form and query options
-        	when running in integrated mode a patient can be selected through the URL
-        	i.e. for accessing patient with id `p1` in dataset `ds1` with user `user1`:
-        	RegaDB?uid=user1&patient_id=p1&dataset=ds1
-        	
-        	INTEGRATED mode in combination with single-patient-view allows the access of
-        	patients to be delegated to another application
-        -->
-        <single-patient-view>false</single-patient-view>
         <blocked-attributes/>
       </role>
       <role>
         <name>user</name>
         <admin>false</admin>
-        <single-patient-view>true</single-patient-view>
-        
         <!-- disabled viewing and editing of certain attributes -->
         <blocked-attributes>
           <attribute name="First name" group="Personal" />
@@ -123,8 +132,12 @@
       </role>
     </roles>
   </access-policies>
-  <proxies>
-  	<!-- a list of proxy servers, with optional authentication -->
+  	
+
+	<!-- a list of proxy servers, with optional authentication 
+			this element is only required if your installation is behind a proxy server
+	-->
+	<proxies>
     <proxy>
       <url>www-proxy</url>
       <port>3128</port>

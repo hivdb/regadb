@@ -46,9 +46,6 @@ RegaDB requires a XML configuration file, a documented example file is available
 If you place the configuration file at an alternative location, you should define an environment variable called \textbf{REGADB\_CONF\_DIR} containing this path.
 Note that this file should only be accessible by your servlet container, so please make sure only your servlet container user has read access to it.
 
-\lstset{language=XML, caption={RegaDB XML configuration file example (with proxy settings)}}
-\lstinputlisting{xml/global-conf.xml}
-
 \subsection{Deploy RegaDB into your servlet container}
 To run RegaDB v2.0 in your application server, you will need to install the regadb.war file in your application server (eg. Tomcat, JBoss, ...). This file is part of the RegaDB software package.
 \\
