@@ -135,13 +135,17 @@ public abstract class DdlGenerator {
 	protected void write(String fileName, List<Query> qs){
 		try{
 			PrintStream out = new PrintStream(new FileOutputStream(fileName));
-			for(Query q : qs)
-				out.println(q.toString() +";");
+			write(out,qs);
 			out.close();
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	protected void write(PrintStream out, List<Query> qs){
+		for(Query q : qs)
+			out.println(q.toString() +";");
 	}
 	
 	protected abstract String processLine(String line);

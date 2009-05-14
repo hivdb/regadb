@@ -1,7 +1,9 @@
 package net.sf.regadb.install.ddl;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.util.reflection.PackageUtils;
@@ -133,5 +135,12 @@ public class PostgresDdlGenerator extends DdlGenerator
         if(!foreignKeys.add(fk))
             System.out.println("duplicate foreign key: "+ fk);
         return fk;
+    }
+    
+    protected void write(PrintStream out, List<Query> qs){
+    	out.println("create schema "+ schema +';');
+    	out.println("set search_path to "+ schema +';');
+    	
+    	super.write(out, qs);
     }
 }

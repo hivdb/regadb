@@ -1,7 +1,5 @@
 create schema regadbschema;
-
-SET search_path TO regadbschema;
-
+set search_path to regadbschema;
 create sequence regadbschema.aa_sequence_aa_sequence_ii_seq;
 create sequence regadbschema.analysis_analysis_ii_seq;
 create sequence regadbschema.analysis_data_analysis_data_ii_seq;
