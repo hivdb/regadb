@@ -78,7 +78,7 @@ public class ProxyConfig implements IConfigParser {
 			Element e = new Element("proxy");
 			r.addContent(e);
 			
-			Element ee = new Element("url");
+			Element ee = new Element("host");
 			ee.setText(ps.getHost());
 			e.addContent(ee);
 			
