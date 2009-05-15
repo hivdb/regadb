@@ -39,6 +39,7 @@ import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingDoesNotExistExceptio
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.ObjectDoesNotExistException;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.mapper.XmlMapper;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -97,13 +98,15 @@ public class AutoImport {
     private XmlMapper xmlMapper;
     private ObjectStore objectStore;
     
+    private String datasetDescription = "KUL"; 
+    
     public static void main(String [] args) {
         AutoImport ai = new AutoImport(
-                new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml"),
-                new File("/home/simbre1/workspaces/regadb.import/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping"));
+                new File("/home/simbre1/workspaces/regadb.clean/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml"),
+                new File("/home/simbre1/workspaces/regadb.clean/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping"));
                 
         try {
-			ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis"));
+			ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis/GHB_1900_1986.txt"));
         	//ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis/test.txt"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -186,12 +189,15 @@ public class AutoImport {
             if(line != null){
                 Map<String, Integer> headers = new HashMap<String, Integer>(); 
                 int i=0;
-                for(String s : tokenizeTab(line))
+                String[] fields = tokenizeTab(line);
+                logNotImported(line);
+                
+                for(String s : fields)
                     headers.put(s, i++);
             
                 int n = 2;
                 while((line = br.readLine()) != null) {
-                    String[] fields = tokenizeTab(line);
+                    fields = tokenizeTab(line);
                     
                     if(fields.length > 0 && headers.get(fields[0]) == null){
                         Patient p = handlePatient(headers, fields, n);
@@ -414,13 +420,14 @@ public class AutoImport {
     private boolean duplicateTestResult(Patient p, TestResult result) {
         for(TestResult tr : p.getTestResults()) {
             if(tr.getTest().getDescription().equals(result.getTest().getDescription()) &&
-                    tr.getTestDate().equals(result.getTestDate()) &&
+                    DateUtils.equals(tr.getTestDate(),result.getTestDate()) &&
                     equals(tr.getSampleId(),result.getSampleId())) {
-                if(tr.getTestNominalValue() == null)
-                    return tr.getValue().equals(result.getValue());
-                else if(result.getTestNominalValue() != null)
-                    return tr.getTestNominalValue().getValue().equals(result.getTestNominalValue().getValue());
-                return false;
+//                if(tr.getTestNominalValue() == null)
+//                    return tr.getValue().equals(result.getValue());
+//                else if(result.getTestNominalValue() != null)
+//                    return tr.getTestNominalValue().getValue().equals(result.getTestNominalValue().getValue());
+//                return false;
+            	return true;
             }
         }
         return false;
@@ -435,11 +442,11 @@ public class AutoImport {
     }
     
     private Patient getPatient(String ead){
-        Dataset dataset = objectStore.getDataset("GHB");
+        Dataset dataset = objectStore.getDataset(datasetDescription);
         return objectStore.getPatient(dataset, ead);
     }
     private Patient createPatient(String ead){
-        Dataset dataset = objectStore.getDataset("GHB");
+        Dataset dataset = objectStore.getDataset(datasetDescription);
         return objectStore.createPatient(dataset, ead);
     }
     

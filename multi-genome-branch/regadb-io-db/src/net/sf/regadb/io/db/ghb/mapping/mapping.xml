@@ -64,8 +64,8 @@
 		</test>
 		<test testtype="HBsAg" description="HBsAg (generic)">
 			<match type="and">
-				<match var="elementNaam" type="contains">HBsAg</match>
-				<match var="eenheden" type="contains">S/N</match>
+				<match var="elementNaam" type="iequals">HBsAg</match>
+				<match var="eenheden" type="iequals">S/N</match>
 			</match>
 			<values var="reeel"/>
 		</test>
