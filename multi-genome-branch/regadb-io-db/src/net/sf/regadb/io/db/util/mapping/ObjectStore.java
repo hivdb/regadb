@@ -8,25 +8,38 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
 
-public interface ObjectStore {
-    public TestType getTestType(String description, String organismName);
+public abstract class ObjectStore {
+    public abstract TestType getTestType(String description, String organismName);
     
-    public Test getTest(String description, String testTypeDescription, String organismName);
-    public Test createTest(TestType testType, String description);
+    public abstract Test getTest(String description, String testTypeDescription, String organismName);
+    public Test createTest(TestType testType, String description){
+    	Test t = new Test(testType, description);
+        return t;
+    }
     
-    public TestNominalValue getTestNominalValue(TestType testType, String value);
-    public TestNominalValue createTestNominalValue(TestType testType, String value);
+    public abstract TestNominalValue getTestNominalValue(TestType testType, String value);
+    public TestNominalValue createTestNominalValue(TestType testType, String value){
+    	TestNominalValue tnv = new TestNominalValue(testType, value);
+        testType.getTestNominalValues().add(tnv);
+        return tnv;
+    }
     
-    public Attribute getAttribute(String name, String group);
+    public abstract Attribute getAttribute(String name, String group);
     
-    public AttributeNominalValue getAttributeNominalValue(Attribute attribute, String value);
-    public AttributeNominalValue createAttributeNominalValue(Attribute attribute, String value);
+    public abstract AttributeNominalValue getAttributeNominalValue(Attribute attribute, String value);
+    public AttributeNominalValue createAttributeNominalValue(Attribute attribute, String value){
+    	AttributeNominalValue anv = new AttributeNominalValue(attribute, value);
+        attribute.getAttributeNominalValues().add(anv);
+        return anv;
+    }
     
-    public Dataset getDataset(String description);
+    public abstract Dataset getDataset(String description);
     
-    public Patient getPatient(Dataset dataset, String id);
-    public Patient createPatient(Dataset dataset, String id);
+    public abstract Patient getPatient(Dataset dataset, String id);
+    public abstract Patient createPatient(Dataset dataset, String id);
     
-    public void commit();
+    public void commit(){
+    	
+    }
 }
 

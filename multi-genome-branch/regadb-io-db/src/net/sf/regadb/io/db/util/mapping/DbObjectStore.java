@@ -10,7 +10,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 
-public class DbObjectStore implements ObjectStore{
+public class DbObjectStore extends ObjectStore{
     private Login login;
     private Transaction transaction;
     
@@ -35,25 +35,6 @@ public class DbObjectStore implements ObjectStore{
     }
     private void setTransaction(Transaction transaction){
         this.transaction = transaction;
-    }
-
-    public AttributeNominalValue createAttributeNominalValue(
-            Attribute attribute, String value) {
-        AttributeNominalValue anv = new AttributeNominalValue(attribute, value);
-        attribute.getAttributeNominalValues().add(anv);
-        return anv;
-    }
-
-    public Test createTest(TestType testType, String description) {
-        Test t = new Test(testType, description);
-        return t;
-    }
-
-    public TestNominalValue createTestNominalValue(TestType testType,
-            String value) {
-        TestNominalValue tnv = new TestNominalValue(testType, value);
-        testType.getTestNominalValues().add(tnv);
-        return tnv;
     }
 
     public Attribute getAttribute(String name, String group) {
