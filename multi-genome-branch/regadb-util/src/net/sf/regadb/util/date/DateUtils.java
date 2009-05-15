@@ -66,4 +66,36 @@ public class DateUtils
         cal.add(calendarUnit, offset);
         return cal.getTime();
     }
+
+    public static boolean equals(Date d1, Date d2){
+    	return equals(d1, d2, Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH);
+    }
+    public static boolean equals(Date d1, Date d2, int... calenderFields){
+    	if(d1 == d2)
+    		return true;
+    	if(d1 == null || d2 == null)
+    		return false;
+    	
+    	if(d1.equals(d2))
+    		return true;
+    	
+    	Calendar c1 = Calendar.getInstance();
+    	c1.setTime(d1);
+        	
+    	Calendar c2 = Calendar.getInstance();
+    	c2.setTime(d2);
+        	
+    	for(int field : calenderFields)
+    		if(c1.get(field) != c2.get(field))
+    			return false;
+    	return true;
+    }
+    
+    public static void main(String args[]) throws InterruptedException{
+    	Date d1 = new Date();
+    	Thread.sleep(1000);
+    	Date d2 = new Date();
+    	
+    	System.out.println(equals(d1,d2));
+    }
 }
