@@ -1,12 +1,14 @@
 package net.sf.regadb.io.db.util.mapping;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.ValueType;
 
 public abstract class ObjectStore {
     public abstract TestType getTestType(String description, String organismName);
@@ -37,6 +39,13 @@ public abstract class ObjectStore {
     
     public abstract Patient getPatient(Dataset dataset, String id);
     public abstract Patient createPatient(Dataset dataset, String id);
+    
+    public abstract AttributeGroup getAttributeGroup(String name);
+    public abstract AttributeGroup createAttributeGroup(String name);
+    
+    public abstract Attribute createAttribute(AttributeGroup attributeGroup, ValueType valueType, String name);
+    
+    public abstract ValueType getValueType(String description);
     
     public void commit(){
     	

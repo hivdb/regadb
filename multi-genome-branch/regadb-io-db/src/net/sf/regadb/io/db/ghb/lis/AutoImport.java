@@ -26,7 +26,6 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -94,11 +93,11 @@ public class AutoImport {
     Set<String> temp;
     Map<String, ErrorTypes> lisTests = new TreeMap<String, ErrorTypes>();
     
-    private ObjectMapper objMapper;
+    private ObjectMapper objectMapper;
     private XmlMapper xmlMapper;
     private ObjectStore objectStore;
     
-    private String datasetDescription = "KUL"; 
+    private String datasetDescription = "KUL";
     
     public static void main(String [] args) {
         AutoImport ai = new AutoImport(
@@ -113,15 +112,27 @@ public class AutoImport {
 		}
     }
     
+    public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore){
+    	init(mappingFile, nationMappingFile, objectStore);
+    }
+
     public AutoImport(File mappingFile, File nationMappingFile) {
+        Login login;
+		try {
+			login = Login.authenticate("admin", "admin");
+			init(mappingFile, nationMappingFile, new DbObjectStore(login));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    private void init(File mappingFile, File nationMappingFile, ObjectStore objectStore){
         try {
-            
             xmlMapper = new XmlMapper(mappingFile);
             
-            Login login = Login.authenticate("admin", "admin");
-            objectStore = new DbObjectStore(login);
-            
-            objMapper = new ObjectMapper(objectStore, xmlMapper);
+            objectMapper = new ObjectMapper(objectStore, xmlMapper);
+            this.objectStore = objectStore; 
             
             nationMapping = Utils.readTable(nationMappingFile.getAbsolutePath());
             
@@ -243,12 +254,9 @@ public class AutoImport {
         
         Attribute emdAttribute = objectStore.getAttribute("EMD Number", StandardObjects.getClinicalAttributeGroup().getGroupName());
         if(emdAttribute == null){
-        	Transaction t = ((DbObjectStore)objectStore).getTransaction();
-        	emdAttribute = new Attribute();
-        	emdAttribute.setName("EMD Number");
-        	emdAttribute.setAttributeGroup(t.getAttributeGroup(StandardObjects.getClinicalAttributeGroup().getGroupName()));
-        	emdAttribute.setValueType(t.getValueType(StandardObjects.getStringValueType().getDescription()));
-        	t.save(emdAttribute);
+        	emdAttribute = objectStore.createAttribute( objectStore.getAttributeGroup(StandardObjects.getClinicalAttributeGroup().getGroupName()),
+        												objectStore.getValueType(StandardObjects.getStringValueType().getDescription()),
+        												"EMD Number");
         }
         
         Attribute genderAttribute = objectStore.getAttribute(
@@ -340,7 +348,7 @@ public class AutoImport {
                 
                 TestResult tr = null;
                 try {
-                    tr = objMapper.getTestResult(variables);
+                    tr = objectMapper.getTestResult(variables);
                     tr.setSampleId(correctId);
                     tr.setTestDate(sampleDate);
                     
@@ -348,6 +356,8 @@ public class AutoImport {
                         logError(lineNumber, "Duplicate test result ignored");
                         return;
                     }
+                    
+                    setFirstTestDate(tr);
                     
                     p.addTestResult(tr);
                 }
@@ -385,7 +395,19 @@ public class AutoImport {
         }
     }
        
-    private String getCorrectSampleId(Map<String,Integer> headers, String[] line) {
+    private void setFirstTestDate(TestResult tr) {
+    	String description = tr.getTest().getTestType().getDescription(); 
+    	if(description.equals(StandardObjects.getCd4TestType().getDescription()) && tr.getTestDate().before(firstCd4))
+    		firstCd4 = tr.getTestDate();
+    	else if(description.equals(StandardObjects.getCd8TestType().getDescription()) && tr.getTestDate().before(firstCd8))
+    		firstCd8 = tr.getTestDate();
+    	else if(description.equals(StandardObjects.getViralLoadDescription()) && tr.getTestDate().before(firstViralLoad))
+    		firstViralLoad = tr.getTestDate();
+    	else if(description.equals(StandardObjects.getSeroStatusDescription()) && tr.getTestDate().before(firstSeroStatus))
+    		firstSeroStatus = tr.getTestDate();
+	}
+
+	private String getCorrectSampleId(Map<String,Integer> headers, String[] line) {
         String id = line[headers.get("otheeknr")];
         if(id.equals("")) {
             id = line[headers.get("staalId")];
@@ -405,7 +427,7 @@ public class AutoImport {
             Map<String,String> variables = new HashMap<String,String>();
             variables.put("name", name);
             variables.put("value", nominalValue);
-            PatientAttributeValue pav = objMapper.getAttributeValue(variables);
+            PatientAttributeValue pav = objectMapper.getAttributeValue(variables);
             p.addPatientAttributeValue(pav);
 
         } catch (ObjectDoesNotExistException e) {

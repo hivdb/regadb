@@ -1,6 +1,7 @@
 package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,9 @@ import java.util.Map.Entry;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
-import net.sf.regadb.io.db.ghb.MergeLISFiles;
+import net.sf.regadb.io.db.ghb.lis.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
 
 
@@ -35,6 +37,7 @@ public class ParseAll {
         String eadNrEmdNrFile;
         String patientenFile;
         String symptomenFile;
+        String lisMappingFile;
         String lisNationMappingFile;
         String stalenLeuvenFile;
         String spreadStalenFile;
@@ -60,6 +63,7 @@ public class ParseAll {
         medicatieFile               = filemakerDir + "medicatie.MER";
         
         filemakerMappingPath        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+        lisMappingFile        		= workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml";
         lisNationMappingFile        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
         seqsToIgnoreFile            = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
         
@@ -68,6 +72,8 @@ public class ParseAll {
         macFastaFile                = seqDir + "MAC_final.fasta";
         pcFastaFile                 = seqDir + "PC_final.fasta";
         outputPath                  = importDir;
+        
+        
         
         ParseEadEmd eadEmd = new ParseEadEmd();
         eadEmd.run(eadNrEmdNrFile,patientenFile);
@@ -81,9 +87,14 @@ public class ParseAll {
             patientIdPatients.put(e.getValue(), p);
         }
         
-        MergeLISFiles mergeLIS = new MergeLISFiles(lisNationMappingFile);
-        mergeLIS.patients = eadPatients;
-        mergeLIS.run(lisDir);
+        OfflineObjectStore oos = new OfflineObjectStore();
+        oos.setPatients(eadPatients);
+        AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos);
+        try {
+			ai.run(new File(lisDir));
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
         
         GetViralIsolates gvi = new GetViralIsolates();
         gvi.eadPatients = eadPatients;
@@ -100,7 +111,7 @@ public class ParseAll {
                             new File(filemakerMappingPath + "aids_defining_illness.mapping"),
                             patientIdPatients);
         
-        ParseContacts parseContacts = new ParseContacts(mergeLIS.firstCd4, mergeLIS.firstCd8, mergeLIS.firstViralLoad);
+        ParseContacts parseContacts = new ParseContacts(ai.firstCd4, ai.firstCd8, ai.firstViralLoad);
         parseContacts.run(patientIdPatients, contactenFile);
         
         ParseTherapy parseTherapy = new ParseTherapy();

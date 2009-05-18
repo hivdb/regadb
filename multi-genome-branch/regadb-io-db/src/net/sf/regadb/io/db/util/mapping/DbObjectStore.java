@@ -1,6 +1,7 @@
 package net.sf.regadb.io.db.util.mapping;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
@@ -8,6 +9,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.Login;
 
 public class DbObjectStore extends ObjectStore{
@@ -81,4 +83,32 @@ public class DbObjectStore extends ObjectStore{
         getTransaction().clearCache();
         createTransaction();
     }
+
+	@Override
+	public Attribute createAttribute(AttributeGroup attributeGroup,
+			ValueType valueType, String name) {
+    	Attribute a = new Attribute();
+    	a.setName(name);
+    	a.setAttributeGroup(attributeGroup);
+    	a.setValueType(valueType);
+    	getTransaction().save(a);
+    	return a;
+    }
+
+	@Override
+	public AttributeGroup createAttributeGroup(String name) {
+		AttributeGroup ag = new AttributeGroup();
+		getTransaction().save(ag);
+		return ag;
+	}
+
+	@Override
+	public AttributeGroup getAttributeGroup(String name) {
+		return getTransaction().getAttributeGroup(name);
+	}
+
+	@Override
+	public ValueType getValueType(String description) {
+		return getTransaction().getValueType(description);
+	}
 }

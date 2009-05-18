@@ -34,6 +34,8 @@ public class StandardObjects {
     private static List<Test> allTests = new ArrayList<Test>();
     private static List<Attribute> allAttributes = new ArrayList<Attribute>();
     private static List<Event> allEvents = new ArrayList<Event>();
+    private static List<AttributeGroup> allAttributeGroups = new ArrayList<AttributeGroup>();
+    private static List<ValueType> allValueTypes = new ArrayList<ValueType>();
     
     private static Map<String, Map<String, TestType>> standardGenomeTestTypes = new HashMap<String, Map<String, TestType>>();
     private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
@@ -122,15 +124,15 @@ public class StandardObjects {
         hiv2bGenome = createGenome("HIV-2B", "");
         hcvGenome = createGenome("HCV","");
         
-        numberValueType         = new ValueType("number");
-        limitedNumberValueType  = new ValueType("limited number (<,=,>)");
-        nominalValueType        = new ValueType("nominal value");
-        stringValueType         = new ValueType("string");
-        dateValueType           = new ValueType("date");
+        numberValueType         = createValueType("number");
+        limitedNumberValueType  = createValueType("limited number (<,=,>)");
+        nominalValueType        = createValueType("nominal value");
+        stringValueType         = createValueType("string");
+        dateValueType           = createValueType("date");
         
-        personalAttributeGroup = new AttributeGroup("Personal");
-        demographicsAttributeGroup = new AttributeGroup("Demographics");
-        clinicalAttributeGroup = new AttributeGroup("Clinical");
+        personalAttributeGroup = createAttributeGroup("Personal");
+        demographicsAttributeGroup = createAttributeGroup("Demographics");
+        clinicalAttributeGroup = createAttributeGroup("Clinical");
         
         firstNameAttribute          = createAttribute(Patient.FIRST_NAME, getStringValueType(), getPersonalAttributeGroup());
         lastNameAttribute           = createAttribute(Patient.LAST_NAME, getStringValueType(), getPersonalAttributeGroup());
@@ -241,6 +243,18 @@ public class StandardObjects {
         return e;
     }
     
+    private static AttributeGroup createAttributeGroup(String name){
+    	AttributeGroup ag = new AttributeGroup(name);
+    	allAttributeGroups.add(ag);
+    	return ag;
+    }
+    
+    private static ValueType createValueType(String description){
+    	ValueType vt = new ValueType(description);
+    	allValueTypes.add(vt);
+    	return vt;
+    }
+    
     public static List<Genome> getGenomes(){
         return allGenomes;
     }
@@ -255,6 +269,12 @@ public class StandardObjects {
     }
     public static List<Event> getEvents(){
         return allEvents;
+    }
+    public static List<AttributeGroup> getAttributeGroups(){
+    	return allAttributeGroups;
+    }
+    public static List<ValueType> getValueTypes(){
+    	return allValueTypes;
     }
     
     public static Map<String, Map<String, Test>> getStandardGenomeTests(){
