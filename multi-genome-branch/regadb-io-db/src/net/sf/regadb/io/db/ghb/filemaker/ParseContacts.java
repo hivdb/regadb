@@ -121,29 +121,29 @@ public class ParseContacts {
         return false;
     }
     
-    private void storeTestResult(Date startLis, Test t, Date date, double value, String sampleId, Patient p){
+    private void storeTestResult(Date startLis, Test t, Date date, String value, String sampleId, Patient p){
         if(date.before(startLis) || !hasTestResultOnDate(p, t, date)){
             TestResult tr = p.createTestResult(t);
-            tr.setValue(value+"");
+            tr.setValue(value);
             tr.setTestDate(date);
             tr.setSampleId(sampleId); 
         }
     }
     
     private void storeCD4(Date date, double value, String sampleId, Patient p) {
-        storeTestResult(firstCd4_, StandardObjects.getGenericCD4Test(), date, value, sampleId, p);
+        storeTestResult(firstCd4_, StandardObjects.getGenericCD4Test(), date, ((long)value)+"", sampleId, p);
     }
     
     private void storeCD8(Date date, double value, String sampleId, Patient p) {
-        storeTestResult(firstCd8_, StandardObjects.getGenericCD8Test(), date, value, sampleId, p);
+        storeTestResult(firstCd8_, StandardObjects.getGenericCD8Test(), date, ((long)value)+"", sampleId, p);
     }
     
     private void storeCD4Percent(Date date, double value, String sampleId, Patient p) {
-        storeTestResult(firstCd4_, StandardObjects.getGenericCD4PercentageTest(), date, value, sampleId, p);
+        storeTestResult(firstCd4_, StandardObjects.getGenericCD4PercentageTest(), date, value+"", sampleId, p);
     }
     
     private void storeCD8Percent(Date date, double value, String sampleId, Patient p) {
-        storeTestResult(firstCd8_, StandardObjects.getGenericCD8PercentageTest(), date, value, sampleId, p);
+        storeTestResult(firstCd8_, StandardObjects.getGenericCD8PercentageTest(), date, value+"", sampleId, p);
     }
     
     private void storeContact(Date date, Patient p){
@@ -177,7 +177,7 @@ public class ParseContacts {
 
         try {
             if(sensChar==' ') {
-                parsedValue = "="+ Double.parseDouble(removeCharsFromString(value,' '));
+                parsedValue = "="+ (long)Double.parseDouble(removeCharsFromString(value,' '));
             }
             else {
                 parsedValue = Character.toString(sensChar) + Double.parseDouble(removeCharsFromString(value.substring(1, value.length()), ' '));
