@@ -13,12 +13,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
@@ -86,10 +83,6 @@ public class AutoImport {
     public Date firstViralLoad = new Date();
     public Date firstSeroStatus = new Date();
     
-    private Table nationMapping;
-    
-    //for checking nation codes
-    Set<String> temp;
     Map<String, ErrorTypes> lisTests = new TreeMap<String, ErrorTypes>();
     
     private ObjectMapper objectMapper;
@@ -141,8 +134,6 @@ public class AutoImport {
             objectMapper = new ObjectMapper(objectStore, xmlMapper);
             this.objectStore = objectStore; 
             
-            temp = new HashSet<String>();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -170,10 +161,6 @@ public class AutoImport {
     		batchProcess(path);
     	}
     	
-    	for(String s: temp) {
-            System.err.println(s);
-        }
-        
         logInfo("Tests summary ------");
         for(Map.Entry<String, ErrorTypes> me : lisTests.entrySet())
             logInfo(me.getKey() +": \t"+ me.getValue());
@@ -249,8 +236,6 @@ public class AutoImport {
            e.printStackTrace();
         }
         char sex = line[headers.get("geslacht")].toUpperCase().charAt(0);
-        String nation = line[headers.get("nation")].toUpperCase();
-        
         
         Patient p = getPatient(ead);
         if(p==null){
@@ -281,10 +266,6 @@ public class AutoImport {
         if(!containsAttribute(birthDateAttribute, p))
             p.createPatientAttributeValue(birthDateAttribute).setValue(birthDate.getTime()+"");
         
-        if(mapCountry(nation)==null) {
-            temp.add(nation);
-        }
-        
         return p;
     }
     
@@ -296,15 +277,6 @@ public class AutoImport {
             }
         }
         return false;
-    }
-    
-    public String mapCountry(String code) {
-        for(int i = 1; i<nationMapping.numRows(); i++) {
-            if(nationMapping.valueAt(0, i).equals(code)) {
-                return nationMapping.valueAt(1, i);
-            }
-        }
-        return null;
     }
     
     private void handleTest(Patient p, Map<String,Integer> headers, String[] line, int lineNumber) {
