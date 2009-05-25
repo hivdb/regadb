@@ -15,6 +15,9 @@ public class GhbUtils {
     	return d == null || isValidDate(d);
     }
     public static boolean isValidDate(Date d){
+    	if(d == null)
+    		return false;
+    	
     	if(earliestDate.after(d))
     		return false;
     	
