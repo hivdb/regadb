@@ -314,6 +314,9 @@ public class AutoImport {
         
         try {
             sampleDate = GhbUtils.LISDateFormat.parse(line[headers.get("afname")]);
+            if(!GhbUtils.isValidDate(sampleDate))
+            	throw new Exception("invalid test date: "+ sampleDate);
+            
             if(sampleDate.before(earliestDate)) {
                 earliestDate = sampleDate;
             }
@@ -352,51 +355,51 @@ public class AutoImport {
 
                 
                 TestResult tr = null;
-                try {
-                    tr = objectMapper.getTestResult(variables);
-                    tr.setSampleId(correctId);
-                    tr.setTestDate(sampleDate);
-                    
-                    if(duplicateTestResult(p, tr)){
-                        logError(lineNumber, "Duplicate test result ignored");
-                        return;
-                    }
-                    
-                    setFirstTestDate(tr);
-                    
-                    p.addTestResult(tr);
+                tr = objectMapper.getTestResult(variables);
+                tr.setSampleId(correctId);
+                tr.setTestDate(sampleDate);
+                
+                if(duplicateTestResult(p, tr)){
+                    logError(lineNumber, "Duplicate test result ignored");
+                    return;
                 }
-                catch(MappingDoesNotExistException e){
-                    logError(lineNumber, e.getMessage());
-                    lisTests.get(aanvraagTestNaam).mapping = true;
-                    logNotImported(toString(line));
-                }
-                catch(ObjectDoesNotExistException e){
-                    logError(lineNumber, e.getMessage());
-                    lisTests.get(aanvraagTestNaam).object = true;
-                    logNotImported(toString(line));
-                }
-                catch(InvalidValueException e){
-                    logError(lineNumber, e.getMessage());
-                    lisTests.get(aanvraagTestNaam).value = true;
-                    logNotImported(toString(line));
-                }
-                catch (MappingException e) {
-                    logError(lineNumber, "MappingException: "+ e.getMessage());
-                    logNotImported(toString(line));
-                }
-                catch (Exception e){
-                    logError(lineNumber, "Exception: "+ e.getMessage());
-                    e.printStackTrace();
-                    logNotImported(toString(line));
-                }
+                
+                setFirstTestDate(tr);
+                
+                p.addTestResult(tr);
+                
             }
             else{
                 logError(lineNumber, "No result");
             }
-        } catch (ParseException e) {
+        } 
+        catch(MappingDoesNotExistException e){
+            logError(lineNumber, e.getMessage());
+            lisTests.get(aanvraagTestNaam).mapping = true;
+            logNotImported(toString(line));
+        }
+        catch(ObjectDoesNotExistException e){
+            logError(lineNumber, e.getMessage());
+            lisTests.get(aanvraagTestNaam).object = true;
+            logNotImported(toString(line));
+        }
+        catch(InvalidValueException e){
+            logError(lineNumber, e.getMessage());
+            lisTests.get(aanvraagTestNaam).value = true;
+            logNotImported(toString(line));
+        }
+        catch (MappingException e) {
+            logError(lineNumber, "MappingException: "+ e.getMessage());
+            logNotImported(toString(line));
+        }
+        catch (ParseException e) {
             logNotImported(toString(line));
             logError("ParseException at line "+ lineNumber +": "+ e.getMessage());
+        }
+        catch (Exception e){
+            logError(lineNumber, "Exception: "+ e.getMessage());
+            e.printStackTrace();
+            logNotImported(toString(line));
         }
     }
        

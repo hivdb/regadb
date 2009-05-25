@@ -122,7 +122,7 @@ public class ParseContacts {
     }
     
     private void storeTestResult(Date startLis, Test t, Date date, String value, String sampleId, Patient p){
-        if(date.before(startLis) || !hasTestResultOnDate(p, t, date)){
+        if(GhbUtils.isValidDate(date) && (date.before(startLis) || !hasTestResultOnDate(p, t, date))){
             TestResult tr = p.createTestResult(t);
             tr.setValue(value);
             tr.setTestDate(date);
