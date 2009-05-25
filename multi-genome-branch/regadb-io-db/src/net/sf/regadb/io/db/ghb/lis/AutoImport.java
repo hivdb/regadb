@@ -29,7 +29,6 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.ConsoleLogger;
-import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.mapping.DbObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper;
 import net.sf.regadb.io.db.util.mapping.ObjectStore;
@@ -100,41 +99,47 @@ public class AutoImport {
     private String datasetDescription = "KUL";
     
     public static void main(String [] args) {
+    	if(args.length < 5){
+    		System.err.println("Usage: regadb_conf_dir regadb_user regadb_pass mapping.xml lis_export_dir");
+    		return;
+    	}
+    	
         AutoImport ai = new AutoImport(
-                new File("/home/simbre1/workspaces/regadb.clean/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml"),
-                new File("/home/simbre1/workspaces/regadb.clean/regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping"));
+        		args[0],
+        		args[1],
+        		args[2],
+                new File(args[3]));
                 
         try {
-			ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis/GHB_1900_1986.txt"));
-        	//ai.run(new File("/home/simbre1/import/ghb/2009-05-04/lis/test.txt"));
+			ai.run(new File(args[4]));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
     }
     
     public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore){
-    	init(mappingFile, nationMappingFile, objectStore);
+    	init(mappingFile, objectStore);
     }
 
-    public AutoImport(File mappingFile, File nationMappingFile) {
+    public AutoImport(String confDir, String user, String pass, File mappingFile) {
+    	RegaDBSettings.getInstance(confDir);
+    	
         Login login;
 		try {
-			login = Login.authenticate("admin", "admin");
-			init(mappingFile, nationMappingFile, new DbObjectStore(login));
+			login = Login.authenticate(user, pass);
+			init(mappingFile, new DbObjectStore(login));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
     }
     
-    private void init(File mappingFile, File nationMappingFile, ObjectStore objectStore){
+    private void init(File mappingFile, ObjectStore objectStore){
         try {
             xmlMapper = new XmlMapper(mappingFile);
             
             objectMapper = new ObjectMapper(objectStore, xmlMapper);
             this.objectStore = objectStore; 
-            
-            nationMapping = Utils.readTable(nationMappingFile.getAbsolutePath());
             
             temp = new HashSet<String>();
 
@@ -444,11 +449,6 @@ public class AutoImport {
             if(tr.getTest().getDescription().equals(result.getTest().getDescription()) &&
                     DateUtils.equals(tr.getTestDate(),result.getTestDate()) &&
                     equals(tr.getSampleId(),result.getSampleId())) {
-//                if(tr.getTestNominalValue() == null)
-//                    return tr.getValue().equals(result.getValue());
-//                else if(result.getTestNominalValue() != null)
-//                    return tr.getTestNominalValue().getValue().equals(result.getTestNominalValue().getValue());
-//                return false;
             	return true;
             }
         }
