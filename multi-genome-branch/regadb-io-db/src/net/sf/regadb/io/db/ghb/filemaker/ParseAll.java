@@ -14,6 +14,7 @@ import net.sf.regadb.io.db.ghb.lis.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 
 // Files needed from filemaker pro are:
@@ -49,8 +50,11 @@ public class ParseAll {
         String filemakerMappingPath;
         String outputPath;
         
-        String importDir = new File(args[0]).getAbsolutePath() + File.separatorChar;
-        String workspaceDir = new File(args[1]).getAbsolutePath() + File.separatorChar;
+        String confDir = args[0];
+        String importDir = new File(args[1]).getAbsolutePath() + File.separatorChar;
+        String workspaceDir = new File(args[2]).getAbsolutePath() + File.separatorChar;
+        
+        RegaDBSettings.getInstance(confDir);
         
         String lisDir = importDir + "lis" + File.separatorChar;
         String filemakerDir = importDir + "filemaker" + File.separatorChar;

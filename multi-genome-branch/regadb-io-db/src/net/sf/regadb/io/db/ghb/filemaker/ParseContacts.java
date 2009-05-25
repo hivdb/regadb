@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
@@ -43,73 +44,75 @@ public class ParseContacts {
         int CDate = Utils.findColumn(contacts, "Datum");
         //int CContact = Utils.findColumn(contacts, "AlleenContact");
         
-        HashSet<String> setset = new HashSet<String>();
+        Set<String> invalidPatientIds = new HashSet<String>();
         
         for(int i = 1; i<contacts.numRows(); i++) {
-            String patientId = contacts.valueAt(CPatientId, i);
+
+        	String patientId = contacts.valueAt(CPatientId, i);
+            Patient p = patients.get(patientId);
+            if(p == null){
+            	if(invalidPatientIds.add(patientId))
+            		System.err.println("invalid patient id: "+ patientId);
+            	continue;
+            }
+
+            String sdate = contacts.valueAt(CDate, i).replace('/', '-');
             Date date = null;
             try {
-                date = GhbUtils.filemakerDateFormat.parse(contacts.valueAt(CDate, i).replace('/', '-'));
+                date = GhbUtils.filemakerDateFormat.parse(sdate);
             } catch (ParseException e) {
-                
             }
-            if(!"".equals(patientId) && date!=null) {
-                Patient p = patients.get(patientId);
-                if(p!=null) {
-                    storeContact(date, p);
-                    
-                    if(!contacts.valueAt(CCD4, i).equals("")) {
-                        try{
-                        double cd4 = Double.parseDouble(contacts.valueAt(CCD4, i).replace(',', '.'));
-                        storeCD4(date, cd4, null, p);
-                        } catch(NumberFormatException nfe) {
-                            System.err.println("Cannot parse cd4 value " + contacts.valueAt(CCD4, i));
-                        }
-                    }
-                    
-                    if(!contacts.valueAt(CCD8, i).equals("")) {
-                        try{
-                            double cd8 = Double.parseDouble(contacts.valueAt(CCD8, i).replace(',', '.'));
-                            storeCD8(date, cd8, null, p);
-                            } catch(NumberFormatException nfe) {
-                                System.err.println("Cannot parse cd8 value " + contacts.valueAt(CCD8, i));
-                            }
-                    }
-                    
-                    if(!contacts.valueAt(CCD4Percent, i).equals("")) {
-                        try{
-                        double cd4p = Double.parseDouble(contacts.valueAt(CCD4Percent, i).replace(',', '.'));
-                        storeCD4Percent(date, cd4p, null, p);
-                        } catch(NumberFormatException nfe) {
-                            System.err.println("Cannot parse cd4% value " + contacts.valueAt(CCD4Percent, i));
-                        }
-                    }
-                    
-                    if(!contacts.valueAt(CCD8Percent, i).equals("")) {
-                        try{
-                            double cd8p = Double.parseDouble(contacts.valueAt(CCD8Percent, i).replace(',', '.'));
-                            storeCD8Percent(date, cd8p, null, p);
-                            } catch(NumberFormatException nfe) {
-                                System.err.println("Cannot parse cd8% value " + contacts.valueAt(CCD8Percent, i));
-                            }
-                    }
-                    
-                    if(!contacts.valueAt(CViralLoad, i).equals(""))
-                        storeViralLoad(date, contacts.valueAt(CViralLoad, i), null, p);
-                    
-                    String sero = contacts.valueAt(CHIVPos, i);
-                    if(!sero.equals("")) {
-                        if(sero.toLowerCase().contains("hiv") && sero.toLowerCase().contains("positief")) {
-                            storePosSero(date, null, p);
-                        }
-                    }
-                } else {
-                    if(setset.add(patientId)) {                    
-                        System.err.println("invalid patientId****: " + patientId);
-                    }
+            if(!GhbUtils.isValidDate(date)){
+            	System.err.println("invalid date: "+ sdate);
+            	continue;
+            }
+                
+            storeContact(date, p);
+            
+            if(!contacts.valueAt(CCD4, i).equals("")) {
+                try{
+                double cd4 = Double.parseDouble(contacts.valueAt(CCD4, i).replace(',', '.'));
+                storeCD4(date, cd4, null, p);
+                } catch(NumberFormatException nfe) {
+                    System.err.println("Cannot parse cd4 value " + contacts.valueAt(CCD4, i));
                 }
-            } else {
-                System.err.println("Cannot parse contact, no date or wrong patientId");
+            }
+            
+            if(!contacts.valueAt(CCD8, i).equals("")) {
+                try{
+                    double cd8 = Double.parseDouble(contacts.valueAt(CCD8, i).replace(',', '.'));
+                    storeCD8(date, cd8, null, p);
+                    } catch(NumberFormatException nfe) {
+                        System.err.println("Cannot parse cd8 value " + contacts.valueAt(CCD8, i));
+                    }
+            }
+            
+            if(!contacts.valueAt(CCD4Percent, i).equals("")) {
+                try{
+                double cd4p = Double.parseDouble(contacts.valueAt(CCD4Percent, i).replace(',', '.'));
+                storeCD4Percent(date, cd4p, null, p);
+                } catch(NumberFormatException nfe) {
+                    System.err.println("Cannot parse cd4% value " + contacts.valueAt(CCD4Percent, i));
+                }
+            }
+            
+            if(!contacts.valueAt(CCD8Percent, i).equals("")) {
+                try{
+                    double cd8p = Double.parseDouble(contacts.valueAt(CCD8Percent, i).replace(',', '.'));
+                    storeCD8Percent(date, cd8p, null, p);
+                    } catch(NumberFormatException nfe) {
+                        System.err.println("Cannot parse cd8% value " + contacts.valueAt(CCD8Percent, i));
+                    }
+            }
+            
+            if(!contacts.valueAt(CViralLoad, i).equals(""))
+                storeViralLoad(date, contacts.valueAt(CViralLoad, i), null, p);
+            
+            String sero = contacts.valueAt(CHIVPos, i);
+            if(!sero.equals("")) {
+                if(sero.toLowerCase().contains("hiv") && sero.toLowerCase().contains("positief")) {
+                    storePosSero(date, null, p);
+                }
             }
         }
     }
@@ -122,7 +125,7 @@ public class ParseContacts {
     }
     
     private void storeTestResult(Date startLis, Test t, Date date, String value, String sampleId, Patient p){
-        if(GhbUtils.isValidDate(date) && (date.before(startLis) || !hasTestResultOnDate(p, t, date))){
+        if(date.before(startLis) || !hasTestResultOnDate(p, t, date)){
             TestResult tr = p.createTestResult(t);
             tr.setValue(value);
             tr.setTestDate(date);
