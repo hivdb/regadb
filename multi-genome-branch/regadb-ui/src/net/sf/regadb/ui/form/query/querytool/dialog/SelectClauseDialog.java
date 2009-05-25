@@ -13,13 +13,11 @@ import net.sf.regadb.ui.form.query.querytool.buttons.SelectClauseButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.widgets.MyDialog;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.regadb.ui.framework.widgets.UIUtils;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
-import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WKeyEvent;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -75,28 +73,28 @@ public class SelectClauseDialog extends MyDialog {
 		// has updated
 //		UIUtils.singleShot(this, 1, new Signal.Listener() {
 //			public void trigger() {
-//				for (String key : clauses.keySet()) {
-//					if (!key.equals(SelectClauseDialog.this.focusGroup)) {
-//						List<AtomicWhereClause> clauseList = clauses.get(key);
-//						rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
-//					}
-//				}
-//				
-//				rootSelector.keyWentUp().addListener(SelectClauseDialog.this, new Signal1.Listener<WKeyEvent>() {
-//					public void trigger(WKeyEvent a) {
-//						if (getSelectedClause() != null) {
-//							setEditable(!getSelectedClause().getManager().isUseless());
-//						}
-//					}
-//				});
-//				
-//				rootSelector.clicked().addListener(SelectClauseDialog.this, new Signal1.Listener<WMouseEvent>() {
-//					public void trigger(WMouseEvent a) {
-//						if (getSelectedClause() != null) {
-//							setEditable(!getSelectedClause().getManager().isUseless());
-//						}
-//					}
-//				});
+				for (String key : clauses.keySet()) {
+					if (!key.equals(SelectClauseDialog.this.focusGroup)) {
+						clauseList = clauses.get(key);
+						rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
+					}
+				}
+				
+				rootSelector.keyWentUp().addListener(SelectClauseDialog.this, new Signal1.Listener<WKeyEvent>() {
+					public void trigger(WKeyEvent a) {
+						if (getSelectedClause() != null) {
+							setEditable(!getSelectedClause().getManager().isUseless());
+						}
+					}
+				});
+				
+				rootSelector.clicked().addListener(SelectClauseDialog.this, new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent a) {
+						if (getSelectedClause() != null) {
+							setEditable(!getSelectedClause().getManager().isUseless());
+						}
+					}
+				});
 //			}
 //		});
 	}
