@@ -34,6 +34,10 @@ import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingDoesNotExistExceptio
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.ObjectDoesNotExistException;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.args.Arguments.ArgumentException;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.mapper.XmlMapper;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -89,38 +93,50 @@ public class AutoImport {
     private XmlMapper xmlMapper;
     private ObjectStore objectStore;
     
-    private String datasetDescription = "KUL";
+    private String datasetDescription = null;
     
     public static void main(String [] args) {
-    	if(args.length < 5){
-    		System.err.println("Usage: regadb_conf_dir regadb_user regadb_pass mapping.xml lis_export_dir");
-    		return;
-    	}
+    	Arguments as = new Arguments();
+    	ValueArgument conf			= as.addValueArgument("conf-dir", "configuration directory", false);
+    	PositionalArgument user		= as.addPositionalArgument("regadb user", true);
+    	PositionalArgument pass		= as.addPositionalArgument("regadb password", true);
+    	PositionalArgument dataset	= as.addPositionalArgument("regadb dataset", true);
+    	PositionalArgument mapfile	= as.addPositionalArgument("lis mapping xml file", true);
+    	PositionalArgument lisdir	= as.addPositionalArgument("lis export directory", true);
     	
-        AutoImport ai = new AutoImport(
-        		args[0],
-        		args[1],
-        		args[2],
-                new File(args[3]));
-                
-        try {
-			ai.run(new File(args[4]));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+    	try {
+			as.parse(args);
+		} catch (ArgumentException e1) {
+			System.err.println(e1);
 		}
+		
+		if(as.isValid()){
+			if(conf.isSet())
+				RegaDBSettings.getInstance(conf.getValue());
+			
+			as.printValues(System.out);
+	        AutoImport ai = new AutoImport(user.getValue(), pass.getValue(), new File(mapfile.getValue()), dataset.getValue());
+            
+	        try {
+				ai.run(new File(lisdir.getValue()));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+			as.printUsage(System.err);
     }
     
     public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore){
     	init(mappingFile, objectStore);
     }
 
-    public AutoImport(String confDir, String user, String pass, File mappingFile) {
-    	RegaDBSettings.getInstance(confDir);
-    	
+    public AutoImport(String user, String pass, File mappingFile, String dataset) {
         Login login;
 		try {
 			login = Login.authenticate(user, pass);
 			init(mappingFile, new DbObjectStore(login));
+			datasetDescription = dataset;
 			
 		} catch (Exception e) {
 			e.printStackTrace();
