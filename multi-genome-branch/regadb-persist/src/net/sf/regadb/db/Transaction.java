@@ -1180,7 +1180,7 @@ public class Transaction {
             queryString += " and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField + (ascending?" asc":" desc") +", settingsUser";
+        queryString += " order by " + sortField + (ascending?" asc":" desc");
     
       	Query q = session.createQuery(queryString);
         
