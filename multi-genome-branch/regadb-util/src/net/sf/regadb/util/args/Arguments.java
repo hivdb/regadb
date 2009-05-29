@@ -102,6 +102,21 @@ public class Arguments{
 		return true;
 	}
 	
+	public boolean handle(String args[]){
+		try {
+			parse(args);
+		} catch (ArgumentException e) {
+			e.printStackTrace();
+		}
+		
+		if(isValid())
+			return true;
+		else{
+			printUsage(System.err);
+			return false;
+		}
+	}
+	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
