@@ -39,7 +39,6 @@ public class NtSequenceUtils {
 
 		Comparator<NtSequence> c = new Comparator<NtSequence>(){
 
-			@Override
 			public int compare(NtSequence o1, NtSequence o2) {
 				if(o1.getViralIsolate().getSampleDate() == null && o2.getViralIsolate().getSampleDate() == null){
 					return 0;
