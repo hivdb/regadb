@@ -1,0 +1,108 @@
+<genotype-analyses>
+  <alignment file="novI-ORF2.fasta" trim="false" />
+
+  <clusters>
+    <cluster id="I.1" name="NoV I.1">
+      <taxus name="I.1|M87661" />
+      <taxus name="I.1|L23828" />
+    </cluster>
+
+    <cluster id="I.2" name="NoV I.2">
+      <taxus name="I.2|L07418" />
+      <taxus name="I.2|AJ277610" />
+    </cluster>
+
+    <cluster id="I.3" name="NoV I.3">
+      <taxus name="I.3|U04469" />
+      <taxus name="I.3|AY038598" />      
+      <taxus name="I.3|AJ277612" />
+    </cluster>
+
+    <cluster id="I.4" name="NoV I.4">
+      <taxus name="I.4|AB042808" />
+      <taxus name="I.4|AJ313030" />
+    </cluster>
+
+    <cluster id="I.5" name="NoV I.5">
+      <taxus name="I.5|AB039774" />
+      <taxus name="I.5|AJ277614" />
+    </cluster>
+
+    <cluster id="I.6" name="NoV I.6">
+      <taxus name="I.6|AF093797" />
+      <taxus name="I.6|AJ277615" />
+    </cluster>
+
+    <cluster id="I.7" name="NoV I.7">
+      <taxus name="I.7|AJ277609" />
+      <taxus name="I.7|AY675555" />
+    </cluster>
+
+    <cluster id="I.8" name="NoV I.8">
+      <taxus name="I.8|AF538679" />
+    </cluster>
+
+    <cluster id="O" name="NoV III.1">
+      <taxus name="III.1|EU360814" />
+    </cluster>
+  </clusters>
+
+  <analysis id="phylo-ORF2" type="paup">
+    <identify>
+      I.1,I.2,I.3,I.4,I.5,I.6,I.7,I.8,O
+    </identify>
+    <cutoff>
+      70
+    </cutoff>
+    <block>
+      begin paup;
+      log file=paup.log replace=yes;
+      export format=phylip file=paup.fasta replace=yes;
+      exclude gapped;
+      export format=nexus file=paup.nex replace=yes;
+      outgroup III.1|EU360814;
+      set criterion=distance outroot=monophyl;
+      dset distance=TamNei rates=gamma shape=0.324463 NegBrLen=SetAbsVal;
+      constraints CONSTRE(BACKBONE)=((2,3),(4,5),(6,7,8),(9,10),(11,12),(13,14),(15,16));
+      NJ constraints=CONSTRE enforce=yes;
+      savetree format=nexus brlens=yes file=paup.tre replace=yes;
+      bootstrap nreps=100 search=nj;
+      end;
+      quit;
+    </block>
+    <options>
+      log,alignment,tree,inner,outer
+    </options>
+  </analysis>
+
+
+  <analysis id="scan-self" type="scan">
+    <window>
+      300
+    </window>
+    <step>
+      50
+    </step>
+    <analysis type="paup">
+      <identify>
+       I.1,I.2,I.3,I.4,I.5,I.6,I.7,I.8,O
+      </identify>
+      <block>
+        begin paup;
+        log file=paup.log replace=yes;
+        exclude gapped;
+        export format=nexus file=paup.nex replace=yes;
+	set criterion=distance outroot=monophyl;
+	dset distance=TamNei rates=gamma shape=0.324463 NegBrLen=SetAbsVal;
+	outgroup EU360814|III.1;
+        NJ;
+        savetree format=phylip brlens=yes file=paup.tre replace=yes;
+        bootstrap nreps=100 search=nj;
+        end;
+        quit;
+      </block>
+    </analysis>
+  </analysis>
+    
+</genotype-analyses>
+
