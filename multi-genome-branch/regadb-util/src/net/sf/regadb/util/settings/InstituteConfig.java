@@ -1,7 +1,6 @@
 package net.sf.regadb.util.settings;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 
 import org.jdom.Comment;
@@ -14,6 +13,8 @@ public class InstituteConfig implements IConfigParser {
 	private File queryResultDir;
 	private int reportDateTolerance;
 	private String dateFormat;
+	private int minYear;
+	private int maxDaysFuture;
 	
 	private WivConfig wivConfig;
 	
@@ -56,6 +57,14 @@ public class InstituteConfig implements IConfigParser {
 		if(ee != null)
 			setDateFormat(ee.getTextTrim());
 
+		ee = e.getChild("min-year");
+		if(ee != null)
+			setMinYear(Integer.parseInt(ee.getTextTrim()));
+
+		ee = e.getChild("max-days-future");
+		if(ee != null)
+			setMaxDaysFuture(Integer.parseInt(ee.getTextTrim()));
+		
 		ee = e.getChild("organism-filter");
 		if(ee != null)
 			organismFilter = new Filter(ee.getText());
@@ -88,6 +97,9 @@ public class InstituteConfig implements IConfigParser {
 		forms.clear();
 		addFormConfig(new SelectPatientFormConfig());
 		addFormConfig(new ContactFormConfig());
+		
+		setMinYear(-1);
+		setMaxDaysFuture(-1);
 	}
 	
 	public void addFormConfig(FormConfig form){
@@ -122,6 +134,18 @@ public class InstituteConfig implements IConfigParser {
 		e = new Element("date-format");
 		e.setText(getDateFormat());
 		r.addContent(e);
+		
+		if(getMinYear() != -1){
+			e = new Element("min-year");
+			e.setText(getMinYear()+"");
+			r.addContent(e);
+		}
+		
+		if(getMaxDaysFuture() != -1){
+			e = new Element("max-days-future");
+			e.setText(getMaxDaysFuture()+"");
+			r.addContent(e);
+		}
 		
 		if(organismFilter != null){
 			r.addContent(new Comment("Only show test types, tests, drugs linked with this organism, i.e. 'HIV*' will only show HIV-1, HIV-2A/B, ... items."));
@@ -188,5 +212,21 @@ public class InstituteConfig implements IConfigParser {
 	}
 	public void setWivConfig(WivConfig wivConfig){
 		this.wivConfig = wivConfig;
+	}
+
+	public void setMinYear(int minYear) {
+		this.minYear = minYear;
+	}
+
+	public int getMinYear() {
+		return minYear;
+	}
+
+	public void setMaxDaysFuture(int maxDaysInFuture) {
+		this.maxDaysFuture = maxDaysInFuture;
+	}
+
+	public int getMaxDaysFuture() {
+		return maxDaysFuture;
 	}
 }

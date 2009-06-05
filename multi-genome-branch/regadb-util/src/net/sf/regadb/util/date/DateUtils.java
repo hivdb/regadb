@@ -98,4 +98,28 @@ public class DateUtils
     	
     	System.out.println(equals(d1,d2));
     }
+    
+    public boolean isValidDate(Date d){
+    	return isValidDate(d,
+    			RegaDBSettings.getInstance().getInstituteConfig().getMinYear(),
+    			RegaDBSettings.getInstance().getInstituteConfig().getMaxDaysFuture());
+    }
+    public boolean isValidDate(Date d, int minYear, int maxDays){
+    	if(minYear > -1){ 
+        	Calendar cal = Calendar.getInstance();
+        	cal.setTime(d);
+
+    		if(cal.get(Calendar.YEAR) < minYear)
+    			return false;
+    	}
+
+    	if(maxDays > -1){
+	       	Calendar cal = Calendar.getInstance();
+	       	cal.add(Calendar.DAY_OF_MONTH, maxDays+1);
+	       	
+	       	if(d.after(cal.getTime()))
+	       		return false;
+    	}
+    	return true;
+    }
 }

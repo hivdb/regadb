@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import net.sf.regadb.ui.framework.forms.IForm;
@@ -7,6 +8,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDatePicker;
 import eu.webtoolkit.jwt.WDateValidator;
 import eu.webtoolkit.jwt.WFormWidget;
@@ -40,7 +42,27 @@ public class DateField extends FormField
         
 		if(_fieldEdit!=null)
 		{
-			_fieldEdit.setValidator(new WDateValidator(dateFormat));
+			WDateValidator dv;
+			int minYear = RegaDBSettings.getInstance().getInstituteConfig().getMinYear();
+			int maxDays = RegaDBSettings.getInstance().getInstituteConfig().getMaxDaysFuture();
+			
+			if(minYear > -1 || maxDays > -1){
+				if(minYear < 0)
+					minYear = 1900;
+				if(maxDays < 0)
+					maxDays = 36500;
+				
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DAY_OF_MONTH, maxDays);
+				
+				dv = new WDateValidator(dateFormat,
+						new WDate(minYear,1,1),
+						new WDate(cal.getTime()));
+			}
+			else{
+				dv = new WDateValidator(dateFormat);
+			}
+			_fieldEdit.setValidator(dv);
 		}
 	}
 	
