@@ -59,7 +59,7 @@ public abstract class FormField extends WContainerWidget implements IFormField
             valid = getFormWidget().validator().validate(getFormText()) == WValidator.State.Valid;
         }
         
-        if(isUnique()){
+        if(valid && isUnique()){
             valid = checkUniqueness();
         }
         return valid;
