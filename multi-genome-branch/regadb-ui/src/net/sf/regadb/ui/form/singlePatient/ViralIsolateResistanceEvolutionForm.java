@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
@@ -85,9 +87,12 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
     private void loadCombo() {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        for(Test test : t.getTests()) {
+        Set<String> tests = new HashSet<String>();
+        for(TestResult tr : patient_.getTestResults()) {
+        	Test test = tr.getTest();
             if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())){
-                asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
+            	if(tests.add(test.getDescription()))
+            		asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
             }
         }
         asiCombo_.sort();
