@@ -14,6 +14,7 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Logging;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseSequences extends Parser{

@@ -813,8 +813,8 @@ public class Utils {
          return pav;
      }
 
-     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, AttributeNominalValue anv){
-         PatientAttributeValue pav = createPatientAttributeValue(attribute);
+     public static PatientAttributeValue createPatientAttributeValue(AttributeNominalValue anv){
+         PatientAttributeValue pav = createPatientAttributeValue(anv.getAttribute());
          pav.setAttributeNominalValue(anv);
          return pav;
      }

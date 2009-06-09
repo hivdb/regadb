@@ -22,6 +22,7 @@ import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.TimeLine;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.util.date.DateUtils;

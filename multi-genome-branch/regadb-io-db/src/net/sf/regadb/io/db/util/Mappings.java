@@ -43,11 +43,11 @@ public class Mappings {
                 if(caseSensitive)
                     mappings.put(mappingCsvTable.valueAt(0, i), mappingCsvTable.valueAt(1, i));
                 else
-                    mappings.put(mappingCsvTable.valueAt(0, i).toUpperCase(), mappingCsvTable.valueAt(1, i).toUpperCase());
+                    mappings.put(mappingCsvTable.valueAt(0, i).toUpperCase(), mappingCsvTable.valueAt(1, i));
             }
             
             mappings_.put(fileName, mappings);
         }
-        return mappings.get(value);
+        return mappings.get(caseSensitive ? value : value.toUpperCase());
     }
 }

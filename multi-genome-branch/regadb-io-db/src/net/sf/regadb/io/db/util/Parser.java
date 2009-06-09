@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.telaviv;
+package net.sf.regadb.io.db.util;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.io.db.util.Logging;
 
 public class Parser {
 	protected SimpleDateFormat simpleFormat = new SimpleDateFormat("dd-MM-yyyy"); 

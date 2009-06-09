@@ -1,0 +1,34 @@
+cuba medicam,regadb
+"abacavir",ABC
+"amprenavir",APV
+"delavirdine",DLV
+"didanosine - ddi",DDI
+"efavirenz",EFV
+"indinavir",IDV
+"lamivudine - 3tc",3TC
+"stavudine - d4t",D4T
+"lamivudine/zidovudin",3TC;AZT
+"nelfinavir",NFV
+"nevirapine",NVP
+"ritonavir",RTV
+"saquinavir",SQV
+"saquinavir (gel)",SQV
+"zalcitabine - ddc",DDC
+"zidovudine - azt",AZT
+"kaletra","Kaletra (LPV+RTV)"
+"SAQUINAVIR 500",SQV
+"FORTOVASE",Fortovase (SQV-sgc)
+"tenefovir",TDF
+"tenofovir",TDF
+"3TC jarabe",3TC
+"Nevirapine jarabe",NVP
+"AZT (jarabe)",AZT
+"atazanavir",ATV
+"(J)NEVIRAPINE",NVP
+"(J)3TC",3TC
+"fosamprenavir",FPV
+"combivir",Combivir (3TC+AZT)
+"TIPRANAVIR 250 MG",TPV
+"ENFUVIRTIDE 90 MG",T20
+"(J) D4T",D4T
+"SAQUINAVIR 200 MG",SQV

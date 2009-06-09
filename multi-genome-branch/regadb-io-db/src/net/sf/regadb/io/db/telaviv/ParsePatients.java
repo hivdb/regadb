@@ -16,6 +16,7 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.NominalAttribute;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
