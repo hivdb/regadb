@@ -18,10 +18,6 @@ import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 
-import eu.webtoolkit.jwt.Signal1;
-import eu.webtoolkit.jwt.WKeyEvent;
-import eu.webtoolkit.jwt.WMouseEvent;
-
 public class SelectClauseDialog extends MyDialog {
 	private QueryTreeNode owner;
 	private WAWCSelectorTabbedPane rootSelector;
@@ -69,36 +65,15 @@ public class SelectClauseDialog extends MyDialog {
 		rootSelector.addAll(clauseList.subList(1, clauseList.size()), this.focusGroup);
 		rootSelector.showTab(this.focusGroup);
 		
-		// only start filling in all the other tabs after the UI
-		// has updated
-//		UIUtils.singleShot(this, 1, new Signal.Listener() {
-//			public void trigger() {
-				for (String key : clauses.keySet()) {
-					if (!key.equals(SelectClauseDialog.this.focusGroup)) {
-						clauseList = clauses.get(key);
-						rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
-					}
-				}
-				
-				rootSelector.keyWentUp().addListener(SelectClauseDialog.this, new Signal1.Listener<WKeyEvent>() {
-					public void trigger(WKeyEvent a) {
-						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().getManager().isUseless());
-						}
-					}
-				});
-				
-				rootSelector.clicked().addListener(SelectClauseDialog.this, new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent a) {
-						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().getManager().isUseless());
-						}
-					}
-				});
-//			}
-//		});
+		for (String key : clauses.keySet()) {
+			if (!key.equals(SelectClauseDialog.this.focusGroup)) {
+				clauseList = clauses.get(key);
+				rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
+			}
+		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void setEditable(boolean editable) {
 		buttonPanel.setEnabled(editable);
 	}
