@@ -475,24 +475,30 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
             	// [foreigntable.property] [operator] [constant]
             	
             	if(property.getValueType() == ValueType.Number){
-            	    
-            	    aComposer.addFixedString(new FixedString("cast( CASE WHEN substring("));
-            	    
-            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
-
-            	    aComposer.addFixedString(new FixedString(", 1 , 1) in ('<', '>', '=') THEN substring("));
-
-            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
-
-            	    aComposer.addFixedString(new FixedString(",2,length("));
-
-                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
-                    
-                    aComposer.addFixedString(new FixedString(")) ELSE "));
-
-                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
-            	    
-            	    aComposer.addFixedString(new FixedString(" END as double )"));
+            		if(catalog.getObject(property.getTableName(), property.getPropertyName()).getValueType() == ValueType.Number){
+	            	    aComposer.addFixedString(new FixedString("cast( "));
+	            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+	            	    aComposer.addFixedString(new FixedString(" as double )"));
+            		}
+            		else{
+	            	    aComposer.addFixedString(new FixedString("cast( CASE WHEN substring("));
+	            	    
+	            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+	
+	            	    aComposer.addFixedString(new FixedString(", 1 , 1) in ('<', '>', '=') THEN substring("));
+	
+	            	    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+	
+	            	    aComposer.addFixedString(new FixedString(",2,length("));
+	
+	                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+	                    
+	                    aComposer.addFixedString(new FixedString(")) ELSE "));
+	
+	                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+	            	    
+	            	    aComposer.addFixedString(new FixedString(" END as double )"));
+            		}
             	}
             	else{
                     if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
