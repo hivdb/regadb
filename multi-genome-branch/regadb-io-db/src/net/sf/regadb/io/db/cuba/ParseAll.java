@@ -53,13 +53,13 @@ public class ParseAll extends Parser{
 		Arguments as = new Arguments();
 		PositionalArgument csvDir = as.addPositionalArgument("csv-directory", true);
 		PositionalArgument mapDir = as.addPositionalArgument("mapping-directory", true);
-		PositionalArgument xmlFile = as.addPositionalArgument("output-file", true);
+		PositionalArgument xmlDir = as.addPositionalArgument("xml-output-directory", true);
 		
 		if(!as.handle(args))
 			return;
 		
 		ParseAll pa = new ParseAll();
-		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlFile.getValue()));
+		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlDir.getValue()));
 	}
 	
 	public ParseAll(){
@@ -67,9 +67,9 @@ public class ParseAll extends Parser{
 		setLogger(new ConsoleLogger());
 	}
 	
-	public void run(File csvDir, File mapDir, File xmlFile){
-		if(!xmlFile.getParentFile().canWrite()){
-			System.err.println("unable to write to "+ xmlFile.getAbsolutePath());
+	public void run(File csvDir, File mapDir, File xmlDir){
+		if(!xmlDir.canWrite()){
+			System.err.println("unable to write to "+ xmlDir.getAbsolutePath());
 			return;
 		}
 		
@@ -106,7 +106,8 @@ public class ParseAll extends Parser{
 		System.out.println("parse sequences");
 		parseSequences(seqsDir);
 		
-		IOUtils.exportPatientsXML(getObjectStore().getPatients(), xmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+		IOUtils.exportPatientsXML(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"patients.xml", ConsoleLogger.getInstance());
+		IOUtils.exportNTXMLFromPatients(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"viral-isolates.xml", ConsoleLogger.getInstance());
 		System.out.println("done");
 	}
 	
@@ -364,7 +365,7 @@ public class ParseAll extends Parser{
 			int iPatientId = find(sh,0,"CIND");
 			int iSampleDate = find(sh,0,"FechaMuestra");
 			
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
 			for(int i=1; i<sh.getRows(); ++i){
 				Patient p = getObjectStore().getPatient(null, sh.getCell(iPatientId,i).getContents().trim());
 				if(p == null)
