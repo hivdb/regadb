@@ -170,6 +170,10 @@ public class OfflineObjectStore extends ObjectStore{
 	public void setPatients(Map<String, Patient> patients){
 		this.patients = patients;
 	}
+	public Map<String, Patient> getPatients(){
+		return patients;
+	}
+
 
 	@Override
 	public Attribute createAttribute(AttributeGroup attributeGroup,
