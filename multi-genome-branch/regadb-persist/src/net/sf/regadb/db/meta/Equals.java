@@ -81,7 +81,8 @@ public class Equals {
     }
 
     public static boolean isSameDrugGeneric(DrugGeneric o1, DrugGeneric o2) {
-        return o1 == o2;
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getGenericId().equals(o2.getGenericId()));
     }
 
     public static boolean isSamePatientAttributeValue(PatientAttributeValue o1, PatientAttributeValue o2) {
@@ -136,7 +137,7 @@ public class Equals {
 
     public static boolean isSameAaSequence(AaSequence o1, AaSequence o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getProtein() == o2.getProtein());
+        || (o1 != null && o2 != null && isSameProtein(o1.getProtein(), o2.getProtein()));
     }
 
     public static boolean isSameAaInsertion(AaInsertion o1, AaInsertion o2) {
@@ -147,12 +148,12 @@ public class Equals {
 
     public static boolean isSameTherapyCommercial(TherapyCommercial o1, TherapyCommercial o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getDrugCommercial() == o2.getId().getDrugCommercial());
+        || (o1 != null && o2 != null && isSameDrugCommercial(o1.getId().getDrugCommercial(),o2.getId().getDrugCommercial()));
     }
 
     public static boolean isSameTherapyGeneric(TherapyGeneric o1, TherapyGeneric o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getDrugGeneric() == o2.getId().getDrugGeneric());
+        || (o1 != null && o2 != null && isSameDrugGeneric(o1.getId().getDrugGeneric(),o2.getId().getDrugGeneric()));
     }
 
     public static boolean isSameAaMutation(AaMutation o1, AaMutation o2) {
@@ -219,7 +220,7 @@ public class Equals {
 	public static boolean isSameDrugCommercial(DrugCommercial drugCommercial,
 			DrugCommercial drugCommercial2) {
 		return drugCommercial == drugCommercial2 
-		|| (drugCommercial != null && drugCommercial2 != null && drugCommercial.getCommercialIi().equals(drugCommercial2.getCommercialIi()));
+		|| (drugCommercial != null && drugCommercial2 != null && drugCommercial.getName().equals(drugCommercial2.getName()));
 	}
 
 }
