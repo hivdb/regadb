@@ -113,6 +113,13 @@ public class Arguments{
 			return true;
 		else{
 			printUsage(System.err);
+			
+			for(Argument a : getAll()){
+				if(!a.isValid()){
+					System.err.println("invalid value for argument: "+ a.toString());
+				}
+			}
+
 			return false;
 		}
 	}
