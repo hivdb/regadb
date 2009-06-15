@@ -9,6 +9,7 @@ package net.sf.regadb.io.importXML.impl;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sf.regadb.db.Dataset;
@@ -146,6 +147,26 @@ public class ImportXML {
                 if (dbvi == null)
                     throw new RuntimeException("Viral Isolate '" + vi.getSampleId() + "' not found in database!");
                 instance.syncPair(t, vi, dbvi, SyncMode.Update, false);
+                
+                Patient p = t.getPatientBySampleId(dbvi.getSampleId());
+                List<TestResult> remove = new LinkedList<TestResult>();
+                for(TestResult tr : p.getTestResults()){
+                	if(tr.getViralIsolate() != null){
+                		if(tr.getViralIsolate().getSampleId().equals(vi.getSampleId()))
+                			remove.add(tr);
+                		if(tr.getNtSequence() != null && tr.getViralIsolate().getSampleId().equals(vi.getSampleId()))
+                			remove.add(tr);
+                	}
+                }
+                p.getTestResults().removeAll(remove);
+                remove.clear();
+                
+                for(TestResult tr : dbvi.getTestResults())
+                	p.addTestResult(tr);
+                for(NtSequence nt : dbvi.getNtSequences())
+                	for(TestResult tr : nt.getTestResults())
+                		p.addTestResult(tr);
+                
                 out.println(instance.getLog());
                 instance.getLog().delete(0, instance.getLog().length());
             } catch (Exception e) {

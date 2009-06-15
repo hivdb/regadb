@@ -194,6 +194,23 @@ public class Transaction {
 
         return (Patient)q.uniqueResult();
     }
+    
+    public Patient getPatientBySampleId(String sampleId)
+    {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) from ViralIsolate vi join vi.patient as patient " +
+        		"join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.id.dataset as dataset " +
+                "join dataset.datasetAccesses access " +
+                "where ( access.permissions >= 1 " +
+                "and access.id.settingsUser.uid = :uid ) and (vi.sampleId = :sampleId) group by patient order by patient.id");
+        
+        q.setParameter("uid", login.getUid());
+        q.setParameter("sampleId", sampleId);
+
+        return (Patient)q.uniqueResult();
+    }
+
 
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(String from, HibernateFilterConstraint filter)
