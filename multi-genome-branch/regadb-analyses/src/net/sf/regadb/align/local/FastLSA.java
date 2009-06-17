@@ -2,6 +2,7 @@ package net.sf.regadb.align.local;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -131,7 +132,7 @@ public class FastLSA extends JFrame{
             yw = (int)(yWidth() * ratio);
             
             xmax = xo + (x * xw);
-            ymax = yo + (y * yw);            
+            ymax = yo + (y * yw);
         }
         
         public void paintComponent(Graphics g){
@@ -139,6 +140,8 @@ public class FastLSA extends JFrame{
             Graphics2D g2d = (Graphics2D)g;
 
             updateGeometryValues();
+            
+            g2d.setFont(new Font(Font.MONOSPACED,Font.PLAIN,yw/2));
             
             for(Grid grid : grids)
                 drawGrid(g2d, grid);
@@ -175,6 +178,34 @@ public class FastLSA extends JFrame{
             g2d.drawPolyline(xs, ys, n);
             g2d.setColor(c);
             g2d.setStroke(s);
+            
+            StringBuilder s1 = new StringBuilder();
+            StringBuilder s2 = new StringBuilder();
+            
+            Path.Node prev = null;
+            for(Path.Node node : path){
+            	if(node.x() >= flsa.seq1.length()
+            			|| node.y() >= flsa.seq2.length())
+            		continue;
+            	
+            	if(prev != null){
+            		if(prev.x() == node.x())
+            			s1.insert(0,FastLSA.GAP);
+            		else
+            			s1.insert(0,flsa.seq1.get(node.x()));
+            		if(prev.y() == node.y())
+            			s2.insert(0,FastLSA.GAP);
+            		else
+            			s2.insert(0,flsa.seq2.get(node.y()));
+            	}
+            	else{
+            		s1.append(flsa.seq1.get(node.x()));
+            		s2.append(flsa.seq2.get(node.y()));
+            	}
+            	prev = node;
+            }
+            g2d.drawString(s1.toString(), xo, ymax + yw/2);
+            g2d.drawString(s2.toString(), xo, ymax + yw);
         }
         
         private void drawCenteredString(Graphics2D g2d, String s, int x, int y){
@@ -255,8 +286,8 @@ public class FastLSA extends JFrame{
                 g2d.drawLine(xi, yo, xi, ymax);
 
                 if(i < x){
-                    drawCenteredString(g2d, flsa.seq1.get(i).toString(), xi +(xw/2), 10);
-                    drawCenteredString(g2d, ""+i, xi +(xw/2), 25);
+                    drawCenteredString(g2d, flsa.seq1.get(i).toString(), xi +(xw/2), yw/2);
+                    drawCenteredString(g2d, ""+i, xi +(xw/2), yw);
                 }
             }
             for(int i = 0; i <= y; ++i){
@@ -280,7 +311,7 @@ public class FastLSA extends JFrame{
         
         FastLSA flsa;
         try {
-            flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt","-acggcttggccgacggcttggccg");
+            flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt-","-acggcttggccgacggcttggccg-");
 //            flsa = new FastLSA("-tldkllkd","-tdvlkad");
             flsa.run();
         } catch (Exception e) {
@@ -289,7 +320,7 @@ public class FastLSA extends JFrame{
     }
         
     public boolean fitsInBuffer(Bounds bounds){
-        return bounds.sizeX() < 4 && bounds.sizeY() < 4;
+        return bounds.sizeX() * bounds.sizeY() < 100;
         //return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
     }
     
@@ -306,7 +337,7 @@ public class FastLSA extends JFrame{
         
         Bounds bounds = new Bounds(0,0,x,y);
         Path p = new Path();
-        p.add(new Path.Node(x,y));
+        p.add(new Path.Node(x-1,y-1));
         visualTrace.path = p;
         run(bounds, new Line(x,true), new Line(y,true), p);
     }
@@ -383,8 +414,53 @@ public class FastLSA extends JFrame{
     
     private Path fullMatrix(Bounds bounds, Line cacheRow, Line cacheCol,
             Path path) {
-        //Path p = new Path();
-        path.add(new Path.Node(bounds.x1(),bounds.y1()));
+    	int sx = bounds.sizeX();
+    	int sy = bounds.sizeY();
+    	
+    	Score scores[][] = new Score[sx][sy];
+    	for(int i=0; i<sx; ++i)
+    		scores[i][0] = cacheRow.at(i);
+    	for(int i=1; i<sy; ++i)
+    		scores[0][i] = cacheCol.at(i);
+    	
+    	Score up;
+    	Score left;
+    	Score leftUp;
+    	
+    	for(int i=1; i<sx; ++i){
+    		for(int j=1; j<sy; ++j){
+    			left = scores[i-1][j];
+    			leftUp = scores[i-1][j-1];
+    			up = scores[i][j-1];
+    			
+    			int rx = i + bounds.x1();
+    			int ry = j + bounds.y1();
+    			scores[i][j] = findScore(rx, ry, left, up, leftUp, seq1.get(rx), seq2.get(ry));
+    		}
+    	}
+    	
+    	int i = sx-1;
+    	int j = sy-1;
+    	while(i > 0 && j > 0){
+			left = scores[i-1][j];
+			leftUp = scores[i-1][j-1];
+			up = scores[i][j-1];
+			
+//			System.err.println("l: "+ left.getScore() +" lu: "+ leftUp.getScore() +" u: "+ up.getScore());
+    			
+			if(left.getScore() > leftUp.getScore())
+				if(left.getScore() > up.getScore())
+					--i;
+				else
+					--j;
+			else if(leftUp.getScore() > up.getScore()){
+				--i; --j;
+			}
+			else
+				--j;
+			path.add(new Path.Node(bounds.x1()+i,bounds.y1()+j));
+    	}
+    	
         return path;
     }
 
@@ -429,7 +505,7 @@ public class FastLSA extends JFrame{
         int y = bounds.y1() - grid.bounds.y1();
         
         Line ret = new Line(bounds.sizeY());
-        grid.cols[x].copy(y, y+bounds.sizeY(), ret);
+        ret.copy(y, y+bounds.sizeY(), grid.cols[x]);
         return ret;
     }
 
@@ -440,7 +516,7 @@ public class FastLSA extends JFrame{
         int x = bounds.x1() - grid.bounds.x1();
         
         Line ret = new Line(bounds.sizeX());
-        grid.rows[y].copy(x, x+bounds.sizeX(), ret);
+        ret.copy(x, x+bounds.sizeX(), grid.rows[y]);
         return ret;
     }
 
