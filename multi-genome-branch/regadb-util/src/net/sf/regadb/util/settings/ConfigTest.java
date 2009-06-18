@@ -24,6 +24,6 @@ public class ConfigTest {
 		r.getBlockedAttributes().add(new AttributeConfig("First name","Personal"));
 		set.getAccessPolicyConfig().addRole(r);
 		
-		set.writeConfFileSkeleton(new java.io.File("/dev/null"));
+		set.write(new java.io.File("/dev/null"));
 	}
 }

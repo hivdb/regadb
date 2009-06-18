@@ -1,27 +1,19 @@
 package net.sf.regadb.install.generateConfigFile;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import net.sf.regadb.util.pair.Pair;
+import net.sf.regadb.util.settings.ProxyConfig;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 public class GenerateConfigFile {
-	private static String configFile;
+	private static RegaDBSettings config;
 	
-	private static Map<String, String> configMap;
-	private static ArrayList<Pair<String, String>> proxyConfigList;
+	private static String configFile;
 	
 	private static String installDir;
 	private static String driverClass;
@@ -31,8 +23,6 @@ public class GenerateConfigFile {
 	private static String password;
 	private static String queryDir;
 	private static String logDir;
-	private static String centreName;
-	private static String reportDateTolerance;
 	private static String proxyUrlA;
 	private static String proxyPortA;
 	private static String proxyUrlB;
@@ -46,10 +36,9 @@ public class GenerateConfigFile {
 	}
     
     public void run(boolean inConfDir, String installFileName) {
+    	config = RegaDBSettings.create();
+    	
         File installFile = new File(installFileName);
-        
-        configMap = new HashMap<String, String>();
-        proxyConfigList = new ArrayList<Pair<String, String>>();
         
         installDir = "";
         driverClass = "";
@@ -66,9 +55,11 @@ public class GenerateConfigFile {
         readInstallFile(installFile);
         generateConfiguration(inConfDir);
         generateProxyConfiguration();
-        writeConfigFile(generateConfigFile());
+        
+        config.write(new File(configFile));
     }
 	
+	@SuppressWarnings("unchecked")
 	private static void readInstallFile(File installFile) {
 		List configElements = new ArrayList();
 		
@@ -138,18 +129,14 @@ public class GenerateConfigFile {
 		queryDir = installDir + "queryResult";
 		logDir = installDir + "logs";
 		
-		reportDateTolerance = "2";
-		centreName = "???";
+		config.getHibernateConfig().setDriverClass(driverClass);
+		config.getHibernateConfig().setDialect(dialect);
+		config.getHibernateConfig().setUrl(url);
+		config.getHibernateConfig().setUsername(username);
+		config.getHibernateConfig().setPassword(password);
 		
-		configMap.put("hibernate.connection.driver_class", driverClass);
-    	configMap.put("hibernate.dialect", dialect);
-    	configMap.put("hibernate.connection.url", url);
-    	configMap.put("hibernate.connection.username", username);
-    	configMap.put("hibernate.connection.password", password);
-    	configMap.put("regadb.query.resultDir", queryDir);
-    	configMap.put("regadb.log.dir", logDir);
-    	configMap.put("regadb.report.dateTolerance", reportDateTolerance);
-    	configMap.put("centre.name", centreName);
+		config.getInstituteConfig().setQueryResultDir(new File(queryDir));
+		config.getInstituteConfig().setLogDir(new File(logDir));
 	}
 	
 	private static void generateProxyConfiguration() {
@@ -157,59 +144,12 @@ public class GenerateConfigFile {
 		addProxy(proxyUrlB, proxyPortB);
 	}
 	
-	private static Element generateConfigFile() {
-    	Element rootElement = new Element("regadb-settings");
-    	
-    	for (Entry<String, String> entry : configMap.entrySet()) {
-    		Element propertyElement = new Element("property".toLowerCase());
-    		propertyElement.setAttribute("name", entry.getKey());
-    		propertyElement.addContent(entry.getValue());
-    		rootElement.addContent(propertyElement);
-    	}
-    	
-    	for (Pair<String, String> pair : proxyConfigList) {
-    		Element proxyElement = new Element("proxy");
-    		
-    		Element proxyUrlElement = new Element("property");
-    		proxyUrlElement.setAttribute("name", "http.proxy.url");
-    		proxyUrlElement.addContent(pair.getKey());
-    		proxyElement.addContent(proxyUrlElement);
-    		
-    		Element proxyPortElement = new Element("property");
-    		proxyPortElement.setAttribute("name", "http.proxy.port");
-    		proxyPortElement.addContent(pair.getValue());
-    		proxyElement.addContent(proxyPortElement);
-    		
-    		rootElement.addContent(proxyElement);
-    	}
-    	
-    	return rootElement;
-	}
-	
-	private static void writeConfigFile(Element rootElement) {
-		Document document = new Document(rootElement);
-		
-		try {
-		    XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-		    outputter.outputString(document);
-		    
-		    FileWriter writer = new FileWriter(configFile);
-			outputter.output(document, writer);
-			writer.close();
-		}
-		catch (IOException e) {
-		    e.printStackTrace();
-		}
-	}
-	
 	private static void addProxy(String proxyUrl, String proxyPort) {
 		if (!proxyUrl.equals("") && !proxyPort.equals("")) {
-    		if (proxyUrl.toLowerCase().equals("empty") && proxyPort.toLowerCase().equals("empty")) {
-    			proxyConfigList.add(new Pair<String, String>("", ""));
-    		}
-    		else {
-    			proxyConfigList.add(new Pair<String, String>(proxyUrl, proxyPort));
-    		}
+    		if (proxyUrl.toLowerCase().equals("empty") && proxyPort.toLowerCase().equals("empty"))
+    			config.getProxyConfig().getProxyList().add(new ProxyConfig.ProxyServer("",""));
+    		else
+    			config.getProxyConfig().getProxyList().add(new ProxyConfig.ProxyServer(proxyUrl,proxyPort));
     	}
 	}
 }

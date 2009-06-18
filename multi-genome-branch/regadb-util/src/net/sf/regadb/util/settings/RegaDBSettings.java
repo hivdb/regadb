@@ -31,6 +31,10 @@ public class RegaDBSettings {
     private void addConfig(IConfigParser cfg){
     	configs.put(cfg.getXmlTag(),cfg);
     }
+    
+    public static RegaDBSettings create(){
+    	return new RegaDBSettings();
+    }
 
     public static RegaDBSettings getInstance(){
         if(instance_==null)
@@ -87,7 +91,7 @@ public class RegaDBSettings {
         }
     }
     
-    void writeConfFileSkeleton(File confFile) {
+    public void write(File confFile) {
         Element root = new Element("regadb-settings");
         for(IConfigParser cfg : configs.values())
         	root.addContent(cfg.toXml());
@@ -117,7 +121,7 @@ public class RegaDBSettings {
 
     public static void main(String[] args) {
         RegaDBSettings settings = new RegaDBSettings();
-        settings.writeConfFileSkeleton(new File("settings" + File.separatorChar
+        settings.write(new File("settings" + File.separatorChar
                 + "skeleton-settings.xml"));
     }
 
