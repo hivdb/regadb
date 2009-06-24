@@ -5,4 +5,5 @@ public interface IAlphabet<S extends Symbol> {
     public S get(int i);
     public S get(String s);
     public int size();
+    public S getGap();
 }

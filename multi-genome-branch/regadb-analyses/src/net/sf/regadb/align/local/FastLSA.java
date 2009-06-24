@@ -23,8 +23,8 @@ import org.apache.commons.io.FileUtils;
 public class FastLSA extends JFrame{    
     final static double defaultscore = 0;
     
-    final static double gapOpenScore = 0;
-    final static double gapExtensionScore = -10;
+    final static double gapOpenScore = -10;
+    final static double gapExtensionScore = -3.3;
     final static double gapEdgeExtensionScore = 0;
     
     final static double matchscore = 20;
@@ -36,7 +36,9 @@ public class FastLSA extends JFrame{
     private SymbolSequence seq1;
     private SymbolSequence seq2;
     
-    private IAlphabet<Symbol> alphabet;
+    private String aseq1;
+    private String aseq2;
+    
     private ISymbolMatchTable<Symbol> matchTable;
     
     private VisualTrace visualTrace;
@@ -179,33 +181,10 @@ public class FastLSA extends JFrame{
             g2d.setColor(c);
             g2d.setStroke(s);
             
-            StringBuilder s1 = new StringBuilder();
-            StringBuilder s2 = new StringBuilder();
-            
-            Path.Node prev = null;
-            for(Path.Node node : path){
-            	if(node.x() >= flsa.seq1.length()
-            			|| node.y() >= flsa.seq2.length())
-            		continue;
-            	
-            	if(prev != null){
-            		if(prev.x() == node.x())
-            			s1.insert(0,FastLSA.GAP);
-            		else
-            			s1.insert(0,flsa.seq1.get(node.x()));
-            		if(prev.y() == node.y())
-            			s2.insert(0,FastLSA.GAP);
-            		else
-            			s2.insert(0,flsa.seq2.get(node.y()));
-            	}
-            	else{
-            		s1.append(flsa.seq1.get(node.x()));
-            		s2.append(flsa.seq2.get(node.y()));
-            	}
-            	prev = node;
+            if(flsa.aseq1 != null && flsa.aseq2 != null){
+	            g2d.drawString(flsa.aseq1, xo, ymax + yw/2);
+	            g2d.drawString(flsa.aseq2, xo, ymax + yw);
             }
-            g2d.drawString(s1.toString(), xo, ymax + yw/2);
-            g2d.drawString(s2.toString(), xo, ymax + yw);
         }
         
         private void drawCenteredString(Graphics2D g2d, String s, int x, int y){
@@ -311,17 +290,33 @@ public class FastLSA extends JFrame{
         
         FastLSA flsa;
         try {
-            flsa = new FastLSA("-actgcttggaccgttactgcttggaccgtt-","-acggcttggccgacggcttggccg-");
+            DefaultMatchTable<Symbol> mt = new DefaultMatchTable<Symbol>(new NtAlphabet());
+            mt.construct(CodonAlign.nuc4_4);
+        	
+            String s1 = "---cctcaaatcactctttggcagcgaccccttgtctcaataaaagtagagggtcaaataaaggaagctctcttagacacaggagcagatgatacagtattagaagaaataaatttgccaggaagatggaaaccaaaaatgataggaggaattggaggttttatcaaagtaagacagtatgatcaaatatctatagaaatttgtggaaaaagggctataggtacagtattagtgggacctacacctgtcaacataattggaagaaatatgttgactcagcttggatgcacattaaatttt---";
+            String s2 = "---cctcaggtcactctttggcaacgacccctcgtcacaataaagataggggggcaactaaaggaagctctattagatacaggagcagatgatacagtattagaagaaatgagtttgccaggaagatggaaaccaaaaatgatagggggaattggaggttttatcaaagtaagacagtatgatcagatactcatagaaatctgtggacataaagctataggtacagtattagtaggacctacacctgtcaacataattggaagaaatctgttgactcagattggttgcactttaaatttt---";
+            flsa = new FastLSA(
+            		mt,
+            		s1.toUpperCase(),
+            		s2.toUpperCase());
 //            flsa = new FastLSA("-tldkllkd","-tdvlkad");
+            
+            Double i = 1.0;
+            double j = 1.0;
+            double k = i * j;
+            
             flsa.run();
+            
+            NeedlemanWunsch nmw = new NeedlemanWunsch(-10,-3.3,CodonAlign.nuc4_4matrix);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
         
     public boolean fitsInBuffer(Bounds bounds){
-        return bounds.sizeX() * bounds.sizeY() < 100;
-        //return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
+    	return true;
+//        return bounds.sizeX() * bounds.sizeY() < 1000;
+//        return (bounds.sizeX() * bounds.sizeY() * 96) <= bufferSizeBits;
     }
     
     public Path concatenatePaths(Path p1, Path p2){
@@ -338,22 +333,57 @@ public class FastLSA extends JFrame{
         Bounds bounds = new Bounds(0,0,x,y);
         Path p = new Path();
         p.add(new Path.Node(x-1,y-1));
-        visualTrace.path = p;
-        run(bounds, new Line(x,true), new Line(y,true), p);
+//        visualTrace.path = p;
+        p = run(bounds, new Line(x,true), new Line(y,false), p);
+        
+        constructSequences(p);
+        
+        System.out.println(aseq1);
+        System.out.println(aseq2);
+    }
+    
+    private void constructSequences(Path path){
+    	StringBuilder s1 = new StringBuilder();
+        StringBuilder s2 = new StringBuilder();
+        
+        Path.Node prev = null;
+        for(Path.Node node : path){
+        	if(node.x() >= seq1.length()
+        			|| node.y() >= seq2.length())
+        		continue;
+        	
+        	if(prev != null){
+        		if(prev.x() == node.x())
+        			s1.insert(0,matchTable.getAlphabet().getGap());
+        		else
+        			s1.insert(0,seq1.get(node.x()));
+        		if(prev.y() == node.y())
+        			s2.insert(0,matchTable.getAlphabet().getGap());
+        		else
+        			s2.insert(0,seq2.get(node.y()));
+        	}
+        	else{
+        		s1.append(seq1.get(node.x()));
+        		s2.append(seq2.get(node.y()));
+        	}
+        	prev = node;
+        }
+        aseq1 = s1.toString();
+        aseq2 = s2.toString();
     }
 
     public Path run(Bounds bounds, Line cacheRow, Line cacheCol, Path path){
         
         if(fitsInBuffer(bounds)){
-            System.err.println("fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
+//            System.err.println("fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
             
             Path p = fullMatrix( bounds, cacheRow, cacheCol, path );
             return p;
         }
-        System.err.println("no fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
+//        System.err.println("no fit: "+ bounds.x1() +","+ bounds.y1() +" -> "+ bounds.x2() +","+ bounds.y2());
         
         Grid grid = new Grid(k, bounds, cacheRow, cacheCol );
-        visualTrace.grids.add(grid);
+//        visualTrace.grids.add(grid);
 
         fillGridCache(bounds, grid);
         
@@ -367,7 +397,7 @@ public class FastLSA extends JFrame{
         while (notExtended(bounds, pathExt)){
 //            visualTrace.bounds.remove(subProblem);
             subProblem = upLeft( grid, pathExt );
-            visualTrace.bounds.add(subProblem);
+//            visualTrace.bounds.add(subProblem);
 
             newCacheRow = cachedRow( grid, subProblem );
             newCacheCol = cachedColumn( grid, subProblem );
@@ -556,7 +586,7 @@ public class FastLSA extends JFrame{
         x2 = node.x()+1;
         y2 = node.y()+1;
 
-        System.err.println("upleft: "+ x1 +","+ y1 +" "+ x2 +","+ y2);
+//        System.err.println("upleft: "+ x1 +","+ y1 +" "+ x2 +","+ y2);
         return new Bounds(x1,y1,x2,y2);
     }
     
@@ -566,14 +596,15 @@ public class FastLSA extends JFrame{
         return (node.x() > bounds.x1()) && (node.y() > bounds.y1());
     }
     
-    public FastLSA(String seq1, String seq2) throws Exception{
+    public FastLSA(ISymbolMatchTable<Symbol> matchTable, String seq1, String seq2) throws Exception{
         super();
-        init();
+//        init();
         
+        this.matchTable = matchTable;
         this.seq1 = createSequence(seq1);
         this.seq2 = createSequence(seq2);
         
-        initVisualization();
+//        initVisualization();
     }
     
     private static final Symbol GAP = new Symbol("-");
@@ -605,7 +636,11 @@ public class FastLSA extends JFrame{
     private static final Symbol Z = new Symbol("z");
     
     private void init(){
-        alphabet = new DefaultAlphabet<Symbol>();
+        IAlphabet<Symbol> alphabet = new DefaultAlphabet<Symbol>(){
+			public Symbol getGap() {
+				return GAP;
+			}
+        };
         alphabet.addSymbol(GAP);
         alphabet.addSymbol(A);
         alphabet.addSymbol(B);
@@ -745,10 +780,10 @@ public class FastLSA extends JFrame{
     }
     
     private SymbolSequence createSequence(String str) throws Exception{
-        String s = str.toLowerCase();
+        String s = str.toUpperCase();
         SymbolSequence seq = new SymbolSequence();
         for(int i=0; i<s.length(); ++i){
-            Symbol smb = alphabet.get(s.charAt(i)+"");
+            Symbol smb = matchTable.getAlphabet().get(s.charAt(i)+"");
             if(smb == null)
                 throw new Exception("Unrecognized char: "+ s.charAt(i));
             

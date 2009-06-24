@@ -1,6 +1,7 @@
 package net.sf.regadb.align.local;
 
 
+
 public class Grid{
     
     public Bounds bounds;
@@ -58,11 +59,15 @@ public class Grid{
         public Line(int size){
             this(size, FastLSA.defaultscore);
         }
-        public Line(int size, boolean edge){
-            if(edge){
-                scores = new Score[size];
-                for(int i=0; i<size; ++i)
-                    scores[i] = new Score(i * FastLSA.gapExtensionScore);
+        public Line(int size, boolean row){
+            scores = new Score[size];
+            scores[0] = new Score(0,0);
+            for(int i=1; i<size; ++i){
+                scores[i] = new Score(scores[i-1].getScore() + FastLSA.gapEdgeExtensionScore);
+                if(row)
+                	scores[i].setGapSize(scores[i-1].getGapSize() +1);
+                else
+                	scores[i].setGapSize(scores[i-1].getGapSize() -1);
             }
         }
         public Line(int size, double value){

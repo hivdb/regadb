@@ -3,7 +3,7 @@ package net.sf.regadb.align.local;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DefaultAlphabet<S extends Symbol> implements IAlphabet<S>{
+public abstract class DefaultAlphabet<S extends Symbol> implements IAlphabet<S>{
     private ArrayList<S> intrep = new ArrayList<S>();
     private HashMap<String, S> strrep = new HashMap<String, S>();
     
@@ -23,5 +23,5 @@ public class DefaultAlphabet<S extends Symbol> implements IAlphabet<S>{
     
     public int size(){
         return intrep.size();
-    }
+    }    
 }

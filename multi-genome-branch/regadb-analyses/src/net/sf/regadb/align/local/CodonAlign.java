@@ -30,7 +30,7 @@ import org.biojava.utils.ChangeVetoException;
 
 public class CodonAlign {
 
-    static private String blosum30 = "   A  R  N  D  C  Q  E  G  H  I  L  K  M  F  P  S  T  W  Y  V  B  Z  X  *\n"
+    static String blosum30 = "   A  R  N  D  C  Q  E  G  H  I  L  K  M  F  P  S  T  W  Y  V  B  Z  X  *\n"
             + "A  4 -1  0  0 -3  1  0  0 -2  0 -1  0  1 -2 -1  1  1 -5 -4  1  0  0  0 -7\n"
             + "R -1  8 -2 -1 -2  3 -1 -2 -1 -3 -2  1  0 -1 -1 -1 -3  0  0 -1 -2  0 -1 -7\n"
             + "N  0 -2  8  1 -1 -1 -1  0 -1  0 -2  0  0 -1 -3  0  1 -7 -4 -2  4 -1  0 -7\n"
@@ -56,7 +56,7 @@ public class CodonAlign {
             + "X  0 -1  0 -1 -2  0 -1 -1 -1  0  0  0  0 -1 -1  0  0 -2 -1  0 -1  0 -1 -7\n"
             + "* -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7 -7  1\n";
 
-    static private String nuc4_4 = "    A   T   G   C   S   W   R   Y   K   M   B   V   H   D   N\n"
+    static String nuc4_4 = "    A   T   G   C   S   W   R   Y   K   M   B   V   H   D   N\n"
             + "A   5  -4  -4  -4  -4   1   1  -4  -4   1  -4  -1  -1  -1  -2\n"
             + "T  -4   5  -4  -4  -4   1  -4   1   1  -4  -1  -4  -1  -1  -2\n"
             + "G  -4  -4   5  -4   1  -4   1  -4   1  -4  -1  -1  -4  -1  -2\n"
@@ -73,8 +73,8 @@ public class CodonAlign {
             + "D  -1  -1  -1  -4  -3  -1  -1  -3  -1  -3  -2  -2  -2  -1  -1\n"
             + "N  -2  -2  -2  -2  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1\n";
 
-    static private SubstitutionMatrix nuc4_4matrix = null;
-    static private SubstitutionMatrix blosum30matrix = null;
+    static SubstitutionMatrix nuc4_4matrix = null;
+    static SubstitutionMatrix blosum30matrix = null;
     private int minNtScore;
         
     private NeedlemanWunsch aaNeedleman;

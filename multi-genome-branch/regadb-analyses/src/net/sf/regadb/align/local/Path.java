@@ -5,7 +5,7 @@ import java.util.LinkedList;
 public class Path extends LinkedList<Path.Node>{
     public boolean add(Path.Node node){
         boolean ret = super.add(node);
-        System.err.println("path: "+ node.x +","+ node.y);
+//        System.err.println("path: "+ node.x +","+ node.y);
         return ret;
     }
     
