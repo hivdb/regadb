@@ -316,8 +316,8 @@ public class ParseAll extends Parser{
 				
 				Date d = getDate(dr.get("fecha"));
 				
-				addTestResult(p, vl, d, dr.get("copias"));
-				addTestResult(p, vll, d, dr.get("logar"));
+				addTestResult(p, vl, d, '='+ dr.get("copias"));
+				addTestResult(p, vll, d, '='+ dr.get("logar"));
 			}
 			
 			dr.close();
