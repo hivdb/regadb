@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +33,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -483,21 +482,12 @@ public class Utils {
      {
          RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
-         FileProvider fp = new FileProvider();
          List<Attribute> list = null;
          File attributesFile = null;
          try {
-             attributesFile = File.createTempFile("attributes", "xml");
+             attributesFile = RegaDBWtsServer.getAttributes();
          } catch (IOException e1) {
              e1.printStackTrace();
-         }
-         try 
-         {
-             fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-         }
-         catch (RemoteException e) 
-         {
-             e.printStackTrace();
          }
          final ImportFromXML imp = new ImportFromXML();
          try 
@@ -521,21 +511,12 @@ public class Utils {
      {
 	 	RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
-         FileProvider fp = new FileProvider();
          List<Event> list = null;
          File eventsFile = null;
          try {
-             eventsFile = File.createTempFile("events", "xml");
+             eventsFile = RegaDBWtsServer.getEvents();
          } catch (IOException e1) {
              e1.printStackTrace();
-         }
-         try 
-         {
-             fp.getFile("regadb-events", "events.xml", eventsFile);
-         }
-         catch (RemoteException e) 
-         {
-             e.printStackTrace();
          }
          final ImportFromXML imp = new ImportFromXML();
          try 

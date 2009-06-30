@@ -1,16 +1,18 @@
 package net.sf.regadb.service.wts;
 
+import java.io.File;
+import java.io.IOException;
+
 import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class RegaDBWtsServer 
 {
-    private static final String url_ = "http://regadb.med.kuleuven.be/wts/services/";
-    
     public static Test getSubtypeTest(TestObject to, AnalysisType analysisType, ValueType valueType)
     {
         TestType type = new TestType(to, getSubtypeTestType());
@@ -65,6 +67,36 @@ public class RegaDBWtsServer
 //    }
     
     public static String getUrl() {
-        return url_;
+    	return RegaDBSettings.getInstance().getInstituteConfig().getServiceProviderUrl();
     }
+    
+    private static File getFile(String localFileName, String provider, String remoteFileName) throws IOException{
+    	FileProvider fp = new FileProvider();
+        File f = File.createTempFile(localFileName, ".xml");
+        fp.getFile(provider, remoteFileName, f);
+        return f;
+    }
+    
+    public static File getDrugClasses() throws IOException{
+    	return getFile("drug-classes","regadb-drugs","DrugClasses-genomes.xml");
+    }
+    public static File getDrugGenerics() throws IOException{
+    	return getFile("drug-enerics","regadb-drugs","DrugGenerics-genomes.xml");
+    }
+    public static File getDrugCommercials() throws IOException{
+    	return getFile("drug-commercials","regadb-drugs","DrugCommercials-genomes.xml");
+    }
+    public static File getAttributes() throws IOException{
+    	return getFile("attributes","regadb-attributes","attributes.xml");
+    }
+    public static File getEvents() throws IOException{
+    	return getFile("events","regadb-events","events.xml");
+    }
+    public static File getGenomes() throws IOException{
+    	return getFile("genomes","regadb-genomes","genomes.xml");
+    }
+    public static File getTests() throws IOException{
+    	return getFile("tests","regadb-tests","tests-genomes.xml");
+    }
+
 }

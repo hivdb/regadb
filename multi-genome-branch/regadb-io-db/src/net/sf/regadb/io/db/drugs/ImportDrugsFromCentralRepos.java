@@ -8,49 +8,44 @@ import java.util.List;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.io.importXML.ImportDrugs;
-import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 
 public class ImportDrugsFromCentralRepos {
     private static ImportDrugTransaction getDrugs() throws IOException {
         ImportDrugTransaction idt = new ImportDrugTransaction();
         
-        FileProvider fp = new FileProvider();
-        
-        File drugClasses = File.createTempFile("DrugClasses", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugClasses-genomes.xml", drugClasses);
+            File drugClasses = RegaDBWtsServer.getDrugClasses();
+            ImportDrugs.importDrugClasses(idt, drugClasses, false);
+            drugClasses.delete();
         } 
         catch (RemoteException e) 
         {
             e.printStackTrace();
         }
-        ImportDrugs.importDrugClasses(idt, drugClasses, false);
-        drugClasses.delete();
         
-        File drugGenerics = File.createTempFile("DrugGenerics", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugGenerics-genomes.xml", drugGenerics);
+        	File drugGenerics = RegaDBWtsServer.getDrugGenerics();
+            ImportDrugs.importGenericDrugs(idt, drugGenerics, false);
+            drugGenerics.delete();
         } 
         catch (RemoteException e) 
         {
             e.printStackTrace();
         }
-        ImportDrugs.importGenericDrugs(idt, drugGenerics, false);
-        drugGenerics.delete();
         
-        File drugCommercials = File.createTempFile("DrugCommercials", ".xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugCommercials-genomes.xml", drugCommercials);
+            File drugCommercials = RegaDBWtsServer.getDrugCommercials();
+            ImportDrugs.importCommercialDrugs(idt, drugCommercials, false);
+            drugCommercials.delete();
         } 
         catch (RemoteException e) 
         {
             e.printStackTrace();
         }
-        ImportDrugs.importCommercialDrugs(idt, drugCommercials, false);
-        drugCommercials.delete();
         
         return idt;
     }

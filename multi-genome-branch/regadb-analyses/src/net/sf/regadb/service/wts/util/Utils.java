@@ -3,7 +3,6 @@ package net.sf.regadb.service.wts.util;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -31,9 +30,7 @@ public class Utils {
 
         try 
         {
-            File tests =  File.createTempFile("tests_from_central_repos",".xml");
-            FileProvider fp = new FileProvider();
-            fp.getFile("regadb-tests", "tests-genomes.xml", tests);
+            File tests =  RegaDBWtsServer.getTests();
             List<Test> resistanceTests = importXML.readTests(new InputSource(new FileReader(tests)), null);
             //remove non-resistance tests
             ArrayList<Test> toRemove = new ArrayList<Test>();
@@ -65,21 +62,11 @@ public class Utils {
     public static Collection<Genome> getGenomes(){
         RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         
-        FileProvider fp = new FileProvider();
-        
         File genomesFile = null;
         try {
-            genomesFile = File.createTempFile("genomes", "xml");
+            genomesFile = RegaDBWtsServer.getGenomes();
         } catch (IOException e1) {
             e1.printStackTrace();
-        }
-        try 
-        {
-            fp.getFile("regadb-genomes", "genomes.xml", genomesFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
         }
         final ImportGenomes imp = new ImportGenomes();
         return imp.importFromXml(genomesFile, true);

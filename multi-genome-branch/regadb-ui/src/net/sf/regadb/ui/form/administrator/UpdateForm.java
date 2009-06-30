@@ -3,7 +3,6 @@ package net.sf.regadb.ui.form.administrator;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +24,7 @@ import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
-import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -104,19 +103,11 @@ public class UpdateForm extends FormWidget
     
     private void handleTests(final boolean simulate)
     {
-        FileProvider fp = new FileProvider();
-        File testsFile = RegaDBMain.getApp().createTempFile("tests", "xml");
         try 
         {
-            fp.getFile("regadb-tests", "tests-genomes.xml", testsFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        final ImportFromXML imp = new ImportFromXML();
-        try 
-        {
+            File testsFile = RegaDBWtsServer.getTests();
+            final ImportFromXML imp = new ImportFromXML();
+
             final Transaction t = RegaDBMain.getApp().createTransaction();
             imp.loadDatabaseObjects(t);
             if(simulate)
@@ -136,6 +127,9 @@ public class UpdateForm extends FormWidget
                         }
                     });
             t.commit();
+            
+            testsFile.delete();
+            new WLogText(testGroup_, lt(imp.getLog().toString()));
         } 
         catch (SAXException e) 
         {
@@ -145,25 +139,15 @@ public class UpdateForm extends FormWidget
         {
             e.printStackTrace();
         }
-        testsFile.delete();
-        new WLogText(testGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleAttributes(final boolean simulate)
     {
-        FileProvider fp = new FileProvider();
-        File attributesFile = RegaDBMain.getApp().createTempFile("attributes", "xml");
-        try 
-        {
-            fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
         final ImportFromXML imp = new ImportFromXML();
         try 
         {
+            File attributesFile = RegaDBWtsServer.getAttributes();
+
             final Transaction t = RegaDBMain.getApp().getLogin().copyLogin(false).createTransaction();
             imp.loadDatabaseObjects(t);
             imp.readAttributes(new InputSource(new FileReader(attributesFile)), new ImportHandler<Attribute>()
@@ -181,6 +165,7 @@ public class UpdateForm extends FormWidget
                         }
                     });
             t.commit();
+            attributesFile.delete();
         } 
         catch (SAXException e) 
         {
@@ -190,25 +175,15 @@ public class UpdateForm extends FormWidget
         {
             e.printStackTrace();
         }
-        attributesFile.delete();
         new WLogText(attributesGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleEvents(final boolean simulate)
     {
-        FileProvider fp = new FileProvider();
-        File eventsFile = RegaDBMain.getApp().createTempFile("events", "xml");
         try 
         {
-            fp.getFile("regadb-events", "events.xml", eventsFile);
-        }
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        final ImportFromXML imp = new ImportFromXML();
-        try 
-        {
+            File eventsFile = RegaDBWtsServer.getEvents();
+            final ImportFromXML imp = new ImportFromXML();
             final Transaction t = RegaDBMain.getApp().createTransaction();
             imp.loadDatabaseObjects(t);
             imp.readEvents(new InputSource(new FileReader(eventsFile)), new ImportHandler<Event>()
@@ -226,6 +201,8 @@ public class UpdateForm extends FormWidget
                         }
                     });
             t.commit();
+            eventsFile.delete();
+            new WLogText(eventsGroup_, lt(imp.getLog().toString()));
         } 
         catch (SAXException e) 
         {
@@ -235,8 +212,6 @@ public class UpdateForm extends FormWidget
         {
             e.printStackTrace();
         }
-        eventsFile.delete();
-        new WLogText(eventsGroup_, lt(imp.getLog().toString()));
     }
     
     private void handleDrugs(boolean simulate)
@@ -244,76 +219,58 @@ public class UpdateForm extends FormWidget
         Transaction t;
         ArrayList<String> report;
         
-        FileProvider fp = new FileProvider();
-        
-        File drugClasses = RegaDBMain.getApp().createTempFile("DrugClasses-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugClasses-genomes.xml", drugClasses);
-        } 
-        catch (RemoteException e) 
-        {
-            e.printStackTrace();
-        }
-        t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importDrugClasses(new DrugTransaction(t), drugClasses, simulate);
-        handleFields(drugsGroup_, drugClassTitle_, report);
-        drugClasses.delete();
-        t.commit();
+            File drugClasses = RegaDBWtsServer.getDrugClasses();
+            t = RegaDBMain.getApp().createTransaction();
+            report = ImportDrugs.importDrugClasses(new DrugTransaction(t), drugClasses, simulate);
+            handleFields(drugsGroup_, drugClassTitle_, report);
+            drugClasses.delete();
+            t.commit();
+        } catch (IOException e) {
+			e.printStackTrace();
+		}
 
-        File drugGenerics = RegaDBMain.getApp().createTempFile("DrugGenerics-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugGenerics-genomes.xml", drugGenerics);
-        } 
-        catch (RemoteException e) 
-        {
+            File drugGenerics = RegaDBWtsServer.getDrugGenerics();
+            t = RegaDBMain.getApp().createTransaction();
+            report = ImportDrugs.importGenericDrugs(new DrugTransaction(t), drugGenerics, simulate);
+            handleFields(drugsGroup_, drugGenericsTitle_, report);
+            drugGenerics.delete();
+            t.commit();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importGenericDrugs(new DrugTransaction(t), drugGenerics, simulate);
-        handleFields(drugsGroup_, drugGenericsTitle_, report);
-        drugGenerics.delete();
-        t.commit();
         
-        File drugCommercials = RegaDBMain.getApp().createTempFile("DrugCommercials-genomes", "xml");
         try 
         {
-            fp.getFile("regadb-drugs", "DrugCommercials-genomes.xml", drugCommercials);
-        } 
-        catch (RemoteException e) 
-        {
+            File drugCommercials = RegaDBWtsServer.getDrugCommercials();
+            t = RegaDBMain.getApp().createTransaction();
+            report = ImportDrugs.importCommercialDrugs(new DrugTransaction(t), drugCommercials, simulate);
+            handleFields(drugsGroup_, drugCommercialsTitle_, report);
+            drugCommercials.delete();
+            t.commit();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        t = RegaDBMain.getApp().createTransaction();
-        report = ImportDrugs.importCommercialDrugs(new DrugTransaction(t), drugCommercials, simulate);
-        handleFields(drugsGroup_, drugCommercialsTitle_, report);
-        drugCommercials.delete();
-        t.commit();
     }
     
     private Collection<Genome> handleGenomes(boolean simulate){
-        Transaction t;
-        
-        FileProvider fp = new FileProvider();
-        
-        File genomesXml = RegaDBMain.getApp().createTempFile("genomes", "xml");
-        try 
-        {
-            fp.getFile("regadb-genomes", "genomes.xml", genomesXml);
-        } 
-        catch (RemoteException e) 
-        {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        Collection<Genome> ret = null;
+        ImportGenomes ig = new ImportGenomes(t,simulate);
+
+        try {
+            File genomesXml = RegaDBWtsServer.getGenomes();
+            ret = ig.importFromXml(genomesXml);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        t = RegaDBMain.getApp().createTransaction();
-        
-        ImportGenomes ig = new ImportGenomes(t,simulate);
-        Collection<Genome> ret = ig.importFromXml(genomesXml);
-                
-        new WLogText(genomeGroup_, lt(ig.getLog().toString()));
         
         t.commit();
+
+        new WLogText(genomeGroup_, lt(ig.getLog().toString()));
         return ret;
     }
 

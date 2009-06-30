@@ -15,6 +15,7 @@ public class InstituteConfig implements IConfigParser {
 	private String dateFormat;
 	private int minYear;
 	private int maxDaysFuture;
+	private String serviceProviderUrl;
 	
 	private WivConfig wivConfig;
 	
@@ -75,6 +76,10 @@ public class InstituteConfig implements IConfigParser {
 				parseForm(settings, (Element)oo);
 			}
 		}
+		
+		ee = e.getChild("service-provider-url");
+		if(ee != null)
+				setServiceProviderUrl(ee.getTextTrim());
 	}
 	
 	private void parseForm(RegaDBSettings settings, Element e){
@@ -100,6 +105,8 @@ public class InstituteConfig implements IConfigParser {
 		
 		setMinYear(-1);
 		setMaxDaysFuture(-1);
+		
+		setServiceProviderUrl("http://regadb.med.kuleuven.be/wts/services/");
 	}
 	
 	public void addFormConfig(FormConfig form){
@@ -161,6 +168,10 @@ public class InstituteConfig implements IConfigParser {
 			for(FormConfig fc : forms.values())
 				e.addContent(fc.toXml());
 		}
+		
+		e = new Element("service-provider-url");
+		e.setText(getServiceProviderUrl().toString());
+		r.addContent(e);
 		
 		return r;
 	}
@@ -228,5 +239,17 @@ public class InstituteConfig implements IConfigParser {
 
 	public int getMaxDaysFuture() {
 		return maxDaysFuture;
+	}
+
+	public void setServiceProviderUrl(String serviceProviderUrl) {
+		if(!serviceProviderUrl.endsWith("/"))
+			serviceProviderUrl += '/';
+		if(!serviceProviderUrl.startsWith("http://") && !serviceProviderUrl.startsWith("https://"))
+			serviceProviderUrl = "http://"+ serviceProviderUrl;
+		this.serviceProviderUrl = serviceProviderUrl;
+	}
+
+	public String getServiceProviderUrl() {
+		return serviceProviderUrl;
 	}
 }

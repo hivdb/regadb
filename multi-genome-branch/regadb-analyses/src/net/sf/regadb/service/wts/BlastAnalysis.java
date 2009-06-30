@@ -2,7 +2,6 @@ package net.sf.regadb.service.wts;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,8 @@ import net.sf.regadb.io.importXML.ImportGenomes;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class BlastAnalysis extends NtSequenceAnalysis{
-    public static class UnsupportedGenomeException extends ServiceException{
+    @SuppressWarnings("serial")
+	public static class UnsupportedGenomeException extends ServiceException{
         private String blastResult;
 
         public UnsupportedGenomeException(String service, String url, String blastResult) {
@@ -108,21 +108,11 @@ public class BlastAnalysis extends NtSequenceAnalysis{
         if(t == null){
             RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
             
-            FileProvider fp = new FileProvider();
-            
             File genomesFile = null;
             try {
-                genomesFile = File.createTempFile("genomes", "xml");
+                genomesFile = RegaDBWtsServer.getGenomes();
             } catch (IOException e1) {
                 e1.printStackTrace();
-            }
-            try 
-            {
-                fp.getFile("regadb-genomes", "genomes.xml", genomesFile);
-            }
-            catch (RemoteException e) 
-            {
-                e.printStackTrace();
             }
             final ImportGenomes imp = new ImportGenomes();
             genomes = imp.importFromXml(genomesFile);
