@@ -1,0 +1,19 @@
+#!/bin/bash
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+
+echo "Setting files" >> $monitor_file
+
+seqs_in="$1/inputs/sequences"
+seqs_out="$1/outputs/sequences"
+
+clustalw -infile=$seqs_in -outfile=$seqs_out -align -output=gde -pwgapopen=-10 -pwgapext=-3.3 >> $monitor_file 2>> $monitor_file
+
+sed -i -e 's/#/>/' $seqs_out
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"
+

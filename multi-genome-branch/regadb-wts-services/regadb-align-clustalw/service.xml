@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB Clustal Alignment tool
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		sequences
+		</name>
+		<description>
+		unaligned fasta file
+		</description>
+	</input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		sequences
+		</name>
+		<description>
+		aligned fasta file
+		</description>
+	</output>
+</outputs>
+</service>
