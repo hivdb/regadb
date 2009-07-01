@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,7 +25,12 @@ public class GenerateDrugsXML
 {
     public static void main(String [] args)
     {
-        String filesPath = args[0];
+    	Arguments as = new Arguments();
+    	PositionalArgument path = as.addPositionalArgument("output-path", true);
+    	if(!as.handle(args))
+    		return;
+    	
+        String filesPath = path.getValue();
         Table classes = null;
         Table generic = null;
         Table commercial = null;
