@@ -76,7 +76,8 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     public void deleteData(TherapyGeneric tg)
     {
         therapy_.getTherapyGenerics().remove(tg);
-        transaction_.delete(tg);
+        if(therapy_.getTherapyIi() != null)
+        	transaction_.delete(tg);
     }
 
     public InteractionState getInteractionState()

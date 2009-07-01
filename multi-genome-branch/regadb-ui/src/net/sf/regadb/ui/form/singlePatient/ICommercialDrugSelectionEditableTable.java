@@ -75,7 +75,8 @@ public class ICommercialDrugSelectionEditableTable implements IEditableTable<The
     public void deleteData(TherapyCommercial tc)
     {
         therapy_.getTherapyCommercials().remove(tc);
-        transaction_.delete(tc);
+        if(therapy_.getTherapyIi() != null)
+        	transaction_.delete(tc);
     }
 
     public InteractionState getInteractionState()
