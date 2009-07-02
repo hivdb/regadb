@@ -509,6 +509,9 @@ public class StandardObjects {
     public static boolean isViralLoad(TestType tt) {
         return getViralLoadDescription().equals(tt.getDescription());
     }
+    public static boolean isViralLoadLog10(TestType tt) {
+        return getViralLoadLog10Description().equals(tt.getDescription());
+    }
     
     public static Test getGenericHiv1SeroStatusTest() {
         return getGenericTest(getSeroStatusDescription(), getHiv1Genome());

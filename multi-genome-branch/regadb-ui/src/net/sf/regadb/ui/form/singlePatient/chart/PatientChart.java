@@ -389,7 +389,12 @@ public class PatientChart
 			d = Double.parseDouble(result.getValue().substring(1));
 		else
 			d = Double.parseDouble(result.getValue());
-		return d == 0 ? 1 : d;
+		
+		if(StandardObjects.isViralLoad(result.getTest().getTestType()))
+			return d == 0 ? 1 : d;
+		if(StandardObjects.isViralLoadLog10(result.getTest().getTestType()))
+			return Math.pow(10, d);
+		return d;
 	}
 
 	private boolean isClipped(TestResult result)
@@ -413,7 +418,8 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isViralLoad(r.getTest().getTestType()))
+			if (StandardObjects.isViralLoad(r.getTest().getTestType())
+					|| StandardObjects.isViralLoadLog10(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				boolean clipped = isClipped(r);
