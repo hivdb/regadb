@@ -384,10 +384,12 @@ public class PatientChart
 
 	private double getNumberValue(TestResult result)
 	{
+		double d;
 		if (hasLimitedNumberValue(result))
-			return Double.parseDouble(result.getValue().substring(1));
+			d = Double.parseDouble(result.getValue().substring(1));
 		else
-			return Double.parseDouble(result.getValue());
+			d = Double.parseDouble(result.getValue());
+		return d == 0 ? 1 : d;
 	}
 
 	private boolean isClipped(TestResult result)
