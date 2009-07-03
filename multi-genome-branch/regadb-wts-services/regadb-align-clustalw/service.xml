@@ -15,6 +15,30 @@
 		unaligned fasta file
 		</description>
 	</input>
+	<input>
+		<name>
+		gapopen
+		</name>
+		<description>
+		gap open score
+		</description>
+	</input>
+	<input>
+		<name>
+		gapext
+		</name>
+		<description>
+		gapextensionscore
+		</description>
+	</input>
+	<input>
+		<name>
+		matrix
+		</name>
+		<description>
+		substitution matrix
+		</description>
+	</input>
 </inputs>
 <outputs>
 	<output>
@@ -23,6 +47,14 @@
 		</name>
 		<description>
 		aligned fasta file
+		</description>
+	</output>
+		<output>
+		<name>
+		score
+		</name>
+		<description>
+		alignment score
 		</description>
 	</output>
 </outputs>

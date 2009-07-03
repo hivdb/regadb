@@ -26,10 +26,6 @@ public abstract class NtSequenceAnalysis extends AbstractService implements IAna
         this(ntSequence, uid, 5000);
     }
     
-    public NtSequenceAnalysis(NtSequence ntSequence, Test test){
-        setNtSequence(ntSequence);
-    }
-    
     public NtSequenceAnalysis(NtSequence ntSequence){
         setNtSequence(ntSequence);
     }
