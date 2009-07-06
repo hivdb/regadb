@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -44,7 +43,7 @@ import net.sf.regadb.util.frequency.Frequency;
 
 public class ParseAll extends Parser{
 	private OfflineObjectStore objstore = new OfflineObjectStore();
-	private Map<String,Drugs> drugMap;
+	private Map<String,Drugs> therapyMap;
 	
 	private String delimiter = "\"";
 	private String separator = ",";
@@ -200,64 +199,78 @@ public class ParseAll extends Parser{
 	private static class Drugs{
 		Set<DrugGeneric> dgs = new HashSet<DrugGeneric>();
 		Set<DrugCommercial> dcs = new HashSet<DrugCommercial>();
-		
-		public int size(){
-			return dgs.size()+dcs.size();
-		}
 	}
 	
 	public void parseDrugs(File drugsFile, File mapDir){
 		Mappings map = Mappings.getInstance(mapDir.getAbsolutePath());
-		drugMap = new HashMap<String,Drugs>();
+		therapyMap = new HashMap<String,Drugs>();
 		
 		try{
 			DelimitedReader dr = new DelimitedReader(drugsFile,separator,delimiter);
 			Set<String> noMap = new HashSet<String>();
 
-			List<DrugGeneric> generics = Utils.prepareRegaDrugGenerics();
-			List<DrugCommercial> commercials = Utils.prepareRegaDrugCommercials();
+			Map<String,DrugGeneric> gmap = new HashMap<String, DrugGeneric>();
+			for(DrugGeneric dg : Utils.prepareRegaDrugGenerics())
+				gmap.put(dg.getGenericId(), dg);
+			
+			Map<String,DrugCommercial> cmap = new HashMap<String, DrugCommercial>();
+			for(DrugCommercial dc : Utils.prepareRegaDrugCommercials())
+				cmap.put(dc.getName(), dc);
+			
 			
 			while(dr.readLine() != null){
 				String combina = dr.get("combina");
-				String medicam = dr.get("medicam");
-				Drugs ds = new Drugs();
+				String med = dr.get("med");
 				
-				String m = map.getMapping("drugs.mapping", medicam);
+				Drugs ds = therapyMap.get(combina);
+				if(ds == null){
+					ds = new Drugs();
+					therapyMap.put(combina,ds);
+				}
+
+				
+				String m = map.getMapping("drugs.mapping", med);
 				if(m == null){
-					if(noMap.add(medicam))
-						System.err.println("no mapping for drug(s): '"+ medicam +'\'');
+					if(noMap.add(med))
+						System.err.println("no mapping for drug(s): '"+ dr.get("medicam") +'\'');
 					continue;
 				}
 				for(String d : m.split(";")){
-					int size = ds.size();
-					
-					for(DrugGeneric dg : generics){
-						if(dg.getGenericId().equals(d)){
-							ds.dgs.add(dg);
-							break;
-						}
-					}
-					
-					if(size == ds.size()){
-						for(DrugCommercial dc : commercials){
-							if(dc.getName().equals(d)){
-								ds.dcs.add(dc);
-								break;
-							}
-						}
-					
-						if(size == ds.size())
+					DrugGeneric dg = gmap.get(d);
+					if(dg != null)
+						ds.dgs.add(dg);
+					else{
+						DrugCommercial dc = cmap.get(d);
+						if(dc != null)
+							ds.dcs.add(dc);
+						else
 							System.err.println("wrong mapping for drug: '"+ d +'\'');
 					}
 				}
-				
-				drugMap.put(combina, ds);
 			}
-			
 			dr.close();
+			
+			for(Drugs ds : therapyMap.values())
+				toBoosted(gmap,ds.dgs);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void toBoosted(Map<String, DrugGeneric> gmap, Set<DrugGeneric> dgs){
+		for(DrugGeneric rtv : dgs){
+			if(rtv.getGenericId().equals("RTV")){
+				for(DrugGeneric pi : dgs){
+					DrugGeneric bpi = gmap.get(pi.getGenericId()+"/r");
+					if(bpi != null){
+						dgs.remove(pi);
+						dgs.remove(rtv);
+						dgs.add(bpi);
+						return;
+					}
+				}
+			}
 		}
 	}
 	
@@ -327,7 +340,7 @@ public class ParseAll extends Parser{
 	}
 	
 	private void addDrugs(Therapy t, String combina){
-		Drugs ds = drugMap.get(combina);
+		Drugs ds = therapyMap.get(combina);
 		if(ds == null)
 			return;
 		

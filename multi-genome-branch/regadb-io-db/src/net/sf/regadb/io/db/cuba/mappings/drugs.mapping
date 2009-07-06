@@ -1,34 +1,28 @@
-cuba medicam,regadb
-"abacavir",ABC
-"amprenavir",APV
-"delavirdine",DLV
-"didanosine - ddi",DDI
-"efavirenz",EFV
-"indinavir",IDV
-"lamivudine - 3tc",3TC
-"stavudine - d4t",D4T
-"lamivudine/zidovudin",3TC;AZT
-"nelfinavir",NFV
-"nevirapine",NVP
-"ritonavir",RTV
-"saquinavir",SQV
-"saquinavir (gel)",SQV
-"zalcitabine - ddc",DDC
-"zidovudine - azt",AZT
-"kaletra","Kaletra (LPV+RTV)"
-"SAQUINAVIR 500",SQV
-"FORTOVASE",Fortovase (SQV-sgc)
-"tenefovir",TDF
-"tenofovir",TDF
-"3TC jarabe",3TC
-"Nevirapine jarabe",NVP
-"AZT (jarabe)",AZT
-"atazanavir",ATV
-"(J)NEVIRAPINE",NVP
-"(J)3TC",3TC
-"fosamprenavir",FPV
-"combivir",Combivir (3TC+AZT)
-"TIPRANAVIR 250 MG",TPV
-"ENFUVIRTIDE 90 MG",T20
-"(J) D4T",D4T
-"SAQUINAVIR 200 MG",SQV
+cuba med,regadb
+1,NVP
+2,EFV
+3,DLV
+4,Combivir (3TC+AZT)
+5,3TC
+6,D4T
+7,ABC
+8,DDC
+9,DDI
+10,AZT
+11,IDV
+12,SQV
+13,NFV
+14,RTV
+15,APV
+16,Fortovase (SQV-sgc)
+17,"Kaletra (LPV+RTV)"
+18,TDF
+19,3TC
+20,NVP
+21,AZT
+22,ATV
+23,SQV
+24,FPV
+25,TPV
+26,T20
+27,D4T"tenofovir",TDF
