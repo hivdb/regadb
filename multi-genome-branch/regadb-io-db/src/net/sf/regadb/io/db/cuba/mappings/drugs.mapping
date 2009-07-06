@@ -1,13 +1,13 @@
 cuba med,regadb
-1,NVP
-2,EFV
-3,DLV
-4,Combivir (3TC+AZT)
-5,3TC
-6,D4T
-7,ABC
-8,DDC
-9,DDI
+01,NVP
+02,EFV
+03,DLV
+04,Combivir (3TC+AZT)
+05,3TC
+06,D4T
+07,ABC
+08,DDC
+09,DDI
 10,AZT
 11,IDV
 12,SQV
