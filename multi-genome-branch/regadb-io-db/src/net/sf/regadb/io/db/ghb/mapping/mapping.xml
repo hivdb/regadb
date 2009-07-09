@@ -29,22 +29,11 @@
 			<match type="and">
 				<match var="aanvraagTestNaam" type="contains">HIV-1 viral load</match>
 				<match var="eenheden" type="contains" inverse="true">log</match>
+				<match var="eenheden" type="contains" inverse="true">sym</match>
 			</match>
 			<values var="relatie+geheel">
-<!--				<value const="&gt;>40">-->
-<!--					<match type="and">-->
-<!--						<match var="elementNaam" type="contains">sym</match>-->
-<!--						<match var="resultaat" type="contains">Positief</match>-->
-<!--					</match>-->
-<!--				</value>-->
 				<value const="&lt;40">
 					<match var="resultaat" type="contains">&lt; 40</match>
-				</value>
-				<value const="=0">
-					<match type="and">
-						<match var="elementNaam" type="contains">sym</match>
-						<match var="resultaat" type="contains">Geen</match>
-					</match>
 				</value>
 			</values>
 		</test>
