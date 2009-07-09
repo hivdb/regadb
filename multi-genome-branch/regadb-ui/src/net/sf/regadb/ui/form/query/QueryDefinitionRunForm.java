@@ -172,7 +172,7 @@ public class QueryDefinitionRunForm extends FormWidget
         	
         	t.commit();
         	
-        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun, paramObjects);
+        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin(), queryDefinitionRun, paramObjects);
         	
         	qt.startQueryThread();
         	

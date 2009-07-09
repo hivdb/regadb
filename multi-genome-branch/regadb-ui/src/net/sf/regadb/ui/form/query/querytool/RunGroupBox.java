@@ -110,7 +110,7 @@ public class RunGroupBox extends WGroupContainer {
 	}
 	
 	public void runQuery() {
-		QueryToolThread qt = new QueryToolThread(RegaDBMain.getApp().getLogin().copyLogin(), editor);
+		QueryToolThread qt = new QueryToolThread(RegaDBMain.getApp().getLogin(), editor);
 		qt.startQueryThread();
 		runningQueries.add(qt.getRun());
 		timer.start();

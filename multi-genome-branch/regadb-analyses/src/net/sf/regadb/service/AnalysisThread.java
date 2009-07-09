@@ -16,7 +16,9 @@ public class AnalysisThread extends Thread
             public void run() 
             {
                 try {
-                    analysis.launch(login);
+                	Login copiedLogin = login.copyLogin();
+                    analysis.launch(copiedLogin);
+                    copiedLogin.closeSession();
                 } catch (ServiceException e) {
                     e.printStackTrace();
                 }

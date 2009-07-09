@@ -39,8 +39,9 @@ public class ProcessXMLImport extends Thread {
 	public void run() {
 		PrintStream ps = System.out;
 		
+		Login copiedLogin = login_.copyLogin();
 		try {
-			ImportXML instance = new ImportXML(login_.copyLogin());
+			ImportXML instance = new ImportXML(copiedLogin);
 			
 			ps = new PrintStream(logFile);
 			instance.setPrintStream(ps);
@@ -68,6 +69,8 @@ public class ProcessXMLImport extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace(ps);
 			status = UploadStatus.FAILED;
+		} finally {
+			copiedLogin.closeSession();
 		}
 	}
 	

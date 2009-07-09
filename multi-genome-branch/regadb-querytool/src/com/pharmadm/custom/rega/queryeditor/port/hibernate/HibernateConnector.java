@@ -24,9 +24,9 @@ public class HibernateConnector implements DatabaseConnector {
 	private Login login;
 	private boolean tableSelectionAllowed;
 	
-	public HibernateConnector(Login copiedLogin, boolean tables) {
+	public HibernateConnector(Login login, boolean tables) {
 		try {
-			login = copiedLogin;
+			this.login = login;
 			tableSelectionAllowed = tables;
 		} catch (Exception e) {
 			e.printStackTrace();

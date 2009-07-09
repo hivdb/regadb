@@ -48,7 +48,7 @@ public class AnalysisPool
     
     public synchronized void launchAnalysis(final IAnalysis analysis, Login login)
     {
-        AnalysisThread t = new AnalysisThread(analysis, login.copyLogin());
+        AnalysisThread t = new AnalysisThread(analysis, login);
         t.start();
         threadList_.add(t);
     }

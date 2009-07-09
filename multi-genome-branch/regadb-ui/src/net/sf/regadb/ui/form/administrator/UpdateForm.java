@@ -18,6 +18,7 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.SplicingPosition;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportDrugs;
 import net.sf.regadb.io.importXML.ImportException;
 import net.sf.regadb.io.importXML.ImportFromXML;
@@ -148,7 +149,8 @@ public class UpdateForm extends FormWidget
         {
             File attributesFile = RegaDBWtsServer.getAttributes();
 
-            final Transaction t = RegaDBMain.getApp().getLogin().copyLogin(false).createTransaction();
+            Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin(false);
+            final Transaction t = copiedLogin.createTransaction();
             imp.loadDatabaseObjects(t);
             imp.readAttributes(new InputSource(new FileReader(attributesFile)), new ImportHandler<Attribute>()
                     {
@@ -165,6 +167,7 @@ public class UpdateForm extends FormWidget
                         }
                     });
             t.commit();
+            copiedLogin.closeSession();
             attributesFile.delete();
         } 
         catch (SAXException e) 

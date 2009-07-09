@@ -19,7 +19,6 @@ public class BatchTestRunningTest extends Thread {
 	private Test test;
 	private BatchTestStatus status;
 	private Transaction t;
-	private Login copiedLogin;
 	
 	private int processedTests = 0;
 	private int testsToProcess = 0;
@@ -27,10 +26,11 @@ public class BatchTestRunningTest extends Thread {
 	public BatchTestRunningTest(Test test) {
 		this.test = test;
         t = RegaDBMain.getApp().createTransaction();
-		copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
 	}
 	
 	public void run() {
+		Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
+		
 		status = BatchTestStatus.RUNNING;
 		
 		String testObject = test.getTestType().getTestObject().getDescription().toLowerCase();
@@ -61,6 +61,8 @@ public class BatchTestRunningTest extends Thread {
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			status = BatchTestStatus.FAILED;
+		} finally {
+			copiedLogin.closeSession();
 		}
 	}
 	
