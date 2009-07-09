@@ -144,6 +144,7 @@ public class Login {
             SQLQuery shutdown = session_.createSQLQuery("SHUTDOWN");
             shutdown.executeUpdate();
         }
+        session_.flush();
         session_.close();
     }
 }
