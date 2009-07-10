@@ -78,7 +78,6 @@ public class RegaDBApplication extends WApplication
     
     public void logout()
     {
-        //close the wt and servlet session
         login_.closeSession();
         login_=null;
     }
@@ -123,5 +122,13 @@ public class RegaDBApplication extends WApplication
 	}
 	public Role getRole(){
 		return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(getSettingsUser().getRole());
+	}
+	
+	@Override
+	public void finalize() {
+		if (login_ != null)
+			login_.closeSession();
+
+		super.finalize();
 	}
 }
