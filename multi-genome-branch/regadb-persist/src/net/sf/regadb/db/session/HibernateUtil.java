@@ -45,12 +45,6 @@ public class HibernateUtil {
         return conf;
     }
     
-    public static Session getEditedSession(File tempTableMappings) {
-        Configuration conf = getConfiguration();
-        conf.addFile(tempTableMappings);
-        return conf.buildSessionFactory().openSession();
-    }
-    
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
