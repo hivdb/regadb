@@ -26,6 +26,8 @@ import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 import com.pharmadm.util.settings.RegaSettings;
 import com.pharmadm.util.thread.ThreadManager;
 import com.pharmadm.util.thread.WorkManagerThreadManagerAdapter;
+
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 
 
@@ -123,7 +125,13 @@ public class QueryEditorApp implements FrontEnd{
         try {
 //        	DatabaseConnector con = new JDBCConnector(null, "jdbc:postgresql://localhost:5432/regadb", "freek", "freek");
 //        	QueryVisitor visitor = new SqlQuery();
-            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(Login.authenticate("admin", "admin"), false));
+        	final Login login = Login.authenticate("admin", "admin");
+            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(false){
+				@Override
+				public Transaction createTransaction() {
+					return login.createTransaction();
+				}
+            });
             DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
         } catch (Exception e) {
         	e.printStackTrace();
