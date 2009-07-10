@@ -42,6 +42,10 @@ public class HibernateConfig implements IConfigParser{
 		return properties.get(name);
 	}
 	
+	public Map<String,String> getProperties(){
+		return properties;
+	}
+	
 	public void setProperty(String name, String value){
 		properties.put(name,value);
 	}
