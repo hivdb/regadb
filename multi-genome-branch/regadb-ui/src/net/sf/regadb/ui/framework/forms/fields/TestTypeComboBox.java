@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import java.util.Collection;
+
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
@@ -14,22 +16,30 @@ public class TestTypeComboBox extends ComboBox<TestType>{
     }
 
     public void fill(Transaction t, boolean omitEmpties){
-        for(TestType tt : t.getTestTypes()){
-            if(!omitEmpties || t.hasTests(tt))
-                addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
-        }
+    	Collection<TestType> testTypes;
+    	if(omitEmpties)
+    		testTypes = t.getUsedTestsTypes();
+    	else
+    		testTypes = t.getTestTypes();
+
+    	for(TestType tt : testTypes)
+            addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
         sort();
     }
     
     public void fill(Transaction t, boolean omitEmpties, Filter organismFilter){
-        for(TestType tt : t.getTestTypes()){
-            if(!omitEmpties || t.hasTests(tt)) {
-            	if(organismFilter==null || tt.getGenome()==null) {
-            		addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
-            	} else if(organismFilter.compareRegexp(tt.getGenome().getOrganismName())) {
-            		addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
-            	}
-            }
+    	Collection<TestType> testTypes;
+    	if(omitEmpties)
+    		testTypes = t.getUsedTestsTypes();
+    	else
+    		testTypes = t.getTestTypes();
+
+    	for(TestType tt : testTypes){
+        	if(organismFilter==null || tt.getGenome()==null) {
+        		addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
+        	} else if(organismFilter.compareRegexp(tt.getGenome().getOrganismName())) {
+        		addItem(new DataComboMessage<TestType>(tt, getLabel(tt)));
+        	}
         }
         sort();
     }
