@@ -26,22 +26,19 @@
 			<values var="reeel"/>
 		</test>
 		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
-			<match type="and">
-				<match var="aanvraagTestNaam" type="contains">HIV-1 viral load</match>
-				<match var="eenheden" type="contains" inverse="true">log</match>
-				<match var="eenheden" type="contains" inverse="true">sym</match>
-			</match>
-			<values var="relatie+geheel">
-				<value const="&lt;40">
-					<match var="resultaat" type="contains">&lt; 40</match>
-				</value>
-			</values>
+			<match var="elementNaam" type="equals">HIV-1 VL</match>
+			<values var="relatie+geheel"/>
 		</test>
 		<test organism="HIV-1" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
-			<match type="and">
-				<match var="aanvraagTestNaam" type="contains">HIV-1 viral load</match>
-				<match var="eenheden" type="contains">log</match>
-			</match>
+			<match var="elementNaam" type="equals">HIV-1 VL log</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test organism="HIV-2A" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
+			<match var="elementNaam" type="equals">HIV-2 VL</match>
+			<values var="relatie+geheel"/>
+		</test>
+		<test organism="HIV-2A" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
+			<match var="elementNaam" type="equals">HIV-2 VL log</match>
 			<values var="relatie+reeel"/>
 		</test>
 		<test testtype="HBsAb" description="HBsAb (generic)">

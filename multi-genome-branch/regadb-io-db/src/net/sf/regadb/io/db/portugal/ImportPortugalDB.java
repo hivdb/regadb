@@ -31,7 +31,6 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -832,8 +831,8 @@ public class ImportPortugalDB {
     }
     
     public void exportToXml() {
-        IOUtils.exportPatientsXML(patientMap, patientXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(patientMap, sequenceXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patientMap.values(), patientXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap.values(), sequenceXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
     }
     
  	public static void main(String[] args)

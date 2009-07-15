@@ -79,8 +79,8 @@ public class ImportEgazMonizHiv2 {
 		ImportEgazMonizHiv2Sequences seqs = new ImportEgazMonizHiv2Sequences();
 		seqs.run(this, new File(dir.getAbsolutePath()+File.separatorChar+"seqs"));
 		
-        IOUtils.exportPatientsXML(patientMap, dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(patientMap, dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"viralIsolates.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patientMap.values(), dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap.values(), dir.getAbsolutePath()+File.separatorChar+"xml"+File.separatorChar+"viralIsolates.xml", ConsoleLogger.getInstance());
 	}
 	
 	public void parsePatientInfo(File dir) throws FileNotFoundException, UnsupportedEncodingException {

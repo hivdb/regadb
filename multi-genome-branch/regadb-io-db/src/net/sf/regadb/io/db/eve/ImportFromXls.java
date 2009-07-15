@@ -90,8 +90,8 @@ public class ImportFromXls {
     		}
     	}
     	
-    	IOUtils.exportPatientsXML(patientMap, basePath_ + File.separatorChar + "patients_eve.xml", ConsoleLogger.getInstance());
-    	IOUtils.exportNTXML(viralisolates, basePath_ + File.separatorChar + "sequences_eve.xml", ConsoleLogger.getInstance());
+    	IOUtils.exportPatientsXML(patientMap.values(), basePath_ + File.separatorChar + "patients_eve.xml", ConsoleLogger.getInstance());
+    	IOUtils.exportNTXML(viralisolates.values(), basePath_ + File.separatorChar + "sequences_eve.xml", ConsoleLogger.getInstance());
 	}
     
 	private void processTherapy(Patient p, Date startDate, Date stopDate, String drugs) {		

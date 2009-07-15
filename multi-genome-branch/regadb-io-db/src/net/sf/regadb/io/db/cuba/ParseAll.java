@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
@@ -34,6 +35,7 @@ import net.sf.regadb.io.db.util.FastaFile;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.db.util.mapping.ObjectStore;
 import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -112,6 +114,21 @@ public class ParseAll extends Parser{
 	
 	public void parsePatients(File patFile){
 		try {
+			
+			Test seroconv = StandardObjects.getGenericTest(
+					StandardObjects.getSeroconversionDescription(),
+					StandardObjects.getHiv1Genome());
+			seroconv = getObjectStore().getTest(
+					seroconv.getDescription(),
+					seroconv.getTestType().getDescription(),
+					seroconv.getTestType().getGenome().getOrganismName());
+			TestNominalValue seroconvPositive = getObjectStore().getTestNominalValue(seroconv.getTestType(), "Positive");
+			
+			Attribute aids = getObjectStore().createAttribute(
+					getObjectStore().getAttributeGroup(StandardObjects.getClinicalAttributeGroup().getGroupName()),
+					getObjectStore().getValueType(StandardObjects.getDateValueType().getDescription()),
+					"AIDS status");
+							
 			DelimitedReader dr = new DelimitedReader(patFile,separator,delimiter);
 
 			Attribute municipart = getObjectStore().createAttribute(StandardObjects.getDemographicsAttributeGroup(),
@@ -120,6 +137,13 @@ public class ParseAll extends Parser{
 			Attribute provpart = getObjectStore().createAttribute(	StandardObjects.getDemographicsAttributeGroup(),
 																	StandardObjects.getNominalValueType(),
 																	"provpart");
+			
+			Attribute gender = getObjectStore().getAttribute(
+					StandardObjects.getGenderAttribute().getName(),
+					StandardObjects.getPersonalAttributeGroup().getGroupName());
+			AttributeNominalValue female = getObjectStore().getAttributeNominalValue(gender, "female");
+			AttributeNominalValue male   = getObjectStore().getAttributeNominalValue(gender, "male");
+			
 
 			while(dr.readLine() != null){
 				Patient p = getObjectStore().createPatient(null, dr.get("casoind"));
@@ -127,7 +151,8 @@ public class ParseAll extends Parser{
 				String s;
 				
 				s = dr.get("sexo");
-				p.addPatientAttributeValue(Utils.createPatientAttributeValue(StandardObjects.getGenderAttribute(), s.equals("F") ? "female":"male"));
+				p.createPatientAttributeValue(gender).setAttributeNominalValue(s.equals("F") ? female:male);
+				
 				
 				s = dr.get("municipart");
 				if(s != null && s.length() > 0){
@@ -148,11 +173,23 @@ public class ParseAll extends Parser{
 				s = dr.get("fechadiag");
 				if(s != null && s.length() > 0){
 					Date d = getDate(s);
-					if(d != null)
-						Utils.setBirthDate(p, d);
+					
+					if(d != null){
+						try{
+							Calendar cal = Calendar.getInstance();
+							cal.setTime(d);
+							cal.add(Calendar.YEAR, - Integer.parseInt(dr.get("edaddiag")));
+							cal.set(Calendar.MONTH, 1);
+							cal.set(Calendar.DAY_OF_MONTH, 1);
+							Utils.setBirthDate(p, cal.getTime());
+						}catch(NumberFormatException e){
+						}
+						p.createTestResult(seroconv,null,d,seroconvPositive);
+					}
+						
 					d = getDate(dr.get("fechafall"));
 					if(d != null)
-						Utils.setDeathDate(p, d);
+						p.createPatientAttributeValue(aids).setValue(d.getTime()+"");
 				}
 			}
 			
@@ -189,11 +226,8 @@ public class ParseAll extends Parser{
 	}
 	
 	private void addTestResult(Patient p, Test t, Date d, String value){
-		if(value != null && value.length() > 0){
-			TestResult tr = p.createTestResult(t);
-			tr.setValue(value);
-			tr.setTestDate(d);
-		}
+		if(value != null && value.length() > 0)
+			p.createTestResult(t, null, d, value);
 	}
 	
 	private static class Drugs{
@@ -465,7 +499,7 @@ public class ParseAll extends Parser{
 		return -1;
 	}
 	
-	public OfflineObjectStore getObjectStore(){
+	public ObjectStore getObjectStore(){
 		return objstore;
 	}
 }

@@ -36,6 +36,7 @@ public class StandardObjects {
     private static List<Event> allEvents = new ArrayList<Event>();
     private static List<AttributeGroup> allAttributeGroups = new ArrayList<AttributeGroup>();
     private static List<ValueType> allValueTypes = new ArrayList<ValueType>();
+    private static List<TestObject> allTestObjects = new ArrayList<TestObject>();
     
     private static Map<String, Map<String, TestType>> standardGenomeTestTypes = new HashMap<String, Map<String, TestType>>();
     private static Map<String, Map<String, Test>> standardGenomeTests = new HashMap<String, Map<String, Test>>();
@@ -146,11 +147,11 @@ public class StandardObjects {
         clinicalFileNumberAttribute = createAttribute("Clinical File Number", getStringValueType(), getClinicalAttributeGroup());
 //        countryOfOriginAttribute    = createCountryOfOrigin();
         
-        patientTestObject           = new TestObject("Patient test", 0);
-        sequenceAnalysisTestObject  = new TestObject("Sequence analysis", 1);
-        genericDrugTestObject       = new TestObject("Generic drug test", 2);
-        resistanceTestObject        = new TestObject("Resistance test", 3);
-        viralIsolateAnalysisTestObject = new TestObject("Viral Isolate analysis", 4);
+        patientTestObject           = createTestObject("Patient test", 0);
+        sequenceAnalysisTestObject  = createTestObject("Sequence analysis", 1);
+        genericDrugTestObject       = createTestObject("Generic drug test", 2);
+        resistanceTestObject        = createTestObject("Resistance test", 3);
+        viralIsolateAnalysisTestObject = createTestObject("Viral Isolate analysis", 4);
         
         TestType tt;
         List<TestType> genomeTestTypes = new ArrayList<TestType>();
@@ -218,6 +219,12 @@ public class StandardObjects {
         pregnancyEvent = createPregnancyEvent();
     }
     
+    private static TestObject createTestObject(String description, int id){
+    	TestObject to = new TestObject(description, id);
+    	allTestObjects.add(to);
+    	return to;
+    }
+    
     private static Genome createGenome(String organismName, String organismDescription){
         Genome g = new Genome(organismName, organismDescription);
         allGenomes.add(g);
@@ -255,6 +262,9 @@ public class StandardObjects {
     	return vt;
     }
     
+    public static List<TestObject> getTestObjects(){
+    	return allTestObjects;
+    }
     public static List<Genome> getGenomes(){
         return allGenomes;
     }

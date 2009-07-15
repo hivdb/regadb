@@ -63,7 +63,7 @@ public class ExportDB {
             ht.run(patients);
             
             logInfo("Generating xml");
-            IOUtils.exportPatientsXML(patients, getOutputPath() + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+            IOUtils.exportPatientsXML(patients.values(), getOutputPath() + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
             
             logInfo("Done");
         }

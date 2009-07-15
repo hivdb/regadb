@@ -1,5 +1,6 @@
 package net.sf.regadb.io.db.util.mapping;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.util.StandardObjects;
@@ -26,6 +28,7 @@ public class OfflineObjectStore extends ObjectStore{
 	Map<String, TestType> testTypes = new HashMap<String, TestType>();
 	Map<String, Test> tests = new HashMap<String, Test>();
 	Map<String, TestNominalValue> testNominalValues = new HashMap<String, TestNominalValue>();
+	Map<String, TestObject> testObjects = new HashMap<String, TestObject>();
 	
 	public OfflineObjectStore(){
 		loadStandardObjects();
@@ -170,8 +173,8 @@ public class OfflineObjectStore extends ObjectStore{
 	public void setPatients(Map<String, Patient> patients){
 		this.patients = patients;
 	}
-	public Map<String, Patient> getPatients(){
-		return patients;
+	public Collection<Patient> getPatients(){
+		return patients.values();
 	}
 
 
@@ -204,5 +207,15 @@ public class OfflineObjectStore extends ObjectStore{
 	
 	public void addDataset(Dataset dataset){
 		datasets.put(key(dataset), dataset);
+	}
+
+	@Override
+	public Genome getGenome(String organismName) {
+		return genomes.get(organismName);
+	}
+
+	@Override
+	public TestObject getTestObject(String description) {
+		return testObjects.get(description);
 	}
 }

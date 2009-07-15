@@ -134,8 +134,8 @@ public class ParseAll {
             }
         }
         
-        IOUtils.exportPatientsXML(eadPatients, outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(eadPatients, outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(eadPatients.values(), outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(eadPatients.values(), outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     }
 
     public static void setCharset(String charset) {

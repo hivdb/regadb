@@ -1,12 +1,16 @@
 package net.sf.regadb.io.db.util.mapping;
 
+import java.util.Collection;
+
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
@@ -110,5 +114,20 @@ public class DbObjectStore extends ObjectStore{
 	@Override
 	public ValueType getValueType(String description) {
 		return getTransaction().getValueType(description);
+	}
+
+	@Override
+	public Collection<Patient> getPatients() {
+		return getTransaction().getPatients();
+	}
+
+	@Override
+	public Genome getGenome(String organismName) {
+		return getTransaction().getGenome(organismName);
+	}
+
+	@Override
+	public TestObject getTestObject(String description) {
+		return getTransaction().getTestObject(description);
 	}
 }

@@ -28,7 +28,6 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -203,8 +202,8 @@ public class ImportUCLHiv2DB {
     	}
     	
 		//print out xml files
-		IOUtils.exportPatientsXML(patientMap, srcPath.getAbsolutePath()+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(patientMap, srcPath.getAbsolutePath()+File.separatorChar+"vi.xml", ConsoleLogger.getInstance());
+		IOUtils.exportPatientsXML(patientMap.values(), srcPath.getAbsolutePath()+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap.values(), srcPath.getAbsolutePath()+File.separatorChar+"vi.xml", ConsoleLogger.getInstance());
 	}
 	
 	public TestNominalValue createTNV(TestType tt, String value, Map<String, TestNominalValue> map, String ... mapStrings){

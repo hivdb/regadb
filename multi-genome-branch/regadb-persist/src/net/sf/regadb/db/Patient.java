@@ -284,6 +284,22 @@ public class Patient implements Serializable {
         return result;
     }
     
+    public TestResult createTestResult(Test test, String sampleId, Date testDate, String value) {
+        TestResult result = createTestResult(test);
+        result.setSampleId(sampleId);
+        result.setTestDate(testDate);
+        result.setValue(value);
+        return result;
+    }
+
+    public TestResult createTestResult(Test test, String sampleId, Date testDate, TestNominalValue value) {
+        TestResult result = createTestResult(test);
+        result.setSampleId(sampleId);
+        result.setTestDate(testDate);
+        result.setTestNominalValue(value);
+        return result;
+    }
+    
     public PatientEventValue addPatientEvent(Event e) {
         PatientEventValue pev = new PatientEventValue(patient, e);
         return pev;

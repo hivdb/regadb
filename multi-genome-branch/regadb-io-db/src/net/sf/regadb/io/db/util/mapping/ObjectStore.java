@@ -1,17 +1,28 @@
 package net.sf.regadb.io.db.util.mapping;
 
+import java.util.Collection;
+
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 
 public abstract class ObjectStore {
     public abstract TestType getTestType(String description, String organismName);
+    public TestType createTestType(String description, TestObject testObject, Genome genome, ValueType valueType){
+    	TestType tt = new TestType();
+    	tt.setDescription(description);
+    	tt.setGenome(genome);
+    	tt.setTestObject(testObject);
+    	return tt;
+    }
     
     public abstract Test getTest(String description, String testTypeDescription, String organismName);
     public Test createTest(TestType testType, String description){
@@ -46,6 +57,12 @@ public abstract class ObjectStore {
     public abstract Attribute createAttribute(AttributeGroup attributeGroup, ValueType valueType, String name);
     
     public abstract ValueType getValueType(String description);
+    
+    public abstract TestObject getTestObject(String description);
+    
+    public abstract Genome getGenome(String organismName);
+    
+    public abstract Collection<Patient> getPatients();
     
     public void commit(){
     	

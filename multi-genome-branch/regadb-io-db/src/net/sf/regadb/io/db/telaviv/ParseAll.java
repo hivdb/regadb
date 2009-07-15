@@ -62,7 +62,7 @@ public class ParseAll {
         
         //pSeqs.run(      getFile(importDir,""));
         
-        IOUtils.exportPatientsXML(patients, outputDir + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patients.values(), outputDir + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
         //Utils.exportNTXML(viralisolates, outputDir + File.separatorChar + "viralisolates.xml");
         
         logger.logInfo("Done.");

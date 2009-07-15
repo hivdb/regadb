@@ -27,12 +27,8 @@ public class ImportPatientsFromXML
     	PositionalArgument ds	= as.addPositionalArgument("dataset", false);
     	ValueArgument conf		= as.addValueArgument("conf-dir", "configuration directory", false);
     	
-    	as.parse(args);
-    	
-    	if(!as.isValid()){
-    		as.printUsage(System.err);
+    	if(!as.handle(args))
     		return;
-    	}
     	
         if(conf.isSet())
         	RegaDBSettings.getInstance(conf.getValue());

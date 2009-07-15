@@ -88,8 +88,8 @@ public class ImportTPVDataset {
         	e.printStackTrace();
         }
         
-        IOUtils.exportPatientsXML(patientMap, path.getAbsolutePath()+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(patientMap, path.getAbsolutePath()+File.separatorChar+"vi.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patientMap.values(), path.getAbsolutePath()+File.separatorChar+"patients.xml", ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap.values(), path.getAbsolutePath()+File.separatorChar+"vi.xml", ConsoleLogger.getInstance());
 	}
 	
 	public static void main(String [] args) {

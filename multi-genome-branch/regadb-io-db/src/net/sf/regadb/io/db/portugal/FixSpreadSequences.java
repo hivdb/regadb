@@ -40,7 +40,7 @@ public class FixSpreadSequences {
 	public static void main(String [] args) throws FileNotFoundException, UnsupportedEncodingException, ParseException {
 		FixSpreadSequences fss = new FixSpreadSequences(args[3]);
 		fss.run(args[0], args[1], args[2]);
-		IOUtils.exportNTXML(fss.vis, args[4], ConsoleLogger.getInstance());
+		IOUtils.exportNTXML(fss.vis.values(), args[4], ConsoleLogger.getInstance());
 	}
 
 	public void run(String userName, String password, String csvFile) throws FileNotFoundException, UnsupportedEncodingException, ParseException {

@@ -167,8 +167,8 @@ public class ImportUcsc
 			ConsoleLogger.getInstance().logInfo("Successful");
 
 			ConsoleLogger.getInstance().logInfo("Generating output xml file...");
-			IOUtils.exportPatientsXML(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml", ConsoleLogger.getInstance());
-			IOUtils.exportNTXMLFromPatients(patientMap, workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_viralIsolates.xml", ConsoleLogger.getInstance());
+			IOUtils.exportPatientsXML(patientMap.values(), workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_patients.xml", ConsoleLogger.getInstance());
+			IOUtils.exportNTXMLFromPatients(patientMap.values(), workingDirectory.getAbsolutePath() + File.separatorChar + "ucsc_viralIsolates.xml", ConsoleLogger.getInstance());
 			ConsoleLogger.getInstance().logInfo("Export finished.");
 		}
 		catch(Exception e)

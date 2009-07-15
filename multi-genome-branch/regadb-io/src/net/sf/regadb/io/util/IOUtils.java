@@ -2,8 +2,7 @@ package net.sf.regadb.io.util;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
@@ -15,25 +14,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class IOUtils {
-    public static void exportPatientsXMLI(Map<Integer, Patient> patientMap, String fileName, ILogger logger) {
-        Map<String, Patient> patientMapS = new HashMap<String, Patient>();
-        for (Integer patientId:patientMap.keySet()) {
-            patientMapS.put(patientId+"", patientMap.get(patientId));
-        }
-        
-        exportPatientsXML(patientMapS, fileName, logger);
-    }
-    
-    public static void exportViralIsolatesXMLFromPatientsI(Map<Integer, Patient> patientMap, String fileName, ILogger logger) {
-        Map<String, Patient> patientMapS = new HashMap<String, Patient>();
-        for (Integer patientId:patientMap.keySet()) {
-            patientMapS.put(patientId+"", patientMap.get(patientId));
-        }
-        
-        exportNTXMLFromPatients(patientMapS, fileName, logger);
-    }
-    
-    public static void exportPatientsXML(Map<String, Patient> patientMap, String fileName, ILogger logger) 
+    public static void exportPatientsXML(Collection<Patient> patients, String fileName, ILogger logger)
     {
     	try {
     		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
@@ -42,9 +23,8 @@ public class IOUtils {
     
            FileWriter out = new FileWriter(fileName);
            out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n <patients>");
-           for (String patientId:patientMap.keySet()) {
+           for (Patient p : patients) {
            	Element patient = new Element("patients-el");
-	            Patient p = patientMap.get(patientId);
 	            l.writePatient(p, patient);
 	            out.write(outputter.outputString(patient)+'\n');
            }
@@ -56,19 +36,17 @@ public class IOUtils {
     	}
     }
     
-    public static void exportNTXML(Map<String, ViralIsolate> ntMap, String fileName, ILogger logger) 
+    public static void exportNTXML(Collection<ViralIsolate> viralIsolates, String fileName, ILogger logger) 
     {
     	try
     	{
 	        ExportToXML l = new ExportToXML();
 	        Element root = new Element("viralIsolates");
 	        
-	        for (String seqFinalSampleId:ntMap.keySet()) 
+	        for (ViralIsolate vi : viralIsolates) 
 	        {
 	            Element viralIsolateE = new Element("viralIsolates-el");
 	            root.addContent(viralIsolateE);
-	
-	            ViralIsolate vi = ntMap.get(seqFinalSampleId);
 	            l.writeViralIsolate(vi, viralIsolateE);            
 	        }
 	        
@@ -88,15 +66,14 @@ public class IOUtils {
         }
     }
     
-    public static void exportNTXMLFromPatients(Map<String, Patient> patientMap, String fileName, ILogger logger) 
+    public static void exportNTXMLFromPatients(Collection<Patient> patients, String fileName, ILogger logger)
     {
        try
        {
            ExportToXML l = new ExportToXML();
            Element root = new Element("viralIsolates");
            
-           for (String patientSampleId:patientMap.keySet()) {
-               Patient p = patientMap.get(patientSampleId);
+           for (Patient p : patients) {
                if(p.getViralIsolates().size()>0) {
                    for(ViralIsolate vi : p.getViralIsolates()) {
                        Element viralIsolateE = new Element("viralIsolates-el");
