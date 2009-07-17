@@ -59,6 +59,10 @@ public class OfflineObjectStore extends ObjectStore{
 		
 		for(AttributeGroup ag : StandardObjects.getAttributeGroups())
 			attributeGroups.put(key(ag), ag);
+		
+		for(TestObject to : StandardObjects.getTestObjects())
+			testObjects.put(key(to), to);
+
 	}
 
 	@Override
@@ -108,10 +112,18 @@ public class OfflineObjectStore extends ObjectStore{
 		return testTypes.get(implode(organismName,description));
 	}
 	
+	@Override
 	public Test createTest(TestType testType, String description){
 		Test t = super.createTest(testType, description);
 		tests.put(key(t), t);
 		return t;
+	}
+	
+	@Override
+	public TestType createTestType(String description, TestObject testObject, Genome genome, ValueType valueType){
+		TestType tt = super.createTestType(description, testObject, genome, valueType);
+		testTypes.put(key(tt),tt);
+		return tt;
 	}
 	
 	public AttributeNominalValue createAttributeNominalValue(Attribute attribute, String value){
@@ -168,6 +180,9 @@ public class OfflineObjectStore extends ObjectStore{
 	}
 	private String key(Genome g){
 		return g == null ? "":g.getOrganismName();
+	}
+	private String key(TestObject to){
+		return to.getDescription();
 	}
 	
 	public void setPatients(Map<String, Patient> patients){

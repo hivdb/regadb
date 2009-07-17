@@ -18,6 +18,7 @@ public abstract class ObjectStore {
     public abstract TestType getTestType(String description, String organismName);
     public TestType createTestType(String description, TestObject testObject, Genome genome, ValueType valueType){
     	TestType tt = new TestType();
+    	tt.setValueType(valueType);
     	tt.setDescription(description);
     	tt.setGenome(genome);
     	tt.setTestObject(testObject);

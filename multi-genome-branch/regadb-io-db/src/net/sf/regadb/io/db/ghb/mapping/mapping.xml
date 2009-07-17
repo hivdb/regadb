@@ -5,9 +5,14 @@
 <!--			<match var="aanvraagTestNaam" type="contains"></match>-->
 <!--			<values var="reeel"/>-->
 <!--		</test>-->
+
+<!-- Lymphocytes -->
 		<test testtype="CD4 Count (cells/ul)" description="CD4 Count (generic)">
 			<match var="elementNaam" type="contains">CD4+ Abs.w.</match>
 			<values>
+				<value var="reeel">
+					<match var="eenheden" type="equals">per mm3</match>
+				</value>
 				<value var="reeel*1000">
 					<match var="eenheden" type="equals">10**9/L</match>
 				</value>
@@ -17,22 +22,36 @@
 			<match var="elementNaam" type="contains">CD4+ %</match>
 			<values var="reeel"/>
 		</test>
+		
 		<test testtype="CD8 Count" description="CD8 Count (generic)">
 			<match var="elementNaam" type="contains">CD8+ Abs.w.</match>
-			<values var="reeel*1000"/>
+			<values>
+				<value var="reeel">
+					<match var="eenheden" type="equals">per mm3</match>
+				</value>
+				<value var="reeel*1000">
+					<match var="eenheden" type="equals">10**9/L</match>
+				</value>
+			</values>
 		</test>
 		<test testtype="CD8 Count (%)" description="CD8 Count % (generic)">
 			<match var="elementNaam" type="contains">CD8+ %</match>
 			<values var="reeel"/>
 		</test>
+		
+<!--  Viral Loads -->		
 		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
 			<match var="elementNaam" type="equals">HIV-1 VL</match>
 			<values var="relatie+geheel"/>
 		</test>
 		<test organism="HIV-1" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
-			<match var="elementNaam" type="equals">HIV-1 VL log</match>
+			<match type="and">
+				<match var="elementNaam" type="equals">HIV-1 VL log</match>
+				<match var="eenheden" type="equals">log copies/mL</match>
+			</match>
 			<values var="relatie+reeel"/>
 		</test>
+		
 		<test organism="HIV-2A" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
 			<match var="elementNaam" type="equals">HIV-2 VL</match>
 			<values var="relatie+geheel"/>
@@ -41,12 +60,39 @@
 			<match var="elementNaam" type="equals">HIV-2 VL log</match>
 			<values var="relatie+reeel"/>
 		</test>
+		
+		<test organism="HCV" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
+			<match type="and">
+				<match var="eenheden" type="contains">IU/ml</match>
+				<match type="or">
+					<match var="elementNaam" type="equals">HCV RNA VL</match>
+					<match var="elementNaam" type="equals">Hep C PCR</match>
+				</match>
+			</match>
+			<values var="relatie+geheel"/>
+		</test>
+		<test organism="HCV" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
+			<match type="and">
+				<match var="elementNaam" type="equals">Hep C PCR</match>
+				<match var="eenheden" type="contains">log HCV IU/mL</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+
+<!-- Antibodies/gens -->		
 		<test testtype="HBsAb" description="HBsAb (generic)">
 			<match type="and">
-				<match var="aanvraagTestNaam" type="contains">Hepatitis B surface antistoffen (aHBs)</match>
-				<match var="eenheden" type="contains">IU/L</match>
+				<match var="elementNaam" type="iequals">aHBs</match>
+				<match var="eenheden" type="iequals">IU/L</match>
 			</match>
 			<values var="reeel"/>
+		</test>
+		<test testtype="HBcAb (presence)" description="HBcAb (presence) (generic)">
+			<match var="elementNaam" type="equals">aHBc</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
 		</test>
 		<test testtype="HBsAg" description="HBsAg (generic)">
 			<match type="and">
@@ -55,22 +101,58 @@
 			</match>
 			<values var="reeel"/>
 		</test>
+		<test testtype="HBsAg (presence)" description="HBsAg (presence) (generic)">
+			<match type="and">
+				<match var="elementNaam" type="iequals">HBsAg</match>
+				<match var="eenheden" type="iequals" inverse="true">S/N</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+		
+		<test testtype="HCVAb (presence)" description="HCVAb (presence) (generic)">
+			<match var="elementNaam" type="equals">HCV AS</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+		<test testtype="HCVAb (presence)" description="HCVAb (presence) (Monolisa)">
+			<match type="or">
+				<match var="elementNaam" type="equals">Mon.Hep C As</match>
+				<match var="elementNaam" type="equals">Mon.Anti-HCV</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+		
+		<test testtype="HAVAb (presence)" description="HAVAb (presence) (generic)">
+			<match var="elementNaam" type="equals">HAV AS</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+		
+		
 		<test testtype="Toxo IgG" description="Toxo IgG (generic)">
 			<match var="aanvraagTestNaam" type="contains">Toxoplasma IgG</match>
 			<values var="reeel"/>
 		</test>
 		<test testtype="Syphilis" description="Syphilis (generic)">
 			<match var="aanvraagTestNaam" type="contains">Syphilis</match>
-			<values var="resultaat">
-				<value const="Positive">
-					<match var="resultaat" type="equals">positief</match>
-				</value>
-				<value const="Negative">
-					<match var="resultaat" type="equals">negatief</match>
-				</value>
+			<values>
+				<value const="Positive"><match var="resultaat" type="equals">positief</match></value>
+				<value const="Negative"><match var="resultaat" type="equals">negatief</match></value>
 			</values>
 		</test>
 	</tests>
+	
+<!-- Attributes -->
 	<attributes>
 		<attribute name="Gender" group="Personal">
 			<values var="value">

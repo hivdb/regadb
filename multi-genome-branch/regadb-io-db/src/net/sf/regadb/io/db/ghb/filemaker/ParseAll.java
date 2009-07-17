@@ -8,12 +8,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestObject;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
 import net.sf.regadb.io.db.ghb.lis.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 
@@ -92,6 +97,7 @@ public class ParseAll {
         }
         
         OfflineObjectStore oos = new OfflineObjectStore();
+        createNonStandardObjects(oos);
         oos.setPatients(eadPatients);
         AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos);
         try {
@@ -152,5 +158,26 @@ public class ParseAll {
 
     public static char getDelimiter() {
         return delimiter;
+    }
+    
+    private static void createNonStandardObjects(OfflineObjectStore oos){
+    	createBooleanTest(oos,"Syphilis","Syphilis (generic)");
+    	
+    	Test hcvab = createBooleanTest(oos,"HCVAb (presence)","HCVAb (presence) (generic)");
+    	oos.createTest(hcvab.getTestType(),"HCVAb (presence) (Monolisa)");
+    	
+    	createBooleanTest(oos,"HBcAb (presence)","HBcAb (presence) (generic)");
+    	createBooleanTest(oos,"HBsAg (presence)","HBsAg (presence) (generic)");
+    	createBooleanTest(oos,"HAVAb (presence)","HAVAb (presence) (generic)");
+    }
+    
+    private static Test createBooleanTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
+    	TestObject patient = oos.getTestObject(StandardObjects.getPatientTestObject().getDescription());
+    	ValueType nominal = oos.getValueType(StandardObjects.getNominalValueType().getDescription());
+
+    	TestType tt = oos.createTestType(testTypeDescr, patient, null, nominal);
+    	oos.createTestNominalValue(tt, "Positive");
+    	oos.createTestNominalValue(tt, "Negative");
+    	return oos.createTest(tt, testDescr);
     }
 }
