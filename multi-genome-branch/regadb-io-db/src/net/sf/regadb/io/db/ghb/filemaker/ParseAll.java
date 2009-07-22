@@ -19,6 +19,9 @@ import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 
@@ -55,15 +58,21 @@ public class ParseAll {
         String filemakerMappingPath;
         String outputPath;
         
-        String confDir = args[0];
-        String importDir = new File(args[1]).getAbsolutePath() + File.separatorChar;
-        String workspaceDir = new File(args[2]).getAbsolutePath() + File.separatorChar;
+        Arguments as = new Arguments();
+        ValueArgument confDir = as.addValueArgument("c", "configuration-dir", false);
+        PositionalArgument importDir = as.addPositionalArgument("import-dir", true);
+        PositionalArgument workspaceDir = as.addPositionalArgument("workspace-dir", true);
+        if(!as.handle(args))
+        	return;
         
-        RegaDBSettings.getInstance(confDir);
+        if(confDir.isSet())
+        	RegaDBSettings.getInstance(confDir.getValue());
+        else
+        	RegaDBSettings.getInstance();
         
-        String lisDir = importDir + "lis" + File.separatorChar;
-        String filemakerDir = importDir + "filemaker" + File.separatorChar;
-        String seqDir = importDir + "sequences" + File.separatorChar;
+        String lisDir = importDir.getValue() + File.separatorChar + "lis" + File.separatorChar;
+        String filemakerDir = importDir.getValue() + File.separatorChar + "filemaker" + File.separatorChar;
+        String seqDir = importDir.getValue() + File.separatorChar + "sequences" + File.separatorChar;
         
         eadNrEmdNrFile              = filemakerDir + "eadnr_emdnr.MER";
         patientenFile               = filemakerDir + "patienten.MER";
@@ -71,16 +80,16 @@ public class ParseAll {
         contactenFile               = filemakerDir + "contacten.MER";
         medicatieFile               = filemakerDir + "medicatie.MER";
         
-        filemakerMappingPath        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
-        lisMappingFile        		= workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml";
-        lisNationMappingFile        = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
-        seqsToIgnoreFile            = workspaceDir + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
+        filemakerMappingPath        = workspaceDir.getValue() + File.separatorChar + "regadb-io-db/src/net/sf/regadb/io/db/ghb/filemaker/mappings/";
+        lisMappingFile        		= workspaceDir.getValue() + File.separatorChar + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/mapping.xml";
+        lisNationMappingFile        = workspaceDir.getValue() + File.separatorChar + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/LIS-nation.mapping";
+        seqsToIgnoreFile            = workspaceDir.getValue() + File.separatorChar + "regadb-io-db/src/net/sf/regadb/io/db/ghb/mapping/sequencesToIgnore.csv";
         
         stalenLeuvenFile            = seqDir + "Stalen Leuven.csv";
         spreadStalenFile            = seqDir + "SPREAD_stalen.csv";
         macFastaFile                = seqDir + "MAC_final.fasta";
         pcFastaFile                 = seqDir + "PC_final.fasta";
-        outputPath                  = importDir;
+        outputPath                  = importDir.getValue();
         
         
         
