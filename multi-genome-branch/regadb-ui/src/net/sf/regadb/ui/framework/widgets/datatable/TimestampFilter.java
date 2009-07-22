@@ -3,6 +3,7 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 import java.util.Date;
 
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 
 
 public class TimestampFilter extends DateFilter {
@@ -16,7 +17,7 @@ public class TimestampFilter extends DateFilter {
 	    if(d == null)
 	        d = new Date();
 	    
-        return d.getTime()+"";
+        return d.getTime();
     }
     
     public Object getSecondDate()
@@ -25,6 +26,11 @@ public class TimestampFilter extends DateFilter {
         if(d == null)
             d = new Date();
 
-        return d.getTime()+"";
+        return d.getTime();
+    }
+    
+    public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+    	varName = "cast("+ varName +", long)";
+    	return super.getConstraint(varName, filterIndex);
     }
 }

@@ -14,6 +14,7 @@ import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
+import net.sf.regadb.ui.framework.widgets.datatable.TimestampFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
@@ -95,12 +96,18 @@ public class IPatientDataTable implements IDataTable<Object[]>
         else
             as = attributes;
         
-        String sort;
+        String sort = filterVarNames_.get(sortColIndex);
         IFilter f = filters_.get(sortColIndex); 
-        if(f != null && f instanceof AttributeFilter && nullAttribute())
-            sort = "p.patientId";
-        else
-            sort = filterVarNames_.get(sortColIndex);
+        if(f != null){
+        	if( f instanceof AttributeFilter ){
+        		if (nullAttribute())
+        			sort = "p.patientId";
+        		else if(((AttributeFilter)f).getFilter() instanceof TimestampFilter)
+        			sort = "cast("+ sort +",long)";
+        	}
+        	else if(f instanceof TimestampFilter)
+        		sort = "cast("+ sort +",long)";
+        }
         
         return t.getPatientWithAttributeValues(startIndex, amountOfRows, sort, ascending, hfc, as);
 	}
