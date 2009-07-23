@@ -122,28 +122,40 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
         run_.clicked().addListener(this, this);
     }
     
+    private long endTime = 0;
     public void trigger(WMouseEvent a) 
     {
-        run_.disable();
-        status_.setText(tr("form.query.wiv.label.status.running"));
+    	//arbitrary 2sec wait between runs,
+    	//prevents unintended multiple triggers
+    	long diff = new Date().getTime() - endTime;
+    	if(diff > 2000){  
+	        run_.disable();
 
-        try{
-            File csvFile =  getOutputFile();
-            
-            process(csvFile);
-            File output = postProcess(csvFile);
-            setDownloadLink(output);
-            status_.setText(tr("form.query.wiv.label.status.finished"));
-        }
-        catch(EmptyResultException e){
-            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            status_.setText(tr("form.query.wiv.label.status.failed"));
-        }
-        
-        run_.enable();
+	        status_.setText(tr("form.query.wiv.label.status.running"));
+	
+	        try{
+	            File csvFile =  getOutputFile();
+	            
+	            process(csvFile);
+	            File output = postProcess(csvFile);
+	            setDownloadLink(output);
+	            status_.setText(tr("form.query.wiv.label.status.finished"));
+	        }
+	        catch(EmptyResultException e){
+	            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
+	        }
+	        catch(Exception e){
+	            e.printStackTrace();
+	            status_.setText(tr("form.query.wiv.label.status.failed"));
+	        }
+	        
+	        endTime = new Date().getTime();
+	        run_.enable();
+	        
+	        Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+	        t.clearCache();
+	        t.commit();
+    	}
     }
 
     @SuppressWarnings("unchecked")
