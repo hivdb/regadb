@@ -143,7 +143,7 @@ public class FastLSA extends JFrame{
 
             updateGeometryValues();
             
-            g2d.setFont(new Font(Font.MONOSPACED,Font.PLAIN,yw/2));
+            g2d.setFont(new Font("Monospaced",Font.PLAIN,yw/2));
             
             for(Grid grid : grids)
                 drawGrid(g2d, grid);
