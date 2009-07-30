@@ -49,9 +49,11 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 			}
 			ts.add(countstring + "\t" + therapy);
 		}
-		for(String line : ts.descendingSet()){
-			getOut().println(line);
-			System.err.println(line);
+		String[] tsa = new String[ts.size()];
+		ts.toArray(tsa);
+		for(int i = tsa.length -1; i > -1; --i){
+			getOut().println(tsa[i]);
+			System.err.println(tsa[i]);
 		}
 		getOut().flush();
 		getOut().close();
