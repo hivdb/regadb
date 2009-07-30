@@ -1653,7 +1653,13 @@ public class Transaction {
     
         Query q = session.createQuery(queryString);
         
-        return (Long)q.list().get(0);
+        List result = q.list();
+        
+        if (result.size() == 0) {
+        	return 0;
+        } else {
+        	return (Long)result.get(0);
+        }
     }
 
     public void flush() 
