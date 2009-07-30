@@ -96,10 +96,10 @@ public class MutationHelper
                 continue;
 
             AaMutInsertion m1 = aaMutationAt(mutIns1, position, false);
-            if(m1!=null && m1.getMutation().getAaMutation().equals(m1.getMutation().getAaReference()))
+            if(m1!=null && equals(m1.getMutation().getAaMutation(),m1.getMutation().getAaReference()))
             	m1 = null;
             AaMutInsertion m2 = aaMutationAt(mutIns2, position, false);
-            if(m2!=null && m2.getMutation().getAaMutation().equals(m2.getMutation().getAaReference()))
+            if(m2!=null && equals(m2.getMutation().getAaMutation(),m2.getMutation().getAaReference()))
             	m2 = null;
 
             if ((m1 != null) || (m2 != null)) {
@@ -127,6 +127,11 @@ public class MutationHelper
         }
         
         return result;
+    }
+    
+    private static boolean equals(String aaMutation, String aaReference){
+    	return aaMutation == aaReference
+    		|| ( aaMutation != null && aaMutation.equals(aaReference));
     }
     
     private static void addChangedPositions(Set<AaMutInsertion> mutIns, Set<Integer> posSet) {
