@@ -27,7 +27,6 @@ public class ViralIsolateProteinForm extends WContainerWidget
 {
 	private ViralIsolateForm viralIsolateForm_;
 	
-	private WGroupBox proteinGroup_;
 	private Label ntSequenceComboL_;
 	private ComboBox<NtSequence> ntSequenceCombo_;
 	private Label aaSequenceComboL_;
@@ -87,9 +86,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
             refreshAlignmentsTimer_.start();
         }        
 		
-		
-		proteinGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.protein"), this);
-		proteinGroupTable_ = new FormTable(proteinGroup_);
+		proteinGroupTable_ = new FormTable(this);
 		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
 		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
         proteinGroupTable_.addLineToTable(ntSequenceComboL_, ntSequenceCombo_);

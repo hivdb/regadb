@@ -12,7 +12,6 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
@@ -21,7 +20,6 @@ public class ViralIsolateResistanceForm extends WContainerWidget
 {
     private ViralIsolateForm viralIsolateForm_;
     
-    private WGroupBox resistanceGroup_;
     private ViralIsolateResistanceTable resistanceTable_;
     private WPushButton refreshButton_;
     private WCheckBox showMutations_;
@@ -36,9 +34,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
 
     public void init()
     {
-        resistanceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.resistance"), this);
-        
-        WTable wrapper = new SimpleTable(resistanceGroup_);
+        WTable wrapper = new SimpleTable(this);
         wrapper.getElementAt(0, 0).setStyleClass("navigation");
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         

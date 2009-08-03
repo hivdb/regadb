@@ -2,7 +2,6 @@ package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import net.sf.regadb.analysis.functions.GenerateReport;
 import net.sf.regadb.db.Genome;
@@ -21,7 +20,6 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMemoryResource;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
@@ -30,7 +28,6 @@ public class ViralIsolateReportForm extends WContainerWidget
 {
     private ViralIsolateForm viralIsolateForm_;
     
-    private WGroupBox reportGroup_;
     private FormTable reportTable_;
     private Label algorithmL_;
     private ComboBox<Test> algorithmCB_;
@@ -54,9 +51,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     
     public void init()
     {
-        reportGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.report"), this);
-        reportGroup_.setStyleClass("groupbox");
-        reportTable_ = new FormTable(reportGroup_);
+        reportTable_ = new FormTable(this);
         algorithmL_ = new Label(tr("form.viralIsolate.editView.report.algorithm"));
         algorithmCB_ = new ComboBox<Test>(InteractionState.Editing, viralIsolateForm_);
         reportTable_.addLineToTable(algorithmL_, algorithmCB_);
