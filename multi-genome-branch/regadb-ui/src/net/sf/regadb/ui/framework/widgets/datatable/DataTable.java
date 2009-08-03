@@ -207,10 +207,7 @@ public class DataTable<DataType> extends WTable
                });
         
         labelScroll_ = new WText(scrollingButtons);
-        labelMsg_ = tr("datatable.text.pageXOfY");
-        labelMsg_.arg(0);
-        labelMsg_.arg(0);
-        labelScroll_.setText(labelMsg_);
+        labelScroll_.setText(tr("datatable.text.pageXOfY").arg(0).arg(0));
         
         nextScroll_ = new WPushButton(tr("datatable.button.nextScroll"), scrollingButtons);
         nextScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
@@ -324,9 +321,7 @@ public class DataTable<DataType> extends WTable
             }
         }
         
-        labelMsg_.changeArg(0, (currentPage_+1));
-        labelMsg_.changeArg(1, amountOfPages_);
-        labelScroll_.setText(labelMsg_);
+        labelScroll_.setText(tr("datatable.text.pageXOfY").arg((currentPage_+1)).arg(amountOfPages_));
 	}
 	
 	private void showHideFilters()
