@@ -25,7 +25,7 @@ public class MyComboBox extends WComboBox {
 		}
 	}
 	
-	public void addItem(WString text)  {
+	public void addItem(CharSequence text)  {
 		super.addItem(text);
 		if(getCurrentIndex()==-1) {
 			setCurrentIndex(0);
