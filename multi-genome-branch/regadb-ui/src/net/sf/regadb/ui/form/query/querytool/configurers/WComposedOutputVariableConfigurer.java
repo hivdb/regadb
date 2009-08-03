@@ -22,7 +22,7 @@ public class WComposedOutputVariableConfigurer extends MyComboBox implements Com
 	}
 	
 	private void addItem(OutputVariableConfigurer confy) {
-		this.addItem(lt(confy.toString()));
+		this.addItem(confy.toString());
 		vars.add(confy);
 	}
 	
@@ -36,7 +36,7 @@ public class WComposedOutputVariableConfigurer extends MyComboBox implements Com
 	}
 	
 	private OutputVariableConfigurer getSelectedItem() {
-		return vars.get(currentIndex());
+		return vars.get(getCurrentIndex());
 	}
 
 	public ConfigurableWord getWord() {
@@ -50,7 +50,7 @@ public class WComposedOutputVariableConfigurer extends MyComboBox implements Com
 	}
 
 	public int getSelectedIndex() {
-		return currentIndex();
+		return getCurrentIndex();
 	}
 
 	public void setSelectedIndex(int index) {

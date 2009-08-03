@@ -38,8 +38,8 @@ public class SelectionListContainer extends WContainerWidget{
 	}
 	
 	private void updateSelection() {
-		while(rootSelectorPanel.children().size() > 0) {
-			rootSelectorPanel.removeWidget(rootSelectorPanel.children().get(0));
+		while(rootSelectorPanel.getChildren().size() > 0) {
+			rootSelectorPanel.removeWidget(rootSelectorPanel.getChildren().get(0));
 		}
 		
 		List<Selection> selections = mainForm.getEditorModel().getQueryEditor().getQuery().getSelectList().getSelections();

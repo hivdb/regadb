@@ -51,7 +51,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         templateTable_.addLineToTable(templateL, templateTF);
         
         reportL = new Label(tr("form.resistance.report.template.editView.report"));
-        final int row = templateTable_.rowCount();
+        final int row = templateTable_.getRowCount();
         templateTable_.putElementAt(row, 0, reportL);
         
         upload = new FileUpload(getInteractionState(), this);
@@ -65,8 +65,8 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
 				public void trigger() {
                     try 
                     {
-                        resRepTemplate_.setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().spoolFileName())));
-                        resRepTemplate_.setFilename(lastPartOfFilename(upload.getFileUpload().clientFileName()));
+                        resRepTemplate_.setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().getSpoolFileName())));
+                        resRepTemplate_.setFilename(lastPartOfFilename(upload.getFileUpload().getClientFileName()));
                     } 
                     catch (IOException e) 
                     {
@@ -75,7 +75,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
                     memResource.suggestFileName("template.rtf");
                     memResource.setData(resRepTemplate_.getDocument());
-                    upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource);
+                    upload.setAnchor(resRepTemplate_.getFilename(), memResource);
 				}
         	});
         }
@@ -105,7 +105,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
             templateTF.setText(resRepTemplate_.getName());
             WMemoryResource memResource = new WMemoryResource("application/rtf");
             memResource.setData(resRepTemplate_.getDocument());
-            upload.setAnchor(lt(resRepTemplate_.getFilename()), memResource.generateUrl());
+            upload.setAnchor(resRepTemplate_.getFilename(), memResource.generateUrl());
         }
     }
     
@@ -116,7 +116,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         
         boolean notExists = getInteractionState()==InteractionState.Editing?true:t.getResRepTemplate(templateTF.text())==null;
         
-        if(notExists && upload.getFileUpload().spoolFileName()!=null)
+        if(notExists && upload.getFileUpload().getSpoolFileName()!=null)
         {
             resRepTemplate_.setName(templateTF.text());
             update(resRepTemplate_, t);
@@ -125,7 +125,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
             RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(resRepTemplate_);
             redirectToView(RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected, RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView);
         }
-        else if(upload.getFileUpload().spoolFileName()==null)
+        else if(upload.getFileUpload().getSpoolFileName()==null)
         {
             UIUtils.showWarningMessageBox(this, tr("form.resistance.report.template.warning.noFileSpecified"));
         }

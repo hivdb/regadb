@@ -28,9 +28,9 @@ public class WOutputVariableConfigurer extends WText implements OutputVariableCo
     	/**
     	 * for display as single output variable
     	 */
-        super(lt(var.getName(RelationDisplay.SHOW,
+        super(var.getName(RelationDisplay.SHOW,
         		DescriptionDisplay.SHOW,
-        		UniqueNameDisplay.SHOW_WHEN_ASSIGNED)));
+        		UniqueNameDisplay.SHOW_WHEN_ASSIGNED));
         this.setStyleClass("outputvariableconfigurer");
         this.var = var;
     }

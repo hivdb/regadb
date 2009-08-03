@@ -21,7 +21,7 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     private static boolean [] sortable_ = {true};
     private static int[] colWidths = {100};
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

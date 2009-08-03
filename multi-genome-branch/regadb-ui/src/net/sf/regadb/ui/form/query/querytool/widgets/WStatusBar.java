@@ -7,6 +7,10 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
 
+
+/*
+TODO remove
+*/
 public class WStatusBar extends WStyledContainerWidget {
 	private WTable table;
 	private WButtonPanel buttonPanel;
@@ -21,13 +25,13 @@ public class WStatusBar extends WStyledContainerWidget {
 	private void init() {
 		getStyleClasses().addStyle("statusbar");
 		table = new WTable(this);
-		table.elementAt(0, 0).setStyleClass("statustext");
-		warningText = new WText(lt(""), getTextContainer());
+		table.getElementAt(0, 0).setStyleClass("statustext");
+		warningText = new WText("", getTextContainer());
 		warningText.setStyleClass("warning");
 	}
 	
 	public WContainerWidget getTextContainer() {
-		return table.elementAt(0, 0);
+		return table.getElementAt(0, 0);
 	}
 	
 	public WButtonPanel getButtonPanel() {
@@ -50,13 +54,13 @@ public class WStatusBar extends WStyledContainerWidget {
 	 */
 	public void setButtonPanel(WButtonPanel buttonPanel) {
 		if (this.buttonPanel != null) {
-			table.elementAt(0, 1).removeWidget(this.buttonPanel);
+			table.getElementAt(0, 1).removeWidget(this.buttonPanel);
 		}
-		table.elementAt(0, 1).addWidget(buttonPanel);
+		table.getElementAt(0, 1).addWidget(buttonPanel);
 	}
 	
 	public WString getStatusText() {
-		return warningText.text();
+		return warningText.getText();
 	}
 	
 	/**

@@ -88,7 +88,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     public WivQueryForm(WString formName, WString description, WString filename){
         super(formName,InteractionState.Viewing);
         
-        filename_ = filename.value().trim();
+        filename_ = filename.getValue().trim();
         description_ = new WText(description);
         
         init();
@@ -107,13 +107,13 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
         run_ = new WPushButton(tr("form.query.wiv.pushbutton.run"));
 
         linkL_ = new Label(tr("form.query.wiv.label.result"));
-        link_ = new WAnchor("dummy", lt(""));
+        link_ = new WAnchor("dummy", "");
         
         statusL_ = new Label(tr("form.query.wiv.label.status"));
         status_ = new WText(tr("form.query.wiv.label.status.initial"));
 
 
-        generalTable_.elementAt(0, 0).addWidget(description_);
+        generalTable_.getElementAt(0, 0).addWidget(description_);
         
         resultTable_.addLineToTable(new WWidget[]{runL_,run_});
         resultTable_.addLineToTable(new WWidget[]{statusL_,status_});
@@ -307,7 +307,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     }    
      
     public void setDownloadLink(File file){
-        link_.setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
+        link_.setText("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]");
         WFileResource res = new WFileResource("application/csv", file.getAbsolutePath());
         res.suggestFileName(filename_ +".csv");
         link_.setResource(res);

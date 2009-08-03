@@ -6,18 +6,22 @@ import eu.webtoolkit.jwt.WMenuItem;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
+/*
+ * TODO REMOVE???
+ */
+
 public class WTabMenuItem extends WMenuItem {
 
 	private boolean wrapped;
 	private WContainerWidget iw;
 	public WTabMenuItem(WString text, WWidget contents, LoadPolicy policy) {
 		super(text, contents, policy);
-		wrapped = text.literal();
+		wrapped = text.isLiteral();
 	}
 	
-	public WInteractWidget itemWidget() {
-		if(super.itemWidget() instanceof WInteractWidget) {
-			WInteractWidget w = (WInteractWidget)super.itemWidget();
+	public WInteractWidget getItemWidget() {
+		if(super.getItemWidget() instanceof WInteractWidget) {
+			WInteractWidget w = (WInteractWidget)super.getItemWidget();
 			if (wrapped) {
 				return w;
 			}

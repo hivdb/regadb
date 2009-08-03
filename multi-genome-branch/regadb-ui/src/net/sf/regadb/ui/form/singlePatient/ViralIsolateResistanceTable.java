@@ -36,18 +36,18 @@ public class ViralIsolateResistanceTable extends WTable {
         //drug names - column position
         HashMap<String, Integer> algoColumn = new HashMap<String, Integer>();
         int col = 0;
-        elementAt(0, col).addWidget(new WText(lt("")));
-        col = columnCount();
-        elementAt(0, col).addWidget(new WText(lt("")));
+        getElementAt(0, col).addWidget(new WText(""));
+        col = getColumnCount();
+        getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
         for(Test test : t.getTests())
         {
             if(test.getAnalysis()!=null
                     && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
-                col = columnCount();
-                elementAt(0, col).addWidget(new TableHeader(lt(test.getDescription())));
-                elementAt(0, col).setStyleClass("column-title");
+                col = getColumnCount();
+                getElementAt(0, col).addWidget(new TableHeader(test.getDescription()));
+                getElementAt(0, col).setStyleClass("column-title");
                 
                 algoColumn.put(test.getDescription(), col);
                 maxWidth += test.getDescription().length();
@@ -66,25 +66,25 @@ public class ViralIsolateResistanceTable extends WTable {
             firstGenericDrugInThisClass = true;
             for(DrugGeneric dg : genericDrugs)
             {
-                row = rowCount();
+                row = getRowCount();
                 if(firstGenericDrugInThisClass)
                 {
-                	elementAt(row, 0).addWidget(new TableHeader(lt(dc.getClassId()+ ":")));
+                	getElementAt(row, 0).addWidget(new TableHeader(dc.getClassId()+ ":"));
                     firstGenericDrugInThisClass = false;
-                    elementAt(row, 0).setStyleClass("form-label-area");
+                    getElementAt(row, 0).setStyleClass("form-label-area");
                 }
-                elementAt(row, 1).addWidget(new TableHeader(lt(dg.getGenericId())));
+                getElementAt(row, 1).addWidget(new TableHeader(dg.getGenericId()));
                 drugColumn.put(dg.getGenericId(), row);
-                elementAt(row, 1).setStyleClass("form-label-area");
+                getElementAt(row, 1).setStyleClass("form-label-area");
             }
         }
         
         //clear table
-        for(int i = 1; i < rowCount(); i++)
+        for(int i = 1; i < getRowCount(); i++)
         {
-            for(int j = 2; j< columnCount(); j++)
+            for(int j = 2; j< getColumnCount(); j++)
             {
-                ViralIsolateFormUtils.putResistanceTableResult(null, elementAt(i, j), false, showMutations);
+                ViralIsolateFormUtils.putResistanceTableResult(null, getElementAt(i, j), false, showMutations);
             }
         }
         
@@ -95,11 +95,11 @@ public class ViralIsolateResistanceTable extends WTable {
             colN = algoColumn.get(tr.getTest().getDescription());
             rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
             if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, elementAt(rowN, colN), false, showMutations);
+                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
             }
             rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
             if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, elementAt(rowN, colN), true, showMutations);
+                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
             }
         }
         

@@ -13,11 +13,11 @@ public class FilterTools
 		{
 			if(parent == null)
 			{
-				parent = w.parent();
+				parent = w.getParent();
 			}
 			else
 			{
-				parent = parent.parent();
+				parent = parent.getParent();
 			}
 		}
 		

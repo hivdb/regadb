@@ -16,12 +16,16 @@ import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WWidget;
 import eu.webtoolkit.jwt.WMenuItem.LoadPolicy;
 
+/*
+ * TODO REMOVE???
+ */
+
 public class WTabbedPane extends WStyledContainerWidget implements StatusbarHolder {
 	private WMenu tabs;
 	
 	private int selectedIndex;
 	private List<WContainerWidget> tabItems;
-	private ArrayList<WString> titles;
+	private ArrayList<CharSequence> titles;
 	private WStatusBar statusbar;
 	
 	private WTable table;
@@ -34,29 +38,29 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 	public WTabbedPane(WContainerWidget parent) {
 		super(parent);
 		tabItems = new ArrayList<WContainerWidget>();
-		titles = new ArrayList<WString>();
+		titles = new ArrayList<CharSequence>();
 		table = new WTable(this);
 		table.setStyleClass("tabbedpane");
 		
 		WStackedWidget menuContents = new WStackedWidget();
-		table.elementAt(1, 0).setStyleClass("tabstack");
-		table.elementAt(1, 0).addWidget(menuContents);
+		table.getElementAt(1, 0).setStyleClass("tabstack");
+		table.getElementAt(1, 0).addWidget(menuContents);
 		
 		tabs = new WMenu(menuContents, Orientation.Horizontal);
 		tabs.setStyleClass("tabmenu");
-		table.elementAt(0, 0).addWidget(tabs);
+		table.getElementAt(0, 0).addWidget(tabs);
 	}
 	
 	public void addTab(WString title, final WContainerWidget contents) {
 		WWidget widget = (WWidget) contents;
-		widget.setStyleClass(widget.styleClass() + " tab");
+		widget.setStyleClass(widget.getStyleClass() + " tab");
 		
 		final WMenuItem wmi = new WTabMenuItem(title, widget, LoadPolicy.LazyLoading);
 		tabs.addItem(wmi);
 		titles.add(title);
 		tabItems.add(contents);
 		
-		((WInteractWidget)wmi.itemWidget()).clicked().addListener(this, new Signal.Listener() {
+		((WInteractWidget)wmi.getItemWidget()).clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				contents.show();
 				selectedIndex = tabItems.indexOf(contents);
@@ -72,9 +76,9 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 		}
 	}
 	
-	public void showTab(WString title) {
+	public void showTab(CharSequence title) {
 		for (int i = 0 ; i < titles.size() ; i++) {
-			if (UIUtils.keyOrValue(title).equals(UIUtils.keyOrValue(titles.get(i)))) {
+			if (title.equals(titles.get(i))) {
 				showTab(i);
 			}
 		}
@@ -98,9 +102,9 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 
 	public void setStatusBar(WStatusBar statusBar) {
 		if (statusbar != null) {
-			table.elementAt(1, 0).removeWidget(statusbar);
+			table.getElementAt(1, 0).removeWidget(statusbar);
 		}
-		table.elementAt(1, 0).addWidget(statusBar);
+		table.getElementAt(1, 0).addWidget(statusBar);
 		statusbar = statusBar;
 	}
 }

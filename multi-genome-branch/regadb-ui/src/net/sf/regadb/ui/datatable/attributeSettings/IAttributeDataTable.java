@@ -24,7 +24,7 @@ public class IAttributeDataTable implements IDataTable<Attribute>
     
     private static boolean [] sortable_ = {true, true, true};
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

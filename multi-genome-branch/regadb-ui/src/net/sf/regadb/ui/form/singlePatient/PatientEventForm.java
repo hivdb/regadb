@@ -87,7 +87,7 @@ public class PatientEventForm extends FormWidget
         
         t.commit();
 		
-        int row = mainFrameTable_.rowCount();
+        int row = mainFrameTable_.getRowCount();
 		lblValue = new Label(tr("form.singlePatient.patientEvent.label.value"));
 		lblValue.setLabelUIMandatory(this);
 		valueContainer = new WContainerWidget();

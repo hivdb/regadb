@@ -64,7 +64,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 		div.addWidget(getDateField1());
 		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1(), false));
 		dp.setFormat(dateFormat);
-		dp.calendar().selectionChanged().addListener(this, new Signal.Listener()
+		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
 			public void trigger() 
 			{
@@ -77,7 +77,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 		div.addWidget(getDateField2());
 		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2(), false));
 		dp.setFormat(dateFormat);
-		dp.calendar().selectionChanged().addListener(this, new Signal.Listener()
+		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
 			public void trigger() 
 			{
@@ -96,8 +96,8 @@ public class DateFilter extends WContainerWidget implements IFilter
 		combo.changed().addListener(this, new Signal.Listener() {
 			public void trigger()
 			{
-				getDateField1().setEnabled(combo.currentIndex() > 0);
-				getDateField2().setEnabled(combo.currentText().key().equals(between));
+				getDateField1().setEnabled(combo.getCurrentIndex() > 0);
+				getDateField2().setEnabled(combo.getCurrentText().getKey().equals(between));
 			}
 		});
 	}
@@ -114,17 +114,17 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public Object getFirstDate()
 	{
-		return WDate.fromString(getDateField1().text(), dateFormat).getDate();
+		return WDate.fromString(getDateField1().getText(), dateFormat).getDate();
 	}
 	
 	public Object getSecondDate()
 	{
-		return WDate.fromString(getDateField2().text(), dateFormat).getDate();
+		return WDate.fromString(getDateField2().getText(), dateFormat).getDate();
 	}
 	
 	public WString getComboState()
 	{
-		return combo.currentText();
+		return combo.getCurrentText();
 	}
 
 	private void setDateField1(FilterTF tf1) {
@@ -146,7 +146,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		
-		String operator = getComboState().key();
+		String operator = getComboState().getKey();
 			
 		if(operator.equals(DateFilter.equals))
 		{

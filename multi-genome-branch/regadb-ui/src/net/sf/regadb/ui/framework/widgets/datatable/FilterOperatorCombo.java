@@ -21,7 +21,7 @@ public class FilterOperatorCombo extends MyComboBox
 				//disable if the first element is selected
 				filterTF_.setEnabled(i!=0);
 				
-				if(!(filterTF_.isEnabled() && "".equals(filterTF_.text())))
+				if(!(filterTF_.isEnabled() && "".equals(filterTF_.getText())))
 				{
 					FilterTools.findDataTable(filterTF_).applyFilter();
 				}

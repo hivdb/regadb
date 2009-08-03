@@ -11,7 +11,7 @@ public class WFixedStringConfigurer extends WText implements WordConfigurer {
     private FixedString string;
     
     public WFixedStringConfigurer(FixedString string) {
-        super(lt(string.getHumanStringValue()));
+        super(string.getHumanStringValue());
         this.setStyleClass("fixedstringconfigurer");
         this.string = string;
     }

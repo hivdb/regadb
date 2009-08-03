@@ -21,7 +21,7 @@ public class DatasetFilter extends ListFilter
 		Set<DatasetAccess> datasets = getTransaction().getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getDatasetAccesses();
 		for(DatasetAccess ds : datasets )
 		{
-			combo.addItem(lt(ds.getId().getDataset().getDescription()));
+			combo.addItem(ds.getId().getDataset().getDescription());
 		}
 	}
 }

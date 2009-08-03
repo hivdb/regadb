@@ -37,8 +37,8 @@ public class NucleotideField extends FormField
         {
             initViewWidget();
             WFont font = new WFont();
-            font.setFamily(WFont.GenericFamily.Monospace , lt("Courier"));
-            getViewWidget().decorationStyle().setFont(new WFont());
+            font.setFamily(WFont.GenericFamily.Monospace , "Courier");
+            getViewWidget().getDecorationStyle().setFont(new WFont());
         }
         
         form.addFormField(this);
@@ -66,7 +66,7 @@ public class NucleotideField extends FormField
     
     public String getFormText()
     {
-        String test = _fieldEdit.text();
+        String test = _fieldEdit.getText();
         
         if(test.contains("\r\n"))
         {
@@ -81,15 +81,15 @@ public class NucleotideField extends FormField
     }
     
     @Override
-    protected void setViewMessage(WString message)
+    protected void setViewMessage(CharSequence message)
     {
-        super.setViewMessage(lt(createLinesFromText("<br/>", message.value())));
+        super.setViewMessage(createLinesFromText("<br/>", message.toString()));
     }
     
     @Override
     protected WString getViewMessage()
     {
-        return lt(replaceAllPatterns(super.getViewMessage().value(), "<br/>", ""));
+        return new WString(replaceAllPatterns(super.getViewMessage().getValue(), "<br/>", ""));
     }
     
     public static String replaceAllPatterns(String str, String pattern, String replace) 

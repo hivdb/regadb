@@ -88,7 +88,7 @@ public class DateField extends FormField
 
     public String getFormText() 
     {
-        return _fieldEdit.text();
+        return _fieldEdit.getText();
     }
     
     public void setFormText(String text) 

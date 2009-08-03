@@ -31,7 +31,7 @@ public class WInputVariableConfigurer extends MyComboBox implements WordConfigur
         outputVars = controller.getCompatibleOutputVariables(input).toArray(new OutputVariable[0]);
         
         for (OutputVariable ovar : outputVars) {
-        	this.addItem(lt(ovar.toString()));
+        	this.addItem(ovar.toString());
         }
         
         if (isUseless()) {
@@ -54,7 +54,7 @@ public class WInputVariableConfigurer extends MyComboBox implements WordConfigur
     	// if the user then tries to modify the clause we should leave this
     	// inputvariable unconfigured
     	if (!isUseless()) {
-    		this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
+    		this.controller.assignOutputVariable(var, outputVars[this.getCurrentIndex()]);
     	}
 //    	else if (var.getOutputVariable() == null) {
     		// if we have changed clauses the old outputvariable is lost
@@ -68,10 +68,10 @@ public class WInputVariableConfigurer extends MyComboBox implements WordConfigur
 		confy.controller = this.controller;
 		confy.var = this.var; 
 		confy.outputVars = this.outputVars;
-		this.setCurrentIndex(confy.currentIndex());
+		this.setCurrentIndex(confy.getCurrentIndex());
 	}
 
 	public boolean isUseless() {
-		return this.count() == 0;
+		return this.getCount() == 0;
 	}
 }

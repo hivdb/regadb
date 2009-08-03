@@ -14,32 +14,32 @@ public class FormTable extends WTable {
 	
     public int addLineToTable(Label label, IFormField field)
     {
-        int numRows = rowCount();
-        elementAt(numRows, 0).setStyleClass("form-label-area");
+        int numRows = getRowCount();
+        getElementAt(numRows, 0).setStyleClass("form-label-area");
         putElementAt(numRows, 0, label);
         putElementAt(numRows, 1, field.getWidget());
-        elementAt(numRows, 1).setStyleClass("form-value-area");
+        getElementAt(numRows, 1).setStyleClass("form-value-area");
         label.setBuddy(field);
         return numRows;
     }
     
     public int addLineToTable(WWidget... widgets)
     {
-        int numRows = rowCount();
-        elementAt(numRows, 0).setStyleClass("form-label-area");
+        int numRows = getRowCount();
+        getElementAt(numRows, 0).setStyleClass("form-label-area");
         for(int i=0;i<widgets.length;++i) {
             putElementAt(numRows, i, widgets[i]);
             if(i > 0)
-                elementAt(numRows, i).setStyleClass("form-value-area");
+            	getElementAt(numRows, i).setStyleClass("form-value-area");
         }
         return numRows;
     }
     
     public void putElementAt(int row, int col, WWidget widget) {
     	if (col == 0) {
-    		elementAt(row, col).setStyleClass("form-label-area");
+    		getElementAt(row, col).setStyleClass("form-label-area");
     	}
-    	super.elementAt(row, col).addWidget(widget);
+    	super.getElementAt(row, col).addWidget(widget);
     }
 
 }

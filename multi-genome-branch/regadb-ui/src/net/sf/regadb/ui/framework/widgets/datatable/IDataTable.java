@@ -8,7 +8,7 @@ import eu.webtoolkit.jwt.WString;
 
 public interface IDataTable <DataType>
 {
-	public WString[] getColNames();
+	public CharSequence[] getColNames();
 	
 	public void init(Transaction t);
 	

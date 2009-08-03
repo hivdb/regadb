@@ -86,10 +86,10 @@ public class QueryToolRunnable implements Runnable {
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
-		errors.put("write_error", WString.tr("form.query.querytool.label.status.failed.writeerror").value());
-		errors.put("memory_error", WString.tr("form.query.querytool.label.status.failed.memoryerror").value());
-		errors.put("sql_error", WString.tr("form.query.querytool.label.status.failed.sqlerror").value());
-		errors.put("type_error", WString.tr("form.query.querytool.label.status.failed.typeerror").value());
+		errors.put("write_error", WString.tr("form.query.querytool.label.status.failed.writeerror").getValue());
+		errors.put("memory_error", WString.tr("form.query.querytool.label.status.failed.memoryerror").getValue());
+		errors.put("sql_error", WString.tr("form.query.querytool.label.status.failed.sqlerror").getValue());
+		errors.put("type_error", WString.tr("form.query.querytool.label.status.failed.typeerror").getValue());
 	}
 	
 	public boolean isDone() {
@@ -100,20 +100,18 @@ public class QueryToolRunnable implements Runnable {
 		return status == Status.FAILED;
 	}
 	
-	public WString getStatusText() {
-		//TODO
-		//OMG
+	public CharSequence getStatusText() {
 		if (status == Status.RUNNING) {
-			return WString.lt(WString.tr("form.query.querytool.label.status.running").value() + statusMsg);			
+			return WString.tr("form.query.querytool.label.status.running").getValue() + statusMsg;			
 		}
 		else if (status == Status.FINISHED) {
-			return WString.lt(WString.tr("form.query.querytool.link.result").value() + statusMsg);			
+			return WString.tr("form.query.querytool.link.result").getValue() + statusMsg;			
 		}
 		else if (status == Status.FAILED) {
-			return WString.lt(WString.tr("form.query.querytool.label.status.failed").value() + statusMsg);			
+			return WString.tr("form.query.querytool.label.status.failed").getValue() + statusMsg;			
 		}
 		else if (status == Status.CANCELED) {
-			return WString.lt(WString.tr("form.query.querytool.label.status.canceling").value() + statusMsg);			
+			return WString.tr("form.query.querytool.label.status.canceling").getValue() + statusMsg;			
 		}
 		return WString.tr("form.query.querytool.label.status.initial");
 	}

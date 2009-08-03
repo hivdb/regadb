@@ -26,7 +26,7 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
     private static int[] colWidths = {20,20,40,20};
     private IFilter[] filters_ = new IFilter[4];
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

@@ -5,14 +5,14 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
-import eu.webtoolkit.jwt.WebController;
+import eu.webtoolkit.jwt.WtServlet;
 
 @SuppressWarnings("serial")
-public class RegaDBMain extends WebController
+public class RegaDBMain extends WtServlet
 {
 	public RegaDBMain()
 	{
-		super(new Configuration());
+		super();
 	}
 
 	@Override
@@ -46,6 +46,6 @@ public class RegaDBMain extends WebController
 	
 	public static RegaDBApplication getApp()
 	{
-		return (RegaDBApplication)WApplication.instance();
+		return (RegaDBApplication)WApplication.getInstance();
 	}
 }

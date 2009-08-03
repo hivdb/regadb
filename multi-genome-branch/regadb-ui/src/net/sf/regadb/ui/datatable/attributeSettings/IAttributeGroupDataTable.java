@@ -21,7 +21,7 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     
     private static boolean [] sortable_ = {true};
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

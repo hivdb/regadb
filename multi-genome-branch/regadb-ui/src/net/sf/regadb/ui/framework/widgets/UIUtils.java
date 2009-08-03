@@ -34,10 +34,10 @@ public class UIUtils {
 	}
 	
 	public static String keyOrValue(WString s) {
-		if(s.literal()) {
-			return s.value();
+		if(s.isLiteral()) {
+			return s.getValue();
 		} else {
-			return s.key();
+			return s.getKey();
 		}
 	}
 	

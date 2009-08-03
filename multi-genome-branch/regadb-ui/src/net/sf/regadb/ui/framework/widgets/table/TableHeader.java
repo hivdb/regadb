@@ -6,13 +6,13 @@ import eu.webtoolkit.jwt.WText;
 
 public class TableHeader extends WText
 {
-	public TableHeader(WString title, WTableCell cell)
+	public TableHeader(CharSequence title, WTableCell cell)
 	{
 		super(title, cell);
 		setStyleClass("table-header");
 	}
 	
-	public TableHeader(WString title)
+	public TableHeader(CharSequence title)
 	{
 		this(title, null);
 	}

@@ -15,19 +15,19 @@ public class MyComboBox extends WComboBox {
 	}
 	
 	public void sort() {
-		this.model().sort(0);
+		this.getModel().sort(0);
 	}
 
-	public void setCurrentItem(WString lt) {
-		for(int i = 0; i<this.count(); i++) {
-			if(itemText(i).equals(lt))
+	public void setCurrentItem(CharSequence lt) {
+		for(int i = 0; i<this.getCount(); i++) {
+			if(getItemText(i).equals(lt))
 				this.setCurrentIndex(i);
 		}
 	}
 	
 	public void addItem(WString text)  {
 		super.addItem(text);
-		if(currentIndex()==-1) {
+		if(getCurrentIndex()==-1) {
 			setCurrentIndex(0);
 		}
 	}

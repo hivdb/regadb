@@ -65,9 +65,9 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public boolean isMandatory() 
     {
-        if(checkBox_.validator()!=null)
+        if(checkBox_.getValidator()!=null)
         {
-            return checkBox_.validator().isMandatory();
+            return checkBox_.getValidator().isMandatory();
         }
         return false;
     }
@@ -79,11 +79,11 @@ public class CheckBox extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory) 
     {
-        if(checkBox_.validator()==null)
+        if(checkBox_.getValidator()==null)
         {
             checkBox_.setValidator(new WValidator());
         }
-        checkBox_.validator().setMandatory(mandatory);
+        checkBox_.getValidator().setMandatory(mandatory);
     }
 
     public boolean validate() 
@@ -102,11 +102,11 @@ public class CheckBox extends WContainerWidget implements IFormField
     }
 
     public void setConfirmAction(Signal.Listener se) {
-        if(getFormWidget()!=null) {
-        getFormWidget().enterPressed().removeAllListeners();
-        if(se != null)
-            getFormWidget().enterPressed().addListener(this, se);
-        }
+//        if(getFormWidget()!=null) {
+//        getFormWidget().enterPressed().removeAllListeners();
+//        if(se != null)
+//            getFormWidget().enterPressed().addListener(this, se);
+//        }
     }
 
     public IForm getForm() {

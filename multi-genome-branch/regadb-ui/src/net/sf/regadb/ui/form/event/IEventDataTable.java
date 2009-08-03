@@ -53,7 +53,7 @@ public class IEventDataTable implements IDataTable<Event> {
 		filters_[1] = new StringFilter();
 	}
 	
-	public WString[] getColNames() {
+	public CharSequence[] getColNames() {
 		return _colNames;
 	}
 	

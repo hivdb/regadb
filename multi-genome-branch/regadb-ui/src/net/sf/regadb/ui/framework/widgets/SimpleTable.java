@@ -17,12 +17,12 @@ public class SimpleTable extends WTable{
     	setStyleClass("datatable datatable-grid");
     	currentRow = 1;
 	}
-	public void setHeaders(WString... titles) {
+	public void setHeaders(CharSequence... titles) {
         int row = 0;
         headerColumns = 0;
-        for (WString title : titles) {
-        	elementAt(row, headerColumns).addWidget(new TableHeader(title));
-        	elementAt(row, headerColumns).setStyleClass("column-title");
+        for (CharSequence title : titles) {
+        	getElementAt(row, headerColumns).addWidget(new TableHeader(title));
+        	getElementAt(row, headerColumns).setStyleClass("column-title");
         	headerColumns++;
         }
         maxColumns = Math.max(maxColumns, headerColumns);
@@ -31,7 +31,7 @@ public class SimpleTable extends WTable{
 	public void setWidths(int... widths) {
 		int col = 0;
 		for (int i : widths) {
-			elementAt(0, col).resize(new WLength(i, WLength.Unit.Percentage), new WLength());
+			getElementAt(0, col).resize(new WLength(i, WLength.Unit.Percentage), new WLength());
 			col++;
 		}
 	}
@@ -39,7 +39,7 @@ public class SimpleTable extends WTable{
 	public void addRow(WWidget... widgets) {
 		int col = 0;
 		for (WWidget widget : widgets) {
-			elementAt(currentRow, col).addWidget(widget);
+			getElementAt(currentRow, col).addWidget(widget);
 			col++;
 		}
 		currentRow++;
@@ -62,7 +62,7 @@ public class SimpleTable extends WTable{
 	public void spanHeaders(){
 	    int colspan = maxColumns - headerColumns +1;
 	    if(colspan > 1){
-	        elementAt(0,headerColumns-1).setColumnSpan(colspan);
+	    	getElementAt(0,headerColumns-1).setColumnSpan(colspan);
 	    }
 	}
 }

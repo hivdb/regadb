@@ -10,7 +10,7 @@ public class WFromVariableConfigurer extends WText implements WordConfigurer {
 
     private FromVariable var;
     public WFromVariableConfigurer(FromVariable var) {
-        super(lt(var.getUniqueName()));
+        super(var.getUniqueName());
         this.setStyleClass("fromvariableconfigurer");
         this.var = var;
     }

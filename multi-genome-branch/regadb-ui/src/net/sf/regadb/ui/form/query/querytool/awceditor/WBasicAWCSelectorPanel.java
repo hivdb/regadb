@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.query.querytool.awceditor;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,8 @@ import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
 
+import eu.webtoolkit.jwt.Key;
+import eu.webtoolkit.jwt.KeyboardModifier;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WKeyEvent;
 import eu.webtoolkit.jwt.WLength;
@@ -75,9 +76,9 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     private void initMoreComponents() {
     	WTable table = new WTable(this);
 		radioButton.setStyleClass("selectorradio");
-    	table.elementAt(0, 0).addWidget(radioButton);
-    	table.elementAt(0, 0).resize(new WLength(2, WLength.Unit.FontEm), new WLength());
-    	table.elementAt(0, 1).addWidget(editPanel);
+    	table.getElementAt(0, 0).addWidget(radioButton);
+    	table.getElementAt(0, 0).resize(new WLength(2, WLength.Unit.FontEm), new WLength());
+    	table.getElementAt(0, 1).addWidget(editPanel);
     	if (!isUseless()) {
 	    	this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 				public void trigger(WMouseEvent a) {
@@ -87,7 +88,7 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 	    	});
 	    	this.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
 				public void trigger(WKeyEvent a) {
-					if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
+					if (a.getKey() != Key.Key_Tab && ! a.getModifiers().contains(KeyboardModifier.MetaModifier)) {
 						radioButton.setChecked(true);
 						radioButton.refresh();
 					}

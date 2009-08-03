@@ -349,7 +349,7 @@ public class AccountForm extends FormWidget
                 if(admin && wasNotEnabled)
                 {
                     t = login.createTransaction();
-                    su_.setDataset(t.getDataset(datasetCB.currentItem().value()));
+                    su_.setDataset(t.getDataset(datasetCB.currentItem().getValue()));
                     su_ = t.changeUid(su_, uidTF.text());
                     update(su_, t);
                     t.commit();

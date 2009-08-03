@@ -35,7 +35,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	
 	private static boolean [] sortable_ = {true, true, false, true};
 	private static int[] colWidths = {20,20,25,25};
-	public WString[] getColNames()
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}

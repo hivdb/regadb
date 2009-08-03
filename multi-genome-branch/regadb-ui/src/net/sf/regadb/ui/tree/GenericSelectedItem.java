@@ -11,7 +11,7 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
     public GenericSelectedItem(WTreeNode parent, String text)
     {
         super(tr(text), parent);
-        label().text().arg("");
+        getLabel().getText().arg("");
     }
 
     public DataType getSelectedItem()
@@ -24,7 +24,7 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
         type_ = item;
         
         String value = item==null?"":getArgument(type_);
-        label().text().changeArg(0, value);
+        getLabel().getText().changeArg(0, value);
         
         refresh();
     }

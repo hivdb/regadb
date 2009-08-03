@@ -72,8 +72,8 @@ public class BatchTestRunningTest extends Thread {
 		status = BatchTestStatus.CANCELING;
 	}
 	
-	public WString testName() {
-		return WString.lt(test.getDescription());
+	public CharSequence testName() {
+		return test.getDescription();
 	}
 	
 	public boolean isTest(Test t) {
@@ -86,8 +86,8 @@ public class BatchTestRunningTest extends Thread {
 	
 	public boolean isRunning() { return status == BatchTestStatus.RUNNING || status == BatchTestStatus.CANCELING; }
 	
-	public WString getPercent() {
-		return WString.lt(this.processedTests + "/" + this.testsToProcess);
+	public CharSequence getPercent() {
+		return this.processedTests + "/" + this.testsToProcess;
 	}
 	
 	public WString getStatusMessage() {

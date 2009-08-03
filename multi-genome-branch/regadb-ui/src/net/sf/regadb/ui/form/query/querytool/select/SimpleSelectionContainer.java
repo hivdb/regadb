@@ -26,7 +26,7 @@ public class SimpleSelectionContainer extends WContainerWidget {
 		this.setStyleClass("selectionitem simpleselectionitem");
 		
 		OutputVariable ovar = (OutputVariable) selection.getObject();
-		checkBox = new WCheckBox(lt(ovar.getUniqueName()), this);
+		checkBox = new WCheckBox(ovar.getUniqueName(), this);
 		checkBox.setChecked(selection.isSelected());
 		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {

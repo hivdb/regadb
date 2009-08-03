@@ -10,6 +10,7 @@ import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 
 import eu.webtoolkit.jwt.WRadioButton;
+import eu.webtoolkit.jwt.WString;
 
 public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 
@@ -27,7 +28,7 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	}
 	
 	public void showTab(String tabName) {
-		tabs.showTab(lt(tabName));
+		tabs.showTab(tabName);
 	}
 	
 	@Override
@@ -69,7 +70,7 @@ public class WAWCSelectorTabbedPane extends WAWCSelectorPanel {
 	
 	private void addSelectorPanel(WAWCSelectorTab panel) {
 		panels.put(panel.getTitle(), panel);
-        tabs.addTab(lt(panel.getTitle()), panel);
+        tabs.addTab(new WString(panel.getTitle()), panel);
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public class ColumnHeader extends WContainerWidget
     private WImage descendingSort_;
     private WImage noSort_;
 	
-	public ColumnHeader(WString intlName, WContainerWidget parent)
+	public ColumnHeader(CharSequence intlName, WContainerWidget parent)
 	{
 		super(parent);
 		

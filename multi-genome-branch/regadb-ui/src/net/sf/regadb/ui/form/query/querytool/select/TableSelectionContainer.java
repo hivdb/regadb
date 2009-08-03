@@ -26,7 +26,7 @@ public class TableSelectionContainer extends WContainerWidget {
 	private void init(Savable savable) {
 		this.setStyleClass("selectionitem tableselectionitem");
 		
-		tableCheckBox = new WCheckBox(lt(selection.getVariableName()), this);
+		tableCheckBox = new WCheckBox(selection.getVariableName(), this);
 		tableCheckBox.setChecked(selection.isSelected());
 		tableCheckBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {

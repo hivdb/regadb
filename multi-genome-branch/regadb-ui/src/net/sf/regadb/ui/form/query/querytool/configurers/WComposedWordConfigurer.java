@@ -21,7 +21,7 @@ public class WComposedWordConfigurer extends MyComboBox implements ComposedWordC
 	}
 	
 	private void addItem(WordConfigurer confy) {
-		this.addItem(lt(confy.toString()));
+		this.addItem(confy.toString());
 		vars.add(confy);
 	}
 	
@@ -35,7 +35,7 @@ public class WComposedWordConfigurer extends MyComboBox implements ComposedWordC
 	}
 	
 	private WordConfigurer getSelectedItem() {
-		return vars.get(currentIndex());
+		return vars.get(getCurrentIndex());
 	}
 
 	public ConfigurableWord getWord() {
@@ -49,7 +49,7 @@ public class WComposedWordConfigurer extends MyComboBox implements ComposedWordC
 	}
 
 	public int getSelectedIndex() {
-		return currentIndex();
+		return getCurrentIndex();
 	}
 
 	public void setSelectedIndex(int index) {

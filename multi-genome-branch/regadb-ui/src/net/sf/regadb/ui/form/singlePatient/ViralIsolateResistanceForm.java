@@ -39,12 +39,12 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         resistanceGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.resistance"), this);
         
         WTable wrapper = new SimpleTable(resistanceGroup_);
-        wrapper.elementAt(0, 0).setStyleClass("navigation");
-        wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
+        wrapper.getElementAt(0, 0).setStyleClass("navigation");
+        wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         
-        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
+        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
         
-        refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.elementAt(0, 0));
+        refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.getElementAt(0, 0));
         refreshButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a) 
@@ -53,7 +53,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                     }
                 });
         
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.elementAt(0, 0));
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.getElementAt(0, 0));
         showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a)
@@ -61,6 +61,10 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         refreshTable();
                     }
                 });
+        
+        
+        //TODO
+        //is this still required?????
         
         // delay table loading so IE doesn't get confused by the
         // massive amount of changes

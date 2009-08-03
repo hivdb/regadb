@@ -13,8 +13,8 @@ public class UploadFile extends FileUpload
         super(istate, form);
         getFileUpload().uploaded().addListener(this, new Signal.Listener() {
                    public void trigger() {
-                	   if(getFileUpload().clientFileName()!=null) {
-	                       setAnchor(lt(getFileUpload().clientFileName()), getFileUpload().spoolFileName());
+                	   if(getFileUpload().getClientFileName()!=null) {
+	                       setAnchor(getFileUpload().getClientFileName(), getFileUpload().getSpoolFileName());
                 	   }
                    }
                 });

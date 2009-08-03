@@ -39,8 +39,6 @@ public class DataTable<DataType> extends WTable
 	private int currentPage_ = 0;
 	private int amountOfPages_ = 0;
     
-    private final static WString emptyLiteral_ = lt("");
-    
     private ColumnHeader[] colHeaders_;
     
     private int sortColIndex_ = -1;
@@ -65,9 +63,9 @@ public class DataTable<DataType> extends WTable
 		
 		if(dataTableInterface_.getFilters()!=null)
 		{
-			elementAt(row, col).setColumnSpan(dataTableInterface_.getColumnWidths().length);
-	        elementAt(row, col).setStyleClass("navigation");
-			showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), elementAt(row, col));
+			getElementAt(row, col).setColumnSpan(dataTableInterface_.getColumnWidths().length);
+			getElementAt(row, col).setStyleClass("navigation");
+			showHideFilter_ = new WPushButton(tr("datatable.button.hideFilter"), getElementAt(row, col));
 			showHideFilter_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
 				public void trigger(WMouseEvent e)
@@ -75,7 +73,7 @@ public class DataTable<DataType> extends WTable
 					showHideFilters();
 				}
 			});
-			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), elementAt(row, col));
+			applyFilter_ = new WPushButton(tr("datatable.button.applyFilter"), getElementAt(row, col));
 			applyFilter_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 			{
 				public void trigger(WMouseEvent me)
@@ -89,11 +87,11 @@ public class DataTable<DataType> extends WTable
         colHeaders_ = new ColumnHeader[dataTableInterface_.getColNames().length];
 		//put colheaders in the table
         int columnIndex = 0;
-		for(WString colName : dataTableInterface_.getColNames())
+		for(CharSequence colName : dataTableInterface_.getColNames())
 		{
-            colHeaders_[col] = new ColumnHeader(colName, elementAt(row, col));
-            elementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLength.Unit.Percentage), new WLength());
-            elementAt(row, col).setStyleClass("column-title");
+            colHeaders_[col] = new ColumnHeader(colName, getElementAt(row, col));
+            getElementAt(row, col).resize(new WLength(dataTableInterface.getColumnWidths()[col], WLength.Unit.Percentage), new WLength());
+            getElementAt(row, col).setStyleClass("column-title");
             if(dataTableInterface_.sortableFields()[columnIndex])
             {
                 if(sortColIndex_ == -1)
@@ -139,10 +137,10 @@ public class DataTable<DataType> extends WTable
 			{
 				if(filter!=null)
 				{
-					elementAt(row, col).clear();
-					elementAt(row, col).addWidget(filter.getFilterWidget());
+					getElementAt(row, col).clear();
+					getElementAt(row, col).addWidget(filter.getFilterWidget());
 				}
-                elementAt(row, col).setStyleClass("filter");
+				getElementAt(row, col).setStyleClass("filter");
 
 				col++;
 			}
@@ -161,7 +159,7 @@ public class DataTable<DataType> extends WTable
             WText toPut;
 			for(int j = 0; j<dataTableInterface_.getColNames().length; j++)
 			{
-			    toPut = new WText(noNullLt(null), elementAt(row, col));
+			    toPut = new WText(noNullLt(null), getElementAt(row, col));
 			    toPut.setTextFormat(TextFormat.PlainText);
                 toPut.setStyleClass("table-cell");
                 toPut.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
@@ -178,7 +176,7 @@ public class DataTable<DataType> extends WTable
                                 }
                             }
                         });
-                elementAt(row, col).resize(new WLength(), new WLength(1.0,WLength.Unit.FontEm));
+                getElementAt(row, col).resize(new WLength(), new WLength(1.0,WLength.Unit.FontEm));
                 textRow.add(toPut);
 				col++;
 			}
@@ -187,9 +185,9 @@ public class DataTable<DataType> extends WTable
 		}
         
         //scrolling buttons
-        elementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
-        elementAt(row, col).setStyleClass("bottom-navigation");
-        WContainerWidget scrollingButtons = new WContainerWidget(elementAt(row, col));
+		getElementAt(row, col).setColumnSpan(dataTableInterface_.getColNames().length);
+		getElementAt(row, col).setStyleClass("bottom-navigation");
+        WContainerWidget scrollingButtons = new WContainerWidget(getElementAt(row, col));
         scrollingButtons.setStyleClass("scrollingButtons");
         firstScroll_ = new WPushButton(tr("datatable.button.firstScroll"), scrollingButtons);
         firstScroll_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
@@ -311,7 +309,7 @@ public class DataTable<DataType> extends WTable
 			{
 				al.get(j).setText(noNullLt(cols[j]));
 				if(tooltips!=null && tooltips[j]!=null) {
-					al.get(j).setToolTip(lt(tooltips[j]));
+					al.get(j).setToolTip(tooltips[j]);
 				}
 			}
 		}
@@ -322,7 +320,7 @@ public class DataTable<DataType> extends WTable
             List<WText> al = textMatrix_.get(i+rawDataArray_.size());
             for(int j = 0; j<al.size(); j++)
             {
-                al.get(j).setText(lt(""));
+                al.get(j).setText("");
             }
         }
         
@@ -352,13 +350,13 @@ public class DataTable<DataType> extends WTable
 		applyFilter_.setHidden(!applyFilter_.isHidden());	
 	}
 	
-	private WString noNullLt(String col)
+	private CharSequence noNullLt(String col)
 	{
 		if(col==null)
 		{
-			return emptyLiteral_;
+			return "";
 		}
-		return lt(col);
+		return col;
 	}
 	
 	public void applyFilter()

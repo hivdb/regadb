@@ -81,7 +81,7 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 		return sortable_;
 	}
 	
-	public WString[] getColNames() {
+	public CharSequence[] getColNames() {
 		return _colNames;
 	}
 	

@@ -130,7 +130,7 @@ public class UpdateForm extends FormWidget
             t.commit();
             
             testsFile.delete();
-            new WLogText(testGroup_, lt(imp.getLog().toString()));
+            new WLogText(testGroup_, imp.getLog().toString());
         } 
         catch (SAXException e) 
         {
@@ -178,7 +178,7 @@ public class UpdateForm extends FormWidget
         {
             e.printStackTrace();
         }
-        new WLogText(attributesGroup_, lt(imp.getLog().toString()));
+        new WLogText(attributesGroup_, imp.getLog().toString());
     }
     
     private void handleEvents(final boolean simulate)
@@ -205,7 +205,7 @@ public class UpdateForm extends FormWidget
                     });
             t.commit();
             eventsFile.delete();
-            new WLogText(eventsGroup_, lt(imp.getLog().toString()));
+            new WLogText(eventsGroup_, imp.getLog().toString());
         } 
         catch (SAXException e) 
         {
@@ -273,7 +273,7 @@ public class UpdateForm extends FormWidget
         
         t.commit();
 
-        new WLogText(genomeGroup_, lt(ig.getLog().toString()));
+        new WLogText(genomeGroup_, ig.getLog().toString());
         return ret;
     }
 
@@ -462,9 +462,9 @@ public class UpdateForm extends FormWidget
     
     private void handleFields(WContainerWidget parent, List<String> titles, List<List<String>> data)
     {
-    	WString[] messages = new WString[titles.size()];
+    	CharSequence[] messages = new CharSequence[titles.size()];
         for (int i = 0 ; i < titles.size() ; i++) {
-            messages[i] = lt(titles.get(i));
+            messages[i] = titles.get(i);
         }
         
         SimpleTable table = new SimpleTable(parent);
@@ -473,7 +473,7 @@ public class UpdateForm extends FormWidget
         for (List<String> dataRow : data) {
             WText[] txt = new WText[dataRow.size()];
             for (int i = 0 ; i < dataRow.size() ; i++) {
-                txt[i] = new WText(lt(dataRow.get(i)));
+                txt[i] = new WText(dataRow.get(i));
             }           
             table.addRow(txt);
         }
@@ -489,7 +489,7 @@ public class UpdateForm extends FormWidget
         for(String line : report) {
             field += line + "\n";
         }
-        new WLogText(group, lt(field));
+        new WLogText(group, field);
         
         
         report.clear();     
@@ -526,7 +526,7 @@ public class UpdateForm extends FormWidget
     }
     
     private class WLogText extends WText {
-        public WLogText(WContainerWidget parent, WString msg) {
+        public WLogText(WContainerWidget parent, CharSequence msg) {
             super(parent);
             setTextFormat(TextFormat.PlainText);
             setText(msg);

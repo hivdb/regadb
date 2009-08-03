@@ -53,7 +53,7 @@ public class ImportFormRunning extends FormWidget {
 					tr("form.impex.import.progress.header.status"));
 			
 			table.setWidths(20,40,20,20);
-			table.elementAt(0, 4).setStyleClass("column-action");
+			table.getElementAt(0, 4).setStyleClass("column-action");
 
 			int row = 1;
 			int running = 0;
@@ -62,11 +62,11 @@ public class ImportFormRunning extends FormWidget {
 					running++;
 				}			
 				
-				table.elementAt(row, 0).addWidget(new WText( lt(importXml.getUid()) ));
-				table.elementAt(row, 1).addWidget( new WText( lt(importXml.clientFileName()) ));
-				table.elementAt(row, 2).addWidget( new WText( importXml.getDatasetName() ));
-				table.elementAt(row, 3).addWidget( new WText( importXml.getStatusName() ));
-				table.elementAt(row, 4).setStyleClass("column-action");				
+				table.getElementAt(row, 0).addWidget(new WText( importXml.getUid()) );
+				table.getElementAt(row, 1).addWidget( new WText( importXml.clientFileName()) );
+				table.getElementAt(row, 2).addWidget( new WText( importXml.getDatasetName() ));
+				table.getElementAt(row, 3).addWidget( new WText( importXml.getStatusName() ));
+				table.getElementAt(row, 4).setStyleClass("column-action");				
 				
 //				if (importXml.getLogFile() != null) {
 //					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
@@ -75,7 +75,7 @@ public class ImportFormRunning extends FormWidget {
 //				}
 				
 				if (importXml.getStatus() != UploadStatus.PROCESSING) {
-					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.elementAt(row, 4));
+					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.getElementAt(row, 4));
 					clearButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent a) {
 							int row = processList.indexOf(importXml);

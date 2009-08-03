@@ -38,7 +38,7 @@ public class RegaDBApplication extends WApplication
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
 		window_.init();
-		root().addWidget(window_);
+		getRoot().addWidget(window_);
 	}
 
 	public RegaDBWindow getWindow()

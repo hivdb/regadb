@@ -24,13 +24,13 @@ public class WConstantChoiceConfigurer extends MyComboBox implements WordConfigu
         this.constant = constant;
         this.values = constant.getSuggestedValuesList();
         for (SuggestedValuesOption option: values) {
-        	this.addItem(lt(option.getOption().toString()));
+        	this.addItem(option.getOption().toString());
         }
-        this.setCurrentItem(lt(constant.getHumanStringValue()));
+        this.setCurrentItem(constant.getHumanStringValue());
         
         // last item gets selected when setCurrentItem can't find the given item
         // set it back to zero if that happens
-    	if (!isUseless() && !UIUtils.keyOrValue(this.currentText()).equals(constant.getHumanStringValue() )) {
+    	if (!isUseless() && !UIUtils.keyOrValue(this.getCurrentText()).equals(constant.getHumanStringValue() )) {
     		this.setCurrentIndex(0);
     	}
 
@@ -44,7 +44,7 @@ public class WConstantChoiceConfigurer extends MyComboBox implements WordConfigu
     }
     
     public void configureWord() {
-        if (! controller.setConstantValueString(constant, values.get(currentIndex()))) {
+        if (! controller.setConstantValueString(constant, values.get(getCurrentIndex()))) {
             System.err.println("Warning : word configuration failed !");
         }
     }
@@ -55,7 +55,7 @@ public class WConstantChoiceConfigurer extends MyComboBox implements WordConfigu
 		this.controller = confy.controller;
 		this.constant = confy.constant;
 		this.values = confy.values;
-		this.setCurrentIndex(confy.currentIndex());
+		this.setCurrentIndex(confy.getCurrentIndex());
 	}
 
 	public boolean isUseless() {

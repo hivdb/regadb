@@ -26,16 +26,16 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	public FileUpload(InteractionState istate, IForm form) {
 		this.form = form;
 		
-        link = new WAnchor("dummy", lt(""), this);
+        link = new WAnchor("dummy", "", this);
         link.setStyleClass("link");
         
         uploadFile = new WFileUpload(this);
         uploadFile.uploaded().addListener(this, new Signal.Listener()  {
             public void trigger() {
-                link.setHidden(uploadFile.clientFileName()==null);
+                link.setHidden(uploadFile.getClientFileName()==null);
                 uploadButton.setEnabled(true);
                 uploadButton.setText(tr("form.general.button.upload"));
-                setAnchor(lt(uploadFile.clientFileName()), uploadFile.spoolFileName());
+                setAnchor(uploadFile.getClientFileName(), uploadFile.getSpoolFileName());
             }
         });
         
@@ -59,12 +59,12 @@ public class FileUpload extends WContainerWidget implements IFormField{
 		return uploadFile;
 	}
 	
-	public void setAnchor(WString title, String url) {
+	public void setAnchor(CharSequence title, String url) {
 	        link.setText(title);
 	        link.setRef(url);
 	}
 	
-	public void setAnchor(WString title, WResource res){
+	public void setAnchor(CharSequence title, WResource res){
 		link.setResource(res);
 		link.setText(title);
 	}
@@ -78,7 +78,7 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	}
 
 	public String getFormText() {
-		return getFileUpload().clientFileName();
+		return getFileUpload().getClientFileName();
 	}
 
 	public WFormWidget getFormWidget() {
@@ -98,11 +98,11 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	}
 
 	public void setConfirmAction(Signal.Listener se) {
-        if(getFormWidget()!=null) {
-            getFormWidget().enterPressed().removeAllListeners();
-            if(se != null)
-                getFormWidget().enterPressed().addListener(this, se);
-            }
+//        if(getFormWidget()!=null) {
+//            getFormWidget().enterPressed().removeAllListeners();
+//            if(se != null)
+//                getFormWidget().enterPressed().addListener(this, se);
+//            }
 	}
 
 	public void setFormText(String text) {
@@ -114,7 +114,7 @@ public class FileUpload extends WContainerWidget implements IFormField{
 
 	public boolean validate() {
 		if (isMandatory()) {
-			return getFileUpload().clientFileName() != null;
+			return getFileUpload().getClientFileName() != null;
 		}
 		return true;
 	}

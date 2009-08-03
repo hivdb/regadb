@@ -25,7 +25,7 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     	this.controller = controller;
     	css = new CssClasses(this);
     	setValidator(new WConstantValidator());
-    	validator().setMandatory(true);
+    	getValidator().setMandatory(true);
     	
     	this.keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>() {
 			public void trigger(WKeyEvent a) {
@@ -67,7 +67,7 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
     
     
     public void configureWord() {
-        if (! controller.setConstantValueString(constant, this.text())) {
+        if (! controller.setConstantValueString(constant, this.getText())) {
             System.err.println("Warning : word configuration failed !");
         }
     }
@@ -77,7 +77,7 @@ public class WConstantConfigurer extends WLineEdit implements WordConfigurer {
 		WConstantConfigurer confy = (WConstantConfigurer) o;
 		this.controller = confy.controller;
 		this.constant = confy.constant;
-		this.setText(confy.text());
+		this.setText(confy.getText());
 	}
 
 	public boolean isUseless() {

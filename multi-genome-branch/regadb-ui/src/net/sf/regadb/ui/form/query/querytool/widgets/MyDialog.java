@@ -6,6 +6,8 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
+//TODO remove
+
 public class MyDialog extends WStyledContainerWidget implements StatusbarHolder, ToolbarHolder {
 	private WContainerWidget titlePanel;
 	private WText titleText;
@@ -54,7 +56,7 @@ public class MyDialog extends WStyledContainerWidget implements StatusbarHolder,
 	}
 	
 	public WString getTitle() {
-		return titleText.text();
+		return titleText.getText();
 	}
 	
 	public WContainerWidget getContentPanel() {

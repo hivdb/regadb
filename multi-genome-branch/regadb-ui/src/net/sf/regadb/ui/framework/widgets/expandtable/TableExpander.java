@@ -17,21 +17,21 @@ public class TableExpander
     
     private WTableCell startTableCell_;
    
-    public TableExpander(WString labelText, WTable table, int row)
+    public TableExpander(CharSequence labelText, WTable table, int row)
     {
         table_ = table;
         
-        startTableCell_ = table.elementAt(row, 0);
+        startTableCell_ = table.getElementAt(row, 0);
         startTableCell_.setStyleClass("table-expander");
         plusMinusIcon_ = new WIconPair("pics/nav-plus.gif", "pics/nav-minus.gif", true, startTableCell_);
-        label_ = new WText(labelText, table.elementAt(row, 0));
+        label_ = new WText(labelText, table.getElementAt(row, 0));
         label_.setStyleClass("table-expander-text");
         
         label_.clicked().addListener(table, new Signal1.Listener<WMouseEvent>()
         {
             public void trigger(WMouseEvent me)
             {
-                if(plusMinusIcon_.state()==0) {
+                if(plusMinusIcon_.getState()==0) {
                     expand(true);
                 } else {
                     expand(false);
@@ -61,12 +61,12 @@ public class TableExpander
     	plusMinusIcon_.setState(expand?1:0);
     	
         WWidget cellWidget;
-        int row = startTableCell_.row();
-        for(int i = row+1; i<table_.rowCount(); i++)
+        int row = startTableCell_.getRow();
+        for(int i = row+1; i<table_.getRowCount(); i++)
         {
-            if(table_.elementAt(i, 0)!=null && table_.elementAt(i, 0).children().size()!=0)
+            if(table_.getElementAt(i, 0)!=null && table_.getElementAt(i, 0).getChildren().size()!=0)
             {
-                cellWidget = table_.elementAt(i, 0).children().get(0);
+                cellWidget = table_.getElementAt(i, 0).getChildren().get(0);
             }
             else
             {
@@ -74,12 +74,12 @@ public class TableExpander
             }
             if(!(cellWidget instanceof WIconPair))
             {
-                int numCols = table_.columnCount();
+                int numCols = table_.getColumnCount();
                 for(int j = 0; j<numCols; j++)
                 {
-                    if(table_.elementAt(i, j)!=null && table_.elementAt(i, j).children().size()>0)
+                    if(table_.getElementAt(i, j)!=null && table_.getElementAt(i, j).getChildren().size()>0)
                     {
-                    	table_.elementAt(i, j).children().get(0).setHidden(!expand);
+                    	table_.getElementAt(i, j).getChildren().get(0).setHidden(!expand);
                     }
                 }
             }

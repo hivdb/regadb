@@ -21,16 +21,16 @@ public class Header extends WTable
 		
 		edition_ = edition;
 		
-		  WImage icon = new WImage("pics/regaDBHeader.gif", this.elementAt(0, 0));
+		  WImage icon = new WImage("pics/regaDBHeader.gif", this.getElementAt(0, 0));
 		  icon.setMargin(new WLength(5));
-		  this.elementAt(0, 1).setStyleClass("header");
-		  WTable textTable = new WTable(this.elementAt(0, 1));
+		  this.getElementAt(0, 1).setStyleClass("header");
+		  WTable textTable = new WTable(this.getElementAt(0, 1));
 		  textTable.setMargin(new WLength(5));
-		  mainHeader_ = new WText(tr("main.header.mainTitle"),textTable.elementAt(0, 0));
+		  mainHeader_ = new WText(tr("main.header.mainTitle"),textTable.getElementAt(0, 0));
 		  mainHeader_.setStyleClass("header-mainTitle");
-		  subHeader_ = new WText(tr("main.header.subTitle"), textTable.elementAt(1, 0));
+		  subHeader_ = new WText(tr("main.header.subTitle"), textTable.getElementAt(1, 0));
 		  subHeader_.setStyleClass("header-subTitle");
-		  editionHeader_ = new WText(getEditionText(), textTable.elementAt(2, 0));
+		  editionHeader_ = new WText(getEditionText(), textTable.getElementAt(2, 0));
 		  editionHeader_.setStyleClass("header-subTitle");
 	}
 	

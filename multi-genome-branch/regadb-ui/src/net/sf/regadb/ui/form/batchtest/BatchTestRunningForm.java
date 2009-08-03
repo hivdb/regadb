@@ -45,7 +45,7 @@ public class BatchTestRunningForm extends FormWidget {
 				tr("form.batchtest.running.head.progress"));
 		
 		table.setWidths(60,20,20);
-		table.elementAt(0, 3).setStyleClass("column-action");
+		table.getElementAt(0, 3).setStyleClass("column-action");
 		
 		
 		int row = 1;
@@ -56,13 +56,13 @@ public class BatchTestRunningForm extends FormWidget {
 				needRefreshCount++;
 			}
 			
-			table.elementAt(row, 0).addWidget(new WText( run.testName() ));
-			table.elementAt(row, 1).addWidget(new WText( run.getStatusMessage()));
-			table.elementAt(row, 2).addWidget(new WText( run.getPercent() ));
-			table.elementAt(row, 3).setStyleClass("column-action");
+			table.getElementAt(row, 0).addWidget(new WText( run.testName() ));
+			table.getElementAt(row, 1).addWidget(new WText( run.getStatusMessage()));
+			table.getElementAt(row, 2).addWidget(new WText( run.getPercent() ));
+			table.getElementAt(row, 3).setStyleClass("column-action");
 			
 			if (run.getStatus() == BatchTestStatus.RUNNING) {
-				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.elementAt(row, 3));
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.cancel"), table.getElementAt(row, 3));
 				cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent a) {
 						if (run.isRunning()) {
@@ -75,14 +75,14 @@ public class BatchTestRunningForm extends FormWidget {
 			}
 			
 			if (run.getStatus() == BatchTestStatus.CANCELING) {
-				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.canceling"), table.elementAt(row, 3));
+				final WPushButton cancelButton = new WPushButton(tr("form.batchtest.running.control.canceling"), table.getElementAt(row, 3));
 				cancelButton.disable();
 			}
 			
 			if (run.getStatus() == BatchTestStatus.DONE ||
 					run.getStatus() == BatchTestStatus.FAILED ||
 					run.getStatus() == BatchTestStatus.CANCELED) {
-				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.elementAt(row, 3));
+				WPushButton clearButton = new WPushButton(tr("form.batchtest.running.control.clear"), table.getElementAt(row, 3));
 				clearButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent a) {
 						int row = runningList.indexOf(run);

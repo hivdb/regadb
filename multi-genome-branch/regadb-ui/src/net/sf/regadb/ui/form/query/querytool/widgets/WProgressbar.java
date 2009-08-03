@@ -10,6 +10,8 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 
+//TODO REMOVE
+
 public class WProgressbar extends WStyledContainerWidget {
 	private int progress;
 	
@@ -38,7 +40,7 @@ public class WProgressbar extends WStyledContainerWidget {
 		time = new WTimer();
 		time.setInterval(100);
 		setProgress(0);
-		setText(lt(""));
+		setText("");
 
 		time.start();
 		time.timeout().addListener(this, new Signal.Listener() {
@@ -53,7 +55,7 @@ public class WProgressbar extends WStyledContainerWidget {
 	}
 	
 	private void setProgress(int progress) {
-		progressBar.resize(new WLength(progress, WLength.Unit.Percentage), progressBar.height());
+		progressBar.resize(new WLength(progress, WLength.Unit.Percentage), progressBar.getHeight());
 		
 		for (ProgressListener l : progressListeners) {
 			l.progressChanged(reporter);
@@ -69,8 +71,8 @@ public class WProgressbar extends WStyledContainerWidget {
 		return reporter.isDone();
 	}
 	
-	public void setText(WString txt) {
-		progressText.setText( lt("" + getProgress() + "% " + txt.value()) );
+	public void setText(CharSequence txt) {
+		progressText.setText( "" + getProgress() + "% " + txt.toString() );
 	}
 	
 	public interface ProgressListener {

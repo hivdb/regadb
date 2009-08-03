@@ -45,7 +45,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     {
         TextField dsTF = (TextField)widgets[0];
         MyComboBox priv = (MyComboBox)widgets[1];
-        Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
+        Privileges privillege = ((DataComboMessage<Privileges>)priv.getCurrentText()).getDataValue();
         
         for(DatasetAccess cuda : currentUserDatasetAccess)
         {
@@ -60,7 +60,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public void changeData(DatasetAccess da, WWidget[] widgets)
     {
         MyComboBox priv = (MyComboBox)widgets[1];
-        Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
+        Privileges privillege = ((DataComboMessage<Privileges>)priv.getCurrentText()).getDataValue();
         da.setPermissions(privillege.getValue());
     }
     
@@ -153,14 +153,9 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
         return widgets;
     }
     
-    private WString getPrivilegeMessage(Privileges p)
-    {
-        return WWidget.tr("privilege.status."+p.toString());
-    }
-    
     private String getPrivilegeString(Privileges p)
     {
-        return WWidget.tr("privilege.status."+p.toString()).value();
+        return WWidget.tr("privilege.status."+p.toString()).getValue();
     }
     
     public void setTransaction(Transaction transaction) 
@@ -204,7 +199,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     
     private void setRights(MyComboBox datasetCombo, MyComboBox privilegesCombo)
     {
-        Privileges daPermissions = Privileges.getPrivilege(((DataComboMessage<DatasetAccess>)datasetCombo.currentText()).getValue().getPermissions());
+        Privileges daPermissions = Privileges.getPrivilege(((DataComboMessage<DatasetAccess>)datasetCombo.getCurrentText()).getDataValue().getPermissions());
         privilegesCombo.clear();
         for(int i = 0; i<daPermissions.getValue(); i++)
         {
@@ -216,9 +211,9 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public WWidget[] fixAddRow(WWidget[] widgets)
     {
         MyComboBox ds = (MyComboBox)widgets[0];
-        DatasetAccess dsaFromAddRow = ((DataComboMessage<DatasetAccess>)ds.currentText()).getValue();
+        DatasetAccess dsaFromAddRow = ((DataComboMessage<DatasetAccess>)ds.getCurrentText()).getDataValue();
         MyComboBox priv = (MyComboBox)widgets[1];
-        Privileges privillege = ((DataComboMessage<Privileges>)priv.currentText()).getValue();
+        Privileges privillege = ((DataComboMessage<Privileges>)priv.getCurrentText()).getDataValue();
     
         DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(currentUser_, dsaFromAddRow.getId().getDataset()),privillege.getValue(), ((TextField)widgets[2]).text());
         

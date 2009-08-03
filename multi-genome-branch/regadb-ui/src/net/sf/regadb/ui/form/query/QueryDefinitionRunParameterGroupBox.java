@@ -76,7 +76,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     	
     	for(QueryDefinitionRunParameter qdrp : qdrps)
     	{
-    		Label qdpL = new Label(lt(qdrp.getQueryDefinitionParameter().getName()));
+    		Label qdpL = new Label(qdrp.getQueryDefinitionParameter().getName());
     		
     		WWidget w = new TextField(interactionState, queryDefinitionRunForm);
     		Transaction t;
@@ -315,10 +315,10 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     
     private boolean saveDataFormField(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
-    	if(!((((FormField)(parameterTable.elementAt(i,1).children().get(i))).text()).equals("")))
+    	if(!((((FormField)(parameterTable.getElementAt(i,1).getChildren().get(i))).text()).equals("")))
     	{
-    		qdrp.setValue(((FormField)(parameterTable.elementAt(i,1).children().get(i))).text());
-            params.put(qdrp.getQueryDefinitionParameter().getName(), ((FormField)(parameterTable.elementAt(i,1).children().get(i))).text());
+    		qdrp.setValue(((FormField)(parameterTable.getElementAt(i,1).getChildren().get(i))).text());
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((FormField)(parameterTable.getElementAt(i,1).getChildren().get(i))).text());
     		return true;
     	}
     	else
@@ -329,10 +329,10 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
     
     private boolean saveDataComboBox(QueryDefinitionRunParameter qdrp, int i, Map<String, Object> params)
     {
-    	if(((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).currentItem() != null)
+    	if(((ComboBox)(parameterTable.getElementAt(i,1).getChildren().get(i))).currentItem() != null)
     	{
-    		qdrp.setValue(((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).text());
-            params.put(qdrp.getQueryDefinitionParameter().getName(), ((ComboBox)(parameterTable.elementAt(i,1).children().get(i))).currentValue());
+    		qdrp.setValue(((ComboBox)(parameterTable.getElementAt(i,1).getChildren().get(i))).text());
+            params.put(qdrp.getQueryDefinitionParameter().getName(), ((ComboBox)(parameterTable.getElementAt(i,1).getChildren().get(i))).currentValue());
     		return true;
     	}
     	else

@@ -32,7 +32,7 @@ public class WhereClauseNode extends QueryTreeNode{
 			getStyleClasses().addStyle("composedtreenode");
 			String label = getClause().toString();
 			label = label.substring(0, label.indexOf(' '));
-			this.label().setText(lt(label.toLowerCase()));
+			this.getLabel().setText(label.toLowerCase());
 			
 			if (getQueryApp().getEditorModel().getQueryEditor().acceptsAdditionalChild(getClause())) {
 				setButtonPanel(new NonAtomicClauseButtonPanel(this));

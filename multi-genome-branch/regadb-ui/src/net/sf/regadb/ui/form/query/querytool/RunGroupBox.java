@@ -50,8 +50,8 @@ public class RunGroupBox extends WGroupContainer {
 	}
 	
 	private void updateRunningQueries() {
-		while(runStatus.children().size() > 0) {
-			runStatus.removeWidget(runStatus.children().get(0));
+		while(runStatus.getChildren().size() > 0) {
+			runStatus.removeWidget(runStatus.getChildren().get(0));
 		}
 		
 		if (runningQueries.isEmpty() && warning == null) {
@@ -71,19 +71,19 @@ public class RunGroupBox extends WGroupContainer {
 	        for (int i = runningQueries.size()-1 ; i >= 0 ; i--) {
 	        	final QueryToolRunnable qt = runningQueries.get(i);
 	
-				WText lbl = new WText(lt("" + (i+1) + " :"));
+				WText lbl = new WText("" + (i+1) + " :");
 				lbl.setStyleClass("label");
-				table.elementAt(runningQueries.size()-i-1, 0).addWidget(lbl);
+				table.getElementAt(runningQueries.size()-i-1, 0).addWidget(lbl);
 	
 				if (qt.isDone()) {
 					WFileResource res = qt.getDownloadResource();
 					res.suggestFileName("result_"+ (i+1) +".csv");
 					final WAnchor link = new WAnchor(res, qt.getStatusText());
-					table.elementAt(runningQueries.size()-i-1, 1).addWidget(link);
+					table.getElementAt(runningQueries.size()-i-1, 1).addWidget(link);
 				}
 				else {
 					final WText status = new WText(qt.getStatusText());
-					table.elementAt(runningQueries.size()-i-1, 1).addWidget(status);
+					table.getElementAt(runningQueries.size()-i-1, 1).addWidget(status);
 					if (!qt.isFailed()) {
 						done = false;
 					}
@@ -95,13 +95,13 @@ public class RunGroupBox extends WGroupContainer {
 								qt.cancel();
 							}
 						});
-						table.elementAt(runningQueries.size()-i-1, 2).addWidget(cancelButton);
+						table.getElementAt(runningQueries.size()-i-1, 2).addWidget(cancelButton);
 					}
 				}
 				
-				table.elementAt(runningQueries.size()-i-1, 0).setStyleClass("resultNumber");
-				table.elementAt(runningQueries.size()-i-1, 1).setStyleClass("resultStatus");
-				table.elementAt(runningQueries.size()-i-1, 2).setStyleClass("resultCancel");
+				table.getElementAt(runningQueries.size()-i-1, 0).setStyleClass("resultNumber");
+				table.getElementAt(runningQueries.size()-i-1, 1).setStyleClass("resultStatus");
+				table.getElementAt(runningQueries.size()-i-1, 2).setStyleClass("resultCancel");
 	        }		
 		}
         if (done) {

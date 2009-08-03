@@ -30,7 +30,7 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     {
     }
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

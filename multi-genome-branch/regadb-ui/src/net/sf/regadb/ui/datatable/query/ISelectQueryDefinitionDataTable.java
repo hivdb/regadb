@@ -24,7 +24,7 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
     private static int[] colWidths = {30,50,20};
     private IFilter[] filters_ = new IFilter[3];
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

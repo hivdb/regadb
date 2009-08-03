@@ -10,8 +10,6 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTreeNode;
-import eu.webtoolkit.jwt.WebSession;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 public abstract class TreeMenuNode extends WTreeNode
 {
@@ -22,14 +20,13 @@ public abstract class TreeMenuNode extends WTreeNode
 		setInteractive(false);
 		setLabelIcon(null);
 		
-		String contextPath = WebSession.Handler.instance().request().getContextPath();
-		setImagePack(StringUtils.terminate(contextPath, '/') + "pics/");
+		setImagePack("pics/");
 		
 		this.setChildCountPolicy(ChildCountPolicy.Disabled);
 		
 		setStyle();
 		
-		label().clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
+		getLabel().clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 		{
 			public void trigger(WMouseEvent a)
 			{
@@ -50,7 +47,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	public void prograSelectNode()
 	{
 		if(getParent()!=null)
-			getParent().expand();	
+			getParentNode().expand();	
 		selectNode();
 	}
 	
@@ -70,12 +67,12 @@ public abstract class TreeMenuNode extends WTreeNode
 			RegaDBMain.getApp().getTree().setSelectedTreeNode(TreeMenuNode.this);
 			
 			openOnlyOneMenuPath();
-			if(childNodes().size()>0)
+			if(getChildNodes().size()>0)
 			{
 			expand();
 			}
 			
-			for(WTreeNode node : childNodes())
+			for(WTreeNode node : getChildNodes())
 			{
 				if(node instanceof TreeMenuNode)
 				{
@@ -95,11 +92,11 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		if(isEnabled())
 		{
-			label().setStyleClass("treemenu-menuItem");
+			getLabel().setStyleClass("treemenu-menuItem");
 		}
 		else
 		{
-			label().setStyleClass("treemenu-disabledMenuItem");
+			getLabel().setStyleClass("treemenu-disabledMenuItem");
 		}
 	}
 	
@@ -112,7 +109,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		ArrayList<TreeMenuNode> treeMenuNodeList = new ArrayList<TreeMenuNode>();
 		
-		for(WTreeNode node : childNodes())
+		for(WTreeNode node : getChildNodes())
 		{
 			if(node instanceof TreeMenuNode)
 			{
@@ -123,9 +120,9 @@ public abstract class TreeMenuNode extends WTreeNode
 		return treeMenuNodeList;
 	}
 	
-	public TreeMenuNode getParent()
+	public TreeMenuNode getParentNode()
 	{
-		return (TreeMenuNode)this.parentNode();
+		return (TreeMenuNode)super.getParentNode();
 	}
 	
 	public TreeMenuNode findChild(String intlKey)
@@ -135,16 +132,16 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	private static TreeMenuNode findChildInNode(TreeMenuNode rootNode, String intlKey, boolean deep)
 	{
-		if(UIUtils.keyOrValue(((TreeMenuNode)rootNode).label().text()).equals(intlKey))
+		if(UIUtils.keyOrValue(((TreeMenuNode)rootNode).getLabel().getText()).equals(intlKey))
 		{
 			return rootNode;
 		}
 		
-		for(WTreeNode node : rootNode.childNodes())
+		for(WTreeNode node : rootNode.getChildNodes())
 		{
 			if(node instanceof TreeMenuNode)
 			{
-				if(UIUtils.keyOrValue(((TreeMenuNode)node).label().text()).equals(intlKey))
+				if(UIUtils.keyOrValue(((TreeMenuNode)node).getLabel().getText()).equals(intlKey))
 				{
 					return (TreeMenuNode)node;
 				}
@@ -168,11 +165,11 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		if(isEnabled())
 		{
-			label().setStyleClass("treemenu-selectedMenuItem");
+			getLabel().setStyleClass("treemenu-selectedMenuItem");
 		}
 		else
 		{
-			label().setStyleClass("treemenu-disabledMenuItem");
+			getLabel().setStyleClass("treemenu-disabledMenuItem");
 		}
 	}
 	
@@ -180,11 +177,11 @@ public abstract class TreeMenuNode extends WTreeNode
 	{
 		if(isEnabled())
 		{
-			label().setStyleClass("treemenu-menuItem");
+			getLabel().setStyleClass("treemenu-menuItem");
 		}
 		else
 		{
-			label().setStyleClass("treemenu-disabledMenuItem");
+			getLabel().setStyleClass("treemenu-disabledMenuItem");
 		}
 	}
 	
@@ -201,7 +198,7 @@ public abstract class TreeMenuNode extends WTreeNode
     
     public void refreshAllChildren()
     {
-        for(WTreeNode node : childNodes())
+        for(WTreeNode node : getChildNodes())
         {
             node.refresh();
             if(node instanceof TreeMenuNode)
@@ -218,7 +215,7 @@ public abstract class TreeMenuNode extends WTreeNode
 		return;	
 		}
 		
-		for(WTreeNode node : getParent().childNodes())
+		for(WTreeNode node : getParentNode().getChildNodes())
 		{
 			if(node.isExpanded() && node!=this)
 			{

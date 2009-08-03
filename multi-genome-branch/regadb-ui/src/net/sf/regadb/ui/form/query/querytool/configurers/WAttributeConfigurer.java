@@ -47,7 +47,7 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 	private void changeSelection() {
 		int index = ovar.getSelectedIndex();
 		if (index >= 0 && index < constantPanels.size()) {
-			contentTable.removeWidget(contentTable.children().get(0));
+			contentTable.removeWidget(contentTable.getChildren().get(0));
 			contentTable.addWidget((WWidget) constantPanels.get(index));
 		}
 	}

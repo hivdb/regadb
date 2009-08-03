@@ -46,7 +46,7 @@ public class QueryToolThread {
 		//TODO
 		//????
 		
-		return WString.tr("file.query.querytool").value();
+		return WString.tr("file.query.querytool").getValue();
 	}      
 	
     public void startQueryThread()

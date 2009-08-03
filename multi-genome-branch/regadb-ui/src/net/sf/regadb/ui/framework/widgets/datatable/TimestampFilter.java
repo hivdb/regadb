@@ -13,7 +13,7 @@ public class TimestampFilter extends DateFilter {
 
 	public Object getFirstDate()
     {
-	    Date d = DateUtils.parse(getDateField1().text());
+	    Date d = DateUtils.parse(getDateField1().getText());
 	    if(d == null)
 	        d = new Date();
 	    
@@ -22,7 +22,7 @@ public class TimestampFilter extends DateFilter {
     
     public Object getSecondDate()
     {
-        Date d = DateUtils.parse(getDateField2().text());
+        Date d = DateUtils.parse(getDateField2().getText());
         if(d == null)
             d = new Date();
 

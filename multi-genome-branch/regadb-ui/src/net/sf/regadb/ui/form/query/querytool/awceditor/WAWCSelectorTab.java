@@ -51,7 +51,7 @@ public class WAWCSelectorTab extends WAWCSelectorPanel {
         	}
         }
         WAWCSelectorPanel newPanel = new WComposedAWCSelectorPanel(context, clause);
-        newPanel.setStyleClass(newPanel.styleClass() + " " + (selectorPanels.size() % 2 == 0 ? "even":"odd"));
+        newPanel.setStyleClass(newPanel.getStyleClass() + " " + (selectorPanels.size() % 2 == 0 ? "even":"odd"));
         group.addButton(newPanel.getRadioButtons().get(0));
         if (!firstChecked) {
         	newPanel.getRadioButtons().get(0).setChecked(true);

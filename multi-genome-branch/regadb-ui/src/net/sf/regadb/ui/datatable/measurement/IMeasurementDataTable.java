@@ -38,7 +38,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		
 	}
 	
-	public WString[] getColNames()
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}

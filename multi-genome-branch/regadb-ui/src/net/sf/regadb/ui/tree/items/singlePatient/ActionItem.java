@@ -64,7 +64,7 @@ public class ActionItem extends TreeMenuNode
 	public boolean isEnabled()
 	{
 		if(getParent()!=null)
-			return getParent().isEnabled();
+			return getParentNode().isEnabled();
 		else 
 			return true;
 	}

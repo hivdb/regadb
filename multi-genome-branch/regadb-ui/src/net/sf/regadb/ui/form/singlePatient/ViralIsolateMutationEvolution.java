@@ -34,7 +34,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     
     public void init() {
         viralIsolatesTable_ = new SimpleTable(this);
-        viralIsolatesTable_.setStyleClass(viralIsolatesTable_.styleClass() + " viral-isolate-table");
+        viralIsolatesTable_.setStyleClass(viralIsolatesTable_.getStyleClass() + " viral-isolate-table");
         
         
         viralIsolatesTable_.setHeaders(tr("form.viralIsolate.evolution.mutation.table.header.sampleIdDate"),
@@ -60,30 +60,30 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             aaseqs = getAaSeqsForViralIsolateSortedByProtein(vis.get(i));
             
             sampleId = new WText();
-            sampleId.setText(lt(vis.get(i).getSampleId() + "<br/>" + DateUtils.format(vis.get(i).getSampleDate())));
-            viralIsolatesTable_.elementAt(rowCounter, 0).addWidget(sampleId);
-            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
+            sampleId.setText(vis.get(i).getSampleId() + "<br/>" + DateUtils.format(vis.get(i).getSampleDate()));
+            viralIsolatesTable_.getElementAt(rowCounter, 0).addWidget(sampleId);
+            viralIsolatesTable_.getElementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();
-                protein.setText(lt(aaseq.getProtein().getAbbreviation()));
-                viralIsolatesTable_.elementAt(rowCounter, 1).addWidget(protein);
+                protein.setText(aaseq.getProtein().getAbbreviation());
+                viralIsolatesTable_.getElementAt(rowCounter, 1).addWidget(protein);
                 
                 region = new WText();
-                region.setText(lt(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos()));
-                viralIsolatesTable_.elementAt(rowCounter, 2).addWidget(region);
+                region.setText(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos());
+                viralIsolatesTable_.getElementAt(rowCounter, 2).addWidget(region);
                 
                 mutations = new WText();
-                mutations.setText(lt(MutationHelper.getWildtypeMutationList(aaseq)));
-                viralIsolatesTable_.elementAt(rowCounter, 3).addWidget(mutations);
+                mutations.setText(MutationHelper.getWildtypeMutationList(aaseq));
+                viralIsolatesTable_.getElementAt(rowCounter, 3).addWidget(mutations);
                 
                 changes = new WText();
                 String changesS = "";
                 if(i-1>=0) {
                     changesS = diff(aaseq, vis.get(i-1));
                 }
-                changes.setText(lt(changesS));
-                viralIsolatesTable_.elementAt(rowCounter, 4).addWidget(changes);
+                changes.setText(changesS);
+                viralIsolatesTable_.getElementAt(rowCounter, 4).addWidget(changes);
                 
                 rowCounter++;
             }

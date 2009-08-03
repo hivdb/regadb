@@ -31,7 +31,7 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 
 	private static int[] colWidths = {25,25,25,25};
 	
-	public WString[] getColNames() 
+	public CharSequence[] getColNames() 
 	{
 		return _colNames;
 	}

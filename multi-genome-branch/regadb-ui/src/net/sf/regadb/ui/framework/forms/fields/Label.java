@@ -16,7 +16,7 @@ public class Label extends WLabel
 		asterisk_.setAlternateText(tr("form.label.alternateText.isRequired"));
 	}
 	
-	public Label(WString labelText)
+	public Label(CharSequence labelText)
 	{
 		super(labelText);
         this.setStyleClass("form-label");

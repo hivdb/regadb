@@ -105,7 +105,7 @@ public class MultipleTestResultForm extends FormWidget {
         testGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         
         for(Test t : tests_) {
-            Label l = new Label(lt(TestComboBox.getLabel(t)));
+            Label l = new Label(TestComboBox.getLabel(t));
             FormField testResultField;
             if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
                 testResultField = new ComboBox(getInteractionState(), this);
@@ -156,7 +156,7 @@ public class MultipleTestResultForm extends FormWidget {
 	        setUseContactDate(useContactDate && getInteractionState() != InteractionState.Viewing);
 	        
 	        for(Event e : events_) {
-	            Label l = new Label(lt(e.getName()));
+	            Label l = new Label(e.getName());
 	            FormField eventValueField;
 	            if(ValueTypes.getValueType(e.getValueType()) == ValueTypes.NOMINAL_VALUE) {
 	                eventValueField = new ComboBox(getInteractionState(), this);
@@ -325,7 +325,7 @@ public class MultipleTestResultForm extends FormWidget {
             if(f instanceof ComboBox) {
                 if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
                     tr = p.createTestResult(tests_.get(i));
-                    tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue());
+                    tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
@@ -347,7 +347,7 @@ public class MultipleTestResultForm extends FormWidget {
             if(f instanceof ComboBox) {
                 if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
                     pev = p.createPatientEventValue(events_.get(i));
-                    pev.setEventNominalValue(((DataComboMessage<EventNominalValue>)((ComboBox)f).currentItem()).getValue());
+                    pev.setEventNominalValue(((DataComboMessage<EventNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {

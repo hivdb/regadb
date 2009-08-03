@@ -25,9 +25,10 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
 	}
 	
 	public void initConfigurers() {
+		//TODO check
 		// clear() does not work
-		while (children().size() > 0) {
-			this.removeWidget(children().get(0));
+		while (getChildren().size() > 0) {
+			this.removeWidget(getChildren().get(0));
 		}
 		
 		for (WordConfigurer confy : configurers) {

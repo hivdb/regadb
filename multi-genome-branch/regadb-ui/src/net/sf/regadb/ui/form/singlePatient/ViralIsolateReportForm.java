@@ -67,7 +67,7 @@ public class ViralIsolateReportForm extends WContainerWidget
         generateButton_ = new WPushButton(tr("form.viralIsolate.editView.report.generateButton"));
         reportTable_.addLineToTable(generateLabel, generateButton_);
         reportL = new Label(tr("form.viralIsolate.editView.report.report"));
-        reportA_ = new WAnchor("dummy", lt(""));
+        reportA_ = new WAnchor("dummy", "");
         reportA_.setStyleClass("link");
         reportTable_.addLineToTable(reportL, reportA_);
         
@@ -90,7 +90,7 @@ public class ViralIsolateReportForm extends WContainerWidget
                     
                     String fileName = viralIsolateForm_.getViralIsolate().getSampleId() + "_" +algorithmCB_.currentValue().getDescription()+"_"+resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
                     
-                    reportA_.setText(lt(fileName));
+                    reportA_.setText(fileName);
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
                     memResource.setData(report.getReport());
                     memResource.suggestFileName(fileName);

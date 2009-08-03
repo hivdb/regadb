@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.WString;
 
 public class AttributeFilter extends WContainerWidget implements IFilter 
 {
-    private static WString noAttribute = lt("No attribute");
+    private static CharSequence noAttribute = "No attribute";
     
     private Attribute attribute_=null;
     private IFilter filter_=null;
@@ -46,13 +46,13 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         addWidget(getAttributeCombo());
         
         for(Attribute a : l){
-            getAttributeCombo().addItem(lt(a.getName()));
+            getAttributeCombo().addItem(a.getName());
         }
         getAttributeCombo().sort();
         getAttributeCombo().insertItem(0, noAttribute);
         
         if(getAttribute() != null)
-            getAttributeCombo().setCurrentItem(lt(getAttribute().getName()));
+            getAttributeCombo().setCurrentItem(getAttribute().getName());
         else
             getAttributeCombo().setCurrentItem(noAttribute);
         
@@ -60,7 +60,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
                 {
             public void trigger()
             {
-                changeAttribute(getAttributeCombo().currentText().value());
+                changeAttribute(getAttributeCombo().getCurrentText().getValue());
                 FilterTools.findDataTable(getAttributeCombo()).applyFilter();
             }
         });
@@ -83,7 +83,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
     public void changeAttribute(String attributeName){
         Attribute a = null;
         
-        if(!attributeName.equals(noAttribute.value())){
+        if(!attributeName.equals(noAttribute.toString())){
             List<Attribute> l = getTransaction().getAttributes(attributeName);
             if(l != null || l.size() > 0)
                 a = l.get(0);
@@ -169,7 +169,7 @@ public class AttributeFilter extends WContainerWidget implements IFilter
         {
             for(AttributeNominalValue anv : getAttribute().getAttributeNominalValues())
             {
-                combo.addItem(lt(anv.getValue()));
+                combo.addItem(anv.getValue());
             }
         }
     }

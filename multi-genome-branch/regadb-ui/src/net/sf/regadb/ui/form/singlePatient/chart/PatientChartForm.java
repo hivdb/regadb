@@ -26,23 +26,19 @@ public class PatientChartForm extends WGroupBox implements IForm
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);
 		final PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
-        
-        WImage chartImage = new WImage(new WResource() {
-            public String resourceMimeType() {
-                return "image/png";
-            }
 
+		//TODO 
+		//how to set mimetype????
+        WImage chartImage = new WImage(new WResource() {
         	protected void handleRequest(WebRequest request, WebResponse response) {
         		try {
-        			// TODO
-        			// is this OK, to use the outputsream??
         			chartDrawer.writePngChart(800, response.getOutputStream());
         		} catch (IOException e) {
         			e.printStackTrace();
         		}
         	}
             
-        }, lt("Patient Chart"), this);
+        }, "Patient Chart", this);
 
 		t.commit();
 	}

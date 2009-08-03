@@ -140,7 +140,7 @@ public class ViralIsolateForm extends FormWidget
 	
 	private Genome blast(){
 	    Genome genome = null;
-	    NtSequence ntseq = ((DataComboMessage<NtSequence>)_mainForm.getSeqComboBox().currentText()).getValue();
+	    NtSequence ntseq = ((DataComboMessage<NtSequence>)_mainForm.getSeqComboBox().getCurrentText()).getDataValue();
 	    
         if(ntseq != null){
             BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());

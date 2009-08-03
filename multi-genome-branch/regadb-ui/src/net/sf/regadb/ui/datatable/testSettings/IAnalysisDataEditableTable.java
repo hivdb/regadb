@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WMemoryResource;
+import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WWidget;
 
 public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
@@ -41,8 +42,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         TextField tf = new TextField(InteractionState.Viewing, form_);
         tf.setText(type.getName());
 
-        WMemoryResource resource = new WMemoryResource(type.getMimetype(), tf);
-        WAnchor anchor = new WAnchor(resource, WWidget.lt(type.getName()));
+        WMemoryResource resource = new WMemoryResource(type.getMimetype());
+        WAnchor anchor = new WAnchor(resource, type.getName());
         resource.setData(type.getData());
         
         anchor.setStyleClass("link");
@@ -59,9 +60,9 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         WAnchor anchor = (WAnchor)widgets[1];
         
         type.setName(tf.text());
-        WMemoryResource mem = (WMemoryResource)anchor.resource();
-        type.setMimetype(mem.mimeType());
-        type.setData(mem.data());
+        WMemoryResource mem = (WMemoryResource)anchor.getResource();
+        type.setMimetype(mem.getMimeType());
+        type.setData(mem.getData());
     }
     
     public void addData(WWidget[] widgets)
@@ -69,11 +70,11 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         TextField tf = (TextField)widgets[0];
         WAnchor anchor = (WAnchor)widgets[1];
         
-        WMemoryResource mem = (WMemoryResource)anchor.resource();
+        WMemoryResource mem = (WMemoryResource)anchor.getResource();
         
-        AnalysisData data = new AnalysisData(analysis_, mem.mimeType());
+        AnalysisData data = new AnalysisData(analysis_, mem.getMimeType());
         data.setName(tf.text());
-        data.setData(mem.data());
+        data.setData(mem.getData());
         
         analysis_.getAnalysisDatas().add(data);
     }
@@ -96,7 +97,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         MyComboBox cb = new MyComboBox();
         for(String ifn : inputFileNames_)
         {
-            cb.addItem(WWidget.lt(ifn));
+            cb.addItem(ifn);
         }
         UploadFile upload = new UploadFile(getInteractionState(), form_);
         
@@ -120,9 +121,9 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             byte[] data = null;
             try 
             {
-            	if(add_uf.getFileUpload().spoolFileName().equals(""))
+            	if(add_uf.getFileUpload().getSpoolFileName().equals(""))
             		return null;
-                data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().spoolFileName()));
+                data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().getSpoolFileName()));
             } 
             catch (IOException e) 
             {
@@ -134,8 +135,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             
             AnalysisData analysisData = new AnalysisData();
             analysisData.setData(data);
-            analysisData.setMimetype(add_uf.getFileUpload().contentDescription());
-            analysisData.setName(add_cb.currentText().value());
+            analysisData.setMimetype(add_uf.getFileUpload().getContentDescription());
+            analysisData.setName(add_cb.getCurrentText().getValue());
             
             return getWidgets(analysisData);
         }

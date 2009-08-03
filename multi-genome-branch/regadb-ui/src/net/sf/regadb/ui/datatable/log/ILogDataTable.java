@@ -27,7 +27,7 @@ public class ILogDataTable implements IDataTable<File> {
     private static Comparator<File>[] comparators_ = new Comparator[]{ new FileDateComparator(), new FileNameComparator(), new FileSizeComparator() };
     private static boolean[] sortable_ = {true, true, true};
 
-    public WString[] getColNames() {
+    public CharSequence[] getColNames() {
         return colNames_;
     }
     

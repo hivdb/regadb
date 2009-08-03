@@ -36,7 +36,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	
 	private static boolean [] sortable_ = {true, true, false, false};
 	private static int[] colWidths = {25,25,25,25};
-	public WString[] getColNames()
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}

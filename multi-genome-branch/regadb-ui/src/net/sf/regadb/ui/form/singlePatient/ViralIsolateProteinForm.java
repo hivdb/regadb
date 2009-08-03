@@ -105,8 +105,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		alignmentL = new Label(tr("form.viralIsolate.editView.label.alignment"));
 		alignmentTF = new WText(viralIsolateForm_);
 		WFont alignmentFont = new WFont();
-		alignmentFont.setFamily(WFont.GenericFamily.Monospace, lt("Courier"));
-		alignmentTF.decorationStyle().setFont(alignmentFont);
+		alignmentFont.setFamily(WFont.GenericFamily.Monospace, "Courier");
+		alignmentTF.getDecorationStyle().setFont(alignmentFont);
 		proteinGroupTable_.addLineToTable(alignmentL, alignmentTF);
 		synonymousL = new Label(tr("form.viralIsolate.editView.label.synonymous"));
 		synonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
@@ -190,7 +190,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
         
     		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
     		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
-    		alignmentTF.setText(lt("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>"));
+    		alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
             synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
             nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
             

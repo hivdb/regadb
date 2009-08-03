@@ -55,8 +55,8 @@ public class ExportForm extends FormWidget {
 		
 		Label formatL = new Label(tr("form.impex.export.format"));
 		format = new WComboBox();
-		format.addItem(lt("XML"));
-		format.addItem(lt("CSV"));
+		format.addItem("XML");
+		format.addItem("CSV");
 		table_.addLineToTable(formatL, format);
 		
 		WPushButton export = new WPushButton(tr("form.impex.export.title"));
@@ -73,9 +73,9 @@ public class ExportForm extends FormWidget {
 			    	anchor.setHidden(true);
     			    Dataset ds = datasets.currentValue();
     			    deleteExportFile();
-    			    if(format.currentText().value().equals("XML")) {
+    			    if(format.getCurrentText().getValue().equals("XML")) {
     			    	exportXml(ds);
-    			    } else if (format.currentText().value().equals("CSV")){
+    			    } else if (format.getCurrentText().getValue().equals("CSV")){
     			    	exportCsv(ds);
     			    }
     			    anchor.setHidden(false);
@@ -112,12 +112,12 @@ public class ExportForm extends FormWidget {
 			e.printStackTrace();
 		}
         
-        table_.elementAt(0, 2).clear();
+        table_.getElementAt(0, 2).clear();
         
         String fileName = ds.getDescription() + "_csv_export.zip";
-        anchor.setText(lt(fileName));
+        anchor.setText(fileName);
         anchor.setResource(new WFileResource("application/zip", exportFile.getAbsolutePath()));
-        anchor.resource().suggestFileName(fileName);
+        anchor.getResource().suggestFileName(fileName);
 	}
 	
 	private void exportXml(Dataset ds) throws FileNotFoundException {
@@ -128,10 +128,10 @@ public class ExportForm extends FormWidget {
         PatientExporter<Patient> exportPatient = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
         exportPatient.run();
         
-        table_.elementAt(0, 2).clear();
+        table_.getElementAt(0, 2).clear();
         
         String fileName = ds.getDescription() + "_export.xml";
-        anchor.setText(lt(fileName));
+        anchor.setText(fileName);
         WFileResource wfr = new WFileResource("text/txt", exportFile.getAbsolutePath());
         anchor.setResource(wfr);
         wfr.suggestFileName(fileName);

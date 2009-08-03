@@ -31,7 +31,7 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
         
     }
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

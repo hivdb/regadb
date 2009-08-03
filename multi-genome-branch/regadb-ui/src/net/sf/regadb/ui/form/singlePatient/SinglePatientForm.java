@@ -97,7 +97,7 @@ public class SinglePatientForm extends FormWidget
                 WAnchor anchor = new WAnchor(new WFileResource("xml", tmpFile.getAbsolutePath()), WWidget.lt("patient xml file"), parent.elementAt(parent.numRows()-1, 1));
             }
         });*/
-        generalGroupTable_.columnCount();
+        generalGroupTable_.getColumnCount();
         
         fillData(patient_);
         
@@ -199,7 +199,7 @@ public class SinglePatientForm extends FormWidget
             attributesGroupTable_.setStyleClass("datatable");
             int rowToPlace;
             TableExpander attributeGroup;
-            WString groupMessage;
+            CharSequence groupMessage;
             Label attributeLabel;
             FormField attributeFieldTF = null;
             ComboBox<AttributeNominalValue> attributeFieldCB;
@@ -213,25 +213,25 @@ public class SinglePatientForm extends FormWidget
                 }
                 else
                 {
-                    groupMessage = lt(entry.getKey());
-                    rowToPlace = attributesGroupTable_.rowCount();
+                    groupMessage = entry.getKey();
+                    rowToPlace = attributesGroupTable_.getRowCount();
                 }
                 addRowIfNotEmpty(rowToPlace);
                 attributeGroup = new TableExpander(groupMessage, attributesGroupTable_, rowToPlace);
-                attributesGroupTable_.elementAt(rowToPlace, 0).setColumnSpan(2);
+                attributesGroupTable_.getElementAt(rowToPlace, 0).setColumnSpan(2);
                 
                 for(Pair<Attribute, PatientAttributeValue> attrEl : entry.getValue())
                 {
                     rowToPlace++;
                     addRowIfNotEmpty(rowToPlace);
-                    attributeLabel = new Label(lt(attrEl.getKey().getName()));
+                    attributeLabel = new Label(attrEl.getKey().getName());
                     attributePairs_.put(attributeLabel, attrEl.getKey());
-                    attributesGroupTable_.elementAt(rowToPlace, 0).addWidget(attributeLabel);
-                    attributesGroupTable_.elementAt(rowToPlace, 0).setStyleClass("form-label-area");
+                    attributesGroupTable_.getElementAt(rowToPlace, 0).addWidget(attributeLabel);
+                    attributesGroupTable_.getElementAt(rowToPlace, 0).setStyleClass("form-label-area");
                     if(attrEl.getKey().getValueType().getDescription().equals("nominal value"))
                     {
                         attributeFieldCB = new ComboBox<AttributeNominalValue>(getInteractionState(), this);
-                        attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldCB);
+                        attributesGroupTable_.getElementAt(rowToPlace, 1).addWidget(attributeFieldCB);
                         
                         for(AttributeNominalValue nominalVal : attrEl.getKey().getAttributeNominalValues())
                         {
@@ -264,9 +264,9 @@ public class SinglePatientForm extends FormWidget
                             else
                                 attributeFieldTF.setText(attrEl.getValue().getValue());
                         }
-                        attributesGroupTable_.elementAt(rowToPlace, 1).addWidget(attributeFieldTF);
+                        attributesGroupTable_.getElementAt(rowToPlace, 1).addWidget(attributeFieldTF);
                     }
-                    attributesGroupTable_.elementAt(rowToPlace, 1).setStyleClass("form-value-area");
+                    attributesGroupTable_.getElementAt(rowToPlace, 1).setStyleClass("form-value-area");
                 }
                 attributeGroup.expand(true);
             }
@@ -277,7 +277,7 @@ public class SinglePatientForm extends FormWidget
     
     public void addRowIfNotEmpty(int row)
     {
-        if(attributesGroupTable_.elementAt(row, 0).children().size()!=0 || attributesGroupTable_.elementAt(row, 1).children().size()!=0)
+        if(attributesGroupTable_.getElementAt(row, 0).getChildren().size()!=0 || attributesGroupTable_.getElementAt(row, 1).getChildren().size()!=0)
         {
             attributesGroupTable_.insertRow(row);
         }
@@ -349,13 +349,13 @@ public class SinglePatientForm extends FormWidget
         Attribute attribute;
         if(attributesGroupTable_!=null)
         {
-        for(int row = 0; row < attributesGroupTable_.rowCount(); row++)
+        for(int row = 0; row < attributesGroupTable_.getRowCount(); row++)
         {
-                label = attributesGroupTable_.elementAt(row, 0).children().get(0);
+                label = attributesGroupTable_.getElementAt(row, 0).getChildren().get(0);
                 if(label instanceof Label)
                 {
                     attribute = attributePairs_.get(label);
-                    tf = attributesGroupTable_.elementAt(row, 1).children().get(0);
+                    tf = attributesGroupTable_.getElementAt(row, 1).getChildren().get(0);
                     PatientAttributeValue attributeValue = patient_.getAttributeValue(attribute);
     
                     if(tf instanceof TextField)
@@ -383,7 +383,7 @@ public class SinglePatientForm extends FormWidget
                             {
                             attributeValue = patient_.createPatientAttributeValue(attribute);
                             }
-                            attributeValue.setAttributeNominalValue(((DataComboMessage<AttributeNominalValue>)message).getValue());
+                            attributeValue.setAttributeNominalValue(((DataComboMessage<AttributeNominalValue>)message).getDataValue());
                         }
                         else if(attributeValue!=null)
                         {

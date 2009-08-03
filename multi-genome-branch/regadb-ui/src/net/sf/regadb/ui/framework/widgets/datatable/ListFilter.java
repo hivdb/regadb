@@ -64,10 +64,10 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 	 */
 	public WString getComboValue()
 	{
-		if(combo_.currentIndex()==0)
+		if(combo_.getCurrentIndex()==0)
 			return null;
 		else
-			return combo_.currentText();
+			return combo_.getCurrentText();
 	}
 	
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
@@ -77,7 +77,7 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 		if(message!=null)
 		{
 		constraint.clause_ = " " + varName+" = :param" + filterIndex;
-		constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, message.value()));
+		constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, message.getValue()));
 		}
 		
 		return constraint;

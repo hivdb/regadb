@@ -42,7 +42,7 @@ public abstract class FormField extends WContainerWidget implements IFormField
         }
         else
         {
-            WValidator validator = getFormWidget().validator();
+            WValidator validator = getFormWidget().getValidator();
             if(validator==null)
                 return false;
             else
@@ -54,9 +54,9 @@ public abstract class FormField extends WContainerWidget implements IFormField
     {
         boolean valid=true;
 
-        if(getFormWidget().validator()!=null)
+        if(getFormWidget().getValidator()!=null)
         {
-            valid = getFormWidget().validator().validate(getFormText()) == WValidator.State.Valid;
+            valid = getFormWidget().getValidator().validate(getFormText()) == WValidator.State.Valid;
         }
         
         if(valid && isUnique()){
@@ -73,19 +73,19 @@ public abstract class FormField extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory)
     {
-        if(getFormWidget()!=null && getFormWidget().validator()==null)
+        if(getFormWidget()!=null && getFormWidget().getValidator()==null)
         {
             getFormWidget().setValidator(new WValidator());
         }
         if(getFormWidget()!=null)
         {
-            getFormWidget().validator().setMandatory(mandatory);
+            getFormWidget().getValidator().setMandatory(mandatory);
         }
     }
     
     public String text()
     {
-        return getFormWidget()!=null?getFormText():getViewMessage().value();
+        return getFormWidget()!=null?getFormText():getViewMessage().getValue();
     }
     
     public void setText(String text)
@@ -101,18 +101,18 @@ public abstract class FormField extends WContainerWidget implements IFormField
             }
         else
             {
-                setViewMessage(lt(text));
+                setViewMessage(text);
             }
     }
     
-    protected void setViewMessage(WString message)
+    protected void setViewMessage(CharSequence message)
     {
     	_fieldView.setText(message);
     }
     
     protected WString getViewMessage()
     {
-    	return _fieldView.text();
+    	return _fieldView.getText();
     }
     
     public WWidget getWidget()
@@ -121,11 +121,11 @@ public abstract class FormField extends WContainerWidget implements IFormField
     }
     
     public void setConfirmAction(Signal.Listener se) {
-        if(getFormWidget()!=null) {
-        getFormWidget().enterPressed().removeAllListeners();
-        if(se!=null)
-            getFormWidget().enterPressed().addListener(this, se);
-        }
+//        if(getFormWidget()!=null) {
+//        getFormWidget().enterPressed().removeAllListeners();
+//        if(se!=null)
+//            getFormWidget().enterPressed().addListener(this, se);
+//        }
     }
     
     public boolean isUnique(){

@@ -2,6 +2,9 @@ package net.sf.regadb.ui.form.singlePatient;
 
 import eu.webtoolkit.jwt.WString;
 
+/*
+ * TODO remove 
+ */
 
 public class DataComboMessage <DataType> extends WString
 {
@@ -13,7 +16,7 @@ public class DataComboMessage <DataType> extends WString
         value_ = value;
     }
 
-    public DataType getValue() 
+    public DataType getDataValue() 
     {
         return value_;
     }

@@ -25,7 +25,7 @@ public class ITestTypeDataTable implements IDataTable<TestType>
     private static int[] colWidths = {30,10,30,30};
     private static boolean [] sortable_ = {true, true, true, true};
     
-    public WString[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }

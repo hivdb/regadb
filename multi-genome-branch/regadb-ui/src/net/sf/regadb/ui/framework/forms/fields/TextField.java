@@ -98,7 +98,7 @@ public class TextField extends FormField
 
     public String getFormText() 
     {
-        return _fieldEdit.text();
+        return _fieldEdit.getText();
     }
     
     public void setFormText(String text) 
@@ -110,11 +110,11 @@ public class TextField extends FormField
     {
 		if(_fieldEdit!=null)
 		{
-			return _fieldEdit.decorationStyle();
+			return _fieldEdit.getDecorationStyle();
 		}
 		else
 		{
-			return getViewWidget().decorationStyle();
+			return getViewWidget().getDecorationStyle();
 		}
     }
     

@@ -78,7 +78,7 @@ public class LogForm extends FormWidget {
 
         fileContentTA = new TextArea(InteractionState.Viewing,this);
         fileContentTA.setStyleClass("code-area");
-        contentTable.elementAt(0,0).addWidget(fileContentTA);
+        contentTable.getElementAt(0,0).addWidget(fileContentTA);
     }
     
     protected void fillData(){
@@ -87,7 +87,7 @@ public class LogForm extends FormWidget {
             fileDateDF.setDate(new Date(logFile.lastModified()));
             fileSizeTF.setText(FileUtils.getHumanReadableFileSize(logFile));
             
-            fileDownloadA.setText(lt(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]"));
+            fileDownloadA.setText(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
             fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
             
             try{

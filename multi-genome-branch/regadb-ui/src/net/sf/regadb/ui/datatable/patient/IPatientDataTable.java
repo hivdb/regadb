@@ -24,7 +24,7 @@ import eu.webtoolkit.jwt.WString;
 
 public class IPatientDataTable implements IDataTable<Object[]>
 {
-	private List<WString> colNames_ = new ArrayList<WString>();
+	private List<CharSequence> colNames_ = new ArrayList<CharSequence>();
 
 	private List<IFilter> filters_ = new ArrayList<IFilter>();
 
@@ -61,7 +61,7 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	    int i=0;
 	    for(Attribute attribute : attributes){
 	        IFilter filter = AttributeFilter.createFilter(attribute, t);
-	        addColumn(WString.lt(attribute.getName()), filter, "av"+ (i++) +".value", true, width);
+	        addColumn(attribute.getName(), filter, "av"+ (i++) +".value", true, width);
 	    }
 	    
 	    addColumn(WString.tr("dataTable.patient.colName.attribute"), getAttributeFilter(), "av"+ (i) +".value", true, width);
@@ -70,7 +70,7 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	        addColumn(WString.tr("dataTable.patient.colName.sampleId"), new SampleIdFilter(), "vi.sampleId", false, width);
 	}
 	
-	public void addColumn(WString colName, IFilter filter, String varName, boolean sortable, int width){
+	public void addColumn(CharSequence colName, IFilter filter, String varName, boolean sortable, int width){
 	    colNames_.add(colName);
 	    filters_.add(filter);
 	    filterVarNames_.add(varName);
@@ -78,9 +78,9 @@ public class IPatientDataTable implements IDataTable<Object[]>
 	    widths.add(width);
 	}
 
-	public WString[] getColNames()
+	public CharSequence[] getColNames()
 	{
-		return colNames_.toArray(new WString[colNames_.size()]);
+		return colNames_.toArray(new CharSequence[colNames_.size()]);
 	}
 
 	public List<Object[]> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortColIndex, boolean ascending)

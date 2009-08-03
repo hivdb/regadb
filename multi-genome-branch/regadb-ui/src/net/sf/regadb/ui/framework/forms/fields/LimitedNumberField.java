@@ -25,13 +25,13 @@ public class LimitedNumberField extends FormField
             ConfirmUtils.addConfirmAction(form, fieldEdit_);
 
             limiterField_ = new MyComboBox();
-            limiterField_.addItem(lt("<"));
-            limiterField_.addItem(lt("="));
-            limiterField_.addItem(lt(">"));
+            limiterField_.addItem("<");
+            limiterField_.addItem("=");
+            limiterField_.addItem(">");
             WTable table = new WTable(this);
-            table.elementAt(0, 0).addWidget(limiterField_);
-            table.elementAt(0, 0).resize(new WLength(3, WLength.Unit.FontEm), new WLength());
-            table.elementAt(0, 1).addWidget(fieldEdit_);
+            table.getElementAt(0, 0).addWidget(limiterField_);
+            table.getElementAt(0, 0).resize(new WLength(3, WLength.Unit.FontEm), new WLength());
+            table.getElementAt(0, 1).addWidget(fieldEdit_);
             
             flagValid();
         }
@@ -86,17 +86,17 @@ public class LimitedNumberField extends FormField
 
     public String getFormText() 
     {
-        if(fieldEdit_.text().equals(""))
+        if(fieldEdit_.getText().equals(""))
             return "";
         else
-            return limiterField_.currentText().value()+fieldEdit_.text();
+            return limiterField_.getCurrentText().getValue()+fieldEdit_.getText();
     }
     
     public boolean validate()
     {
-        if(getFormWidget().validator()!=null)
+        if(getFormWidget().getValidator()!=null)
         {
-            return getFormWidget().validator().validate(fieldEdit_.text()) == WValidator.State.Valid;
+            return getFormWidget().getValidator().validate(fieldEdit_.getText()) == WValidator.State.Valid;
         }
         return true;
     }

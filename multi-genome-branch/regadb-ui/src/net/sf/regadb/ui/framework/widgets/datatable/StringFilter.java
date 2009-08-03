@@ -39,18 +39,18 @@ public class StringFilter extends WContainerWidget implements IFilter
 	
 	public WString getComboState()
 	{
-		return combo_.currentText();
+		return combo_.getCurrentText();
 	}
 	
 	public String getStringValue()
 	{
-		return tf_.text();
+		return tf_.getText();
 	}
 
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
 		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
 		
-		String operator = getComboState().key();
+		String operator = getComboState().getKey();
 		String param = "param"+filterIndex;
 		
 		if(operator.equals(StringFilter.beginsWith_))

@@ -223,9 +223,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
         for(WWidget widget : genericwidgets)
         {
-            if(!genericDrugs.contains(((ComboBox)widget).currentItem().value()))
+            if(!genericDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
             {
-                genericDrugs.add(((ComboBox)widget).currentItem().value());
+                genericDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
             }
         }
         
@@ -233,9 +233,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
         for(WWidget widget : commercialwidgets)
         {
-            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().value()))
+            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
             {
-                commercialDrugs.add(((ComboBox)widget).currentItem().value());
+                commercialDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
             }
         }
         

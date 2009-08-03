@@ -18,16 +18,16 @@ public class RegaDBWindow extends WTable
 		
 		loadI18nResources();
 		
-		WApplication.instance().useStyleSheet("style/regadb.css");
-		WApplication.instance().useStyleSheet("style/querytool.css");
+		WApplication.getInstance().useStyleSheet("style/regadb.css");
+		WApplication.getInstance().useStyleSheet("style/querytool.css");
 		
 		//! TODO make the edition configurable
-		header_ = new Header(this.elementAt(0, 0), Edition.Clinical);
-		WTable contentTable = new WTable(this.elementAt(1, 0));
-		tree_ = new Tree(contentTable.elementAt(0, 0));
-		contentTable.elementAt(0, 0).setStyleClass("main-tree");
-		container_ = new FormContainer(contentTable.elementAt(0, 1));
-		contentTable.elementAt(0, 1).setStyleClass("formcontent");
+		header_ = new Header(this.getElementAt(0, 0), Edition.Clinical);
+		WTable contentTable = new WTable(this.getElementAt(1, 0));
+		tree_ = new Tree(contentTable.getElementAt(0, 0));
+		contentTable.getElementAt(0, 0).setStyleClass("main-tree");
+		container_ = new FormContainer(contentTable.getElementAt(0, 1));
+		contentTable.getElementAt(0, 1).setStyleClass("formcontent");
 
 	}
 	
@@ -35,7 +35,7 @@ public class RegaDBWindow extends WTable
 	{
 		WStdLocalizedStrings resourceBundle = new WStdLocalizedStrings();
 		resourceBundle.use("net.sf.regadb.ui.i18n.resources.regadb");
-		WApplication.instance().setLocalizedStrings(resourceBundle);
+		WApplication.getInstance().setLocalizedStrings(resourceBundle);
 	}
 
 	public FormContainer getContainer_()
@@ -59,7 +59,7 @@ public class RegaDBWindow extends WTable
 	}
     
     public void newTree() {
-        WTableCell cell = ((WTableCell)tree_.parent());
+        WTableCell cell = ((WTableCell)tree_.getParent());
         cell.clear();
         tree_ = new Tree(cell);
         tree_.init();

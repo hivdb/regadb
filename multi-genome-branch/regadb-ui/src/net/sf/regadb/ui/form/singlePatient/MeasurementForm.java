@@ -76,10 +76,10 @@ public class MeasurementForm extends FormWidget
         testResultL = new Label(tr("form.testResult.editView.testResult"));
         testResultL.setLabelUIMandatory(this);
         testResultC = new WContainerWidget();
-        int row = generalGroupTable_.rowCount();
+        int row = generalGroupTable_.getRowCount();
         generalGroupTable_.putElementAt(row, 0, testResultL);
         generalGroupTable_.putElementAt(row, 1, testResultC);
-        generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
+        generalGroupTable_.getElementAt(row,0).setStyleClass("form-label-area");
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -195,7 +195,7 @@ public class MeasurementForm extends FormWidget
 			    
 		if(testResultField_ instanceof ComboBox)
 		{
-			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getValue());
+			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getDataValue());
             testResult_.setValue(null);
         }
 		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
