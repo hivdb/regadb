@@ -21,7 +21,11 @@ public class SelectionWindow {
 	
 	public static final SelectionWindow PR_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"));
 	public static final SelectionWindow RT_WINDOW_REGION = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "RT"));
-		
+	
+	public static final SelectionWindow HIV_2_P6_WINDOW = new SelectionWindow(Utils.getProtein("HIV-2A", "gag", "p6"));
+	public static final SelectionWindow HIV_2_PR_WINDOW = new SelectionWindow(Utils.getProtein("HIV-2A", "pol", "PR"));
+	public static final SelectionWindow HIV_2_RT_WINDOW = new SelectionWindow(Utils.getProtein("HIV-2A", "pol", "RT"));
+	
 	private Protein protein;
 	//starting point of this window relative to the start of the protein in the AA sequence
 	private int start;

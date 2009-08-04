@@ -23,6 +23,7 @@ public class GetAllSequences extends Query<Patient,NtSequence> {
 	public void process(Patient p) {
 		for(ViralIsolate vi : p.getViralIsolates()){
 			for(NtSequence seq : vi.getNtSequences()){
+				seq.setLabel(p.getPatientId());
 				getNextQuery().process(seq);
 			}
 		}

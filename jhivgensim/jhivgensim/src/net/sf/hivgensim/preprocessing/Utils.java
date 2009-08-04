@@ -13,6 +13,10 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 
+import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.symbol.IllegalSymbolException;
+
 public class Utils {
 	
 	public static String getAlignedNtSequenceString(NtSequence ntseq, SelectionWindow sw){
@@ -129,5 +133,38 @@ public class Utils {
 			}
 		}
 		return null;
-	}	
+	}
+	
+	public static OpenReadingFrame getOpenReadingFrame(String organismName, String orfName){
+		Genome genome = null;
+		for(Genome g : net.sf.regadb.service.wts.util.Utils.getGenomes()){
+			if(g.getOrganismName().equals(organismName)){
+				genome = g;
+				break;
+			}				
+		}
+		if(genome == null){
+			return null;
+		}
+
+		OpenReadingFrame orf = null;
+		for(OpenReadingFrame o : genome.getOpenReadingFrames()){
+			if(o.getName().equals(orfName)){
+				orf = o;
+				break;
+			}
+		}
+		return orf;
+	}
+	
+	public static Sequence getReferenceSequence(String organismName, String orfName){
+		Sequence s = null;
+		OpenReadingFrame orf = getOpenReadingFrame(organismName, orfName);
+		try {
+			s = DNATools.createDNASequence(orf.getReferenceSequence(),orfName);
+		} catch (IllegalSymbolException e) {
+			e.printStackTrace();
+		}
+		return s;
+	}
 }
