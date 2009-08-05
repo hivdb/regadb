@@ -56,7 +56,9 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
     public WString  leaveForm() {
         if(isEditable() && queryTreeTab.getQueryEditor().isDirty()) {
             return tr("form.warning.stillEditing");
-        } else {
+        } else if(runGroup_.isQueryRunning()){
+        	return tr("form.query.querytool.message.stillRunning");
+        } else{
             return null;
         }
     }	

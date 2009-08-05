@@ -116,4 +116,11 @@ public class RunGroupBox extends WGroupContainer {
 		timer.start();
 		updateRunningQueries();
 	}
+	
+	public boolean isQueryRunning(){
+		for(QueryToolRunnable qt : runningQueries)
+			if(qt.isRunning())
+				return true;
+		return false;
+	}
 }
