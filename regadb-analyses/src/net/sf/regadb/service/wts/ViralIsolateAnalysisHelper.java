@@ -8,8 +8,7 @@ import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.service.wts.client.WtsClientFactory;
-import net.sf.wts.client.IWtsClient;
+import net.sf.wts.client.WtsClient;
 
 public class ViralIsolateAnalysisHelper
 {
@@ -25,7 +24,7 @@ public class ViralIsolateAnalysisHelper
     
     private static byte[] runInternal(File resultFile, ViralIsolate vi_, Test test_, int waitDelay_)
     {
-        IWtsClient client = WtsClientFactory.getWtsClient(test_.getAnalysis().getUrl());
+        WtsClient client = new WtsClient(test_.getAnalysis().getUrl());
         
         byte[] result = null;
         String input = "";

@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class Attribute implements java.io.Serializable {
 
-    // Fields    
-
     private Integer attributeIi;
 
     private int version;
@@ -24,18 +22,13 @@ public class Attribute implements java.io.Serializable {
     private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public Attribute() {
     }
 
-    /** minimal constructor */
     public Attribute(String name) {
         this.name = name;
     }
 
-    /** full constructor */
     public Attribute(ValueType valueType, AttributeGroup attributeGroup,
             String name, Set<AttributeNominalValue> attributeNominalValues) {
         this.valueType = valueType;
@@ -44,7 +37,6 @@ public class Attribute implements java.io.Serializable {
         this.attributeNominalValues = attributeNominalValues;
     }
 
-    // Property accessors
     public Integer getAttributeIi() {
         return this.attributeIi;
     }

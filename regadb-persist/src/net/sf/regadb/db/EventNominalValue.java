@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class EventNominalValue implements java.io.Serializable {
 
-    // Fields    
-
     private Integer nominalValueIi;
 
     private int version;
@@ -16,19 +14,14 @@ public class EventNominalValue implements java.io.Serializable {
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public EventNominalValue() {
     }
 
-    /** full constructor */
     public EventNominalValue(Event event, String value) {
         this.event = event;
         this.value = value;
     }
 
-    // Property accessors
     public Integer getNominalValueIi() {
         return this.nominalValueIi;
     }

@@ -3,13 +3,11 @@ package net.sf.regadb.install.initdb;
 import java.util.ArrayList;
 
 import net.sf.regadb.db.AnalysisType;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.QueryDefinitionParameterType;
 import net.sf.regadb.db.QueryDefinitionParameterTypes;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.session.HibernateUtil;
@@ -18,6 +16,7 @@ import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.pair.Pair;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -36,6 +35,11 @@ public class InitRegaDB
         run(null);
     }
     
+    protected boolean isUninitialized(Session session){
+        Query q = session.createQuery("select count(*) from ValueType");
+        return (Long)q.uniqueResult() == 0;
+    }
+    
     public void run(ArrayList<Pair<String, String>> configurations) {
         Session session = null;
         if(configurations==null)
@@ -45,31 +49,27 @@ public class InitRegaDB
         
         session.beginTransaction();
         
-        addAdminUser(session);
-        ArrayList<TestObject> tos = initTestObjects(session);
-        
-        TestObject seqAnalysisTestObject = null;
-        TestObject resistanceTestObject = null;
-        for(TestObject to : tos)
-        {
-            if(to.getDescription().equals("Sequence analysis"))
+        if(isUninitialized(session)){
+            System.err.println("Initializing database.");
+            
+            addAdminUser(session);
+            ArrayList<TestObject> tos = initTestObjects(session);
+            
+            TestObject seqAnalysisTestObject = null;
+            for(TestObject to : tos)
             {
-                seqAnalysisTestObject = to;
+                if(to.getDescription().equals("Sequence analysis"))
+                {
+                    seqAnalysisTestObject = to;
+                }
             }
-            else if(to.getDescription().equals("Resistance test"))
-            {
-                resistanceTestObject = to;
-            }
+            
+            ArrayList<ValueType> valueTypes = initValueTypes(session);
+            initTherapyChangeMotivations(session);
+            AnalysisType wts = initAnalysisTypes(session);
+            initQueryDefinitionParameterTypes(session);
+            initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
         }
-        
-        ArrayList<ValueType> valueTypes = initValueTypes(session);
-        initProteins(session);
-        initTherapyChangeMotivations(session);
-        AnalysisType wts = initAnalysisTypes(session);
-        initQueryDefinitionParameterTypes(session);
-        initSubTypeTests(seqAnalysisTestObject, wts, valueTypes, session);
-        initGssTestType(resistanceTestObject, valueTypes, session);
-        
         session.getTransaction().commit();
         session.close();
     }
@@ -108,8 +108,7 @@ public class InitRegaDB
         SettingsUser admin = new SettingsUser("admin", 0, 0);
         admin.setFirstName("install-admin");
         admin.setLastName("install-admin");
-        admin.setAdmin(true);
-        admin.setEnabled(true);
+        admin.setRole("admin");
         admin.setPassword(Encrypt.encryptMD5("admin"));
         admin.setEmail("regadb-admin@uz.kuleuven.ac.be");
         su_=admin;
@@ -131,11 +130,11 @@ public class InitRegaDB
     {
         ArrayList<TestObject> tos = new ArrayList<TestObject>();
         
-        TestObject patientTest = new TestObject("Patient test", 0);
-        TestObject seqAnalysis = new TestObject("Sequence analysis", 1);
-        TestObject genericDrugTest = new TestObject("Generic drug test", 2);
-        TestObject resistanceTest = new TestObject("Resistance test", 3);
-        TestObject viAnalysis = new TestObject("Viral Isolate analysis", 4);
+        TestObject patientTest      = StandardObjects.getPatientTestObject();
+        TestObject seqAnalysis      = StandardObjects.getSequenceAnalysisTestObject();
+        TestObject genericDrugTest  = StandardObjects.getGenericDrugTestObject();
+        TestObject resistanceTest   = StandardObjects.getResistanceTestObject();
+        TestObject viAnalysis       = StandardObjects.getViralIsolateAnalysisTestObject();
         
         tos.add(patientTest);
         tos.add(seqAnalysis);
@@ -156,11 +155,11 @@ public class InitRegaDB
     {
         ArrayList<ValueType> valueTypes = new ArrayList<ValueType>();
         
-        ValueType number = new ValueType("number");
-        ValueType limitedNumber = new ValueType("limited number (<,=,>)");
-        ValueType string = new ValueType("string");
-        ValueType nominalValue = new ValueType("nominal value");
-        ValueType dateValue = new ValueType("date");
+        ValueType number        = StandardObjects.getNumberValueType();
+        ValueType limitedNumber = StandardObjects.getLimitedNumberValueType();
+        ValueType string        = StandardObjects.getStringValueType();
+        ValueType nominalValue  = StandardObjects.getNominalValueType();
+        ValueType dateValue     = StandardObjects.getDateValueType();
         
         valueTypes.add(number);
         valueTypes.add(limitedNumber);
@@ -175,13 +174,6 @@ public class InitRegaDB
         session.save(dateValue);
         
         return valueTypes;
-    }
-    
-    private void initProteins(Session session)
-    {
-        for(Protein p : StandardObjects.getProteins()) {
-            session.save(p);
-        }
     }
     
     private AnalysisType initAnalysisTypes(Session session)
@@ -231,33 +223,11 @@ public class InitRegaDB
             }
         }
         
-        Test subType = RegaDBWtsServer.getHIV1SubTypeTest(seqAnalysis, wts, stringVT);
-        Test type = RegaDBWtsServer.getHIVTypeTest(seqAnalysis, wts, stringVT);
+        Test subType = RegaDBWtsServer.getSubtypeTest(seqAnalysis, wts, stringVT);
         
         session.save(subType.getTestType());
         session.save(subType.getAnalysis());
         session.save(subType);
-        session.save(type.getTestType());
-        session.save(type.getAnalysis());
-        session.save(type);
-    }
-    
-    private void initGssTestType(TestObject to, ArrayList<ValueType> valueTypes, Session session)
-    {
-        TestType gss = new TestType(to, StandardObjects.getGssId());
-        
-        ValueType numberVT = null;
-        for(ValueType vt : valueTypes)
-        {
-            if(vt.getDescription().equals("number"))
-            {
-                numberVT = vt;
-            }
-        }
-        
-        gss.setValueType(numberVT);
-        
-        session.save(gss);
     }
 
 	public SettingsUser getSu_() {

@@ -13,7 +13,7 @@ import java.awt.geom.Rectangle2D;
  * memory allocation. A common point array is used for all created shapes. The
  * factory methods don't return a new shape, but set the object to the selected
  * shape. Hence, the class is not thread-safe and only one PathIterator can be
- * used at the same time.<br>
+ * used at the same time.<br/>
  * 
  * @author Simon Fischer
  * @version $Id: SymbolShape.java,v 1.1 2006/12/20 09:33:45 plibin0 Exp $

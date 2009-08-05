@@ -8,11 +8,15 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public abstract class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
 {
 	
-    private static String [] _colNames = {"dataTable.queryDefinition.colName.name", "dataTable.queryDefinition.colName.description", "dataTable.queryDefinition.colName.uid"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.queryDefinition.colName.name"),
+        WString.tr("dataTable.queryDefinition.colName.description"),
+        WString.tr("dataTable.queryDefinition.colName.uid")};
     
     private static String[] filterVarNames_ = {"queryDefinition.name", "queryDefinition.description", "queryDefinition.settingsUser.uid"};
         
@@ -20,7 +24,7 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
     private static int[] colWidths = {30,50,20};
     private IFilter[] filters_ = new IFilter[3];
     
-    public String[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }
@@ -74,5 +78,9 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
 
     public int[] getColumnWidths() {
 		return colWidths;
+	}
+    
+	public String[] getRowTooltips(QueryDefinition type) {
+		return null;
 	}
 }

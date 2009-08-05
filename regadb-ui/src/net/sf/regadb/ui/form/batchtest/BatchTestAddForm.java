@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.batchtest;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
@@ -9,12 +10,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
 
 public class BatchTestAddForm extends FormWidget {
 	private ComboBox<Test> cmbTest;
 	
-	public BatchTestAddForm(WMessage formName, InteractionState interactionState) {
+	public BatchTestAddForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		init();
 	}
@@ -40,7 +41,9 @@ public class BatchTestAddForm extends FormWidget {
         for(Test t : tr.getTests())
         {
         	if ( t.getAnalysis() != null && !BatchTestRunningForm.containsRunningTest(t) ) {
-            	cmbTest.addItem(new DataComboMessage<Test>(t, t.getDescription()));
+        		Genome genome = t.getTestType().getGenome();
+        		String genomeString = genome!=null?" ("+genome.getOrganismName()+")":"";
+            	cmbTest.addItem(new DataComboMessage<Test>(t, t.getDescription() + genomeString));
         	}
         }
     	cmbTest.sort();
@@ -54,7 +57,7 @@ public class BatchTestAddForm extends FormWidget {
 	}
 	
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		return null;
 	}
 	

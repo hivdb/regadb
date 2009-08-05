@@ -9,17 +9,23 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ITestTypeDataTable implements IDataTable<TestType>
 {
-    private static String [] _colNames = {"dataTable.testType.colName.description","dataTable.testType.colName.testObject","dataTable.testType.colName.valueType" };
-    private static String[] filterVarNames_ = { "testType.valueType.description", "testType.testObject.description", "testType.description"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.testType.colName.description"),
+        WString.tr("dataTable.testType.colName.organismName"),
+        WString.tr("dataTable.testType.colName.testObject"),
+        WString.tr("dataTable.testType.colName.valueType")};
     
-    private IFilter[] filters_ = new IFilter[3];
-    private static int[] colWidths = {33,34,33};
-    private static boolean [] sortable_ = {true, true, true};
+    private static String[] filterVarNames_ = { "testType.description", "case when genome is null then '' else genome.organismName end", "testType.testObject.description", "testType.valueType.description"};
     
-    public String[] getColNames()
+    private IFilter[] filters_ = new IFilter[4];
+    private static int[] colWidths = {30,10,30,30};
+    private static boolean [] sortable_ = {true, true, true, true};
+    
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }
@@ -46,11 +52,13 @@ public class ITestTypeDataTable implements IDataTable<TestType>
 
     public String[] getRowData(TestType testType)
     {
-        String [] row = new String[3];
+        String [] row = new String[4];
         
         row[0] = testType.getDescription();
-        row[1] = testType.getTestObject().getDescription();
-        row[2] = testType.getValueType().getDescription();
+        row[1] = (testType.getGenome() == null ? "":testType.getGenome().getOrganismName());
+        row[2] = testType.getTestObject().getDescription();
+        row[3] = testType.getValueType().getDescription();
+        
       
         return row;
     }
@@ -60,6 +68,7 @@ public class ITestTypeDataTable implements IDataTable<TestType>
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
+        filters_[3] = new StringFilter();
     }
 
     public void selectAction(TestType selectedItem)
@@ -77,5 +86,9 @@ public class ITestTypeDataTable implements IDataTable<TestType>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(TestType type) {
+		return null;
 	}
 }

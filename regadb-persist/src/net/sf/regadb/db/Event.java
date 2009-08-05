@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class Event implements java.io.Serializable {
 
-    // Fields    
-
     private Integer eventIi;
 
     private int version;
@@ -22,18 +20,13 @@ public class Event implements java.io.Serializable {
     private Set<EventNominalValue> eventNominalValues = new HashSet<EventNominalValue>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public Event() {
     }
 
-    /** minimal constructor */
     public Event(String name) {
         this.name = name;
     }
 
-    /** full constructor */
     public Event(ValueType valueType, String name,
             Set<EventNominalValue> eventNominalValues) {
         this.valueType = valueType;
@@ -41,7 +34,6 @@ public class Event implements java.io.Serializable {
         this.eventNominalValues = eventNominalValues;
     }
 
-    // Property accessors
     public Integer getEventIi() {
         return this.eventIi;
     }

@@ -5,51 +5,73 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.hibernate.Hibernate;
+
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class PersistenceWriteCodeGen {
 
 	public void writeClassToFile() {
-		String total = "";
-
-		//package declaration
-//		total = "package net.sf.regadb.io.persistence;\n\n";        
-
+		
+		/*
+		TODO make this less dirty
+		quick and dirty fix to support link from generic to class and again to all generics from same class 
+		for(Therapy t: p.getTherapies()){
+			for(TherapyCommercial c : t.getTherapyCommercials()){
+				for(DrugGeneric g : c.getId().getDrugCommercial().getDrugGenerics()){
+					for(DrugGeneric g2 : g.getDrugClass().getDrugGenerics()){
+						Hibernate.initialize(g2);
+					}
+				}
+			}
+		 } 
+		 */
+		
+		List<String> ignoreClasses = Arrays.asList(new String[]{
+//			"Dataset","AaMutationId","AaInsertionId"	
+		});
 		//imports
 		InterpreteHbm interpreter = InterpreteHbm.getInstance();
 		String imports = "import net.sf.regadb.db.Patient;\n";
-		Package p = Package.getPackage("net.sf.regadb.db");
-		
-//		for(String className : interpreter.getClassNames())
-//		{
-//			imports += "import "+className.replace("PatientImpl", "Patient") +";\n";
-//		}
 		imports += "import org.hibernate.Hibernate;\n";
-//		total+=imports+"\n";       
 
+		//rest of class
+		String total = "";
 		total+="public class ExportToPersistentObjects {\n";
 		total+="public void initialize(Patient p){\n";
 		total+="write(p);\n";
+		total+="for(Therapy t: p.getTherapies()){\n" + 
+				"for(TherapyCommercial c : t.getTherapyCommercials()){\n" +
+				"for(DrugGeneric g : c.getId().getDrugCommercial().getDrugGenerics()){\n" +
+				"for(DrugGeneric g2 : g.getDrugClass().getDrugGenerics()){\n" +
+				"Hibernate.initialize(g2);\n" +
+				"}\n}\n}\n}\n";
 		total+="}\n\n";
-	
-		
+
 		ArrayList<String> classes = new ArrayList<String>();
 		for(String className : interpreter.getClassNames())
 		{
 			classes.add(className.replace("net.sf.regadb.db.", "").replace("PatientImpl", "Patient"));
 		}
-		
+
 		ArrayList<String> queue = new ArrayList<String>();
 		ArrayList<String> done = new ArrayList<String>();
 		queue.add("Patient"); //starting class = patient
 		while(!queue.isEmpty()){
 			System.out.println("queue size: "+queue.size()+" done size: "+done.size());
-			String shortClassName = null;
-			
-				shortClassName = queue.get(0);
-			
+			String shortClassName = queue.get(0);
 			total+= "private void write(" + shortClassName + " " + toObjectName(shortClassName) + "){\n";
+			if(ignoreClasses.contains(shortClassName)){
+				queue.remove(queue.indexOf(shortClassName));
+				total+= "}\n\n";
+				continue;
+			}
 			Class c = null;
 			try {
 				c = Class.forName("net.sf.regadb.db."+shortClassName);
@@ -59,22 +81,23 @@ public class PersistenceWriteCodeGen {
 			for(Method m : c.getMethods()){
 				String methodName = m.getName().replace("PatientDatasets", "Datasets");
 				if(!ignoreMethod(m)){
-					total+="\tHibernate.initialize("+ toObjectName(shortClassName) +"."+methodName+"());\n";
-					if(m.getReturnType().equals(java.util.Set.class) && !done.contains(toClassName(m)) && !queue.contains(toClassName(m))){
-						total+="\tfor("+toClassName(m)+ " " + toObjectName(toClassName(m)) + ":" + toObjectName(shortClassName) + "." + methodName + "()){\n";
-						total+="\twrite("+toObjectName(toClassName(m)) + ");\n";
-						total+="\t}\n";
-						imports+= "import net.sf.regadb.db."+toClassName(m)+";\n";
-						queue.add(toClassName(m));
-					}else if(!done.contains(toClassName(m)) && !queue.contains(toClassName(m))){
-						total+="\tif("+toObjectName(shortClassName) +"."+methodName+"() != null"+")write("+toObjectName(shortClassName) +"."+methodName+"());\n";
+					total+="\tif(!Hibernate.isInitialized("+ toObjectName(shortClassName) +"."+methodName+"())){\n";
+					total+="\t\tHibernate.initialize("+ toObjectName(shortClassName) +"."+methodName+"());\n";
+
+					if(m.getReturnType().equals(java.util.Set.class)){
+						total+="\t\tfor("+toClassName(m)+ " " + toObjectName(toClassName(m)) + ":" + toObjectName(shortClassName) + "." + methodName + "()){\n";
+						total+="\t\t\twrite("+toObjectName(toClassName(m)) + ");\n";
+						total+="\t\t}\n";						
+					}else{
+						total+="\t\tif("+toObjectName(shortClassName) +"."+methodName+"() != null"+")write("+toObjectName(shortClassName) +"."+methodName+"());\n";
+					}
+					total+="\t}\n";
+					if(!done.contains(toClassName(m)) && !queue.contains(toClassName(m))){
 						imports+= "import net.sf.regadb.db."+toClassName(m)+";\n";
 						queue.add(toClassName(m));
 					}
-//				}else if(m.getName().startsWith("get") && m.getParameterTypes().length ==0 ){
-//					total+="\tHibernate.initialize("+toObjectName(shortClassName) +"."+methodName+"());\n";
-				}
 
+				}
 			}
 			total+= "}\n\n";
 			done.add(shortClassName);
@@ -100,12 +123,10 @@ public class PersistenceWriteCodeGen {
 	private String toObjectName(String className){
 		return className.substring(0,1).toLowerCase() + className.substring(1);
 	}
-	
+
 	private String toClassName(Method m){
 		return m.getGenericReturnType().toString().replace("java.util.Set<", "").replace("net.sf.regadb.db.","").replace(">", "").replace("class ", "");
 	}
-	
-	
 	
 	private boolean ignoreMethod(Method m){
 		return (!m.getName().startsWith("get") || // method must be a getter
@@ -123,7 +144,7 @@ public class PersistenceWriteCodeGen {
 				m.getReturnType().isArray() ||
 				m.getReturnType().isPrimitive() ||
 				m.getParameterTypes().length !=0
-				);		
+		);		
 	}
 
 	public static void main(String[] args){

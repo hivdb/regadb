@@ -5,9 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import net.sf.regadb.align.Aligner;
@@ -15,9 +13,15 @@ import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Protein;
-import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
@@ -29,13 +33,7 @@ public class TestFastaAlign {
         FileReader uploadedStream = null;
         BufferedReader br = null;
         
-        Map<String, Protein> proteinMap = new HashMap<String, Protein>();
-        
-        for(Protein p : StandardObjects.getProteins()) {
-            proteinMap.put(p.getAbbreviation(), p);
-        }
-        
-        Aligner aligner = new Aligner(new LocalAlignmentService(), proteinMap);
+        Aligner aligner = new Aligner(new LocalAlignmentService());
         
         try 
         {
@@ -56,6 +54,8 @@ public class TestFastaAlign {
         	ioe.printStackTrace();
         }
         
+        Genome g = null;
+        
         if(xna!=null)
         { 
             while(xna.hasNext())
@@ -64,8 +64,12 @@ public class TestFastaAlign {
                     Sequence seq = xna.nextRichSequence();
                     NtSequence ntseq = new NtSequence();
                     ntseq.setNucleotides(seq.seqString());
+                    
+                    if(g==null) {
+                    	g = getGenome(ntseq);
+                    }
                     		
-                    List<AaSequence> result = aligner.alignHiv(ntseq);
+                    List<AaSequence> result = aligner.align(ntseq, g);
                     for(AaSequence aaseq : result) {
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
                     		char[] mut = aamut.getAaMutation().toCharArray();
@@ -80,7 +84,7 @@ public class TestFastaAlign {
                     		Arrays.sort(ins);
                     		System.out.print(aaseq.getProtein().getAbbreviation()+
                     				aains.getId().getInsertionPosition()+aains.getId().getInsertionOrder()+
-                    				new String(ins) + " ");
+                    				new String(ins) +" ");
                     	}
                     }
                     System.out.print("\n");
@@ -110,4 +114,15 @@ public class TestFastaAlign {
             e.printStackTrace();
         }
 	}
+	
+    public static Genome getGenome(NtSequence ntseq)
+    {
+        BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq);
+        try {
+            blastAnalysis.launch();
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+        return blastAnalysis.getGenome();
+    }
 }

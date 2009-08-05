@@ -18,18 +18,24 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class ITherapyDataTable implements IDataTable<Therapy>
 {
-	private static String [] _colNames = {"dataTable.therapy.colName.startDate","dataTable.therapy.colName.endDate", 
-		"dataTable.therapy.colName.drugs", "dataTable.therapy.colName.comment"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.therapy.colName.startDate"),
+	    WString.tr("dataTable.therapy.colName.endDate"), 
+	    WString.tr("dataTable.therapy.colName.drugs"),
+	    WString.tr("dataTable.therapy.colName.comment")};
+	
 	private static String[] filterVarNames_ = { "therapy.startDate", "therapy.stopDate", null, "therapy.comment"};
 	
 	private IFilter[] filters_ = new IFilter[4];
 	
 	private static boolean [] sortable_ = {true, true, false, true};
-	private static int[] colWidths = {20,20,30,30};
-	public String[] getColNames()
+	private static int[] colWidths = {20,20,25,25};
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}
@@ -60,8 +66,8 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	{
 		String [] row = new String[4];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getStartDate());
-		row[1] = DateUtils.getEuropeanFormat(type.getStopDate());
+		row[0] = DateUtils.format(type.getStartDate());
+		row[1] = DateUtils.format(type.getStopDate());
 		
 		SortedSet<String> drugList = new TreeSet<String>();
 		for(TherapyGeneric tg : type.getTherapyGenerics())
@@ -90,14 +96,14 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 		row[2] = genericDrugList.toString();
 		
 		row[3] = type.getComment();
-		
+
 		return row;
 	}
 
 	public void init(Transaction t)
 	{
-		filters_[0] = new DateFilter();
-		filters_[1] = new DateFilter();
+		filters_[0] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
+		filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[2] = null;
 		filters_[3] = new StringFilter();
 	}
@@ -117,5 +123,9 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(Therapy type) {
+		return null;
 	}
 }

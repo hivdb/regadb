@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +14,7 @@ import java.util.Set;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
@@ -46,6 +45,8 @@ public class ParseConsultDB {
     
     private List<Attribute> regadbAttributes_;
     
+    private Attribute patientNoAttribute;
+    
     private Set<String> setset = new HashSet<String>();
     
     private Map<Integer, String> codepat_;
@@ -60,20 +61,25 @@ public class ParseConsultDB {
     
         regadbAttributes_ = Utils.prepareRegaDBAttributes();
             
-        genderNominal_.attribute.setAttributeGroup(Items.getRegadbAttributeGroup());
+        genderNominal_.attribute.setAttributeGroup(StandardObjects.getGenderAttribute().getAttributeGroup());
         
         Table countryTable = Utils.readTable(mappingBasePath + File.separatorChar + "countryOfOrigin.mapping");
-        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes_), false);
+        countryOfOriginA = new NominalAttribute("Country of origin", countryTable, StandardObjects.getDemographicsAttributeGroup(), Utils.selectAttribute("Country of origin", regadbAttributes_), false);
         
         Table geoTable = Utils.readTable(mappingBasePath + File.separatorChar + "geographicOrigin.mapping");
-        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Geographic origin", regadbAttributes_), false);
+        geographicOriginA = new NominalAttribute("Geographic origin", geoTable, StandardObjects.getGeoGraphicOriginAttribute().getAttributeGroup(), Utils.selectAttribute(StandardObjects.getGeoGraphicOriginAttribute().getName(), regadbAttributes_), false);
         
         Table transmissionTable = Utils.readTable(mappingBasePath + File.separatorChar + "transmissionRisk.mapping");
-        transmissionA = new NominalAttribute("Transmission group", transmissionTable, Items.getRegadbAttributeGroup(), Utils.selectAttribute("Transmission group", regadbAttributes_));
+        transmissionA = new NominalAttribute("Transmission group", transmissionTable, StandardObjects.getTransmissionGroupAttribute().getAttributeGroup(), Utils.selectAttribute(StandardObjects.getTransmissionGroupAttribute().getName(), regadbAttributes_));
         
         therapyAdherenceT = new NominalTestMapper(mappingBasePath + File.separatorChar + "therapyAdherence.mapping", Items.getGenerichivTherapyAdherence());
     
         codepat_ = codepat;
+        
+        patientNoAttribute = new Attribute();
+        patientNoAttribute.setName("PatientNo");
+        patientNoAttribute.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
+        patientNoAttribute.setValueType(StandardObjects.getStringValueType());
     }
     
     public void exec() {
@@ -120,7 +126,7 @@ public class ParseConsultDB {
                 
                 p.createPatientAttributeValue(Items.getPatCodeAttribute()).setValue(codepat_.get(id));
         	}
-            
+        	
             String birthDate = text(patientEl, "BirthDate");
             String deathDate = text(patientEl, "DeathDate");
             String sex = text(patientEl, "Sex");
@@ -131,7 +137,8 @@ public class ParseConsultDB {
             String followup = text(patientEl, "Followup");
             
             if(followup!=null) {
-            	if(Utils.getAttributeValue("FOLLOW-UP", p)==null) {
+                PatientAttributeValue pav = Utils.getAttributeValue("FOLLOW-UP", p); 
+            	if(pav==null) {
 	            	if(followup.equals("intern")) {
 	            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '1', p);
 	            	} else if(followup.equals("extern")) {
@@ -141,22 +148,25 @@ public class ParseConsultDB {
 	            	}
             	} else {
             		if(followup.equals("intern"))
-            			Utils.getAttributeValue("FOLLOW-UP", p).setAttributeNominalValue(WivObjects.getANVFromAbbrev(Utils.getAttributeValue("FOLLOW-UP", p).getAttribute(), "1"));
+            			pav.setAttributeNominalValue(WivObjects.getANVFromAbbrev(pav.getAttribute(), "1"));
             	}
             } else {
             	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
             }
             
+            if(consultId != null){
+            	p.addPatientAttributeValue(Utils.createPatientAttributeValue(patientNoAttribute, consultId));
+            }
             if(birthDate!=null) {
                 try {
-                    p.setBirthDate(dateFormatter.parse(birthDate));
+                    Utils.setBirthDate(p, dateFormatter.parse(birthDate));
                 } catch (ParseException e) {
                     ConsoleLogger.getInstance().logError("Cannot parse patient's birthdate: " + birthDate);
                 }
             }
             if(deathDate!=null) {
                 try {
-                    p.setDeathDate(dateFormatter.parse(deathDate));
+                    Utils.setDeathDate(p, dateFormatter.parse(deathDate));
                 } catch (ParseException e) {
                     ConsoleLogger.getInstance().logError("Cannot parse patient's deathdate: " + deathDate);
                 }
@@ -346,6 +356,6 @@ public class ParseConsultDB {
             return null;
         String toReturn = el.getChild(name).getText();
         el.getChild(name).detach();
-        return toReturn;
+        return toReturn != null ? toReturn.trim() : null;
     }
 }

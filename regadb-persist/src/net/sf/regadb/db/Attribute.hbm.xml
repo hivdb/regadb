@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.Attribute" table="attribute" schema="public">
+  <class name="net.sf.regadb.db.Attribute" table="attribute">
     <id name="attributeIi" type="java.lang.Integer">
       <column name="attribute_ii" />
-      <generator class="sequence">
+      <generator class="native">
         <param name="sequence">attribute_attribute_ii_seq</param>
       </generator>
     </id>
@@ -27,6 +27,10 @@
       </key>
       <one-to-many class="net.sf.regadb.db.AttributeNominalValue" />
     </set>
+    <filter name="attributeFilter" condition="attribute_ii NOT IN (:attribute_ii_list)" />
   </class>
+  <filter-def name="attributeFilter">
+    <filter-param name="attribute_ii_list" type="integer" />
+  </filter-def>
 </hibernate-mapping>
 

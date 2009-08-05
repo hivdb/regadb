@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.AaMutation" table="aa_mutation" schema="public">
+  <class name="net.sf.regadb.db.AaMutation" table="aa_mutation">
     <composite-id name="id" class="net.sf.regadb.db.AaMutationId">
       <key-property name="mutationPosition" type="short">
         <column name="mutation_position" />
@@ -20,10 +20,10 @@
     <property name="aaMutation" type="string">
       <column name="aa_mutation" length="30" />
     </property>
-    <property name="ntReferenceCodon" type="java.lang.String">
+    <property name="ntReferenceCodon" type="string">
       <column name="nt_reference_codon" length="3" not-null="true" />
     </property>
-    <property name="ntMutationCodon" type="java.lang.String">
+    <property name="ntMutationCodon" type="string">
       <column name="nt_mutation_codon" length="3" />
     </property>
   </class>

@@ -3,9 +3,9 @@ package net.sf.regadb.ui.form.query.querytool.awceditor;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.witty.wt.WRadioButton;
-
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
+
+import eu.webtoolkit.jwt.WRadioButton;
 
 public class WAWCSelectorPanelContainer extends WAWCSelectorPanel {
 

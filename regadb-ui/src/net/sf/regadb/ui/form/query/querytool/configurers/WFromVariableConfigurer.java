@@ -1,17 +1,16 @@
 package net.sf.regadb.ui.form.query.querytool.configurers;
 
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
-
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
+
+import eu.webtoolkit.jwt.WText;
 
 public class WFromVariableConfigurer extends WText implements WordConfigurer {
 
     private FromVariable var;
     public WFromVariableConfigurer(FromVariable var) {
-        super(new WMessage(var.getUniqueName(), true));
+        super(var.getUniqueName());
         this.setStyleClass("fromvariableconfigurer");
         this.var = var;
     }

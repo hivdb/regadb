@@ -8,7 +8,7 @@ import net.sf.regadb.util.pair.Pair;
 
 public class SelectPatientForm extends SelectForm
 {
-	private DataTable<Pair<Patient,PatientAttributeValue>> dataTable_;
+	private DataTable<Object[]> dataTable_;
 	private IPatientDataTable dataTableI_;
 	
 	public SelectPatientForm()

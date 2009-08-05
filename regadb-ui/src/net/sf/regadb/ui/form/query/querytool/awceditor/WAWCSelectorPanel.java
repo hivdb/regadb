@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WRadioButton;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WRadioButton;
 
 public abstract class WAWCSelectorPanel extends WContainerWidget {
     /**

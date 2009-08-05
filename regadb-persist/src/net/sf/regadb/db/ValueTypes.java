@@ -20,4 +20,49 @@ public enum ValueTypes
         
         return ret;
     }
+    
+    public static boolean isNominal(ValueType vt){
+        return getValueType(vt) == NOMINAL_VALUE;
+    }
+    
+    public static boolean isDate(ValueType vt){
+        return getValueType(vt) == DATE;
+    }
+    
+    public static boolean isValidValue(ValueType valueType, String value){
+        ValueTypes vt = ValueTypes.getValueType(valueType);
+        
+        if(vt == ValueTypes.NUMBER)
+            return isValidNumber(value);
+        else if(vt == ValueTypes.LIMITED_NUMBER)
+            return isValidLimitedNumber(value);
+        
+        return true;
+    }
+    
+    public static boolean isValidNumber(String value){
+        if(value == null || value.length() == 0)
+            return false;
+        
+        try{
+            Double.parseDouble(value);
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+    
+    public static boolean isValidLimitedNumber(String value){
+        if(value == null || value.length() == 0)
+            return false;
+        
+        char c = value.charAt(0);
+        if(c == '<' || c == '>' || c == '='){
+            value = value.substring(1);
+            return isValidNumber(value);
+        }
+        return false;
+    }
+
 }

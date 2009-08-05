@@ -43,12 +43,10 @@ public class ParseSymptom {
         
         NominalEvent aidsDefiningIllness    = new NominalEvent("Aids defining illness", adiMapTable, Utils.selectEvent("Aids defining illness", regadbEvents));
         
-        AttributeGroup regadbAttributeGroup = new AttributeGroup("RegaDB");
-        
         Attribute symptomClassAttribute = new Attribute();
         symptomClassAttribute.setName("CDC Class");
         symptomClassAttribute.setValueType(StandardObjects.getNominalValueType());
-        symptomClassAttribute.setAttributeGroup(regadbAttributeGroup);
+        symptomClassAttribute.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
         
         
         AttributeNominalValue scA = new AttributeNominalValue(symptomClassAttribute,"A");

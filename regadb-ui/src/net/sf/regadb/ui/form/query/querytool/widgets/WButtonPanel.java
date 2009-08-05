@@ -3,8 +3,8 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WPushButton;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WPushButton;
 
 /**
  * a group of buttons

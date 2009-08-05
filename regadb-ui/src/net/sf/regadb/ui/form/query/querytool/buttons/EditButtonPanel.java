@@ -1,20 +1,21 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorTreeContainer;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 public class EditButtonPanel extends WButtonPanel {
 	private QueryEditorTreeContainer owner;
@@ -52,8 +53,8 @@ public class EditButtonPanel extends WButtonPanel {
 		wrapOrButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapor"));
 		wrapNotButton_ = new WPushButton(tr("form.query.querytool.pushbutton.wrapnot"));
 		
-		copyButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		copyButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				cursorClauses = new ArrayList<WhereClause>();
 				for (QueryTreeNode node : selection) {
@@ -64,8 +65,8 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		pasteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		pasteButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				QueryTreeNode pasteNode = (selection.isEmpty()?owner.getRootNode() :selection.get(0));
 				if (pasteNode.getClause().isAtomic()) {
@@ -75,8 +76,8 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		deleteButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		deleteButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				for (QueryTreeNode node : selection) {
@@ -86,8 +87,8 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		cutButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		cutButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				cursorClauses = new ArrayList<WhereClause>();
@@ -99,8 +100,8 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		unwrapButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		unwrapButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				List<QueryTreeNode> selection = getSelection();
 				owner.setValidation(false);
 				
@@ -119,20 +120,20 @@ public class EditButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		wrapAndButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		wrapAndButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				wrapIn(new AndClause());
 			}
 		});
 
-		wrapOrButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		wrapOrButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				wrapIn(new InclusiveOrClause());
 			}
 		});	
 		
-		wrapNotButton_.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		wrapNotButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				wrapIn(new NotClause());
 			}
 		});		

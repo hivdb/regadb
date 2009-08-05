@@ -9,10 +9,14 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUser>
 {
-    private static String [] _colNames = {"dataTable.settingsUser.colName.uid", "dataTable.settingsUser.colName.firstname","dataTable.settingsUser.colName.lastname"};
+    private static WString [] _colNames = {
+        WString.tr("dataTable.settingsUser.colName.uid"),
+        WString.tr("dataTable.settingsUser.colName.firstname"),
+        WString.tr("dataTable.settingsUser.colName.lastname")};
     
     private static String[] filterVarNames_ = { "settingsUser.uid", "settingsUser.firstName", "settingsUser.lastName"};
         
@@ -27,7 +31,7 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
         
     }
     
-    public String[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }
@@ -84,7 +88,10 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
     }
 
 	public int[] getColumnWidths() {
-		// TODO Auto-generated method stub
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(SettingsUser type) {
+		return null;
 	}
 }

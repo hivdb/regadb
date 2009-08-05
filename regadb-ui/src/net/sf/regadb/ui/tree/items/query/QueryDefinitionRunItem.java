@@ -3,7 +3,7 @@ package net.sf.regadb.ui.tree.items.query;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class QueryDefinitionRunItem extends TreeMenuNode
 {

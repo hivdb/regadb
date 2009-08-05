@@ -14,10 +14,11 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Logging;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseSequences extends Parser{
-    DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
     
     public static void main(String [] args) {
         ParseSequences ps = new ParseSequences();
@@ -29,9 +30,12 @@ public class ParseSequences extends Parser{
     
     public ParseSequences(Logging logger, List<DateFormat> df) {
         super(logger,df);
+        setName("Sequences");
     }
     
     public void run(File csvSequenceFile, File csvSampleFile, Map<String, Patient> patients) {
+        setCurrentFile(csvSequenceFile);
+        
         Table seqsTable = Utils.readTable(csvSequenceFile.getAbsolutePath());
         Table sampleTable = Utils.readTable(csvSampleFile.getAbsolutePath());
         
@@ -66,8 +70,9 @@ public class ParseSequences extends Parser{
                         dateAnswer = null;
                 }
             }
+            Patient p = patients.get(seqsTable.valueAt(CID, i));
             if(dateTaken==null || dateAnswer==null) {
-                System.err.println("No dates for sequence with sampleno " + sampleNo);
+                logWarn(p, "No dates for sequence", sampleNo);
             } else {
                 List<NtSequence> seqs = new ArrayList<NtSequence>();
                 String pro = seqsTable.valueAt(CProtease, i);
@@ -81,7 +86,7 @@ public class ParseSequences extends Parser{
                 //String gag = seqsTable.valueAt(CGAG, i);
                 //    handleSequence(gag, seqs, dateAnswer, sampleNo);
                     
-                Patient p = patients.get(seqsTable.valueAt(CID, i));
+                
                 if(seqs.size()>0) {
                     ViralIsolate vi = p.createViralIsolate();
                     vi.setSampleId(sampleNo);

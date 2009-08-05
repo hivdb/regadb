@@ -12,6 +12,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.io.db.util.Logging;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
@@ -19,7 +20,7 @@ import net.sf.regadb.util.date.DateUtils;
 public class ParseTests extends Parser {
 	UniqueObjects<Patient,TestResult> uniques = new UniqueObjects<Patient,TestResult>(){
 		protected String getHashKey(Patient p, TestResult t){
-			return p.getPatientId() +":"+ t.getTest().getDescription() +":"+ t.getTestDate() +":"+ t.getValue();
+			return p.getPatientId() +":"+ t.getTest().getDescription() +":"+ t.getTestDate();
 		}
 	};
 
@@ -111,7 +112,8 @@ public class ParseTests extends Parser {
         TestResult tr2 = uniques.exists(p, tr); 
         if(tr2 !=  null){
         	p.getTestResults().remove(tr);
-        	logWarn(p,"Duplicate test result",tr.getTest().getDescription() +" "+ DateUtils.getEuropeanFormat(d));
+        	if(!tr.getValue().equals(tr2.getValue()))
+        	    logWarn(p,"Duplicate test result",tr.getTest().getDescription() +" "+ simpleFormat.format(d) +" values: "+ tr.getValue() +" vs "+ tr2.getValue());
         	
         	return tr2;
         }

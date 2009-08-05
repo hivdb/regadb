@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import net.sf.regadb.genome.HivGenome;
 import net.sf.regadb.util.http.HttpDownload;
 
 import org.jdom.Document;
@@ -14,16 +13,13 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-public class ParseGenBankXml {
-    public static void main(String[] args) {
-        System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");
-        
+public class ParseGenBankXml {    
+    public static GBOrganism parseOrganism(String genbankId) {
         File organism = null;
         try {
             organism = File.createTempFile("organism-genbank", ".xml");
-            System.err.println(organism.getAbsolutePath());
-            efetchGenbankXmlFile(args[0], "nucleotide", organism);
+            //System.err.println(organism.getAbsolutePath());
+            efetchGenbankXmlFile(genbankId, "nucleotide", organism);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -64,24 +60,7 @@ public class ParseGenBankXml {
             e.printStackTrace();
         }
         
-        for(GBORF orf : organismGB.orfs) {
-        	System.err.println(orf.name);
-        	//System.err.println(orf.sequence);
-//        	if(orf.name.contains("pol ")) {
-//        		String gagseq = null;
-//        		for(GBORF orf2 : organismGB.orfs) {
-//        			if(orf2.name.contains("gag ")) {
-//        				gagseq = orf2.sequence;
-//        			}
-//        		}
-//        		String seq = HivGenome.getHxb2().getPol().getSequence().seqString();
-//        		System.err.println("koen:" + seq);
-//        		System.err.println("genbank:" + orf.sequence);
-//        		if(!orf.sequence.equals(seq)) {
-//        			System.err.println("SHIT");
-//        		}
-//        	}
-        }
+        return organismGB;
     }
     
     public static List<GBORF> getOrfs(String genome, String location, String name, String protein_id) {
@@ -102,6 +81,10 @@ public class ParseGenBankXml {
         
         for(int i = 0; i<locations.size(); i++) {
             String [] positions = locations.get(i).split("\\.\\.");
+            for(int j = 0; j<positions.length; j++) {
+            	positions[j] = positions[j].replace(">", "");
+            	positions[j] = positions[j].replace("<", "");
+            }
             GBORF orf = new GBORF();
             orf.name = name + " ORF " + (i+1);
             orf.sequence = genome.substring(Integer.parseInt(positions[0])-1, Integer.parseInt(positions[1]));
@@ -140,6 +123,15 @@ public class ParseGenBankXml {
         genbankEfetchUrl = genbankEfetchUrl.replace("$database", database);
         genbankEfetchUrl = genbankEfetchUrl.replace("$id", id);
         
-        HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        boolean done = HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        while(!done) {
+        	try {
+				Thread.sleep(1000*5);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.err.println("retrying");
+        	done = HttpDownload.download(genbankEfetchUrl, f.getAbsolutePath());
+        }
     }
 }

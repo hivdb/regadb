@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class Analysis implements java.io.Serializable {
 
-    // Fields    
-
     private Integer analysisIi;
 
     private AnalysisType analysisType;
@@ -33,18 +31,13 @@ public class Analysis implements java.io.Serializable {
 
     private Set<AnalysisData> analysisDatas = new HashSet<AnalysisData>(0);
 
-    // Constructors
-
-    /** default constructor */
     public Analysis() {
     }
 
-    /** minimal constructor */
     public Analysis(AnalysisType analysisType) {
         this.analysisType = analysisType;
     }
 
-    /** full constructor */
     public Analysis(AnalysisType analysisType, String url, String account,
             String password, String baseinputfile, String baseoutputfile,
             String serviceName, String dataoutputfile, Set<Test> tests,
@@ -61,7 +54,6 @@ public class Analysis implements java.io.Serializable {
         this.analysisDatas = analysisDatas;
     }
 
-    // Property accessors
     public Integer getAnalysisIi() {
         return this.analysisIi;
     }

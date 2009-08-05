@@ -3,20 +3,20 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class ActionItem extends TreeMenuNode
 {
     private ITreeAction action_;
     
-	public ActionItem(WMessage text, WTreeNode root, ITreeAction action)
+	public ActionItem(WString text, WTreeNode root, ITreeAction action)
 	{
 		super(text, root);
         action_ = action;
 	}
     
-    public ActionItem(WMessage text, WTreeNode root)
+    public ActionItem(WString text, WTreeNode root)
     {
         this(text, root, null);
     }
@@ -63,6 +63,9 @@ public class ActionItem extends TreeMenuNode
 	@Override
 	public boolean isEnabled()
 	{
-		return getParent().isEnabled();
+		if(getParent()!=null)
+			return getParentNode().isEnabled();
+		else 
+			return true;
 	}
 }

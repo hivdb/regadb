@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import net.sf.regadb.build.ant.AntTools;
-import net.sf.regadb.build.cvs.CvsTools;
 import net.sf.regadb.build.eclipse.EclipseParseTools;
 import net.sf.regadb.build.error.ErrorRapport;
 import net.sf.regadb.build.junit.JUnitRapport;
@@ -26,7 +25,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 public class Jarbuilder
 {
 	private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
-    private final static String witty_cvs_url = ":pserver:anonymous@zolder:2401/cvsroot/witty";
     
     private static HashMap<String, List<String>> moduleJars_ = new HashMap<String, List<String>>();
     private static HashMap<String, List<String>> moduleDependencies_ = new HashMap<String, List<String>>();
@@ -89,17 +87,6 @@ public class Jarbuilder
     {
         createDirs();
         
-        try {
-            if(localCheckoutDir_==null)
-                CvsTools.checkout(witty_cvs_url, buildDir_, "jwt/src", "jwt_src");
-            else
-                CvsTools.localCheckout("jwt", "jwt_src",  localCheckoutDir_, buildDir_);
-        }  
-        
-        catch (Exception e) {
-        	handleError("jwt", e);
-        }
-        
         SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
         
         List<String> modules;
@@ -143,8 +130,6 @@ public class Jarbuilder
             moduleDependencies_.put(m, moduleDependencies);
             }
         }
-        
-        buildModule(buildDir_, "jwt_src");
         
         buildRegaDBProjects(moduleDeps);
     }
@@ -274,12 +259,8 @@ public class Jarbuilder
         }
         try {
         	String jarDeps = getJardependenciesString(getOwnJarDependencies(moduleName));
-        	
-        	if(!(moduleName.equals("jwt_src")))
-        	{
-        		jarDeps = jarDeps.concat(" " + getJardependenciesString(getForeignJarDependencies(moduleName, new ArrayList<String>())));
-        	}
-        	
+        	jarDeps = jarDeps.concat(" " + getJardependenciesString(getForeignJarDependencies(moduleName, new ArrayList<String>())));
+
         	AntTools.buildProject(moduleName, buildDir_, jarDeps);
         	
         	List<String> dists = copyDistJarsToLibPool(buildDir, moduleName);
@@ -302,7 +283,7 @@ public class Jarbuilder
         
         for(String m : modules)
         {
-            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-") || m.startsWith("pharmadm"))
+            if(m.startsWith("regadb-") || m.startsWith("wts-") || m.startsWith("infra-") || m.startsWith("pharmadm") || m.startsWith("jhivgensim"))
             {
                 if(!m.equals("wts-build"))
                 {
@@ -322,7 +303,7 @@ public class Jarbuilder
         {
             String dependency = md.substring(1);
             
-            if((dependency.startsWith("regadb") || dependency.startsWith("wts")) || dependency.startsWith("pharmadm") && dependency.indexOf('/')==-1)
+            if((dependency.startsWith("regadb") || dependency.startsWith("wts") || dependency.startsWith("jhivgensim")) || dependency.startsWith("pharmadm") && dependency.indexOf('/')==-1)
             {
                 filteredDependencies.add(dependency);
             }
@@ -411,10 +392,7 @@ public class Jarbuilder
     	
     	jars.addAll(getOwnJarDependencies(moduleName));
     	
-    	if(!(moduleName.equals("jwt_src")))
-    	{
-    		jars.addAll(getForeignJarDependencies(moduleName, new ArrayList<String>()));
-    	}
+  	  	jars.addAll(getForeignJarDependencies(moduleName, new ArrayList<String>()));
     	
     	Collection jarFilesFromLibPool = FileUtils.listFiles(new File(libPool_), new String[] { "jar" }, true);
         

@@ -2,6 +2,7 @@ package net.sf.regadb.ui.framework.forms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
@@ -14,15 +15,16 @@ import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.core.utils.WHorizontalAlignment;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StandardButton;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMessageBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
 
 public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 {
@@ -38,7 +40,9 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
     private WPushButton _deleteButton = new WPushButton(tr("form.general.button.delete"));
     
-    public FormWidget(WMessage formName, InteractionState interactionState)
+    private List<WPushButton> extraButtons = new ArrayList<WPushButton>();
+
+	public FormWidget(WString formName, InteractionState interactionState)
 	{
         super(formName);
         interactionState_ = interactionState;
@@ -82,47 +86,44 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
         
+        for(WPushButton b : extraButtons) {
+        	buttonContainer.addWidget(b);
+        }
+        
         if(getInteractionState()==InteractionState.Deleting)
         {
             buttonContainer.addWidget(_deleteButton);
-            _deleteButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            _deleteButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
-                public void notify(WMouseEvent a) 
+                public void trigger(WMouseEvent a) 
                 {
-                    final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("msg.warning.delete"));
-                    cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                        public void notify(WMouseEvent a) 
-                        {
-                            deleteAction();
-                            
-                            cmb.hide();
-                        }
+                    final WMessageBox cmb = UIUtils.createYesNoMessageBox(FormWidget.this, tr("msg.warning.delete"));
+                    cmb.buttonClicked().addListener(FormWidget.this, new Signal1.Listener<StandardButton>(){
+        				public void trigger(StandardButton sb) {
+        					cmb.remove();
+        					if(sb==StandardButton.Yes) {
+        						deleteAction();
+        					}
+        				}
                     });
-                    cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                        public void notify(WMouseEvent a) 
-                        {
-                            cmb.hide();
-                        }
-                    });
+                    cmb.show();
                 }
                 });
         }
         else
         {
             buttonContainer.addWidget(_okButton);
-            _okButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            _okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
-                public void notify(WMouseEvent a) 
+                public void trigger(WMouseEvent a) 
                 {
                     confirmAction();
                 }
             });
             buttonContainer.addWidget(_cancelButton);
-            _cancelButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            _cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
             {
-                public void notify(WMouseEvent a) 
+                public void trigger(WMouseEvent a) 
                 {
                     cancel();
                 }
@@ -136,13 +137,12 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         }
         
         buttonContainer.addWidget(_helpButton);
-        buttonContainer.setContentAlignment(WHorizontalAlignment.AlignRight);
         buttonContainer.setStyleClass("control-buttons");
     }
     
     private void deleteAction()
     {
-    	WMessage message = deleteObject();
+    	WString message = deleteObject();
     	
         if(message == null)
         {
@@ -150,7 +150,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         }
         else
         {
-        	MessageBox.showWarningMessage(message);
+        	UIUtils.showWarningMessageBox(this, message);
         	
         	redirectAfterDelete();
         }
@@ -167,7 +167,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         case LIMITED_NUMBER:
         	return new LimitedNumberField(getInteractionState(), this, FieldType.DOUBLE);
         case DATE:
-            return new DateField(getInteractionState(), this);
+            return new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         }
         
         return null;
@@ -177,7 +177,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     public abstract void cancel();
     
-    public abstract WMessage deleteObject();
+    public abstract WString deleteObject();
     
     public abstract void redirectAfterDelete();
     
@@ -236,11 +236,15 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         this._okButton.setEnabled(enable);
     }
     
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         if(isEditable()) {
             return tr("form.warning.stillEditing");
         } else {
             return null;
         }
     }
+    
+    protected List<WPushButton> getExtraButtons() {
+		return extraButtons;
+	}
 }

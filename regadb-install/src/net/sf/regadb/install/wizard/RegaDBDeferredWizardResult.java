@@ -138,10 +138,28 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 			Connection conn = DriverManager.getConnection(jdbcUrl + "template1", props);
 			
 			Statement st = conn.createStatement();
-			st.execute("CREATE ROLE " + getString("db_roleUser") +
-					" WITH ENCRYPTED PASSWORD '" + getString("db_rolePass") + "' LOGIN");
-			st.execute("CREATE DATABASE " + getString("db_databaseName") +
-					" WITH OWNER " + getString("db_roleUser"));
+			if(!getBoolean("roleExists")){
+				st.execute("CREATE ROLE " + getString("db_roleUser") +
+						" WITH ENCRYPTED PASSWORD '" + getString("db_rolePass") + "' LOGIN");
+				
+				set("roleExists", true);
+			}
+			
+			if(!getBoolean("dbExists")){
+				st.execute("CREATE DATABASE " + getString("db_databaseName") +
+						" WITH OWNER " + getString("db_roleUser"));
+
+				set("dbExists", true);
+			}
+			if(!getBoolean("schemaExists")){
+				try{
+					st.execute("CREATE SCHEMA regadbschema AUTHORIZATION "+ getString("db_roleUser"));
+					set("schemaExists",true);
+				}
+				catch(SQLException e){
+					e.printStackTrace();
+				}
+			}
 			
 			conn.close();
 		} catch ( SQLException e ) {
@@ -164,14 +182,22 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 			props.setProperty("password", getString("db_rolePass"));
 			
 			Connection conn = DriverManager.getConnection(jdbcUrl + getString("db_databaseName"), props);
+			Statement st = conn.createStatement();
 			
 			File schemaFile = new File("src/net/sf/regadb/install/ddl/schema/postgresSchema.sql");
 			BufferedReader read = new BufferedReader(new FileReader(schemaFile));
 			
+			clearDdlCreateLog();
 			while( read.ready() ) {
 				String line = read.readLine();
-				Statement st = conn.createStatement();
-				st.execute(line);
+				
+				try{
+					st = conn.createStatement();
+					st.execute(line);
+				}
+				catch(SQLException e){
+					addToDdlCreateLog(e.getLocalizedMessage());
+				}
 			}
 			
 			conn.close();
@@ -203,8 +229,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		SettingsUser admin = new SettingsUser(getString("account_Uid"), 0, 0);
 		admin.setFirstName(getString("account_FirstName"));
         admin.setLastName(getString("account_LastName"));
-        admin.setAdmin(true);
-        admin.setEnabled(true);
+        admin.setRole("admin");
         admin.setPassword(Encrypt.encryptMD5(getString("account_Pass")));
         
 		InitRegaDB init = new InitRegaDB();
@@ -222,7 +247,7 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 		setProgress(tr("install_progress_deploy"));
 		
 		if ( getBoolean("deployDoWant") ) {
-			File war = new File("./regadb-ui.war");
+			File war = new File(getString("warfile"));
 			File webapps = new File(getString("deploydir") + File.separator + "webapps");
 			try {
 				org.apache.commons.io.FileUtils.copyFileToDirectory(war, webapps);
@@ -273,10 +298,22 @@ public class RegaDBDeferredWizardResult extends DeferredWizardResult {
 	}
 	
 	private boolean getBoolean(String key) {
-		return ((Boolean)getValue(key)).booleanValue();
+		Boolean b = (Boolean)getValue(key);
+		return b != null && b;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void set(String key, Object value){
+		settings_.put(key, value);
 	}
 	
 	private String tr(String key) {
 		return I18n.tr(key);
+	}
+	
+	private void clearDdlCreateLog(){
+	}
+	private void addToDdlCreateLog(String s){
+		System.out.println(s);
 	}
 }

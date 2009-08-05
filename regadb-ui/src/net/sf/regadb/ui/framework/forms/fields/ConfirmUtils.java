@@ -2,9 +2,8 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WInteractWidget;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WInteractWidget;
 
 public class ConfirmUtils 
 {
@@ -13,9 +12,9 @@ public class ConfirmUtils
         if(form instanceof IConfirmForm)
         {
             final IConfirmForm confirmForm = ((IConfirmForm)form);
-            interactWidget.enterPressed.addListener(new SignalListener<WEmptyEvent>()
+            interactWidget.enterPressed().addListener(form.getWContainer(), new Signal.Listener()
                     {
-                        public void notify(WEmptyEvent a) 
+                        public void trigger() 
                         {
                             confirmForm.confirmAction();   
                         }

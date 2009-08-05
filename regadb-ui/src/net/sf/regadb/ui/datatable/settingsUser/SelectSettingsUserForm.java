@@ -9,15 +9,15 @@ public class SelectSettingsUserForm extends SelectForm
     private DataTable<SettingsUser> dataTable_;
     private ISettingsUserDataTable dataTableI_;
     
-    public SelectSettingsUserForm(boolean enabled)
+    public SelectSettingsUserForm()
     {
-        super((enabled?tr("form.administrator.registeredUser.select"):tr("form.administrator.notRegisteredUser.select")));
-        init(enabled);
+        super(tr("form.administrator.user.select"));
+        init();
     }
     
-    public void init(boolean enabled)
+    public void init()
     {
-        dataTableI_ = new ISettingsUserDataTable(enabled);
+        dataTableI_ = new ISettingsUserDataTable();
         dataTable_ = new DataTable<SettingsUser>(dataTableI_, 10);
         addWidget(dataTable_);
     }

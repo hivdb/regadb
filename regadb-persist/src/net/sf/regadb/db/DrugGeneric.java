@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class DrugGeneric implements java.io.Serializable {
 
-    // Fields    
-
     private Integer genericIi;
 
     private int version;
@@ -25,34 +23,31 @@ public class DrugGeneric implements java.io.Serializable {
 
     private String atcCode;
 
+    private Set<Genome> genomes = new HashSet<Genome>(0);
+
     private Set<DrugCommercial> drugCommercials = new HashSet<DrugCommercial>(0);
 
-    // Constructors
-
-    /** default constructor */
     public DrugGeneric() {
     }
 
-    /** minimal constructor */
     public DrugGeneric(DrugClass drugClass, String genericId, String genericName) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
     }
 
-    /** full constructor */
     public DrugGeneric(DrugClass drugClass, String genericId,
             String genericName, Integer resistanceTableOrder, String atcCode,
-            Set<DrugCommercial> drugCommercials) {
+            Set<Genome> genomes, Set<DrugCommercial> drugCommercials) {
         this.drugClass = drugClass;
         this.genericId = genericId;
         this.genericName = genericName;
         this.resistanceTableOrder = resistanceTableOrder;
         this.atcCode = atcCode;
+        this.genomes = genomes;
         this.drugCommercials = drugCommercials;
     }
 
-    // Property accessors
     public Integer getGenericIi() {
         return this.genericIi;
     }
@@ -107,6 +102,14 @@ public class DrugGeneric implements java.io.Serializable {
 
     public void setAtcCode(String atcCode) {
         this.atcCode = atcCode;
+    }
+
+    public Set<Genome> getGenomes() {
+        return this.genomes;
+    }
+
+    public void setGenomes(Set<Genome> genomes) {
+        this.genomes = genomes;
     }
 
     public Set<DrugCommercial> getDrugCommercials() {

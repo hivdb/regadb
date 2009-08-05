@@ -12,8 +12,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.beanlib.hibernate.HibernateBeanReplicator;
+
 public class Patient implements Serializable {
 
+    public static final String FIRST_NAME = "First name";
+    public static final String LAST_NAME = "Last name";
+    public static final String BIRTH_DATE = "Birth date";
+    public static final String DEATH_DATE = "Death date";
+    public static final String GROUP = "Personal";
+    
     private PatientImpl patient;
     private Privileges privileges;
     
@@ -66,43 +74,98 @@ public class Patient implements Serializable {
     public void setPatientId(String patientId) {
         patient.setPatientId(patientId);
     }
+    
+    private String getAttributeValue(String attribute){
+        for(PatientAttributeValue pav : patient.getPatientAttributeValues())
+            if(pav.getAttribute().getName().equals(attribute))
+                return pav.getValue();
+                
+        return null;
+    }
+    private PatientAttributeValue setAttributeValue(Attribute attribute, String value){
+        PatientAttributeValue av = null;
+        for(PatientAttributeValue pav : patient.getPatientAttributeValues()){
+            if(pav.getAttribute().getName().equals(attribute.getName())){
+                av = pav;
+                break;
+            }
+        }
+        
+        
+        if(av == null){
+            if(value != null){
+                av = createPatientAttributeValue(attribute);
+                av.setValue(value);
+            }
+        }
+        else{
+            if(value == null){
+                patient.getPatientAttributeValues().remove(av);
+            }
+            else{
+                av.setValue(value);
+            }
+        }
+            
+        return av;
+    }
+    private Date getDate(String timestamp){
+        if(timestamp != null){
+            try{
+                return new Date(Long.parseLong(timestamp));
+            }
+            catch(NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
     public String getLastName() {
         if (privileges.getValue() >= Privileges.READONLY.getValue())
-            return patient.getLastName();
+            return getAttributeValue(LAST_NAME);
         else
             return null;
     }
 
-    public void setLastName(String lastName) {
-        patient.setLastName(lastName);
+    public void setLastName(Transaction t, String lastName) {
+        PatientAttributeValue pav = setAttributeValue(t.getAttribute(LAST_NAME, GROUP), lastName);
+        if(pav != null && lastName == null)
+            t.delete(pav);
     }
 
     public String getFirstName() {
         if (privileges.getValue() >= Privileges.READONLY.getValue())
-            return patient.getFirstName();
+            return getAttributeValue(FIRST_NAME);
         else
             return null;
     }
 
-    public void setFirstName(String firstName) {
-        patient.setFirstName(firstName);
+    public void setFirstName(Transaction t, String firstName) {
+        PatientAttributeValue pav = setAttributeValue(t.getAttribute(FIRST_NAME, GROUP), firstName);
+        if(pav != null && firstName == null)
+            t.delete(pav);
     }
 
     public Date getBirthDate() {
-        return patient.getBirthDate();
+        return getDate(getAttributeValue(BIRTH_DATE));
     }
 
-    public void setBirthDate(Date birthDate) {
-        patient.setBirthDate(birthDate);
+    public void setBirthDate(Transaction t, Date birthDate) {
+        PatientAttributeValue pav = setAttributeValue(t.getAttribute(BIRTH_DATE, GROUP), birthDate == null ? null : birthDate.getTime()+"");
+        if(pav != null && birthDate == null)
+            t.delete(pav);
     }
 
     public Date getDeathDate() {
-        return patient.getDeathDate();
+        return getDate(getAttributeValue(DEATH_DATE));
     }
 
-    public void setDeathDate(Date deathDate) {
-        patient.setDeathDate(deathDate);
+    public void setDeathDate(Transaction t, Date deathDate) {
+        PatientAttributeValue pav = setAttributeValue(t.getAttribute(DEATH_DATE, GROUP), deathDate == null ? null : deathDate.getTime()+"");
+        if(pav != null && deathDate == null)
+            t.delete(pav);
     }
 
     public Set<TestResult> getTestResults() {
@@ -192,7 +255,7 @@ public class Patient implements Serializable {
         eventValue.setPatient(patient);
     }
     
-    public Therapy createTherapy(Date startDate) {
+    public Therapy createTherapy(Date startDate){
         Therapy result = new Therapy(patient, startDate);
         getTherapies().add(result);
         return result;
@@ -218,6 +281,22 @@ public class Patient implements Serializable {
         TestResult result = new TestResult(test);
         result.setPatient(patient);
         getTestResults().add(result);
+        return result;
+    }
+    
+    public TestResult createTestResult(Test test, String sampleId, Date testDate, String value) {
+        TestResult result = createTestResult(test);
+        result.setSampleId(sampleId);
+        result.setTestDate(testDate);
+        result.setValue(value);
+        return result;
+    }
+
+    public TestResult createTestResult(Test test, String sampleId, Date testDate, TestNominalValue value) {
+        TestResult result = createTestResult(test);
+        result.setSampleId(sampleId);
+        result.setTestDate(testDate);
+        result.setTestNominalValue(value);
         return result;
     }
     
@@ -255,5 +334,29 @@ public class Patient implements Serializable {
     
     public void addDataset(Dataset ds){
         getPatient().getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds,getPatient())));
+    }
+    
+    public Patient copy(HibernateBeanReplicator rep) {
+    	Patient newPatient = new Patient();
+    	
+    	newPatient.patient.setPatientAttributeValues(copy(rep, this.patient.getPatientAttributeValues()));
+    	newPatient.patient.setPatientDatasets(copy(rep, this.patient.getPatientDatasets()));
+    	newPatient.patient.setPatientEventValues(copy(rep, this.patient.getPatientEventValues()));
+    	newPatient.patient.setPatientId(this.patient.getPatientId());
+    	newPatient.patient.setTestResults(copy(rep, this.patient.getTestResults()));
+    	newPatient.patient.setTherapies(copy(rep, this.patient.getTherapies()));
+    	newPatient.patient.setViralIsolates(copy(rep, this.patient.getViralIsolates()));    	
+    	
+    	return newPatient;
+    }
+    
+    private Set copy(HibernateBeanReplicator rep, Set s) {
+    	Set cs = new HashSet();
+    	
+    	for(Object o : s) {
+    		cs.add(rep.copy(o));
+    	}
+    	
+    	return cs;
     }
 }

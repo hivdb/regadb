@@ -72,7 +72,7 @@ public class MutationHelper
         return result;
     }
     
-    public static String getMutationDifferenceList(AaSequence s1, AaSequence s2) {
+    public static String getAaMutationDifferenceList(AaSequence s1, AaSequence s2) {
         String result = "";
         
         if (!s1.getProtein().getAbbreviation().equals(s2.getProtein().getAbbreviation()))
@@ -95,8 +95,12 @@ public class MutationHelper
                 || !regionIncludesPosition(s2, position))
                 continue;
 
-            AaMutInsertion m1 = mutationAt(mutIns1, position, false);
-            AaMutInsertion m2 = mutationAt(mutIns2, position, false);
+            AaMutInsertion m1 = aaMutationAt(mutIns1, position, false);
+            if(m1!=null && equals(m1.getMutation().getAaMutation(),m1.getMutation().getAaReference()))
+            	m1 = null;
+            AaMutInsertion m2 = aaMutationAt(mutIns2, position, false);
+            if(m2!=null && equals(m2.getMutation().getAaMutation(),m2.getMutation().getAaReference()))
+            	m2 = null;
 
             if ((m1 != null) || (m2 != null)) {
                 if (m1 == null) {
@@ -111,8 +115,8 @@ public class MutationHelper
                 }
             }
 
-            AaMutInsertion i1 = mutationAt(mutIns1, position, true);
-            AaMutInsertion i2 = mutationAt(mutIns2, position, true);
+            AaMutInsertion i1 = aaMutationAt(mutIns1, position, true);
+            AaMutInsertion i2 = aaMutationAt(mutIns2, position, true);
             
             if ((i1 != null) || (i2 != null)) {
                 if (i1 == null)
@@ -123,6 +127,11 @@ public class MutationHelper
         }
         
         return result;
+    }
+    
+    private static boolean equals(String aaMutation, String aaReference){
+    	return aaMutation == aaReference
+    		|| ( aaMutation != null && aaMutation.equals(aaReference));
     }
     
     private static void addChangedPositions(Set<AaMutInsertion> mutIns, Set<Integer> posSet) {
@@ -136,7 +145,7 @@ public class MutationHelper
         return (position >= seq.getFirstAaPos()) && (position <= seq.getLastAaPos());
     }
     
-    private static AaMutInsertion mutationAt(Set<AaMutInsertion> mutIns, int position, boolean insertion) {
+    private static AaMutInsertion aaMutationAt(Set<AaMutInsertion> mutIns, int position, boolean insertion) {
         for (AaMutInsertion m : mutIns) {
             if (m.getPosition() == position && (m.isInsertion() == insertion))
                 return m;

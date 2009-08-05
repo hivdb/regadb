@@ -6,24 +6,17 @@ package net.sf.regadb.db;
  */
 public class AnalysisType implements java.io.Serializable {
 
-    // Fields    
-
     private Integer analysisTypeIi;
 
     private String type;
 
-    // Constructors
-
-    /** default constructor */
     public AnalysisType() {
     }
 
-    /** full constructor */
     public AnalysisType(String type) {
         this.type = type;
     }
 
-    // Property accessors
     public Integer getAnalysisTypeIi() {
         return this.analysisTypeIi;
     }

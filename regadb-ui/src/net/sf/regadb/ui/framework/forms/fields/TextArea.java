@@ -2,11 +2,10 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCssDecorationStyle;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WTextArea;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WCssDecorationStyle;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WTextArea;
 
 public class TextArea extends FormField
 {
@@ -14,7 +13,7 @@ public class TextArea extends FormField
     
     public TextArea(InteractionState state, IForm form)
     {
-        super();
+        super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             _fieldEdit = new WTextArea();
@@ -40,17 +39,17 @@ public class TextArea extends FormField
     
     public void flagErroneous()
     {
-        _fieldEdit.setStyleClass("form-field textarea edit-invalid");
+    	_fieldEdit.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
-        _fieldEdit.setStyleClass("form-field textarea edit-valid");
+    	_fieldEdit.setStyleClass("");
     }
 
     public String getFormText() 
     {
-        return _fieldEdit.text();
+        return _fieldEdit.getText();
     }
     
     public void setFormText(String text) 
@@ -62,19 +61,19 @@ public class TextArea extends FormField
     {
         if(_fieldEdit!=null)
         {
-            return _fieldEdit.decorationStyle();
+            return _fieldEdit.getDecorationStyle();
         }
         else
         {
-            return getViewWidget().decorationStyle();
+            return getViewWidget().getDecorationStyle();
         }
     }
     
-    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addChangeListener(Signal.Listener listener)
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(listener);
+            _fieldEdit.changed().addListener(this, listener);
         }
     }
 }

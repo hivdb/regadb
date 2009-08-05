@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WComboBox;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import eu.webtoolkit.jwt.Signal1;
 
-public class FilterOperatorCombo extends WComboBox
+public class FilterOperatorCombo extends MyComboBox
 {
 	private FilterTF filterTF_;
 	
@@ -14,14 +14,14 @@ public class FilterOperatorCombo extends WComboBox
 		
 		addItem(tr("datatable.filter.combo.noFilter"));
 		
-		activated.addListener(new SignalListener<Integer>()
+		activated().addListener(this, new Signal1.Listener<Integer>()
 		{
-			public void notify(Integer i)
+			public void trigger(Integer i)
 			{
 				//disable if the first element is selected
 				filterTF_.setEnabled(i!=0);
 				
-				if(!(filterTF_.isEnabled() && "".equals(filterTF_.text())))
+				if(!(filterTF_.isEnabled() && "".equals(filterTF_.getText())))
 				{
 					FilterTools.findDataTable(filterTF_).applyFilter();
 				}

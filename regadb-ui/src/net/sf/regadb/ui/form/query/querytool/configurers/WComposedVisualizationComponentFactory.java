@@ -3,9 +3,9 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 import java.util.List;
 
 import com.pharmadm.custom.rega.awccomposition.AggregateComposition;
+import com.pharmadm.custom.rega.awccomposition.NewTableComposition;
 import com.pharmadm.custom.rega.awccomposition.PropertyFetchComposition;
 import com.pharmadm.custom.rega.awccomposition.TableFetchComposition;
-import com.pharmadm.custom.rega.awccomposition.NewTableComposition;
 import com.pharmadm.custom.rega.queryeditor.CompositionBehaviour;
 import com.pharmadm.custom.rega.queryeditor.NullComposition;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedVisualizationComponentFactory;

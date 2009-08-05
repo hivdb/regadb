@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class AnalysisData implements java.io.Serializable {
 
-    // Fields    
-
     private Integer analysisDataIi;
 
     private Analysis analysis;
@@ -18,19 +16,14 @@ public class AnalysisData implements java.io.Serializable {
 
     private String mimetype;
 
-    // Constructors
-
-    /** default constructor */
     public AnalysisData() {
     }
 
-    /** minimal constructor */
     public AnalysisData(Analysis analysis, String mimetype) {
         this.analysis = analysis;
         this.mimetype = mimetype;
     }
 
-    /** full constructor */
     public AnalysisData(Analysis analysis, String name, byte[] data,
             String mimetype) {
         this.analysis = analysis;
@@ -39,7 +32,6 @@ public class AnalysisData implements java.io.Serializable {
         this.mimetype = mimetype;
     }
 
-    // Property accessors
     public Integer getAnalysisDataIi() {
         return this.analysisDataIi;
     }

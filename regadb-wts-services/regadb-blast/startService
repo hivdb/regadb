@@ -5,7 +5,7 @@ running_file="$1/.running"
 
 
 echo "Setting files" >> $monitor_file
- 
+
 nt_sequence_file="$1/inputs/nt_sequence"
 species_file="$1/outputs/species"
 
@@ -16,30 +16,42 @@ db_file=`ls $blastdb_path*/ -d --sort time | head -n 1`
 db_file=$db_file"all.fasta"
 
 echo "Blasting started" >> $monitor_file
+echo blastall -p blastn -d $db_file -i $nt_sequence_file -o $running_file >> $monitor_file
 blastall -p blastn -d $db_file -i $nt_sequence_file -o $running_file
 echo "Blasting ended" >> $monitor_file
 
-#get the line where the results are
+echo get the line where the results are >> $monitor_file
 linenumber=`grep "Sequences producing significant alignments:" -n $running_file | cut -d : -f 1`
 (( linenumber+=2 ))
 line=`( head -n $linenumber $running_file | tail -n 1 )`
-
-#split the result line in a word-array
 line2=($line)
 
-#the last 2 words are value and score, everything before that is part of the name
+echo split the result line in a word-array >> $monitor_file
+for c in $line; do
+    echo $c- >> $monitor_file
+done
+
+echo the last 2 words are value and score, everything before that is part of the name >> $monitor_file
 n=${#line2[@]}
 nv=$(( n-1 ))
 ns=$(( n-2 ))
+
+echo $n $nv $ns >> $monitor_file
 
 value=${line2[ $nv ]}
 score=${line2[ $ns ]}
 name=`echo $line | cut -f 1-$ns -d ' '`
 
-echo $name >> $species_file
+( echo $name | grep -q HXB2 ) && echo "HIV-1" >> $species_file
+( echo $name | grep -q ROD ) && echo "HIV-2A" >> $species_file
+( echo $name | grep -q EHO ) && echo "HIV-2B" >> $species_file
+( echo $name | grep -q 'Hepatitis C virus' ) && echo "HCV" >> $species_file
+
 echo $value >> $species_file
 echo $score >> $species_file
+
 
 rm "$running_file"
 
 echo "ENDED_SUCCES" > "$1/.ended"
+

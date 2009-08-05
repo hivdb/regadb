@@ -2,13 +2,13 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.ui.tree.GenericSelectedItem;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class PatientSelectedItem extends GenericSelectedItem<Patient>
 {
     public PatientSelectedItem(WTreeNode parent)
     {
-        super(parent, "menu.singlePatient.patientSelectedItem", "{patientId}");
+        super(parent, "menu.singlePatient.patientSelectedItem");
     }
 
     @Override

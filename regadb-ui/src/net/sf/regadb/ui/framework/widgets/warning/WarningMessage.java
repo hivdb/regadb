@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.warning;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class WarningMessage extends WContainerWidget {
 
@@ -15,14 +15,14 @@ public class WarningMessage extends WContainerWidget {
 		INFO
 	}
 	
-	public WarningMessage(WImage image, WMessage text, MessageType type) {
+	public WarningMessage(WImage image, WString text, MessageType type) {
         addWidget(image);
         this.text = new WText(text);
         addWidget(this.text);
         setMessageType(type);
 	}
 	
-	public void setText(WMessage msg) {
+	public void setText(WString msg) {
 		text.setText(msg);
 	}
 	

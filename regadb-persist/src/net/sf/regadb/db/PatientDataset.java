@@ -6,22 +6,15 @@ package net.sf.regadb.db;
  */
 public class PatientDataset implements java.io.Serializable {
 
-    // Fields    
-
     private PatientDatasetId id;
 
-    // Constructors
-
-    /** default constructor */
     public PatientDataset() {
     }
 
-    /** full constructor */
     public PatientDataset(PatientDatasetId id) {
         this.id = id;
     }
 
-    // Property accessors
     public PatientDatasetId getId() {
         return this.id;
     }

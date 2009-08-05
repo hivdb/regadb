@@ -8,12 +8,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.encrypt.Encrypt;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WString;
 
 public class PasswordForm extends FormWidget
 {
@@ -32,7 +32,7 @@ public class PasswordForm extends FormWidget
     private Label retypePasswordL;
     private TextField retypePasswordTF;
     
-    public PasswordForm(WMessage formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
+    public PasswordForm(WString formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
     {
         super(formName, interactionState);
         selectNode_ = selectNode;
@@ -69,17 +69,17 @@ public class PasswordForm extends FormWidget
         }
         passwordTF = new TextField(getInteractionState(), this);
         passwordTF.setMandatory(true);
-        passwordTF.setEchomode(WLineEditEchoMode.Password);
+        passwordTF.setEchomode(WLineEdit.EchoMode.Password);
         passwordGroupTable.addLineToTable(passwordL, passwordTF);
         newPasswordL = new Label(tr("form.settings.user.label.password.new"));
         newPasswordTF = new TextField(getInteractionState(), this);
         newPasswordTF.setMandatory(true);
-        newPasswordTF.setEchomode(WLineEditEchoMode.Password);
+        newPasswordTF.setEchomode(WLineEdit.EchoMode.Password);
         passwordGroupTable.addLineToTable(newPasswordL, newPasswordTF);
         retypePasswordL = new Label(tr("form.settings.user.label.password.retype.new"));
         retypePasswordTF = new TextField(getInteractionState(), this);
         retypePasswordTF.setMandatory(true);
-        retypePasswordTF.setEchomode(WLineEditEchoMode.Password);
+        retypePasswordTF.setEchomode(WLineEdit.EchoMode.Password);
         passwordGroupTable.addLineToTable(retypePasswordL, retypePasswordTF);
         
         addWidget(passwordGroup_);
@@ -131,7 +131,7 @@ public class PasswordForm extends FormWidget
             update(su_, t);
             t.commit();
             
-            MessageBox.showWarningMessage(tr("form.settings.user.password.message"));
+            UIUtils.showWarningMessageBox(this, tr("form.settings.user.password.message"));
             
             redirectToView(expandNode_, selectNode_);
         }
@@ -144,7 +144,7 @@ public class PasswordForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         return null;
     }

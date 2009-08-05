@@ -1,13 +1,13 @@
 package net.sf.regadb.ui.framework.forms;
 
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class SelectForm extends WGroupBox implements IForm {
     
-    public SelectForm(WMessage message) {
+    public SelectForm(WString message) {
         super(message);
     }
     
@@ -19,7 +19,11 @@ public class SelectForm extends WGroupBox implements IForm {
         return this;
     }
 
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         return null;
     }
+
+	public void removeFormField(IFormField field) {
+		
+	}
 }

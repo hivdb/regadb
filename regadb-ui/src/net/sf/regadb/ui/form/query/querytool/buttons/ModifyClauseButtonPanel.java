@@ -3,9 +3,9 @@ package net.sf.regadb.ui.form.query.querytool.buttons;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorPanel;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 
 public class ModifyClauseButtonPanel extends WButtonPanel {
@@ -27,16 +27,16 @@ public class ModifyClauseButtonPanel extends WButtonPanel {
 		WPushButton cancelButton = new WPushButton(tr("form.general.button.cancel"));
 		addButton(cancelButton);
 
-		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				editPanel.getSelectedClause().getManager().applyEditings();
 				node.replaceNode(editPanel.getSelectedClause().getManager().getClause());
 				node.showContent();
 			}
 		});
 		
-		cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				node.showContent();
 			}
 		});

@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,8 +24,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import net.sf.regadb.tools.MutationStringComparator;
 
 public class Table {
+	
 	public static Table readTable(String filename)  throws FileNotFoundException, UnsupportedEncodingException {
 		return readTable(filename, Charset.defaultCharset().name(), ',');
 	}
@@ -111,8 +116,8 @@ public class Table {
 
 
 	ArrayList<ArrayList<String> > rows;
-	LineNumberReader reader;
-	HashMap<String, Index> indexes;
+	private LineNumberReader reader;
+	private HashMap<String, Index> indexes;
 
 	public Table() {
 		rows = new ArrayList<ArrayList<String> >();
@@ -147,7 +152,7 @@ public class Table {
 		readLines(oneline, null, null,delimiter);
 	}
 
-	private void readLines(boolean oneline, ArrayList selected, OutputStream output, char delimiter) {
+	private void readLines(boolean oneline, ArrayList<Integer> selected, OutputStream output, char delimiter) {
 
 		PrintStream sout = null;
 
@@ -158,7 +163,7 @@ public class Table {
 
 		try {
 			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-				ArrayList values = splitHandleQuotes(s, delimiter, '"', '\\');
+				ArrayList<String> values = splitHandleQuotes(s, delimiter, '"', '\\');
 				ArrayList<String> row = new ArrayList<String>(numColumns());
 
 				for (int i = 0; i < values.size(); ++i) {
@@ -235,13 +240,14 @@ public class Table {
 							current.append(s.charAt(i));
 			}
 		}
+
 		results.add(new String(current));
 
 		return results;
 	}
 
 	public String valueAt(int i, int j) {
-		return (String) ((ArrayList) rows.get(j)).get(i);
+		return rows.get(j).get(i);
 	}
 
 	public String valueAt(Index index, int i, int j) {
@@ -252,7 +258,7 @@ public class Table {
 		if (rows.isEmpty())
 			return 0;
 		else
-			return ((ArrayList) rows.get(0)).size();
+			return rows.get(0).size();
 	}
 
 	public int numRows() {
@@ -261,6 +267,10 @@ public class Table {
 
 	public void exportAsCsv(OutputStream output){
 		exportAsCsv(output,',',false);
+	}
+	
+	public void exportAsCsv(OutputStream output, boolean quotes){
+		exportAsCsv(output,',',quotes);
 	}
 
 	public void exportAsCsv(OutputStream output, char delimiter, boolean quotes) {
@@ -317,8 +327,8 @@ public class Table {
 			boolean allReal = true;
 
 			try {			
-				for (Iterator j = values.iterator(); j.hasNext();) {
-					String s = (String) j.next();
+				for (Iterator<String> j = values.iterator(); j.hasNext();) {
+					String s = j.next();
 					if (!s.equals(""))
 						Double.parseDouble(s);
 				}
@@ -335,7 +345,7 @@ public class Table {
 			else {
 				sout.print(" { ");
 				boolean first = true;
-				for (Iterator j = values.iterator(); j.hasNext();) {
+				for (Iterator<String> j = values.iterator(); j.hasNext();) {
 					if (!first)
 						sout.print(", ");
 					first = false;
@@ -373,12 +383,46 @@ public class Table {
 		rows.remove(r);
 	}
 
-	public void deleteColumn(int c) {
+	public void deleteColumn(int c){
 		for (int i = 0; i < rows.size(); ++i) {
-			ArrayList row = (ArrayList) rows.get(i);
-
+			ArrayList<String> row = rows.get(i);
 			row.remove(c);
 		}
+	}
+	
+	public void deleteColumns(ArrayList<Integer> c){
+		Collections.sort(c);
+		for(int i = c.size()-1; i >= 0; i--){
+			deleteColumn(c.get(i));
+		}	
+	}
+	
+	public void deleteColumns(String pattern){
+		ArrayList<Integer> colsToBeDeleted = new ArrayList<Integer>();
+		ArrayList<String> header = getRow(0);
+		Pattern p = Pattern.compile(pattern);
+		for(int i = 0; i < header.size(); i++){
+			if(p.matcher(header.get(i)).matches()){
+				colsToBeDeleted.add(i);				
+			}
+		}
+		deleteColumns(colsToBeDeleted);		
+	}
+	
+	/**
+	 * select the columns with name in names
+	 * the others columns are removed from the table
+	 * @param names
+	 */
+	public void selectColumns(ArrayList<String> names){
+		ArrayList<Integer> colsToBeDeleted = new ArrayList<Integer>();
+		ArrayList<String> header = getRow(0);
+		for(int i = 1; i < header.size(); i++){
+			if(!names.contains(header.get(i))){
+				colsToBeDeleted.add(i);				
+			}
+		}
+		deleteColumns(colsToBeDeleted);		
 	}
 
 	public ArrayList<String> getColumn(int c) {
@@ -386,10 +430,18 @@ public class Table {
 
 		for (int i = 0; i < numRows(); ++i) {
 			result.add(valueAt(c, i));
-		}
-
+		}		
 		return result;
 	}
+
+	public ArrayList<String> getRow(int r){
+		return rows.get(r);
+	}
+
+	public void addColumn(ArrayList<String> list){
+		addColumn(list, findOrderedPosition(list.get(0)));
+	}
+
 
 	public void addColumn(ArrayList<String> list, int pos) {
 		if (numColumns() == 0) {
@@ -410,7 +462,7 @@ public class Table {
 
 	public void addRow(ArrayList<String> row){
 		if(numColumns() != 0 && row.size() != numColumns())
-			throw new RuntimeException("column not compatible with table geometry");
+			throw new RuntimeException("row not compatible with table geometry");
 		else
 			rows.add(row);
 	}
@@ -420,25 +472,23 @@ public class Table {
 	}
 
 	public int findInRow(int i, String s) {
-		ArrayList row = (ArrayList) rows.get(i);
+		ArrayList<String> row = rows.get(i);
 
 		return row.indexOf(s);
 	}
 
 	public int findInRow(int i, int offset, String s){
-		ArrayList row = (ArrayList) rows.get(i);
+		ArrayList<String> row = rows.get(i);
 		return offset + row.subList(offset, row.size()).indexOf(s);
 	}
 
 	public int findInRowIgnoreCase(int i, String s) {
-		ArrayList row = (ArrayList) rows.get(i);
-
+		ArrayList<String> row = rows.get(i);
 		for (int j = 0; j < row.size(); ++j) {
 			if (((String) row.get(j)).compareToIgnoreCase(s) == 0) {
 				return j;
 			}
 		}
-
 		return -1;
 	}
 
@@ -455,7 +505,7 @@ public class Table {
 			sout.println("<VARIABLE TYPE=\"nature\">");
 			sout.println("<NAME>" + valueAt(i, 0) + "</NAME>");
 
-			for (Iterator j = values.iterator(); j.hasNext();) {
+			for (Iterator<String> j = values.iterator(); j.hasNext();) {
 				sout.println("<OUTCOME>&quot;" + j.next() + "&quot;</OUTCOME>");
 			}
 
@@ -463,7 +513,7 @@ public class Table {
 		}
 	}
 
-	static private class HistogramEntry implements Comparable {
+	static private class HistogramEntry implements Comparable<HistogramEntry> {
 		String key;
 		int count;
 
@@ -475,14 +525,12 @@ public class Table {
 			this.count = count;
 		}
 
-		public int compareTo(Object arg0) {
-			HistogramEntry other = (HistogramEntry) arg0;
-
+		public int compareTo(HistogramEntry other) {
 			return 100 * (other.count - count) + key.compareTo(other.key);
 		}		
 	}
 
-	public ArrayList<Map<String, Integer> > histogram() {
+	public ArrayList<Map<String, Integer>> histogram() {
 		ArrayList<Map<String, Integer> > columnEntries
 		= new ArrayList<Map<String, Integer> >(numColumns());
 
@@ -525,7 +573,7 @@ public class Table {
 		 * Sort them in decreasing 'count'
 		 */
 		SortedSet<HistogramEntry> sortedCounts = new TreeSet<HistogramEntry>();
-		for (Iterator it = valueCounts.keySet().iterator(); it.hasNext();) {
+		for (Iterator<String> it = valueCounts.keySet().iterator(); it.hasNext();) {
 			HistogramEntry e = valueCounts.get(it.next());
 
 			sortedCounts.add(e);
@@ -657,11 +705,11 @@ public class Table {
 
 		for (int i = 0; i < numColumns(); ++i) {			
 			printVd.print(valueAt(i, 0));
-			Map vc = (Map) histogram.get(i);
+			Map<String, Integer> vc = histogram.get(i);
 			Map<String, Integer> values = new LinkedHashMap<String, Integer>();			
 
 			int index = 0;
-			for (Iterator j = vc.keySet().iterator(); j.hasNext();) {
+			for (Iterator<String> j = vc.keySet().iterator(); j.hasNext();) {
 				String v = (String) j.next();
 				printVd.print("\t" + v);
 				values.put(v, new Integer(index));
@@ -675,7 +723,7 @@ public class Table {
 		PrintStream printIdt = new PrintStream(outputIdt);
 		for (int j = 1; j < numRows(); ++j) {
 			for (int i = 0; i < numColumns(); ++i) {
-				Map values = (Map) columnValues.get(i);
+				Map<String, Integer> values = columnValues.get(i);
 				if (i != 0)
 					printIdt.print("\t");
 				if (!valueAt(i, j).equals("")) {
@@ -737,7 +785,7 @@ public class Table {
 		}
 	}
 
-	public void readSelectedColumns(InputStream input, ArrayList selected,
+	public void readSelectedColumns(InputStream input, ArrayList<Integer> selected,
 			OutputStream output, char delimiter) {
 		ArrayList<ArrayList<String>> newRows = new ArrayList<ArrayList<String>>();
 		newRows.add(selectColumns(rows.get(0), selected));
@@ -746,16 +794,17 @@ public class Table {
 		readLines(false, selected, output, delimiter);
 	}
 
-	public void readSelectedColumns(InputStream input, ArrayList selected,
+	public void readSelectedColumns(InputStream input, ArrayList<Integer> selected,
 			OutputStream output) {
 		readSelectedColumns(input, selected, output, ',');
 	}
 
 
-	private ArrayList<String> selectColumns(ArrayList<String> row, ArrayList selected) {
+	private ArrayList<String> selectColumns(ArrayList<String> row, ArrayList<Integer> selected) {
 		ArrayList<String> result = new ArrayList<String>();
 		for (int i = 0; i < selected.size(); ++i) {
-			String o = row.get(((Integer) selected.get(i)).intValue());
+//			String o = row.get(((Integer) selected.get(i)).intValue());
+			String o = row.get(selected.get(i));
 			result.add(o);
 		}
 		return result;
@@ -772,7 +821,6 @@ public class Table {
 
 	public int findColumn(String name) {
 		int column = this.findInRow(0, name);
-
 		return column;
 	}
 	public int findColumn(int offset, String name) {
@@ -780,4 +828,187 @@ public class Table {
 
 		return column;
 	}
+
+	private int findOrderedPosition(String mutString){
+		Comparator<String> c = new MutationStringComparator();
+		ArrayList<String> header = getRow(0);
+		for(int i = 1 ; i<numColumns();i++){
+			if(c.compare(mutString, header.get(i)) < 0){
+//				System.out.println(mutString +" op pos "+(i+1)+" tov "+header.get(i)+" in "+header);
+				return i;
+			}
+		}
+//		System.out.println(mutString +"achteraan in "+header);
+		return numColumns();
+	}	
+	
+
+	public void removeLowPrevalenceMutations(double threshold, boolean lump){
+		if(lump){
+			/*
+			 * 05 December 2008
+			 * because of disappearing wild types under certain circumstances involving mixtures
+			 * I (gbehey0) tried to put a threshold without lumpValues. However this part of the code
+			 * seemed broken (the index went out of bounds) and I wasn't able to quickly fix the old code.
+			 * I re-wrote this part (the old code is still commented a few lines down). 
+			 * 
+			 * problem before (threshold 2%):
+			 * RT65K (WT) n : 1.95 % => deleted
+			 * RT65R y : 2.4 % => not deleted
+			 * RT65E y : 0.02 % => deleted
+			 * 
+			 * problem : wild type got deleted but mutation remained due to mixtures.
+			 * solution: only delete column when occurrence of 'y' < threshold.
+			 * 
+			 * new possible problem: (threshold 2% - no mixtures): 
+			 * RT65K (WT) 	n : 5 % => ok
+			 * RT65R 		y : 4 % => ok
+			 * RT65E 		y : 1 % => deleted
+			 * 
+			 * what to do with the 1% rows containing RT65E = y ? delete rows?
+			 */
+
+			ArrayList<Integer> colIndicesToBeRemoved = new ArrayList<Integer>();
+			for(int i = 1; i < numColumns();i++){
+				Map<String,Integer> m = histogram().get(i);
+				for (Iterator<String> j = m.keySet().iterator(); j.hasNext();) {
+					String k = j.next();
+					int c = m.get(k);
+
+					if ((double) c / (numRows() - 1)
+							< threshold && k.equals("y")) {
+						colIndicesToBeRemoved.add(i);
+					}
+				}					
+			}
+			deleteColumns(colIndicesToBeRemoved);
+
+			//OLD CODE
+
+			//		boolean hasDeleted = false;
+			//		int numRowsRemoved = 0;
+			//
+			//		int numIterations = 1;
+			//		do {
+			//			hasDeleted = false;
+			//			System.err.print("(" + numIterations + ") ");
+			//
+			//			for (int ii = 0; ii < columns.size(); ++ii) {
+			//				int i = ((Integer)columns.get(ii)).intValue();
+			//
+			//				Map m = (Map) histogram.get(i);
+			//				ArrayList smaller = new ArrayList();
+			//
+			//				for (Iterator j = m.keySet().iterator(); j.hasNext();) {
+			//					String k = (String) j.next();
+			//					int c = ((Integer) m.get(k)).intValue();
+			//
+			//					if ((double) c / (table.numRows() - 1)
+			//						< threshold.doubleValue()) {
+			//						smaller.add(k);
+			//					}
+			//				}
+			//
+			//				if (smaller.size() == m.size() - 1) {
+			//					table.deleteColumn(i);
+			//					columns.remove(ii);
+			//					--ii;
+			//					++numColumnsRemoved;
+			//					System.err.print("c");
+			//				} else {
+			//					for (Iterator j = m.keySet().iterator(); j.hasNext();) {
+			//						String k = (String) j.next();
+			//						int c = ((Integer) m.get(k)).intValue();
+			//
+			//						if ((double) c / (table.numRows() - 1)
+			//							< threshold.doubleValue()) {
+			//							numRowsRemoved
+			//								+= table.deleteRowsWithValue(i, k);
+			//							hasDeleted = true;
+			//							System.err.print("r");
+			//						}
+			//					}
+			//				}
+			//			}
+			//
+			//			if (hasDeleted)
+			//				histogram = table.histogram();
+			//			System.err.println();
+			//			++numIterations;
+			//		} while (hasDeleted);
+			//
+			//		System.err.println(
+			//			"Deleted "
+			//				+ numRowsRemoved
+			//				+ " rows, "
+			//				+ numColumnsRemoved
+			//				+ " columns");
+
+		} else {
+			/*
+			 * For every attribute, we sort the values in ascending frequency order,
+			 * and lump the last value together with the preceding one until the last
+			 * one is above the threshold
+			 */
+			ArrayList<Integer> removeColumns = new ArrayList<Integer>();
+
+			for (int i = 1; i < numColumns(); ++i) {
+				Map<String,Integer> m = histogram(i);
+
+				SortedSet<AttributeValue> values = new TreeSet<AttributeValue>();
+				int l = 0;
+				for (Iterator<String> j = m.keySet().iterator(); j.hasNext(); ++l) {					
+					String k = j.next();
+					int c = m.get(k);
+					values.add(new AttributeValue(k, c, l));
+				}
+
+				boolean again = false;
+				do {
+					again = false;
+					Iterator<AttributeValue> it = values.iterator();
+					AttributeValue v = (AttributeValue) it.next();
+
+					if ((double) v.count / (numRows() - 1)
+							< threshold) {
+						if (it.hasNext()) {                            
+							/*
+							 * lump together with next value.
+							 */
+							AttributeValue v2 = it.next();
+
+							values.remove(v);
+							values.remove(v2);
+
+							v2.count += v.count;
+							String oldv2name = v2.name;
+							v2.name = v2.name + "/" + v.name;
+
+							values.add(v2);
+
+							for (int j = 1; j < numRows(); ++j) {
+								if (valueAt(i, j).equals(v.name)
+										|| valueAt(i, j).equals(oldv2name)) {
+									setValue(i, j, v2.name);
+								}
+							}
+
+							System.err.print(".");
+
+							again = true;
+						}
+					}
+				} while (again);
+
+				if (values.size() == 1) {
+					removeColumns.add(new Integer(i));
+					System.err.print("c");					
+				}
+			}
+			deleteColumns(removeColumns);
+			System.err.println();
+			System.err.println("Removed " + removeColumns.size() + " columns.");
+		}
+	}
+
 }

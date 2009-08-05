@@ -5,12 +5,12 @@ import java.util.List;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.AtomicWhereClauseEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditor;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
+import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCManager;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ConfigurationController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
-import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCManager;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEditorPanel{
 	private ComposedAWCManager  manager;
@@ -25,9 +25,10 @@ public class WAWCEditorPanel extends WContainerWidget implements ComposedAWCEdit
 	}
 	
 	public void initConfigurers() {
+		//TODO check
 		// clear() does not work
-		while (children().size() > 0) {
-			this.removeWidget(children().get(0));
+		while (getChildren().size() > 0) {
+			this.removeWidget(getChildren().get(0));
 		}
 		
 		for (WordConfigurer confy : configurers) {

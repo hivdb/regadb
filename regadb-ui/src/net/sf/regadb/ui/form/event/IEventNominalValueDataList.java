@@ -7,7 +7,7 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class IEventNominalValueDataList implements IEditableTable <EventNominalValue>{
 	private FormWidget form_;

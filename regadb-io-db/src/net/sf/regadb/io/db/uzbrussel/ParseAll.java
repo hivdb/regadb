@@ -1,13 +1,10 @@
 package net.sf.regadb.io.db.uzbrussel;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.io.FileUtils;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -77,7 +74,7 @@ public class ParseAll {
         ParseSeqs parseSeqs = new ParseSeqs(baseDir,parseIds, patients, povl.seqMathOldVL);
         parseSeqs.exec();
         
-        IOUtils.exportPatientsXMLI(patients, regadbXmlFile, ConsoleLogger.getInstance());
-        IOUtils.exportViralIsolatesXMLFromPatientsI(patients, viXmlFile, ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patients.values(), regadbXmlFile, ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patients.values(), viXmlFile, ConsoleLogger.getInstance());
     }
 }

@@ -12,17 +12,20 @@ import java.util.List;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -40,15 +43,7 @@ public class GenerateReport
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile){
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        int dateTolerance;
-        try{
-            dateTolerance = Integer.parseInt(RegaDBSettings.getInstance().getPropertyValue("regadb.report.dateTolerance"));
-        }
-        catch(Exception e){
-            dateTolerance = 14;
-        }
-        
-        init(vi, patient, algorithm, t, chartFile, dateTolerance); //default tolerance to two weeks
+        init(vi, patient, algorithm, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
     }
     
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
@@ -61,13 +56,13 @@ public class GenerateReport
     public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
     {
         replace("$ASI_ALGORITHM", algorithm.getDescription());
-        replace("$REPORT_GENERATION_DATE", DateUtils.getEuropeanFormat(new Date()));
+        replace("$REPORT_GENERATION_DATE", DateUtils.format(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
         replace("$PATIENT_ID", patient.getPatientId());
         replace("$PATIENT_CLINICAL_FILE_NR", getClinicalFileNumber(patient));
         replace("$SAMPLE_ID", vi.getSampleId());
-        replace("$SAMPLE_DATE", DateUtils.getEuropeanFormat(vi.getSampleDate()));
+        replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient));
         
         TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericHiv1ViralLoadTest(), dateTolerance);
@@ -82,8 +77,8 @@ public class GenerateReport
         else
             replace("$CD4_COUNT", "- ");
         
-        replace("$TYPE", getType(vi, RegaDBWtsServer.getTypeTest()));
-        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubTypeTest()));
+        replace("$TYPE", getOrganismName(vi));
+        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubtypeTest()));
         
         List<TestResult> results = getGssTestResults(vi, algorithm);
         setRITable(results, t);
@@ -101,7 +96,7 @@ public class GenerateReport
     {
         for(PatientAttributeValue pav : patient.getPatientAttributeValues())
         {
-            if(StandardObjects.getClinicalFileNumber().equals(pav.getAttribute().getName()))
+            if(StandardObjects.getClinicalFileNumberAttribute().getName().equals(pav.getAttribute().getName()))
             {
                 return pav.getValue();
             }
@@ -122,6 +117,19 @@ public class GenerateReport
         }
         
         return "";
+    }
+    
+    private String getOrganismName(ViralIsolate vi){
+        String organismName="";
+        if(vi.getNtSequences().size() > 0){
+            NtSequence ntSeq = vi.getNtSequences().iterator().next();
+            
+            if(ntSeq.getAaSequences().size() > 0){
+                AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
+                organismName = aaSeq.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+            }
+        }
+        return organismName;
     }
     
     private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)
@@ -173,13 +181,20 @@ public class GenerateReport
     private List<TestResult> getGssTestResults(ViralIsolate vi, Test algorithm)
     {
         List<TestResult> testResults = new ArrayList<TestResult>();
-        
-        for(TestResult tr : vi.getTestResults())
-        {
-            if(tr.getTest().getTestType().getDescription().equals(StandardObjects.getGssId()) 
-                    && tr.getTest().getDescription().equals(algorithm.getDescription())) {
-                testResults.add(tr);
+        try{
+            Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+            TestType gssTestType = StandardObjects.getGssTestType(g);
+            
+            for(TestResult tr : vi.getTestResults())
+            {
+                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType) 
+                        && tr.getTest().getDescription().equals(algorithm.getDescription())) {
+                    testResults.add(tr);
+                }
             }
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
         
         return testResults;
@@ -199,7 +214,11 @@ public class GenerateReport
         String result;
         String textToReplace;
         boolean foundMatchinqSeq;
-        for(Protein protein : t.getProteins())
+        
+        
+        Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+        
+        for(Protein protein : t.getProteins(g))
         {   
             foundMatchinqSeq = false;
             textToReplace = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";

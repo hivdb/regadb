@@ -16,8 +16,8 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateMutationEvolution extends FormWidget {
     private Patient patient_;
@@ -25,7 +25,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     private SimpleTable viralIsolatesTable_;
     
     
-    public ViralIsolateMutationEvolution(WMessage formName, Patient patient) {
+    public ViralIsolateMutationEvolution(WString formName, Patient patient) {
         super(formName, InteractionState.Viewing);
         patient_ = patient;
 
@@ -34,7 +34,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     
     public void init() {
         viralIsolatesTable_ = new SimpleTable(this);
-        viralIsolatesTable_.setStyleClass(viralIsolatesTable_.styleClass() + " viral-isolate-table");
+        viralIsolatesTable_.setStyleClass(viralIsolatesTable_.getStyleClass() + " viral-isolate-table");
         
         
         viralIsolatesTable_.setHeaders(tr("form.viralIsolate.evolution.mutation.table.header.sampleIdDate"),
@@ -60,30 +60,30 @@ public class ViralIsolateMutationEvolution extends FormWidget {
             aaseqs = getAaSeqsForViralIsolateSortedByProtein(vis.get(i));
             
             sampleId = new WText();
-            sampleId.setText(lt(vis.get(i).getSampleId() + "<br>" + DateUtils.getEuropeanFormat(vis.get(i).getSampleDate())));
-            viralIsolatesTable_.putElementAt(rowCounter, 0, sampleId);
-            viralIsolatesTable_.elementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
+            sampleId.setText(vis.get(i).getSampleId() + "<br/>" + DateUtils.format(vis.get(i).getSampleDate()));
+            viralIsolatesTable_.getElementAt(rowCounter, 0).addWidget(sampleId);
+            viralIsolatesTable_.getElementAt(rowCounter, 0).setRowSpan(Math.max(aaseqs.size(),1));
             
             for(AaSequence aaseq : getAaSeqsForViralIsolateSortedByProtein(vis.get(i))) {
                 protein = new WText();
-                protein.setText(lt(aaseq.getProtein().getAbbreviation()));
-                viralIsolatesTable_.putElementAt(rowCounter, 1, protein);
+                protein.setText(aaseq.getProtein().getAbbreviation());
+                viralIsolatesTable_.getElementAt(rowCounter, 1).addWidget(protein);
                 
                 region = new WText();
-                region.setText(lt(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos()));
-                viralIsolatesTable_.putElementAt(rowCounter, 2, region);
+                region.setText(aaseq.getFirstAaPos() + " - " + aaseq.getLastAaPos());
+                viralIsolatesTable_.getElementAt(rowCounter, 2).addWidget(region);
                 
                 mutations = new WText();
-                mutations.setText(lt(MutationHelper.getWildtypeMutationList(aaseq)));
-                viralIsolatesTable_.putElementAt(rowCounter, 3, mutations);
+                mutations.setText(MutationHelper.getWildtypeMutationList(aaseq));
+                viralIsolatesTable_.getElementAt(rowCounter, 3).addWidget(mutations);
                 
                 changes = new WText();
                 String changesS = "";
                 if(i-1>=0) {
                     changesS = diff(aaseq, vis.get(i-1));
                 }
-                changes.setText(lt(changesS));
-                viralIsolatesTable_.putElementAt(rowCounter, 4, changes);
+                changes.setText(changesS);
+                viralIsolatesTable_.getElementAt(rowCounter, 4).addWidget(changes);
                 
                 rowCounter++;
             }
@@ -96,7 +96,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
         List<AaSequence> aaseqs = getAaSeqsForViralIsolateSortedByProtein(vi);
         String result;
         for(AaSequence s : aaseqs) {
-            result = MutationHelper.getMutationDifferenceList(s, aaseq);
+            result = MutationHelper.getAaMutationDifferenceList(s, aaseq);
             if(result!=null) {
                 return result;
             }
@@ -129,7 +129,7 @@ public class ViralIsolateMutationEvolution extends FormWidget {
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 

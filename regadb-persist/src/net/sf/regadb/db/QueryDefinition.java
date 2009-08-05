@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class QueryDefinition implements java.io.Serializable {
 
-    // Fields    
-
     private Integer queryDefinitionIi;
 
     private SettingsUser settingsUser;
@@ -32,18 +30,13 @@ public class QueryDefinition implements java.io.Serializable {
     private Set<QueryDefinitionRun> queryDefinitionRuns = new HashSet<QueryDefinitionRun>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public QueryDefinition() {
     }
 
-    /** minimal constructor */
     public QueryDefinition(int queryTypeIi) {
         this.queryTypeIi = queryTypeIi;
     }
 
-    /** full constructor */
     public QueryDefinition(SettingsUser settingsUser, String name,
             String description, String query, int queryTypeIi,
             Set<CombinedQueryDefinition> combinedQueryDefinitions,
@@ -59,7 +52,6 @@ public class QueryDefinition implements java.io.Serializable {
         this.queryDefinitionRuns = queryDefinitionRuns;
     }
 
-    // Property accessors
     public Integer getQueryDefinitionIi() {
         return this.queryDefinitionIi;
     }

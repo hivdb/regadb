@@ -7,23 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
-import com.pharmadm.custom.rega.queryeditor.WhereClause;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCEditorPanel;
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCSelectorTabbedPane;
 import net.sf.regadb.ui.form.query.querytool.buttons.SelectClauseButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
+import net.sf.regadb.ui.form.query.querytool.widgets.MyDialog;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTimer;
 
-public class SelectClauseDialog extends WDialog {
+import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
+import com.pharmadm.custom.rega.queryeditor.WhereClause;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
+public class SelectClauseDialog extends MyDialog {
 	private QueryTreeNode owner;
 	private WAWCSelectorTabbedPane rootSelector;
 	private WButtonPanel buttonPanel;
@@ -70,36 +65,15 @@ public class SelectClauseDialog extends WDialog {
 		rootSelector.addAll(clauseList.subList(1, clauseList.size()), this.focusGroup);
 		rootSelector.showTab(this.focusGroup);
 		
-		// only start filling in all the other tabs after the UI
-		// has updated
-		WTimer.singleShot(1, new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
-				for (String key : clauses.keySet()) {
-					if (!key.equals(SelectClauseDialog.this.focusGroup)) {
-						List<AtomicWhereClause> clauseList = clauses.get(key);
-						rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
-					}
-				}
-				
-				rootSelector.keyWentUp.addListener(new SignalListener<WKeyEvent>() {
-					public void notify(WKeyEvent a) {
-						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().getManager().isUseless());
-						}
-					}
-				});
-				
-				rootSelector.clicked.addListener(new SignalListener<WMouseEvent>() {
-					public void notify(WMouseEvent a) {
-						if (getSelectedClause() != null) {
-							setEditable(!getSelectedClause().getManager().isUseless());
-						}
-					}
-				});
+		for (String key : clauses.keySet()) {
+			if (!key.equals(SelectClauseDialog.this.focusGroup)) {
+				clauseList = clauses.get(key);
+				rootSelector.addAll(clauseList.subList(1, clauseList.size()), key);
 			}
-		});
+		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void setEditable(boolean editable) {
 		buttonPanel.setEnabled(editable);
 	}

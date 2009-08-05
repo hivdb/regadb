@@ -16,14 +16,14 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class PatientEventForm extends FormWidget
 {
@@ -38,7 +38,7 @@ public class PatientEventForm extends FormWidget
 	private ComboBox<Event> cmbEvents;
 	private DateField startDate, endDate;
 	
-	public PatientEventForm(InteractionState state, WMessage formName, PatientEventValue patientEvent) {
+	public PatientEventForm(InteractionState state, WString formName, PatientEventValue patientEvent) {
 		super(formName, state);
 		
 		patientEvent_ = patientEvent;
@@ -53,12 +53,12 @@ public class PatientEventForm extends FormWidget
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
 		lblStartDate = new Label(tr("form.singlePatient.patientEvent.label.startDate"));
-		startDate = new DateField(getInteractionState(), this);
+		startDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		startDate.setMandatory(true);
 		mainFrameTable_.addLineToTable(lblStartDate, startDate);
 		
 		lblEndDate = new Label(tr("form.singlePatient.patientEvent.label.endDate"));
-		endDate = new DateField(getInteractionState(), this);
+		endDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		mainFrameTable_.addLineToTable(lblEndDate, endDate);
 		
 		lblEvent = new Label(tr("form.singlePatient.patientEvent.label.event"));
@@ -77,9 +77,9 @@ public class PatientEventForm extends FormWidget
         
         cmbEvents.sort();
         
-        cmbEvents.addComboChangeListener(new SignalListener<WEmptyEvent>()
+        cmbEvents.addComboChangeListener(new Signal.Listener()
 		{
-			public void notify(WEmptyEvent a)
+			public void trigger()
 			{
 				updateValue();
 			}
@@ -87,7 +87,7 @@ public class PatientEventForm extends FormWidget
         
         t.commit();
 		
-        int row = mainFrameTable_.numRows();
+        int row = mainFrameTable_.getRowCount();
 		lblValue = new Label(tr("form.singlePatient.patientEvent.label.value"));
 		lblValue.setLabelUIMandatory(this);
 		valueContainer = new WContainerWidget();
@@ -163,10 +163,11 @@ public class PatientEventForm extends FormWidget
 	}
 	
 	@Override
-	public WMessage deleteObject()
+	public WString deleteObject()
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
         
+		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(patientEvent_);
         t.delete(patientEvent_);
         
         t.commit();
@@ -184,12 +185,12 @@ public class PatientEventForm extends FormWidget
 	public void saveData() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getSelectedPatient();
 		t.attach(p);
 		
 		if( endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
+			UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
         }
         else
         {

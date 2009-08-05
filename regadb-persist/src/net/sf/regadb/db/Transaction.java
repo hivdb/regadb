@@ -8,15 +8,13 @@ package net.sf.regadb.db;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.regadb.util.settings.Filter;
 
-import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -42,7 +40,8 @@ public class Transaction {
     private final Query getValueTypeQuery;
     private final Query getAttributeNominalValueQuery;
     private final Query getTestNominalValueQuery;
-    private final Query getTestTypeQuery;
+    private final Query getTestTypeGenomeQuery;
+    private final Query getTestTypeNoGenomeQuery;
     private final Query getAttributeQuery;
     private final Query getAmbiguousAttributeQuery;
     private final Query getPatientQuery;
@@ -51,6 +50,11 @@ public class Transaction {
     private final Query getViralIsolateQuery;
     private final Query getEventQuery;
     private final Query getEventNominalValueQuery;
+
+    private final Query getGenomeQuery;
+    private final Query getOpenReadingFrameQuery;
+    private final Query getProteinQuery;
+    private final Query getSplicingPositionQuery;
 
     public Transaction(Login login, Session session) {
         this.login = login;
@@ -63,7 +67,10 @@ public class Transaction {
         getValueTypeQuery = session.createQuery("from ValueType as valuetype where description = :description");
         getAttributeNominalValueQuery = session.createQuery("from AttributeNominalValue as anv where attribute = :attribute and value = :value");
         getTestNominalValueQuery = session.createQuery("from TestNominalValue as anv where testType = :type and value = :value");
-        getTestTypeQuery = session.createQuery("from TestType as testType where testType.description = :description");
+
+        getTestTypeGenomeQuery   = session.createQuery("from TestType as testType where testType.description = :description and (testType.genome is not null) and (testType.genome.organismName = :organismName)");
+        getTestTypeNoGenomeQuery = session.createQuery("from TestType as testType where testType.description = :description and testType.genome is null");
+
         getAttributeQuery = session.createQuery("from Attribute attribute where attribute.name = :name and attribute.attributeGroup.groupName = :groupName");
         getAmbiguousAttributeQuery = session.createQuery("from Attribute attribute where lower(attribute.name) = lower(:name)");
         getPatientQuery = session.createQuery(
@@ -87,7 +94,12 @@ public class Transaction {
                         + "and vi.sampleId = :sampleId");
         
         getEventQuery = session.createQuery("from Event event where event.name = :name");
-        getEventNominalValueQuery = session.createQuery("from EventNominalValue as anv where event = :event and value = :value"); 
+        getEventNominalValueQuery = session.createQuery("from EventNominalValue as anv where event = :event and value = :value");
+        
+        getGenomeQuery = session.createQuery("from Genome g where g.organismName = :organismName");
+        getOpenReadingFrameQuery = session.createQuery("from OpenReadingFrame orf where orf.genome = :genome and orf.name = :name");
+        getProteinQuery = session.createQuery("from Protein p where p.openReadingFrame = :openReadingFrame and p.abbreviation = :abbreviation");
+        getSplicingPositionQuery = session.createQuery("from SplicingPosition sp where sp.protein = :protein and sp.ntPosition = :ntPosition");
     }
     
     private void begin() {
@@ -182,6 +194,23 @@ public class Transaction {
 
         return (Patient)q.uniqueResult();
     }
+    
+    public Patient getPatientBySampleId(String sampleId)
+    {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) from ViralIsolate vi join vi.patient as patient " +
+        		"join patient.patientDatasets as patient_dataset " +
+                "join patient_dataset.id.dataset as dataset " +
+                "join dataset.datasetAccesses access " +
+                "where ( access.permissions >= 1 " +
+                "and access.id.settingsUser.uid = :uid ) and (vi.sampleId = :sampleId) group by patient order by patient.id");
+        
+        q.setParameter("uid", login.getUid());
+        q.setParameter("sampleId", sampleId);
+
+        return (Patient)q.uniqueResult();
+    }
+
 
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(String from, HibernateFilterConstraint filter)
@@ -192,7 +221,7 @@ public class Transaction {
                 "join dataset.datasetAccesses access " +
                 from +" "+
                 "where ( access.permissions >= 1 " +
-                "and access.id.settingsUser.uid = :uid ) and ( "+ filter.clause_ +" ) group by patient");
+                "and access.id.settingsUser.uid = :uid ) and ( "+ filter.clause_ +" ) group by patient order by patient.id");
         
         for(Pair<String, Object> arg : filter.arguments_)
         {
@@ -248,7 +277,7 @@ public class Transaction {
     
     @SuppressWarnings("unchecked")
     public List<Test> getTests() {
-        Query q = session.createQuery("from Test test");
+        Query q = session.createQuery("from Test test order by test.id");
         
         return q.list();
     }
@@ -256,7 +285,7 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Test> getTests(TestType testType) 
     {
-        Query q = session.createQuery("from Test test where test.testType.testTypeIi = :testTypeIdParam");
+        Query q = session.createQuery("from Test test where test.testType.testTypeIi = :testTypeIdParam order by test.id");
 
         q.setParameter("testTypeIdParam", testType.getTestTypeIi());
         
@@ -276,35 +305,45 @@ public class Transaction {
             return null;
     }
     
+    public PatientEventValue getNewestPatientEventValue(Event event, Patient p) {
+        Query q = session.createQuery("from PatientEventValue pev where pev.event.name = :eventName and pev.patient.id = :patientId order by pev.startDate desc");
+
+        q.setParameter("eventName", event.getName());
+        q.setParameter("patientId", p.getPatientIi());
+        q.setMaxResults(1);
+        
+        if(q.list().size()>0)
+            return (PatientEventValue)q.list().get(0);
+        else
+            return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public List<TestType> getTestTypes() 
     {
-        Query q = session.createQuery("from TestType");
+        Query q = session.createQuery("from TestType tt order by tt.id");
         
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<AnalysisType> getAnalysisTypes() {
-        Query q = session.createQuery("from AnalysisType");
+        Query q = session.createQuery("from AnalysisType analysistype order by analysistype.id");
         
         return q.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<TherapyMotivation> getTherapyMotivations() {
-        Query q = session.createQuery("from TherapyMotivation");
+        Query q = session.createQuery("from TherapyMotivation tm order by tm.id");
         
         return q.list();
     }
 
-    public boolean hasTests(TestType testType)
-    {
-        Query q = session.createQuery("select count(test) from Test test where test.testType.id = :testTypeIdParam");
-        
-        q.setParameter("testTypeIdParam", testType.getTestTypeIi());
-        
-        return ((Long)q.uniqueResult())>0;
+    @SuppressWarnings("unchecked")
+	public List<TestType> getUsedTestsTypes(){
+    	Query q = session.createQuery("select distinct t.testType from Test t");
+    	return q.list();
     }
 
     public ResistanceInterpretationTemplate getResRepTemplate(String name) {
@@ -315,7 +354,7 @@ public class Transaction {
     
     @SuppressWarnings("unchecked")
     public List<ResistanceInterpretationTemplate> getResRepTemplates() {
-        Query q = session.createQuery("from ResistanceInterpretationTemplate");
+        Query q = session.createQuery("from ResistanceInterpretationTemplate rit order by rit.id");
         
         return q.list();
     }
@@ -325,57 +364,91 @@ public class Transaction {
         
         return (Test) getTestQuery.uniqueResult();
     }
+    public Test getTestByGenome(String description, String organismName) {
+        Query q;
+        if(organismName == null || organismName.length() == 0)
+            q = session.createQuery("select t from Test t where t.description = :description and t.testType.genome is null order by t.description");
+        else{
+            q = session.createQuery("select t from Test t join t.testType tt where t.description = :description and tt.genome is not null and tt.genome.organismName = :organismName order by t.description");
+            q.setParameter("organismName", organismName);
+        }
+        q.setParameter("description", description);
+        
+        return (Test) q.uniqueResult();
+    }
 
     @SuppressWarnings("unchecked")
     public List<DrugGeneric> getGenericDrugs() 
     {
-        Query q = session.createQuery("from DrugGeneric");
+        Query q = session.createQuery("from DrugGeneric dg order by dg.id");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugGeneric> getGenericDrugsSorted() 
+    {
+        Query q = session.createQuery("from DrugGeneric dg order by dg.genericName");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugGeneric> getGenericDrugsSorted(Filter genomeFilter)
+    {
+        Query q = session.createQuery("select dg from DrugGeneric dg join dg.genomes g where g.organismName like :organismFilter group by dg.id, dg.version, dg.genericName, dg.drugClass.id, dg.genericId, dg.resistanceTableOrder, dg.atcCode order by dg.genericName");
+        q.setString("organismFilter", genomeFilter.getHqlString());
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<DrugCommercial> getCommercialDrugs() 
     {
-        Query q = session.createQuery("from DrugCommercial");
+        Query q = session.createQuery("from DrugCommercial dc order by dc.id");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugCommercial> getCommercialDrugsSorted() 
+    {
+        Query q = session.createQuery("from DrugCommercial dc order by dc.name");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<DrugCommercial> getCommercialDrugsSorted(Filter genomeFilter) 
+    {
+        Query q = session.createQuery("select dc from DrugCommercial dc join dc.drugGenerics dg join dg.genomes g where g.organismName like :organismFilter " +
+        		"group by dc.commercialIi, dc.name, dc.atcCode, dc.version order by dc.name");
+        q.setString("organismFilter", genomeFilter.getHqlString());
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<DrugClass> getClassDrugs() 
     {
-        Query q = session.createQuery("from DrugClass");
+        Query q = session.createQuery("from DrugClass dc order by dc.id");
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<Protein> getProteins() {
-        Query q = session.createQuery("from Protein protein");
+        Query q = session.createQuery("from Protein protein order by protein.id");
+        return q.list();
+    }
+    @SuppressWarnings("unchecked")
+    public List<Protein> getProteins(Genome genome) {
+        Query q = session.createQuery("from Protein protein where protein.openReadingFrame.genome.organismName = :organismName order by protein.id");
+        q.setParameter("organismName", genome.getOrganismName());
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<ValueType> getValueTypes()
     {
-        Query q = session.createQuery("from ValueType");
+        Query q = session.createQuery("from ValueType vt order by vt.id");
         return q.list();
     }
     
     @SuppressWarnings("unchecked")
     public List<AttributeGroup> getAttributeGroups()
     {
-        Query q = session.createQuery("from AttributeGroup");
+        Query q = session.createQuery("from AttributeGroup ag order by ag.id");
         return q.list();
-    }
-    
-    public Map<String, Protein> getProteinMap() {
-        List<Protein> proteins = getProteins();
-        Map<String, Protein> result = new HashMap<String, Protein>();
-        
-        for (Protein p:proteins)
-            result.put(p.getAbbreviation(), p);
-        
-
-        return result;
     }
     
     /*
@@ -387,7 +460,7 @@ public class Transaction {
      */
     @SuppressWarnings("unchecked")
     public List<Dataset> getDatasets() {
-        Query q = session.createQuery("from Dataset dataset");
+        Query q = session.createQuery("from Dataset dataset order by dataset.id");
         
         return q.list();
     }
@@ -445,14 +518,14 @@ public class Transaction {
     }
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(Dataset dataset) {
-    	Query q = getPatientsQuery(dataset);
+        Query q = getPatientsQuery(dataset);
         return q.list();
     }
     @SuppressWarnings("unchecked")
     public List<Patient> getPatients(Dataset dataset, int firstResult, int maxResult) {
-    	Query q = getPatientsQuery(dataset);
-    	q.setFirstResult(firstResult);
-    	q.setMaxResults(maxResult);
+        Query q = getPatientsQuery(dataset);
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResult);
         return q.list();
     }
 
@@ -464,7 +537,7 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 getPatientsQuery() + 
-                "group by patient");
+                "group by patient order by patient");
         q.setParameter("uid", login.getUid());
 
         return q.list();
@@ -478,7 +551,7 @@ public class Transaction {
         Query q = session.createQuery(
                 "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
                 getPatientsQuery() + 
-                "group by patient");
+                "group by patient order by patient");
         q.setParameter("uid", login.getUid());
 
         return q.scroll();
@@ -498,7 +571,7 @@ public class Transaction {
         	queryString += "and" + filterConstraints.clause_;
         }
         queryString += " group by patient, " + sortField;
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", patient ";
         
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
@@ -513,30 +586,52 @@ public class Transaction {
         
         return q.list();
     }
-
-    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeNominalValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, pav from PatientImpl patient join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue ","pav.attribute.attributeIi = :attributeIi");
-    }
     
-    public List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesEx(firstResult, maxResults, sortField, ascending, filterConstraints,
-                "select patient.patientIi, attributeValue from PatientImpl patient join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi = :attributeIi");
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<Pair<Patient,PatientAttributeValue>> getPatientPatientAttributeValuesEx(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, String selectFrom, String where)
-    {
-        String datasetQuery = " join patient.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid and ";
-        String queryString = selectFrom + datasetQuery + where +" ";
+    private String getPatientFromWhereClause(HibernateFilterConstraint filterConstraints, List<Attribute> attributes){
+        StringBuilder from = new StringBuilder(" from PatientImpl p ");
+        
+        int i=0;
+        for(Attribute a : attributes){
+            String av = "av"+i;
+            
+            from.append(" left outer join p.patientAttributeValues ");
+            if(a.getAttributeNominalValues().size() == 0){
+                from.append(av +" with "+ av +".attribute.attributeIi = "+ a.getAttributeIi() +" " );
+                //from.append(av +" with ( p.patientIi = "+ av +".patientIi and "+ av +".attributeIi = "+ a.getAttributeIi() +") " );
+            }
+            else{
+                String pav = "p"+ av;
+                String att = "a"+i;
+                from.append(pav +" with "+ pav +".attribute.attributeIi = "+ a.getAttributeIi() +" left outer join "+ pav +".attributeNominalValue "+ av +" ");
+                //from.append(pav +" with p.patientIi = "+ pav +".patientIi left outer join AttributeNominalValue "+ av +" with "+ av +" = "+ pav  );
+            }
+            
+            ++i;
+        }
+        
+        String datasetQuery = " join p.patientDatasets as patient_dataset join patient_dataset.id.dataset as dataset join dataset.datasetAccesses access where access.permissions >= 1 and access.id.settingsUser.uid = :uid ";
+        String queryString = from.toString() + datasetQuery+" ";
         
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += "and" + filterConstraints.clause_;
         }
-        //queryString += " group by patient ";
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        
+        return queryString;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Object[]> getPatientWithAttributeValues(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, List<Attribute> attributes)
+    {
+        String fromWhere = getPatientFromWhereClause(filterConstraints, attributes);
 
+        StringBuilder select = new StringBuilder("select p.patientIi");
+        for(int i=0; i< attributes.size(); ++i)
+            select.append(", av"+ i +".value");
+        
+        String queryString = select.toString() + fromWhere;
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", p";
+        
         Query q = session.createQuery(queryString);
         q.setParameter("uid", login.getUid());
 
@@ -544,19 +639,40 @@ public class Transaction {
         {
             q.setParameter(arg.getKey(), arg.getValue());
         }
-
+        
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
 
-        List<Pair<Patient,PatientAttributeValue>> res = new ArrayList<Pair<Patient,PatientAttributeValue>>();
-
-        List<Object[]> l = q.list();
-        for(Object[] o : l){
-            res.add(new Pair(getPatientByIi((Integer)o[0]),(PatientAttributeValue)o[1]));
+        List<Object[]> l;
+        if(attributes.size() == 0){
+            l = new ArrayList<Object[]>();
+            
+            for(Object o : q.list())
+                l.add(new Object[]{getPatientByIi((Integer)o)});
         }
-
-        return res;
+        else{
+            l = q.list();
+            for(Object[] o : l)
+                o[0] = getPatientByIi((Integer)o[0]);
+        }
+        return l;
     }
+    
+    public long getPatientWithAttributeValuesCount(HibernateFilterConstraint filterConstraints, List<Attribute> attributes){
+        String select = "select count(p) ";
+        String fromWhere = getPatientFromWhereClause(filterConstraints, attributes);
+        String queryString = select + fromWhere;
+        
+        Query q = session.createQuery(queryString);
+        q.setParameter("uid", login.getUid());
+
+        for(Pair<String, Object> arg : filterConstraints.arguments_)
+        {
+            q.setParameter(arg.getKey(), arg.getValue());
+        }
+        return ((Long)q.uniqueResult()).longValue();
+    }
+    
     
     public String getPatientsQuery()
     {
@@ -572,41 +688,6 @@ public class Transaction {
     {
         String queryString =    "select count(patient) " +
                                 getPatientsQuery();
-        if(!filterConstraints.clause_.equals(" "))
-        {
-            queryString += "and" + filterConstraints.clause_;
-        }
-        
-        Query q = session.createQuery(queryString);
-        q.setParameter("uid", login.getUid());
-        
-        for(Pair<String, Object> arg : filterConstraints.arguments_)
-        {
-            q.setParameter(arg.getKey(), arg.getValue());
-        }
-        
-        return ((Long)q.uniqueResult()).longValue();
-    }
-    
-    public long getPatientPatientAttributeValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues attributeValue","attributeValue.attribute.attributeIi=:attributeIi",filterConstraints); 
-    }
-
-    public long getPatientPatientAttributeNominalValuesCount(HibernateFilterConstraint filterConstraints){
-        return getPatientPatientAttributeValuesCountEx("join patient.patientAttributeValues pav join pav.attributeNominalValue attributeValue","pav.attribute.attributeIi=:attributeIi",filterConstraints); 
-    }
-
-    private long getPatientPatientAttributeValuesCountEx(String from, String where, HibernateFilterConstraint filterConstraints) 
-    {
-        String queryString =    "select count(patient) " +
-            "from PatientImpl as patient " +
-            "join patient.patientDatasets as patient_dataset " +
-            "join patient_dataset.id.dataset as dataset " +
-            "join dataset.datasetAccesses access " +
-            from +
-            " where access.permissions >= 1 " +
-            "and access.id.settingsUser.uid = :uid and "+
-            where +" ";
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += "and" + filterConstraints.clause_;
@@ -653,8 +734,7 @@ public class Transaction {
         newSu.setEmail(user.getEmail());
         newSu.setFirstName(user.getFirstName());
         newSu.setLastName(user.getLastName());
-        newSu.setAdmin(user.getAdmin());
-        newSu.setEnabled(user.getEnabled());
+        newSu.setRole(user.getRole());
         
         delete(user);
         
@@ -721,36 +801,14 @@ public class Transaction {
     /*
      * Patient queries
      */
-
-    public Criteria createCriteria(Class c)
-    {
-        return session.createCriteria(c);
-    }
-    
-    public boolean stillExists(Object obj)
-    {
-        if(obj instanceof Patient)
-            obj = ((Patient)obj).getPatient();
-        
-        String className = obj.getClass().getName();
-        int indexOfDollar = className.indexOf("$");
-        if(indexOfDollar!=-1)
-            className = className.substring(0, indexOfDollar);
-        
-        Query q = session.createQuery("from " + className + " obj where obj = :objParam");
-        
-        q.setParameter("objParam", obj);
-    
-        return q.uniqueResult() !=null;
-    }
     
     //Get a limited, filtered and sorted list
-    private List getLFS(String queryString, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
+    private List getLFS(String queryString, String uniqueField, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints, boolean and) {
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += (and ? " and" : " where" ) + filterConstraints.clause_;
         }
-        queryString += " order by " + sortField + (ascending?" asc":" desc");
+        queryString += " order by " + sortField + (ascending?" asc":" desc") +", "+ uniqueField;
     
         Query q = session.createQuery(queryString);
         
@@ -772,17 +830,19 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<TestResult> getNonViralIsolateTestResults(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
-        String queryString = "from TestResult as testResult " +
+        String queryString = "select testResult from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
+                            "left outer join testResult.testNominalValue as testNominalValue "+
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " +
                             "and testResult.ntSequence is null";
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "testResult", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getNonViralIsolateTestResultsCount(Patient patient, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "select count(testResult) " +
-                            "from TestResult as testResult " +
+                            "from TestResult as testResult left outer join testResult.test.testType.genome as genome " +
+                            "left outer join testResult.testNominalValue as testNominalValue "+
                             "where testResult.patient.patientIi = " + patient.getPatientIi() + " " +
                             "and testResult.viralIsolate is null " + 
                             "and testResult.ntSequence is null";
@@ -810,7 +870,7 @@ public class Transaction {
     {
     	String queryString = "FROM PatientEventValue AS patient_event_value " +
 							" WHERE patient_ii = " + p.getPatientIi() + " ";
-    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+    	return getLFS(queryString, "patient_event_value", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long patientEventCount(Patient p, HibernateFilterConstraint filterConstraints) {
@@ -847,7 +907,7 @@ public class Transaction {
     public List<Event> getEvents(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
     	String queryString = "FROM Event AS event ";
-    	return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+    	return getLFS(queryString, "event", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public long eventCount(HibernateFilterConstraint filterConstraints) {
@@ -875,9 +935,9 @@ public class Transaction {
     @SuppressWarnings("unchecked")
     public List<Therapy> getTherapies(Patient patient, int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
-        String queryString = "from Therapy as therapy " +
+        String queryString = "select therapy from Therapy as therapy " +
                             "where therapy.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "therapy", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -889,7 +949,7 @@ public class Transaction {
     {
         String queryString = "from ViralIsolate as viralIsolate " +
                             "where viralIsolate.patient.id = " + patient.getPatientIi();
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "viralIsolate", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     /**
@@ -951,7 +1011,7 @@ public class Transaction {
     {
         String queryString = "from Attribute as attribute ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "attribute", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -996,7 +1056,7 @@ public class Transaction {
     {
         String queryString = "from AttributeGroup as attributeGroup ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "attributeGroup", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     /**
@@ -1026,21 +1086,21 @@ public class Transaction {
     @SuppressWarnings("unchecked")
 	public List<TestObject> getTestObjects() 
 	{
-		Query q=session.createQuery("from TestObject");
+		Query q=session.createQuery("from TestObject tobj order by tobj");
 		return q.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<TestType> getTestTypes(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints) 
 	{
-		String queryString = "from TestType as testType ";
+		String queryString = "select testType from TestType as testType left outer join testType.genome as genome";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "testType", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getTestTypeCount(HibernateFilterConstraint filterConstraints) 
 	{
-		 String queryString = "select count(testType) from TestType as testType ";
+		 String queryString = "select count(testType) from TestType as testType left outer join testType.genome as genome ";
 	        
 	       	if(!filterConstraints.clause_.equals(" "))
 	        {
@@ -1059,7 +1119,7 @@ public class Transaction {
 	
 	public long getTestCount(HibernateFilterConstraint filterConstraints) 
 	{
-		 String queryString = "select count(description) from Test as test ";
+		 String queryString = "select count(test) from Test as test left outer join test.testType.genome as genome ";
 	        
 	        if(!filterConstraints.clause_.equals(" "))
 	        {
@@ -1079,9 +1139,9 @@ public class Transaction {
 	@SuppressWarnings("unchecked")
 	public List<Test> getTests(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
 	{
-		String queryString = "from Test as test ";
+		String queryString = "select test from Test as test left outer join test.testType.genome as genome";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "test", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
     
     public long getResRepTemplatesCount(HibernateFilterConstraint filterConstraints) 
@@ -1108,7 +1168,7 @@ public class Transaction {
     {
         String queryString = "from ResistanceInterpretationTemplate as resistanceInterpretationTemplate ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "resistanceInterpretationTemplate", firstResult, maxResults, sortField, ascending, filterConstraints, false);
     }
     
     public UserAttribute getUserAttribute(SettingsUser uid, String name)
@@ -1123,13 +1183,11 @@ public class Transaction {
     }
     
     @SuppressWarnings("unchecked")
-    public List<SettingsUser> getUsersByEnabled(int firstResult, int maxResults, String sortField, boolean ascending, boolean enabled, HibernateFilterConstraint filterConstraints)
+    public List<SettingsUser> getSettingsUsers(int firstResult, int maxResults, String sortField, boolean ascending, HibernateFilterConstraint filterConstraints)
     {
         String queryString = "from SettingsUser as settingsUser ";
         
         queryString += "where not settingsUser.uid = :uid ";
-        
-        queryString += "and enabled " + (enabled?"is not null":"= null");
         
         if(!filterConstraints.clause_.equals(" "))
         {
@@ -1153,13 +1211,11 @@ public class Transaction {
         return q.list();
     }
     
-    public long getSettingsUserCountByEnabled(HibernateFilterConstraint filterConstraints, boolean enabled) 
+    public long getSettingsUsersCount(HibernateFilterConstraint filterConstraints) 
     {
          String queryString = "select count(settingsUser) from SettingsUser as settingsUser ";
             
          queryString += "where not settingsUser.uid = :uid ";
-         
-         queryString += "and enabled " + (enabled?"is not null":"= null");
          
          if(!filterConstraints.clause_.equals(" "))
          {
@@ -1190,7 +1246,7 @@ public class Transaction {
             queryString += " and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField;
+        queryString += " order by " + sortField +", settingsUser ";
     
         Query q = session.createQuery(queryString);
         
@@ -1225,12 +1281,32 @@ public class Transaction {
             
             return ((Long)q.uniqueResult()).longValue();
     }
-    
+
+    //ambiguous
     public Test getTest(String testDescription, String testTypeDescription)
     {
         String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription";
         
         Query q = session.createQuery(queryString);
+        q.setParameter("testDescription", testDescription);
+        q.setParameter("testTypeDescription", testTypeDescription);
+        
+        return (Test)q.uniqueResult();
+    }
+
+    public Test getTest(String testDescription, String testTypeDescription, String organismName)
+    {
+        Query q;
+        String queryString = "from Test as test where test.description = :testDescription and test.testType.description = :testTypeDescription and ";
+        if(organismName != null && organismName.length() > 0){
+            queryString += "(test.testType.genome is not null) and (test.testType.genome.organismName = :organismName)";
+            q = session.createQuery(queryString);
+            q.setParameter("organismName", organismName);
+        }
+        else{
+            queryString += "(test.testType.genome is null)";
+            q = session.createQuery(queryString);
+        }
         q.setParameter("testDescription", testDescription);
         q.setParameter("testTypeDescription", testTypeDescription);
         
@@ -1247,11 +1323,19 @@ public class Transaction {
         return (Test)q.uniqueResult();
     }
 
-    public TestType getTestType(String description) {
-        getTestTypeQuery.setParameter("description", description);
-        
-        return (TestType)getTestTypeQuery.uniqueResult();
-       
+    public TestType getTestType(TestType t){
+        return getTestType(t.getDescription(), (t.getGenome() != null ? t.getGenome().getOrganismName():null));
+    }
+    public TestType getTestType(String description, String organismName) {
+        if(organismName != null && organismName.length() > 0){
+            getTestTypeGenomeQuery.setParameter("description", description);
+            getTestTypeGenomeQuery.setParameter("organismName", organismName);
+            return (TestType)getTestTypeGenomeQuery.uniqueResult();
+        }
+        else{
+            getTestTypeNoGenomeQuery.setParameter("description", description);
+            return (TestType)getTestTypeNoGenomeQuery.uniqueResult();
+        }
     }
 
     public DrugGeneric getGenericDrug(String genericId) {
@@ -1272,7 +1356,7 @@ public class Transaction {
     {
         String queryString = "from QueryDefinition as queryDefinition where queryDefinition.queryTypeIi = " + queryType;
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, true);
+        return getLFS(queryString, "queryDefinition", firstResult, maxResults, sortField, ascending, filterConstraints, true);
     }
     
     public long getQueryDefinitionCount(HibernateFilterConstraint filterConstraints) 
@@ -1306,7 +1390,7 @@ public class Transaction {
 	{
 		String queryString = "from Dataset as dataset ";
         
-        return getLFS(queryString, firstResult, maxResults, sortField, ascending, filterConstraints, false);
+        return getLFS(queryString, "dataset", firstResult, maxResults, sortField, ascending, filterConstraints, false);
 	}
 
 	public long getDatasetCount(HibernateFilterConstraint filterConstraints) 
@@ -1354,7 +1438,7 @@ public class Transaction {
             queryString += "and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField + (ascending ? " asc" : " desc");
+        queryString += " order by " + sortField + (ascending ? " asc" : " desc") +", queryDefinitionRun";
     
         Query q = session.createQuery(queryString);
         
@@ -1453,6 +1537,39 @@ public class Transaction {
         
         return (TestNominalValue)getTestNominalValueQuery.uniqueResult();        
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Genome> getGenomes(){
+        return session.createQuery("from Genome").list();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Genome> getGenomesSorted(){
+        return session.createQuery("from Genome g order by g.organismName").list();
+    }
+    
+    public Genome getGenome(String organismName){
+        getGenomeQuery.setParameter("organismName", organismName);
+        return (Genome)getGenomeQuery.uniqueResult();
+    }
+    
+    public OpenReadingFrame getOpenReadingFrame(Genome genome, String name){
+        getOpenReadingFrameQuery.setParameter("genome", genome);
+        getOpenReadingFrameQuery.setParameter("name", name);
+        return (OpenReadingFrame)getOpenReadingFrameQuery.uniqueResult();
+    }
+    
+    public Protein getProtein(OpenReadingFrame orf, String abbreviation){
+        getProteinQuery.setParameter("openReadingFrame", orf);
+        getProteinQuery.setParameter("abbreviation", abbreviation);
+        return (Protein)getProteinQuery.uniqueResult();
+    }
+    
+    public SplicingPosition getSplicingPosition(Protein protein, int ntPosition){
+        getSplicingPositionQuery.setParameter("protein", protein);
+        getSplicingPositionQuery.setParameter("ntPosition", ntPosition);
+        return (SplicingPosition)getSplicingPositionQuery.uniqueResult();
+    }
 
     public void clear() 
     {
@@ -1528,6 +1645,21 @@ public class Transaction {
         Query q = session.createQuery(queryString);
         
         return q.list();
+    }
+    
+    public long getMaxAmountOfSequences() {
+        String queryString = 
+            " select count(ntseq) from NtSequence ntseq group by ntseq.viralIsolate.id order by count(ntseq) desc";
+    
+        Query q = session.createQuery(queryString);
+        
+        List result = q.list();
+        
+        if (result.size() == 0) {
+        	return 0;
+        } else {
+        	return (Long)result.get(0);
+        }
     }
 
     public void flush() 

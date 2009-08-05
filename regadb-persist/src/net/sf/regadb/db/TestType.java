@@ -9,13 +9,13 @@ import java.util.Set;
  */
 public class TestType implements java.io.Serializable {
 
-    // Fields    
-
     private Integer testTypeIi;
 
     private int version;
 
     private ValueType valueType;
+
+    private Genome genome;
 
     private TestObject testObject;
 
@@ -24,28 +24,23 @@ public class TestType implements java.io.Serializable {
     private Set<TestNominalValue> testNominalValues = new HashSet<TestNominalValue>(
             0);
 
-    // Constructors
-
-    /** default constructor */
     public TestType() {
     }
 
-    /** minimal constructor */
     public TestType(TestObject testObject, String description) {
         this.testObject = testObject;
         this.description = description;
     }
 
-    /** full constructor */
-    public TestType(ValueType valueType, TestObject testObject,
+    public TestType(ValueType valueType, Genome genome, TestObject testObject,
             String description, Set<TestNominalValue> testNominalValues) {
         this.valueType = valueType;
+        this.genome = genome;
         this.testObject = testObject;
         this.description = description;
         this.testNominalValues = testNominalValues;
     }
 
-    // Property accessors
     public Integer getTestTypeIi() {
         return this.testTypeIi;
     }
@@ -68,6 +63,14 @@ public class TestType implements java.io.Serializable {
 
     public void setValueType(ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    public Genome getGenome() {
+        return this.genome;
+    }
+
+    public void setGenome(Genome genome) {
+        this.genome = genome;
     }
 
     public TestObject getTestObject() {

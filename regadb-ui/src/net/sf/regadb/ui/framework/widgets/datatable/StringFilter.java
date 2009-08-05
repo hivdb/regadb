@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class StringFilter extends WContainerWidget implements IFilter 
 {
@@ -35,13 +37,44 @@ public class StringFilter extends WContainerWidget implements IFilter
 		return this;
 	}
 	
-	public WMessage getComboState()
+	public WString getComboState()
 	{
-		return combo_.currentText();
+		return combo_.getCurrentText();
 	}
 	
 	public String getStringValue()
 	{
-		return tf_.text();
+		return tf_.getText();
+	}
+
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
+		
+		String operator = getComboState().getKey();
+		String param = "param"+filterIndex;
+		
+		if(operator.equals(StringFilter.beginsWith_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, getStringValue().toLowerCase() + "%"));
+			//return varName + " like '" + tf_.text() + "%'"; 
+		}
+		else if(operator.equals(StringFilter.endsWith_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, "%"+getStringValue().toLowerCase()));
+		}
+		else if(operator.equals(StringFilter.contains_))
+		{
+			constraint.clause_ = "lower(" + varName + ") like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, "%"+getStringValue().toLowerCase()+"%"));
+		}
+		else if(operator.equals(StringFilter.sqlRegExp_))
+		{
+			constraint.clause_ = varName + " like :"+ param;
+			constraint.arguments_.add(new Pair<String, Object>(param, getStringValue()));
+		}
+		
+		return constraint;
 	}
 }

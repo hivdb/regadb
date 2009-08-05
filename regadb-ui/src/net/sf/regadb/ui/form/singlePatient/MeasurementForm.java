@@ -15,14 +15,16 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
+import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class MeasurementForm extends FormWidget
 {
@@ -36,14 +38,14 @@ public class MeasurementForm extends FormWidget
     private Label dateL;
     private DateField dateTF;
     private Label testTypeL;
-    private ComboBox<TestType> testTypeCB;
+    private TestTypeComboBox testTypeCB;
     private Label testNameL;
-    private ComboBox<Test> testNameCB;
+    private TestComboBox testNameCB;
     private Label testResultL;
     private FormField testResultField_;
     private WContainerWidget testResultC;
     
-	public MeasurementForm(InteractionState interactionState, WMessage formName, TestResult testResult)
+	public MeasurementForm(InteractionState interactionState, WString formName, TestResult testResult)
 	{
 		super(formName, interactionState);
 		testResult_ = testResult;
@@ -60,36 +62,28 @@ public class MeasurementForm extends FormWidget
         sampleIdTF_ = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(sampleIdL_, sampleIdTF_);
         dateL = new Label(tr("form.testResult.editView.date"));
-        dateTF = new DateField(getInteractionState(), this);
+        dateTF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(dateL, dateTF);
         testTypeL = new Label(tr("form.testResult.editView.testType"));
-        testTypeCB = new ComboBox<TestType>(getInteractionState(), this);
+        testTypeCB = new TestTypeComboBox(getInteractionState(), this);
 
         testTypeCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testTypeL, testTypeCB);
         testNameL = new Label(tr("form.testResult.editView.testName"));
-        testNameCB = new ComboBox<Test>(getInteractionState(), this);
+        testNameCB = new TestComboBox(getInteractionState(), this);
         testNameCB.setMandatory(true);
         generalGroupTable_.addLineToTable(testNameL, testNameCB);
         testResultL = new Label(tr("form.testResult.editView.testResult"));
         testResultL.setLabelUIMandatory(this);
         testResultC = new WContainerWidget();
-        int row = generalGroupTable_.numRows();
+        int row = generalGroupTable_.getRowCount();
         generalGroupTable_.putElementAt(row, 0, testResultL);
         generalGroupTable_.putElementAt(row, 1, testResultC);
-        generalGroupTable_.elementAt(row,0).setStyleClass("form-label-area");
+        generalGroupTable_.getElementAt(row,0).setStyleClass("form-label-area");
         
         //set the comboboxes
         Transaction t = RegaDBMain.getApp().createTransaction();
-        for(TestType testType : t.getTestTypes())
-        {
-        	if(t.hasTests(testType))
-        	{
-	        	testTypeCB.addItem(new DataComboMessage<TestType>(testType, testType.getDescription()));
-        	}
-        }
-        testTypeCB.sort();
-        
+        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         testTypeCB.selectIndex(0);
 
         t.commit();
@@ -103,8 +97,8 @@ public class MeasurementForm extends FormWidget
 	{
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
-	       	testTypeCB.selectItem(testResult_.getTest().getTestType().getDescription());
-	        testNameCB.selectItem(testResult_.getTest().getDescription());
+	       	testTypeCB.selectItem(testResult_.getTest().getTestType());
+	        testNameCB.selectItem(testResult_.getTest());
 	        
 	        dateTF.setDate(testResult_.getTestDate());
             
@@ -134,9 +128,9 @@ public class MeasurementForm extends FormWidget
             }
         }
 		
-        testTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
+        testTypeCB.addComboChangeListener(new Signal.Listener()
                 {
-        			public void notify(WEmptyEvent a)
+        			public void trigger()
         			{
                         TestType testType = testTypeCB.currentValue();
                         
@@ -152,13 +146,7 @@ public class MeasurementForm extends FormWidget
 	private void setTestCombo(Transaction t, TestType testType)
 	{
 		testNameCB.clearItems();
-		
-        for(Test test : t.getTests(testType))
-        {
-        	testNameCB.addItem(new DataComboMessage<Test>(test, test.getDescription()));
-        }
-        testNameCB.sort();
-        
+		testNameCB.fill(t, testType);
         testNameCB.selectIndex(0);
 	}
     
@@ -207,12 +195,12 @@ public class MeasurementForm extends FormWidget
 			    
 		if(testResultField_ instanceof ComboBox)
 		{
-			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getValue());
+			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getDataValue());
             testResult_.setValue(null);
         }
 		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
 		{
-		    testResult_.setValue(DateUtils.parserEuropeanDate(testResultField_.text()).getTime()+"");
+		    testResult_.setValue(DateUtils.parse(testResultField_.text()).getTime()+"");
 		    testResult_.setTestNominalValue(null);
 		}
 		else
@@ -242,7 +230,7 @@ public class MeasurementForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

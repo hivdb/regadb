@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.SettingsUser" table="settings_user" schema="public">
+  <class name="net.sf.regadb.db.SettingsUser" table="settings_user">
     <id name="uid" type="string">
       <column name="uid" length="50" />
     </id>
@@ -33,11 +33,8 @@
     <property name="lastName" type="string">
       <column name="last_name" length="50" />
     </property>
-    <property name="admin" type="java.lang.Boolean">
-      <column name="admin" />
-    </property>
-    <property name="enabled" type="java.lang.Boolean">
-      <column name="enabled" />
+    <property name="role" type="string">
+      <column name="role" length="50" />
     </property>
     <set name="datasetAccesses" inverse="true" cascade="all">
       <key>

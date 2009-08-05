@@ -6,6 +6,7 @@ import java.util.List;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.io.importXML.IDrugTransaction;
 
 public class ImportDrugTransaction implements IDrugTransaction {
@@ -59,4 +60,8 @@ public class ImportDrugTransaction implements IDrugTransaction {
         return drugGeneric;
     }
 
+    public Genome getGenome(String organismName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

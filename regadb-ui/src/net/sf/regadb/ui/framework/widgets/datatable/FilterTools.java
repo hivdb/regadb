@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.witty.wt.WInteractWidget;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WInteractWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class FilterTools
 {
@@ -13,11 +13,11 @@ public class FilterTools
 		{
 			if(parent == null)
 			{
-				parent = w.parent();
+				parent = w.getParent();
 			}
 			else
 			{
-				parent = parent.parent();
+				parent = parent.getParent();
 			}
 		}
 		

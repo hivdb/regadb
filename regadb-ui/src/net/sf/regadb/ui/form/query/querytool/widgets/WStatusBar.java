@@ -2,11 +2,15 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 
 
 import net.sf.regadb.ui.form.query.querytool.widgets.WProgressbar.ProgressListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
+
+/*
+TODO remove
+*/
 public class WStatusBar extends WStyledContainerWidget {
 	private WTable table;
 	private WButtonPanel buttonPanel;
@@ -21,13 +25,13 @@ public class WStatusBar extends WStyledContainerWidget {
 	private void init() {
 		getStyleClasses().addStyle("statusbar");
 		table = new WTable(this);
-		table.elementAt(0, 0).setStyleClass("statustext");
-		warningText = new WText(lt(""), getTextContainer());
+		table.getElementAt(0, 0).setStyleClass("statustext");
+		warningText = new WText("", getTextContainer());
 		warningText.setStyleClass("warning");
 	}
 	
 	public WContainerWidget getTextContainer() {
-		return table.elementAt(0, 0);
+		return table.getElementAt(0, 0);
 	}
 	
 	public WButtonPanel getButtonPanel() {
@@ -39,7 +43,7 @@ public class WStatusBar extends WStyledContainerWidget {
 	 * and assign it the given style class
 	 * @param message
 	 */
-	public void showMessage(WMessage message, String cssClass) {
+	public void showMessage(WString message, String cssClass) {
 		warningText.setText(message);
 		warningText.setStyleClass(cssClass);
 	}	
@@ -50,13 +54,13 @@ public class WStatusBar extends WStyledContainerWidget {
 	 */
 	public void setButtonPanel(WButtonPanel buttonPanel) {
 		if (this.buttonPanel != null) {
-			table.elementAt(0, 1).removeWidget(this.buttonPanel);
+			table.getElementAt(0, 1).removeWidget(this.buttonPanel);
 		}
-		table.elementAt(0, 1).addWidget(buttonPanel);
+		table.getElementAt(0, 1).addWidget(buttonPanel);
 	}
 	
-	public WMessage getStatusText() {
-		return warningText.text();
+	public WString getStatusText() {
+		return warningText.getText();
 	}
 	
 	/**

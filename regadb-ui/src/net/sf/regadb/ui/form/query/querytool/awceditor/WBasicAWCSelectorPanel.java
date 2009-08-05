@@ -1,20 +1,20 @@
 package net.sf.regadb.ui.form.query.querytool.awceditor;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WRadioButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
 
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedAWCEditorPanel;
+
+import eu.webtoolkit.jwt.Key;
+import eu.webtoolkit.jwt.KeyboardModifier;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WKeyEvent;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WRadioButton;
+import eu.webtoolkit.jwt.WTable;
 
 public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
 
@@ -76,19 +76,19 @@ public class WBasicAWCSelectorPanel extends WAWCSelectorPanel {
     private void initMoreComponents() {
     	WTable table = new WTable(this);
 		radioButton.setStyleClass("selectorradio");
-    	table.putElementAt(0, 0, radioButton);
-    	table.elementAt(0, 0).resize(new WLength(2, WLengthUnit.FontEm), new WLength());
-    	table.putElementAt(0, 1, editPanel);
+    	table.getElementAt(0, 0).addWidget(radioButton);
+    	table.getElementAt(0, 0).resize(new WLength(2, WLength.Unit.FontEm), new WLength());
+    	table.getElementAt(0, 1).addWidget(editPanel);
     	if (!isUseless()) {
-	    	this.clicked.addListener(new SignalListener<WMouseEvent>(){
-				public void notify(WMouseEvent a) {
+	    	this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+				public void trigger(WMouseEvent a) {
 					radioButton.setChecked(true);
 					radioButton.refresh();
 				}
 	    	});
-	    	this.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-				public void notify(WKeyEvent a) {
-					if (a.keyCode() != KeyEvent.VK_TAB && ! a.metaKey()) {
+	    	this.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
+				public void trigger(WKeyEvent a) {
+					if (a.getKey() != Key.Key_Tab && ! a.getModifiers().contains(KeyboardModifier.MetaModifier)) {
 						radioButton.setChecked(true);
 						radioButton.refresh();
 					}

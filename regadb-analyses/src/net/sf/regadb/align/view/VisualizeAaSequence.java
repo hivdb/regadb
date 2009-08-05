@@ -1,17 +1,20 @@
 package net.sf.regadb.align.view;
 
+import java.util.Iterator;
+import java.util.TreeSet;
+
 import net.sf.regadb.analysis.functions.AaSequenceHelper;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.genome.HivGenome;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.SplicingPosition;
 
 public abstract class VisualizeAaSequence {
     public String getAlignmentView(AaSequence aaseq) {
     	clear();
     	
-        HivGenome genome = HivGenome.getHxb2();
-        String proteinNt = genome.getNtSequenceForProtein(aaseq.getProtein().getAbbreviation());
+        String proteinNt = getNtSequenceForProtein(aaseq.getProtein());
                 
         AaMutation[] mutations = AaSequenceHelper.getSortedAaMutationArray(aaseq);
         int mutationIndex = 0;
@@ -57,6 +60,10 @@ public abstract class VisualizeAaSequence {
         end();
         
         return getStringRepresentation();
+    }
+    
+    protected String getNtSequenceForProtein(Protein protein){
+        return protein.getOpenReadingFrame().getReferenceSequence().substring(protein.getStartPosition()-1,protein.getStopPosition()-1);
     }
     
     public abstract void addNt(char reference, char target, int codonIndex);

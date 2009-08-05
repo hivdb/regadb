@@ -19,6 +19,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 
@@ -48,7 +49,7 @@ public class ImportSequences {
 			}
 		}
 
-		Test subtype = RegaDBWtsServer.getHIV1SubTypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+		Test subtype = RegaDBWtsServer.getSubtypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
 
 		try {
 			FileWriter fw = new FileWriter("/home/plibin0/import/pt/pt_regadb/hiv2/seqs/combinedSeqs.fasta");
@@ -61,7 +62,9 @@ public class ImportSequences {
 					NtSequence ntseq = new NtSequence();
 					ntseq.setLabel(header[header.length-1]);
 					ntseq.setNucleotides(fasta.substring(fasta.indexOf("\n")+1));
-					TestResult tr = IOAssistImportHandler.ntSeqAnalysis(ntseq, subtype);
+					
+					//TODO fixed genome
+					TestResult tr = IOAssistImportHandler.doSubtypeAnalysis(ntseq, subtype, StandardObjects.getHiv1Genome());
 					System.out.println(header[header.length-1] + "," + tr.getValue());
 			}
 			fw.close();

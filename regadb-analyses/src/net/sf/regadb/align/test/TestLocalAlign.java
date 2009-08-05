@@ -7,24 +7,22 @@
 package net.sf.regadb.align.test;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 class TestLocalAlign {
     private Login login;
@@ -62,19 +60,14 @@ class TestLocalAlign {
 
     TestLocalAlign() {
         login = null;
-        
-        Map<String, Protein> proteins = new HashMap<String, Protein>();
-        proteins.put("PRO", new Protein("PRO", "protease"));
-        proteins.put("RT", new Protein("RT", "reverse transcriptase"));
 
-        aligner = new Aligner(new LocalAlignmentService(), proteins);
+        aligner = new Aligner(new LocalAlignmentService());
     }
 
     void testCreateAligner() {
         Transaction t = login.createTransaction();
 
-        Map<String, Protein> proteins = t.getProteinMap();
-        aligner = new Aligner(new LocalAlignmentService(), proteins);
+        aligner = new Aligner(new LocalAlignmentService());
         
         t.commit();
     }
@@ -110,7 +103,10 @@ class TestLocalAlign {
 + "GATGAC");
         
         try {
-            result = aligner.alignHiv(seq);
+            Transaction t = login.createTransaction();
+            Genome g = t.getGenome("HIV-1");
+            
+            result = aligner.align(seq, g);
             for (AaSequence aas:result) {
                 System.err.println("protein: " + aas.getProtein().getFullName());
                 System.err.println("region: " + aas.getFirstAaPos() + " - " + aas.getLastAaPos());

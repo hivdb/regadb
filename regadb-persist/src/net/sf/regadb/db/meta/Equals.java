@@ -21,7 +21,9 @@ import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Protein;
@@ -40,7 +42,7 @@ public class Equals {
 
     public static boolean isSameTest(Test o1, Test o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()));
+        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()) && isSameTestType(o1.getTestType(),o2.getTestType()));
     }
 
     public static boolean isSameTestNominalValue(TestNominalValue o1, TestNominalValue o2) {
@@ -55,7 +57,13 @@ public class Equals {
 
     public static boolean isSameTestType(TestType o1, TestType o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription()));
+        || (o1 != null && o2 != null && o1.getDescription().equals(o2.getDescription())
+                && isSameGenome(o1.getGenome(), o2.getGenome()));
+    }
+    
+    public static boolean isSameGenome(Genome o1, Genome o2){
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getOrganismName().equals(o2.getOrganismName()));
     }
 
     public static boolean isSameDataset(Dataset o1, Dataset o2) {
@@ -73,7 +81,8 @@ public class Equals {
     }
 
     public static boolean isSameDrugGeneric(DrugGeneric o1, DrugGeneric o2) {
-        return o1 == o2;
+        return o1 == o2
+        || (o1 != null && o2 != null && o1.getGenericId().equals(o2.getGenericId()));
     }
 
     public static boolean isSamePatientAttributeValue(PatientAttributeValue o1, PatientAttributeValue o2) {
@@ -128,7 +137,7 @@ public class Equals {
 
     public static boolean isSameAaSequence(AaSequence o1, AaSequence o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getProtein() == o2.getProtein());
+        || (o1 != null && o2 != null && isSameProtein(o1.getProtein(), o2.getProtein()));
     }
 
     public static boolean isSameAaInsertion(AaInsertion o1, AaInsertion o2) {
@@ -139,12 +148,12 @@ public class Equals {
 
     public static boolean isSameTherapyCommercial(TherapyCommercial o1, TherapyCommercial o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getDrugCommercial() == o2.getId().getDrugCommercial());
+        || (o1 != null && o2 != null && isSameDrugCommercial(o1.getId().getDrugCommercial(),o2.getId().getDrugCommercial()));
     }
 
     public static boolean isSameTherapyGeneric(TherapyGeneric o1, TherapyGeneric o2) {
         return o1 == o2
-        || (o1 != null && o2 != null && o1.getId().getDrugGeneric() == o2.getId().getDrugGeneric());
+        || (o1 != null && o2 != null && isSameDrugGeneric(o1.getId().getDrugGeneric(),o2.getId().getDrugGeneric()));
     }
 
     public static boolean isSameAaMutation(AaMutation o1, AaMutation o2) {
@@ -198,13 +207,20 @@ public class Equals {
 
 	public static boolean isSameProtein(Protein protein, Protein protein2) {
 		return protein == protein2 
-		|| (protein != null && protein2 != null && protein.getProteinIi().equals(protein2.getProteinIi()));
+		|| (protein != null && protein2 != null && protein.getAbbreviation().equals(protein2.getAbbreviation())
+		        && isSameOpenReadingFrame(protein.getOpenReadingFrame(), protein2.getOpenReadingFrame()));
+	}
+	
+	public static boolean isSameOpenReadingFrame(OpenReadingFrame orf, OpenReadingFrame orf2) {
+	    return orf == orf2 
+        || (orf != null && orf2 != null && orf.getName().equals(orf2.getName())
+                && isSameGenome(orf.getGenome(),orf2.getGenome()));
 	}
 
 	public static boolean isSameDrugCommercial(DrugCommercial drugCommercial,
 			DrugCommercial drugCommercial2) {
 		return drugCommercial == drugCommercial2 
-		|| (drugCommercial != null && drugCommercial2 != null && drugCommercial.getCommercialIi().equals(drugCommercial2.getCommercialIi()));
+		|| (drugCommercial != null && drugCommercial2 != null && drugCommercial.getName().equals(drugCommercial2.getName()));
 	}
 
 }

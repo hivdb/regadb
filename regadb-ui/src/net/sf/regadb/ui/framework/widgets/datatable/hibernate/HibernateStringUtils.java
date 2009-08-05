@@ -1,11 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.datatable.hibernate;
 
-import net.sf.regadb.ui.datatable.patient.AttributeFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 
@@ -22,25 +18,11 @@ public class HibernateStringUtils
 		
 		for(int i = 0; i<filters.length; i++)
 		{
-			if(dt.getFilters()[i]!=null)
+			if(filters[i]!=null)
 			{
-			    if(filters[i] instanceof AttributeFilter){
-			        filters[i] = ((AttributeFilter)filters[i]).getFilter();
-			    }
-				if (filters[i] instanceof StringFilter)
-				{
-					filter = HibernateFilterConstraintMapping.getStringFilterConstraint((StringFilter)filters[i], fieldNames[i], i);
-				}
-				else if(filters[i] instanceof DateFilter)
-				{
-					filter = HibernateFilterConstraintMapping.getDateFilterConstraint((DateFilter)filters[i], fieldNames[i], i);
-				}
-				else if (filters[i] instanceof ListFilter)
-				{
-					filter = HibernateFilterConstraintMapping.getListFilterConstraint((ListFilter)filters[i], fieldNames[i], i);
-				}
+				filter = filters[i].getConstraint(fieldNames[i], i);
 				
-				if(filter.clause_!=null)
+				if(filter!=null && filter.clause_!=null)
 				{
 					if(!query.clause_.equals(" "))
 					{

@@ -14,15 +14,15 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class TestTypeForm extends FormWidget
 {
@@ -38,12 +38,15 @@ public class TestTypeForm extends FormWidget
     private Label testObjectL;
     private ComboBox<TestObject> testObjectCB;    
     
+    private Label genomeL;
+    private GenomeComboBox genomeCB;
+    
 //  nominal values group
     private WGroupBox nominalValuesGroup_;
     private EditableTable<TestNominalValue> nominalValuesList_;
     private ITestNominalValueDataList iNominalValuesList_;
 	
-	public TestTypeForm(InteractionState interactionState, WMessage formName, TestType testType ) 
+	public TestTypeForm(InteractionState interactionState, WString formName, TestType testType ) 
 	{
 		super(formName, interactionState);
 		
@@ -69,6 +72,11 @@ public class TestTypeForm extends FormWidget
 	    testObjectCB= new ComboBox<TestObject>(getInteractionState(),this);
 	    testObjectCB.setMandatory(true);
 	    mainFrameTable_.addLineToTable(testObjectL, testObjectCB);
+	    
+	    genomeL = new Label(tr("form.testSettings.testType.editView.genome"));
+	    genomeCB = new GenomeComboBox(getInteractionState(), this);
+	    mainFrameTable_.addLineToTable(genomeL, genomeCB);
+	    
 	    Transaction t = RegaDBMain.getApp().createTransaction();
 	    List<ValueType> valueTypes=t.getValueTypes();
         for(ValueType vt : valueTypes)
@@ -144,25 +152,33 @@ public class TestTypeForm extends FormWidget
          }
          
 		 setNominalValuesGroup();
-		 valueTypeCB.addComboChangeListener(new SignalListener<WEmptyEvent>()
+		 valueTypeCB.addComboChangeListener(new Signal.Listener()
 	                {
-	                    public void notify(WEmptyEvent a)
+	                    public void trigger()
 	                    {
 	                        setNominalValuesGroup();
 	                    }
 	                });
+		 
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        genomeCB.fill(t);
+        if(testType_.getGenome() != null)
+            genomeCB.selectItem(testType_.getGenome().getOrganismName());
+        else
+            genomeCB.selectIndex(0);
+        t.commit();
 	}
 
 	@Override
 	public void saveData() 
 	{   
-        WMessage duplicates = null;
+		WString duplicates = null;
         if(nominalValuesList_!=null) {
         duplicates = nominalValuesList_.removeDuplicates(0);
         }
         if(duplicates!=null)
         {
-            MessageBox.showWarningMessage(duplicates);
+        	UIUtils.showWarningMessageBox(this, duplicates);
         }
         
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -180,6 +196,7 @@ public class TestTypeForm extends FormWidget
         testType_.setDescription(testTypeTF.text());
         testType_.setValueType(vt);
         testType_.setTestObject(to);
+        testType_.setGenome(genomeCB.currentValue());
           
         if(!nominalValuesGroup_.isHidden())
         {
@@ -209,7 +226,7 @@ public class TestTypeForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

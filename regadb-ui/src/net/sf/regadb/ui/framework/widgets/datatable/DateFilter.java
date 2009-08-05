@@ -1,65 +1,112 @@
 package net.sf.regadb.ui.framework.widgets.datatable;
 
-import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.validation.WEuropeanDateValidator;
+import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.pair.Pair;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WDate;
+import eu.webtoolkit.jwt.WDatePicker;
+import eu.webtoolkit.jwt.WDateValidator;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
 
 public class DateFilter extends WContainerWidget implements IFilter 
 {
-	private FilterOperatorCombo combo_;
-	private FilterTF tf1_;
+	private FilterOperatorCombo combo;
+	private FilterTF tf1;
 	private WImage calendarIcon1 = new WImage("pics/calendar.png");
-	private FilterTF tf2_;
+	private FilterTF tf2;
 	private WImage calendarIcon2 = new WImage("pics/calendar.png");
 	
-	public final static String equals_ = "dataTable.filter.dateFilter.equals";
-	public final static String before_ = "dataTable.filter.dateFilter.before";
-	public final static String after_ = "dataTable.filter.dateFilter.after";
-	public final static String between_ = "dataTable.filter.dateFilter.between";
+	public final static String equals = "dataTable.filter.dateFilter.equals";
+	public final static String before = "dataTable.filter.dateFilter.before";
+	public final static String after = "dataTable.filter.dateFilter.after";
+	public final static String between = "dataTable.filter.dateFilter.between";
 	
-	public DateFilter()
+	private String dateFormat;
+	
+	/**
+	 * Constructor, accepting a dateFormat, which the DateFilter will use to do the validation.
+	 * DateFilter allows to filter dates, by equals, greater then, smaller then, and between constraints.
+	 * 
+	 * @param dateFormat
+	 */
+	public DateFilter(String dateFormat)
 	{
-		setDateField1(new FilterTF(new WEuropeanDateValidator()));
-		setDateField2(new FilterTF(new WEuropeanDateValidator()));
-		getDateField2().setEnabled(false);
-		combo_ = new FilterOperatorCombo(getDateField1());
-		combo_.setInline(false);
+		this.dateFormat = dateFormat;
 		
-		addWidget(combo_);
-		WTable w1 = new WTable(this);
-		w1.setStyleClass("date-field");
-		w1.putElementAt(0, 0, getDateField1());
-		w1.putElementAt(0,1, calendarIcon1);
-		w1.putElementAt(1, 0, getDateField2());
-		w1.putElementAt(1, 1, calendarIcon2);
-        w1.elementAt(0, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
-        w1.elementAt(1, 1).resize(new WLength(24, WLengthUnit.Pixel), new WLength());
+		setDateField1(new FilterTF(new WDateValidator(dateFormat)){
+			public void setEnabled(boolean enabled) {
+				super.setEnabled(enabled);
+				calendarIcon1.setHidden(!enabled);
+			}
+		});
+		setDateField2(new FilterTF(new WDateValidator(dateFormat)){
+			public void setEnabled(boolean enabled) {
+				super.setEnabled(enabled);
+				calendarIcon2.setHidden(!enabled);
+			}
+		});
+
+		getDateField1().setEnabled(false);
+		getDateField2().setEnabled(false);
+
+		combo = new FilterOperatorCombo(getDateField1());
+		combo.setInline(false);
+		
+		WContainerWidget div;
+		WDatePicker dp;
+
+		div = new WContainerWidget(this);
+		div.addWidget(combo);
+
+		div = new WContainerWidget(this);
+		div.addWidget(getDateField1());
+		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1(), false));
+		dp.setFormat(dateFormat);
+		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
+		{
+			public void trigger() 
+			{
+				FilterTools.findDataTable(tf1).applyFilter();
+			}
+		});
+
+
+		div = new WContainerWidget(this);
+		div.addWidget(getDateField2());
+		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2(), false));
+		dp.setFormat(dateFormat);
+		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
+		{
+			public void trigger() 
+			{
+				FilterTools.findDataTable(tf1).applyFilter();
+			}
+		});
+
+		setStyleClass("datefield");
 		
 		//filling of the combo-box with operators		
-		combo_.addItem(tr(equals_));
-		combo_.addItem(tr(before_));
-		combo_.addItem(tr(after_));
-		combo_.addItem(tr(between_));
+		combo.addItem(tr(equals));
+		combo.addItem(tr(before));
+		combo.addItem(tr(after));
+		combo.addItem(tr(between));
 		
-		combo_.changed.addListener(new SignalListener<WEmptyEvent>()
-				{
-					public void notify(WEmptyEvent a)
-					{
-						getDateField1().setText("");
-						getDateField1().setText("");
-						
-						getDateField2().setEnabled(combo_.currentText().key().equals(between_));
-					}
-				});
+		combo.changed().addListener(this, new Signal.Listener() {
+			public void trigger()
+			{
+				getDateField1().setEnabled(combo.getCurrentIndex() > 0);
+				getDateField2().setEnabled(combo.getCurrentText().getKey().equals(between));
+			}
+		});
 	}
 	
+	/**
+	 * Returns this {@link WContainerWidget}
+	 * 
+	 * @see nl.rivm.mpf.ui.framework.forms.datatable.IFilter#getFilterWidget()
+	 */
 	public WContainerWidget getFilterWidget()
 	{
 		return this;
@@ -67,32 +114,62 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public Object getFirstDate()
 	{
-		return DateUtils.parserEuropeanDate(getDateField1().text());
+		return WDate.fromString(getDateField1().getText(), dateFormat).getDate();
 	}
 	
 	public Object getSecondDate()
 	{
-		return DateUtils.parserEuropeanDate(getDateField2().text());
+		return WDate.fromString(getDateField2().getText(), dateFormat).getDate();
 	}
 	
-	public WMessage getComboState()
+	public WString getComboState()
 	{
-		return combo_.currentText();
+		return combo.getCurrentText();
 	}
 
-    protected void setDateField1(FilterTF tf1_) {
-        this.tf1_ = tf1_;
+	private void setDateField1(FilterTF tf1) {
+        this.tf1 = tf1;
     }
 
-    protected FilterTF getDateField1() {
-        return tf1_;
+	FilterTF getDateField1() {
+        return tf1;
     }
 
-    protected void setDateField2(FilterTF tf2_) {
-        this.tf2_ = tf2_;
+	private void setDateField2(FilterTF tf2) {
+        this.tf2 = tf2;
     }
 
-    protected FilterTF getDateField2() {
-        return tf2_;
+	FilterTF getDateField2() {
+        return tf2;
     }
+
+	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {
+		HibernateFilterConstraint constraint = new HibernateFilterConstraint();
+		
+		String operator = getComboState().getKey();
+			
+		if(operator.equals(DateFilter.equals))
+		{
+			constraint.clause_ = varName + " = :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.before))
+		{
+			constraint.clause_ = varName + " < :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.after))
+		{
+			constraint.clause_ = varName + " > :param" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("param" + filterIndex, getFirstDate()));
+		}
+		else if(operator.equals(DateFilter.between))
+		{
+			constraint.clause_ = varName + " between :paramA" + filterIndex + " and :paramB" + filterIndex;
+			constraint.arguments_.add(new Pair<String, Object>("paramA" + filterIndex, getFirstDate()));
+			constraint.arguments_.add(new Pair<String, Object>("paramB" + filterIndex, getSecondDate()));
+		}
+			
+		return constraint;
+	}
 }

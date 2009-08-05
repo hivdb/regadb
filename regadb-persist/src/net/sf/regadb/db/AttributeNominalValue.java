@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class AttributeNominalValue implements java.io.Serializable {
 
-    // Fields    
-
     private Integer nominalValueIi;
 
     private int version;
@@ -16,19 +14,14 @@ public class AttributeNominalValue implements java.io.Serializable {
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public AttributeNominalValue() {
     }
 
-    /** full constructor */
     public AttributeNominalValue(Attribute attribute, String value) {
         this.attribute = attribute;
         this.value = value;
     }
 
-    // Property accessors
     public Integer getNominalValueIi() {
         return this.nominalValueIi;
     }

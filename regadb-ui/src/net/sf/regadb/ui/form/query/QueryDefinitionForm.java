@@ -12,12 +12,12 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class QueryDefinitionForm extends FormWidget
 {
@@ -39,7 +39,7 @@ public class QueryDefinitionForm extends FormWidget
     private Label creatorL;
     private TextField creatorTF;
     
-    public QueryDefinitionForm(WMessage formName, InteractionState interactionState, QueryDefinition queryDefinition)
+    public QueryDefinitionForm(WString formName, InteractionState interactionState, QueryDefinition queryDefinition)
     {
     	super(formName, interactionState);
         
@@ -167,7 +167,7 @@ public class QueryDefinitionForm extends FormWidget
     			}
     			else
     			{
-    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.null"));
+    				UIUtils.showWarningMessageBox(this, tr("form.query.validate.parameters.null"));
     				
     				return false;
     			}
@@ -203,14 +203,14 @@ public class QueryDefinitionForm extends FormWidget
     				}
     				else
     				{
-    					MessageBox.showWarningMessage(tr("form.query.validate.parameters.error"));
+    					UIUtils.showWarningMessageBox(this, tr("form.query.validate.parameters.error"));
     					
     					return false;
     				}
     			}
     			else
     			{
-    				MessageBox.showWarningMessage(tr("form.query.validate.parameters.duplicate"));
+    				UIUtils.showWarningMessageBox(this, tr("form.query.validate.parameters.duplicate"));
     				
     				return false;
     			}
@@ -238,7 +238,7 @@ public class QueryDefinitionForm extends FormWidget
 	}
 
 	@Override
-	public WMessage deleteObject() 
+	public WString deleteObject() 
 	{
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         

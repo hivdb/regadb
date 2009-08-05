@@ -1,7 +1,5 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.util.List;
-
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
@@ -12,11 +10,13 @@ import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
+import net.sf.regadb.ui.framework.forms.fields.DrugGenericComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import net.sf.regadb.util.frequency.Frequency;
-import net.sf.witty.wt.WWidget;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WWidget;
 
 public class IGenericDrugSelectionEditableTable implements IEditableTable<TherapyGeneric>
 {
@@ -76,7 +76,8 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
     public void deleteData(TherapyGeneric tg)
     {
         therapy_.getTherapyGenerics().remove(tg);
-        transaction_.delete(tg);
+        if(therapy_.getTherapyIi() != null)
+        	transaction_.delete(tg);
     }
 
     public InteractionState getInteractionState()
@@ -91,7 +92,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
 
     public WWidget[] getWidgets(TherapyGeneric tg)
     {
-        ComboBox<DrugGeneric> combo = new ComboBox<DrugGeneric>(InteractionState.Viewing, form_);
+        DrugGenericComboBox combo = new DrugGenericComboBox(InteractionState.Viewing, form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         CheckBox cb_placebo = new CheckBox(form_.getInteractionState(), form_);
         CheckBox cb_blind = new CheckBox(form_.getInteractionState(), form_);
@@ -99,13 +100,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        List<DrugGeneric> genericDrugs = t.getGenericDrugs();
-        for(DrugGeneric dg: genericDrugs)
-        {
-            combo.addItem(new DataComboMessage<DrugGeneric>(dg, getGenericDrugRepresentation(dg)));
-        }
-        combo.sort();
-        
+        combo.fill(t, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];
@@ -120,7 +115,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         {
             tf.setText(tg.getDayDosageMg()+"");
         }
-        combo.selectItem(getGenericDrugRepresentation(tg.getId().getDrugGeneric()));
+        combo.selectItem(tg.getId().getDrugGeneric());
         
         cb_placebo.setChecked(tg.isPlacebo());
         cb_blind.setChecked(tg.isBlind());
@@ -137,7 +132,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
 
     public WWidget[] addRow() 
     {
-        ComboBox<DrugGeneric> combo = new ComboBox<DrugGeneric>(form_.getInteractionState(), form_);
+        DrugGenericComboBox combo = new DrugGenericComboBox(form_.getInteractionState(), form_);
         TextField tf = new TextField(form_.getInteractionState(), form_, FieldType.DOUBLE);
         CheckBox cb_placebo = new CheckBox(form_.getInteractionState(), form_);
         CheckBox cb_blind = new CheckBox(form_.getInteractionState(), form_);
@@ -145,12 +140,7 @@ public class IGenericDrugSelectionEditableTable implements IEditableTable<Therap
         ComboBox<Frequency> combo_freq = createFrequencyComboBox();
         
         Transaction t = RegaDBMain.getApp().createTransaction();
-        List<DrugGeneric> genericDrugs = t.getGenericDrugs();
-        for(DrugGeneric dg: genericDrugs)
-        {
-            combo.addItem(new DataComboMessage<DrugGeneric>(dg, getGenericDrugRepresentation(dg)));
-        }
-        combo.sort();
+        combo.fill(t, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
         t.commit();
         
         WWidget[] widgets = new WWidget[6];

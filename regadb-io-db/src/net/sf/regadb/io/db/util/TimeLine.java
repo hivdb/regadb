@@ -1,14 +1,20 @@
 package net.sf.regadb.io.db.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.sf.regadb.util.pair.Pair;
+
 public class TimeLine<T> {
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	
     private TreeMap<Date, List<Period>> timeline = new TreeMap<Date, List<Period>>();
     
     public class Period{
@@ -52,6 +58,15 @@ public class TimeLine<T> {
         public List<T> getValues() {
             return values;
         }
+        
+        public String toString(){
+        	return (start == null ? "...":dateFormat.format(start)) +" -> "+ (stop == null ? "...":dateFormat.format(stop));
+        }
+        
+        public boolean equals(Period p){
+        	return (start == p.start || (start != null && start.equals(p.start)))
+        		&& (stop == p.stop || (stop != null && stop.equals(p.stop)));
+        }
     }
     
     public void addPeriod(Date start, Date end, T value){
@@ -84,15 +99,30 @@ public class TimeLine<T> {
     }
     
     public boolean overlap(Period p1, Period p2){
-        return overlap(p1.getStart(),p1.getStop(),p2.getStart(),p2.getStop());
+        return overlap(p1,p2,true);
+    }
+    public boolean overlap(Period p1, Period p2, boolean strict){
+        return overlap(p1.getStart(),p1.getStop(),p2.getStart(),p2.getStop(),strict);
     }
     
     public static boolean overlap(Date start1, Date stop1, Date start2, Date stop2){
-        if(stop2 != null && start1.after(stop2))
-            return false;
-        
-        if(stop1 != null && start2.after(stop1))
-            return false;
+    	return overlap(start1, stop1, start2, stop2, true);
+    }
+    public static boolean overlap(Date start1, Date stop1, Date start2, Date stop2, boolean strict){
+        if(stop2 != null){
+        	if(start1.after(stop2))
+        		return false;
+        	
+        	if(!strict && start1.equals(stop2))
+        		return false;
+        }
+        if(stop1 != null){
+        	if(start2.after(stop1))
+        		return false;
+        	
+        	if(!strict && start2.equals(stop1))
+        		return false;
+        }
         
         return true;
     }
@@ -140,6 +170,45 @@ public class TimeLine<T> {
         }
         
         return all;
+    }
+    
+    public List<Pair<Period, List<Period>>> getOverlappingPeriods(boolean strict){
+    	List<Pair<Period, List<Period>>> r = new ArrayList<Pair<Period,List<Period>>>();
+    	
+    	for(Map.Entry<Date,List<Period>> pl1 : timeline.entrySet()){
+    		for(Period p1 : pl1.getValue()){
+    			if(!p1.getStart().equals(pl1.getKey()))
+    				continue;
+    			
+    			List<Period> overlaps = new ArrayList<Period>();
+
+    			for(Period p2 : pl1.getValue())
+    				if(p1 != p2 && p2.getStart().equals(pl1.getKey()))
+    					overlaps.add(p2);
+    			
+    	    	for(Map.Entry<Date,List<Period>> pl2 : timeline.tailMap(pl1.getKey()).entrySet()){
+    	    	    if(pl2.getKey().equals(pl1.getKey()))
+    	    	        continue;
+    	    	    
+        			int size = overlaps.size();
+
+    	    		for(Period p2 : pl2.getValue()){
+    	    			if(!p2.getStart().equals(pl2.getKey()))
+    	    				continue;
+    	    			
+    	    			if(overlap(p1, p2, strict))
+    	    				overlaps.add(p2);
+    	    		}
+
+    	    		if(overlaps.size() == size)
+        	    		break;
+    	    	}
+    	    	if(overlaps.size() > 0)
+    	    		r.add(new Pair<Period, List<Period>>(p1,overlaps));
+    		}
+    	}
+    	
+    	return r;
     }
     
     public boolean isStartDate(Date d, Period p){

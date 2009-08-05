@@ -1,18 +1,18 @@
 package net.sf.regadb.ui.framework.widgets.table;
 
-import net.sf.witty.wt.WTableCell;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTableCell;
+import eu.webtoolkit.jwt.WText;
 
 public class TableHeader extends WText
 {
-	public TableHeader(WMessage title, WTableCell cell)
+	public TableHeader(CharSequence title, WTableCell cell)
 	{
 		super(title, cell);
 		setStyleClass("table-header");
 	}
 	
-	public TableHeader(WMessage title)
+	public TableHeader(CharSequence title)
 	{
 		this(title, null);
 	}

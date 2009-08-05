@@ -4,7 +4,7 @@ import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class PatientSelectItem extends TreeMenuNode
 {
@@ -20,7 +20,8 @@ public class PatientSelectItem extends TreeMenuNode
         {
             public void performAction(TreeMenuNode node) 
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientForm());    
+            	if(isEnabled())
+            		RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientForm());    
             }
         };
 	}
@@ -28,6 +29,6 @@ public class PatientSelectItem extends TreeMenuNode
 	@Override
 	public boolean isEnabled()
 	{
-		return RegaDBMain.getApp().getLogin()!=null;
+		return RegaDBMain.getApp().getLogin()!=null && !RegaDBMain.getApp().getRole().isSinglePatientView();
 	}
 }

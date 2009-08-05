@@ -6,26 +6,19 @@ package net.sf.regadb.db;
  */
 public class TherapyMotivation implements java.io.Serializable {
 
-    // Fields    
-
     private Integer therapyMotivationIi;
 
     private int version;
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public TherapyMotivation() {
     }
 
-    /** full constructor */
     public TherapyMotivation(String value) {
         this.value = value;
     }
 
-    // Property accessors
     public Integer getTherapyMotivationIi() {
         return this.therapyMotivationIi;
     }

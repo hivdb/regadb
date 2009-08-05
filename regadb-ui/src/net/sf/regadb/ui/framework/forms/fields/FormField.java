@@ -1,23 +1,31 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WInteractWidget;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.validation.WValidator;
-import net.sf.witty.wt.validation.WValidatorState;
+import net.sf.regadb.ui.framework.forms.IForm;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.TextFormat;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WInteractWidget;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WValidator;
+import eu.webtoolkit.jwt.WWidget;
 
 public abstract class FormField extends WContainerWidget implements IFormField
 {
     private WText _fieldView;
     private boolean _unique=false;
     
+    private IForm form;
+    
+    public FormField(IForm form) {
+    	this.form = form;
+    }
+    
     public void initViewWidget()
     {
         _fieldView = new WText();
+        _fieldView.setTextFormat(TextFormat.PlainText);
+        
         addWidget(_fieldView);
     }
     
@@ -34,7 +42,7 @@ public abstract class FormField extends WContainerWidget implements IFormField
         }
         else
         {
-            WValidator validator = getFormWidget().validator();
+            WValidator validator = getFormWidget().getValidator();
             if(validator==null)
                 return false;
             else
@@ -46,12 +54,12 @@ public abstract class FormField extends WContainerWidget implements IFormField
     {
         boolean valid=true;
 
-        if(getFormWidget().validator()!=null)
+        if(getFormWidget().getValidator()!=null)
         {
-            valid = getFormWidget().validator().validate(getFormText(), null) == WValidatorState.Valid;
+            valid = getFormWidget().getValidator().validate(getFormText()) == WValidator.State.Valid;
         }
         
-        if(isUnique()){
+        if(valid && isUnique()){
             valid = checkUniqueness();
         }
         return valid;
@@ -65,19 +73,19 @@ public abstract class FormField extends WContainerWidget implements IFormField
 
     public void setMandatory(boolean mandatory)
     {
-        if(getFormWidget()!=null && getFormWidget().validator()==null)
+        if(getFormWidget()!=null && getFormWidget().getValidator()==null)
         {
             getFormWidget().setValidator(new WValidator());
         }
         if(getFormWidget()!=null)
         {
-            getFormWidget().validator().setMandatory(mandatory);
+            getFormWidget().getValidator().setMandatory(mandatory);
         }
     }
     
     public String text()
     {
-        return getFormWidget()!=null?getFormText():getViewMessage().value();
+        return getFormWidget()!=null?getFormText():getViewMessage().getValue();
     }
     
     public void setText(String text)
@@ -93,18 +101,18 @@ public abstract class FormField extends WContainerWidget implements IFormField
             }
         else
             {
-                setViewMessage(lt(text));
+                setViewMessage(text);
             }
     }
     
-    protected void setViewMessage(WMessage message)
+    protected void setViewMessage(CharSequence message)
     {
     	_fieldView.setText(message);
     }
     
-    protected WMessage getViewMessage()
+    protected WString getViewMessage()
     {
-    	return _fieldView.text();
+    	return _fieldView.getText();
     }
     
     public WWidget getWidget()
@@ -112,12 +120,12 @@ public abstract class FormField extends WContainerWidget implements IFormField
         return this;
     }
     
-    public void setConfirmAction(SignalListener<WEmptyEvent> se) {
-        if(getFormWidget()!=null) {
-        getFormWidget().enterPressed.removeAllListeners();
-        if(se!=null)
-            getFormWidget().enterPressed.addListener(se);
-        }
+    public void setConfirmAction(Signal.Listener se) {
+//        if(getFormWidget()!=null) {
+//        getFormWidget().enterPressed().removeAllListeners();
+//        if(se!=null)
+//            getFormWidget().enterPressed().addListener(this, se);
+//        }
     }
     
     public boolean isUnique(){
@@ -130,5 +138,15 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public boolean checkUniqueness(){
         return false;
+    }
+    
+    public void setTextFormat(TextFormat tf) {
+    	if(_fieldView!=null) {
+    		_fieldView.setTextFormat(tf);
+    	}
+    }
+    
+    public IForm getForm() {
+    	return form;
     }
 }

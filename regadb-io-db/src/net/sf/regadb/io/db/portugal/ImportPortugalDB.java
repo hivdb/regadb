@@ -31,7 +31,6 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -611,11 +610,11 @@ public class ImportPortugalDB {
                   Utils.createDate(collectionYear, collectionMonth, null),
                   sampleId);
           
-          handlePosNegTest(pregnancy, StandardObjects.getPregnancyTest(), p,
-                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Positive"),
-                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Negative"),
-                  Utils.createDate(collectionYear, collectionMonth, null),
-                  sampleId);
+//          handlePosNegTest(pregnancy, StandardObjects.getPregnancyTest(), p,
+//                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Positive"),
+//                  Utils.getNominalValue(StandardObjects.getPregnancyTest().getTestType(), "Negative"),
+//                  Utils.createDate(collectionYear, collectionMonth, null),
+//                  sampleId);
           
           handlePosNegTest(therapyFailure, this.genericTherapyFailure, p,
                   this.therapyFailurePos,
@@ -672,7 +671,7 @@ public class ImportPortugalDB {
 
                     patient = new Patient();
                     patient.setPatientId(patientId);
-                    patient.setBirthDate(Utils.createDate(yearBirth, "1", null));
+                    Utils.setBirthDate(patient, Utils.createDate(yearBirth, "1", null));
                     
 //                    if(sampleTable.valueAt(CSampleIdProtocol, row).contains("S")){
 //                        patient.addPatientToDataset(spreadDataset);
@@ -688,12 +687,6 @@ public class ImportPortugalDB {
 
     public void importSequences() throws FileNotFoundException {
         System.err.println("Importing sequences ...");
-        
-        Map<String, Protein> proteinMap_ = new HashMap<String, Protein>();
-        
-        for(Protein p : StandardObjects.getProteins()) {
-            proteinMap_.put(p.getAbbreviation(), p);
-        }
         
 //        Aligner aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
         
@@ -785,11 +778,11 @@ public class ImportPortugalDB {
         System.err.println("Importing patient attributes");
 
         AttributeGroup portugal = new AttributeGroup("PT");
-        AttributeGroup regadb = new AttributeGroup("RegaDB");
+        //AttributeGroup regadb = StandardObjects.getRegaDBAttributeGroup();
         
         List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
 
-        Attribute clinicalFileAttribute = Utils.selectAttribute(StandardObjects.getClinicalFileNumber(), regadbAttributes);
+        Attribute clinicalFileAttribute = StandardObjects.getClinicalFileNumberAttribute();
 
         ArrayList<NominalAttribute> nominals = new ArrayList<NominalAttribute>();
         nominals.add(new NominalAttribute("Institution", CSampleIdInstitution, institutionTable));
@@ -803,7 +796,7 @@ public class ImportPortugalDB {
         
         nominals.add(new NominalAttribute("Gender", CSampleGender, new String[] { "M", "F" },
                                           new String[] { "male", "female" } ));
-        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(regadb);
+        nominals.get(nominals.size() - 1).attribute.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
         
         String lastPatientId = null;
         for (int i = 1; i < sampleTable.numRows(); ++i) {
@@ -838,8 +831,8 @@ public class ImportPortugalDB {
     }
     
     public void exportToXml() {
-        IOUtils.exportPatientsXML(patientMap, patientXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(patientMap, sequenceXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patientMap.values(), patientXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patientMap.values(), sequenceXmlFile.getAbsolutePath(), ConsoleLogger.getInstance());
     }
     
  	public static void main(String[] args)

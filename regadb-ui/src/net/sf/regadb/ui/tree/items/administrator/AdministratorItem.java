@@ -1,10 +1,9 @@
 package net.sf.regadb.ui.tree.items.administrator;
 
-import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class AdministratorItem extends TreeMenuNode
 {
@@ -22,15 +21,7 @@ public class AdministratorItem extends TreeMenuNode
     @Override
     public boolean isEnabled()
     {
-        if(RegaDBMain.getApp().getLogin()!=null)
-        {
-            Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-            
-            return t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getAdmin();
-        }
-        else
-        {
-            return false;
-        }
+        return RegaDBMain.getApp().getLogin()!=null
+            && RegaDBMain.getApp().getRole().isAdmin();
     }
 }

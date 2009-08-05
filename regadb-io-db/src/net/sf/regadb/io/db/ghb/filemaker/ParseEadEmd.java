@@ -20,12 +20,12 @@ public class ParseEadEmd {
         Set<String> emd  = new HashSet<String>();
         Table eadEmd = Utils.readTable(eadEmdNameFile,ParseAll.getCharset(),ParseAll.getDelimiter());
         
-        System.err.println("Non-unique emd's -------------------------");
+        System.err.println("Non-unique emd's:");
         for(int i = 1; i<eadEmd.numRows(); i++) {
-            if(!emd.add(eadEmd.valueAt(1, i)))
-                System.err.println("NONE" + eadEmd.valueAt(1, i));
+        	String id = parseId(eadEmd.valueAt(1, i));
+            if(!emd.add(id))
+                System.err.println("\t- \""+ id +'"');
         }
-        System.err.println("Non-unique emd's -------------------------");
         
         Table patientFilemakerTable = Utils.readTable(patientenFile, ParseAll.getCharset(), ParseAll.getDelimiter());
         int CDossierNr = Utils.findColumn(patientFilemakerTable, "DossierNr");
@@ -36,32 +36,32 @@ public class ParseEadEmd {
         //only in kws
         HashSet<String> onlyInKWS = new HashSet<String>();
         for(int i = 1; i<eadEmd.numRows(); i++) {
-            String emdKWSValue = eadEmd.valueAt(1, i);
+            String emdKWSValue = parseId(eadEmd.valueAt(1, i));
             boolean found = false;
             for(int j = 1; j<patientFilemakerTable.numRows() && !found; j++) {
-                String emdFileMaker = patientFilemakerTable.valueAt(CDossierNr, j);
+                String emdFileMaker = parseId(patientFilemakerTable.valueAt(CDossierNr, j));
+
                 if(emdFileMaker.equals(emdKWSValue)) {
                     found = true;
                 }
             }
             if(!found&&!eadEmd.valueAt(2, i).equals("error")) {
-            	
-                onlyInKWS.add(emdKWSValue); //+ " " + eadEmd.valueAt(2, i) + " " + eadEmd.valueAt(3, i));
+                onlyInKWS.add(emdKWSValue);
             }
         }
         
-        System.err.println("Only in KWS " + onlyInKWS.size());
+        System.err.println("Only in KWS " + onlyInKWS.size() +":");
         for(String s : onlyInKWS) {
-            System.err.println("Only in KWS " + s);
+            System.err.println("\t- \""+ s +'"');
         }
         
         //only in filemaker
         ArrayList<String> onlyInFilemaker = new ArrayList<String>();
         for(int i = 1; i<patientFilemakerTable.numRows(); i++) {
-            String emdFileMaker = patientFilemakerTable.valueAt(CDossierNr, i);
+            String emdFileMaker = parseId(patientFilemakerTable.valueAt(CDossierNr, i));
             boolean found = false;
             for(int j = 1; j<eadEmd.numRows() && !found; j++) {
-                String emdKWSValue = eadEmd.valueAt(1, j);
+                String emdKWSValue = parseId(eadEmd.valueAt(1, j));
                 if(emdFileMaker.equals(emdKWSValue)) {
                     found = true;
                 }
@@ -71,21 +71,21 @@ public class ParseEadEmd {
             }
         }
         
-        System.err.println("Only in filemaker " + onlyInFilemaker.size());
+        System.err.println("Only in filemaker " + onlyInFilemaker.size()+":");
         for(String s : onlyInFilemaker) {
-            System.err.println("Only in filemaker " + s);
+            System.err.println("\t- \""+ s +'"');
         }
         
         //build mapping
         for(int i = 1; i<eadEmd.numRows(); i++) {
-            String emdKWSValue = eadEmd.valueAt(1, i);
-            String eadKWSValue = eadEmd.valueAt(0, i);
+            String emdKWSValue = parseId(eadEmd.valueAt(1, i));
+            String eadKWSValue = parseId(eadEmd.valueAt(0, i));
             
             if(eadKWSValue == null || eadKWSValue.trim().length() == 0)
             	continue;
             
             for(int j = 1; j<patientFilemakerTable.numRows(); j++) {
-                String emdFileMaker = patientFilemakerTable.valueAt(CDossierNr, j);
+                String emdFileMaker = parseId(patientFilemakerTable.valueAt(CDossierNr, j));
                 String patientID = patientFilemakerTable.valueAt(CPatientId, j);
                 if(emdKWSValue.equals(emdFileMaker)) {
                     eadPatientId.put(eadKWSValue, patientID);
@@ -93,6 +93,10 @@ public class ParseEadEmd {
                 }
             }
         }
+    }
+    
+    private String parseId(String id){
+    	return id.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
     }
     
     public static void main(String [] args) {

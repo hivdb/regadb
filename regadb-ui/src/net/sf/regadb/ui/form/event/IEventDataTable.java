@@ -9,9 +9,13 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class IEventDataTable implements IDataTable<Event> {
-	private static String [] _colNames = {"dataTable.event.column.name", "dataTable.event.column.valuetype"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.event.column.name"),
+	    WString.tr("dataTable.event.column.valuetype")};
+	
 	private static String[] filterVarNames_ = {"event.name", "event.valueType"};
 	private static boolean [] sortable_ = {true, true};
 	private static int[] colWidths = {50,50};
@@ -49,7 +53,7 @@ public class IEventDataTable implements IDataTable<Event> {
 		filters_[1] = new StringFilter();
 	}
 	
-	public String[] getColNames() {
+	public CharSequence[] getColNames() {
 		return _colNames;
 	}
 	
@@ -67,5 +71,9 @@ public class IEventDataTable implements IDataTable<Event> {
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(Event type) {
+		return null;
 	}
 }

@@ -2,38 +2,36 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WLineEdit;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.validation.WDoubleValidator;
-import net.sf.witty.wt.validation.WIntValidator;
-import net.sf.witty.wt.validation.WValidatorState;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
+import eu.webtoolkit.jwt.WDoubleValidator;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WIntValidator;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WValidator;
 
 public class LimitedNumberField extends FormField
 {
     private WLineEdit fieldEdit_;
-    private WComboBox limiterField_;
+    private MyComboBox limiterField_;
     
     public LimitedNumberField(InteractionState state, IForm form, FieldType type)
     {
-        super();
+        super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, fieldEdit_);
 
-            limiterField_ = new WComboBox();
-            limiterField_.addItem(lt("<"));
-            limiterField_.addItem(lt("="));
-            limiterField_.addItem(lt(">"));
+            limiterField_ = new MyComboBox();
+            limiterField_.addItem("<");
+            limiterField_.addItem("=");
+            limiterField_.addItem(">");
             WTable table = new WTable(this);
-            table.putElementAt(0, 0, limiterField_);
-            table.elementAt(0, 0).resize(new WLength(3, WLengthUnit.FontEm), new WLength());
-            table.putElementAt(0, 1, fieldEdit_);
+            table.getElementAt(0, 0).addWidget(limiterField_);
+            table.getElementAt(0, 0).resize(new WLength(3, WLength.Unit.FontEm), new WLength());
+            table.getElementAt(0, 1).addWidget(fieldEdit_);
             
             flagValid();
         }
@@ -64,7 +62,7 @@ public class LimitedNumberField extends FormField
         this(state, form, FieldType.DOUBLE);
     }
     
-    public void setEchomode(WLineEditEchoMode mode)
+    public void setEchomode(WLineEdit.EchoMode mode)
     {
         fieldEdit_.setEchoMode(mode);
     }
@@ -76,29 +74,29 @@ public class LimitedNumberField extends FormField
     
     public void flagErroneous()
     {
-        fieldEdit_.setStyleClass("form-field textfield edit-invalid");
-        limiterField_.setStyleClass("form-field combobox edit-invalid");
+    	fieldEdit_.setStyleClass("Wt-invalid");
+        limiterField_.setStyleClass("Wt-invalid");
     }
 
     public void flagValid()
     {
-        fieldEdit_.setStyleClass("form-field textfield edit-valid");
-        limiterField_.setStyleClass("form-field combobox edit-valid");
+    	fieldEdit_.setStyleClass("");
+        limiterField_.setStyleClass("");
     }
 
     public String getFormText() 
     {
-        if(fieldEdit_.text().equals(""))
+        if(fieldEdit_.getText().equals(""))
             return "";
         else
-            return limiterField_.currentText().value()+fieldEdit_.text();
+            return limiterField_.getCurrentText().getValue()+fieldEdit_.getText();
     }
     
     public boolean validate()
     {
-        if(getFormWidget().validator()!=null)
+        if(getFormWidget().getValidator()!=null)
         {
-            return getFormWidget().validator().validate(fieldEdit_.text(), null) == WValidatorState.Valid;
+            return getFormWidget().getValidator().validate(fieldEdit_.getText()) == WValidator.State.Valid;
         }
         return true;
     }

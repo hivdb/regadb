@@ -19,4 +19,9 @@ public class SelectHqlQueryDefinitionDatatable extends
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.refreshAllChildren();
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView.selectNode();
 	}
+	
+	@Override
+	public String[] getRowTooltips(QueryDefinition type) {
+		return null;
+	}
 }

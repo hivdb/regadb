@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WWidget;
+import net.sf.regadb.ui.framework.forms.IForm;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public interface IFormField
 {
@@ -17,5 +17,6 @@ public interface IFormField
 	public void flagErroneous();
 	public void flagValid();
     public WWidget getWidget();
-    public void setConfirmAction(SignalListener<WEmptyEvent> se);
+    public void setConfirmAction(Signal.Listener se);
+    public IForm getForm();
 }

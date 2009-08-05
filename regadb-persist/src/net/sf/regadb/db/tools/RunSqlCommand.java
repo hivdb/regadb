@@ -79,16 +79,16 @@ public class RunSqlCommand {
     }
     
     public String getDriver(){
-        return RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.driver_class");
+        return RegaDBSettings.getInstance().getHibernateConfig().getDriverClass();
     }
     public String getUrl(){
-        return RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.url");
+        return RegaDBSettings.getInstance().getHibernateConfig().getUrl();
     }
     public String getUsername(){
-        return RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.username");
+        return RegaDBSettings.getInstance().getHibernateConfig().getUsername();
     }
     public String getPassword(){
-        return RegaDBSettings.getInstance().getPropertyValue("hibernate.connection.password");
+        return RegaDBSettings.getInstance().getHibernateConfig().getPassword();
     }
     
     public void logInfo(String s){

@@ -1,9 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.analysis.functions.NtSequenceHelper;
-import net.sf.witty.wt.validation.WValidator;
-import net.sf.witty.wt.validation.WValidatorPosition;
-import net.sf.witty.wt.validation.WValidatorState;
+import eu.webtoolkit.jwt.WValidator;
 
 public class WNucleotideValidator extends WValidator
 {
@@ -13,28 +11,28 @@ public class WNucleotideValidator extends WValidator
     }
     
     @Override
-    public WValidatorState validate(String input, WValidatorPosition pos) 
+    public WValidator.State validate(String input) 
     {
         if (isMandatory())
         {
             if (input==null || input.length() == 0)
-                return WValidatorState.InvalidEmpty;
+                return WValidator.State.InvalidEmpty;
         }
         else
         {
             if (input==null || input.length() == 0)
-                return WValidatorState.Valid;
+                return WValidator.State.Valid;
         }
         
         for(int i = 0; i<input.length(); i++)
         {
             if(!NtSequenceHelper.isValidNtCharacter(input.charAt(i)))
             {
-                return WValidatorState.Invalid;
+                return WValidator.State.Invalid;
             }
         }
         
-        return WValidatorState.Valid;
+        return WValidator.State.Valid;
     }
 
 }

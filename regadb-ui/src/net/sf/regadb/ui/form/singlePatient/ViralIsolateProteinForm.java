@@ -15,22 +15,18 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFont;
-import net.sf.witty.wt.WFontGenericFamily;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTimer;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
 
 public class ViralIsolateProteinForm extends WContainerWidget
 {
 	private ViralIsolateForm viralIsolateForm_;
 	
-	private WGroupBox proteinGroup_;
 	private Label ntSequenceComboL_;
 	private ComboBox<NtSequence> ntSequenceCombo_;
 	private Label aaSequenceComboL_;
@@ -41,7 +37,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private Label regionL;
 	private TextField regionTF;
 	private Label alignmentL;
-	private TextField alignmentTF;
+	private WText alignmentTF;
 	private Label synonymousL;
 	private TextField synonymousTF;
 	private Label nonSynonymousL;
@@ -80,9 +76,9 @@ public class ViralIsolateProteinForm extends WContainerWidget
         	addWidget(warningMessage);
             refreshAlignmentsTimer_ = new WTimer(warningMessage);
             refreshAlignmentsTimer_.setInterval(2000);
-            refreshAlignmentsTimer_.timeout.addListener(new SignalListener<WEmptyEvent>()
+            refreshAlignmentsTimer_.timeout().addListener(this, new Signal.Listener()
             {
-                public void notify(WEmptyEvent a)
+                public void trigger()
                 {
                     checkAlignments();
                 }
@@ -90,9 +86,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
             refreshAlignmentsTimer_.start();
         }        
 		
-		
-		proteinGroup_ = new WGroupBox(tr("form.viralIsolate.editView.group.protein"), this);
-		proteinGroupTable_ = new FormTable(proteinGroup_);
+		proteinGroupTable_ = new FormTable(this);
 		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
 		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
         proteinGroupTable_.addLineToTable(ntSequenceComboL_, ntSequenceCombo_);
@@ -106,8 +100,10 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		regionTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(regionL, regionTF);
 		alignmentL = new Label(tr("form.viralIsolate.editView.label.alignment"));
-		alignmentTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		alignmentTF.decorationStyle().setFont(new WFont(WFontGenericFamily.Monospace, "Courier"));
+		alignmentTF = new WText(viralIsolateForm_);
+		WFont alignmentFont = new WFont();
+		alignmentFont.setFamily(WFont.GenericFamily.Monospace, "Courier");
+		alignmentTF.getDecorationStyle().setFont(alignmentFont);
 		proteinGroupTable_.addLineToTable(alignmentL, alignmentTF);
 		synonymousL = new Label(tr("form.viralIsolate.editView.label.synonymous"));
 		synonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
@@ -138,17 +134,8 @@ public class ViralIsolateProteinForm extends WContainerWidget
         {
         	warningMessage.setText(tr("form.viralIsolate.editView.message.aligningComplete"));
             refreshAlignmentsTimer_.stop();
-            WPushButton refreshAlignments_ = new WPushButton(warningMessage.getContentArea());
-            refreshAlignments_.setText(tr("form.viralIsolate.editView.button.refreshAlignments"));
-            refreshAlignments_.setEnabled(true);
-            refreshAlignments_.clicked.addListener(new SignalListener<WMouseEvent>()
-            {
-                public void notify(WMouseEvent me)
-                {
-                    fillData(viralIsolateForm_.getViralIsolate());
-                    warningMessage.setHidden(true);
-                }
-            });
+            fillData(viralIsolateForm_.getViralIsolate());
+            warningMessage.setHidden(true);
         }
     }
 	
@@ -169,18 +156,18 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		setAaSequenceCombo();
 		setAaData();
 		
-		ntSequenceCombo_.addComboChangeListener(new SignalListener<WEmptyEvent>()
+		ntSequenceCombo_.addComboChangeListener(new Signal.Listener()
 				{
-					public void notify(WEmptyEvent a)
+					public void trigger()
 					{
 						setAaSequenceCombo();
 						setAaData();
 					}
 				});
 		
-		aaSequenceCombo_.addComboChangeListener(new SignalListener<WEmptyEvent>()
+		aaSequenceCombo_.addComboChangeListener(new Signal.Listener()
 				{
-					public void notify(WEmptyEvent a)
+					public void trigger()
 					{
 						setAaData();
 					}
@@ -200,7 +187,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
         
     		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
     		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
-            alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
+    		alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
             synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
             nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
             

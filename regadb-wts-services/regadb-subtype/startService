@@ -14,23 +14,26 @@ echo "Starting subtype calculation..." >> $monitor_file
 
 species=`cat $species_file`
 
-if [ $species == hbv ]; then tool="rega.genotype.hbv.HBVTool"; fi
-if [ $species == hcv ]; then tool="rega.genotype.hbv.HCVTool"; fi
-if [ $species == hhv8 ]; then tool="rega.genotype.hhv8.HHV8Tool"; fi
-if [ $species == hiv ]; then tool="rega.genotype.hiv.HIVTool"; fi
-if [ $species == hpv ]; then tool="rega.genotype.hpv.HPVTool"; fi
-if [ $species == htlv ]; then tool="rega.genotype.htlv.HTLVTool"; fi
-if [ $species == phylo ]; then tool="rega.genotype.phylo.PhyloTool"; fi
+#mapping & tool selection
+if [ "$species" = "HBV" ]; then tool="rega.genotype.hbv.HBVTool"; fi
+if [ `echo "$species" | grep HCV` ]; then tool="rega.genotype.hcv.HCVTool"; fi
+if [ "$species" = "HHV8" ]; then tool="rega.genotype.hhv8.HHV8Tool"; fi
+if [ `echo "$species" | grep HIV` ]; then tool="rega.genotype.hiv.HIVTool"; fi
+if [ "$species" = "HPV" ]; then tool="rega.genotype.hpv.HPVTool"; fi
+if [ "$species" = "HTLV" ]; then tool="rega.genotype.htlv.HTLVTool"; fi
+if [ "$species" = "phylo" ]; then tool="rega.genotype.phylo.PhyloTool"; fi
 
 
-/soft/project/rega-genotype/batch-genotype.sh $tool $nt_sequence_file "$1/outputs/" >> $monitor_file 2>> $monitor_file                     
 
-cp $1/outputs/result.xml subtype_data_file >> $monitor_file 2>> $monitor_file
+/soft/project/rega-genotype/batch-genotype.sh $tool $nt_sequence_file "$1/outputs/" >> $monitor_file 2>> $monitor_file
 
-python /soft/wts/services/regadb-subtype/parse_subtype.py $1/outputs/result.xml $subtype_file >> $monitor_file 2>> $monitor_file
+cp $1/outputs/result.xml $subtype_data_file >> $monitor_file 2>> $monitor_file
+
+echo `xgrep -x '//conclusion/assigned/name' $1/outputs/result.xml | grep '<name>' | sed -e 's/<[^>]*>//g'` > $subtype_file
+#python /soft/wts/services/regadb-subtype/parse_subtype.py $1/outputs/result.xml $subtype_file >> $monitor_file 2>> $monitor_file
 
 echo "Calculation ended" >> $monitor_file
 
-rm "$running_file"
+#rm "$running_file"
 
 echo "ENDED_SUCCES" > "$1/.ended"

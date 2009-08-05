@@ -6,9 +6,9 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WKeyEvent;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WKeyEvent;
 
 public class InfoContainer extends WContainerWidget {
     private Label nameL;
@@ -33,8 +33,8 @@ public class InfoContainer extends WContainerWidget {
     	nameTF = new TextField(form.getInteractionState(), form);
         nameTF.setMandatory(true);
         infoTable.addLineToTable(nameL, nameTF);
-        nameTF.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
+        nameTF.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
+			public void trigger(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
 			}
         });
@@ -43,8 +43,8 @@ public class InfoContainer extends WContainerWidget {
         descriptionTA = new TextArea(form.getInteractionState(), form);
         descriptionTA.setMandatory(true);
         infoTable.addLineToTable(descriptionL, descriptionTA);
-        descriptionTA.keyPressed.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
+        descriptionTA.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
+			public void trigger(WKeyEvent a) {
 				mainForm.getEditorModel().getQueryEditor().setDirty(true);
 			}
         });

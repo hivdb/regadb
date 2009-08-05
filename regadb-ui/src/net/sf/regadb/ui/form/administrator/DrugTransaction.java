@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.administrator;
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.IDrugTransaction;
 
@@ -35,5 +36,9 @@ public class DrugTransaction implements IDrugTransaction {
 
     public void save(DrugCommercial dc) {
         t_.save(dc);        
+    }
+
+    public Genome getGenome(String organismName) {
+        return t_.getGenome(organismName);
     }
 }

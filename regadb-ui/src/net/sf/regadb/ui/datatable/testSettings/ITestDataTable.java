@@ -9,17 +9,22 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ITestDataTable implements IDataTable<Test>
 {
-	private static String [] _colNames = {"dataTable.test.colName.description", "dataTable.test.colName.testType" };
-	private static String[] filterVarNames_ = {"test.description", "test.testType.description" };
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.test.colName.description"),
+	    WString.tr("dataTable.test.colName.testType"),
+	    WString.tr("dataTable.test.colName.genome") };
+	
+	private static String[] filterVarNames_ = {"test.description", "test.testType.description", "case when genome is null then '' else genome.organismName end" };
 
-	private IFilter[] filters_ = new IFilter[2];
+	private IFilter[] filters_ = new IFilter[3];
 
-	private static boolean [] sortable_ = {true, true};
-	private static int[] colWidths = {50,50};
-	public String[] getColNames() 
+	private static boolean [] sortable_ = {true, true, true};
+	private static int[] colWidths = {45,45,10};
+	public CharSequence[] getColNames() 
 	{
 		return _colNames;
 	}
@@ -46,10 +51,11 @@ public class ITestDataTable implements IDataTable<Test>
 
 	public String[] getRowData(Test test) 
 	{
-		String [] row = new String[2];
+		String [] row = new String[3];
         
         row[0] = test.getDescription();
         row[1] = test.getTestType().getDescription();
+        row[2] = (test.getTestType().getGenome() == null ? "":test.getTestType().getGenome().getOrganismName());
              
         return row;
 	}
@@ -58,6 +64,7 @@ public class ITestDataTable implements IDataTable<Test>
 	{
 		filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
+        filters_[2] = new StringFilter();
 	}
 
 	public void selectAction(Test selectedItem) 
@@ -75,5 +82,9 @@ public class ITestDataTable implements IDataTable<Test>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(Test type) {
+		return null;
 	}
 }

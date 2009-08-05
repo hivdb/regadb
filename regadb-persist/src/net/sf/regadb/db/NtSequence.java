@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public class NtSequence implements java.io.Serializable {
 
-    // Fields    
-
     private Integer ntSequenceIi;
 
     private int version;
@@ -28,18 +26,13 @@ public class NtSequence implements java.io.Serializable {
 
     private Set<TestResult> testResults = new HashSet<TestResult>(0);
 
-    // Constructors
-
-    /** default constructor */
     public NtSequence() {
     }
 
-    /** minimal constructor */
     public NtSequence(ViralIsolate viralIsolate) {
         this.viralIsolate = viralIsolate;
     }
 
-    /** full constructor */
     public NtSequence(ViralIsolate viralIsolate, String label,
             Date sequenceDate, String nucleotides, Set<AaSequence> aaSequences,
             Set<TestResult> testResults) {
@@ -51,7 +44,6 @@ public class NtSequence implements java.io.Serializable {
         this.testResults = testResults;
     }
 
-    // Property accessors
     public Integer getNtSequenceIi() {
         return this.ntSequenceIi;
     }

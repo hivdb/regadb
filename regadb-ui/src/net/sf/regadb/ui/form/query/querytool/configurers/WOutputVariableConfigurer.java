@@ -1,14 +1,13 @@
 package net.sf.regadb.ui.form.query.querytool.configurers;
 
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.i8n.WMessage;
-
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.DescriptionDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.RelationDisplay;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable.UniqueNameDisplay;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.OutputVariableConfigurer;
+
+import eu.webtoolkit.jwt.WText;
 
 public class WOutputVariableConfigurer extends WText implements OutputVariableConfigurer {
 
@@ -29,9 +28,9 @@ public class WOutputVariableConfigurer extends WText implements OutputVariableCo
     	/**
     	 * for display as single output variable
     	 */
-        super(new WMessage(var.getName(RelationDisplay.SHOW,
+        super(var.getName(RelationDisplay.SHOW,
         		DescriptionDisplay.SHOW,
-        		UniqueNameDisplay.SHOW_WHEN_ASSIGNED), true));
+        		UniqueNameDisplay.SHOW_WHEN_ASSIGNED));
         this.setStyleClass("outputvariableconfigurer");
         this.var = var;
     }

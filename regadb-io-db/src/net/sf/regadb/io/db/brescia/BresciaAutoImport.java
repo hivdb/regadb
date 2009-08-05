@@ -20,7 +20,7 @@ public class BresciaAutoImport {
         	
         	File[] files = tempDir.listFiles();
         	
-        	if(files.length != 0)
+        	/*if(files.length != 0)
         	{
         		for(int i = 0; i < files.length; i++)
         		{
@@ -32,7 +32,7 @@ public class BresciaAutoImport {
         				file.delete();
         			}
         		}
-        	}
+        	}*/
         }
         else
         {
@@ -40,8 +40,8 @@ public class BresciaAutoImport {
 	        tempDir.mkdir();
         }
             
-        DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(args[1])));
-        a2c.createCsv(tempDir);
+        //DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(args[1])));
+        //a2c.createCsv(tempDir);
         
         ImportUNIBS imp = new  ImportUNIBS();
         imp.getData(tempDir, args[2], args[3]);

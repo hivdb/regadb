@@ -11,13 +11,16 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IDatasetDataTable implements IDataTable<Dataset> 
 {
-	private static String [] _colNames = {"dataTable.dataset.colName.description", 										 
-										  "dataTable.dataset.colName.creationDate",
-										  "dataTable.dataset.colName.closedDate", 
-										  "dataTable.dataset.colName.revision"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.dataset.colName.description"), 										 
+	    WString.tr("dataTable.dataset.colName.creationDate"),
+        WString.tr("dataTable.dataset.colName.closedDate"), 
+        WString.tr("dataTable.dataset.colName.revision")};
 	private static String[] filterVarNames_ = {"dataset.description", 
 											   "dataset.creationDate",
 											   "dataset.closedDate",
@@ -28,7 +31,7 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 
 	private static int[] colWidths = {25,25,25,25};
 	
-	public String[] getColNames() 
+	public CharSequence[] getColNames() 
 	{
 		return _colNames;
 	}
@@ -58,8 +61,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 		String [] row = new String[4];
         
         row[0] = dataset.getDescription();
-        row[1] = DateUtils.getEuropeanFormat(dataset.getCreationDate());
-        row[2] = DateUtils.getEuropeanFormat(dataset.getClosedDate());
+        row[1] = DateUtils.format(dataset.getCreationDate());
+        row[2] = DateUtils.format(dataset.getClosedDate());
         row[3] = String.valueOf(dataset.getRevision());
              
         return row;
@@ -68,8 +71,8 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	public void init(Transaction t) 
 	{
 		filters_[0] = new StringFilter();
-        filters_[1] = new DateFilter();
-        filters_[2] = new DateFilter();
+        filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
+        filters_[2] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
         filters_[3] = new StringFilter();
 	}
 
@@ -88,5 +91,9 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(Dataset type) {
+		return null;
 	}
 }

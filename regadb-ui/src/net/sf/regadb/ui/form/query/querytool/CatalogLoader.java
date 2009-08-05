@@ -2,11 +2,12 @@ package net.sf.regadb.ui.form.query.querytool;
 
 
 import net.sf.regadb.ui.form.query.querytool.widgets.ProgressReporter;
-import net.sf.witty.wt.i8n.WMessage;
 
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog.Status;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+
+import eu.webtoolkit.jwt.WString;
 
 
 public class CatalogLoader implements ProgressReporter {
@@ -39,13 +40,13 @@ public class CatalogLoader implements ProgressReporter {
 		return DatabaseManager.getInstance().getAWCCatalog().getStatus();
 	}
 
-	public WMessage getMessage() {
+	public WString getMessage() {
 		Status st = CatalogLoader.getStatus();
 		if (st == Status.FAILED) {
-			return new WMessage("form.query.querytool.catalog.failed");
+			return WString.tr("form.query.querytool.catalog.failed");
 		}
 		else {
-			return new WMessage("form.query.querytool.catalog.busy");
+			return WString.tr("form.query.querytool.catalog.busy");
 		}
 	}
 

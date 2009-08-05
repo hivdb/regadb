@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class QueryDefinitionParameter implements java.io.Serializable {
 
-    // Fields    
-
     private Integer queryDefinitionParameterIi;
 
     private QueryDefinitionParameterType queryDefinitionParameterType;
@@ -16,13 +14,9 @@ public class QueryDefinitionParameter implements java.io.Serializable {
 
     private String name;
 
-    // Constructors
-
-    /** default constructor */
     public QueryDefinitionParameter() {
     }
 
-    /** full constructor */
     public QueryDefinitionParameter(
             QueryDefinitionParameterType queryDefinitionParameterType,
             QueryDefinition queryDefinition, String name) {
@@ -31,7 +25,6 @@ public class QueryDefinitionParameter implements java.io.Serializable {
         this.name = name;
     }
 
-    // Property accessors
     public Integer getQueryDefinitionParameterIi() {
         return this.queryDefinitionParameterIi;
     }

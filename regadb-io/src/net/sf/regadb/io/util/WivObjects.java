@@ -85,7 +85,7 @@ public class WivObjects {
         		"2: ARC of another institution",
         		"3: Outside of ARC"}, false);
         
-        TestType wivConfirmation = new TestType(StandardObjects.getPatientObject(), "WIV HIV Confirmation");
+        TestType wivConfirmation = new TestType(StandardObjects.getPatientTestObject(), "WIV HIV Confirmation");
         wivConfirmation.setValueType(StandardObjects.getNominalValueType());
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 1"));
         wivConfirmation.getTestNominalValues().add(new TestNominalValue(wivConfirmation, "HIV 2"));

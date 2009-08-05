@@ -6,6 +6,11 @@
  */
 package net.sf.regadb.db.session;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -13,6 +18,7 @@ import net.sf.regadb.db.login.ILoginStrategy;
 import net.sf.regadb.db.login.LoginFactory;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.SQLQuery;
@@ -42,13 +48,13 @@ public class Login {
      * @throws WrongUidException 
      */
     public static Login authenticate(String uid, String passwd) throws WrongUidException, WrongPasswordException, DisabledUserException {
-        Login login = new Login(uid);
+        Login login = new Login(uid, true);
         
         ILoginStrategy loginMethod = LoginFactory.getLoginInstance();
         
         SettingsUser su = loginMethod.authenticate(uid, passwd, login);
         
-        if(su.getEnabled()==null || !su.getEnabled())
+        if(su.getRole()==null || su.getRole().length() == 0)
         {
             throw new DisabledUserException();
         }
@@ -61,6 +67,10 @@ public class Login {
         {
         	return null;
         }
+    }
+    
+    public static Login getLogin(String uid){
+    	return new Login(uid, true);
     }
     
     /**
@@ -80,16 +90,40 @@ public class Login {
         return session_;
     }
     
-    private Login(String uid) {
+    private Login(String uid, boolean blockAttributes) {
         this.uid = uid;
         session_ = HibernateUtil.getSessionFactory().openSession();
+        
+        Transaction t  = new Transaction(this, getSession());
+        SettingsUser su = t.getSettingsUser(uid);
+        
+        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
+        if(blockAttributes && attributes!=null) {
+        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
+        	Attribute attribute;
+        	for(AttributeConfig a : attributes) {
+        		attribute = t.getAttribute(a.getName(), a.getGroup());
+        		if(attribute!=null) {
+        			attribute_iis.add(attribute.getAttributeIi());
+        		} else {
+        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
+        		}
+        	}
+        	
+        	if(attribute_iis.size()>0)
+        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+        }
         
         prepareQueries();
     }
     
     public Login copyLogin()
     {
-        return new Login(this.uid);
+        return copyLogin(true);
+    }
+    
+    public Login copyLogin(boolean blockAttributes) {
+    	return new Login(this.uid, blockAttributes);
     }
     
     private void prepareQueries()
@@ -106,10 +140,11 @@ public class Login {
     }
 
     public void closeSession() {
-        if("org.hibernate.dialect.HSQLDialect".equals(RegaDBSettings.getInstance().getPropertyValue("hibernate.dialect"))) {
+        if("org.hibernate.dialect.HSQLDialect".equals(RegaDBSettings.getInstance().getHibernateConfig().getDialect())) {
             SQLQuery shutdown = session_.createSQLQuery("SHUTDOWN");
             shutdown.executeUpdate();
         }
+        session_.flush();
         session_.close();
     }
 }

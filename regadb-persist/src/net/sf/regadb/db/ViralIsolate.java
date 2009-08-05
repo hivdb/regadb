@@ -10,8 +10,6 @@ import java.util.Set;
  */
 public class ViralIsolate implements java.io.Serializable {
 
-    // Fields    
-
     private Integer viralIsolateIi;
 
     private int version;
@@ -26,18 +24,13 @@ public class ViralIsolate implements java.io.Serializable {
 
     private Set<TestResult> testResults = new HashSet<TestResult>(0);
 
-    // Constructors
-
-    /** default constructor */
     public ViralIsolate() {
     }
 
-    /** minimal constructor */
     public ViralIsolate(PatientImpl patient) {
         this.patient = patient;
     }
 
-    /** full constructor */
     public ViralIsolate(PatientImpl patient, String sampleId, Date sampleDate,
             Set<NtSequence> ntSequences, Set<TestResult> testResults) {
         this.patient = patient;
@@ -47,7 +40,6 @@ public class ViralIsolate implements java.io.Serializable {
         this.testResults = testResults;
     }
 
-    // Property accessors
     public Integer getViralIsolateIi() {
         return this.viralIsolateIi;
     }

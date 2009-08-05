@@ -2,15 +2,15 @@ package net.sf.regadb.ui.form.query.querytool.tree;
 
 
 
-import com.pharmadm.custom.rega.queryeditor.Query;
-import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog.Status;
-
 import net.sf.regadb.ui.form.query.querytool.CatalogLoader;
 import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.querytool.buttons.RunButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import net.sf.regadb.ui.form.query.querytool.widgets.WStatusBar;
+
+import com.pharmadm.custom.rega.queryeditor.Query;
+import com.pharmadm.custom.rega.queryeditor.catalog.AWCPrototypeCatalog.Status;
 
 public class QueryStatusBar extends WStatusBar {
 	private QueryToolApp mainForm;

@@ -6,25 +6,18 @@ package net.sf.regadb.db;
  */
 public class CombinedQueryDefinitionId implements java.io.Serializable {
 
-    // Fields    
-
     private int combinedQueryIi;
 
     private int queryDefinitionIi;
 
-    // Constructors
-
-    /** default constructor */
     public CombinedQueryDefinitionId() {
     }
 
-    /** full constructor */
     public CombinedQueryDefinitionId(int combinedQueryIi, int queryDefinitionIi) {
         this.combinedQueryIi = combinedQueryIi;
         this.queryDefinitionIi = queryDefinitionIi;
     }
 
-    // Property accessors
     public int getCombinedQueryIi() {
         return this.combinedQueryIi;
     }

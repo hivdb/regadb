@@ -13,26 +13,32 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IMeasurementDataTable implements IDataTable<TestResult>
 {
-	private static String [] _colNames = {"dataTable.test.colName.date","dataTable.test.colName.testType", 
-		"dataTable.test.colName.testName", "dataTable.test.colName.result"};
-	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", 
-		"testResult.test.description",	null };
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.test.colName.date"),
+	    WString.tr("dataTable.test.colName.testType"),
+	    WString.tr("dataTable.test.colName.genome"), 
+	    WString.tr("dataTable.test.colName.testName"),
+	    WString.tr("dataTable.test.colName.result")};
 	
-	private static int[] colWidths = {20,30,30,20};
+	private static String[] filterVarNames_ = { "testResult.testDate", "testResult.test.testType.description", "case when genome is null then '' else genome.organismName end",
+		"testResult.test.description",	"case when testResult.testNominalValue is null then testResult.value else testNominalValue.value end"};
 	
-	private static boolean [] sortable_ = {true, true, true, false};
+	private static boolean [] sortable_ = {true, true, true, true, true};
+	private static int[] colWidths = {20,30,10,20,20};
 	
-	private IFilter[] filters_ = new IFilter[4];
+	private IFilter[] filters_ = new IFilter[5];
 	
 	public IMeasurementDataTable()
 	{
 		
 	}
 	
-	public String[] getColNames()
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}
@@ -61,20 +67,21 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public String[] getRowData(TestResult type)
 	{
-		String [] row = new String[4];
+		String [] row = new String[5];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getTestDate());
+		row[0] = DateUtils.format(type.getTestDate());
 		row[1] = type.getTest().getTestType().getDescription();
-		row[2] = type.getTest().getDescription();
+		row[2] = (type.getTest().getTestType().getGenome() == null ? "":type.getTest().getTestType().getGenome().getOrganismName());
+		row[3] = type.getTest().getDescription();
 		if (type.getValue() == null) {
-			row[3] = type.getTestNominalValue().getValue();
+			row[4] = type.getTestNominalValue().getValue();
 		}
 		else {
 			if (ValueTypes.getValueType(type.getTest().getTestType().getValueType()) == ValueTypes.DATE) {
-				row[3] = DateUtils.getEuropeanFormat(type.getValue());
+				row[4] = DateUtils.format(type.getValue());
 			}
 			else {
-				row[3] = type.getValue();
+				row[4] = type.getValue();
 			}
 		}
 		
@@ -83,10 +90,11 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public void init(Transaction t)
 	{
-		filters_[0] = new DateFilter();
+		filters_[0] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[1] = new StringFilter();
 		filters_[2] = new StringFilter();
-		filters_[3] = null;
+		filters_[3] = new StringFilter();
+		filters_[4] = new StringFilter();
 	}
 
 	public void selectAction(TestResult selectedItem)
@@ -104,5 +112,9 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(TestResult type) {
+		return null;
 	}
 }

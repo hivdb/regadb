@@ -14,6 +14,8 @@ import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
@@ -26,11 +28,13 @@ import net.sf.regadb.db.ValueType;
 public class Retrieve {
 
     public static Protein retrieve(Transaction t, Protein p) {
-        return t.getProtein(p.getProteinIi());
+        return t.getProtein(retrieve(t,p.getOpenReadingFrame()),p.getAbbreviation());
     }	
 	
     public static Test retrieve(Transaction t, Test test) {
-        return t.getTest(test.getDescription());
+        TestType tt = test.getTestType();
+        Genome g = tt.getGenome();
+        return t.getTest(test.getDescription(), tt.getDescription(), (g==null ? null:g.getOrganismName()));
     }
 
     public static TestObject retrieve(Transaction t, TestObject testObject) {
@@ -38,7 +42,7 @@ public class Retrieve {
     }
 
     public static TestType retrieve(Transaction t, TestType testType) {
-        return t.getTestType(testType.getDescription());
+        return t.getTestType(testType);
     }
 
     public static Attribute retrieve(Transaction t, Attribute attribute) {
@@ -83,5 +87,14 @@ public class Retrieve {
 
     public static DrugCommercial retrieve(Transaction t, DrugCommercial o) {
         return t.getCommercialDrug(o.getName());
+    }
+
+    public static OpenReadingFrame retrieve(Transaction t,
+            OpenReadingFrame openReadingFrame) {
+        return t.getOpenReadingFrame(retrieve(t,openReadingFrame.getGenome()), openReadingFrame.getName());
+    }
+
+    public static Genome retrieve(Transaction t, Genome genome) {
+        return t.getGenome(genome.getOrganismName());
     }
 }

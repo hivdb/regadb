@@ -1,8 +1,7 @@
 package net.sf.regadb.ui.form.query.querytool.configurers;
 
 
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
@@ -10,7 +9,7 @@ import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.InputVariableController;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
 
-public class WInputVariableConfigurer extends WComboBox implements WordConfigurer {
+public class WInputVariableConfigurer extends MyComboBox implements WordConfigurer {
     private InputVariable var;
     private InputVariableController controller;
     private OutputVariable[] outputVars;
@@ -32,7 +31,7 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
         outputVars = controller.getCompatibleOutputVariables(input).toArray(new OutputVariable[0]);
         
         for (OutputVariable ovar : outputVars) {
-        	this.addItem(new WMessage(ovar.toString(), true));
+        	this.addItem(ovar.toString());
         }
         
         if (isUseless()) {
@@ -55,7 +54,7 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
     	// if the user then tries to modify the clause we should leave this
     	// inputvariable unconfigured
     	if (!isUseless()) {
-    		this.controller.assignOutputVariable(var, outputVars[this.currentIndex()]);
+    		this.controller.assignOutputVariable(var, outputVars[this.getCurrentIndex()]);
     	}
 //    	else if (var.getOutputVariable() == null) {
     		// if we have changed clauses the old outputvariable is lost
@@ -69,10 +68,10 @@ public class WInputVariableConfigurer extends WComboBox implements WordConfigure
 		confy.controller = this.controller;
 		confy.var = this.var; 
 		confy.outputVars = this.outputVars;
-		this.setCurrentIndex(confy.currentIndex());
+		this.setCurrentIndex(confy.getCurrentIndex());
 	}
 
 	public boolean isUseless() {
-		return this.count() == 0;
+		return this.getCount() == 0;
 	}
 }

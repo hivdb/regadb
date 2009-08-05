@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
@@ -44,6 +46,7 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, Protein> proteins;
     private Map<String, AnalysisType> analysisTypes;
     private Map<String, TherapyMotivation> therapyMotivations;
+    private Map<String, Genome> genomes = null;
     private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
     
     protected StringBuffer log = new StringBuffer();
@@ -173,6 +176,13 @@ public class ImportFromXMLBase extends DefaultHandler{
         else
             return result;
     }
+    protected Genome resolveGenome(String value) throws SAXException {
+        Genome result;
+        if (getGenomes() == null || (result = getGenomes().get(value.toUpperCase())) == null)
+            throw new SAXException(new ImportException("Could not resolve genome: '" + value + "'"));
+        else
+            return result;
+    }
     protected Dataset resolveDataset(String value) throws SAXException {
         Dataset result = datasets.get(value.toUpperCase());
         
@@ -237,6 +247,11 @@ public class ImportFromXMLBase extends DefaultHandler{
                 therapyMotivations.put(a.getValue().toUpperCase(), a);
             }
         }
+        
+        if(t!=null)
+            setGenomes(t.getGenomes());
+        else
+            setGenomes(new TreeMap<String, Genome>());
     }    
 
     protected boolean equals(Date o1, Date o2) {
@@ -290,6 +305,10 @@ public class ImportFromXMLBase extends DefaultHandler{
     protected boolean equals(Long a, Long b){
         return a == b || (a != null && a.equals(b));
     }
+    
+    protected boolean equals(Genome a, Genome b){
+        return (a == b) || (a != null && b != null && a.getOrganismName().equals(b.getOrganismName()));
+    }
 
     public StringBuffer getLog() 
     {
@@ -298,5 +317,20 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public Map<String, AnalysisType> getAnalysisTypes() {
         return analysisTypes;
+    }
+    
+    public void setGenomes(Collection<Genome> genomes) {
+        setGenomes(new TreeMap<String, Genome>());
+        for(Genome g : genomes){
+            getGenomes().put(g.getOrganismName(), g);
+        }
+    }
+
+    public void setGenomes(Map<String, Genome> genomes) {
+        this.genomes = genomes;
+    }
+
+    public Map<String, Genome> getGenomes() {
+        return genomes;
     }
 }

@@ -10,13 +10,15 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WComboBox;
-import net.sf.witty.wt.WMemoryResource;
-import net.sf.witty.wt.WWidget;
 
 import org.apache.commons.io.FileUtils;
+
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WMemoryResource;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WWidget;
 
 public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
 {
@@ -39,7 +41,11 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         
         TextField tf = new TextField(InteractionState.Viewing, form_);
         tf.setText(type.getName());
-        WAnchor anchor = new WAnchor(new WMemoryResource(type.getMimetype(), type.getData()), WWidget.lt(type.getName()));
+
+        WMemoryResource resource = new WMemoryResource(type.getMimetype());
+        WAnchor anchor = new WAnchor(resource, type.getName());
+        resource.setData(type.getData());
+        
         anchor.setStyleClass("link");
         
         widgets[0] = tf;
@@ -55,8 +61,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         
         type.setName(tf.text());
         WMemoryResource mem = (WMemoryResource)anchor.getResource();
-        type.setMimetype(mem.mimeType());
-        type.setData(mem.data());
+        type.setMimetype(mem.getMimeType());
+        type.setData(mem.getData());
     }
     
     public void addData(WWidget[] widgets)
@@ -66,9 +72,9 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
         
         WMemoryResource mem = (WMemoryResource)anchor.getResource();
         
-        AnalysisData data = new AnalysisData(analysis_, mem.resourceMimeType());
+        AnalysisData data = new AnalysisData(analysis_, mem.getMimeType());
         data.setName(tf.text());
-        data.setData(mem.data());
+        data.setData(mem.getData());
         
         analysis_.getAnalysisDatas().add(data);
     }
@@ -88,10 +94,10 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     {
         WWidget[] widgets = new WWidget[2];
         
-        WComboBox cb = new WComboBox();
+        MyComboBox cb = new MyComboBox();
         for(String ifn : inputFileNames_)
         {
-            cb.addItem(WWidget.lt(ifn));
+            cb.addItem(ifn);
         }
         UploadFile upload = new UploadFile(getInteractionState(), form_);
         
@@ -103,7 +109,7 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
     
     public WWidget[] fixAddRow(WWidget[] widgets)
     {
-        WComboBox add_cb = (WComboBox)widgets[0];
+    	MyComboBox add_cb = (MyComboBox)widgets[0];
         UploadFile add_uf = (UploadFile)widgets[1];
         
         if(add_uf.getFileUpload()==null)
@@ -115,7 +121,9 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             byte[] data = null;
             try 
             {
-                data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().spoolFileName()));
+            	if(add_uf.getFileUpload().getSpoolFileName().equals(""))
+            		return null;
+                data = FileUtils.readFileToByteArray(new File(add_uf.getFileUpload().getSpoolFileName()));
             } 
             catch (IOException e) 
             {
@@ -127,8 +135,8 @@ public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>
             
             AnalysisData analysisData = new AnalysisData();
             analysisData.setData(data);
-            analysisData.setMimetype(add_uf.getFileUpload().contentDescription());
-            analysisData.setName(add_cb.currentText().value());
+            analysisData.setMimetype(add_uf.getFileUpload().getContentDescription());
+            analysisData.setName(add_cb.getCurrentText().getValue());
             
             return getWidgets(analysisData);
         }

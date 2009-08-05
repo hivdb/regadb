@@ -2,24 +2,21 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCssDecorationStyle;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WLineEdit;
-import net.sf.witty.wt.WLineEditEchoMode;
-import net.sf.witty.wt.validation.WDoubleValidator;
-import net.sf.witty.wt.validation.WEmailValidator;
-import net.sf.witty.wt.validation.WIntValidator;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WCssDecorationStyle;
+import eu.webtoolkit.jwt.WDoubleValidator;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WIntValidator;
+import eu.webtoolkit.jwt.WLineEdit;
 
 public class TextField extends FormField
 {
 	private WLineEdit _fieldEdit;
-    private WLineEditEchoMode echoMode_;
+    private WLineEdit.EchoMode echoMode_;
 	
 	public TextField(InteractionState state, IForm form, FieldType type)
 	{
-		super();
+		super(form);
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();
@@ -49,7 +46,7 @@ public class TextField extends FormField
 	                _fieldEdit.setValidator(new WIntValidator());
 	                break;
                 case EMAIL:
-                    _fieldEdit.setValidator(new WEmailValidator());
+                    _fieldEdit.setValidator(new EmailValidator());
                     break;
 	        }
 		}
@@ -61,7 +58,7 @@ public class TextField extends FormField
         this(state, form, FieldType.ALFANUMERIC);
     }
 	
-	public void setEchomode(WLineEditEchoMode mode)
+	public void setEchomode(WLineEdit.EchoMode mode)
 	{
 		echoMode_ = mode;
         if(_fieldEdit!=null)
@@ -72,7 +69,7 @@ public class TextField extends FormField
 
 	@Override
 	public void setText(String text) {
-    	if(echoMode_ == WLineEditEchoMode.Password && _fieldEdit==null) {
+    	if(echoMode_ == WLineEdit.EchoMode.Password && _fieldEdit==null) {
     		String passwordText = "";
     		
     		for(int i = 0; i < text.length(); i++) {
@@ -91,17 +88,17 @@ public class TextField extends FormField
 	
 	public void flagErroneous()
 	{
-		_fieldEdit.setStyleClass("form-field textfield edit-invalid");
+		_fieldEdit.setStyleClass("Wt-invalid");
 	}
 
 	public void flagValid()
 	{
-		_fieldEdit.setStyleClass("form-field textfield edit-valid");
+		_fieldEdit.setStyleClass("");
 	}
 
     public String getFormText() 
     {
-        return _fieldEdit.text();
+        return _fieldEdit.getText();
     }
     
     public void setFormText(String text) 
@@ -113,19 +110,19 @@ public class TextField extends FormField
     {
 		if(_fieldEdit!=null)
 		{
-			return _fieldEdit.decorationStyle();
+			return _fieldEdit.getDecorationStyle();
 		}
 		else
 		{
-			return getViewWidget().decorationStyle();
+			return getViewWidget().getDecorationStyle();
 		}
     }
     
-    public void addChangeListener(SignalListener<WEmptyEvent> listener)
+    public void addChangeListener(Signal.Listener listener)
     {
         if(_fieldEdit!=null)
         {
-            _fieldEdit.changed.addListener(listener);
+            _fieldEdit.changed().addListener(this, listener);
         }
     }
     

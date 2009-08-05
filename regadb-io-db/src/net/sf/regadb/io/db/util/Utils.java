@@ -3,21 +3,19 @@ package net.sf.regadb.io.db.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.csv.Table;
@@ -29,21 +27,15 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.PatientAttributeValueId;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
-import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportFromXML;
-import net.sf.regadb.service.wts.FileProvider;
+import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -113,11 +105,16 @@ public class Utils {
             //Be even more careful if the month is already 0
             if(month!=0)
             	cal.set(year, month-1, day);
-            
+           //System.out.println(year + month + day);
             return new Date(cal.getTimeInMillis());
         } else {
             return null;
         }
+    }
+    
+    public static Date parse(String date, String format) throws ParseException{
+    	SimpleDateFormat sdf = new SimpleDateFormat(format);
+    	return sdf.parse(date.trim());
     }
     
     public static Date parseAccessDate(String date) {
@@ -144,6 +141,119 @@ public class Utils {
         }
     }
     
+    public static Date parseMMDDYYDate(String date) {
+        if("".equals(date))
+            return null;
+
+    	DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    	
+        try {
+			return df.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    public static Date parseDDMMYYDate(String date) {
+        if("".equals(date))
+            return null;
+
+    	DateFormat df = new SimpleDateFormat("dd/MM/yy");
+    	
+        try {
+			return df.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    public static Date parseMMDDYY(String date) {
+    	if("".equals(date))
+            return null;
+        
+        String [] dateTokens = date.split("/");
+        
+        if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public static Date parseMMDDYYHHMMSS(String date) {
+    	if("".equals(date))
+            return null;
+    	 String dateNoTime = date.split(" ")[0];
+         String [] dateTokens = dateNoTime.split("/");
+      
+        
+        if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public static Date parseDDMMYY(String date) {
+    	if("".equals(date))
+            return null;
+        
+        String [] dateTokens = date.split("/");
+        /*if(Integer.valueOf(dateTokens[2])<=1900)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	dateTokens[2]=String.valueOf(value);
+        }*/
+        
+        /*if(Integer.valueOf(dateTokens[2])<=9)
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=2000;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        else 
+        {
+        	int value=Integer.valueOf(dateTokens[2]);
+        	value+=1900;
+        	dateTokens[2]=String.valueOf(value);
+        }
+        */
+       
+        
+        try {
+        return Utils.createDate(dateTokens[2], dateTokens[0], dateTokens[1]);
+        
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public static Date parseBresciaSeqDate(String date) {
         if("".equals(date))
             return null;
@@ -156,7 +266,37 @@ public class Utils {
             return null;
         }
     }
-    
+    public static Date parseUcscSeqDate(String date) {
+        if("".equals(date))
+            return null;
+        
+        String dateNoTime = date.split(" ")[0];
+        String [] dateTokens = dateNoTime.split("\\.");
+                try {
+        return Utils.createDate(dateTokens[2], dateTokens[1], dateTokens[0]);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public static Comparator<Date> getDayComparator(){
+    	return new Comparator<Date>(){
+
+			public int compare(Date o1, Date o2) {
+				Calendar c1,c2;
+				(c1 = Calendar.getInstance()).setTime(o1);
+				(c2 = Calendar.getInstance()).setTime(o2);
+				if(c1.get(Calendar.YEAR) != c2.get(Calendar.YEAR)){
+					return ((Integer) c1.get(Calendar.YEAR)).compareTo((Integer) c2.get(Calendar.YEAR));
+				}
+				if(c1.get(Calendar.MONTH) != c2.get(Calendar.MONTH)){
+					return ((Integer) c1.get(Calendar.MONTH)).compareTo((Integer) c2.get(Calendar.MONTH));
+				}
+				return ((Integer) c1.get(Calendar.DAY_OF_MONTH)).compareTo((Integer) c2.get(Calendar.DAY_OF_MONTH));
+			}
+			
+		};
+    }
+
      public static boolean checkColumnValueForExistance(String columnName, String value, int row, String patientID)
      {
     	 if(value != null)
@@ -340,23 +480,14 @@ public class Utils {
      
      public static List<Attribute> prepareRegaDBAttributes()
      {
-         RegaDBSettings.getInstance().initProxySettings();
+         RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
-         FileProvider fp = new FileProvider();
          List<Attribute> list = null;
          File attributesFile = null;
          try {
-             attributesFile = File.createTempFile("attributes", "xml");
+             attributesFile = RegaDBWtsServer.getAttributes();
          } catch (IOException e1) {
              e1.printStackTrace();
-         }
-         try 
-         {
-             fp.getFile("regadb-attributes", "attributes.xml", attributesFile);
-         }
-         catch (RemoteException e) 
-         {
-             e.printStackTrace();
          }
          final ImportFromXML imp = new ImportFromXML();
          try 
@@ -378,23 +509,14 @@ public class Utils {
      
      public static List<Event> prepareRegaDBEvents()
      {
-	 	RegaDBSettings.getInstance().initProxySettings();
+	 	RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
          
-         FileProvider fp = new FileProvider();
          List<Event> list = null;
          File eventsFile = null;
          try {
-             eventsFile = File.createTempFile("events", "xml");
+             eventsFile = RegaDBWtsServer.getEvents();
          } catch (IOException e1) {
              e1.printStackTrace();
-         }
-         try 
-         {
-             fp.getFile("regadb-events", "events.xml", eventsFile);
-         }
-         catch (RemoteException e) 
-         {
-             e.printStackTrace();
          }
          final ImportFromXML imp = new ImportFromXML();
          try 
@@ -595,15 +717,18 @@ public class Utils {
          }
      }
      
-     public static void handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate, Patient p) {
+     public static PatientEventValue handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate, Patient p) {
          EventNominalValue env = ne.nominalValueMap.get(value);
          
           if (env != null)
           {
         	  for(PatientEventValue pev : p.getPatientEventValues()){
+        		  if(pev.getStartDate() == null){
+        			  return null;
+        		  }
         		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
         			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
-        			  return;
+        			  return null;
         		  }
         	  }
               PatientEventValue v = p.createPatientEventValue(ne.event);
@@ -611,11 +736,14 @@ public class Utils {
               v.setStartDate(startDate);
               if(endDate != null)
             	  v.setEndDate(endDate);
+              return v;
           }
           else 
           {
               ConsoleLogger.getInstance().logWarning("Unsupported event value (" + ne.event.getName() + "): "+value);
           }
+          
+          return null;
       }
      
      public static PatientEventValue handlePatientEventValue(NominalEvent ne, String value, Date startDate, Date endDate) {
@@ -659,17 +787,22 @@ public class Utils {
          pav.setValue(value);
          return pav;
      }
-
-     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, AttributeNominalValue anv){
+     
+     public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, Date date){
          PatientAttributeValue pav = createPatientAttributeValue(attribute);
+         pav.setValue(date.getTime()+"");
+         return pav;
+     }
+
+     public static PatientAttributeValue createPatientAttributeValue(AttributeNominalValue anv){
+         PatientAttributeValue pav = createPatientAttributeValue(anv.getAttribute());
          pav.setAttributeNominalValue(anv);
          return pav;
      }
 
      public static PatientAttributeValue createPatientAttributeValue(Attribute attribute){
          PatientAttributeValue pav = new PatientAttributeValue();
-         PatientAttributeValueId pavId = new PatientAttributeValueId();
-         pavId.setAttribute(attribute);
+         pav.setAttribute(attribute);
          
          return pav;
      }
@@ -733,4 +866,60 @@ public class Utils {
          ConsoleLogger.getInstance().logError("No mapping for nominal value: " + val);
          return false;
      }
+
+	public static Date parseYY(String firstTest)
+	{
+		try {
+	        return Utils.createDate("1", "1", firstTest);
+	        
+	        } catch (Exception e) {
+	            return null;
+	        }
+		
+	}
+	
+	public static PatientAttributeValue setFirstName(Patient p, String name){
+	    if(name == null)
+            return null;
+	    
+	    name = name.trim();
+	    if(name.length() == 0)
+	        return null;
+	    
+	    return setPatientAttributeValue(p, StandardObjects.getFirstNameAttribute(), name);
+	}
+	public static PatientAttributeValue setLastName(Patient p, String name){
+	    if(name == null)
+            return null;
+	    
+	    name = name.trim();
+        if(name.length() == 0)
+            return null;
+	    
+        return setPatientAttributeValue(p, StandardObjects.getLastNameAttribute(), name);
+    }
+	public static PatientAttributeValue setBirthDate(Patient p, Date date){
+	    if(date == null)
+	        return null;
+	    
+        return setPatientAttributeValue(p, StandardObjects.getBirthDateAttribute(), date.getTime() +"");
+    }
+	public static PatientAttributeValue setDeathDate(Patient p, Date date){
+        if(date == null)
+            return null;
+        
+        return setPatientAttributeValue(p, StandardObjects.getDeathDateAttribute(), date.getTime() +"");
+    }
+	
+	public static PatientAttributeValue setPatientAttributeValue(Patient p, Attribute a, String value){
+		PatientAttributeValue pav = getAttributeValue(a, p);
+		if(pav == null){
+			pav = createPatientAttributeValue(a, value);
+			p.addPatientAttributeValue(pav);
+		}
+		else{
+			pav.setValue(value);
+		}
+		return pav;
+	}
 }

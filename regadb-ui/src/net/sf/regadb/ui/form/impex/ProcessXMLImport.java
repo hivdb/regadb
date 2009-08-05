@@ -11,11 +11,12 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.impl.ImportXML;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.witty.wt.WFileUpload;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.xml.sax.InputSource;
+
+import eu.webtoolkit.jwt.WFileUpload;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WString;
 
 public class ProcessXMLImport extends Thread {
 	private File xmlFile;
@@ -27,8 +28,8 @@ public class ProcessXMLImport extends Thread {
 	private Login login_;
 	
 	public ProcessXMLImport(Login login, WFileUpload fileUpload, Dataset dataset) {
-		clientFileName = fileUpload.clientFileName();
-		xmlFile = new File(fileUpload.spoolFileName());
+		clientFileName = fileUpload.getClientFileName();
+		xmlFile = new File(fileUpload.getSpoolFileName());
 		dataset_ = dataset;
 		logFile = RegaDBMain.getApp().createTempFile(clientFileName.replace('.', '_'), "log");
 		login_ = login;
@@ -38,8 +39,9 @@ public class ProcessXMLImport extends Thread {
 	public void run() {
 		PrintStream ps = System.out;
 		
+		Login copiedLogin = login_.copyLogin();
 		try {
-			ImportXML instance = new ImportXML(login_.copyLogin());
+			ImportXML instance = new ImportXML(copiedLogin);
 			
 			ps = new PrintStream(logFile);
 			instance.setPrintStream(ps);
@@ -50,7 +52,7 @@ public class ProcessXMLImport extends Thread {
 			String line = br.readLine().trim();
 			
 			if ( line == null ) {
-				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
+				ps.println(WResource.tr("form.impex.import.progress.status.invalid").getValue());
 				status = UploadStatus.FAILED;
 			} else if (line.contains("<patients>")) {
 				instance.importPatients(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
@@ -59,7 +61,7 @@ public class ProcessXMLImport extends Thread {
 				instance.importViralIsolates(new InputSource(new FileReader(xmlFile)), dataset_.getDescription());
 				status = UploadStatus.SUCCEEDED;
 			} else {
-				ps.println(WResource.tr("form.impex.import.progress.status.invalid").value());
+				ps.println(WResource.tr("form.impex.import.progress.status.invalid").getValue());
 				status = UploadStatus.FAILED;
 			}
 			
@@ -67,6 +69,8 @@ public class ProcessXMLImport extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace(ps);
 			status = UploadStatus.FAILED;
+		} finally {
+			copiedLogin.closeSession();
 		}
 	}
 	
@@ -74,8 +78,8 @@ public class ProcessXMLImport extends Thread {
 		return logFile;
 	}
 	
-	public WMessage getDatasetName() {
-		return new WMessage(dataset_.getDescription(), true);
+	public CharSequence getDatasetName() {
+		return dataset_.getDescription();
 	}
 	
 	public String clientFileName() {
@@ -89,7 +93,7 @@ public class ProcessXMLImport extends Thread {
 	public UploadStatus getStatus(){
 		return status;
 	}
-	public WMessage getStatusName() {
+	public WString getStatusName() {
 		String key = "form.impex.import.progress.status.";
 		if ( status == UploadStatus.PROCESSING ) key += "processing";
 		else if ( status == UploadStatus.SUCCEEDED ) key += "done";

@@ -5,8 +5,8 @@ import java.util.Set;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.datatable.ListFilter;
-import net.sf.witty.wt.WComboBox;
 
 public class DatasetFilter extends ListFilter
 {
@@ -16,12 +16,12 @@ public class DatasetFilter extends ListFilter
 	}
 	
 	@Override
-	public void setComboBox(WComboBox combo)
+	public void setComboBox(MyComboBox combo)
 	{
 		Set<DatasetAccess> datasets = getTransaction().getSettingsUser(RegaDBMain.getApp().getLogin().getUid()).getDatasetAccesses();
 		for(DatasetAccess ds : datasets )
 		{
-			combo.addItem(lt(ds.getId().getDataset().getDescription()));
+			combo.addItem(ds.getId().getDataset().getDescription());
 		}
 	}
 }

@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class DatasetAccess implements java.io.Serializable {
 
-    // Fields    
-
     private DatasetAccessId id;
 
     private int version;
@@ -16,20 +14,15 @@ public class DatasetAccess implements java.io.Serializable {
 
     private String provider;
 
-    // Constructors
-
-    /** default constructor */
     public DatasetAccess() {
     }
 
-    /** full constructor */
     public DatasetAccess(DatasetAccessId id, int permissions, String provider) {
         this.id = id;
         this.permissions = permissions;
         this.provider = provider;
     }
 
-    // Property accessors
     public DatasetAccessId getId() {
         return this.id;
     }

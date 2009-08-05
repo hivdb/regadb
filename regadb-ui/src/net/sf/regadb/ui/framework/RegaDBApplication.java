@@ -5,17 +5,22 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
-
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.witty.wt.WApplication;
-import net.sf.witty.wt.WEnvironment;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.Role;
+
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
+import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
+
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WEnvironment;
 
 public class RegaDBApplication extends WApplication
 {
@@ -28,11 +33,12 @@ public class RegaDBApplication extends WApplication
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
+		System.err.println("new regadb app");
 		
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
 		window_.init();
-		root().addWidget(window_);
+		getRoot().addWidget(window_);
 	}
 
 	public RegaDBWindow getWindow()
@@ -59,16 +65,24 @@ public class RegaDBApplication extends WApplication
     {
         return login_;
     }
+    protected void setLogin(Login login)
+    {
+    	login_ = login;
+    }
     
     public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
     	login_ = Login.authenticate(uid, pwd);
-		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(login_.copyLogin(), false));
+		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(false) {
+			@Override
+			public Transaction createTransaction() {
+				return getLogin().createTransaction();
+			}
+		});
     }
     
     public void logout()
     {
-        //close the wt and servlet session
         login_.closeSession();
         login_=null;
     }
@@ -102,5 +116,24 @@ public class RegaDBApplication extends WApplication
 		}
 		
 		return file;
+	}
+	
+	public Patient getSelectedPatient(){
+		return getTree().getTreeContent().patientSelected.getSelectedItem();
+	}
+	
+	public SettingsUser getSettingsUser(){
+		return getLogin().createTransaction().getSettingsUser();
+	}
+	public Role getRole(){
+		return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(getSettingsUser().getRole());
+	}
+	
+	@Override
+	public void finalize() {
+		if (login_ != null)
+			login_.closeSession();
+
+		super.finalize();
 	}
 }

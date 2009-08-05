@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.QueryDefinitionRun" table="query_definition_run" schema="public">
+  <class name="net.sf.regadb.db.QueryDefinitionRun" table="query_definition_run">
     <id name="queryDefinitionRunIi" type="java.lang.Integer">
       <column name="query_definition_run_ii" />
-      <generator class="sequence">
+      <generator class="native">
         <param name="sequence">query_definition_run_query_definition_run_ii_seq</param>
       </generator>
     </id>

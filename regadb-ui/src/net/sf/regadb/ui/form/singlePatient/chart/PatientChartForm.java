@@ -1,19 +1,21 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WResource;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {
@@ -24,24 +26,19 @@ public class PatientChartForm extends WGroupBox implements IForm
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);
 		final PatientChart chartDrawer = new PatientChart(p, t.getSettingsUser());
-        
+
+		//TODO 
+		//how to set mimetype????
         WImage chartImage = new WImage(new WResource() {
-
-            @Override
-            public String resourceMimeType() {
-                return "image/png";
-            }
-
-            @Override
-            protected void streamResourceData(OutputStream stream) {
-                try {
-                    chartDrawer.writePngChart(800, stream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        	protected void handleRequest(WebRequest request, WebResponse response) {
+        		try {
+        			chartDrawer.writePngChart(800, response.getOutputStream());
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        		}
+        	}
             
-        }, this);
+        }, "Patient Chart", this);
 
 		t.commit();
 	}
@@ -56,7 +53,11 @@ public class PatientChartForm extends WGroupBox implements IForm
 		return this;
 	}
 
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         return null;
     }
+
+	public void removeFormField(IFormField field) {
+
+	}
 }

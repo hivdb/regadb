@@ -169,7 +169,10 @@ public class HibernateQuery extends SqlQuery {
 			return str;
 		}
 		else {
-			return  ":" + query.createKey(o);
+			if(query==null)
+				return "";
+			else
+				return  ":" + query.createKey(o);
 		}
 	}
 	

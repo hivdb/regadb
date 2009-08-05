@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
@@ -15,11 +17,11 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 
 public class ViralIsolateCumulatedResistance extends FormWidget
 {
@@ -28,7 +30,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     
     private Patient patient_;
     
-    public ViralIsolateCumulatedResistance(WMessage formName, Patient patient) {
+    public ViralIsolateCumulatedResistance(WString formName, Patient patient) {
         super(formName, InteractionState.Viewing);
         patient_ = patient;
         
@@ -38,13 +40,13 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     public void init()
     {
         WTable wrapper = new SimpleTable(this);
-        wrapper.elementAt(0, 0).setStyleClass("navigation");
-        wrapper.elementAt(1, 0).setStyleClass("tablewrapper");
-        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.elementAt(1, 0));
-        showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.elementAt(0, 0));
-        showMutations_.clicked.addListener(new SignalListener<WMouseEvent>()
+        wrapper.getElementAt(0, 0).setStyleClass("navigation");
+        wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
+        resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
+        showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.getElementAt(0, 0));
+        showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
-                    public void notify(WMouseEvent a)
+                    public void trigger(WMouseEvent a)
                     {
                         refreshTable();
                     }
@@ -61,7 +63,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         Set<ViralIsolate> vis = patient_.getViralIsolates();
         
         for(Test test : t.getTests()) {
-            if(StandardObjects.getGssId().equals(test.getTestType().getDescription())) {
+            if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())) {
                 Map<String, TestResult> cumulatedTestResultsForOneAlgorithm = new HashMap<String, TestResult>();
                 for(ViralIsolate vi : vis) {
                     for(TestResult tr : vi.getTestResults()) {
@@ -79,7 +81,10 @@ public class ViralIsolateCumulatedResistance extends FormWidget
             }
         }
         
-        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults);
+        Genome genome = ViralIsolateFormUtils.getGenome((ViralIsolate)patient_.getViralIsolates().toArray()[0]);
+        TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
+        
+        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, gssTestType);
         
         t.commit();
     }
@@ -90,7 +95,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 

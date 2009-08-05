@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,7 +25,12 @@ public class GenerateDrugsXML
 {
     public static void main(String [] args)
     {
-        String filesPath = args[0];
+    	Arguments as = new Arguments();
+    	PositionalArgument path = as.addPositionalArgument("output-path", true);
+    	if(!as.handle(args))
+    		return;
+    	
+        String filesPath = path.getValue();
         Table classes = null;
         Table generic = null;
         Table commercial = null;
@@ -96,7 +103,7 @@ public class GenerateDrugsXML
             classesHM.put(Integer.parseInt(class_ii.get(i)), class_id.get(i));
         }
         
-        writeXMLFile(drugClassesEl, filesPath+File.separatorChar+"DrugClasses.xml");
+        writeXMLFile(drugClassesEl, filesPath+File.separatorChar+"DrugClasses-genomes.xml");
         
         Element drugGenericsEl = new Element("DrugGenerics");
         HashMap<Integer, String> genericDrugsHM = new HashMap<Integer, String>();
@@ -105,6 +112,7 @@ public class GenerateDrugsXML
         ArrayList<String> generic_class_ii = generic.getColumn(2);
         ArrayList<String> generic_name = generic.getColumn(3);
         ArrayList<String> generic_atc_code = generic.getColumn(4);
+        ArrayList<String> generic_genomes = generic.getColumn(5);
 
         for(int i = 1; i < generic_ii.size(); i++)
         {
@@ -116,11 +124,13 @@ public class GenerateDrugsXML
             Element drugGenericClassEl = new Element("class");
             Element drugGenericAtcCodeEl = new Element("atcCode");
             Element drugClassResistanceTableOrderEl = new Element("resistanceTableOrder");
+            Element drugGenomesEl = new Element("genomes");
             drugGenericEl.addContent(drugGenericIdEl);
             drugGenericEl.addContent(drugGenericNameEl);
             drugGenericEl.addContent(drugGenericClassEl);
             drugGenericEl.addContent(drugClassResistanceTableOrderEl);
             drugGenericEl.addContent(drugGenericAtcCodeEl);
+            drugGenericEl.addContent(drugGenomesEl);
             
             drugGenericIdEl.addContent(new Text(generic_id.get(i)));
             drugGenericNameEl.addContent(new Text(generic_name.get(i)));
@@ -134,9 +144,17 @@ public class GenerateDrugsXML
             drugClassResistanceTableOrderEl.addContent(new Text(order+""));
             
             genericDrugsHM.put(Integer.parseInt(generic_ii.get(i)), generic_id.get(i));
+            
+            StringTokenizer genomeTokenizer = new StringTokenizer(generic_genomes.get(i),"+");
+            while(genomeTokenizer.hasMoreTokens()){
+                String organismName = genomeTokenizer.nextToken();
+                Element drugGenomeEl = new Element("genome");
+                drugGenomesEl.addContent(drugGenomeEl);
+                drugGenomeEl.addContent(new Text(organismName));
+            }
         }
         
-        writeXMLFile(drugGenericsEl, filesPath+File.separatorChar+"DrugGenerics.xml");
+        writeXMLFile(drugGenericsEl, filesPath+File.separatorChar+"DrugGenerics-genomes.xml");
         
         Element drugCommercialsEl = new Element("DrugCommercials");
         ArrayList<String> commmercial_comb_ii = commercial_generic.getColumn(0);
@@ -176,7 +194,7 @@ public class GenerateDrugsXML
             }
         }
         
-        writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials.xml");
+        writeXMLFile(drugCommercialsEl, filesPath+File.separatorChar+"DrugCommercials-genomes.xml");
     }
     
     public static void writeXMLFile(Element root, String fileName)

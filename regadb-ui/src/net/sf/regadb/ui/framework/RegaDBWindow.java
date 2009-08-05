@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.witty.wt.WApplication;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WTableCell;
-import net.sf.witty.wt.i8n.WStdMessageResource;
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WStdLocalizedStrings;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 
 public class RegaDBWindow extends WTable
 {
@@ -18,23 +18,24 @@ public class RegaDBWindow extends WTable
 		
 		loadI18nResources();
 		
-		WApplication.instance().useStyleSheet("style/regadb.css");
-		WApplication.instance().useStyleSheet("style/calendar.css");
-		WApplication.instance().useStyleSheet("style/querytool.css");
+		WApplication.getInstance().useStyleSheet("style/regadb.css");
+		WApplication.getInstance().useStyleSheet("style/querytool.css");
 		
 		//! TODO make the edition configurable
-		header_ = new Header(this.elementAt(0, 0), Edition.Clinical);
-		WTable contentTable = new WTable(this.elementAt(1, 0));
-		tree_ = new Tree(contentTable.elementAt(0, 0));
-		contentTable.elementAt(0, 0).setStyleClass("main-tree");
-		container_ = new FormContainer(contentTable.elementAt(0, 1));
-		contentTable.elementAt(0, 1).setStyleClass("formcontent");
+		header_ = new Header(this.getElementAt(0, 0), Edition.Clinical);
+		WTable contentTable = new WTable(this.getElementAt(1, 0));
+		tree_ = new Tree(contentTable.getElementAt(0, 0));
+		contentTable.getElementAt(0, 0).setStyleClass("main-tree");
+		container_ = new FormContainer(contentTable.getElementAt(0, 1));
+		contentTable.getElementAt(0, 1).setStyleClass("formcontent");
 
 	}
 	
 	private void loadI18nResources()
 	{
-		WApplication.instance().messageResourceBundle().useResource(new WStdMessageResource("net.sf.regadb.ui.i18n.resources.regadb"));
+		WStdLocalizedStrings resourceBundle = new WStdLocalizedStrings();
+		resourceBundle.use("net.sf.regadb.ui.i18n.resources.regadb");
+		WApplication.getInstance().setLocalizedStrings(resourceBundle);
 	}
 
 	public FormContainer getContainer_()
@@ -58,8 +59,9 @@ public class RegaDBWindow extends WTable
 	}
     
     public void newTree() {
-        WTableCell cell = ((WTableCell)tree_.parent());
+        WTableCell cell = ((WTableCell)tree_.getParent());
         cell.clear();
         tree_ = new Tree(cell);
+        tree_.init();
     }
 }

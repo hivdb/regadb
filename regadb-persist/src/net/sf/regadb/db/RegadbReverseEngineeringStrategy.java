@@ -32,9 +32,10 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
 
     @Override
     public String getTableIdentifierStrategyName(TableIdentifier id) {
-        return "sequence";
+        return "native";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean excludeForeignKeyAsCollection(String keyname, TableIdentifier fromTable, List fromColumns, TableIdentifier referencedTable, List referencedColumns) {
         if (referencedTable.getName().equals("drug_class")
@@ -50,11 +51,15 @@ public class RegadbReverseEngineeringStrategy extends DelegatingReverseEngineeri
             || referencedTable.getName().equals("aa_sequence")
             || referencedTable.getName().equals("therapy")
             || referencedTable.getName().equals("analysis")
-            || (referencedTable.getName().equals("settings_user") && keyname.equals("FK_user_attribute_settings_user"))
+            || (referencedTable.getName().equals("settings_user") && fromTable.getName().equals("user_attribute"))
             || referencedTable.getName().equals("query_definition_run")
             //|| referencedTable.getName().equals("query_definition_run_parameter")
             //|| referencedTable.getName().equals("query_definition_parameter")
-            || referencedTable.getName().equals("query_definition"))
+            || referencedTable.getName().equals("query_definition")
+            || (referencedTable.getName().equals("genome") && fromTable.getName().equals("open_reading_frame"))
+            || (referencedTable.getName().equals("open_reading_frame") && fromTable.getName().equals("protein"))
+            || (referencedTable.getName().equals("protein") && fromTable.getName().equals("splicing_position"))
+            || fromTable.getName().equals("genome_drug_generic"))
             return false;
         else
             return true;

@@ -20,15 +20,15 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class TherapyForm extends FormWidget
 {
@@ -46,6 +46,7 @@ public class TherapyForm extends FormWidget
     private ComboBox<TherapyMotivation> motivationCB;
     private Label commentL;
     private TextField commentTF;
+
     
     //generic drugs group
     private WGroupBox genericGroup_;
@@ -57,7 +58,7 @@ public class TherapyForm extends FormWidget
     private EditableTable<TherapyCommercial> drugCommercialList_;
     private ICommercialDrugSelectionEditableTable iCommercialDrugSelectionEditableTable_;
     
-	public TherapyForm(InteractionState interactionState, WMessage formName, Therapy therapy)
+	public TherapyForm(InteractionState interactionState, WString formName, Therapy therapy)
 	{
 		super(formName, interactionState);
 		therapy_ = therapy;
@@ -77,18 +78,18 @@ public class TherapyForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
         startDateL = new Label(tr("form.therapy.editView.startDate"));
-        startDateDF = new DateField(getInteractionState(), this);
+        startDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         startDateDF.setMandatory(true);
         generalGroupTable_.addLineToTable(startDateL, startDateDF);
         stopDateL = new Label(tr("form.therapy.editView.stopDate"));
-        stopDateDF = new DateField(getInteractionState(), this);
+        stopDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
-        stopDateDF.addChangeListener(new SignalListener<WEmptyEvent>()
+        stopDateDF.addChangeListener(new Signal.Listener()
         {
-            public void notify(WEmptyEvent a)
+            public void trigger()
             {
-                setMotivations();
+                fillComboBoxes();
             }
         });
         
@@ -98,6 +99,7 @@ public class TherapyForm extends FormWidget
         commentL = new Label(tr("form.therapy.editView.comment"));
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
+        
         genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
         commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);
         
@@ -135,7 +137,7 @@ public class TherapyForm extends FormWidget
         stopDateDF.setDate(therapy_.getStopDate());
 		commentTF.setText(therapy_.getComment());
         
-        setMotivations();
+        fillComboBoxes();
         
 		//generic drugs group
         t = RegaDBMain.getApp().createTransaction();
@@ -189,29 +191,29 @@ public class TherapyForm extends FormWidget
         }
 	}
     
-    private void setMotivations()
+    private void fillComboBoxes()
     {
+        Transaction t = RegaDBMain.getApp().createTransaction();
+        
         if(stopDateDF.getDate()!=null)
         {
-            Transaction t = RegaDBMain.getApp().createTransaction();
-                
             motivationCB.clearItems();
                 
             for(TherapyMotivation therapyMotivation : t.getTherapyMotivations())
             {
                 motivationCB.addItem(new DataComboMessage<TherapyMotivation>(therapyMotivation, therapyMotivation.getValue()));
             }
+            motivationCB.addNoSelectionItem();
             motivationCB.sort();
-                
-            t.commit();
             
             if(therapy_.getTherapyMotivation()!=null)
             {
                 motivationCB.selectItem(therapy_.getTherapyMotivation().getValue());
             }
         }
-        
         motivationCB.setEnabled(stopDateDF.getDate()!=null);
+        
+        t.commit();
     }
 	
 	@Override
@@ -221,9 +223,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
         for(WWidget widget : genericwidgets)
         {
-            if(!genericDrugs.contains(((ComboBox)widget).currentItem().value()))
+            if(!genericDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
             {
-                genericDrugs.add(((ComboBox)widget).currentItem().value());
+                genericDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
             }
         }
         
@@ -231,9 +233,9 @@ public class TherapyForm extends FormWidget
         ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
         for(WWidget widget : commercialwidgets)
         {
-            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().value()))
+            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
             {
-                commercialDrugs.add(((ComboBox)widget).currentItem().value());
+                commercialDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
             }
         }
         
@@ -256,7 +258,7 @@ public class TherapyForm extends FormWidget
 
         if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
         {
-            MessageBox.showWarningMessage(tr("form.therapy.edit.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.edit.warning"));
         }
         else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
         {
@@ -264,11 +266,11 @@ public class TherapyForm extends FormWidget
         }
         else if(startDateExists)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.add.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.add.warning"));
         }
         else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
         {
-            MessageBox.showWarningMessage(tr("form.therapy.date.warning"));
+        	UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
         }
         else
         {
@@ -330,7 +332,7 @@ public class TherapyForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         

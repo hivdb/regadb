@@ -3,14 +3,14 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTimer;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
+
+//TODO REMOVE
 
 public class WProgressbar extends WStyledContainerWidget {
 	private int progress;
@@ -40,11 +40,11 @@ public class WProgressbar extends WStyledContainerWidget {
 		time = new WTimer();
 		time.setInterval(100);
 		setProgress(0);
-		setText(lt(""));
+		setText("");
 
 		time.start();
-		time.timeout.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		time.timeout().addListener(this, new Signal.Listener() {
+			public void trigger() {
 				if (reporter.isDone()) {
 					time.stop();
 				}
@@ -55,7 +55,7 @@ public class WProgressbar extends WStyledContainerWidget {
 	}
 	
 	private void setProgress(int progress) {
-		progressBar.resize(new WLength(progress, WLengthUnit.Percentage), progressBar.height());
+		progressBar.resize(new WLength(progress, WLength.Unit.Percentage), progressBar.getHeight());
 		
 		for (ProgressListener l : progressListeners) {
 			l.progressChanged(reporter);
@@ -71,8 +71,8 @@ public class WProgressbar extends WStyledContainerWidget {
 		return reporter.isDone();
 	}
 	
-	public void setText(WMessage txt) {
-		progressText.setText( lt("" + getProgress() + "% " + txt.value()) );
+	public void setText(CharSequence txt) {
+		progressText.setText( "" + getProgress() + "% " + txt.toString() );
 	}
 	
 	public interface ProgressListener {

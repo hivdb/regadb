@@ -1,6 +1,0 @@
-bin\Debug\wts-client.exe.config
-bin\Debug\wts-client.exe
-bin\Debug\wts-client.pdb
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\wts-client.exe
-obj\Debug\wts-client.pdb

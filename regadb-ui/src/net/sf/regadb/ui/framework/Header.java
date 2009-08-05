@@ -1,11 +1,11 @@
 package net.sf.regadb.ui.framework;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 
 public class Header extends WTable
 {
@@ -21,20 +21,20 @@ public class Header extends WTable
 		
 		edition_ = edition;
 		
-		  WImage icon = new WImage("pics/regaDBHeader.gif", this.elementAt(0, 0));
+		  WImage icon = new WImage("pics/regaDBHeader.gif", this.getElementAt(0, 0));
 		  icon.setMargin(new WLength(5));
-		  this.elementAt(0, 1).setStyleClass("header");
-		  WTable textTable = new WTable(this.elementAt(0, 1));
+		  this.getElementAt(0, 1).setStyleClass("header");
+		  WTable textTable = new WTable(this.getElementAt(0, 1));
 		  textTable.setMargin(new WLength(5));
-		  mainHeader_ = new WText(tr("main.header.mainTitle"),textTable.elementAt(0, 0));
+		  mainHeader_ = new WText(tr("main.header.mainTitle"),textTable.getElementAt(0, 0));
 		  mainHeader_.setStyleClass("header-mainTitle");
-		  subHeader_ = new WText(tr("main.header.subTitle"), textTable.elementAt(1, 0));
+		  subHeader_ = new WText(tr("main.header.subTitle"), textTable.getElementAt(1, 0));
 		  subHeader_.setStyleClass("header-subTitle");
-		  editionHeader_ = new WText(getEditionText(), textTable.elementAt(2, 0));
+		  editionHeader_ = new WText(getEditionText(), textTable.getElementAt(2, 0));
 		  editionHeader_.setStyleClass("header-subTitle");
 	}
 	
-	private WMessage getEditionText()
+	private WString getEditionText()
 	{
 		switch(edition_)
 		{

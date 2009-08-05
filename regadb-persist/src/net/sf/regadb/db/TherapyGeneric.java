@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class TherapyGeneric implements java.io.Serializable {
 
-    // Fields    
-
     private TherapyGenericId id;
 
     private int version;
@@ -20,20 +18,15 @@ public class TherapyGeneric implements java.io.Serializable {
 
     private Long frequency;
 
-    // Constructors
-
-    /** default constructor */
     public TherapyGeneric() {
     }
 
-    /** minimal constructor */
     public TherapyGeneric(TherapyGenericId id, boolean placebo, boolean blind) {
         this.id = id;
         this.placebo = placebo;
         this.blind = blind;
     }
 
-    /** full constructor */
     public TherapyGeneric(TherapyGenericId id, Double dayDosageMg,
             boolean placebo, boolean blind, Long frequency) {
         this.id = id;
@@ -43,7 +36,6 @@ public class TherapyGeneric implements java.io.Serializable {
         this.frequency = frequency;
     }
 
-    // Property accessors
     public TherapyGenericId getId() {
         return this.id;
     }

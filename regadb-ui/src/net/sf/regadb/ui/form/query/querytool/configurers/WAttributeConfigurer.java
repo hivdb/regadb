@@ -3,16 +3,16 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WInteractWidget;
-import net.sf.witty.wt.WKeyEvent;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WWidget;
-
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.ComposedWordConfigurer;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
+
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WInteractWidget;
+import eu.webtoolkit.jwt.WKeyEvent;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WAttributeConfigurer extends WContainerWidget implements ComposedWordConfigurer {
 
@@ -31,14 +31,14 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 		contentTable.setInline(true);
 		contentTable.addWidget((WWidget) constantPanels.get(ovar.getSelectedIndex()));
 		
-		((WInteractWidget) ovar).clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		((WInteractWidget) ovar).clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				changeSelection();
 			}
 		});
 		
-		((WInteractWidget) ovar).keyWentUp.addListener(new SignalListener<WKeyEvent>() {
-			public void notify(WKeyEvent a) {
+		((WInteractWidget) ovar).keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>() {
+			public void trigger(WKeyEvent a) {
 				changeSelection();
 			}
 		});
@@ -47,7 +47,7 @@ public class WAttributeConfigurer extends WContainerWidget implements ComposedWo
 	private void changeSelection() {
 		int index = ovar.getSelectedIndex();
 		if (index >= 0 && index < constantPanels.size()) {
-			contentTable.removeWidget(contentTable.children().get(0));
+			contentTable.removeWidget(contentTable.getChildren().get(0));
 			contentTable.addWidget((WWidget) constantPanels.get(index));
 		}
 	}

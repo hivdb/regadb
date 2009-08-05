@@ -126,6 +126,10 @@ public class PatientChart
 			e.printStackTrace();
 		}
     }
+    
+    private boolean includeAsViralLoad(TestType tt){
+    	return StandardObjects.isViralLoad(tt) || StandardObjects.isViralLoadLog10(tt);
+    }
 
 	public MutationBlock getMutationBlock(AaSequence a)
 	{
@@ -384,10 +388,17 @@ public class PatientChart
 
 	private double getNumberValue(TestResult result)
 	{
+		double d;
 		if (hasLimitedNumberValue(result))
-			return Double.parseDouble(result.getValue().substring(1));
+			d = Double.parseDouble(result.getValue().substring(1));
 		else
-			return Double.parseDouble(result.getValue());
+			d = Double.parseDouble(result.getValue());
+		
+		if(StandardObjects.isViralLoad(result.getTest().getTestType()))
+			return d == 0 ? 1 : d;
+		if(StandardObjects.isViralLoadLog10(result.getTest().getTestType()))
+			return Math.pow(10, d);
+		return d;
 	}
 
 	private boolean isClipped(TestResult result)
@@ -411,7 +422,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()))
+			if (includeAsViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				boolean clipped = isClipped(r);
@@ -496,7 +507,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()))
+			if (includeAsViralLoad(r.getTest().getTestType()))
 			{
 				double v = getNumberValue(r);
 				if (v != 0)
@@ -679,7 +690,7 @@ public class PatientChart
 
 		for (TestResult r : getSortedTestResults())
 		{
-			if (StandardObjects.isHiv1ViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
+			if (includeAsViralLoad(r.getTest().getTestType()) || StandardObjects.isCD4(r.getTest().getTestType()))
 			{
 				expandBounds(r.getTestDate());
 			}

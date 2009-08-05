@@ -2,10 +2,10 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-  <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="public">
+  <class name="net.sf.regadb.db.PatientImpl" table="patient" schema="regadbschema">
     <id name="patientIi" type="java.lang.Integer">
       <column name="patient_ii" />
-      <generator class="sequence">
+      <generator class="native">
         <param name="sequence">patient_patient_ii_seq</param>
       </generator>
     </id>
@@ -14,18 +14,6 @@
     </version>
     <property name="patientId" type="string">
       <column name="patient_id" length="50" not-null="true" />
-    </property>
-    <property name="lastName" type="string">
-      <column name="last_name" length="50" />
-    </property>
-    <property name="firstName" type="string">
-      <column name="first_name" length="50" />
-    </property>
-    <property name="birthDate" type="date">
-      <column name="birth_date" length="13" />
-    </property>
-    <property name="deathDate" type="date">
-      <column name="death_date" length="13" />
     </property>
     <set name="patientEventValues" inverse="true" cascade="all">
       <key>
@@ -50,6 +38,7 @@
         <column name="patient_ii" not-null="true" />
       </key>
       <one-to-many class="net.sf.regadb.db.PatientAttributeValue" />
+      <filter name="attributeFilter" condition="attribute_ii NOT IN (:attribute_ii_list)" />
     </set>
     <set name="viralIsolates" inverse="true" cascade="all">
       <key>

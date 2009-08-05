@@ -4,10 +4,6 @@ package net.sf.regadb.ui.form.query.querytool;
 
 import java.io.IOException;
 
-import com.pharmadm.custom.rega.queryeditor.QueryContext;
-import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
-import com.pharmadm.custom.rega.savable.Savable;
-
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.util.StandardObjects;
@@ -19,8 +15,13 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+
+import com.pharmadm.custom.rega.queryeditor.QueryContext;
+import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
+import com.pharmadm.custom.rega.savable.Savable;
+
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
 
@@ -43,16 +44,16 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private boolean controlsEnabled;
     
 	
-	public QueryToolForm(WMessage title, InteractionState istate) {
+	public QueryToolForm(WString title, InteractionState istate) {
 		this(title, istate, new QueryDefinition(StandardObjects.getQueryToolQueryType()));
 	}
     
-	public QueryToolForm(WMessage title, InteractionState istate, QueryDefinition query) {
+	public QueryToolForm(WString  title, InteractionState istate, QueryDefinition query) {
 		super(title, istate);
 		init(query);
 	}
 	
-    public WMessage leaveForm() {
+    public WString  leaveForm() {
         if(isEditable() && queryTreeTab.getQueryEditor().isDirty()) {
             return tr("form.warning.stillEditing");
         } else {
@@ -159,7 +160,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		
 	}
 
-	public WMessage deleteObject() {
+	public WString  deleteObject() {
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         t.delete(definition);
         t.commit();

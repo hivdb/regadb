@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class ValueType implements java.io.Serializable {
 
-    // Fields    
-
     private Integer valueTypeIi;
 
     private int version;
@@ -20,18 +18,13 @@ public class ValueType implements java.io.Serializable {
 
     private Boolean multiple;
 
-    // Constructors
-
-    /** default constructor */
     public ValueType() {
     }
 
-    /** minimal constructor */
     public ValueType(String description) {
         this.description = description;
     }
 
-    /** full constructor */
     public ValueType(String description, Double minimum, Double maximum,
             Boolean multiple) {
         this.description = description;
@@ -40,7 +33,6 @@ public class ValueType implements java.io.Serializable {
         this.multiple = multiple;
     }
 
-    // Property accessors
     public Integer getValueTypeIi() {
         return this.valueTypeIi;
     }

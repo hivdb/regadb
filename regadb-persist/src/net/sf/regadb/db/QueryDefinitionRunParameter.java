@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class QueryDefinitionRunParameter implements java.io.Serializable {
 
-    // Fields    
-
     private Integer queryDefinitionRunParameterIi;
 
     private QueryDefinitionParameter queryDefinitionParameter;
@@ -16,13 +14,9 @@ public class QueryDefinitionRunParameter implements java.io.Serializable {
 
     private String value;
 
-    // Constructors
-
-    /** default constructor */
     public QueryDefinitionRunParameter() {
     }
 
-    /** full constructor */
     public QueryDefinitionRunParameter(
             QueryDefinitionParameter queryDefinitionParameter,
             QueryDefinitionRun queryDefinitionRun, String value) {
@@ -31,7 +25,6 @@ public class QueryDefinitionRunParameter implements java.io.Serializable {
         this.value = value;
     }
 
-    // Property accessors
     public Integer getQueryDefinitionRunParameterIi() {
         return this.queryDefinitionRunParameterIi;
     }

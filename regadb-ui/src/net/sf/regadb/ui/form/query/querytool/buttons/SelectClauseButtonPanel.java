@@ -1,14 +1,15 @@
 package net.sf.regadb.ui.form.query.querytool.buttons;
 
-import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
-
 import net.sf.regadb.ui.form.query.querytool.awceditor.WAWCEditorPanel;
 import net.sf.regadb.ui.form.query.querytool.dialog.SelectClauseDialog;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryTreeNode;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
+
+import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 public class SelectClauseButtonPanel extends WButtonPanel {
 	private QueryTreeNode owner;
@@ -31,8 +32,8 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 		cancelButton = new WPushButton(tr("form.general.button.cancel"));
 		addButton(cancelButton);
 
-		okButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		okButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				if (!disabled) {
 					disabled = true;
 					WAWCEditorPanel panel = dialog.getSelectedClause();
@@ -49,8 +50,8 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 			}
 		});
 		
-		cancelButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				if (!disabled) {
 					disabled = true;
 					cancel();

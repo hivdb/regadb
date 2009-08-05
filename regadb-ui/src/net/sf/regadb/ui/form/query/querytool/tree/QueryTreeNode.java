@@ -4,41 +4,42 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
+import net.sf.regadb.ui.form.query.querytool.widgets.CssClasses;
+import net.sf.regadb.ui.form.query.querytool.widgets.MyDialog;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+
 import com.pharmadm.custom.rega.queryeditor.AtomicWhereClause;
 import com.pharmadm.custom.rega.queryeditor.IllegalWhereClauseCompositionException;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
 import com.pharmadm.custom.rega.queryeditor.catalog.DbObject;
 
-import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
-import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.regadb.ui.form.query.querytool.widgets.CssClasses;
-import net.sf.regadb.ui.form.query.querytool.widgets.WDialog;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.i8n.WMessage;
-import net.sf.witty.wt.widgets.extra.WTreeNode;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public abstract class QueryTreeNode extends WTreeNode {
 	private WhereClause object;
 	private QueryToolApp mainForm;
 	private WCheckBox checkBox;
 	private WButtonPanel buttonPanel;
-	private WDialog editDialog;
+	private MyDialog editDialog;
 	private WTable contentTable;
 	private String lastAddition;
 	
 	private CssClasses styleClasses;
 	
 	public QueryTreeNode(WhereClause clause, QueryToolApp editor, QueryTreeNode parent) {
-		super(new WMessage("", true), null, parent);
+		super("", null, parent);
 		setImagePack("pics/");
 		this.object = clause;
 		this.mainForm = editor;
-		styleClasses = new CssClasses(this.labelArea());
+		styleClasses = new CssClasses(this.getLabelArea());
 		init();
 	}
 	
@@ -63,8 +64,9 @@ public abstract class QueryTreeNode extends WTreeNode {
 	}
 	
 	private void init() {
-		labelArea().removeWidget(label());
-		labelArea().removeWidget(childCountLabel_);
+		this.setChildCountPolicy(ChildCountPolicy.Disabled);
+		
+		getLabelArea().removeWidget(getLabel());
 		
 		createContentTable();
 		
@@ -81,41 +83,39 @@ public abstract class QueryTreeNode extends WTreeNode {
 	
 	protected void createContentTable() {
 		if (getClause() != null) {
-			label().setText(new WMessage(getClause().toString(), true));		
+			getLabel().setText(getClause().toString());		
 		}	
 		
 		if (contentTable != null) {
-			contentTable.elementAt(0, 0).removeWidget(label());
-			contentTable.elementAt(0, 0).removeWidget(childCountLabel_);
-			contentTable.elementAt(0, 2).removeWidget(checkBox);
+			contentTable.getElementAt(0, 0).removeWidget(getLabel());
+			contentTable.getElementAt(0, 2).removeWidget(checkBox);
 			if (hasButtonPanel()) {
-				contentTable.elementAt(0, 1).removeWidget(buttonPanel);
+				contentTable.getElementAt(0, 1).removeWidget(buttonPanel);
 				buttonPanel = null;
 			}
-			labelArea().removeWidget(contentTable);
+			getLabelArea().removeWidget(contentTable);
 		}
 		
-		contentTable = new WTable(labelArea());
-		contentTable.putElementAt(0, 0, label());
-		contentTable.putElementAt(0, 0, childCountLabel_);
+		contentTable = new WTable(getLabelArea());
+		contentTable.getElementAt(0, 0).addWidget(getLabel());
 		contentTable.setStyleClass("treenodecontent");
-		contentTable.elementAt(0, 0).setStyleClass("labelcontent");
+		contentTable.getElementAt(0, 0).setStyleClass("labelcontent");
 		
 		if (checkBox == null) {
 			checkBox = new WCheckBox();
 			checkBox.setStyleClass("check");
 		}
-		contentTable.putElementAt(0, 2, checkBox);
-		contentTable.elementAt(0, 2).setStyleClass("checkbox");
+		contentTable.getElementAt(0, 2).addWidget(checkBox);
+		contentTable.getElementAt(0, 2).setStyleClass("checkbox");
 		
-		checkBox.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				setSelected(checkBox.isChecked());
 			}
 		});
 		
-		contentTable.elementAt(0, 0).clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		contentTable.getElementAt(0, 0).clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 					setSelected(!checkBox.isChecked());
 			}
 		});
@@ -142,15 +142,15 @@ public abstract class QueryTreeNode extends WTreeNode {
 		return object;
 	}
 	
-	public WDialog getDialog() {
+	public MyDialog getDialog() {
 		return editDialog;
 	}
 	
 	public void setButtonPanel(WButtonPanel panel) {
 		if (hasButtonPanel()) {
-			contentTable.elementAt(0, 1).removeWidget(buttonPanel);
+			contentTable.getElementAt(0, 1).removeWidget(buttonPanel);
 		}
-		contentTable.putElementAt(0, 1, panel);
+		contentTable.getElementAt(0, 1).addWidget(panel);
 		buttonPanel = panel;
 	}
 	
@@ -158,8 +158,8 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * check if the query is still valid
 	 */
 	public void revalidate() {
-		if (object != null && object.isAtomic() && !label().text().keyOrValue().equals(object.toString())) {
-			label().setText(lt(object.toString()));
+		if (object != null && object.isAtomic() && !UIUtils.keyOrValue(getLabel().getText()).equals(object.toString())) {
+			getLabel().setText(object.toString());
 		}
 		if (object != null && !object.isValid()) {
 			styleClasses.addStyle("invalidclause");
@@ -168,7 +168,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 			styleClasses.removeStyle("invalidclause");
 		}
 		
-		for (WTreeNode child : childNodes()) {
+		for (WTreeNode child : getChildNodes()) {
 			((QueryTreeNode) child).revalidate();
 		}
 	}
@@ -179,14 +179,14 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * show the given dialog
 	 * @param dialog
 	 */
-	public void showDialog(WDialog dialog) {
+	public void showDialog(MyDialog dialog) {
 		hideContent();
 		hideDialog();
 		getParentNode().expand();
 		
 		mainForm.getQueryContext().setContextClause(getParentNode().getClause());
 		editDialog = dialog;
-		labelArea().addWidget(dialog);
+		getLabelArea().addWidget(dialog);
 	}
 	
 	
@@ -195,7 +195,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	private void hideDialog() {
 		if (hasDialog()) {
-			labelArea().removeWidget(editDialog);
+			getLabelArea().removeWidget(editDialog);
 		}
 		editDialog = null;
 	}
@@ -237,7 +237,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * @return
 	 */
 	public QueryTreeNode getParentNode() {
-		return (QueryTreeNode) parentNode_;
+		return (QueryTreeNode) super.getParentNode();
 	}
 	
 	/**
@@ -245,7 +245,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * @param editable
 	 */
 	public void setEditable(boolean editable) {
-		for (WTreeNode child : childNodes()) {
+		for (WTreeNode child : getChildNodes()) {
 			((QueryTreeNode) child).setEditable(editable);
 		}
 		if (hasButtonPanel()) {
@@ -266,7 +266,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	public List<QueryTreeNode> getSelection() {
 		List<QueryTreeNode> selection = new ArrayList<QueryTreeNode>();
-		for (WTreeNode child : childNodes()) {
+		for (WTreeNode child : getChildNodes()) {
 			selection.addAll(((QueryTreeNode) child).getSelection());
 		}
 		if (checkBox.isChecked()) selection.add(this);
@@ -305,7 +305,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * @param node
 	 */
 	public void removeNode(QueryTreeNode node) {
-		if (childNodes().contains(node)) {
+		if (getChildNodes().contains(node)) {
 			WhereClause clause = node.getClause();
 			this.removeChildNode(node);
 			mainForm.getEditorModel().getQueryEditor().removeChild(getClause(), clause);
@@ -314,7 +314,7 @@ public abstract class QueryTreeNode extends WTreeNode {
 			this.setEditable(mainForm.isQueryEditable());
 		}
 		else {
-			for (WTreeNode childNode : childNodes()) {
+			for (WTreeNode childNode : getChildNodes()) {
 				((QueryTreeNode) childNode).removeNode(node);
 			}
 		}
@@ -351,6 +351,8 @@ public abstract class QueryTreeNode extends WTreeNode {
 	
 	
 	/**
+	* TODO
+	*
 	 * removing a child from a treenode causes witty errors
 	 * if other updates happen in the tree during the same refresh
 	 * cause most likely somewhere in updateChildren
@@ -362,8 +364,8 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 */
 	public void removeChildNodeBugFix(WTreeNode node)
 	{
-		childNodes().remove(node);
-		((WContainerWidget) node.parent()).removeWidget(node);
+		getChildNodes().remove(node);
+		((WContainerWidget) node.getParent()).removeWidget(node);
 	}	
 	
 	/**
@@ -375,8 +377,8 @@ public abstract class QueryTreeNode extends WTreeNode {
 			try {
 				WhereClause oldClause = getClause();
 				if (!oldClause.isAtomic()) {
-					while (!this.childNodes().isEmpty()) {
-						this.removeChildNodeBugFix(this.childNodes().get(0));
+					while (!this.getChildNodes().isEmpty()) {
+						this.removeChildNodeBugFix(this.getChildNodes().get(0));
 					}
 				}
 				object = newClause;

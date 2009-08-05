@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class AaSequence implements java.io.Serializable {
 
-    // Fields    
-
     private Integer aaSequenceIi;
 
     private int version;
@@ -27,13 +25,9 @@ public class AaSequence implements java.io.Serializable {
 
     private Set<AaInsertion> aaInsertions = new HashSet<AaInsertion>(0);
 
-    // Constructors
-
-    /** default constructor */
     public AaSequence() {
     }
 
-    /** minimal constructor */
     public AaSequence(NtSequence ntSequence, Protein protein, short firstAaPos,
             short lastAaPos) {
         this.ntSequence = ntSequence;
@@ -42,7 +36,6 @@ public class AaSequence implements java.io.Serializable {
         this.lastAaPos = lastAaPos;
     }
 
-    /** full constructor */
     public AaSequence(NtSequence ntSequence, Protein protein, short firstAaPos,
             short lastAaPos, Set<AaMutation> aaMutations,
             Set<AaInsertion> aaInsertions) {
@@ -54,7 +47,6 @@ public class AaSequence implements java.io.Serializable {
         this.aaInsertions = aaInsertions;
     }
 
-    // Property accessors
     public Integer getAaSequenceIi() {
         return this.aaSequenceIi;
     }

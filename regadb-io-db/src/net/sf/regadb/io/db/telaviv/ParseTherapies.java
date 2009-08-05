@@ -22,9 +22,12 @@ import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.TimeLine;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.pair.Pair;
 
 public class ParseTherapies extends Parser{
 //	private UniqueObjects<Patient,Pair<Integer,Therapy>> uniques = new UniqueObjects<Patient,Pair<Integer,Therapy>>(){
@@ -99,7 +102,7 @@ public class ParseTherapies extends Parser{
                     if(check(note))
                         tp.setComment(note);
 	                    
-                    addDrugs(drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
+                    addDrugs(p,drugs,tp,therapiesTable,i,CTrDate+1,CTrDateStop);
 
 //	                int irow = Integer.parseInt(row);
 //	            	Pair<Integer,Therapy> pair2 = null, pair = new Pair<Integer,Therapy>(irow,tp);
@@ -136,6 +139,20 @@ public class ParseTherapies extends Parser{
             if(timeline == null)
                 continue;
             
+            List<Pair<TimeLine<Therapy>.Period,List<TimeLine<Therapy>.Period>>> overlaps = timeline.getOverlappingPeriods(false);
+            if(overlaps.size() > 0){
+            	logWarn(p,"Therapies overlap",overlaps.size());
+            	int equal = 0;
+	            for(Pair<TimeLine<Therapy>.Period,List<TimeLine<Therapy>.Period>> pl1 : overlaps){
+	            	for(TimeLine<Therapy>.Period p2 : pl1.getValue()){
+	            		if(!pl1.getKey().equals(p2))
+	            			logWarn("Overlap: ("+ pl1.getKey().toString() +") ("+ p2.toString() +")");
+	            		else
+	            		    logWarn("Identical interval: "+ pl1.getKey().toString());
+	            	}
+	            }
+            }
+            
             List<TimeLine<Therapy>.Period> periods = timeline.createMergedPeriods();
             
             for(TimeLine<Therapy>.Period period : periods){
@@ -149,7 +166,7 @@ public class ParseTherapies extends Parser{
         }
     }
 
-    private void addDrugs(Map<String,Drug> drugs, Therapy tp, Table t, int row, int bIndex, int eIndex){
+    private void addDrugs(Patient p, Map<String,Drug> drugs, Therapy tp, Table t, int row, int bIndex, int eIndex){
         Set<String> drugNos = new HashSet<String>();
 
         for(int j=bIndex; j<eIndex; ++j){
@@ -173,7 +190,7 @@ public class ParseTherapies extends Parser{
                     }
                 }
                 else{
-                    logWarn("duplicate agentNo found", getCurrentFile(), row, drugNo);
+                    logWarn(p, "duplicate agentNo found in therapy "+ simpleFormat.format(tp.getStartDate()), getCurrentFile(), row, drugNo);
                 }
             }
         }

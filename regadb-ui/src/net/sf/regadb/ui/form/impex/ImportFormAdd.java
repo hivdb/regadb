@@ -10,15 +10,15 @@ import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WString;
 
 public class ImportFormAdd extends FormWidget {
 	private FormTable addFileTable;
 	private ComboBox<Dataset> datasetCB;
 	private FileUpload fileU;
 	
-	public ImportFormAdd(WMessage formName, InteractionState interactionState) {
+	public ImportFormAdd(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		init();
 	}
@@ -65,7 +65,7 @@ public class ImportFormAdd extends FormWidget {
 	}
 	
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		return null;
 	}
 	

@@ -8,8 +8,6 @@ import java.util.Date;
  */
 public class TestResult implements java.io.Serializable {
 
-    // Fields    
-
     private Integer testResultIi;
 
     private int version;
@@ -34,18 +32,13 @@ public class TestResult implements java.io.Serializable {
 
     private byte[] data;
 
-    // Constructors
-
-    /** default constructor */
     public TestResult() {
     }
 
-    /** minimal constructor */
     public TestResult(Test test) {
         this.test = test;
     }
 
-    /** full constructor */
     public TestResult(Test test, DrugGeneric drugGeneric,
             ViralIsolate viralIsolate, TestNominalValue testNominalValue,
             PatientImpl patient, NtSequence ntSequence, String value,
@@ -62,7 +55,6 @@ public class TestResult implements java.io.Serializable {
         this.data = data;
     }
 
-    // Property accessors
     public Integer getTestResultIi() {
         return this.testResultIi;
     }

@@ -6,10 +6,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateMainForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
@@ -17,18 +19,24 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 {
-	private static String [] _colNames = {"dataTable.viralIsolate.colName.sampleDate","dataTable.viralIsolate.colName.sampleId", 
-		"dataTable.viralIsolate.colName.protein", "dataTable.viralIsolate.colName.hivType"};
+	private static WString [] _colNames = {
+	    WString.tr("dataTable.viralIsolate.colName.sampleDate"),
+	    WString.tr("dataTable.viralIsolate.colName.sampleId"), 
+	    WString.tr("dataTable.viralIsolate.colName.protein"),
+	    WString.tr("dataTable.viralIsolate.colName.genome")};
+	
 	private static String[] filterVarNames_ = { "viralIsolate.sampleDate", "viralIsolate.sampleId", null, null};
 	
 	private IFilter[] filters_ = new IFilter[4];
 	
 	private static boolean [] sortable_ = {true, true, false, false};
 	private static int[] colWidths = {25,25,25,25};
-	public String[] getColNames()
+	public CharSequence[] getColNames()
 	{
 		return _colNames;
 	}
@@ -59,7 +67,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 	{
 		String [] row = new String[4];
 		
-		row[0] = DateUtils.getEuropeanFormat(type.getSampleDate());
+		row[0] = DateUtils.format(type.getSampleDate());
 		row[1] = type.getSampleId();
 		
 		SortedSet<String> proteinList = new TreeSet<String>();
@@ -80,14 +88,15 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		}
 		row[2] = proteinBuffer.toString();
 		
-		row[3] = "";
+		Genome genome = ViralIsolateMainForm.getGenome(type);
+		row[3] = (genome == null ? "":genome.getOrganismName());
 		
 		return row;
 	}
 
 	public void init(Transaction t)
 	{
-		filters_[0] = new DateFilter();
+		filters_[0] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[1] = new StringFilter();
 		filters_[2] = null;
 		filters_[3] = null;
@@ -108,5 +117,9 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(ViralIsolate type) {
+		return null;
 	}
 }

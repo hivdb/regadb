@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this script requires mdbtools
+
 db="$1"
 tables="$2"
 
@@ -9,7 +11,7 @@ then
 	do
 		tablename=`echo $table | sed -e 's/---/ /g'`;
 		tablefile=`echo $table | sed -e 's/---/_/g'`;
-		mdb-export "$db" "$tablename" > "$tablefile.csv";
+		mdb-export "$db" "$tablename"  -D '%Y-%m-%d %H:%M:%S' > "$tablefile.csv";
 	done;
 else
 	while read table; do mdb-export "$db" "$table" > "$table.csv"; done < "$tables";

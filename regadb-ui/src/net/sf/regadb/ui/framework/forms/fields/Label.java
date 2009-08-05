@@ -2,10 +2,10 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WLabel;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLabel;
+import eu.webtoolkit.jwt.WString;
 
 public class Label extends WLabel
 {
@@ -16,7 +16,7 @@ public class Label extends WLabel
 		asterisk_.setAlternateText(tr("form.label.alternateText.isRequired"));
 	}
 	
-	public Label(WMessage labelText)
+	public Label(CharSequence labelText)
 	{
 		super(labelText);
         this.setStyleClass("form-label");

@@ -1,25 +1,26 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.AnalysisPool;
-import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
+import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
+import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
+import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.widgets.messagebox.ConfirmMessageBox;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateForm extends FormWidget
 {
@@ -30,7 +31,14 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
-	public ViralIsolateForm(InteractionState interactionState, WMessage formName, ViralIsolate viralIsolate)
+    public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
+        this(interactionState,formName,null);
+        
+        _mainForm.setSampleId(sampleId);
+        _mainForm.setSampleDate(sampleDate);
+    }
+    
+	public ViralIsolateForm(InteractionState interactionState, WString formName, ViralIsolate viralIsolate)
 	{
 		super(formName, interactionState);
 		viralIsolate_ = viralIsolate;
@@ -97,53 +105,61 @@ public class ViralIsolateForm extends FormWidget
 	
 	@Override
 	public void saveData()
-	{
+	{                
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.attach(viralIsolate_);
+        
+        _mainForm.confirmSequence();
+        Genome genome = blast();
+        if(genome == null)
+            return;
         
         _mainForm.saveData(t);
         
         //remove resistance tests
-        for(Iterator<TestResult> i = viralIsolate_.getTestResults().iterator(); i.hasNext();)
-        {
-            TestResult test = i.next();
-            if(StandardObjects.getGssId().equals(test.getTest().getTestType().getDescription()))
-            {
-                if(test.getTest().getAnalysis()!=null)
-                {
-                    i.remove();
-                    t.delete(test);
-                }
-            }
-        }
+        Genome oldgenome = ViralIsolateFormUtils.getGenome(viralIsolate_);
+        
+        Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
+		while (i.hasNext()) {
+			TestResult test = i.next();
+			if (test.getTest().getTestType().getDescription().equals(
+					StandardObjects.getGssDescription())) {
+				i.remove();
+				t.delete(test);
+			}
+		}
         
         update(viralIsolate_, t);
-        
-        startViralIsolateAnalysis(t);
-        
         t.commit();
         
-        _mainForm.startAnalysis();
-                
+        _mainForm.startAnalysis(genome);
+             
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
         redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
 	}
-    
-    private void startViralIsolateAnalysis(Transaction t)
-    {
-        List<Test> tests = t.getTests();
-        String uid = RegaDBMain.getApp().getLogin().getUid();
-        for(Test test : tests)
-        {
-            if(StandardObjects.getGssId().equals(test.getTestType().getDescription()))
-            {
-                if(test.getAnalysis()!=null)
-                {
-                    AnalysisPool.getInstance().launchAnalysis(new ResistanceInterpretationAnalysis(viralIsolate_, test, uid), RegaDBMain.getApp().getLogin());
-                }
+	
+	private Genome blast(){
+	    Genome genome = null;
+	    NtSequence ntseq = ((DataComboMessage<NtSequence>)_mainForm.getSeqComboBox().getCurrentText()).getDataValue();
+	    
+        if(ntseq != null){
+            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());
+            try{
+                blastAnalysis.launch();
+                genome = blastAnalysis.getGenome();
             }
+            catch(UnsupportedGenomeException e){
+                UIUtils.showWarningMessageBox(this, tr("form.viralIsolate.warning.unsupportedGenome"));
+            }
+            catch(ServiceUnavailableException e){
+                UIUtils.showWarningMessageBox(this, tr("msg.warning.serviceUnavailable"));
+            }
+            catch(ServiceException e){
+                e.printStackTrace();
+            }            
         }
-    }
+        return genome;
+	}
     
     @Override
     public void cancel()
@@ -161,7 +177,7 @@ public class ViralIsolateForm extends FormWidget
     }
     
     @Override
-    public WMessage deleteObject()
+    public WString deleteObject()
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
@@ -183,7 +199,7 @@ public class ViralIsolateForm extends FormWidget
     }
     
     @Override
-    public WMessage leaveForm() {
+    public WString leaveForm() {
         if(proteinForm_!=null && proteinForm_.refreshAlignmentsTimer_!=null)
             proteinForm_.refreshAlignmentsTimer_.stop();
         return super.leaveForm();
@@ -193,23 +209,7 @@ public class ViralIsolateForm extends FormWidget
     public void confirmAction()
     {
         if(!_mainForm.checkSampleId()){
-            final ConfirmMessageBox cmb = new ConfirmMessageBox(tr("form.confirm.duplicate.viralIsolate.sampleId"));
-            cmb.yes.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                public void notify(WMouseEvent a) 
-                {
-                    cmb.hide();
-                    doConfirm();
-                }
-            });
-            cmb.no.clicked.addListener(new SignalListener<WMouseEvent>()
-                    {
-                public void notify(WMouseEvent a) 
-                {
-                    cmb.hide();
-                }
-            });
-
+            UIUtils.showWarningMessageBox(this, tr("form.confirm.duplicate.viralIsolate.sampleId"));
         }
         else{
             doConfirm();

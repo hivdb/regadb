@@ -14,18 +14,20 @@ import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class ILogDataTable implements IDataTable<File> {
-    private static String[] colNames_ = new String[]{"dataTable.log.colName.date",
-                                                     "dataTable.log.colName.name",
-                                                     "dataTable.log.colName.size"};
+    private static WString[] colNames_ = {
+        WString.tr("dataTable.log.colName.date"),
+        WString.tr("dataTable.log.colName.name"),
+        WString.tr("dataTable.log.colName.size")};
     
     private static int[] colWidths = {20,60,20};
 
     private static Comparator<File>[] comparators_ = new Comparator[]{ new FileDateComparator(), new FileNameComparator(), new FileSizeComparator() };
     private static boolean[] sortable_ = {true, true, true};
 
-    public String[] getColNames() {
+    public CharSequence[] getColNames() {
         return colNames_;
     }
     
@@ -43,7 +45,7 @@ public class ILogDataTable implements IDataTable<File> {
     }
     
     private File getLogDir(){
-        File f =  new File(RegaDBSettings.getInstance().getPropertyValue("regadb.log.dir"));
+        File f =  RegaDBSettings.getInstance().getInstituteConfig().getLogDir();
         if (f!= null && !f.exists()) {
         	f.mkdirs();
         }
@@ -104,7 +106,7 @@ public class ILogDataTable implements IDataTable<File> {
     }
     
     private String getFormattedFileDate(long timestamp){
-        return DateUtils.getEuropeanFormat(new Date(timestamp));
+        return DateUtils.format(new Date(timestamp));
     }
     
     private String getFormattedFileName(String filename){
@@ -170,5 +172,9 @@ public class ILogDataTable implements IDataTable<File> {
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(File type) {
+		return null;
 	}
 }

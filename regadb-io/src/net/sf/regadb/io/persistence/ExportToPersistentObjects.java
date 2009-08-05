@@ -10,491 +10,554 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.DatasetAccess;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Event;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.DatasetAccessId;
-import net.sf.regadb.db.ValueType;
-import net.sf.regadb.db.AttributeGroup;
-import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.TherapyCommercialId;
-import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.Analysis;
 import net.sf.regadb.db.TestType;
-import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.AaMutation;
-import net.sf.regadb.db.AaInsertion;
+import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.ValueType;
+import net.sf.regadb.db.AttributeGroup;
+import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.TestObject;
-import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.AaMutation;
+import net.sf.regadb.db.AaInsertion;
+import net.sf.regadb.db.SplicingPosition;
 import net.sf.regadb.db.AaMutationId;
 import net.sf.regadb.db.AaInsertionId;
-import net.sf.regadb.db.DrugClass;
 public class ExportToPersistentObjects {
-public void initialize(Patient p){
-write(p);
-}
-
-private void write(Patient patient){
-	Hibernate.initialize(patient.getPatientIi());
-	Hibernate.initialize(patient.getDatasets());
-	for(Dataset dataset:patient.getDatasets()){
-	write(dataset);
+	public void initialize(Patient p){
+		write(p);
+		for(Therapy t: p.getTherapies()){
+			for(TherapyCommercial c : t.getTherapyCommercials()){
+				for(DrugGeneric g : c.getId().getDrugCommercial().getDrugGenerics()){
+					for(DrugGeneric g2 : g.getDrugClass().getDrugGenerics()){
+						Hibernate.initialize(g2);
+					}
+				}
+			}
+		}
 	}
-	Hibernate.initialize(patient.getPatientId());
-	Hibernate.initialize(patient.getLastName());
-	Hibernate.initialize(patient.getFirstName());
-	Hibernate.initialize(patient.getBirthDate());
-	Hibernate.initialize(patient.getDeathDate());
-	Hibernate.initialize(patient.getTestResults());
-	for(TestResult testResult:patient.getTestResults()){
-	write(testResult);
+
+	private void write(Patient patient){
+		if(!Hibernate.isInitialized(patient.getDatasets())){
+			Hibernate.initialize(patient.getDatasets());
+			for(Dataset dataset:patient.getDatasets()){
+				write(dataset);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getTestResults())){
+			Hibernate.initialize(patient.getTestResults());
+			for(TestResult testResult:patient.getTestResults()){
+				write(testResult);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getPatientAttributeValues())){
+			Hibernate.initialize(patient.getPatientAttributeValues());
+			for(PatientAttributeValue patientAttributeValue:patient.getPatientAttributeValues()){
+				write(patientAttributeValue);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getPatientEventValues())){
+			Hibernate.initialize(patient.getPatientEventValues());
+			for(PatientEventValue patientEventValue:patient.getPatientEventValues()){
+				write(patientEventValue);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getViralIsolates())){
+			Hibernate.initialize(patient.getViralIsolates());
+			for(ViralIsolate viralIsolate:patient.getViralIsolates()){
+				write(viralIsolate);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getTherapies())){
+			Hibernate.initialize(patient.getTherapies());
+			for(Therapy therapy:patient.getTherapies()){
+				write(therapy);
+			}
+		}
+		if(!Hibernate.isInitialized(patient.getSourceDataset())){
+			Hibernate.initialize(patient.getSourceDataset());
+			if(patient.getSourceDataset() != null)write(patient.getSourceDataset());
+		}
 	}
-	Hibernate.initialize(patient.getPatientAttributeValues());
-	for(PatientAttributeValue patientAttributeValue:patient.getPatientAttributeValues()){
-	write(patientAttributeValue);
+
+	private void write(Dataset dataset){
+		if(!Hibernate.isInitialized(dataset.getSettingsUser())){
+			Hibernate.initialize(dataset.getSettingsUser());
+			if(dataset.getSettingsUser() != null)write(dataset.getSettingsUser());
+		}
+		if(!Hibernate.isInitialized(dataset.getDatasetAccesses())){
+			Hibernate.initialize(dataset.getDatasetAccesses());
+			for(DatasetAccess datasetAccess:dataset.getDatasetAccesses()){
+				write(datasetAccess);
+			}
+		}
 	}
-	Hibernate.initialize(patient.getPatientEventValues());
-	for(PatientEventValue patientEventValue:patient.getPatientEventValues()){
-	write(patientEventValue);
+
+	private void write(TestResult testResult){
+		if(!Hibernate.isInitialized(testResult.getTest())){
+			Hibernate.initialize(testResult.getTest());
+			if(testResult.getTest() != null)write(testResult.getTest());
+		}
+		if(!Hibernate.isInitialized(testResult.getDrugGeneric())){
+			Hibernate.initialize(testResult.getDrugGeneric());
+			if(testResult.getDrugGeneric() != null)write(testResult.getDrugGeneric());
+		}
+		if(!Hibernate.isInitialized(testResult.getViralIsolate())){
+			Hibernate.initialize(testResult.getViralIsolate());
+			if(testResult.getViralIsolate() != null)write(testResult.getViralIsolate());
+		}
+		if(!Hibernate.isInitialized(testResult.getTestNominalValue())){
+			Hibernate.initialize(testResult.getTestNominalValue());
+			if(testResult.getTestNominalValue() != null)write(testResult.getTestNominalValue());
+		}
+		if(!Hibernate.isInitialized(testResult.getNtSequence())){
+			Hibernate.initialize(testResult.getNtSequence());
+			if(testResult.getNtSequence() != null)write(testResult.getNtSequence());
+		}
 	}
-	Hibernate.initialize(patient.getViralIsolates());
-	for(ViralIsolate viralIsolate:patient.getViralIsolates()){
-	write(viralIsolate);
+
+	private void write(PatientAttributeValue patientAttributeValue){
+		if(!Hibernate.isInitialized(patientAttributeValue.getAttributeNominalValue())){
+			Hibernate.initialize(patientAttributeValue.getAttributeNominalValue());
+			if(patientAttributeValue.getAttributeNominalValue() != null)write(patientAttributeValue.getAttributeNominalValue());
+		}
+		if(!Hibernate.isInitialized(patientAttributeValue.getAttribute())){
+			Hibernate.initialize(patientAttributeValue.getAttribute());
+			if(patientAttributeValue.getAttribute() != null)write(patientAttributeValue.getAttribute());
+		}
 	}
-	Hibernate.initialize(patient.getTherapies());
-	for(Therapy therapy:patient.getTherapies()){
-	write(therapy);
+
+	private void write(PatientEventValue patientEventValue){
+		if(!Hibernate.isInitialized(patientEventValue.getEventNominalValue())){
+			Hibernate.initialize(patientEventValue.getEventNominalValue());
+			if(patientEventValue.getEventNominalValue() != null)write(patientEventValue.getEventNominalValue());
+		}
+		if(!Hibernate.isInitialized(patientEventValue.getEvent())){
+			Hibernate.initialize(patientEventValue.getEvent());
+			if(patientEventValue.getEvent() != null)write(patientEventValue.getEvent());
+		}
 	}
-	Hibernate.initialize(patient.getPrivileges());
-	Hibernate.initialize(patient.getSourceDataset());
-	Hibernate.initialize(patient.getVersion());
-	Hibernate.initialize(patient.getClass());
-}
 
-private void write(Dataset dataset){
-	Hibernate.initialize(dataset.getClosedDate());
-	Hibernate.initialize(dataset.getDatasetIi());
-	Hibernate.initialize(dataset.getSettingsUser());
-	if(dataset.getSettingsUser() != null)write(dataset.getSettingsUser());
-	Hibernate.initialize(dataset.getCreationDate());
-	Hibernate.initialize(dataset.getRevision());
-	Hibernate.initialize(dataset.getDatasetAccesses());
-	for(DatasetAccess datasetAccess:dataset.getDatasetAccesses()){
-	write(datasetAccess);
+	private void write(ViralIsolate viralIsolate){
+		if(!Hibernate.isInitialized(viralIsolate.getTestResults())){
+			Hibernate.initialize(viralIsolate.getTestResults());
+			for(TestResult testResult:viralIsolate.getTestResults()){
+				write(testResult);
+			}
+		}
+		if(!Hibernate.isInitialized(viralIsolate.getNtSequences())){
+			Hibernate.initialize(viralIsolate.getNtSequences());
+			for(NtSequence ntSequence:viralIsolate.getNtSequences()){
+				write(ntSequence);
+			}
+		}
 	}
-	Hibernate.initialize(dataset.getVersion());
-	Hibernate.initialize(dataset.getDescription());
-	Hibernate.initialize(dataset.getClass());
-}
 
-private void write(PatientAttributeValue patientAttributeValue){
-	Hibernate.initialize(patientAttributeValue.getPatient());
-	Hibernate.initialize(patientAttributeValue.getPatientAttributeValueIi());
-	Hibernate.initialize(patientAttributeValue.getAttributeNominalValue());
-	if(patientAttributeValue.getAttributeNominalValue() != null)write(patientAttributeValue.getAttributeNominalValue());
-	Hibernate.initialize(patientAttributeValue.getValue());
-	Hibernate.initialize(patientAttributeValue.getVersion());
-	Hibernate.initialize(patientAttributeValue.getAttribute());
-	if(patientAttributeValue.getAttribute() != null)write(patientAttributeValue.getAttribute());
-	Hibernate.initialize(patientAttributeValue.getClass());
-}
-
-private void write(PatientEventValue patientEventValue){
-	Hibernate.initialize(patientEventValue.getPatient());
-	Hibernate.initialize(patientEventValue.getPatientEventValueIi());
-	Hibernate.initialize(patientEventValue.getEventNominalValue());
-	if(patientEventValue.getEventNominalValue() != null)write(patientEventValue.getEventNominalValue());
-	Hibernate.initialize(patientEventValue.getEvent());
-	if(patientEventValue.getEvent() != null)write(patientEventValue.getEvent());
-	Hibernate.initialize(patientEventValue.getStartDate());
-	Hibernate.initialize(patientEventValue.getEndDate());
-	Hibernate.initialize(patientEventValue.getValue());
-	Hibernate.initialize(patientEventValue.getVersion());
-	Hibernate.initialize(patientEventValue.getClass());
-}
-
-private void write(ViralIsolate viralIsolate){
-	Hibernate.initialize(viralIsolate.getPatient());
-	Hibernate.initialize(viralIsolate.getTestResults());
-	Hibernate.initialize(viralIsolate.getViralIsolateIi());
-	Hibernate.initialize(viralIsolate.getSampleId());
-	Hibernate.initialize(viralIsolate.getSampleDate());
-	Hibernate.initialize(viralIsolate.getNtSequences());
-	for(NtSequence ntSequence:viralIsolate.getNtSequences()){
-	write(ntSequence);
+	private void write(Therapy therapy){
+		if(!Hibernate.isInitialized(therapy.getTherapyMotivation())){
+			Hibernate.initialize(therapy.getTherapyMotivation());
+			if(therapy.getTherapyMotivation() != null)write(therapy.getTherapyMotivation());
+		}
+		if(!Hibernate.isInitialized(therapy.getTherapyCommercials())){
+			Hibernate.initialize(therapy.getTherapyCommercials());
+			for(TherapyCommercial therapyCommercial:therapy.getTherapyCommercials()){
+				write(therapyCommercial);
+			}
+		}
+		if(!Hibernate.isInitialized(therapy.getTherapyGenerics())){
+			Hibernate.initialize(therapy.getTherapyGenerics());
+			for(TherapyGeneric therapyGeneric:therapy.getTherapyGenerics()){
+				write(therapyGeneric);
+			}
+		}
 	}
-	Hibernate.initialize(viralIsolate.getVersion());
-	Hibernate.initialize(viralIsolate.getClass());
-}
 
-private void write(Therapy therapy){
-	Hibernate.initialize(therapy.getPatient());
-	Hibernate.initialize(therapy.getStartDate());
-	Hibernate.initialize(therapy.getTherapyIi());
-	Hibernate.initialize(therapy.getTherapyMotivation());
-	if(therapy.getTherapyMotivation() != null)write(therapy.getTherapyMotivation());
-	Hibernate.initialize(therapy.getStopDate());
-	Hibernate.initialize(therapy.getTherapyCommercials());
-	for(TherapyCommercial therapyCommercial:therapy.getTherapyCommercials()){
-	write(therapyCommercial);
+	private void write(SettingsUser settingsUser){
+		if(!Hibernate.isInitialized(settingsUser.getDataset())){
+			Hibernate.initialize(settingsUser.getDataset());
+			if(settingsUser.getDataset() != null)write(settingsUser.getDataset());
+		}
+		if(!Hibernate.isInitialized(settingsUser.getTest())){
+			Hibernate.initialize(settingsUser.getTest());
+			if(settingsUser.getTest() != null)write(settingsUser.getTest());
+		}
+		if(!Hibernate.isInitialized(settingsUser.getDatasetAccesses())){
+			Hibernate.initialize(settingsUser.getDatasetAccesses());
+			for(DatasetAccess datasetAccess:settingsUser.getDatasetAccesses()){
+				write(datasetAccess);
+			}
+		}
+		if(!Hibernate.isInitialized(settingsUser.getUserAttributes())){
+			Hibernate.initialize(settingsUser.getUserAttributes());
+			for(UserAttribute userAttribute:settingsUser.getUserAttributes()){
+				write(userAttribute);
+			}
+		}
 	}
-	Hibernate.initialize(therapy.getTherapyGenerics());
-	for(TherapyGeneric therapyGeneric:therapy.getTherapyGenerics()){
-	write(therapyGeneric);
+
+	private void write(DatasetAccess datasetAccess){
+		if(!Hibernate.isInitialized(datasetAccess.getId())){
+			Hibernate.initialize(datasetAccess.getId());
+			if(datasetAccess.getId() != null)write(datasetAccess.getId());
+		}
 	}
-	Hibernate.initialize(therapy.getVersion());
-	Hibernate.initialize(therapy.getComment());
-	Hibernate.initialize(therapy.getClass());
-}
 
-private void write(SettingsUser settingsUser){
-	Hibernate.initialize(settingsUser.getDataset());
-	Hibernate.initialize(settingsUser.getLastName());
-	Hibernate.initialize(settingsUser.getFirstName());
-	Hibernate.initialize(settingsUser.getTest());
-	if(settingsUser.getTest() != null)write(settingsUser.getTest());
-	Hibernate.initialize(settingsUser.getDatasetAccesses());
-	Hibernate.initialize(settingsUser.getUid());
-	Hibernate.initialize(settingsUser.getChartWidth());
-	Hibernate.initialize(settingsUser.getChartHeight());
-	Hibernate.initialize(settingsUser.getEmail());
-	Hibernate.initialize(settingsUser.getAdmin());
-	Hibernate.initialize(settingsUser.getEnabled());
-	Hibernate.initialize(settingsUser.getUserAttributes());
-	for(UserAttribute userAttribute:settingsUser.getUserAttributes()){
-	write(userAttribute);
+	private void write(Test test){
+		if(!Hibernate.isInitialized(test.getAnalysis())){
+			Hibernate.initialize(test.getAnalysis());
+			if(test.getAnalysis() != null)write(test.getAnalysis());
+		}
+		if(!Hibernate.isInitialized(test.getTestType())){
+			Hibernate.initialize(test.getTestType());
+			if(test.getTestType() != null)write(test.getTestType());
+		}
 	}
-	Hibernate.initialize(settingsUser.getVersion());
-	Hibernate.initialize(settingsUser.getPassword());
-	Hibernate.initialize(settingsUser.getClass());
-}
 
-private void write(DatasetAccess datasetAccess){
-	Hibernate.initialize(datasetAccess.getPermissions());
-	Hibernate.initialize(datasetAccess.getId());
-	if(datasetAccess.getId() != null)write(datasetAccess.getId());
-	Hibernate.initialize(datasetAccess.getProvider());
-	Hibernate.initialize(datasetAccess.getVersion());
-	Hibernate.initialize(datasetAccess.getClass());
-}
-
-private void write(AttributeNominalValue attributeNominalValue){
-	Hibernate.initialize(attributeNominalValue.getNominalValueIi());
-	Hibernate.initialize(attributeNominalValue.getValue());
-	Hibernate.initialize(attributeNominalValue.getVersion());
-	Hibernate.initialize(attributeNominalValue.getAttribute());
-	Hibernate.initialize(attributeNominalValue.getClass());
-}
-
-private void write(Attribute attribute){
-	Hibernate.initialize(attribute.getAttributeIi());
-	Hibernate.initialize(attribute.getValueType());
-	if(attribute.getValueType() != null)write(attribute.getValueType());
-	Hibernate.initialize(attribute.getAttributeGroup());
-	if(attribute.getAttributeGroup() != null)write(attribute.getAttributeGroup());
-	Hibernate.initialize(attribute.getAttributeNominalValues());
-	Hibernate.initialize(attribute.getName());
-	Hibernate.initialize(attribute.getVersion());
-	Hibernate.initialize(attribute.getClass());
-}
-
-private void write(EventNominalValue eventNominalValue){
-	Hibernate.initialize(eventNominalValue.getEvent());
-	Hibernate.initialize(eventNominalValue.getNominalValueIi());
-	Hibernate.initialize(eventNominalValue.getValue());
-	Hibernate.initialize(eventNominalValue.getVersion());
-	Hibernate.initialize(eventNominalValue.getClass());
-}
-
-private void write(Event event){
-	Hibernate.initialize(event.getValueType());
-	Hibernate.initialize(event.getEventIi());
-	Hibernate.initialize(event.getEventNominalValues());
-	Hibernate.initialize(event.getName());
-	Hibernate.initialize(event.getVersion());
-	Hibernate.initialize(event.getClass());
-}
-
-private void write(NtSequence ntSequence){
-	Hibernate.initialize(ntSequence.getTestResults());
-	Hibernate.initialize(ntSequence.getViralIsolate());
-	Hibernate.initialize(ntSequence.getNtSequenceIi());
-	Hibernate.initialize(ntSequence.getSequenceDate());
-	Hibernate.initialize(ntSequence.getNucleotides());
-	Hibernate.initialize(ntSequence.getAaSequences());
-	for(AaSequence aaSequence:ntSequence.getAaSequences()){
-	write(aaSequence);
+	private void write(DrugGeneric drugGeneric){
+		if(!Hibernate.isInitialized(drugGeneric.getDrugClass())){
+			Hibernate.initialize(drugGeneric.getDrugClass());
+			if(drugGeneric.getDrugClass() != null)write(drugGeneric.getDrugClass());
+		}
+		if(!Hibernate.isInitialized(drugGeneric.getGenomes())){
+			Hibernate.initialize(drugGeneric.getGenomes());
+			for(Genome genome:drugGeneric.getGenomes()){
+				write(genome);
+			}
+		}
+		if(!Hibernate.isInitialized(drugGeneric.getDrugCommercials())){
+			Hibernate.initialize(drugGeneric.getDrugCommercials());
+			for(DrugCommercial drugCommercial:drugGeneric.getDrugCommercials()){
+				write(drugCommercial);
+			}
+		}
 	}
-	Hibernate.initialize(ntSequence.getLabel());
-	Hibernate.initialize(ntSequence.getVersion());
-	Hibernate.initialize(ntSequence.getClass());
-}
 
-private void write(TherapyMotivation therapyMotivation){
-	Hibernate.initialize(therapyMotivation.getTherapyMotivationIi());
-	Hibernate.initialize(therapyMotivation.getValue());
-	Hibernate.initialize(therapyMotivation.getVersion());
-	Hibernate.initialize(therapyMotivation.getClass());
-}
-
-private void write(TherapyCommercial therapyCommercial){
-	Hibernate.initialize(therapyCommercial.getDayDosageUnits());
-	Hibernate.initialize(therapyCommercial.getFrequency());
-	Hibernate.initialize(therapyCommercial.getId());
-	if(therapyCommercial.getId() != null)write(therapyCommercial.getId());
-	Hibernate.initialize(therapyCommercial.getVersion());
-	Hibernate.initialize(therapyCommercial.getClass());
-}
-
-private void write(TherapyGeneric therapyGeneric){
-	Hibernate.initialize(therapyGeneric.getFrequency());
-	Hibernate.initialize(therapyGeneric.getDayDosageMg());
-	Hibernate.initialize(therapyGeneric.getId());
-	if(therapyGeneric.getId() != null)write(therapyGeneric.getId());
-	Hibernate.initialize(therapyGeneric.getVersion());
-	Hibernate.initialize(therapyGeneric.getClass());
-}
-
-private void write(Test test){
-	Hibernate.initialize(test.getTestIi());
-	Hibernate.initialize(test.getAnalysis());
-	if(test.getAnalysis() != null)write(test.getAnalysis());
-	Hibernate.initialize(test.getTestType());
-	if(test.getTestType() != null)write(test.getTestType());
-	Hibernate.initialize(test.getVersion());
-	Hibernate.initialize(test.getDescription());
-	Hibernate.initialize(test.getClass());
-}
-
-private void write(UserAttribute userAttribute){
-	Hibernate.initialize(userAttribute.getValueType());
-	Hibernate.initialize(userAttribute.getSettingsUser());
-	Hibernate.initialize(userAttribute.getUserAttributeIi());
-	Hibernate.initialize(userAttribute.getName());
-	Hibernate.initialize(userAttribute.getValue());
-	Hibernate.initialize(userAttribute.getData());
-	Hibernate.initialize(userAttribute.getClass());
-}
-
-private void write(DatasetAccessId datasetAccessId){
-	Hibernate.initialize(datasetAccessId.getDataset());
-	Hibernate.initialize(datasetAccessId.getSettingsUser());
-	Hibernate.initialize(datasetAccessId.getClass());
-}
-
-private void write(ValueType valueType){
-	Hibernate.initialize(valueType.getValueTypeIi());
-	Hibernate.initialize(valueType.getMultiple());
-	Hibernate.initialize(valueType.getVersion());
-	Hibernate.initialize(valueType.getDescription());
-	Hibernate.initialize(valueType.getMaximum());
-	Hibernate.initialize(valueType.getMinimum());
-	Hibernate.initialize(valueType.getClass());
-}
-
-private void write(AttributeGroup attributeGroup){
-	Hibernate.initialize(attributeGroup.getAttributeGroupIi());
-	Hibernate.initialize(attributeGroup.getGroupName());
-	Hibernate.initialize(attributeGroup.getVersion());
-	Hibernate.initialize(attributeGroup.getClass());
-}
-
-private void write(AaSequence aaSequence){
-	Hibernate.initialize(aaSequence.getNtSequence());
-	Hibernate.initialize(aaSequence.getProtein());
-	if(aaSequence.getProtein() != null)write(aaSequence.getProtein());
-	Hibernate.initialize(aaSequence.getAaSequenceIi());
-	Hibernate.initialize(aaSequence.getFirstAaPos());
-	Hibernate.initialize(aaSequence.getLastAaPos());
-	Hibernate.initialize(aaSequence.getAaMutations());
-	for(AaMutation aaMutation:aaSequence.getAaMutations()){
-	write(aaMutation);
+	private void write(TestNominalValue testNominalValue){
+		if(!Hibernate.isInitialized(testNominalValue.getTestType())){
+			Hibernate.initialize(testNominalValue.getTestType());
+			if(testNominalValue.getTestType() != null)write(testNominalValue.getTestType());
+		}
 	}
-	Hibernate.initialize(aaSequence.getAaInsertions());
-	for(AaInsertion aaInsertion:aaSequence.getAaInsertions()){
-	write(aaInsertion);
+
+	private void write(NtSequence ntSequence){
+		if(!Hibernate.isInitialized(ntSequence.getTestResults())){
+			Hibernate.initialize(ntSequence.getTestResults());
+			for(TestResult testResult:ntSequence.getTestResults()){
+				write(testResult);
+			}
+		}
+		if(!Hibernate.isInitialized(ntSequence.getViralIsolate())){
+			Hibernate.initialize(ntSequence.getViralIsolate());
+			if(ntSequence.getViralIsolate() != null)write(ntSequence.getViralIsolate());
+		}
+		if(!Hibernate.isInitialized(ntSequence.getAaSequences())){
+			Hibernate.initialize(ntSequence.getAaSequences());
+			for(AaSequence aaSequence:ntSequence.getAaSequences()){
+				write(aaSequence);
+			}
+		}
 	}
-	Hibernate.initialize(aaSequence.getVersion());
-	Hibernate.initialize(aaSequence.getClass());
-}
 
-private void write(TherapyCommercialId therapyCommercialId){
-	Hibernate.initialize(therapyCommercialId.getDrugCommercial());
-	if(therapyCommercialId.getDrugCommercial() != null)write(therapyCommercialId.getDrugCommercial());
-	Hibernate.initialize(therapyCommercialId.getTherapy());
-	Hibernate.initialize(therapyCommercialId.getClass());
-}
-
-private void write(TherapyGenericId therapyGenericId){
-	Hibernate.initialize(therapyGenericId.getDrugGeneric());
-	if(therapyGenericId.getDrugGeneric() != null)write(therapyGenericId.getDrugGeneric());
-	Hibernate.initialize(therapyGenericId.getTherapy());
-	Hibernate.initialize(therapyGenericId.getClass());
-}
-
-private void write(Analysis analysis){
-	Hibernate.initialize(analysis.getTests());
-	Hibernate.initialize(analysis.getAnalysisIi());
-	Hibernate.initialize(analysis.getAnalysisType());
-	if(analysis.getAnalysisType() != null)write(analysis.getAnalysisType());
-	Hibernate.initialize(analysis.getUrl());
-	Hibernate.initialize(analysis.getAccount());
-	Hibernate.initialize(analysis.getBaseinputfile());
-	Hibernate.initialize(analysis.getBaseoutputfile());
-	Hibernate.initialize(analysis.getServiceName());
-	Hibernate.initialize(analysis.getDataoutputfile());
-	Hibernate.initialize(analysis.getAnalysisDatas());
-	for(AnalysisData analysisData:analysis.getAnalysisDatas()){
-	write(analysisData);
+	private void write(AttributeNominalValue attributeNominalValue){
+		if(!Hibernate.isInitialized(attributeNominalValue.getAttribute())){
+			Hibernate.initialize(attributeNominalValue.getAttribute());
+			if(attributeNominalValue.getAttribute() != null)write(attributeNominalValue.getAttribute());
+		}
 	}
-	Hibernate.initialize(analysis.getPassword());
-	Hibernate.initialize(analysis.getClass());
-}
 
-private void write(TestType testType){
-	Hibernate.initialize(testType.getValueType());
-	Hibernate.initialize(testType.getTestTypeIi());
-	Hibernate.initialize(testType.getTestObject());
-	if(testType.getTestObject() != null)write(testType.getTestObject());
-	Hibernate.initialize(testType.getTestNominalValues());
-	for(TestNominalValue testNominalValue:testType.getTestNominalValues()){
-	write(testNominalValue);
+	private void write(Attribute attribute){
+		if(!Hibernate.isInitialized(attribute.getValueType())){
+			Hibernate.initialize(attribute.getValueType());
+			if(attribute.getValueType() != null)write(attribute.getValueType());
+		}
+		if(!Hibernate.isInitialized(attribute.getAttributeGroup())){
+			Hibernate.initialize(attribute.getAttributeGroup());
+			if(attribute.getAttributeGroup() != null)write(attribute.getAttributeGroup());
+		}
+		if(!Hibernate.isInitialized(attribute.getAttributeNominalValues())){
+			Hibernate.initialize(attribute.getAttributeNominalValues());
+			for(AttributeNominalValue attributeNominalValue:attribute.getAttributeNominalValues()){
+				write(attributeNominalValue);
+			}
+		}
 	}
-	Hibernate.initialize(testType.getVersion());
-	Hibernate.initialize(testType.getDescription());
-	Hibernate.initialize(testType.getClass());
-}
 
-private void write(Protein protein){
-	Hibernate.initialize(protein.getAbbreviation());
-	Hibernate.initialize(protein.getProteinIi());
-	Hibernate.initialize(protein.getFullName());
-	Hibernate.initialize(protein.getVersion());
-	Hibernate.initialize(protein.getClass());
-}
+	private void write(EventNominalValue eventNominalValue){
+		if(!Hibernate.isInitialized(eventNominalValue.getEvent())){
+			Hibernate.initialize(eventNominalValue.getEvent());
+			if(eventNominalValue.getEvent() != null)write(eventNominalValue.getEvent());
+		}
+	}
 
-private void write(AaMutation aaMutation){
-	Hibernate.initialize(aaMutation.getAaReference());
-	Hibernate.initialize(aaMutation.getAaMutation());
-	Hibernate.initialize(aaMutation.getNtReferenceCodon());
-	Hibernate.initialize(aaMutation.getNtMutationCodon());
-	Hibernate.initialize(aaMutation.getId());
-	if(aaMutation.getId() != null)write(aaMutation.getId());
-	Hibernate.initialize(aaMutation.getVersion());
-	Hibernate.initialize(aaMutation.getClass());
-}
+	private void write(Event event){
+		if(!Hibernate.isInitialized(event.getValueType())){
+			Hibernate.initialize(event.getValueType());
+			if(event.getValueType() != null)write(event.getValueType());
+		}
+		if(!Hibernate.isInitialized(event.getEventNominalValues())){
+			Hibernate.initialize(event.getEventNominalValues());
+			for(EventNominalValue eventNominalValue:event.getEventNominalValues()){
+				write(eventNominalValue);
+			}
+		}
+	}
 
-private void write(AaInsertion aaInsertion){
-	Hibernate.initialize(aaInsertion.getAaInsertion());
-	Hibernate.initialize(aaInsertion.getNtInsertionCodon());
-	Hibernate.initialize(aaInsertion.getId());
-	if(aaInsertion.getId() != null)write(aaInsertion.getId());
-	Hibernate.initialize(aaInsertion.getVersion());
-	Hibernate.initialize(aaInsertion.getClass());
-}
+	private void write(TherapyMotivation therapyMotivation){
+	}
 
-private void write(DrugCommercial drugCommercial){
-	Hibernate.initialize(drugCommercial.getCommercialIi());
-	Hibernate.initialize(drugCommercial.getAtcCode());
-	Hibernate.initialize(drugCommercial.getDrugGenerics());
-	Hibernate.initialize(drugCommercial.getName());
-	Hibernate.initialize(drugCommercial.getVersion());
-	Hibernate.initialize(drugCommercial.getClass());
-}
+	private void write(TherapyCommercial therapyCommercial){
+		if(!Hibernate.isInitialized(therapyCommercial.getId())){
+			Hibernate.initialize(therapyCommercial.getId());
+			if(therapyCommercial.getId() != null)write(therapyCommercial.getId());
+		}
+	}
 
-private void write(DrugGeneric drugGeneric){
-	Hibernate.initialize(drugGeneric.getDrugClass());
-	if(drugGeneric.getDrugClass() != null)write(drugGeneric.getDrugClass());
-	Hibernate.initialize(drugGeneric.getAtcCode());
-	Hibernate.initialize(drugGeneric.getGenericIi());
-	Hibernate.initialize(drugGeneric.getGenericId());
-	Hibernate.initialize(drugGeneric.getGenericName());
-	Hibernate.initialize(drugGeneric.getResistanceTableOrder());
-	Hibernate.initialize(drugGeneric.getDrugCommercials());
-	Hibernate.initialize(drugGeneric.getVersion());
-	Hibernate.initialize(drugGeneric.getClass());
-}
+	private void write(TherapyGeneric therapyGeneric){
+		if(!Hibernate.isInitialized(therapyGeneric.getId())){
+			Hibernate.initialize(therapyGeneric.getId());
+			if(therapyGeneric.getId() != null)write(therapyGeneric.getId());
+		}
+	}
 
-private void write(AnalysisType analysisType){
-	Hibernate.initialize(analysisType.getAnalysisTypeIi());
-	Hibernate.initialize(analysisType.getType());
-	Hibernate.initialize(analysisType.getClass());
-}
+	private void write(UserAttribute userAttribute){
+		if(!Hibernate.isInitialized(userAttribute.getValueType())){
+			Hibernate.initialize(userAttribute.getValueType());
+			if(userAttribute.getValueType() != null)write(userAttribute.getValueType());
+		}
+		if(!Hibernate.isInitialized(userAttribute.getSettingsUser())){
+			Hibernate.initialize(userAttribute.getSettingsUser());
+			if(userAttribute.getSettingsUser() != null)write(userAttribute.getSettingsUser());
+		}
+	}
 
-private void write(AnalysisData analysisData){
-	Hibernate.initialize(analysisData.getAnalysis());
-	Hibernate.initialize(analysisData.getAnalysisDataIi());
-	Hibernate.initialize(analysisData.getMimetype());
-	Hibernate.initialize(analysisData.getName());
-	Hibernate.initialize(analysisData.getData());
-	Hibernate.initialize(analysisData.getClass());
-}
+	private void write(DatasetAccessId datasetAccessId){
+		if(!Hibernate.isInitialized(datasetAccessId.getDataset())){
+			Hibernate.initialize(datasetAccessId.getDataset());
+			if(datasetAccessId.getDataset() != null)write(datasetAccessId.getDataset());
+		}
+		if(!Hibernate.isInitialized(datasetAccessId.getSettingsUser())){
+			Hibernate.initialize(datasetAccessId.getSettingsUser());
+			if(datasetAccessId.getSettingsUser() != null)write(datasetAccessId.getSettingsUser());
+		}
+	}
 
-private void write(TestObject testObject){
-	Hibernate.initialize(testObject.getTestObjectIi());
-	Hibernate.initialize(testObject.getTestObjectId());
-	Hibernate.initialize(testObject.getVersion());
-	Hibernate.initialize(testObject.getDescription());
-	Hibernate.initialize(testObject.getClass());
-}
+	private void write(Analysis analysis){
+		if(!Hibernate.isInitialized(analysis.getTests())){
+			Hibernate.initialize(analysis.getTests());
+			for(Test test:analysis.getTests()){
+				write(test);
+			}
+		}
+		if(!Hibernate.isInitialized(analysis.getAnalysisType())){
+			Hibernate.initialize(analysis.getAnalysisType());
+			if(analysis.getAnalysisType() != null)write(analysis.getAnalysisType());
+		}
+		if(!Hibernate.isInitialized(analysis.getAnalysisDatas())){
+			Hibernate.initialize(analysis.getAnalysisDatas());
+			for(AnalysisData analysisData:analysis.getAnalysisDatas()){
+				write(analysisData);
+			}
+		}
+	}
 
-private void write(TestNominalValue testNominalValue){
-	Hibernate.initialize(testNominalValue.getTestType());
-	Hibernate.initialize(testNominalValue.getNominalValueIi());
-	Hibernate.initialize(testNominalValue.getValue());
-	Hibernate.initialize(testNominalValue.getVersion());
-	Hibernate.initialize(testNominalValue.getClass());
-}
+	private void write(TestType testType){
+		if(!Hibernate.isInitialized(testType.getValueType())){
+			Hibernate.initialize(testType.getValueType());
+			if(testType.getValueType() != null)write(testType.getValueType());
+		}
+		if(!Hibernate.isInitialized(testType.getGenome())){
+			Hibernate.initialize(testType.getGenome());
+			if(testType.getGenome() != null)write(testType.getGenome());
+		}
+		if(!Hibernate.isInitialized(testType.getTestObject())){
+			Hibernate.initialize(testType.getTestObject());
+			if(testType.getTestObject() != null)write(testType.getTestObject());
+		}
+		if(!Hibernate.isInitialized(testType.getTestNominalValues())){
+			Hibernate.initialize(testType.getTestNominalValues());
+			for(TestNominalValue testNominalValue:testType.getTestNominalValues()){
+				write(testNominalValue);
+			}
+		}
+	}
 
-private void write(AaMutationId aaMutationId){
-	Hibernate.initialize(aaMutationId.getMutationPosition());
-	Hibernate.initialize(aaMutationId.getAaSequence());
-	Hibernate.initialize(aaMutationId.getClass());
-}
+	private void write(DrugClass drugClass){
+		if(!Hibernate.isInitialized(drugClass.getDrugGenerics())){
+			Hibernate.initialize(drugClass.getDrugGenerics());
+			for(DrugGeneric drugGeneric:drugClass.getDrugGenerics()){
+				write(drugGeneric);
+			}
+		}
+	}
 
-private void write(AaInsertionId aaInsertionId){
-	Hibernate.initialize(aaInsertionId.getAaSequence());
-	Hibernate.initialize(aaInsertionId.getInsertionPosition());
-	Hibernate.initialize(aaInsertionId.getInsertionOrder());
-	Hibernate.initialize(aaInsertionId.getClass());
-}
+	private void write(Genome genome){
+		if(!Hibernate.isInitialized(genome.getDrugGenerics())){
+			Hibernate.initialize(genome.getDrugGenerics());
+			for(DrugGeneric drugGeneric:genome.getDrugGenerics()){
+				write(drugGeneric);
+			}
+		}
+		if(!Hibernate.isInitialized(genome.getOpenReadingFrames())){
+			Hibernate.initialize(genome.getOpenReadingFrames());
+			for(OpenReadingFrame openReadingFrame:genome.getOpenReadingFrames()){
+				write(openReadingFrame);
+			}
+		}
+	}
 
-private void write(DrugClass drugClass){
-	Hibernate.initialize(drugClass.getDrugGenerics());
-	Hibernate.initialize(drugClass.getResistanceTableOrder());
-	Hibernate.initialize(drugClass.getDrugClassIi());
-	Hibernate.initialize(drugClass.getClassId());
-	Hibernate.initialize(drugClass.getClassName());
-	Hibernate.initialize(drugClass.getVersion());
-	Hibernate.initialize(drugClass.getClass());
-}
+	private void write(DrugCommercial drugCommercial){
+		if(!Hibernate.isInitialized(drugCommercial.getDrugGenerics())){
+			Hibernate.initialize(drugCommercial.getDrugGenerics());
+			for(DrugGeneric drugGeneric:drugCommercial.getDrugGenerics()){
+				write(drugGeneric);
+			}
+		}
+	}
 
-private void write(TestResult testResult){
-	Hibernate.initialize(testResult.getPatient());
-	Hibernate.initialize(testResult.getSampleId());
-	Hibernate.initialize(testResult.getTestResultIi());
-	Hibernate.initialize(testResult.getTest());
-	Hibernate.initialize(testResult.getDrugGeneric());
-	Hibernate.initialize(testResult.getViralIsolate());
-	Hibernate.initialize(testResult.getTestNominalValue());
-	Hibernate.initialize(testResult.getNtSequence());
-	Hibernate.initialize(testResult.getTestDate());
-	Hibernate.initialize(testResult.getValue());
-	Hibernate.initialize(testResult.getVersion());
-	Hibernate.initialize(testResult.getData());
-	Hibernate.initialize(testResult.getClass());
-}
+	private void write(AaSequence aaSequence){
+		if(!Hibernate.isInitialized(aaSequence.getNtSequence())){
+			Hibernate.initialize(aaSequence.getNtSequence());
+			if(aaSequence.getNtSequence() != null)write(aaSequence.getNtSequence());
+		}
+		if(!Hibernate.isInitialized(aaSequence.getProtein())){
+			Hibernate.initialize(aaSequence.getProtein());
+			if(aaSequence.getProtein() != null)write(aaSequence.getProtein());
+		}
+		if(!Hibernate.isInitialized(aaSequence.getAaMutations())){
+			Hibernate.initialize(aaSequence.getAaMutations());
+			for(AaMutation aaMutation:aaSequence.getAaMutations()){
+				write(aaMutation);
+			}
+		}
+		if(!Hibernate.isInitialized(aaSequence.getAaInsertions())){
+			Hibernate.initialize(aaSequence.getAaInsertions());
+			for(AaInsertion aaInsertion:aaSequence.getAaInsertions()){
+				write(aaInsertion);
+			}
+		}
+	}
+
+	private void write(ValueType valueType){
+	}
+
+	private void write(AttributeGroup attributeGroup){
+	}
+
+	private void write(TherapyCommercialId therapyCommercialId){
+		if(!Hibernate.isInitialized(therapyCommercialId.getDrugCommercial())){
+			Hibernate.initialize(therapyCommercialId.getDrugCommercial());
+			if(therapyCommercialId.getDrugCommercial() != null)write(therapyCommercialId.getDrugCommercial());
+		}
+		if(!Hibernate.isInitialized(therapyCommercialId.getTherapy())){
+			Hibernate.initialize(therapyCommercialId.getTherapy());
+			if(therapyCommercialId.getTherapy() != null)write(therapyCommercialId.getTherapy());
+		}
+	}
+
+	private void write(TherapyGenericId therapyGenericId){
+		if(!Hibernate.isInitialized(therapyGenericId.getDrugGeneric())){
+			Hibernate.initialize(therapyGenericId.getDrugGeneric());
+			if(therapyGenericId.getDrugGeneric() != null)write(therapyGenericId.getDrugGeneric());
+		}
+		if(!Hibernate.isInitialized(therapyGenericId.getTherapy())){
+			Hibernate.initialize(therapyGenericId.getTherapy());
+			if(therapyGenericId.getTherapy() != null)write(therapyGenericId.getTherapy());
+		}
+	}
+
+	private void write(AnalysisType analysisType){
+	}
+
+	private void write(AnalysisData analysisData){
+		if(!Hibernate.isInitialized(analysisData.getAnalysis())){
+			Hibernate.initialize(analysisData.getAnalysis());
+			if(analysisData.getAnalysis() != null)write(analysisData.getAnalysis());
+		}
+	}
+
+	private void write(TestObject testObject){
+	}
+
+	private void write(OpenReadingFrame openReadingFrame){
+		if(!Hibernate.isInitialized(openReadingFrame.getProteins())){
+			Hibernate.initialize(openReadingFrame.getProteins());
+			for(Protein protein:openReadingFrame.getProteins()){
+				write(protein);
+			}
+		}
+		if(!Hibernate.isInitialized(openReadingFrame.getGenome())){
+			Hibernate.initialize(openReadingFrame.getGenome());
+			if(openReadingFrame.getGenome() != null)write(openReadingFrame.getGenome());
+		}
+	}
+
+	private void write(Protein protein){
+		if(!Hibernate.isInitialized(protein.getOpenReadingFrame())){
+			Hibernate.initialize(protein.getOpenReadingFrame());
+			if(protein.getOpenReadingFrame() != null)write(protein.getOpenReadingFrame());
+		}
+		if(!Hibernate.isInitialized(protein.getSplicingPositions())){
+			Hibernate.initialize(protein.getSplicingPositions());
+			for(SplicingPosition splicingPosition:protein.getSplicingPositions()){
+				write(splicingPosition);
+			}
+		}
+	}
+
+	private void write(AaMutation aaMutation){
+		if(!Hibernate.isInitialized(aaMutation.getId())){
+			Hibernate.initialize(aaMutation.getId());
+			if(aaMutation.getId() != null)write(aaMutation.getId());
+		}
+	}
+
+	private void write(AaInsertion aaInsertion){
+		if(!Hibernate.isInitialized(aaInsertion.getId())){
+			Hibernate.initialize(aaInsertion.getId());
+			if(aaInsertion.getId() != null)write(aaInsertion.getId());
+		}
+	}
+
+	private void write(SplicingPosition splicingPosition){
+		if(!Hibernate.isInitialized(splicingPosition.getProtein())){
+			Hibernate.initialize(splicingPosition.getProtein());
+			if(splicingPosition.getProtein() != null)write(splicingPosition.getProtein());
+		}
+	}
+
+	private void write(AaMutationId aaMutationId){
+		if(!Hibernate.isInitialized(aaMutationId.getAaSequence())){
+			Hibernate.initialize(aaMutationId.getAaSequence());
+			if(aaMutationId.getAaSequence() != null)write(aaMutationId.getAaSequence());
+		}
+	}
+
+	private void write(AaInsertionId aaInsertionId){
+		if(!Hibernate.isInitialized(aaInsertionId.getAaSequence())){
+			Hibernate.initialize(aaInsertionId.getAaSequence());
+			if(aaInsertionId.getAaSequence() != null)write(aaInsertionId.getAaSequence());
+		}
+	}
 
 
 }

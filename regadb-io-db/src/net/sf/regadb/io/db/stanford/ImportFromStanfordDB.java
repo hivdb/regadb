@@ -2,6 +2,7 @@ package net.sf.regadb.io.db.stanford;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,15 +10,17 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 
 public class ImportFromStanfordDB {
 
@@ -38,30 +41,43 @@ public class ImportFromStanfordDB {
 	public static void main(String[] args){
 		System.setProperty("http.proxyHost", "www-proxy");
 		System.setProperty("http.proxyPort", "3128");
-		String dataPath = "/home/gbehey0/stanford/B/data";
+		String dataPath = "/home/gbehey0/stanford";
 		String mappingsPath = "/home/gbehey0/workspace/regadb-io-db/src/net/sf/regadb/io/db/stanford/mappings";
 		ImportFromStanfordDB imp = new ImportFromStanfordDB(dataPath,mappingsPath);
 		imp.run();
 	}
-	
+
 	private HashMap<String,Patient> patients = new HashMap<String,Patient>();
 	private List<DrugGeneric> regaDrugGenerics = Utils.prepareRegaDrugGenerics();
-	
+
 	private Mappings mappings;
-	private File therapies;
-	private File samplePR;
-	private File sampleRT;
-	
+	String dataPath;
+
 	public ImportFromStanfordDB(String dataPath,String mappingsPath){
 		mappings = Mappings.getInstance(mappingsPath);
-		therapies = new File(dataPath + File.separator + "PatientsRx.txt");
-		samplePR = new File(dataPath + File.separator + "BelgimumPR.txt");
-		sampleRT = new File(dataPath + File.separator + "BelgimumRT.txt");
+		this.dataPath = dataPath;		
 	}
-	
+
 	public void run(){
+		
+		//first import therapies: patients are also created
+		importTherapyFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "PatientsRx.txt"));
+		importTherapyFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "PatientsRx.txt"));
+
+		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumPR.txt"));
+		importSequenceFile(new File(dataPath + File.separator + "B" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
+
+		importSequenceFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "BelgimumPR.txt"));
+		importSequenceFile(new File(dataPath + File.separator + "NONB" + File.separator + "data" + File.separator + "BelgimumRT.txt"));
+
+		IOUtils.exportPatientsXML(patients.values(), dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
+		IOUtils.exportNTXMLFromPatients(patients.values(), dataPath + File.separatorChar + "viral_isolates_stanford.xml", ConsoleLogger.getInstance());
+
+	}
+
+	private void importTherapyFile(File file){
 		try {
-			Scanner s = new Scanner(therapies);
+			Scanner s = new Scanner(file);
 
 			String patientId;
 			Date startDate;
@@ -74,25 +90,64 @@ public class ImportFromStanfordDB {
 				patientId = s.next();
 				startDate = Utils.parseEnglishAccessDate(s.next());
 				stopDate = Utils.parseEnglishAccessDate(s.next());
-				drugs = s.next();
-				
-				p = getPatient(patientId);				
-				t = new Therapy();
-				t.setStartDate(startDate);
-				t.setStopDate(stopDate);
-				for(DrugGeneric dg : parseDrugGenerics(drugs)){
-					System.out.println(patientId + " " + dg.getGenericId());
-					t.getTherapyGenerics().add(new TherapyGeneric( new TherapyGenericId(t, dg), false, false) );
+				drugs = s.nextLine();
+
+				if(!therapyAlreadyAdded(patientId, startDate)){
+					p = getPatient(patientId);
+					t = new Therapy();
+					t.setStartDate(startDate);
+					t.setStopDate(stopDate);
+					for(DrugGeneric dg : parseDrugGenerics(drugs)){
+						t.getTherapyGenerics().add(new TherapyGeneric(new TherapyGenericId(t, dg), false, false));
+					}
+					if(t.getTherapyGenerics().size() == 0 && !drugs.trim().equalsIgnoreCase("none")){
+						System.err.println("therapy generic(s) not added to therapy of patient: "+patientId+" "+drugs);
+					}
+					if(t.getTherapyGenerics().size() > 0){ //do not add therapy if drugs is equal to "none"
+						p.addTherapy(t);						
+					}
+					patients.put(p.getPatientId(), p);
 				}
-				p.addTherapy(t);
-				patients.put(p.getPatientId(), p);
 			}
+			s.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public Patient getPatient(String patientId){
+
+	private void importSequenceFile(File file){
+		try {
+			Scanner s = new Scanner(file);
+
+			String patientId;
+			Date sampleDate;
+			String sampleId;
+			String nucleotides;
+			ViralIsolate v = null;
+			NtSequence n = null;
+
+			while(s.hasNextLine()){
+				patientId = s.next();
+				sampleDate = Utils.parseEnglishAccessDate(s.next());
+				sampleId = s.next();
+				s.next(); //read subtype and discard it				
+				nucleotides = s.nextLine().trim();
+
+				v = getViralIsolate(patientId,sampleId, sampleDate);
+				//new sequence
+				n = new NtSequence(v);
+				n.setNucleotides(Utils.clearNucleotides(nucleotides));
+				n.setSequenceDate(sampleDate);	
+				n.setLabel(sampleId); //set the old sample id as label
+				v.getNtSequences().add(n);
+			}
+			s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Patient getPatient(String patientId){
 		Patient p = patients.get(patientId);
 		if(p == null){
 			p = new Patient();
@@ -100,22 +155,23 @@ public class ImportFromStanfordDB {
 		}
 		return p;
 	}
-	
-	public Set<DrugGeneric> parseDrugGenerics(String therapyGenerics){
-		Set<DrugGeneric> result = new HashSet<DrugGeneric>();
-		String[] drugs = therapyGenerics.split("\\+");
-		DrugGeneric dg = null;
-		for(String drug : drugs){
-			String mappedDrug = mappings.getMapping("drugs.mapping", drug, false);
-			dg = (mappedDrug == null) ? getDrugGeneric(drug) : getDrugGeneric(mappedDrug);
-			if(dg != null){
-				result.add(dg);				
-			}
+
+	private ViralIsolate getViralIsolate(String patientId, String sampleId, Date sampleDate){
+		Set<ViralIsolate> viralIsolates = getPatient(patientId).getViralIsolates();
+		Comparator<Date> c = Utils.getDayComparator(); 
+		for(ViralIsolate v : viralIsolates){
+			if(c.compare(v.getSampleDate(), sampleDate) == 0){
+				return v;
+			}			
 		}
-		return result;
+		//no viral isolate found, so we create one
+		ViralIsolate v = getPatient(patientId).createViralIsolate();
+		v.setSampleId(sampleId);
+		v.setSampleDate(sampleDate);
+		return v;
 	}
-	
-	public DrugGeneric getDrugGeneric(String genericId){
+
+	private DrugGeneric getDrugGeneric(String genericId){
 		DrugGeneric result = null;
 		for(DrugGeneric dg : regaDrugGenerics){
 			if(dg.getGenericId().equals(genericId))
@@ -124,169 +180,28 @@ public class ImportFromStanfordDB {
 		return result;
 	}
 
+	private boolean therapyAlreadyAdded(String patientId, Date therapyStartDate){
+		Comparator<Date> c = Utils.getDayComparator();
+		for(Therapy t : getPatient(patientId).getTherapies()){
+			if(c.compare(t.getStartDate(), therapyStartDate) == 0){
+				return true;
+			}
+		}
+		return false;
+	}
 
-	
-//	private static String dataPath = "/home/dluypa0/stanford_import/nonB_data";
-//	private static int ID = 0, STARTDATE = 1, STOPDATE = 2, DRUGS = 3;
-//	private static int SAMPLEDATE = 1, SAMPLEID = 2, SEQUENCE = 4;
-//
-//	private static Table drugTable_;
-//	
-//	private static HashMap<String, Patient> patientMap;
-//	private static HashMap<String,ViralIsolate> viralisolates = new HashMap<String,ViralIsolate> ();
-
-
-
-	//	public static void main( String[]args ) {
-	//		if ( args.length >= 1 ) dataPath = args[0];
-	//		
-	//		System.setProperty("http.proxyHost", "www-proxy");
-	//        System.setProperty("http.proxyPort", "3128");
-	//        regaDrugGenerics = Utils.prepareRegaDrugGenerics();
-	//        drugTable_ = Utils.readTable(mapPath + File.separatorChar + "drugs.mapping");
-	//        patientMap = new HashMap<String, Patient>();
-	//        
-	//		try {
-	//			BufferedReader br = new BufferedReader(new FileReader(new File(dataPath + File.separatorChar + "PatientsRx.txt")));
-	//			
-	//			while ( br.ready() ) {
-	//				ArrayList<String> lineElements = token2array(br.readLine(), "\t");
-	//				Patient p = findPatient(lineElements.get(ID));
-	//				fixTherapy(p, lineElements);
-	//				patientMap.put(lineElements.get(ID), p);
-	//			}
-	//			
-	//			fixSequences("BelgimumRT.txt");
-	//			fixSequences("BelgimumPR.txt");
-	//		} catch ( FileNotFoundException fnfe ) {
-	//			System.err.println( fnfe.getLocalizedMessage() );
-	//		} catch ( IOException ioe ) {
-	//			System.err.println( ioe.getLocalizedMessage() );
-	//		}
-	//		
-	//    	IOUtils.exportPatientsXML(patientMap, dataPath + File.separatorChar + "patients_stanford.xml", ConsoleLogger.getInstance());
-	//    	IOUtils.exportNTXML(viralisolates, dataPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
-	//    	
-	//    	System.out.println("done");
-	//	}
-
-//	public static void fixTherapy(Patient p, ArrayList<String> lineElements) {
-//		if ( lineElements.size() == 4 ) {
-//			Set<String> drugs = new HashSet<String>();
-//			Therapy t = null;
-//
-//			for ( String drug : token2array(lineElements.get(DRUGS), "+") ) {
-//				if ( drug.toUpperCase().equals("NONE") ) continue;
-//
-//				for(int i=0; i<drugTable_.numRows(); i++) {
-//					if ( drug.equals(drugTable_.valueAt(0, i)) ) {
-//						drug = drugTable_.valueAt(1, i);
-//					}
-//				}
-//
-//				DrugGeneric selectedDg = null;
-//				for( DrugGeneric dg : regaDrugGenerics ) {
-//					if( drug.equals( dg.getGenericId() ) ) {
-//						selectedDg = dg;
-//						break;
-//					}
-//				}
-//
-//				if ( selectedDg != null ) {
-//					if ( t == null ) {
-//						t = p.createTherapy(getDate(lineElements.get(STARTDATE)));
-//						t.setStopDate(getDate(lineElements.get(STOPDATE)));
-//					}
-//
-//					if ( !drugs.contains(drug) ) {
-//						drugs.add(drug);
-//						t.getTherapyGenerics().add(new TherapyGeneric( new TherapyGenericId(t, selectedDg), false, false) );
-//					}
-//				} else {
-//					ConsoleLogger.getInstance().logWarning("No valid generic drug: " + drug);
-//				}
-//			}
-//		}
-//	}
-//
-//	public static void fixSequences(String fileName) throws IOException, FileNotFoundException {
-//		BufferedReader br = new BufferedReader(new FileReader(new File(dataPath + File.separatorChar + fileName)));
-//
-//		while ( br.ready() ) {
-//			String info = br.readLine();
-//			ArrayList<String> elements = token2array(info, "\t");
-//			if ( elements.size() != 5 ) {
-//				System.err.println("Line not properly format: " + info);
-//				continue;
-//			}
-//
-//			Patient p = findPatient(elements.get(ID));
-//
-//			ViralIsolate vi = null;
-//			Date d = getDate(elements.get(SAMPLEDATE));
-//
-//			for(ViralIsolate vii : p.getViralIsolates() ) {
-//				if ( vii.getSampleDate().equals(d) ) {
-//					vi = vii;
-//					break;
-//				}
-//			}
-//
-//			if ( vi == null ) {
-//				vi = new ViralIsolate();
-//				vi.setSampleDate(d);
-//				vi.setSampleId(elements.get(SAMPLEID));
-//
-//				p.addViralIsolate(vi);
-//				viralisolates.put(elements.get(SAMPLEID), vi);
-//			}
-//
-//			NtSequence nt = new NtSequence();
-//			nt.setNucleotides( Utils.clearNucleotides( elements.get(SEQUENCE) ) );
-//			vi.getNtSequences().add(nt);
-//		}
-//	}
-//
-//	public static Patient findPatient(String ID) {
-//		return findPatient(ID, true);
-//	}
-//	public static Patient findPatient(String ID, boolean create) {
-//		Patient p = null;
-//		for(Patient pi : patientMap.values() ) {
-//			if ( pi.getPatientId().equals(ID) ) {
-//				p = pi;
-//				break;
-//			}
-//		}
-//		if ( create && p == null ) {
-//			p = new Patient();
-//			p.setPatientId(ID);
-//		}
-//		return p;
-//	}
-//
-//	public static Date getDate(String date) {
-//		Date d = null;
-//		try {
-//			d = stanford.parse(date);
-//		} catch ( ParseException pe ) {
-//			System.err.println("Couldn't parse date: " + date);
-//		}
-//		return d;
-//	}
-//
-//	public static ArrayList<String> token2array(String line) {
-//		return token2array(line, " ");
-//	}
-//	public static ArrayList<String> token2array(String line, String separator) {
-//		ArrayList<String> elements = new ArrayList<String>();
-//		StringTokenizer tokenizer = new StringTokenizer(line, separator);
-//
-//		while ( tokenizer.hasMoreTokens() ) {
-//			String t = tokenizer.nextToken().trim();
-//			elements.add(t);
-//		}
-//
-//		return elements;
-//	}
+	public Set<DrugGeneric> parseDrugGenerics(String therapyGenerics){
+		Set<DrugGeneric> result = new HashSet<DrugGeneric>();
+		String[] drugs = therapyGenerics.split("\\+");
+		DrugGeneric dg = null;
+		for(String drug : drugs){
+			drug = drug.trim();
+			String mappedDrug = mappings.getMapping("drugs.mapping", drug, true);
+			dg = (mappedDrug == null) ? getDrugGeneric(drug) : getDrugGeneric(mappedDrug);
+			if(dg != null){
+				result.add(dg);				
+			}
+		}
+		return result;
+	}
 }

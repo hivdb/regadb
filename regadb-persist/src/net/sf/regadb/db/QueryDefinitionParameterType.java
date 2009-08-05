@@ -6,27 +6,20 @@ package net.sf.regadb.db;
  */
 public class QueryDefinitionParameterType implements java.io.Serializable {
 
-    // Fields    
-
     private Integer queryDefinitionParameterTypeIi;
 
     private String name;
 
     private int id;
 
-    // Constructors
-
-    /** default constructor */
     public QueryDefinitionParameterType() {
     }
 
-    /** full constructor */
     public QueryDefinitionParameterType(String name, int id) {
         this.name = name;
         this.id = id;
     }
 
-    // Property accessors
     public Integer getQueryDefinitionParameterTypeIi() {
         return this.queryDefinitionParameterTypeIi;
     }

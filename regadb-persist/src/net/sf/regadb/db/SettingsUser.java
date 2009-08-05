@@ -9,8 +9,6 @@ import java.util.Set;
  */
 public class SettingsUser implements java.io.Serializable {
 
-    // Fields    
-
     private String uid;
 
     private int version;
@@ -31,32 +29,24 @@ public class SettingsUser implements java.io.Serializable {
 
     private String lastName;
 
-    private Boolean admin;
-
-    private Boolean enabled;
+    private String role;
 
     private Set<DatasetAccess> datasetAccesses = new HashSet<DatasetAccess>(0);
 
     private Set<UserAttribute> userAttributes = new HashSet<UserAttribute>(0);
 
-    // Constructors
-
-    /** default constructor */
     public SettingsUser() {
     }
 
-    /** minimal constructor */
     public SettingsUser(String uid, int chartWidth, int chartHeight) {
         this.uid = uid;
         this.chartWidth = chartWidth;
         this.chartHeight = chartHeight;
     }
 
-    /** full constructor */
     public SettingsUser(String uid, Test test, Dataset dataset, int chartWidth,
             int chartHeight, String password, String email, String firstName,
-            String lastName, Boolean admin, Boolean enabled,
-            Set<DatasetAccess> datasetAccesses,
+            String lastName, String role, Set<DatasetAccess> datasetAccesses,
             Set<UserAttribute> userAttributes) {
         this.uid = uid;
         this.test = test;
@@ -67,13 +57,11 @@ public class SettingsUser implements java.io.Serializable {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.admin = admin;
-        this.enabled = enabled;
+        this.role = role;
         this.datasetAccesses = datasetAccesses;
         this.userAttributes = userAttributes;
     }
 
-    // Property accessors
     public String getUid() {
         return this.uid;
     }
@@ -154,20 +142,12 @@ public class SettingsUser implements java.io.Serializable {
         this.lastName = lastName;
     }
 
-    public Boolean getAdmin() {
-        return this.admin;
+    public String getRole() {
+        return this.role;
     }
 
-    public void setAdmin(Boolean admin) {
-        this.admin = admin;
-    }
-
-    public Boolean getEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Set<DatasetAccess> getDatasetAccesses() {

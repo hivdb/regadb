@@ -9,6 +9,8 @@ import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
+import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -52,7 +54,14 @@ public class Ids {
     }
 
     public static String getUniqueId(TestType testType) {
-        return testType.getDescription();
+        return combine(testType.getDescription(),getUniqueId(testType.getGenome()));
+    }
+
+    public static String getUniqueId(Genome genome) {
+        if(genome == null)
+            return "";
+        else
+            return genome.getOrganismName();
     }
 
     public static String getUniqueId(Attribute attribute) {
@@ -79,8 +88,12 @@ public class Ids {
         return attributeGroup.getGroupName();
     }
 
+    public static String getUniqueId(OpenReadingFrame openReadingFrame) {
+        return combine(openReadingFrame.getName(),getUniqueId(openReadingFrame.getGenome()));
+    }
+
     public static String getUniqueId(Protein protein) {
-        return protein.getAbbreviation();
+        return combine(protein.getAbbreviation(),getUniqueId(protein.getOpenReadingFrame()));
     }
     
     private static String combine(String ... keys){

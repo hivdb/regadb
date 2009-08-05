@@ -2,16 +2,17 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WFileUpload;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFileUpload;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class FileUpload extends WContainerWidget implements IFormField{
 	private WAnchor link;
@@ -20,23 +21,27 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	
 	private boolean mandatory;
 	
+	private IForm form;
+	
 	public FileUpload(InteractionState istate, IForm form) {
-        link = new WAnchor("dummy", lt(""), this);
+		this.form = form;
+		
+        link = new WAnchor("dummy", "", this);
         link.setStyleClass("link");
         
         uploadFile = new WFileUpload(this);
-        uploadFile.uploaded.addListener(new SignalListener<WEmptyEvent>()  {
-            public void notify(WEmptyEvent a) {
-                link.setHidden(uploadFile.clientFileName()==null);
+        uploadFile.uploaded().addListener(this, new Signal.Listener()  {
+            public void trigger() {
+                link.setHidden(uploadFile.getClientFileName()==null);
                 uploadButton.setEnabled(true);
                 uploadButton.setText(tr("form.general.button.upload"));
-                setAnchor(lt(uploadFile.clientFileName()), uploadFile.spoolFileName());
+                setAnchor(uploadFile.getClientFileName(), uploadFile.getSpoolFileName());
             }
         });
         
         uploadButton = new WPushButton(tr("form.general.button.upload"), this);
-        uploadButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-            public void notify(WMouseEvent a) {
+        uploadButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+            public void trigger(WMouseEvent a) {
                 uploadButton.setText(tr("form.general.button.uploading"));
             	uploadFile.upload();
             }
@@ -54,21 +59,26 @@ public class FileUpload extends WContainerWidget implements IFormField{
 		return uploadFile;
 	}
 	
-	public void setAnchor(WMessage title, String url) {
-	        link.label().setText(title);
+	public void setAnchor(CharSequence title, String url) {
+	        link.setText(title);
 	        link.setRef(url);
+	}
+	
+	public void setAnchor(CharSequence title, WResource res){
+		link.setResource(res);
+		link.setText(title);
 	}
 
 	public void flagErroneous() {
-		this.setStyleClass("form-field textfield edit-invalid");
+		setStyleClass("Wt-invalid");
 	}
 
 	public void flagValid() {
-		this.setStyleClass("form-field textfield edit-valid");
+		setStyleClass("");
 	}
 
 	public String getFormText() {
-		return getFileUpload().clientFileName();
+		return getFileUpload().getClientFileName();
 	}
 
 	public WFormWidget getFormWidget() {
@@ -87,12 +97,12 @@ public class FileUpload extends WContainerWidget implements IFormField{
 		return mandatory;
 	}
 
-	public void setConfirmAction(SignalListener<WEmptyEvent> se) {
-        if(getFormWidget()!=null) {
-            getFormWidget().enterPressed.removeAllListeners();
-            if(se != null)
-                getFormWidget().enterPressed.addListener(se);
-            }
+	public void setConfirmAction(Signal.Listener se) {
+//        if(getFormWidget()!=null) {
+//            getFormWidget().enterPressed().removeAllListeners();
+//            if(se != null)
+//                getFormWidget().enterPressed().addListener(this, se);
+//            }
 	}
 
 	public void setFormText(String text) {
@@ -104,8 +114,12 @@ public class FileUpload extends WContainerWidget implements IFormField{
 
 	public boolean validate() {
 		if (isMandatory()) {
-			return getFileUpload().clientFileName() != null;
+			return getFileUpload().getClientFileName() != null;
 		}
 		return true;
+	}
+
+	public IForm getForm() {
+		return form;
 	}
 }

@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage;
 import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WImage;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WFormValidation 
 {
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
-    private WMessage warningText_ = WWidget.tr("form.validationProblem.warning.mainText");
+    private WString warningText_ = WWidget.tr("form.validationProblem.warning.mainText");
     private WContainerWidget warningWidget_ = new WarningMessage(warningImage_, warningText_, MessageType.ERROR);
     
     public void init(WContainerWidget parent)

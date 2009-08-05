@@ -8,6 +8,7 @@ import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.io.db.util.Logging;
+import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseDrugs extends Parser{

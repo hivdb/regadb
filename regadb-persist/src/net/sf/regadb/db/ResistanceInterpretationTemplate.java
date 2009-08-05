@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class ResistanceInterpretationTemplate implements java.io.Serializable {
 
-    // Fields    
-
     private Integer templateIi;
 
     private String name;
@@ -16,13 +14,9 @@ public class ResistanceInterpretationTemplate implements java.io.Serializable {
 
     private String filename;
 
-    // Constructors
-
-    /** default constructor */
     public ResistanceInterpretationTemplate() {
     }
 
-    /** full constructor */
     public ResistanceInterpretationTemplate(String name, byte[] document,
             String filename) {
         this.name = name;
@@ -30,7 +24,6 @@ public class ResistanceInterpretationTemplate implements java.io.Serializable {
         this.filename = filename;
     }
 
-    // Property accessors
     public Integer getTemplateIi() {
         return this.templateIi;
     }

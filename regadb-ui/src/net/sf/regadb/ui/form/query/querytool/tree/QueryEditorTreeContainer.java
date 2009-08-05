@@ -3,6 +3,10 @@ package net.sf.regadb.ui.form.query.querytool.tree;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
+import net.sf.regadb.ui.form.query.querytool.widgets.ToolbarHolder;
+import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
+
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
@@ -11,10 +15,7 @@ import com.pharmadm.custom.rega.queryeditor.SelectionChangeListener;
 import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.WhereClause;
 
-import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
-import net.sf.regadb.ui.form.query.querytool.widgets.ToolbarHolder;
-import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.WContainerWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
 
 public class QueryEditorTreeContainer extends WContainerWidget implements QueryEditorComponent, QueryContext, ToolbarHolder {
 	private QueryEditor editor = null;

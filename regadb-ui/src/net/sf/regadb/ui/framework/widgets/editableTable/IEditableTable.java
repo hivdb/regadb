@@ -1,7 +1,7 @@
 package net.sf.regadb.ui.framework.widgets.editableTable;
 
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public interface IEditableTable<DataType>
 {

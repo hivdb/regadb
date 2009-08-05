@@ -2,11 +2,15 @@ package net.sf.regadb.io.importXML;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Genome;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -69,9 +73,11 @@ public class ImportDrugs
         return report;
     }
     
+   
     public static ArrayList<String> importGenericDrugs(IDrugTransaction t, File genericDrugXMLFile, boolean simulate)
     {
         ArrayList<String> report = new ArrayList<String>();
+        
         try 
         {        
             SAXBuilder builder = new SAXBuilder();
@@ -87,6 +93,7 @@ public class ImportDrugs
             Integer resistanceTableOrderI;
             DrugClass dc;
             DrugGeneric dg;
+            
             for(Object c : drugs)
             {
                 Element drugEl = (Element)c;
@@ -118,6 +125,19 @@ public class ImportDrugs
                         dg = new DrugGeneric(dc, id, name);
                         dg.setAtcCode(atcCode);
                         dg.setResistanceTableOrder(resistanceTableOrderI);
+                        
+                        for(Object el : drugEl.getChild("genomes").getChildren()){
+                            Genome g = t.getGenome(((Element)el).getText());
+                            if(g != null){
+                                g.getDrugGenerics().add(dg);
+                                dg.getGenomes().add(g);
+                                
+                                String msg = "Adding relation: "+ id +" - "+ g.getOrganismName();
+                                System.out.println(msg);
+                                report.add(msg);
+                            }
+                        }
+                        
                         t.save(dg);
                     }
                 }
@@ -136,8 +156,36 @@ public class ImportDrugs
                     	dg.setGenericName(name);
 	                    dg.setAtcCode(atcCode);
 	                    dg.setResistanceTableOrder(resistanceTableOrderI);
-	                    t.save(dg);
+	                    
+	                    Set<String> ori = toSet(dg.getGenomes());
+	                    Set<String> nuw = toSet((List<Element>)drugEl.getChild("genomes").getChildren());
+	                    
+	                    for(String s : nuw){
+	                        if(ori.add(s)){
+	                            Genome g = t.getGenome(s);
+	                            if(g != null){
+	                                String msg = "Adding relation: "+ id +" - "+ s;
+	                                System.out.println(msg);
+	                                report.add(msg);
+	                                g.getDrugGenerics().add(dg);
+	                                dg.getGenomes().add(g);
+	                            }
+	                        }
+	                    }
+	                    for(String s : ori){
+	                        if(!nuw.contains(s)){
+	                            Genome g = t.getGenome(s);
+                                if(g != null){
+                                    String msg = "Removing relation: "+ id +" - "+ s;
+                                    System.out.println(msg);
+                                    report.add(msg);
+                                    g.getDrugGenerics().remove(dg);
+                                    dg.getGenomes().remove(g);
+                                }
+	                        }
+	                    }
                     }
+                    t.save(dg);
                 }
             }
         } 
@@ -148,6 +196,23 @@ public class ImportDrugs
         }
         
         return report;
+    }
+    
+    private static Set<String> toSet(List<Element> els)
+    {
+        Set<String> sels = new HashSet<String>();
+        for(Element el : els){
+            sels.add(el.getText());
+        }
+        return sels;
+    }
+    private static Set<String> toSet(Collection<Genome> genomes)
+    {
+        Set<String> ss = new HashSet<String>();
+        for(Genome el : genomes){
+            ss.add(el.getOrganismName());
+        }
+        return ss;
     }
     
     public static ArrayList<String> importCommercialDrugs(IDrugTransaction t, File commercialDrugXMLFile, boolean simulate)

@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.form.query.querytool.widgets;
 
-import net.sf.witty.wt.WContainerWidget;
+import eu.webtoolkit.jwt.WContainerWidget;
 
 public class WStyledContainerWidget extends WContainerWidget implements StyledWidget {
 	private CssClasses style = new CssClasses(this);

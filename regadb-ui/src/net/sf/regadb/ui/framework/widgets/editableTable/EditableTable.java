@@ -5,22 +5,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.widgets.messagebox.MessageBox;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.core.utils.WLength;
-import net.sf.witty.wt.core.utils.WLengthUnit;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
+import eu.webtoolkit.jwt.WWidget;
 
 public class EditableTable<DataType> extends WContainerWidget
 {
@@ -53,9 +54,9 @@ public class EditableTable<DataType> extends WContainerWidget
         int headerPosition = 0;
         for(String header : editableList_.getTableHeaders())
         {
-            itemTable_.putElementAt(0, headerPosition, new TableHeader(tr(header)));
-            itemTable_.elementAt(0, headerPosition).setStyleClass("column-title");
-            itemTable_.elementAt(0, headerPosition).resize(new WLength(editableList_.getColumnWidths()[headerPosition], WLengthUnit.Percentage), new WLength());
+            itemTable_.getElementAt(0, headerPosition).addWidget(new TableHeader(tr(header)));
+            itemTable_.getElementAt(0, headerPosition).setStyleClass("column-title");
+            itemTable_.getElementAt(0, headerPosition).resize(new WLength(editableList_.getColumnWidths()[headerPosition], WLength.Unit.Percentage), new WLength());
             headerPosition++;
         }
         
@@ -67,7 +68,7 @@ public class EditableTable<DataType> extends WContainerWidget
         if(editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing)
         {
             addLine(editableList_.addRow(), true);
-            itemTable_.elementAt(0, headerPosition).setStyleClass("column-action");            
+            itemTable_.getElementAt(0, headerPosition).setStyleClass("column-action");            
         }
     }
     
@@ -82,10 +83,10 @@ public class EditableTable<DataType> extends WContainerWidget
         
         for(WWidget w : widgets) {
             if(w instanceof IFormField) {
-                SignalListener<WEmptyEvent> se = null;
+                Signal.Listener se = null;
                 if(lineToAdd) {
-                    se = new SignalListener<WEmptyEvent>() {
-                        public void notify(WEmptyEvent a) {
+                    se = new Signal.Listener() {
+                        public void trigger() {
                             addAction();
                         }
                     };
@@ -95,23 +96,23 @@ public class EditableTable<DataType> extends WContainerWidget
         }
         
         int colIndex = 0;
-        final int rowNum = itemTable_.numRows();
+        final int rowNum = itemTable_.getRowCount();
 
         for(WWidget widget : widgets)
         {
-            widget.setParent(null);
-            itemTable_.putElementAt(rowNum, colIndex, widget);
+            itemTable_.getElementAt(rowNum, colIndex).clear();
+            itemTable_.getElementAt(rowNum, colIndex).addWidget(widget);
             colIndex++;
         }
         
         if(lineToAdd)
         {
             WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
-            itemTable_.putElementAt(rowNum, colIndex, addButton);
-            itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
-            addButton.clicked.addListener(new SignalListener<WMouseEvent>()
+            itemTable_.getElementAt(rowNum, colIndex).addWidget(addButton);
+            itemTable_.getElementAt(rowNum, colIndex).setStyleClass("column-action");            
+            addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                     {
-                        public void notify(WMouseEvent a) 
+                        public void trigger(WMouseEvent a) 
                         {
                             addAction();
                         }
@@ -120,17 +121,17 @@ public class EditableTable<DataType> extends WContainerWidget
         else if (editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing) {
 			final DataType toRemove = itemList_.get(rowNum - 1);
         	RemoveButton removeButton_ = new RemoveButton(tr("editableDataTable.button.removeItem"), toRemove);
-            itemTable_.putElementAt(rowNum, colIndex, removeButton_);
-            itemTable_.elementAt(rowNum, colIndex).setStyleClass("column-action");            
+            itemTable_.getElementAt(rowNum, colIndex).addWidget(removeButton_);
+            itemTable_.getElementAt(rowNum, colIndex).setStyleClass("column-action");            
         }
     }
     
     private void addAction() {
-        WWidget[] widgets = getWidgets(itemTable_.numRows()-1);
+        WWidget[] widgets = getWidgets(itemTable_.getRowCount()-1);
         widgets = editableList_.fixAddRow(widgets);
         if(widgets!=null)
         {
-            itemTable_.deleteRow(itemTable_.numRows()-1);
+            itemTable_.deleteRow(itemTable_.getRowCount()-1);
             itemList_.add(null);
             addLine(widgets, false);
             
@@ -138,7 +139,7 @@ public class EditableTable<DataType> extends WContainerWidget
         }
         else
         {
-            MessageBox.showWarningMessage(tr("editableTable.add.warning.couldNotAdd"));
+        	UIUtils.showWarningMessageBox(this, tr("editableTable.add.warning.couldNotAdd"));
         }
     }
     
@@ -201,9 +202,9 @@ public class EditableTable<DataType> extends WContainerWidget
         WWidget[] widgets = new WWidget[size];
         
         int processedFields = 0;
-        for(int i =0 ; i < itemTable_.numColumns()-1 && processedFields<size; i++)
+        for(int i =0 ; i < itemTable_.getColumnCount()-1 && processedFields<size; i++)
         {
-            widgets[i] = itemTable_.elementAt(row, i).children().get(0);
+            widgets[i] = itemTable_.getElementAt(row, i).getChildren().get(0);
             processedFields++;
         }
         
@@ -214,11 +215,11 @@ public class EditableTable<DataType> extends WContainerWidget
     {
         ArrayList<WWidget> widgets = new ArrayList<WWidget>();
         
-        boolean ignoreLastLine = itemTable_.numColumns()>(editableList_.getTableHeaders().length);
+        boolean ignoreLastLine = itemTable_.getColumnCount()>(editableList_.getTableHeaders().length);
         
-        for(int i = 1; i < itemTable_.numRows(); i++)
+        for(int i = 1; i < itemTable_.getRowCount(); i++)
         {
-            widgets.add(itemTable_.elementAt(i, column).children().get(0));
+            widgets.add(itemTable_.getElementAt(i, column).getChildren().get(0));
         }
         
         if(ignoreLastLine)
@@ -231,9 +232,9 @@ public class EditableTable<DataType> extends WContainerWidget
     
     public void removeAllRows()
     {
-        for(int i = 1; i < itemTable_.numRows()-1; i++)
+        for(int i = 1; i < itemTable_.getRowCount()-1; i++)
         {
-            ((RemoveButton)itemTable_.elementAt(i, itemTable_.numColumns()-1).children().get(0)).remove();
+            ((RemoveButton)itemTable_.getElementAt(i, itemTable_.getColumnCount()-1).getChildren().get(0)).remove();
         }
     }
     
@@ -241,13 +242,13 @@ public class EditableTable<DataType> extends WContainerWidget
     {
         if((editableList_.getInteractionState()==InteractionState.Adding || editableList_.getInteractionState()==InteractionState.Editing))
         {
-            itemTable_.deleteRow(itemTable_.numRows()-1);
+            itemTable_.deleteRow(itemTable_.getRowCount()-1);
             
             addLine(editableList_.addRow(), true);
         }
     }
     
-    public WMessage removeDuplicates(int column)
+    public WString removeDuplicates(int column)
     {
         Set<String> uniqueNominalValues = new HashSet<String>();
         ArrayList<String> duplicates = new ArrayList<String>();
@@ -264,33 +265,42 @@ public class EditableTable<DataType> extends WContainerWidget
             for(int i = 0; i<widgets.size(); i++) {
                 if(((TextField)widgets.get(i)).text().equals(d)) {
                     if(itemList_.get(i)==null) {
-                        ((RemoveButton)itemTable_.elementAt(i+1, itemTable_.numColumns()-1).children().get(0)).remove();
+                        ((RemoveButton)itemTable_.getElementAt(i+1, itemTable_.getColumnCount()-1).getChildren().get(0)).remove();
                     }
                 }
             }
         }
         
         if(duplicates.size()>0)
-            return new WMessage("editableTable.add.warning.duplicatesRemoved");
+            return new WString("editableTable.add.warning.duplicatesRemoved");
         else
             return null;
     }
     
     private class RemoveButton extends WPushButton {
     	private DataType toRemove;
-    	public RemoveButton(WMessage message, DataType toRemove) {
+    	public RemoveButton(WString message, DataType toRemove) {
     		super(message);
     		this.toRemove = toRemove;
     	
-    		this.clicked.addListener(new SignalListener<WMouseEvent>() {
-                public void notify(WMouseEvent a) {
-                	remove();
+    		this.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+                public void trigger(WMouseEvent a) {
+                	removeRow();
                 }
-            });        	
+            });
     	}
     	
-    	public void remove() {
-    		int row =  itemList_.indexOf(RemoveButton.this.toRemove)+1;
+    	private void removeRow() {
+    		int row =  ((WTableCell)RemoveButton.this.getParent()).getRow();
+    		
+    		WWidget[] widgets = getWidgets(row);
+    		for(WWidget ww : widgets) {
+    			if(ww instanceof IFormField) {
+    				IForm form = ((IFormField)ww).getForm();
+    				if(form!=null)
+    					form.removeFormField((IFormField)ww);
+    			}
+    		}
     		
             itemTable_.deleteRow(row);
             removedItemList_.add(RemoveButton.this.toRemove);

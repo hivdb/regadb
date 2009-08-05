@@ -5,25 +5,25 @@ import java.util.ArrayList;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WEmptyEvent;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WTimer;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
 
 public class ImportFormRunning extends FormWidget {
 	private SimpleTable table;
 	private static ArrayList<ProcessXMLImport> processList = new ArrayList<ProcessXMLImport>();
 	private WTimer timer = new WTimer();
 	
-	public ImportFormRunning(WMessage formName, InteractionState interactionState) {
+	public ImportFormRunning(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		timer.setInterval(1000);
-		timer.timeout.addListener(new SignalListener<WEmptyEvent>() {
-			public void notify(WEmptyEvent a) {
+		timer.timeout().addListener(this, new Signal.Listener() {
+			public void trigger() {
 				refreshprogressTable();
 			}
 		});
@@ -53,7 +53,7 @@ public class ImportFormRunning extends FormWidget {
 					tr("form.impex.import.progress.header.status"));
 			
 			table.setWidths(20,40,20,20);
-			table.elementAt(0, 4).setStyleClass("column-action");
+			table.getElementAt(0, 4).setStyleClass("column-action");
 
 			int row = 1;
 			int running = 0;
@@ -62,11 +62,11 @@ public class ImportFormRunning extends FormWidget {
 					running++;
 				}			
 				
-				table.putElementAt(row, 0, new WText( lt(importXml.getUid()) ));
-				table.putElementAt(row, 1, new WText( lt(importXml.clientFileName()) ));
-				table.putElementAt(row, 2, new WText( importXml.getDatasetName() ));
-				table.putElementAt(row, 3, new WText( importXml.getStatusName() ));
-				table.elementAt(row, 4).setStyleClass("column-action");				
+				table.getElementAt(row, 0).addWidget(new WText( importXml.getUid()) );
+				table.getElementAt(row, 1).addWidget( new WText( importXml.clientFileName()) );
+				table.getElementAt(row, 2).addWidget( new WText( importXml.getDatasetName() ));
+				table.getElementAt(row, 3).addWidget( new WText( importXml.getStatusName() ));
+				table.getElementAt(row, 4).setStyleClass("column-action");				
 				
 //				if (importXml.getLogFile() != null) {
 //					new WAnchor(new WFileResource("text/txt", importXml.getLogFile().getAbsolutePath()),
@@ -75,9 +75,9 @@ public class ImportFormRunning extends FormWidget {
 //				}
 				
 				if (importXml.getStatus() != UploadStatus.PROCESSING) {
-					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.elementAt(row, 4));
-					clearButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-						public void notify(WMouseEvent a) {
+					WPushButton clearButton = new WPushButton(tr("form.impex.import.clearchecked"), table.getElementAt(row, 4));
+					clearButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent a) {
 							int row = processList.indexOf(importXml);
 							table.deleteRow(row+1);
 							processList.remove(importXml);
@@ -105,7 +105,7 @@ public class ImportFormRunning extends FormWidget {
 	}
 
 	@Override
-	public WMessage deleteObject() {
+	public WString deleteObject() {
 		return null;
 	}
 

@@ -65,7 +65,7 @@ public class AutoImport {
 			e.printStackTrace();
 		}
 		
-		IOUtils.exportNTXMLFromPatients(patientsMap, tmpFile.getAbsolutePath(), logger_);
+		IOUtils.exportNTXMLFromPatients(patientsMap.values(), tmpFile.getAbsolutePath(), logger_);
 	
 		t.clearCache();
 		t.commit();
@@ -124,7 +124,7 @@ public class AutoImport {
 			for(ViralIsolate vi : diffVis) {
 				diffViMap.put(vi.getSampleId(), vi);
 			}
-			IOUtils.exportNTXML(diffViMap, diffViFile.getAbsolutePath(), logger_);
+			IOUtils.exportNTXML(diffViMap.values(), diffViFile.getAbsolutePath(), logger_);
 			
 			File diffViProcessedFile = File.createTempFile("diffViFileProcessed", "xml");
 			filesToRemove.add(diffViProcessedFile);

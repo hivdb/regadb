@@ -2,7 +2,7 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 
 import java.util.HashSet;
 
-import net.sf.witty.wt.WWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 /**
  * Can be used to replace the default WT css class mechanism
@@ -24,7 +24,7 @@ public class CssClasses {
 	public CssClasses(WWidget widget) {
 		this.widget = widget;
 		styleClasses = new HashSet<String>();
-		addStyle(widget.styleClass());
+		addStyle(widget.getStyleClass());
 	}
 	
 	/**

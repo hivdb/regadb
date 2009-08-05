@@ -6,8 +6,6 @@ package net.sf.regadb.db;
  */
 public class AaInsertion implements java.io.Serializable {
 
-    // Fields    
-
     private AaInsertionId id;
 
     private int version;
@@ -16,13 +14,9 @@ public class AaInsertion implements java.io.Serializable {
 
     private String ntInsertionCodon;
 
-    // Constructors
-
-    /** default constructor */
     public AaInsertion() {
     }
 
-    /** full constructor */
     public AaInsertion(AaInsertionId id, String aaInsertion,
             String ntInsertionCodon) {
         this.id = id;
@@ -30,7 +24,6 @@ public class AaInsertion implements java.io.Serializable {
         this.ntInsertionCodon = ntInsertionCodon;
     }
 
-    // Property accessors
     public AaInsertionId getId() {
         return this.id;
     }

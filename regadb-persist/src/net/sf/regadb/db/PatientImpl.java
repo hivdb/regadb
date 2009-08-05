@@ -1,7 +1,6 @@
 package net.sf.regadb.db;
 
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,21 +9,11 @@ import java.util.Set;
  */
 class PatientImpl implements java.io.Serializable {
 
-    // Fields    
-
     private Integer patientIi;
 
     private int version;
 
     private String patientId;
-
-    private String lastName;
-
-    private String firstName;
-
-    private Date birthDate;
-
-    private Date deathDate;
 
     private Set<PatientEventValue> patientEventValues = new HashSet<PatientEventValue>(
             0);
@@ -40,29 +29,19 @@ class PatientImpl implements java.io.Serializable {
 
     private Set<Therapy> therapies = new HashSet<Therapy>(0);
 
-    // Constructors
-
-    /** default constructor */
     public PatientImpl() {
     }
 
-    /** minimal constructor */
     public PatientImpl(String patientId) {
         this.patientId = patientId;
     }
 
-    /** full constructor */
-    public PatientImpl(String patientId, String lastName, String firstName,
-            Date birthDate, Date deathDate,
+    public PatientImpl(String patientId,
             Set<PatientEventValue> patientEventValues,
             Set<PatientDataset> patientDatasets, Set<TestResult> testResults,
             Set<PatientAttributeValue> patientAttributeValues,
             Set<ViralIsolate> viralIsolates, Set<Therapy> therapies) {
         this.patientId = patientId;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.birthDate = birthDate;
-        this.deathDate = deathDate;
         this.patientEventValues = patientEventValues;
         this.patientDatasets = patientDatasets;
         this.testResults = testResults;
@@ -71,7 +50,6 @@ class PatientImpl implements java.io.Serializable {
         this.therapies = therapies;
     }
 
-    // Property accessors
     public Integer getPatientIi() {
         return this.patientIi;
     }
@@ -94,38 +72,6 @@ class PatientImpl implements java.io.Serializable {
 
     public void setPatientId(String patientId) {
         this.patientId = patientId;
-    }
-
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public Date getBirthDate() {
-        return this.birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public Date getDeathDate() {
-        return this.deathDate;
-    }
-
-    public void setDeathDate(Date deathDate) {
-        this.deathDate = deathDate;
     }
 
     public Set<PatientEventValue> getPatientEventValues() {

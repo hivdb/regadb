@@ -8,11 +8,11 @@ package net.sf.regadb.align.local;
 
 import org.biojava.bio.symbol.Alignment;
 
-class ScoredAlignment {
+public class ScoredAlignment {
     private Alignment alignment;
     private double score;
     
-    ScoredAlignment(Alignment alignment, double score) {
+    public ScoredAlignment(Alignment alignment, double score) {
         this.alignment = alignment;
         this.score = score;
     }

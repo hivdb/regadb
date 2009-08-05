@@ -7,11 +7,10 @@ import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
 import com.pharmadm.custom.rega.savable.Savable;
 
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WCheckBox;
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.i8n.WMessage;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WMouseEvent;
 
 public class FieldSelectionContainer extends WContainerWidget {
 	private FieldSelection selection;
@@ -27,10 +26,10 @@ public class FieldSelectionContainer extends WContainerWidget {
 	}
 	
 	private void init() {
-		checkBox = new WCheckBox(new WMessage(selection.getDbObject().getDescription(), true), this);
+		checkBox = new WCheckBox(selection.getDbObject().getDescription(), this);
 		checkBox.setChecked(selection.isSelected());
-		checkBox.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		checkBox.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				toggleFieldChecked();
 			}
 		});		

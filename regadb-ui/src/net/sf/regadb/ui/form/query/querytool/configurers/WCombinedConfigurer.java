@@ -2,12 +2,12 @@ package net.sf.regadb.ui.form.query.querytool.configurers;
 
 import java.util.List;
 
-import net.sf.witty.wt.WContainerWidget;
-import net.sf.witty.wt.WFormWidget;
-import net.sf.witty.wt.WWidget;
-
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
 import com.pharmadm.custom.rega.queryeditor.wordconfiguration.WordConfigurer;
+
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFormWidget;
+import eu.webtoolkit.jwt.WWidget;
 
 public class WCombinedConfigurer extends WContainerWidget implements WordConfigurer {
 	private List<WordConfigurer> words;

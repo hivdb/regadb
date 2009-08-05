@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import jxl.Cell;
@@ -13,35 +12,22 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
-import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.io.util.StandardObjects;
-
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 public class ImportSequences 
 {
     private Map<String, Patient> patientMap_;
     private File sequenceExcellFile_;
     private Aligner aligner_;
-    private Map<String, Protein> proteinMap_;
     
     public ImportSequences(Map<String, Patient> patientMap, File sequenceExcellFile) {
-        patientMap_ = patientMap;
         sequenceExcellFile_ = sequenceExcellFile;
-        
-        proteinMap_ = new HashMap<String, Protein>();
-        
-        for(Protein p : StandardObjects.getProteins()) {
-            proteinMap_.put(p.getAbbreviation(), p);
-        }
-        
-        aligner_ = new Aligner(new LocalAlignmentService(), proteinMap_);
+        patientMap_ = patientMap;
+        aligner_ = new Aligner(new LocalAlignmentService());
     }
     
     public void run() {

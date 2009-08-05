@@ -9,10 +9,11 @@ import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
+import eu.webtoolkit.jwt.WString;
 
 public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
 {
-    private static String [] _colNames = {"dataTable.attributeGroup.colName.groupName"};
+    private static WString [] _colNames = {WString.tr("dataTable.attributeGroup.colName.groupName")};
     private static String[] filterVarNames_ = { "attributeGroup.groupName"};
     private static int[] colWidths = {100};
     
@@ -20,7 +21,7 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     
     private static boolean [] sortable_ = {true};
     
-    public String[] getColNames()
+    public CharSequence[] getColNames()
     {
         return _colNames;
     }
@@ -74,5 +75,9 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
 
 	public int[] getColumnWidths() {
 		return colWidths;
+	}
+
+	public String[] getRowTooltips(AttributeGroup type) {
+		return null;
 	}
 }

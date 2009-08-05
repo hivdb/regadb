@@ -2,9 +2,9 @@ package net.sf.regadb.ui.form.query.querytool.buttons;
 
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 
 
 public class RunButtonPanel extends WButtonPanel {
@@ -17,8 +17,8 @@ public class RunButtonPanel extends WButtonPanel {
 	
 	private void init(final QueryToolForm mainForm) {
 		WPushButton runButton = new WPushButton(tr("form.query.querytool.pushbutton.run"));
-		runButton.clicked.addListener(new SignalListener<WMouseEvent>() {
-			public void notify(WMouseEvent a) {
+		runButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent a) {
 				mainForm.runQuery();
 			}
         });  

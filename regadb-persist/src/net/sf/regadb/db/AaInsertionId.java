@@ -6,21 +6,15 @@ package net.sf.regadb.db;
  */
 public class AaInsertionId implements java.io.Serializable {
 
-    // Fields    
-
     private short insertionPosition;
 
     private AaSequence aaSequence;
 
     private short insertionOrder;
 
-    // Constructors
-
-    /** default constructor */
     public AaInsertionId() {
     }
 
-    /** full constructor */
     public AaInsertionId(short insertionPosition, AaSequence aaSequence,
             short insertionOrder) {
         this.insertionPosition = insertionPosition;
@@ -28,7 +22,6 @@ public class AaInsertionId implements java.io.Serializable {
         this.insertionOrder = insertionOrder;
     }
 
-    // Property accessors
     public short getInsertionPosition() {
         return this.insertionPosition;
     }

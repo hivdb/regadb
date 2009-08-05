@@ -36,21 +36,23 @@ import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.witty.wt.SignalListener;
-import net.sf.witty.wt.WAnchor;
-import net.sf.witty.wt.WFileResource;
-import net.sf.witty.wt.WGroupBox;
-import net.sf.witty.wt.WMouseEvent;
-import net.sf.witty.wt.WPushButton;
-import net.sf.witty.wt.WTable;
-import net.sf.witty.wt.WText;
-import net.sf.witty.wt.WWidget;
-import net.sf.witty.wt.i8n.WMessage;
 
 import org.hibernate.Query;
 
-public abstract class WivQueryForm extends FormWidget implements SignalListener<WMouseEvent>{
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
+
+public abstract class WivQueryForm extends FormWidget implements Signal1.Listener<WMouseEvent>{
     private WGroupBox generalGroup_;
     private WGroupBox parameterGroup_;
     private WGroupBox resultGroup_;
@@ -74,10 +76,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     private String filename_;
     
     private SimpleDateFormat sdf_ = new SimpleDateFormat("yyyy-MM-dd");
-    private DecimalFormat decimalFormat = new DecimalFormat("##########.00");
-    
-    private static String arcPatientQuery = "select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = 'FOLLOW-UP' and lower(arc_pav.attributeNominalValue.value) = '1: arc of the same institution as arl'";
-
+    private DecimalFormat decimalFormat = new DecimalFormat("0.00");
     
     private HashMap<String,IFormField> parameters_ = new HashMap<String,IFormField>();
     
@@ -86,10 +85,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         
     }
     
-    public WivQueryForm(WMessage formName, WMessage description, WMessage filename){
+    public WivQueryForm(WString formName, WString description, WString filename){
         super(formName,InteractionState.Viewing);
         
-        filename_ = filename.value();
+        filename_ = filename.getValue().trim();
         description_ = new WText(description);
         
         init();
@@ -108,43 +107,55 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         run_ = new WPushButton(tr("form.query.wiv.pushbutton.run"));
 
         linkL_ = new Label(tr("form.query.wiv.label.result"));
-        link_ = new WAnchor("dummy", lt(""));
+        link_ = new WAnchor("dummy", "");
         
         statusL_ = new Label(tr("form.query.wiv.label.status"));
         status_ = new WText(tr("form.query.wiv.label.status.initial"));
 
 
-        generalTable_.putElementAt(0, 0, description_);
+        generalTable_.getElementAt(0, 0).addWidget(description_);
         
         resultTable_.addLineToTable(new WWidget[]{runL_,run_});
         resultTable_.addLineToTable(new WWidget[]{statusL_,status_});
         resultTable_.addLineToTable(new WWidget[]{linkL_,link_});
         
-        run_.clicked.addListener(this);
+        run_.clicked().addListener(this, this);
     }
     
-    public void notify(WMouseEvent a) 
+    private long endTime = 0;
+    public void trigger(WMouseEvent a) 
     {
-        run_.disable();
-        status_.setText(tr("form.query.wiv.label.status.running"));
+    	//arbitrary 2sec wait between runs,
+    	//prevents unintended multiple triggers
+    	long diff = new Date().getTime() - endTime;
+    	if(diff > 2000){  
+	        run_.disable();
 
-        try{
-            File csvFile =  getOutputFile();
-            
-            process(csvFile);
-            File output = postProcess(csvFile);
-            setDownloadLink(output);
-            status_.setText(tr("form.query.wiv.label.status.finished"));
-        }
-        catch(EmptyResultException e){
-            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            status_.setText(tr("form.query.wiv.label.status.failed"));
-        }
-        
-        run_.enable();
+	        status_.setText(tr("form.query.wiv.label.status.running"));
+	
+	        try{
+	            File csvFile =  getOutputFile();
+	            
+	            process(csvFile);
+	            File output = postProcess(csvFile);
+	            setDownloadLink(output);
+	            status_.setText(tr("form.query.wiv.label.status.finished"));
+	        }
+	        catch(EmptyResultException e){
+	            status_.setText(tr("form.query.wiv.label.status.emptyResult"));
+	        }
+	        catch(Exception e){
+	            e.printStackTrace();
+	            status_.setText(tr("form.query.wiv.label.status.failed"));
+	        }
+	        
+	        endTime = new Date().getTime();
+	        run_.enable();
+	        
+	        Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
+	        t.clearCache();
+	        t.commit();
+    	}
     }
 
     @SuppressWarnings("unchecked")
@@ -276,13 +287,13 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         query_ = query;
     }
     
-    public void addParameter(String name, WMessage l, IFormField f){
+    public void addParameter(String name, WString l, IFormField f){
     	parameterTable_.addLineToTable(new Label(l), f);
         parameters_.put(name, f);
     }
     
     public File getResultDir(){
-        File wivDir = new File(RegaDBSettings.getInstance().getPropertyValue("regadb.query.resultDir") + File.separatorChar + "wiv");
+        File wivDir = new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + "wiv");
         if(!wivDir.exists()){
             wivDir.mkdirs();
         }
@@ -296,8 +307,10 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }    
      
     public void setDownloadLink(File file){
-        link_.label().setText(lt("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]"));
-        link_.setRef(new WFileResource("application/csv", file.getAbsolutePath()).generateUrl());
+        link_.setText("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]");
+        WFileResource res = new WFileResource("application/csv", file.getAbsolutePath());
+        res.suggestFileName(filename_ +".csv");
+        link_.setResource(res);
     }
 
     @Override
@@ -306,7 +319,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
 
     @Override
-    public WMessage deleteObject() {
+    public WString deleteObject() {
         return null;
     }
 
@@ -394,7 +407,7 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     }
     
     protected String getCentreName(){
-        return RegaDBSettings.getInstance().getPropertyValue("centre.name");
+        return RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getCentreName();
     }
     
     protected String getFormattedDate(Date date){
@@ -672,8 +685,8 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
         table.add("PROFRISK",                   "PROFRISK",     1,  FillerType.UNKNOWN);
         table.add("PROBYEAR",                   "PROBYEAR",     1,  FillerType.UNKNOWN);
         table.add("PROBCOUNTR",                 "PROBCOUNTR",   3,  FillerType.COUNTRYCODE);
-        table.add("LYMPHO",						"LYMPHO",       4);
-        table.add("VIRLOAD",			        "VIRLOAD",      4);
+        table.add("LYMPHO",                     "LYMPHO",       4);
+        table.add("VIRLOAD",                    "VIRLOAD",      4);
         table.add("STAD_CLIN",                  "STAD_CLIN",    1,  FillerType.UNKNOWN);
         table.add("REASONTEST",                 "REASONTEST",   1,  FillerType.UNKNOWN);
         table.add("FORM_OUT",                   "FORM_OUT",     8);
@@ -707,17 +720,17 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
                 
 	            row[table.getPosition("Patient.birthDate")] = getFormattedDate(p.getBirthDate());
 	            
-	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
-	            if(tr != null){
-	            	row[table.getPosition("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
-	            }
-	            
-	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
-	            if(tr != null){
-	            	row[table.getPosition("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
-	            }
-	            else
-	            	row[table.getPosition("CD4.TestResult.value")] = "U";
+//	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getHiv1ViralLoadTestType(),StandardObjects.getHiv1ViralLoadLog10TestType()});
+//	            if(tr != null){
+//	            	row[table.getPosition("VL.TestResult.value")] = getFormattedViralLoadResult(tr);
+//	            }
+//	            
+//	            tr = getFirstTestResult(p, new TestType[]{StandardObjects.getCd4TestType()});
+//	            if(tr != null){
+//	            	row[table.getPosition("CD4.TestResult.value")] = getFormattedDecimal(tr.getValue(),0,0);
+//	            }
+//	            else
+//	            	row[table.getPosition("CD4.TestResult.value")] = "U";
 	            
 	            tr = getFirstTestResult(p, new TestType[]{WivObjects.getGenericwivConfirmation().getTestType()});
                 if(tr != null){
@@ -767,7 +780,12 @@ public abstract class WivQueryForm extends FormWidget implements SignalListener<
     	return RegaDBMain.getApp().createTransaction();
     }
     
-    protected String getArcPatientQuery(){
+    protected String getArcPatientQuery(String patientIiField){
+    	AttributeConfig ac = RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getArcPatientFilter();
+    	if(ac == null)
+    		return "1=1";
+    	
+    	String arcPatientQuery = patientIiField +" in (select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and arc_pav.attributeNominalValue.value = '"+ ac.getValue() +"')";
     	return arcPatientQuery;
     }
 }
