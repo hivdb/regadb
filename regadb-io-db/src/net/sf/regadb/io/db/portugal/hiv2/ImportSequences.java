@@ -1,9 +1,6 @@
 package net.sf.regadb.io.db.portugal.hiv2;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,13 +9,9 @@ import java.util.List;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.analysis.functions.FastaReadStatus;
-import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -49,7 +42,7 @@ public class ImportSequences {
 			}
 		}
 
-		Test subtype = RegaDBWtsServer.getSubtypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+		Test subtype = RegaDBWtsServer.getSubtypeTest();
 
 		try {
 			FileWriter fw = new FileWriter("/home/plibin0/import/pt/pt_regadb/hiv2/seqs/combinedSeqs.fasta");

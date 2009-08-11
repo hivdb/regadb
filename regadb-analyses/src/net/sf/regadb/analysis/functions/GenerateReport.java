@@ -28,7 +28,6 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -78,7 +77,7 @@ public class GenerateReport
             replace("$CD4_COUNT", "- ");
         
         replace("$TYPE", getOrganismName(vi));
-        replace("$SUBTYPE", getType(vi, RegaDBWtsServer.getSubtypeTest()));
+        replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
         
         List<TestResult> results = getGssTestResults(vi, algorithm);
         setRITable(results, t);

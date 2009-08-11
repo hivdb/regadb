@@ -5,16 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.ioAssist.IOAssistImportHandler;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
-import net.sf.regadb.service.wts.SubtypeAnalysis;
 
 public class SubTypeBatch {
 	public static void main(String [] args) {
@@ -27,7 +23,7 @@ public class SubTypeBatch {
 			wtsServer = args[1];
 		}
 		
-		Test subtype = RegaDBWtsServer.getSubtypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+		Test subtype = RegaDBWtsServer.getSubtypeTest();
 		if(wtsServer!=null) {
 			subtype.getAnalysis().setUrl(wtsServer);
 		}

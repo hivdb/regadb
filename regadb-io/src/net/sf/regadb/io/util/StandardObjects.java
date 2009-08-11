@@ -46,6 +46,8 @@ public class StandardObjects {
     private static String seroStatusDescription = "Serostatus";
     private static String seroconversionDescription = "Seroconversion";
     private static String gssDescription = "Genotypic Susceptibility Score (GSS)";
+    private static String subtypeTestDescription = "Rega Subtype Tool";
+    private static String subtypeTestTypeDescription = "Subtype Test";
     
     private static Genome hiv1Genome;
     private static Genome hiv2aGenome;
@@ -357,6 +359,12 @@ public class StandardObjects {
     }
     public static String getGssDescription() {
         return gssDescription;
+    }
+    public static String getSubtypeTestTypeDescription(){
+    	return subtypeTestTypeDescription;
+    }
+    public static String getSubtypeTestDescription(){
+    	return subtypeTestDescription;
     }
     
     public static Genome getHiv1Genome(){

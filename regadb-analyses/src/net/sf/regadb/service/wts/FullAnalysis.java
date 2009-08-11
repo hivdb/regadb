@@ -53,7 +53,7 @@ public class FullAnalysis implements IAnalysis {
         
         if(getViralIsolate().getNtSequences().size() > 0 && getGenome() != null){
             Transaction t = sessionSafeLogin.createTransaction();
-            Test subTypeTest = t.getTest(RegaDBWtsServer.getSubtypeTest(), RegaDBWtsServer.getSubtypeTestType());
+            Test subTypeTest = t.getTest(StandardObjects.getSubtypeTestDescription(), StandardObjects.getSubtypeTestTypeDescription());
             t.commit();
                         
             if(genome != null){

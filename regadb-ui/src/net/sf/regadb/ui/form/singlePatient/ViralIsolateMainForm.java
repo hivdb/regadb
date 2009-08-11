@@ -18,9 +18,9 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.FullAnalysis;
-import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
@@ -36,7 +36,6 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
@@ -323,7 +322,8 @@ public class ViralIsolateMainForm extends WContainerWidget
         ntTF.setText(seq.getNucleotides());
         
         for(TestResult tr : seq.getTestResults()){
-            if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubtypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubtypeTestType())){
+            if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
+            		&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getSubtypeTestTypeDescription())){
                 subTypeTF.setText(tr.getValue());
                 break;
             }
@@ -414,7 +414,8 @@ public class ViralIsolateMainForm extends WContainerWidget
             
             for(TestResult tr : currentSeq.getTestResults())
             {
-                if(tr.getTest().getDescription().equals(RegaDBWtsServer.getSubtypeTest()) && tr.getTest().getTestType().getDescription().equals(RegaDBWtsServer.getSubtypeTestType())){
+                if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
+                		&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getSubtypeTestTypeDescription())){
                     removedTestResults.add(tr);
                     break;
                 }

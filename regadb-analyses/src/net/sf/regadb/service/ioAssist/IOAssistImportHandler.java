@@ -10,14 +10,11 @@ import java.util.List;
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.exportXML.ExportToXML;
@@ -61,7 +58,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     {        
         aligner_ = new Aligner(new LocalAlignmentService());
         
-        subType_ = RegaDBWtsServer.getSubtypeTest(new TestObject("Sequence analysis", 1), new AnalysisType("wts"), new ValueType("string"));
+        subType_ = RegaDBWtsServer.getSubtypeTest();
         
         export_ = new ExportToXML();
         fileWriter_ = fw;

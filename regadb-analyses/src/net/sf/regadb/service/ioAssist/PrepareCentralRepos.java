@@ -122,6 +122,8 @@ public class PrepareCentralRepos
         resTest = createResistanceTest("RegaHIV2V8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
         
+        export.writeTopTest(RegaDBWtsServer.getSubtypeTest(), tests);
+        
         File testsFile = new File(outputDir +File.separatorChar+"tests-genomes.xml");
         writeXMLFile(testsFile, tests);
     }
@@ -172,7 +174,6 @@ public class PrepareCentralRepos
         
         return resistanceTest;
     }
-    
     
     private static Attribute createCountryOfOrigin()
     {
