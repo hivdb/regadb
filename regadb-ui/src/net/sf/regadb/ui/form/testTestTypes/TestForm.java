@@ -74,6 +74,9 @@ public class TestForm extends FormWidget
     private EditableTable<AnalysisData> analysisDataET;
     private IAnalysisDataEditableTable ianalysisDataET;
     //analysis data group -end-
+    
+    private String prevUrl = null;
+    private String prevService = null;
   
 	public TestForm(InteractionState interactionState, WString formName, Test test ) 
 	{
@@ -312,21 +315,28 @@ public class TestForm extends FormWidget
 		{
 			if(dataFilled())
 	        {
-	            WtsMetaClient wtsMC = new WtsMetaClient(urlTF.text());
-	            
-	            byte[] array = getServices(wtsMC);
-	            
-	            if (array != null)
-	            {
-	            	setBaseFields(wtsMC, array);
-	            	showAnalysisData(wtsMC.parseInputNames(array));
-	            	
-	            	return true;
-	            }
-	            else
-	            {
-	            	return false;
-	            }
+				if(urlTF.text().equals(prevUrl) && serviceTF.text().equals(prevService)){
+					return true;
+				}
+				else{
+		            WtsMetaClient wtsMC = new WtsMetaClient(urlTF.text());
+		            
+		            byte[] array = getServices(wtsMC);
+		            
+		            if (array != null)
+		            {
+		            	setBaseFields(wtsMC, array);
+		            	showAnalysisData(wtsMC.parseInputNames(array));
+		            	
+		            	prevUrl = urlTF.text();
+		            	prevService = serviceTF.text();
+		            	return true;
+		            }
+		            else
+		            {
+		            	return false;
+		            }
+				}
 	        }
 			else
 			{
