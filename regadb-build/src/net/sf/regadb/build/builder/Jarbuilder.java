@@ -3,6 +3,7 @@ package net.sf.regadb.build.builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,16 +17,15 @@ import net.sf.regadb.build.eclipse.EclipseParseTools;
 import net.sf.regadb.build.error.ErrorRapport;
 import net.sf.regadb.build.junit.JUnitRapport;
 import net.sf.regadb.build.junit.JUnitTest;
-import net.sf.regadb.build.svn.SvnTools;
 import net.sf.regadb.build.transform.XsltTransformer;
+import net.sf.regadb.util.args.Argument;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
 
 import org.apache.commons.io.FileUtils;
-import org.tmatesoft.svn.core.io.SVNRepository;
 
 public class Jarbuilder
 {
-	private final static String regadb_svn_url_ = "svn+ssh://zolder:3333/var/svn/repos";
-    
     private static HashMap<String, List<String>> moduleJars_ = new HashMap<String, List<String>>();
     private static HashMap<String, List<String>> moduleDependencies_ = new HashMap<String, List<String>>();
 	
@@ -34,37 +34,25 @@ public class Jarbuilder
     private static String libPool_;
     private static String packageDir_;
     
-    private static String localCheckoutDir_ = null;
+    private static String workspaceDir_ = null;
     
     private static boolean testing_ = true;
 
     public static void main (String args[])
     {
-    	if (args.length >= 2) {
-    		
-            if(args.length>2)
-            {
-                String localCheckoutArg = args[2];
-                if(localCheckoutArg.startsWith("--localCheckout="))
-                {
-                    localCheckoutArg = localCheckoutArg.substring(localCheckoutArg.indexOf("--localCheckout=")+"--localCheckout=".length(), localCheckoutArg.length());
-                    localCheckoutDir_ = localCheckoutArg;
-                }
-            }
-            
-            if(args.length>3) {
-            	if(args[3].equals("--noTesting")) {
-            		testing_ = false;
-            	}
-            }
-            
-            run(args[0], args[1], localCheckoutDir_, true);
-    	}
-    	else {
-    		System.out.println("Wrong parameters");
-    		System.out.println("First parameter for build dir");
-    		System.out.println("Second parameter for report dir");
-    	}
+    	Arguments as = new Arguments();
+    	PositionalArgument workspaceDir	= as.addPositionalArgument("local-workspace", true);
+    	PositionalArgument buildDir		= as.addPositionalArgument("build-dir", true);
+    	PositionalArgument reportDir	= as.addPositionalArgument("report-dir", true);
+    	Argument testing 				= as.addArgument("no-testing", false);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+        run(new File(buildDir.getValue()).getAbsolutePath(),
+        		new File(reportDir.getValue()).getAbsolutePath(),
+        		new File(workspaceDir.getValue()).getAbsolutePath(),
+        		testing.isSet());
     }
     
     public static void run(String buildDir, String reportDir, String localWorkspace, boolean runTests) {
@@ -75,7 +63,7 @@ public class Jarbuilder
         
         packageDir_ = buildDir_ + "packages" + File.separatorChar;
         
-        localCheckoutDir_ = localWorkspace;
+        workspaceDir_ = localWorkspace;
         
         build();
         
@@ -87,29 +75,14 @@ public class Jarbuilder
     {
         createDirs();
         
-        SVNRepository svnrepos = SvnTools.getSVNRepository(regadb_svn_url_, "jvsant1", "Kangoer1" );
-        
-        List<String> modules;
-        if(localCheckoutDir_==null)
-            modules = SvnTools.getModules(svnrepos);
-        else
-            modules = SvnTools.getLocalModules(localCheckoutDir_);
-        
-        modules = filterRegaDBSvnModules(modules);
+        List<String> modules = Arrays.asList(new File(workspaceDir_).list());
+        modules = filterRegaDBModules(modules);
         
         HashMap<String, List<String>> moduleDeps = new HashMap<String, List<String>>();
         
         for(String m : modules)
         {
-        	try {
-                if(localCheckoutDir_==null)
-                    SvnTools.checkout(regadb_svn_url_, m, buildDir_, svnrepos);
-                else
-                    SvnTools.localCheckout(m, localCheckoutDir_, buildDir_);
-            }
-            catch (Exception e) {
-            	handleError(m, e);
-            }
+            copyModule(m, workspaceDir_, buildDir_);
             
             File classPathFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + ".classpath");
             File buildXmlFile = new File(buildDir_ + File.separatorChar + m + File.separatorChar + "build.xml");
@@ -132,6 +105,21 @@ public class Jarbuilder
         }
         
         buildRegaDBProjects(moduleDeps);
+    }
+    
+    private static void copyModule(String projectName, String srcPath, String destPath)
+    {
+        try 
+        {
+            System.out.println("Copying module " + projectName);
+            File destDir = new File(destPath+File.separatorChar+projectName);
+            FileUtils.forceMkdir(destDir);
+            FileUtils.copyDirectory(new File(srcPath + File.separatorChar + projectName), destDir);
+        } 
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
     
     private static void createDirs()
@@ -277,7 +265,7 @@ public class Jarbuilder
         createPackage(moduleName);
     }
 
-	private static List<String> filterRegaDBSvnModules(List<String> modules)
+	private static List<String> filterRegaDBModules(List<String> modules)
     {
         List<String> filteredModules = new ArrayList<String>(); 
         

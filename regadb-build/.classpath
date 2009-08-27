@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/svnkit-cli.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-javahl.jar"/>
 	<classpathentry kind="lib" path="lib/tools.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
