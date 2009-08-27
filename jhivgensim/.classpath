@@ -5,7 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-build"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/wts-client-java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io-db"/>
 	<classpathentry kind="lib" path="lib/jargs.jar"/>
