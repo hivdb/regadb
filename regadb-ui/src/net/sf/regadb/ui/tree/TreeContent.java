@@ -1276,21 +1276,21 @@ public class TreeContent
                 }
             });
             
-            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
-            
-            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
-                }
-            });
-
-            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
-                public void performAction(TreeMenuNode node) 
-                {
-                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
-                }
-            });
+//            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
+//            
+//            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
+//                public void performAction(TreeMenuNode node) 
+//                {
+//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
+//                }
+//            });
+//
+//            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
+//                public void performAction(TreeMenuNode node) 
+//                {
+//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
+//                }
+//            });
             
             
             log = new ActionItem(WResource.tr("menu.log"),administratorMain);
