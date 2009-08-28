@@ -174,6 +174,9 @@ public class FullCsvExport implements ExportPatient {
 	}
 	
 	private void testRow(Patient p, TestResult tr, FileWriter fw) throws IOException {
+		if (tr.getTest().getAnalysis() != null)
+			return;
+		
 		StringBuilder row = new StringBuilder();
 		
 		formatField(row, p.getPatientId());
