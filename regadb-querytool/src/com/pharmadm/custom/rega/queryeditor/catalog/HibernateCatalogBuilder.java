@@ -500,8 +500,14 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	            	    aComposer.addFixedString(new FixedString(" END as double )"));
             		}
             	}
+            	else if(property.getValueType() == ValueType.Date && catalog.getObject(property.getTableName(), property.getPropertyName()).getValueType() != ValueType.Date){
+                    aComposer.addFixedString(new FixedString("(TO_DATE('01-01-1970', 'DD-MM-YYYY') + cast(cast("));
+                    addObjectProperty(aComposer, relations, ivar, newFromVar, property);
+                    aComposer.addFixedString(new FixedString(", long)/86400000, int))"));
+            	}
             	else{
                     if (!caseSensitive) aComposer.addFixedString(new FixedString("UPPER("));
+
                     addObjectProperty(aComposer, relations, ivar, newFromVar, property);
                     
                     if (!caseSensitive) aComposer.addFixedString(new FixedString(")"));
