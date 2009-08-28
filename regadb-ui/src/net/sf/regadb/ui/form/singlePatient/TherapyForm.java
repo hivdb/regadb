@@ -2,6 +2,7 @@ package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -219,7 +220,7 @@ public class TherapyForm extends FormWidget
 	@Override
 	public void saveData()
 	{
-        List<String> genericDrugs = new ArrayList<String>();
+        Set<String> genericDrugs = new HashSet<String>();
         ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
         for(WWidget widget : genericwidgets)
         {
@@ -229,7 +230,7 @@ public class TherapyForm extends FormWidget
             }
         }
         
-        List<String> commercialDrugs = new ArrayList<String>();
+        Set<String> commercialDrugs = new HashSet<String>();
         ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
         for(WWidget widget : commercialwidgets)
         {
