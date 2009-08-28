@@ -375,6 +375,9 @@ public class MultipleTestResultForm extends FormWidget {
     }
 	
     private void saveAndGotoViralIsolate(){
+    	if (!validateForm())
+    		return;
+    	
         save();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesAdd.prograSelectNode();
         RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
