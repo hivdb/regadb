@@ -31,4 +31,9 @@ public class MyComboBox extends WComboBox {
 			setCurrentIndex(0);
 		}
 	}
+	
+    public void removeCurrentItem() {
+    	if(getCurrentIndex()!=-1)
+    		removeItem(getCurrentIndex());
+    }
 }

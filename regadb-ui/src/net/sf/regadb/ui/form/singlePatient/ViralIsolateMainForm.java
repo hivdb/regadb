@@ -60,8 +60,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 	private MyComboBox seqComboBox;
 	private WPushButton addButton;
 	private WPushButton deleteButton;
-    private WPushButton confirmButton;
-    private WPushButton cancelButton;
 
 	// NtSeq group
 	private Label seqLabel;
@@ -205,8 +203,6 @@ public class ViralIsolateMainForm extends WContainerWidget
             table_.getElementAt(row, 0).setStyleClass("form-label-area");
             table_.getElementAt(row, col).setStyleClass("navigation");
            
-            confirmButton = new WPushButton(tr("form.viralIsolate.confirmButton"), table_.getElementAt(row, col));
-            cancelButton = new WPushButton(tr("form.viralIsolate.cancelButton"), table_.getElementAt(row, col));
             addButton = new WPushButton(tr("form.viralIsolate.addButton"), table_.getElementAt(row, col));
             deleteButton = new WPushButton(tr("form.viralIsolate.deleteButton"), table_.getElementAt(row, col));
         }
@@ -266,31 +262,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                            seqComboBox.enable();
 	                            addButton.enable();
 	                        }
-	                    }
-	                });
-        }
-        
-        if (viralIsolateForm_.isEditable()) {
-	        cancelButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
-	                {
-	                    public void trigger(WMouseEvent a) 
-	                    {                        
-	                        setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
-	                        
-	                        seqComboBox.enable();
-	                        addButton.enable();
-	                        fastaLabel_.setText("");
-	                    }
-	                });
-	        
-	        confirmButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
-	                {
-	                    public void trigger(WMouseEvent a) 
-	                    {                
-	                        confirmSequence();
-	                        
-	                        seqComboBox.enable();
-	                        addButton.enable();
 	                    }
 	                });
         }
@@ -391,7 +362,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     {
         NtSequence currentSequence = ((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue();
         removedSequences.add(currentSequence);
-        seqComboBox.removeItem(seqComboBox.getCurrentIndex());
+        seqComboBox.removeCurrentItem();
         
         seqComboBox.setCurrentIndex(seqComboBox.getCount()-1);
         
