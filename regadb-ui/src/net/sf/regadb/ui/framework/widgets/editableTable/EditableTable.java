@@ -254,25 +254,14 @@ public class EditableTable<DataType> extends WContainerWidget
         ArrayList<String> duplicates = new ArrayList<String>();
         for(WWidget widget : getAllWidgets(column))
         {
-            if(!(uniqueNominalValues.add(((TextField)widget).text())))
+            if(!uniqueNominalValues.add(((TextField)widget).text()))
             {
                 duplicates.add(((TextField)widget).text());
             }
         }
         
-        ArrayList<WWidget> widgets = getAllWidgets(column);
-        for(String d : duplicates) {
-            for(int i = 0; i<widgets.size(); i++) {
-                if(((TextField)widgets.get(i)).text().equals(d)) {
-                    if(itemList_.get(i)==null) {
-                        ((RemoveButton)itemTable_.getElementAt(i+1, itemTable_.getColumnCount()-1).getChildren().get(0)).remove();
-                    }
-                }
-            }
-        }
-        
         if(duplicates.size()>0)
-            return new WString("editableTable.add.warning.duplicatesRemoved");
+            return tr("editableTable.add.warning.duplicates");
         else
             return null;
     }

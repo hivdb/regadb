@@ -179,6 +179,7 @@ public class TestTypeForm extends FormWidget
         if(duplicates!=null)
         {
         	UIUtils.showWarningMessageBox(this, duplicates);
+        	return;
         }
         
 		Transaction t = RegaDBMain.getApp().createTransaction();
