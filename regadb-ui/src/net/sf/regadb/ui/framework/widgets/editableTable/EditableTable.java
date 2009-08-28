@@ -248,13 +248,18 @@ public class EditableTable<DataType> extends WContainerWidget
         }
     }
     
-    public WString removeDuplicates(int column)
+    public WString warnDuplicatesAndBlanks(int column)
     {
         Set<String> uniqueNominalValues = new HashSet<String>();
         ArrayList<String> duplicates = new ArrayList<String>();
         for(WWidget widget : getAllWidgets(column))
         {
-            if(!uniqueNominalValues.add(((TextField)widget).text()))
+        	String text = ((TextField)widget).text();
+        	if (text.equals("")) {
+        		return tr("editableTable.add.warning.blanks");
+        	}
+        	
+            if(!uniqueNominalValues.add(text))
             {
                 duplicates.add(((TextField)widget).text());
             }

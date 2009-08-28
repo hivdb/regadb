@@ -171,7 +171,7 @@ public class AttributeForm extends FormWidget
     {
     	WString duplicates = null;
         if(nominalValuesList_!=null) {
-        duplicates = nominalValuesList_.removeDuplicates(0);
+        duplicates = nominalValuesList_.warnDuplicatesAndBlanks(0);
         }
         if(duplicates!=null)
         {
