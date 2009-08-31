@@ -90,7 +90,7 @@ public class ComboBox<ComboDataType> extends FormField
     
     public boolean isNoSelectionItem(DataComboMessage msg)
     {
-        return msg.getValue()==null;
+        return msg.getDataValue()==null;
     }
     
     public DataComboMessage<ComboDataType> currentItem()

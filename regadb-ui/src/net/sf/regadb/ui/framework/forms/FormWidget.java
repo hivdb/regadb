@@ -205,6 +205,16 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         }
     }
     
+    public boolean validateForm() {
+        if(formValidation_.validate(formFields_)) {
+            formValidation_.setHidden(true);
+            return true;
+        } else {
+            formValidation_.setHidden(false);
+            return false;
+        }
+    }
+    
     public void confirmAction()
     {
         if(formValidation_.validate(formFields_))

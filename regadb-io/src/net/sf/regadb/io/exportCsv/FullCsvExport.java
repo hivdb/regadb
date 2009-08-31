@@ -31,9 +31,11 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.export.ExportPatient;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.date.DateUtils;
 
 public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
@@ -172,6 +174,9 @@ public class FullCsvExport implements ExportPatient {
 	}
 	
 	private void testRow(Patient p, TestResult tr, FileWriter fw) throws IOException {
+		if (tr.getTest().getAnalysis() != null)
+			return;
+		
 		StringBuilder row = new StringBuilder();
 		
 		formatField(row, p.getPatientId());
@@ -212,10 +217,6 @@ public class FullCsvExport implements ExportPatient {
 		StringBuilder header = new StringBuilder();
 		
 		formatField(header, "patient_id");
-		formatField(header, "first_name");
-		formatField(header, "last_name");
-		formatField(header, "birth_date");
-		formatField(header, "death_date");
 		
 		for(int i = 0; i<sortedAttributes.size(); i++) {
 			formatField(header, sortedAttributes.get(i).getName(), i!=sortedAttributes.size()-1);
@@ -228,17 +229,18 @@ public class FullCsvExport implements ExportPatient {
 		StringBuilder row = new StringBuilder();
 		
 		formatField(row, p.getPatientId());
-		formatField(row, p.getFirstName());
-		formatField(row, p.getLastName());
-		formatField(row, p.getBirthDate());
-		formatField(row, p.getDeathDate());
 		
 		for(int i = 0; i<sortedAttributes.size(); i++) {
 			boolean found = false;
 			for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
 				if(pav.getAttribute().getName().equals(sortedAttributes.get(i).getName())) {
 					found = true;
-					formatField(row, pav.getValue()==null?pav.getAttributeNominalValue().getValue():pav.getValue(), i!=sortedAttributes.size()-1);
+					String value = pav.getValue()==null?pav.getAttributeNominalValue().getValue():pav.getValue();
+					ValueTypes vt = ValueTypes.getValueType(pav.getAttribute().getValueType());
+                    if(vt == ValueTypes.DATE){
+                        value = DateUtils.format(value);
+                    }
+					formatField(row, value, i!=sortedAttributes.size()-1);
 				}
 			}
 			if(!found)
