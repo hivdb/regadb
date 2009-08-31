@@ -127,7 +127,14 @@ public class TestTypeForm extends FormWidget
                 t.commit();
             }
             iNominalValuesList_ = new ITestNominalValueDataList(this, testType_);
-            nominalValuesList_ = new EditableTable<TestNominalValue>(nominalValuesGroup_, iNominalValuesList_, list);
+            nominalValuesList_ = new EditableTable<TestNominalValue>(nominalValuesGroup_, iNominalValuesList_, list){
+            	public boolean canRemove(TestNominalValue toRemove){
+            		Transaction t = RegaDBMain.getApp().createTransaction();
+            		boolean isUsed = t.isUsed(toRemove);
+            		t.commit();
+            		return !isUsed;
+            	}
+            };
         }
     }
 

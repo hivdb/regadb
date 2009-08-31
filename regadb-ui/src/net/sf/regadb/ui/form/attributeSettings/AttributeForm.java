@@ -129,7 +129,14 @@ public class AttributeForm extends FormWidget
                 t.commit();
             }
             iNominalValuesList_ = new IAttributeNominalValueDataList(this);
-            nominalValuesList_ = new EditableTable<AttributeNominalValue>(nominalValuesGroup_, iNominalValuesList_, list);
+            nominalValuesList_ = new EditableTable<AttributeNominalValue>(nominalValuesGroup_, iNominalValuesList_, list){
+            	public boolean canRemove(AttributeNominalValue toRemove){
+            		Transaction t = RegaDBMain.getApp().createTransaction();
+            		boolean isUsed = t.isUsed(toRemove);
+            		t.commit();
+            		return !isUsed;
+            	}
+            };
         }
     }
     
