@@ -78,7 +78,7 @@ public class WTabbedPane extends WStyledContainerWidget implements StatusbarHold
 	
 	public void showTab(CharSequence title) {
 		for (int i = 0 ; i < titles.size() ; i++) {
-			if (title.equals(titles.get(i))) {
+			if (title.toString().equals(titles.get(i).toString())) {
 				showTab(i);
 			}
 		}
