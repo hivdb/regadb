@@ -1666,4 +1666,32 @@ public class Transaction {
     {
         session.flush();
     }
+    
+    public boolean isUsed(AttributeNominalValue anv){
+    	if(anv != null && anv.getNominalValueIi() != null){
+    		Query q = session.createQuery("select pav from PatientAttributeValue pav join pav.attributeNominalValue anv where anv = :anv");
+    		q.setParameter("anv", anv);
+    		q.setMaxResults(1);
+    		return q.list().size() > 0;
+    	}
+    	return false;
+    }
+    public boolean isUsed(EventNominalValue env){
+    	if(env != null && env.getNominalValueIi() != null){
+    		Query q = session.createQuery("select pev from PatientEventValue pev join pev.eventNominalValue env where env = :env");
+    		q.setParameter("env", env);
+    		q.setMaxResults(1);
+    		return q.list().size() > 0;
+    	}
+    	return false;
+    }
+    public boolean isUsed(TestNominalValue tnv){
+    	if(tnv != null && tnv.getNominalValueIi() != null){
+    		Query q = session.createQuery("select tnv from TestResult tr join tr.testNominalValue tnv where tnv = :tnv");
+    		q.setParameter("tnv", tnv);
+    		q.setMaxResults(1);
+    		return q.list().size() > 0;
+    	}
+    	return false;
+    }
 }

@@ -285,20 +285,29 @@ public class EditableTable<DataType> extends WContainerWidget
     	}
     	
     	private void removeRow() {
-    		int row =  ((WTableCell)RemoveButton.this.getParent()).getRow();
-    		
-    		WWidget[] widgets = getWidgets(row);
-    		for(WWidget ww : widgets) {
-    			if(ww instanceof IFormField) {
-    				IForm form = ((IFormField)ww).getForm();
-    				if(form!=null)
-    					form.removeFormField((IFormField)ww);
-    			}
+    		if(canRemove(RemoveButton.this.toRemove)){
+	    		int row =  ((WTableCell)RemoveButton.this.getParent()).getRow();
+	    		
+	    		WWidget[] widgets = getWidgets(row);
+	    		for(WWidget ww : widgets) {
+	    			if(ww instanceof IFormField) {
+	    				IForm form = ((IFormField)ww).getForm();
+	    				if(form!=null)
+	    					form.removeFormField((IFormField)ww);
+	    			}
+	    		}
+	    		
+	            itemTable_.deleteRow(row);
+	            removedItemList_.add(RemoveButton.this.toRemove);
+	            itemList_.remove(RemoveButton.this.toRemove);
     		}
-    		
-            itemTable_.deleteRow(row);
-            removedItemList_.add(RemoveButton.this.toRemove);
-            itemList_.remove(RemoveButton.this.toRemove);
+    		else{
+    			UIUtils.showWarningMessageBox(this, tr("form.delete.restriction"));
+    		}
     	}
+    }
+    
+    public boolean canRemove(DataType toRemove){
+    	return true;
     }
 }

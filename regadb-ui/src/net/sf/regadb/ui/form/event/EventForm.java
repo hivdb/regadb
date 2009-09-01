@@ -126,7 +126,14 @@ public class EventForm extends FormWidget {
             }
             
             iNominalValuesList_ = new IEventNominalValueDataList(this, event_);
-            nominalValuesList_ = new EditableTable<EventNominalValue>(nominalValuesGroup_, iNominalValuesList_, list);
+            nominalValuesList_ = new EditableTable<EventNominalValue>(nominalValuesGroup_, iNominalValuesList_, list){
+            	public boolean canRemove(EventNominalValue toRemove){
+            		Transaction t = RegaDBMain.getApp().createTransaction();
+            		boolean isUsed = t.isUsed(toRemove);
+            		t.commit();
+            		return !isUsed;
+            	}
+            };
         }
 	}
 	
