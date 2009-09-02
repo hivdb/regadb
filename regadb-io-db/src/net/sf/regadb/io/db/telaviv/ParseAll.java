@@ -12,14 +12,24 @@ import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.util.IOUtils;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
 
 public class ParseAll {
     
     public static void main(String[] args){
+    	Arguments as = new Arguments();
+    	PositionalArgument importDir = as.addPositionalArgument("import-dir", true);
+    	PositionalArgument mappingDir = as.addPositionalArgument("mapping-dir", true);
+    	PositionalArgument outputDir = as.addPositionalArgument("output-dir", true);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
         ParseAll pa = new ParseAll();
-        
-        pa.run(args[0], args[1], args[2]);
-        
+        pa.run(importDir.getValue(),
+        		mappingDir.getValue(),
+        		outputDir.getValue());
     }
     
     public ParseAll(){
@@ -69,7 +79,7 @@ public class ParseAll {
     }
     
     private File getFile(String dir, String name){
-        return new File(dir + File.separatorChar + name);
+        return new File(new File(dir).getAbsolutePath() + File.separatorChar + name);
     }
 
 }
