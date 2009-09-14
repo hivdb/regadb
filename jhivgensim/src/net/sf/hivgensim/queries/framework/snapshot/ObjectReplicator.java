@@ -374,6 +374,7 @@ public class ObjectReplicator {
 		for(AaSequence aaseq : seq.getAaSequences()){
 			tempaaseqs.add(copy(aaseq));
 		}
+		nseq.setAaSequences(tempaaseqs);
 		return nseq;
 	}
 	
