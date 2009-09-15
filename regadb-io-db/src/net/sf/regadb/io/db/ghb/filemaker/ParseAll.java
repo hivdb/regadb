@@ -66,9 +66,9 @@ public class ParseAll {
         	return;
         
         if(confDir.isSet())
-        	RegaDBSettings.getInstance(confDir.getValue());
+        	RegaDBSettings.createInstance(confDir.getValue());
         else
-        	RegaDBSettings.getInstance();
+        	RegaDBSettings.createInstance();
         
         String lisDir = importDir.getValue() + File.separatorChar + "lis" + File.separatorChar;
         String filemakerDir = importDir.getValue() + File.separatorChar + "filemaker" + File.separatorChar;
