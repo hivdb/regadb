@@ -26,6 +26,7 @@ public class RegaDBSettings {
     	addConfig(new ProxyConfig());
     	addConfig(new AccessPolicyConfig());
     	addConfig(new InstituteConfig());
+    	addConfig(new CronConfig());
     }
     
     private void addConfig(IConfigParser cfg){
@@ -37,32 +38,35 @@ public class RegaDBSettings {
     }
 
     public static RegaDBSettings getInstance(){
-        if(instance_==null)
-        {
-            instance_ = new RegaDBSettings();
-            
-            String confDir = System.getenv("REGADB_CONF_DIR");
-            if(confDir==null) {
-                String osName = System.getProperty("os.name");
-                osName = osName.toLowerCase();
-                if(osName.startsWith("windows"))
-                    confDir = "C:\\Program files\\rega_institute\\regadb";
-                else
-                    confDir = "/etc/rega_institute/regadb";
-            }
-            File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
-            instance_.parseConfFile(configFile);
+    	if(instance_==null)
+    		System.err.println("The settings instance has not been created yet, call RegaDBSettings.createInstance() first.");
+    	
+    	return instance_;
+    }
+    
+    public static RegaDBSettings createInstance(){
+        instance_ = new RegaDBSettings();
+        
+        String confDir = System.getenv("REGADB_CONF_DIR");
+        if(confDir==null) {
+            String osName = System.getProperty("os.name");
+            osName = osName.toLowerCase();
+            if(osName.startsWith("windows"))
+                confDir = "C:\\Program files\\rega_institute\\regadb";
+            else
+                confDir = "/etc/rega_institute/regadb";
         }
+        File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
+        instance_.parseConfFile(configFile);
+        
         return instance_;
     }
     
-    public static RegaDBSettings getInstance(String confDir){
-        if(instance_==null)
-        {
-            File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
-            instance_ = new RegaDBSettings();
-            instance_.parseConfFile(configFile);
-        }
+    public static RegaDBSettings createInstance(String confDir){
+        File configFile = new File(new File(confDir).getAbsolutePath() + File.separatorChar + "global-conf.xml");
+        instance_ = new RegaDBSettings();
+        instance_.parseConfFile(configFile);
+        
         return instance_;
     }
     
@@ -137,6 +141,9 @@ public class RegaDBSettings {
     }
     public AccessPolicyConfig getAccessPolicyConfig(){
     	return (AccessPolicyConfig)configs.get("access-policies");
+    }
+    public CronConfig getCronConfig(){
+    	return (CronConfig)configs.get("cron");
     }
     
     public String getDateFormat(){

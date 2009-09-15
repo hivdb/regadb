@@ -35,9 +35,9 @@ public class ImportKwsContacts {
 			return;
 		
 		if(conf.isSet())
-			RegaDBSettings.getInstance(conf.getValue());
+			RegaDBSettings.createInstance(conf.getValue());
 		else
-			RegaDBSettings.getInstance();
+			RegaDBSettings.createInstance();
 		
 		ImportKwsContacts pkc = new ImportKwsContacts();
 		pkc.run(user.getValue(), pass.getValue(), dataset.getValue(), new File(file.getValue()));

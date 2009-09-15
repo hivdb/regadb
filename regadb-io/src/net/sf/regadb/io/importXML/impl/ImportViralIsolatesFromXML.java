@@ -30,7 +30,9 @@ public class ImportViralIsolatesFromXML
     		return;
     	
     	if(conf.isSet())
-    		RegaDBSettings.getInstance(conf.getValue());
+    		RegaDBSettings.createInstance(conf.getValue());
+    	else
+    		RegaDBSettings.createInstance();
     	
         ImportXML instance = new ImportXML(user.getValue(), pass.getValue());
         instance.importViralIsolates(new InputSource(new FileReader(new File(xml.getValue()))), (ds.isSet() ? ds.getValue() : null));

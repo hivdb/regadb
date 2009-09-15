@@ -50,9 +50,6 @@ public class AutoImport {
             out = new PrintStream(new FileOutputStream(file));
         }
         
-        public void print(String msg){
-            out.print(msg);
-        }
         public void println(String msg){
             out.println(msg);
         }
@@ -112,7 +109,9 @@ public class AutoImport {
 		
 		if(as.isValid()){
 			if(conf.isSet())
-				RegaDBSettings.getInstance(conf.getValue());
+				RegaDBSettings.createInstance(conf.getValue());
+			else
+				RegaDBSettings.createInstance();
 			
 			as.printValues(System.out);
 	        AutoImport ai = new AutoImport(user.getValue(), pass.getValue(), new File(mapfile.getValue()), dataset.getValue());
@@ -125,6 +124,10 @@ public class AutoImport {
 		}
 		else
 			as.printUsage(System.err);
+    }
+    
+    public AutoImport(){
+    	
     }
     
     public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore){
