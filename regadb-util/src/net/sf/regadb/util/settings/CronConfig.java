@@ -2,6 +2,8 @@ package net.sf.regadb.util.settings;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.jdom.Element;
 
@@ -10,6 +12,7 @@ public class CronConfig implements IConfigParser{
 	
 	public static class JobElement{
 		private String name, className, expression;
+		private Map<String,String> params = new TreeMap<String,String>();
 		
 		public JobElement(Element e){
 			parseXml(e);
@@ -44,10 +47,21 @@ public class CronConfig implements IConfigParser{
 			return className;
 		}
 		
+		public Map<String,String> getParams(){
+			return params;
+		}
+		
 		public void parseXml(Element e){
 			setName(e.getAttributeValue("name"));
 			setExpression(e.getAttributeValue("expression"));
 			setClassName(e.getAttributeValue("class"));
+			
+			for(Object o : e.getChildren("param")){
+				Element ee = (Element)o;
+				getParams().put(
+						ee.getAttributeValue("name"),
+						ee.getAttributeValue("value"));
+			}
 		}
 		
 		public Element toXml(){
@@ -55,6 +69,13 @@ public class CronConfig implements IConfigParser{
 			e.setAttribute("name",getName());
 			e.setAttribute("expression", getExpression());
 			e.setAttribute("class",getClassName());
+			
+			for(Map.Entry<String, String> me : getParams().entrySet()){
+				Element ee = new Element("param");
+				ee.setAttribute("name", me.getKey());
+				ee.setAttribute("value", me.getValue());
+				e.addContent(ee);
+			}
 			return e;
 		}
 	}
