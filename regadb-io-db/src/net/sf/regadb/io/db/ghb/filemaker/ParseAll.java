@@ -22,6 +22,7 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 
@@ -108,49 +109,51 @@ public class ParseAll {
         OfflineObjectStore oos = new OfflineObjectStore();
         createNonStandardObjects(oos);
         oos.setPatients(eadPatients);
-        AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos);
-        try {
+        try{
+        	AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos);
 			ai.run(new File(lisDir));
+        
+	        GetViralIsolates gvi = new GetViralIsolates();
+	        gvi.eadPatients = eadPatients;
+	        gvi.run(stalenLeuvenFile,spreadStalenFile,seqsToIgnoreFile,macFastaFile,pcFastaFile);
+	        
+	        ParsePatient parsePatient = new ParsePatient();
+	        parsePatient.parse( new File(patientenFile),
+	                            new File(filemakerMappingPath + "country_of_origin.mapping"),
+	                            new File(filemakerMappingPath + "geographic_origin.mapping"),
+	                            new File(filemakerMappingPath + "transmission_group.mapping"), patientIdPatients);
+	        
+	        ParseSymptom parseSymptom = new ParseSymptom();
+	        parseSymptom.parse( new File(symptomenFile),
+	                            new File(filemakerMappingPath + "aids_defining_illness.mapping"),
+	                            patientIdPatients);
+	        
+	        ParseContacts parseContacts = new ParseContacts(ai.firstCd4, ai.firstCd8, ai.firstViralLoad);
+	        parseContacts.run(patientIdPatients, contactenFile);
+	        
+	        ParseTherapy parseTherapy = new ParseTherapy();
+	        parseTherapy.parseTherapy(medicatieFile,filemakerMappingPath);
+	        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+	            parseTherapy.mergeTherapies(e.getValue());
+	            parseTherapy.setStopDates(e.getValue());
+	        }
+	        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+	            Patient p = patientIdPatients.get(e.getKey());
+	            if(p!=null) {
+	                for(Therapy t : e.getValue())
+	                    p.getTherapies().add(t);
+	            } else {
+	                System.err.println("invalid patient id: " + e.getKey());
+	            }
+	        }
+	        
+	        IOUtils.exportPatientsXML(eadPatients.values(), outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
+	        IOUtils.exportNTXMLFromPatients(eadPatients.values(), outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
+		} catch (MapperParseException e) {
+			e.printStackTrace();
 		}
-        
-        GetViralIsolates gvi = new GetViralIsolates();
-        gvi.eadPatients = eadPatients;
-        gvi.run(stalenLeuvenFile,spreadStalenFile,seqsToIgnoreFile,macFastaFile,pcFastaFile);
-        
-        ParsePatient parsePatient = new ParsePatient();
-        parsePatient.parse( new File(patientenFile),
-                            new File(filemakerMappingPath + "country_of_origin.mapping"),
-                            new File(filemakerMappingPath + "geographic_origin.mapping"),
-                            new File(filemakerMappingPath + "transmission_group.mapping"), patientIdPatients);
-        
-        ParseSymptom parseSymptom = new ParseSymptom();
-        parseSymptom.parse( new File(symptomenFile),
-                            new File(filemakerMappingPath + "aids_defining_illness.mapping"),
-                            patientIdPatients);
-        
-        ParseContacts parseContacts = new ParseContacts(ai.firstCd4, ai.firstCd8, ai.firstViralLoad);
-        parseContacts.run(patientIdPatients, contactenFile);
-        
-        ParseTherapy parseTherapy = new ParseTherapy();
-        parseTherapy.parseTherapy(medicatieFile,filemakerMappingPath);
-        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
-            parseTherapy.mergeTherapies(e.getValue());
-            parseTherapy.setStopDates(e.getValue());
-        }
-        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
-            Patient p = patientIdPatients.get(e.getKey());
-            if(p!=null) {
-                for(Therapy t : e.getValue())
-                    p.getTherapies().add(t);
-            } else {
-                System.err.println("invalid patient id: " + e.getKey());
-            }
-        }
-        
-        IOUtils.exportPatientsXML(eadPatients.values(), outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
-        IOUtils.exportNTXMLFromPatients(eadPatients.values(), outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
     }
 
     public static void setCharset(String charset) {

@@ -23,6 +23,9 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.ConsoleLogger;
@@ -40,6 +43,7 @@ import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.args.Arguments.ArgumentException;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.mapper.XmlMapper;
+import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class AutoImport {
@@ -114,11 +118,18 @@ public class AutoImport {
 				RegaDBSettings.createInstance();
 			
 			as.printValues(System.out);
-	        AutoImport ai = new AutoImport(user.getValue(), pass.getValue(), new File(mapfile.getValue()), dataset.getValue());
-            
-	        try {
+	        try{
+	        	AutoImport ai = new AutoImport(user.getValue(), pass.getValue(), new File(mapfile.getValue()), dataset.getValue());
 				ai.run(new File(lisdir.getValue()));
 			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (WrongUidException e) {
+				e.printStackTrace();
+			} catch (WrongPasswordException e) {
+				e.printStackTrace();
+			} catch (DisabledUserException e) {
+				e.printStackTrace();
+			} catch (MapperParseException e) {
 				e.printStackTrace();
 			}
 		}
@@ -130,32 +141,22 @@ public class AutoImport {
     	
     }
     
-    public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore){
+    public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore) throws MapperParseException{
     	init(mappingFile, objectStore);
     }
 
-    public AutoImport(String user, String pass, File mappingFile, String dataset) {
+    public AutoImport(String user, String pass, File mappingFile, String dataset) throws WrongUidException, WrongPasswordException, DisabledUserException, MapperParseException {
         Login login;
-		try {
-			login = Login.authenticate(user, pass);
-			init(mappingFile, new DbObjectStore(login));
-			datasetDescription = dataset;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		login = Login.authenticate(user, pass);
+		init(mappingFile, new DbObjectStore(login));
+		datasetDescription = dataset;
     }
     
-    private void init(File mappingFile, ObjectStore objectStore){
-        try {
-            xmlMapper = new XmlMapper(mappingFile);
-            
-            objectMapper = new ObjectMapper(objectStore, xmlMapper);
-            this.objectStore = objectStore; 
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void init(File mappingFile, ObjectStore objectStore) throws MapperParseException{
+        xmlMapper = new XmlMapper(mappingFile);
+        
+        objectMapper = new ObjectMapper(objectStore, xmlMapper);
+        this.objectStore = objectStore; 
     }
     
     public TestNominalValue getNominalValue(TestType tt, String str){
@@ -170,6 +171,9 @@ public class AutoImport {
     public void run(File path) throws FileNotFoundException{
     	String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     	String logFile = File.separatorChar + date + ".log";
+    	
+    	if(!path.exists())
+    		throw new FileNotFoundException(path.getAbsolutePath());
     	
     	if(path.isFile()){
     		infoLog = new FileLogger(new File(path.getParent() + logFile));
