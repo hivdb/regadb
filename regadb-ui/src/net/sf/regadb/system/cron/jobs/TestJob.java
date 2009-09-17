@@ -13,7 +13,7 @@ public class TestJob implements Job{
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		System.err.println("cron: "
 				+ DateUtils.format(new Date())+" "
-				+ this.getClass().getCanonicalName());
+				+ arg0.getJobDetail().getName());
 		print(arg0.getJobDetail().getJobDataMap());
 	}
 	
