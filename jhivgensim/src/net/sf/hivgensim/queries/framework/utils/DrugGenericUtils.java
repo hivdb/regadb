@@ -1,8 +1,10 @@
 package net.sf.hivgensim.queries.framework.utils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -11,7 +13,6 @@ public class DrugGenericUtils {
 
 	//returns true if one class has been found
 	public static boolean containsDrugsFromDrugClasses(Set<DrugGeneric> drugs, String[] drugclasses){
-		boolean[] found = new boolean[drugclasses.length];
 		for(DrugGeneric dg : drugs){
 			for(int i = 0 ; i < drugclasses.length ; i++){
 				if(dg.getDrugClass().getClassId().equalsIgnoreCase(drugclasses[i])){
@@ -22,6 +23,15 @@ public class DrugGenericUtils {
 		return false;
 	}
 
+	public static boolean containsClass(Collection<DrugClass> before, String drug){
+		for (DrugClass drugClass : before) {
+			if(contains(drugClass.getDrugGenerics(), drug)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean contains(Set<DrugGeneric> drugs, String drug){
 		for(DrugGeneric dg : drugs){
 			if(dg.getGenericId().equalsIgnoreCase(drug)){

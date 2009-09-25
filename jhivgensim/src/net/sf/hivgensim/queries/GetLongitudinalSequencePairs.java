@@ -55,7 +55,7 @@ public class GetLongitudinalSequencePairs extends Query<Patient,SequencePair> {
 			}
 			
 			Set<DrugGeneric> history = new HashSet<DrugGeneric>();
-			for(Therapy t : TherapyUtils.sortByStartDate(input.getTherapies())){
+			for(Therapy t : TherapyUtils.sortTherapies(input.getTherapies())){
 				if(t.getStartDate().before(seq.getViralIsolate().getSampleDate())){
 					history.addAll(TherapyUtils.allDrugGenerics(t));
 				}else{
