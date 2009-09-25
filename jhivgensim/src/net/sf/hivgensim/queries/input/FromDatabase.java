@@ -45,7 +45,7 @@ public class FromDatabase extends QueryInput {
 			}
 			Transaction t = login.createTransaction();
 			ScrollableResults patients = t.getPatientsScrollable();
-			int i = 0;
+			int i = 1;
 			while (patients.next()) {
 				if (i % 100 == 0) {
 					System.out.print(".");

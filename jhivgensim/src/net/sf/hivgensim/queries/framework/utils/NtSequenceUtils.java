@@ -6,15 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
 
 public class NtSequenceUtils {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.hivgensim.queries.framework.QueryOutput;
-import net.sf.regadb.db.NtSequence;
 
 public class ToObjectList<DataType> extends QueryOutput<DataType,List<DataType>> {
 
