@@ -36,7 +36,7 @@ public class DrugGenericUtils {
 		ImportDrugsFromCentralRepos imDrug = new ImportDrugsFromCentralRepos();
 		return imDrug.getGenericDrugs();
 	}
-	
+		
 	public static String toString(Set<DrugGeneric> drugs){
 		String result = "";
 		for(DrugGeneric dg : drugs){

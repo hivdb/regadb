@@ -19,5 +19,18 @@ public class DateUtils {
 		c.add(Calendar.MONTH, 1); // <= edit the window time here
 		return c.getTime();
 	}
+	
+	public static Date addDaysToDate(Date d, int daysToAdd) {
+		Calendar c = Calendar.getInstance();
+
+		c.setTime(d);
+		c.add(Calendar.DAY_OF_MONTH, daysToAdd);
+
+		return c.getTime();
+	}
+	
+	public static long daysBetween(Date d1, Date d2){
+		return (d2.getTime()-d1.getTime())/(1000*60*60*24);		
+	}
 
 }
