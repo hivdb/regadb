@@ -13,37 +13,37 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 
-public class GetTreatedWithDrugClass extends Query<Patient,NtSequence>{
+public class GetTreatedWithDrugClass extends Query<Patient,SequenceExperience>{
 	
 	private String drugclass;
 	
-	public GetTreatedWithDrugClass(String drugclass, IQuery<NtSequence> nextQuery){
+	public GetTreatedWithDrugClass(String drugclass, IQuery<SequenceExperience> nextQuery){
 		super(nextQuery);
 		this.drugclass = drugclass;
 	}
 	
 	public void process(Patient p) {
 		Set<DrugGeneric> history = new HashSet<DrugGeneric>();
+		Set<DrugGeneric> regimen = new HashSet<DrugGeneric>();
 		
 		for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
-			history.clear();
+			regimen.clear();
 			for(TherapyGeneric tg : t.getTherapyGenerics()){
 				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugclass)){
-					history.add(tg.getId().getDrugGeneric());
+					regimen.add(tg.getId().getDrugGeneric());
 				}
 			}
 			for(TherapyCommercial tc : t.getTherapyCommercials()){
 				for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
 					if(dg.getDrugClass().getClassId().equals(drugclass)){
-						history.add(dg);
+						regimen.add(dg);
 					}
 				}
 			}
-			
-			if(!history.isEmpty()){
+			history.addAll(regimen);
+			if(!regimen.isEmpty()){
 				for(NtSequence seq : TherapyUtils.getAllSequencesDuringTherapy(p, t)){
-//					getNextQuery().process(new SequenceExperience(seq,history));
-					getNextQuery().process(seq);
+					getNextQuery().process(new SequenceExperience(seq,history));					
 				}				
 			}
 		}

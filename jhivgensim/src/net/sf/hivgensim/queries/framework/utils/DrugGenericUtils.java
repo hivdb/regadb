@@ -3,6 +3,7 @@ package net.sf.hivgensim.queries.framework.utils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
@@ -81,5 +82,27 @@ public class DrugGenericUtils {
 		}
 		return true;
 	}
-
+	
+	public static Set<String> getPI(){
+		Set<String> drugs = new TreeSet<String>();
+		drugs.add("APV");
+		drugs.add("IDV");
+		drugs.add("NFV");
+		drugs.add("RTV");
+		drugs.add("TPV");
+		drugs.add("ATV");
+		drugs.add("FPV");
+		drugs.add("ATV/r");
+		drugs.add("TPV/r");
+		drugs.add("PI");
+		drugs.add("LPV/r");
+		drugs.add("SQV/r");
+		drugs.add("IDV/r");
+		drugs.add("APV/r");
+		drugs.add("DRV");
+		drugs.add("DRV/r");
+		drugs.add("FPV/r");
+		drugs.add("SQV");
+		return drugs;
+	}
 }

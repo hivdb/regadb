@@ -1,5 +1,6 @@
 package net.sf.hivgensim.pr;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import net.sf.regadb.db.DrugGeneric;
@@ -25,6 +26,13 @@ public class SequenceExperience {
 	}
 	public void setExperience(Set<DrugGeneric> experience) {
 		this.experience = experience;
+	}
+	public ArrayList<String> getInfoCols(){
+		ArrayList<String> info = new ArrayList<String>();
+		for(DrugGeneric dg : experience){
+			info.add(dg.getGenericId());
+		}
+		return info;
 	}
 
 	
