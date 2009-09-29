@@ -306,15 +306,18 @@ public class MutationTable extends Table {
 	private void createNewRow(String id){
 		ArrayList<String> newrow = new ArrayList<String>(numColumns());
 		newrow.add(id);
-		int i = 1;
-		//info cols
-		for(;i<=numColumns()-mutationNames.size();i++){
-			newrow.add("n");						
-		}
+		
 		//mutations
-		for(;i<numColumns();i++){
-			newrow.add("");
+		for(int i = 0; i < numColumns(); i++){
+			if(MUT_PATTERN.matcher(valueAt(0, i)).matches()){
+				newrow.add("");
+			}else{
+				newrow.add("n");
+			}			
 		}
 		addRow(newrow);		
 	}
+	
+	public static final Pattern MUT_PATTERN = Pattern.compile("([A-Z]+)([0-9]+)([A-Z]*|del|ins)");	
+	
 }
