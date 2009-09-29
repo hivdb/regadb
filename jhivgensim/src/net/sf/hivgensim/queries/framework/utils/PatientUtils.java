@@ -1,5 +1,6 @@
 package net.sf.hivgensim.queries.framework.utils;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,18 @@ public class PatientUtils {
 			set.addAll(vi.getNtSequences());
 		}
 		return set;
+	}
+	
+	public static Set<NtSequence> getSequences(Patient p, Date d, int days){
+		Set<NtSequence> seqs = new HashSet<NtSequence>();
+		for(NtSequence seq : getSequences(p)){
+			Date sdate = seq.getViralIsolate().getSampleDate();
+			if(sdate != null && DateUtils.betweenInterval(sdate, DateUtils.addDaysToDate(d, -days), DateUtils.addDaysToDate(d, days))){
+				
+				seqs.add(seq);
+			}
+		}
+		return seqs;
 	}
 
 }
