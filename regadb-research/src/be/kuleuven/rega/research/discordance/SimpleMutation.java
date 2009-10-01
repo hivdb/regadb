@@ -32,7 +32,6 @@ public class SimpleMutation implements Comparable<SimpleMutation> {
 		this.ambiguous = false;
 	}
 
-	@Override
 	public int compareTo(SimpleMutation o) {
 		if(o.getPosition() != this.getPosition()){
 			return new Integer(this.getPosition()).compareTo(o.getPosition());

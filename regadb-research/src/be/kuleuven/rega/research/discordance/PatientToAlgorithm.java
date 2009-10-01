@@ -46,7 +46,6 @@ public class PatientToAlgorithm {
 			allLines.addAll(result.get(rfa));
 		}
 		Collections.sort(allLines, new Comparator<AlgoLine>() {
-			@Override
 			public int compare(AlgoLine o1, AlgoLine o2) {
 				int sizeComp = new Integer(o1.getMuts().size()).compareTo(o2.getMuts().size());
 				if(sizeComp != 0){
