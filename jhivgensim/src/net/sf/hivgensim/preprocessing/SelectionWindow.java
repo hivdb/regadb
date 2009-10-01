@@ -16,6 +16,11 @@ public class SelectionWindow {
 	 * in the program.
 	 *  
 	 */
+	
+	public static SelectionWindow getWindow(String organism, String orf, String protein){
+		return new SelectionWindow(Utils.getProtein(organism,orf,protein));
+	}
+	
 	public static final SelectionWindow PR_WINDOW_CLEAN = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "PR"),10,95);
 	public static final SelectionWindow RT_WINDOW_CLEAN = new SelectionWindow(Utils.getProtein("HIV-1", "pol", "RT"),44,200);
 	
