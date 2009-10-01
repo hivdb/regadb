@@ -24,7 +24,7 @@ public class PatientToAlgorithm {
 	//	TODO wat doet de berekeningstool met ongedefinieerde mutaties? (meerdere aa) 
 	public static void main(String[] args) throws IOException {
 		if(args.length != 2){
-			System.out.println("Usage: PatientToAlgorithm patientFile algorithmFile");
+			System.out.println("Usage: PatientToAlgorithm algorithmFile patientFile");
 		}
 
 		//		Read the discordant mutation sets from the algorithm analysis (sequencetool)

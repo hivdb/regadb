@@ -44,7 +44,9 @@ public class AlgorithmResultBuffer {
 		for (Iterator<AaMutation> iterator = aa.getAaMutations().iterator(); iterator.hasNext();) {
 			AaMutation mut = iterator.next();
 			String aaTo = mut.getAaMutation();
-			toWrite += mut.getId().getMutationPosition()+(aaTo==null ? "d" : aaTo.toUpperCase());
+			String mutString = mut.getId().getMutationPosition()+(aaTo==null ? "d" : aaTo.toUpperCase());
+			toWrite += mutString;
+			
 			if(iterator.hasNext())
 				toWrite += ", ";
 		}
@@ -52,7 +54,7 @@ public class AlgorithmResultBuffer {
 			toWrite += ", ";
 		for (Iterator<AaInsertion> iterator = aa.getAaInsertions().iterator(); iterator.hasNext();) {
 			AaInsertion mut = iterator.next();
-			toWrite += mut.getAaInsertion();
+			toWrite += mut.getId().getInsertionPosition()+mut.getAaInsertion();
 			if(iterator.hasNext())
 				toWrite += ", ";
 		}
