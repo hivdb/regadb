@@ -201,7 +201,7 @@ public class MutationTable extends Table {
 	}
 
 	public void addSequence(NtSequence seq, SelectionWindow[] windows, ArrayList<String> infoCols){
-		createNewRow(seq.getViralIsolate().getSampleId());
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ","));
 		for(String info : infoCols){
 			setValue(findInRow(0, info), numRows()-1,"y");
 		}
@@ -209,7 +209,7 @@ public class MutationTable extends Table {
 	}
 
 	public void addSequence(NtSequence seq, SelectionWindow[] windows){
-		createNewRow(seq.getViralIsolate().getSampleId());
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ","));
 		completeNewRow(seq, windows);
 	}
 
