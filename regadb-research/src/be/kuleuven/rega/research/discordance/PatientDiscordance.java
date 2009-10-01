@@ -33,18 +33,17 @@ import net.sf.regadb.io.util.StandardObjects;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import be.kuleuven.rega.research.FilterVISubtype;
 import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
 
 public class PatientDiscordance {
 
 	final static private TestType gss = StandardObjects.getGssTestType(StandardObjects.getHiv1Genome());
 	final static private String snapshot = "/home/tm/labo/test.snapshot.20090807";
-	final static private String noSubtype = "Check the bootscan";
 
 	final static private HashMap<String, Writer> drugFiles = new HashMap<String, Writer>();
 	final static private List<DrugGeneric> drugs = DrugGenericUtils.prepareRegaDrugGenerics();
 	final static private Map<String, AlgorithmResultBuffer> buffer = new HashMap<String, AlgorithmResultBuffer>();
-	final static private SubtypeGrouper grouper = new SubtypeGrouper();
 
 	public static void main(String[] args) throws IOException {
 		init();
@@ -82,37 +81,6 @@ public class PatientDiscordance {
 		in.run();
 	}
 
-	private static String determineSubtype(ViralIsolate vi) {
-		String majority = null;
-		int maxVote = 0;
-		Map<String, Integer> subtypeVotes = new HashMap<String, Integer>();
-		
-		if(vi.getNtSequences().size()==1){
-			majority = grouper.getGroup(vi.getNtSequences().iterator().next(), null);
-			if(majority==null || majority.equals(noSubtype)){
-				majority = null;
-			}
-			
-		} else {
-			for (NtSequence seq : vi.getNtSequences()) {
-				String subtype = grouper.getGroup(seq, null);
-				if(subtype==null || subtype.equals(noSubtype)){
-					continue;
-				}
-				if(!subtypeVotes.containsKey(subtype))
-					subtypeVotes.put(subtype, 0);
-				int newVote = subtypeVotes.get(subtype)+1;
-				subtypeVotes.put(subtype, newVote);
-				if(newVote > maxVote){
-					maxVote = newVote;
-					majority = subtype;
-				}
-			}
-		}
-		
-		return majority;
-	}
-	
 	private static void init() throws IOException {
 		for (DrugGeneric drug : drugs) {
 			if (drug.getDrugClass().getClassId().equals("Unknown"))
@@ -155,7 +123,7 @@ public class PatientDiscordance {
 	}
 
 	private static void handleTestResults(ViralIsolate vi, String patient) {
-		String subtype = determineSubtype(vi);
+		String subtype = FilterVISubtype.determineSubtype(vi);
 		if(subtype==null)
 			subtype = "unknown";
 		
