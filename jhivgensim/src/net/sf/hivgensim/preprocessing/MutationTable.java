@@ -308,13 +308,13 @@ public class MutationTable extends Table {
 		newrow.add(id);
 		
 		//mutations
-		for(int i = 0; i < numColumns(); i++){
-			if(MUT_PATTERN.matcher(valueAt(0, i)).matches()){
+		for(int i = 1; i < numColumns(); i++){
+			if(MUT_PATTERN.matcher(valueAt(i, 0)).matches()){
 				newrow.add("");
 			}else{
 				newrow.add("n");
 			}			
-		}
+		}		
 		addRow(newrow);		
 	}
 	
