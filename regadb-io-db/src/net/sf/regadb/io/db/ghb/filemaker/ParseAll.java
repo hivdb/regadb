@@ -181,6 +181,9 @@ public class ParseAll {
     	createBooleanTest(oos,"HBcAb (presence)","HBcAb (presence) (generic)");
     	createBooleanTest(oos,"HBsAg (presence)","HBsAg (presence) (generic)");
     	createBooleanTest(oos,"HAVAb (presence)","HAVAb (presence) (generic)");
+    	
+    	oos.createTest(oos.getTestType(StandardObjects.getContactTestType().getDescription(), null), "Consultation");
+    	oos.createTest(oos.getTestType(StandardObjects.getContactTestType().getDescription(), null), "Hospitalisation");
     }
     
     private static Test createBooleanTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
