@@ -120,6 +120,10 @@ public abstract class MixedXMLParser extends DefaultHandler {
     	}
     	return sb.toString();
 	}
+	
+	public int getDepth(){
+		return path.size();
+	}
 	    
     private void parse(InputSource source)  throws SAXException, IOException {
     	XMLReader xmlReader = XMLReaderFactory.createXMLReader();
